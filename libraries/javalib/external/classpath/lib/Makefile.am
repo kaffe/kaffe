@@ -29,7 +29,7 @@ if FOUND_GCJX
 JAVAC = $(GCJX) -encoding UTF-8 -classpath .:$(USER_CLASSLIB) -d . @classes
 else
 if FOUND_ECJ
-JAVAC = $(ECJ) -source 1.4 -encoding UTF-8 -warn:none -proceedOnError -bootclasspath '' -classpath $(compile_classpath) -d . @classes
+JAVAC = $(ECJ) -source 1.4 -encoding UTF-8 -warn:-deprecation,serial,typeHiding,unchecked,unused,varargsCast -proceedOnError -bootclasspath '' -classpath $(compile_classpath) -d . @classes
 endif # FOUND_ECJ
 endif # FOUND_GCJX
 endif # FOUND_KJC

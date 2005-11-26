@@ -55,8 +55,9 @@ import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
+import javax.swing.LookAndFeel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -92,11 +93,11 @@ public abstract class BasicTextUI extends TextUI
   /**
    * A {@link DefaultCaret} that implements {@link UIResource}.
    */
-  public static class BasicCaret extends DefaultCaret
-    implements UIResource
+  public static class BasicCaret extends DefaultCaret implements UIResource
   {
     public BasicCaret()
     {
+      // Nothing to do here.
     }
   }
 
@@ -108,6 +109,7 @@ public abstract class BasicTextUI extends TextUI
   {
     public BasicHighlighter()
     {
+      // Nothing to do here.
     }
   }
 
@@ -252,10 +254,10 @@ public abstract class BasicTextUI extends TextUI
      *
      * This is delegated to the real root view.
      *
-     * @param pos the position of the character in the model
+     * @param position the position of the character in the model
      * @param a the area that is occupied by the view
-     * @param bias either {@link Position.Bias.Forward} or
-     *        {@link Position.Bias.Backward} depending on the preferred
+     * @param bias either {@link Position.Bias#Forward} or
+     *        {@link Position.Bias#Backward} depending on the preferred
      *        direction bias. If <code>null</code> this defaults to
      *        <code>Position.Bias.Forward</code>
      *
@@ -327,6 +329,34 @@ public abstract class BasicTextUI extends TextUI
     {
       view.changedUpdate(ev, shape, vf);
     }
+
+    /**
+     * Returns the document position that is (visually) nearest to the given
+     * document position <code>pos</code> in the given direction <code>d</code>.
+     *
+     * @param pos the document position
+     * @param b the bias for <code>pos</code>
+     * @param a the allocation for the view
+     * @param d the direction, must be either {@link SwingConstants#NORTH},
+     *        {@link SwingConstants#SOUTH}, {@link SwingConstants#WEST} or
+     *        {@link SwingConstants#EAST}
+     * @param biasRet an array of {@link Position.Bias} that can hold at least
+     *        one element, which is filled with the bias of the return position
+     *        on method exit
+     *
+     * @return the document position that is (visually) nearest to the given
+     *         document position <code>pos</code> in the given direction
+     *         <code>d</code>
+     *
+     * @throws BadLocationException if <code>pos</code> is not a valid offset in
+     *         the document model
+     */
+    public int getNextVisualPositionFrom(int pos, Position.Bias b, Shape a,
+                                         int d, Position.Bias[] biasRet)
+      throws BadLocationException
+    {
+      return view.getNextVisualPositionFrom(pos, b, a, d, biasRet);
+    }
   }
 
   /**
@@ -366,8 +396,7 @@ public abstract class BasicTextUI extends TextUI
      */
     public void changedUpdate(DocumentEvent ev)
     {
-      Dimension size = textComponent.getSize();
-      rootView.changedUpdate(ev, new Rectangle(0, 0, size.width, size.height),
+      rootView.changedUpdate(ev, getVisibleEditorRect(),
                              rootView.getViewFactory());
     }
 
@@ -378,8 +407,7 @@ public abstract class BasicTextUI extends TextUI
      */
     public void insertUpdate(DocumentEvent ev)
     {
-      Dimension size = textComponent.getSize();
-      rootView.insertUpdate(ev, new Rectangle(0, 0, size.width, size.height),
+      rootView.insertUpdate(ev, getVisibleEditorRect(),
                             rootView.getViewFactory());
     }
 
@@ -390,8 +418,7 @@ public abstract class BasicTextUI extends TextUI
      */
     public void removeUpdate(DocumentEvent ev)
     {
-      Dimension size = textComponent.getSize();
-      rootView.removeUpdate(ev, new Rectangle(0, 0, size.width, size.height),
+      rootView.removeUpdate(ev, getVisibleEditorRect(),
                             rootView.getViewFactory());
     }
   }
@@ -437,6 +464,7 @@ public abstract class BasicTextUI extends TextUI
    */
   public BasicTextUI()
   {
+    // Nothing to do here.
   }
 
   /**
@@ -514,20 +542,20 @@ public abstract class BasicTextUI extends TextUI
       textComponent.setHighlighter(createHighlighter());
 
     String prefix = getPropertyPrefix();
-    UIDefaults defaults = UIManager.getLookAndFeelDefaults();
-    textComponent.setMargin(defaults.getInsets(prefix + ".margin"));
-    textComponent.setBorder(defaults.getBorder(prefix + ".border"));
-    textComponent.setFont(defaults.getFont(prefix + ".font"));
+    LookAndFeel.installColorsAndFont(textComponent, prefix + ".background",
+                                     prefix + ".foreground", prefix + ".font");
+    LookAndFeel.installBorder(textComponent, prefix + ".border");
+    textComponent.setMargin(UIManager.getInsets(prefix + ".margin"));
 
-    caret.setBlinkRate(defaults.getInt(prefix + ".caretBlinkRate"));
+    caret.setBlinkRate(UIManager.getInt(prefix + ".caretBlinkRate"));
 
     // Fetch the colors for enabled/disabled text components.
-    background = defaults.getColor(prefix + ".background");
-    textComponent.setBackground(background);
-    inactiveBackground = defaults.getColor(prefix + ".inactiveBackground");
-    textComponent.setForeground(defaults.getColor(prefix + ".foreground"));
+    background = UIManager.getColor(prefix + ".background");
+    inactiveBackground = UIManager.getColor(prefix + ".inactiveBackground");
     textComponent.setDisabledTextColor
-                         (defaults.getColor(prefix + ".inactiveForeground"));
+                         (UIManager.getColor(prefix + ".inactiveForeground"));
+    textComponent.setSelectedTextColor(UIManager.getColor(prefix + ".selectionForeground"));
+    textComponent.setSelectionColor(UIManager.getColor(prefix + ".selectionBackground"));    
   }
 
   /**
@@ -588,13 +616,14 @@ public abstract class BasicTextUI extends TextUI
   protected Keymap createKeymap()
   {
     String prefix = getPropertyPrefix();
-    UIDefaults defaults = UIManager.getLookAndFeelDefaults();
     JTextComponent.KeyBinding[] bindings = 
-      (JTextComponent.KeyBinding[]) defaults.get(prefix + ".keyBindings");
+      (JTextComponent.KeyBinding[]) UIManager.get(prefix + ".keyBindings");
     if (bindings == null)
       {
         bindings = new JTextComponent.KeyBinding[0];
-        defaults.put(prefix + ".keyBindings", bindings);
+        // FIXME: Putting something into the defaults map is certainly wrong.
+        // Must be fixed somehow.
+        UIManager.put(prefix + ".keyBindings", bindings);
       }
 
     Keymap km = JTextComponent.addKeymap(getKeymapName(), 
@@ -631,17 +660,16 @@ public abstract class BasicTextUI extends TextUI
   InputMap getInputMap(int condition)
   {
     String prefix = getPropertyPrefix();
-    UIDefaults defaults = UIManager.getLookAndFeelDefaults();
     switch (condition)
       {
       case JComponent.WHEN_IN_FOCUSED_WINDOW:
         // FIXME: is this the right string? nobody seems to use it.
-        return (InputMap) defaults.get(prefix + ".windowInputMap"); 
+        return (InputMap) UIManager.get(prefix + ".windowInputMap"); 
       case JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT:
-        return (InputMap) defaults.get(prefix + ".ancestorInputMap");
+        return (InputMap) UIManager.get(prefix + ".ancestorInputMap");
       default:
       case JComponent.WHEN_FOCUSED:
-        return (InputMap) defaults.get(prefix + ".focusInputMap");
+        return (InputMap) UIManager.get(prefix + ".focusInputMap");
       }
   }
 
@@ -655,12 +683,14 @@ public abstract class BasicTextUI extends TextUI
   ActionMap getActionMap()
   {
     String prefix = getPropertyPrefix();
-    UIDefaults defaults = UIManager.getLookAndFeelDefaults();    
-    ActionMap am = (ActionMap) defaults.get(prefix + ".actionMap");
+    ActionMap am = (ActionMap) UIManager.get(prefix + ".actionMap");
     if (am == null)
       {
         am = createActionMap();
-        defaults.put(prefix + ".actionMap", am);
+        // FIXME: Putting something in the UIDefaults map is certainly wrong.
+        // However, the whole method seems wrong and must be replaced by
+        // something that is less wrong.
+        UIManager.put(prefix + ".actionMap", am);
       }
     return am;
   }
@@ -718,6 +748,7 @@ public abstract class BasicTextUI extends TextUI
   protected void uninstallListeners()
   {
     textComponent.removeFocusListener(focuslistener);
+    textComponent.getDocument().removeDocumentListener(documentHandler);
   }
 
   /**
@@ -771,6 +802,18 @@ public abstract class BasicTextUI extends TextUI
   }
 
   /**
+   * Returns the minimum size for text components. This returns the size
+   * of the component's insets.
+   *
+   * @return the minimum size for text components
+   */
+  public Dimension getMinimumSize(JComponent c)
+  {
+    Insets i = c.getInsets();
+    return new Dimension(i.left + i.right, i.top + i.bottom);
+  }
+
+  /**
    * Paints the text component.
    *
    * @param g the <code>Graphics</code> context to paint to
@@ -790,10 +833,10 @@ public abstract class BasicTextUI extends TextUI
   {
     Caret caret = textComponent.getCaret();
     Highlighter highlighter = textComponent.getHighlighter();
-    
+
     if (textComponent.isOpaque())
       paintBackground(g);
-    
+
     if (highlighter != null
 	&& textComponent.getSelectionStart() != textComponent.getSelectionEnd())
       highlighter.paint(g);
@@ -813,8 +856,8 @@ public abstract class BasicTextUI extends TextUI
   {
     // This method does nothing. All the background filling is done by the
     // ComponentUI update method. However, the method is called by paint
-    // to provide a way for subclasses to draw something different (e.g. background
-    // images etc) on the background.
+    // to provide a way for subclasses to draw something different (e.g.
+    // background images etc) on the background.
   }
 
   /**
@@ -901,10 +944,10 @@ public abstract class BasicTextUI extends TextUI
   /**
    * Maps a position in the document into the coordinate space of the View.
    * The output rectangle usually reflects the font height but has a width
-   * of zero. A bias of {@link Position.Bias.Forward} is used in this method.
+   * of zero. A bias of {@link Position.Bias#Forward} is used in this method.
    *
+   * @param t the text component
    * @param pos the position of the character in the model
-   * @param a the area that is occupied by the view
    *
    * @return a rectangle that gives the location of the document position
    *         inside the view coordinate space
@@ -924,10 +967,10 @@ public abstract class BasicTextUI extends TextUI
    * The output rectangle usually reflects the font height but has a width
    * of zero.
    *
+   * @param t the text component
    * @param pos the position of the character in the model
-   * @param a the area that is occupied by the view
-   * @param bias either {@link Position.Bias.Forward} or
-   *        {@link Position.Bias.Backward} depending on the preferred
+   * @param bias either {@link Position.Bias#Forward} or
+   *        {@link Position.Bias#Backward} depending on the preferred
    *        direction bias. If <code>null</code> this defaults to
    *        <code>Position.Bias.Forward</code>
    *
@@ -973,7 +1016,7 @@ public abstract class BasicTextUI extends TextUI
    */
   public int viewToModel(JTextComponent t, Point pt, Position.Bias[] biasReturn)
   {
-    return 0; // FIXME: Implement me.
+    return rootView.viewToModel(pt.x, pt.y, getVisibleEditorRect(), biasReturn);
   }
 
   /**
@@ -1015,16 +1058,17 @@ public abstract class BasicTextUI extends TextUI
    */
   protected Rectangle getVisibleEditorRect()
   {
+    JTextComponent textComponent = getComponent();
     int width = textComponent.getWidth();
     int height = textComponent.getHeight();
 
     if (width <= 0 || height <= 0)
-      return null;
+      return new Rectangle(0, 0, 0, 0);
 	
     Insets insets = textComponent.getInsets();
     return new Rectangle(insets.left, insets.top,
-			 width - insets.left + insets.right,
-			 height - insets.top + insets.bottom);
+			 width - insets.left - insets.right,
+			 height - insets.top - insets.bottom);
   }
 
   /**
@@ -1036,6 +1080,8 @@ public abstract class BasicTextUI extends TextUI
   {
     rootView.setView(view);
     view.setParent(rootView);
+    textComponent.revalidate();
+    textComponent.repaint();
   }
 
   /**

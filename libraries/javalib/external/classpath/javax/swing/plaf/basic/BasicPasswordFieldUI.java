@@ -49,6 +49,7 @@ public class BasicPasswordFieldUI extends BasicTextFieldUI
 {
   public BasicPasswordFieldUI()
   {
+    // Nothing to do here.
   }
 
   public View create(Element elem)

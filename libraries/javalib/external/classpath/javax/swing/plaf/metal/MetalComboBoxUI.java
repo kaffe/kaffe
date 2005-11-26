@@ -41,6 +41,7 @@ package javax.swing.plaf.metal;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
@@ -49,6 +50,7 @@ import java.beans.PropertyChangeListener;
 
 import javax.swing.CellRendererPane;
 import javax.swing.ComboBoxEditor;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -61,8 +63,7 @@ import javax.swing.plaf.basic.ComboPopup;
 /**
  * A UI delegate for the {@link JComboBox} component.
  */
-public class MetalComboBoxUI
-  extends BasicComboBoxUI
+public class MetalComboBoxUI extends BasicComboBoxUI
 {
   /**
    * A layout manager that arranges the editor component (if active) and the
@@ -75,7 +76,8 @@ public class MetalComboBoxUI
      * Creates a new instance of the layout manager.
      */
     public MetalComboBoxLayoutManager()
-    {      
+    {
+      // Nothing to do here.
     }
     
     /**
@@ -121,6 +123,7 @@ public class MetalComboBoxUI
      */
     public MetalPropertyChangeListener()
     {
+      // Nothing to do here.
     }
     
     /**
@@ -209,8 +212,10 @@ public class MetalComboBoxUI
    */
   protected JButton createArrowButton()
   {
-    return new MetalComboBoxButton(comboBox, new MetalComboBoxIcon(), 
+    JButton button = new MetalComboBoxButton(comboBox, new MetalComboBoxIcon(), 
             new CellRendererPane(), listBox);  
+    button.setMargin(new Insets(0, 1, 1, 3));
+    return button;
   }
   
   /**
@@ -251,7 +256,11 @@ public class MetalComboBoxUI
       }
     else
       {
-        arrowButton.setText(comboBox.getSelectedItem().toString());
+        String text = "";
+        Object selected = comboBox.getSelectedItem();
+        if (selected != null)
+          text = selected.toString();
+        arrowButton.setText(text);
         if (editor != null)
           editor.setVisible(true);
       }
@@ -286,10 +295,58 @@ public class MetalComboBoxUI
    */
   public Dimension getMinimumSize(JComponent c)
   {
-    // FIXME: this needs work
-    Dimension result = super.getMinimumSize(c);
-    result.height = result.height + 9;
-    return result;   
+    Dimension d = getDisplaySize();
+    MetalComboBoxButton b = (MetalComboBoxButton) arrowButton;
+    Insets insets = b.getInsets();
+    int insetsH = insets.top + insets.bottom;
+    int insetsW = insets.left + insets.right;
+    if (!comboBox.isEditable())
+      {
+        Icon icon = b.getComboIcon();
+        int iconWidth = icon.getIconWidth() + 6;
+        return new Dimension(d.width + insetsW + iconWidth, d.height + insetsH);
+      }
+    else
+      // FIXME: the following dimensions pass most of the Mauve tests, but
+      // I don't yet understand the logic behind this...it is probably wrong
+      return new Dimension(d.width + insetsW + (d.height + insetsH) - 4, 
+          d.height + insetsH + 1);
   }
   
+  /**
+   * Configures the editor for this combo box.
+   */
+  public void configureEditor()
+  {
+    ComboBoxEditor cbe = comboBox.getEditor();
+    if (cbe != null)
+      {
+        cbe.getEditorComponent().setFont(comboBox.getFont());
+        cbe.setItem(comboBox.getSelectedItem());
+        cbe.addActionListener(comboBox);
+      }
+  }
+  
+  /**
+   * Unconfigures the editor for this combo box.
+   */
+  public void unconfigureEditor()
+  {
+    ComboBoxEditor cbe = comboBox.getEditor();
+    if (cbe != null)
+      {
+        cbe.getEditorComponent().setFont(null);
+        cbe.setItem(null);
+        cbe.removeActionListener(comboBox);
+      }
+  }
+  
+  /** 
+   * Lays out the ComboBox
+   */
+  public void layoutComboBox(Container parent,
+                             MetalComboBoxUI.MetalComboBoxLayoutManager manager)
+  {
+    manager.layoutContainer(parent);
+  }
 }

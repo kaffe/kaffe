@@ -204,8 +204,6 @@ implements SourceDataLine
 	{
 	}
 
-
-
 	/** Throw a RuntimeException saying "not yet implemented".
 	 */
 	private void throwNYIException()

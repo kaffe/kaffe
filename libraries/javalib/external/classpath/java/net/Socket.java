@@ -325,7 +325,9 @@ public class Socket
       }
     catch (IOException e)
       {
-	throw new SocketException(e.getMessage());
+	SocketException se = new SocketException(e.toString());
+	se.initCause(e);
+	throw se;
       }
 
     return impl;

@@ -45,8 +45,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.EventListener;
 
@@ -98,6 +96,7 @@ public class JMenu extends JMenuItem implements Accessible, MenuElement
   public JMenu()
   {
     super();
+    setOpaque(false);
   }
 
   /**
@@ -109,6 +108,7 @@ public class JMenu extends JMenuItem implements Accessible, MenuElement
   {
     super(text);
     popupMenu.setInvoker(this);
+    setOpaque(false);
   }
 
   /**
@@ -122,6 +122,7 @@ public class JMenu extends JMenuItem implements Accessible, MenuElement
     super(action);
     createActionChangeListener(this);
     popupMenu.setInvoker(this);
+    setOpaque(false);
   }
 
   /**
@@ -135,10 +136,6 @@ public class JMenu extends JMenuItem implements Accessible, MenuElement
   {
     // FIXME: tearoff not implemented
     this(text);
-  }
-
-  private void writeObject(ObjectOutputStream stream) throws IOException
-  {
   }
 
   /**
@@ -768,6 +765,7 @@ public class JMenu extends JMenuItem implements Accessible, MenuElement
    */
   protected void processKeyEvent(KeyEvent event)
   {
+    // TODO: Implement this properly.
   }
 
   /**
@@ -812,6 +810,7 @@ public class JMenu extends JMenuItem implements Accessible, MenuElement
     return accessibleContext;
   }
 
+  // FIXME: This inner class is a complete stub and needs to be implemented.
   protected class AccessibleJMenu extends AccessibleJMenuItem
     implements AccessibleSelection
   {
@@ -819,6 +818,7 @@ public class JMenu extends JMenuItem implements Accessible, MenuElement
 
     protected AccessibleJMenu()
     {
+      // Nothing to do here.
     }
 
     public int getAccessibleChildrenCount()
@@ -858,32 +858,48 @@ public class JMenu extends JMenuItem implements Accessible, MenuElement
 
     public void addAccessibleSelection(int value0)
     {
+      // TODO: Implement this properly.
     }
 
     public void removeAccessibleSelection(int value0)
     {
+      // TODO: Implement this properly.
     }
 
     public void clearAccessibleSelection()
     {
+      // TODO: Implement this properly.
     }
 
     public void selectAllAccessibleSelection()
     {
+      // TODO: Implement this properly.
     }
   }
 
   protected class WinListener extends WindowAdapter implements Serializable
   {
-    JPopupMenu popupMenu;
     private static final long serialVersionUID = -6415815570638474823L;
 
+    /**
+     * Creates a new <code>WinListener</code>.
+     *
+     * @param popup the popup menu which is observed
+     */
     public WinListener(JPopupMenu popup)
     {
+      // TODO: What should we do with the popup argument?
     }
 
+    /**
+     * Receives notification when the popup menu is closing and deselects
+     * the menu.
+     *
+     * @param event the window event
+     */
     public void windowClosing(WindowEvent event)
     {
+      setSelected(false);
     }
   }
 

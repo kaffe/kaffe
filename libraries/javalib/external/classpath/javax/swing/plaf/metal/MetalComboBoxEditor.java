@@ -51,8 +51,7 @@ import javax.swing.plaf.metal.MetalBorders.Flush3DBorder;
 /**
  * An editor used by the {@link MetalComboBoxUI} class.
  */
-public class MetalComboBoxEditor 
-  extends BasicComboBoxEditor
+public class MetalComboBoxEditor extends BasicComboBoxEditor
 {
   /**
    * A border used for the {@link JTextField} component.
@@ -64,6 +63,7 @@ public class MetalComboBoxEditor
      */
     public MetalComboBoxEditorBorder()
     {
+      // Nothing to do here.
     }
     
     /**
@@ -116,8 +116,7 @@ public class MetalComboBoxEditor
    * A subclass of {@link MetalComboBoxEditor} that implements the 
    * {@link javax.swing.plaf.UIResource} interface.
    */
-  public static class UIResource
-    extends MetalComboBoxEditor
+  public static class UIResource extends MetalComboBoxEditor
     implements javax.swing.plaf.UIResource
   {
     /**
@@ -125,11 +124,12 @@ public class MetalComboBoxEditor
      */
     public UIResource()
     {
+      // Nothing to do here.
     }
   }
   
   /** The editor's border insets. */
-  protected static Insets editorBorderInsets = new Insets(2, 2, 2, 2);
+  protected static Insets editorBorderInsets = new Insets(4, 2, 4, 0);
   
   /**
    * Creates a new editor.
@@ -137,7 +137,6 @@ public class MetalComboBoxEditor
   public MetalComboBoxEditor()
   {
     super();
-    editor = new JTextField();
     editor.setBorder(new MetalComboBoxEditorBorder());
   }
   

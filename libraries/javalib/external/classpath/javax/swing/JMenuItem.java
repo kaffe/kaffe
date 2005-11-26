@@ -44,9 +44,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.EventListener;
 
 import javax.accessibility.Accessible;
@@ -147,15 +144,6 @@ public class JMenuItem extends AbstractButton implements Accessible,
   {
     this(text, null);
     setMnemonic(mnemonic);
-  }
-
-  private void readObject(ObjectInputStream stream)
-                   throws IOException, ClassNotFoundException
-  {
-  }
-
-  private void writeObject(ObjectOutputStream stream) throws IOException
-  {
   }
 
   /**
@@ -266,7 +254,9 @@ public class JMenuItem extends AbstractButton implements Accessible,
    */
   public void setAccelerator(KeyStroke keystroke)
   {
+    KeyStroke old = this.accelerator;
     this.accelerator = keystroke;
+    firePropertyChange ("accelerator", old, keystroke);
   }
 
   /**
@@ -676,6 +666,7 @@ public class JMenuItem extends AbstractButton implements Accessible,
 
     public void stateChanged(ChangeEvent event)
     {
+      // TODO: What should be done here, if anything?
     }
 
     public AccessibleRole getAccessibleRole()

@@ -70,8 +70,8 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
-import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.plaf.ComponentUI;
@@ -141,13 +141,14 @@ public class BasicOptionPaneUI extends OptionPaneUI
                                                                               optionPane);
       if (inf != null)
         {
-	  try
-	    {
-	      inf.setClosed(true);
-	    }
-	  catch (PropertyVetoException pve)
-	    {
-	    }
+          try
+            {
+              inf.setClosed(true);
+            }
+          catch (PropertyVetoException pve)
+            {
+              // We do nothing if attempt has been vetoed.
+            }
         }
     }
   }
@@ -526,6 +527,7 @@ public class BasicOptionPaneUI extends OptionPaneUI
      */
     public void paintIcon(Component c, Graphics g, int x, int y)
     {
+      // Nothing to do here.
     }
   }
 
@@ -645,6 +647,7 @@ public class BasicOptionPaneUI extends OptionPaneUI
    */
   public BasicOptionPaneUI()
   {
+    // Nothing to do here.
   }
 
   /**
@@ -771,7 +774,7 @@ public class BasicOptionPaneUI extends OptionPaneUI
 	// it will create a box and burst the string.
 	// otherwise, it will just create a label and re-call 
 	// this method with the label o.O
-	if (msg.toString().length() > maxll)
+	if (msg.toString().length() > maxll || msg.toString().contains("\n"))
 	  {
 	    Box tmp = new Box(BoxLayout.Y_AXIS);
 	    burstStringInto(tmp, msg.toString(), maxll);
@@ -793,17 +796,35 @@ public class BasicOptionPaneUI extends OptionPaneUI
    */
   protected void burstStringInto(Container c, String d, int maxll)
   {
-    // FIXME: Verify that this is the correct behaviour.
-    // One interpretation of the spec is that this method
-    // should recursively call itself to create (and add) 
-    // JLabels to the container if the length of the String d
-    // is greater than maxll.
-    // but in practice, even with a really long string, this is 
-    // all that happens.
     if (d == null || c == null)
       return;
-    JLabel label = new JLabel(d);
+
+    int newlineIndex = d.indexOf('\n');
+    String line;
+    String remainder;
+    if (newlineIndex >= 0 && newlineIndex < maxll)
+      {
+        line = d.substring(0, newlineIndex);
+        remainder = d.substring(newlineIndex + 1);
+      }
+    else
+      {
+        line = d.substring(0, maxll);
+        remainder = d.substring(maxll);
+      }
+    JLabel label = new JLabel(line);
     c.add(label);
+
+    // If there is nothing left to burst, then we can stop.
+    if (remainder.length() == 0)
+      return;
+
+    // Recursivly call ourselves to burst the remainder of the string, 
+    if ((remainder.length() > maxll || remainder.contains("\n")))
+      burstStringInto(c, remainder, maxll);
+    else
+      // Add the remainder to the container and be done.
+      c.add(new JLabel(remainder)); 
   }
 
   /**
@@ -1156,19 +1177,17 @@ public class BasicOptionPaneUI extends OptionPaneUI
    */
   protected void installDefaults()
   {
-    UIDefaults defaults = UIManager.getLookAndFeelDefaults();
-
-    optionPane.setFont(defaults.getFont("OptionPane.font"));
-    optionPane.setBackground(defaults.getColor("OptionPane.background"));
-    optionPane.setForeground(defaults.getColor("OptionPane.foreground"));
-    optionPane.setBorder(defaults.getBorder("OptionPane.border"));
+    LookAndFeel.installColorsAndFont(optionPane, "OptionPane.background",
+                                     "OptionPane.foreground",
+                                     "OptionPane.font");
+    LookAndFeel.installBorder(optionPane, "OptionPane.border");
     optionPane.setOpaque(true);
 
-    messageBorder = defaults.getBorder("OptionPane.messageAreaBorder");
-    messageForeground = defaults.getColor("OptionPane.messageForeground");
-    buttonBorder = defaults.getBorder("OptionPane.buttonAreaBorder");
+    messageBorder = UIManager.getBorder("OptionPane.messageAreaBorder");
+    messageForeground = UIManager.getColor("OptionPane.messageForeground");
+    buttonBorder = UIManager.getBorder("OptionPane.buttonAreaBorder");
 
-    minimumSize = defaults.getDimension("OptionPane.minimumSize");
+    minimumSize = UIManager.getDimension("OptionPane.minimumSize");
 
     // FIXME: Image icons don't seem to work properly right now.
     // Once they do, replace the synthetic icons with these ones.

@@ -39,10 +39,10 @@ exception statement from your version. */
 package org.omg.CORBA;
 
 import gnu.CORBA.DynAn.NameValuePairHolder;
+import gnu.CORBA.typecodes.AliasTypeCode;
+import gnu.CORBA.typecodes.PrimitiveTypeCode;
+import gnu.CORBA.typecodes.StringTypeCode;
 import gnu.CORBA.Minor;
-import gnu.CORBA.aliasTypeCode;
-import gnu.CORBA.primitiveTypeCode;
-import gnu.CORBA.stringTypeCode;
 
 import org.omg.CORBA.portable.InputStream;
 import org.omg.CORBA.portable.OutputStream;
@@ -120,12 +120,12 @@ public abstract class NameValuePairHelper
         StructMember[] members = new StructMember[ 2 ];
 
         TypeCode t_id =
-          new aliasTypeCode(new stringTypeCode(TCKind.tk_string), "", "id");
+          new AliasTypeCode(new StringTypeCode(TCKind.tk_string), "", "id");
 
         members [ 0 ] = new StructMember("id", t_id, null);
 
         members [ 1 ] =
-          new StructMember("value", new primitiveTypeCode(TCKind.tk_any), null);
+          new StructMember("value", new PrimitiveTypeCode(TCKind.tk_any), null);
 
         typeCode = ORB.init().create_struct_tc(id(), "NameValuePair", members);
       }

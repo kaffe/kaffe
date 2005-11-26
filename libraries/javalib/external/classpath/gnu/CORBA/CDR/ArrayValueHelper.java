@@ -120,9 +120,9 @@ class ArrayValueHelper
    */
   public Serializable read_value(InputStream input)
   {
-    if (input instanceof noHeaderInput)
+    if (input instanceof HeadlessInput)
       {
-        ((noHeaderInput) input).subsequentCalls = true;
+        ((HeadlessInput) input).subsequentCalls = true;
       }
 
     component = arrayClass.getComponentType();
@@ -177,8 +177,8 @@ class ArrayValueHelper
                   position = -1;
                 }
 
-              if (input instanceof noHeaderInput)
-                ((noHeaderInput) input).subsequentCalls = true;
+              if (input instanceof HeadlessInput)
+                ((HeadlessInput) input).subsequentCalls = true;
 
               Object o = handler.readValue(input, position, component, null, g);
               Array.set(array, i, o);

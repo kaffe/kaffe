@@ -43,24 +43,23 @@ import java.awt.Graphics;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicGraphicsUtils;
 import javax.swing.plaf.basic.BasicLabelUI;
 
 /**
- * A UI delegate used for {@link JLabel}s in the {@link MetalLookAndFeel}.
+ * A UI delegate for the {@link JLabel} component.
  */
 public class MetalLabelUI
   extends BasicLabelUI
 {
 
-  /** The shared UI instance for JLabels. */
+  /** The shared instance of the UI delegate. */
   protected static MetalLabelUI metalLabelUI;
 
   /**
-   * Constructs a new instance of MetalLabelUI.
+   * Constructs a new instance of <code>MetalLabelUI</code>.
    */
   public MetalLabelUI()
   {
@@ -68,11 +67,11 @@ public class MetalLabelUI
   }
 
   /**
-   * Returns an instance of MetalLabelUI.
+   * Returns a shared instance of <code>MetalLabelUI</code>.
    *
    * @param component the component for which we return an UI instance
    *
-   * @return an instance of MetalLabelUI
+   * @return A shared instance of <code>MetalLabelUI</code>.
    */
   public static ComponentUI createUI(JComponent component)
   {
@@ -83,22 +82,20 @@ public class MetalLabelUI
   
   /**
    * Draws the text for a disabled label, using the color defined in the 
-   * {@link UIDefaults} with the key <code>Label.disabledForeground</code>.
+   * {@link UIManager} defaults with the key
+   * <code>Label.disabledForeground</code>.
    * 
    * @param l  the label.
    * @param g  the graphics device.
    * @param s  the label text.
    * @param textX  the x-coordinate for the label.
    * @param textY  the y-coordinate for the label.
-   * 
-   * @see UIManager#getLookAndFeelDefaults()
    */
   protected void paintDisabledText(JLabel l, Graphics g, String s, int textX,
                                  int textY)
   {
     Color savedColor = g.getColor();
-    UIDefaults defaults = UIManager.getLookAndFeelDefaults();
-    g.setColor(defaults.getColor("Label.disabledForeground"));
+    g.setColor(UIManager.getColor("Label.disabledForeground"));
     int mnemIndex = l.getDisplayedMnemonicIndex();
     if (mnemIndex != -1)
       BasicGraphicsUtils.drawStringUnderlineCharAt(g, s, mnemIndex, textX,

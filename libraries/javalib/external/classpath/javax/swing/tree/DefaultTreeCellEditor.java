@@ -47,7 +47,6 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.Rectangle;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -56,12 +55,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.EventObject;
 
-import javax.swing.CellRendererPane;
 import javax.swing.DefaultCellEditor;
 import javax.swing.Icon;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.SwingUtilities;
@@ -344,9 +339,8 @@ public class DefaultTreeCellEditor
     lastPath = tree.getLeadSelectionPath();
     tree.addTreeSelectionListener(this);
     editingContainer = createContainer();
-    UIDefaults defaults = UIManager.getLookAndFeelDefaults();
-    setFont(defaults.getFont("Tree.font"));
-    setBorderSelectionColor(defaults.getColor("Tree.selectionBorderColor"));
+    setFont(UIManager.getFont("Tree.font"));
+    setBorderSelectionColor(UIManager.getColor("Tree.selectionBorderColor"));
     editingIcon = renderer.getIcon();
     timer = new javax.swing.Timer(1200, this);
   }
@@ -354,9 +348,9 @@ public class DefaultTreeCellEditor
   /**
    * Configures the editing component whenever it is null.
    * 
-   * @param tree- the tree to configure to component for.
-   * @param renderer- the renderer used to set up the nodes
-   * @param editor- the editor used 
+   * @param tree the tree to configure to component for.
+   * @param renderer the renderer used to set up the nodes
+   * @param editor the editor used 
    */
   private void configureEditingComponent(JTree tree,
                                          DefaultTreeCellRenderer renderer,
@@ -607,7 +601,7 @@ public class DefaultTreeCellEditor
   /**
    * Messaged when the timer fires, this will start the editing session.
    * 
-   * @param @param e - the event that characterizes the action.
+   * @param e the event that characterizes the action.
    */
   public void actionPerformed(ActionEvent e)
   {
@@ -740,9 +734,8 @@ public class DefaultTreeCellEditor
    */
   protected TreeCellEditor createTreeCellEditor()
   {
-    UIDefaults defaults = UIManager.getLookAndFeelDefaults();
     realEditor = new DefaultCellEditor(new DefaultTreeCellEditor.DefaultTextField(
-                                  defaults.getBorder("Tree.selectionBorder")));
+                                  UIManager.getBorder("Tree.selectionBorder")));
     return realEditor;
   }
 }

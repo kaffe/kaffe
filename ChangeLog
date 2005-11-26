@@ -1,3 +1,48 @@
+2005-11-26  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* Resynchronized GNU Classpath to 2005-11-26.
+
+	* developers/resync-classpath.sh: Partially automated the update of the
+	repository. Files are not added nor removed from the CVS though. It is
+	possible using the files add_files & remove_files.
+
+	*
+	libraries/javalib/vmspecific/javax/sound/sampled/AudioFileFormat.java,
+	libraries/javalib/vmspecific/javax/sound/sampled/AudioFormat.java,
+	libraries/javalib/vmspecific/javax/sound/sampled/AudioInputStream.java,
+	libraries/javalib/vmspecific/javax/sound/sampled/AudioPermission.java,
+	libraries/javalib/vmspecific/javax/sound/sampled/AudioSystem.java,
+	libraries/javalib/vmspecific/javax/sound/sampled/BooleanControl.java,
+	libraries/javalib/vmspecific/javax/sound/sampled/Clip.java,
+	libraries/javalib/vmspecific/javax/sound/sampled/CompoundControl.java,
+	libraries/javalib/vmspecific/javax/sound/sampled/Control.java,
+	libraries/javalib/vmspecific/javax/sound/sampled/DataLine.java,
+	libraries/javalib/vmspecific/javax/sound/sampled/EnumControl.java,
+	libraries/javalib/vmspecific/javax/sound/sampled/FloatControl.java,
+	libraries/javalib/vmspecific/javax/sound/sampled/Line.java,
+	libraries/javalib/vmspecific/javax/sound/sampled/LineEvent.java,
+	libraries/javalib/vmspecific/javax/sound/sampled/LineListener.java,
+	libraries/javalib/vmspecific/javax/sound/sampled/LineUnavailableException.java,
+	libraries/javalib/vmspecific/javax/sound/sampled/Mixer.java,
+	libraries/javalib/vmspecific/javax/sound/sampled/Port.java,
+	libraries/javalib/vmspecific/javax/sound/sampled/ReverbType.java,
+	libraries/javalib/vmspecific/javax/sound/sampled/SourceDataLine.java,
+	libraries/javalib/vmspecific/javax/sound/sampled/TargetDataLine.java,
+	libraries/javalib/vmspecific/javax/sound/sampled/UnsupportedAudioFileException.java,
+	libraries/javalib/vmspecific/javax/sound/sampled/spi/AudioFileReader.java,
+	libraries/javalib/vmspecific/javax/sound/sampled/spi/AudioFileWriter.java,
+	libraries/javalib/vmspecific/javax/sound/sampled/spi/FormatConversionProvider.java,
+	libraries/javalib/vmspecific/javax/sound/sampled/spi/MixerProvider.java:
+	Removed.
+
+	
+	*
+	libraries/javalib/vmspecific/org/tritonus/share/sampled/mixer/TDataLine.java
+	(getLongFramePosition): Added dummy method.
+
+	* libraries/javalib/vmspecific/java/lang/String.java
+	(contains): Imported from GNU Classpath.
+
 2005-11-25  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/systems/drops-l4threads/syscalls.c

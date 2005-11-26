@@ -46,11 +46,11 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Shape;
 
+import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentEvent.ElementChange;
 
-public class PlainView extends View
-  implements TabExpander
+public class PlainView extends View implements TabExpander
 {
   Color selectedColor;
   Color unselectedColor;
@@ -69,6 +69,11 @@ public class PlainView extends View
   Element longestLine = null;
   
   protected FontMetrics metrics;
+
+  /**
+   * The instance returned by {@link #getLineBuffer()}.
+   */
+  private transient Segment lineBuffer;
 
   public PlainView(Element elem)
   {
@@ -119,7 +124,7 @@ public class PlainView extends View
     // Get the rectangle for position.
     Element line = getElement().getElement(lineIndex);
     int lineStart = line.getStartOffset();
-    Segment segment = new Segment();
+    Segment segment = getLineBuffer();
     document.getText(lineStart, position - lineStart, segment);
     int xoffset = Utilities.getTabbedTextWidth(segment, metrics, rect.x,
 					       this, lineStart);
@@ -144,7 +149,9 @@ public class PlainView extends View
       }
     catch (BadLocationException e)
       {
-	// This should never happen.
+	AssertionError ae = new AssertionError("Unexpected bad location");
+	ae.initCause(e);
+	throw ae;
       }
   }
 
@@ -152,7 +159,7 @@ public class PlainView extends View
     throws BadLocationException
   {
     g.setColor(selectedColor);
-    Segment segment = new Segment();
+    Segment segment = getLineBuffer();
     getDocument().getText(p0, p1 - p0, segment);
     return Utilities.drawTabbedText(segment, x, y, g, this, 0);
   }
@@ -166,7 +173,7 @@ public class PlainView extends View
     else
       g.setColor(disabledColor);
 
-    Segment segment = new Segment();
+    Segment segment = getLineBuffer();
     getDocument().getText(p0, p1 - p0, segment);
     return Utilities.drawTabbedText(segment, x, y, g, this, segment.offset);
   }
@@ -178,7 +185,6 @@ public class PlainView extends View
     
     JTextComponent textComponent = (JTextComponent) getContainer();
 
-    g.setFont(textComponent.getFont());
     selectedColor = textComponent.getSelectedTextColor();
     unselectedColor = textComponent.getForeground();
     disabledColor = textComponent.getDisabledTextColor();
@@ -197,9 +203,19 @@ public class PlainView extends View
       }
   }
 
+  /**
+   * Returns the tab size of a tab.  Checks the Document's
+   * properties for PlainDocument.tabSizeAttribute and returns it if it is
+   * defined, otherwise returns 8.
+   * 
+   * @return the tab size.
+   */
   protected int getTabSize()
   {
-    return 8;
+    Object tabSize = getDocument().getProperty(PlainDocument.tabSizeAttribute);
+    if (tabSize == null)
+      return 8;
+    return ((Integer)tabSize).intValue();
   }
 
   /**
@@ -212,7 +228,7 @@ public class PlainView extends View
    */
   public float nextTabStop(float x, int tabStop)
   {
-    float tabSizePixels = getTabSize() + metrics.charWidth('m');
+    float tabSizePixels = getTabSize() * metrics.charWidth('m');
     return (float) (Math.floor(x / tabSizePixels) + 1) * tabSizePixels;
   }
 
@@ -228,7 +244,7 @@ public class PlainView extends View
     
     // otherwise we have to go through all the lines and find it
     Element el = getElement();
-    Segment seg = new Segment();
+    Segment seg = getLineBuffer();
     float span = 0;
     for (int i = 0; i < el.getElementCount(); i++)
       {
@@ -237,10 +253,13 @@ public class PlainView extends View
         int end = child.getEndOffset();
         try
           {
-            el.getDocument().getText(start, start + end, seg);
+            el.getDocument().getText(start, end - start, seg);
           }
         catch (BadLocationException ex)
           {
+            AssertionError ae = new AssertionError("Unexpected bad location");
+	    ae.initCause(ex);
+	    throw ae;
           }
         
         if (seg == null || seg.array == null || seg.count == 0)
@@ -294,9 +313,35 @@ public class PlainView extends View
    */
   public int viewToModel(float x, float y, Shape a, Position.Bias[] b)
   {
-    // FIXME: not implemented
-    return 0;
-  }
+    Rectangle rec = a.getBounds();
+    Document doc = getDocument();
+    Element root = doc.getDefaultRootElement();
+    
+    // PlainView doesn't support line-wrapping so we can find out which
+    // Element was clicked on just by the y-position    
+    int lineClicked = (int) (y - rec.y) / metrics.getHeight();
+    if (lineClicked >= root.getElementCount())
+      return getEndOffset() - 1;
+    
+    Element line = root.getElement(lineClicked);
+    Segment s = getLineBuffer();
+    int start = line.getStartOffset();
+    // We don't want the \n at the end of the line.
+    int end = line.getEndOffset() - 1;
+    try
+      {
+        doc.getText(start, end - start, s);
+      }
+    catch (BadLocationException ble)
+      {
+        AssertionError ae = new AssertionError("Unexpected bad location");
+        ae.initCause(ble);
+        throw ae;
+      }
+    
+    int pos = Utilities.getTabbedTextOffset(s, metrics, rec.x, (int)x, this, start);
+    return Math.max (0, pos);
+  }     
   
   /**
    * Since insertUpdate and removeUpdate each deal with children
@@ -306,16 +351,34 @@ public class PlainView extends View
    * @param a the allocation of the View.
    * @param f the ViewFactory to use for rebuilding.
    */
-  void insertOrRemoveUpdate(DocumentEvent changes, Shape a, ViewFactory f)
+  protected void updateDamage(DocumentEvent changes, Shape a, ViewFactory f)
   {
     Element el = getElement();
     ElementChange ec = changes.getChange(el);
-    if (ec == null)
-      return;
     
+    // If ec is null then no lines were added or removed, just 
+    // repaint the changed line
+    if (ec == null)
+      {
+        int line = getElement().getElementIndex(changes.getOffset());
+        damageLineRange(line, line, a, getContainer());
+        return;
+      }
+    
+    Element[] removed = ec.getChildrenRemoved();
+    Element[] newElements = ec.getChildrenAdded();
+    
+    // If no Elements were added or removed, we just want to repaint
+    // the area containing the line that was modified
+    if (removed == null && newElements == null)
+      {
+        int line = getElement().getElementIndex(changes.getOffset());
+        damageLineRange(line, line, a, getContainer());
+        return;
+      }
+
     // Check to see if we removed the longest line, if so we have to
     // search through all lines and find the longest one again
-    Element[] removed = ec.getChildrenRemoved();
     if (removed != null)
       {
         for (int i = 0; i < removed.length; i++)
@@ -324,22 +387,30 @@ public class PlainView extends View
               // reset maxLineLength and search through all lines for longest one
               maxLineLength = -1;
               determineMaxLineLength();
+              ((JTextComponent)getContainer()).repaint();
               return;
             }
       }
     
+    // If we've reached here, that means we haven't removed the longest line
+    if (newElements == null)
+      {
+        // No lines were added, just repaint the container and exit
+        ((JTextComponent)getContainer()).repaint();
+        return;
+      }
+
     //  Make sure we have the metrics
     updateMetrics();
-        
-    // Since we didn't remove the longest line, we can just compare it to 
-    // the new lines to see if any of them are longer
-    Element[] newElements = ec.getChildrenAdded();    
-    Segment seg = new Segment();
+       
+    // If we've reached here, that means we haven't removed the longest line
+    // and we have added at least one line, so we have to check if added lines
+    // are longer than the previous longest line        
+    Segment seg = getLineBuffer();
     float longestNewLength = 0;
-    Element longestNewLine = null;
-    
-    if (newElements == null)
-      return;
+    Element longestNewLine = null;    
+
+    // Loop through the added lines to check their length
     for (int i = 0; i < newElements.length; i++)
       {
         Element child = newElements[i];
@@ -347,13 +418,15 @@ public class PlainView extends View
         int end = child.getEndOffset();
         try
           {
-            el.getDocument().getText(start, start + end, seg);
+            el.getDocument().getText(start, end - start, seg);
           }
         catch (BadLocationException ex)
           {
+            AssertionError ae = new AssertionError("Unexpected bad location");
+	    ae.initCause(ex);
+	    throw ae;
           }
-        
-        
+                
         if (seg == null || seg.array == null || seg.count == 0)
           continue;
         
@@ -364,11 +437,16 @@ public class PlainView extends View
             longestNewLength = width;
           }
       }
+    
+    // Check if the longest of the new lines is longer than our previous
+    // longest line, and if so update our values
     if (longestNewLength > maxLineLength)
       {
         maxLineLength = longestNewLength;
         longestLine = longestNewLine;
-      }      
+      }
+    // Repaint the container
+    ((JTextComponent)getContainer()).repaint();
   }
 
   /**
@@ -381,7 +459,7 @@ public class PlainView extends View
    */
   public void insertUpdate(DocumentEvent changes, Shape a, ViewFactory f)
   {
-    insertOrRemoveUpdate(changes, a, f);
+    updateDamage(changes, a, f);
   }
 
   /**
@@ -394,7 +472,63 @@ public class PlainView extends View
    */
   public void removeUpdate(DocumentEvent changes, Shape a, ViewFactory f)
   {
-    insertOrRemoveUpdate(changes, a, f);
+    updateDamage(changes, a, f);
+  }
+  
+  /**
+   * This method is called when attributes were changed in the 
+   * Document in a location that this view is responsible for.
+   */
+  public void changedUpdate (DocumentEvent changes, Shape a, ViewFactory f)
+  {
+    updateDamage(changes, a, f);
+  }
+  
+  /**
+   * Repaint the given line range.  This is called from insertUpdate,
+   * changedUpdate, and removeUpdate when no new lines were added 
+   * and no lines were removed, to repaint the line that was 
+   * modified.
+   * 
+   * @param line0 the start of the range
+   * @param line1 the end of the range
+   * @param a the rendering region of the host
+   * @param host the Component that uses this View (used to call repaint
+   * on that Component)
+   * 
+   * @since 1.4
+   */
+  protected void damageLineRange (int line0, int line1, Shape a, Component host)
+  {
+    if (a == null)
+      return;
+
+    Rectangle rec0 = lineToRect(a, line0);
+    Rectangle rec1 = lineToRect(a, line1);
+
+    if (rec0 == null || rec1 == null)
+      // something went wrong, repaint the entire host to be safe
+      host.repaint();
+    else
+      {
+        Rectangle repaintRec = rec0.union(rec1);
+        host.repaint(repaintRec.x, repaintRec.y, repaintRec.width,
+                     repaintRec.height);
+      }    
+  }
+
+  /**
+   * Provides a {@link Segment} object, that can be used to fetch text from
+   * the document.
+   *
+   * @returna {@link Segment} object, that can be used to fetch text from
+   *          the document
+   */
+  protected Segment getLineBuffer()
+  {
+    if (lineBuffer == null)
+      lineBuffer = new Segment();
+    return lineBuffer;
   }
 }
 

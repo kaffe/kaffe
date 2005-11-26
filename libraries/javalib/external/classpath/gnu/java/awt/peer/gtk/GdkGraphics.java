@@ -48,9 +48,9 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Shape;
-import java.awt.SystemColor;
 import java.awt.image.ImageObserver;
 import java.text.AttributedCharacterIterator;
+import java.util.regex.*;
 
 public class GdkGraphics extends Graphics
 {
@@ -129,6 +129,8 @@ public class GdkGraphics extends Graphics
   {
     initState (component);
     color = component.awtComponent.getForeground ();
+    if (color == null)
+      color = Color.BLACK;
     Dimension d = component.awtComponent.getSize ();
     clip = new Rectangle (0, 0, d.width, d.height);
   }
@@ -138,6 +140,8 @@ public class GdkGraphics extends Graphics
   {
     initStateUnlocked (component);
     color = component.awtComponent.getForeground ();
+    if (color == null)
+      color = Color.BLACK;
     Dimension d = component.awtComponent.getSize ();
     clip = new Rectangle (0, 0, d.width, d.height);
   }
@@ -244,9 +248,8 @@ public class GdkGraphics extends Graphics
   public void drawString (String str, int x, int y)
   {
     drawString(getFontPeer(), str, x, y);
-  }
+  }  
   
-
   public void drawString (AttributedCharacterIterator ci, int x, int y)
   {
     throw new Error ("not implemented");

@@ -52,8 +52,6 @@ exception statement from your version. */
 
 #include "java_nio_channels_FileChannelImpl.h"
 
-#include "javaio.h"
-
 #define NIO_DEBUG(X)		/* no debug */
 //#define NIO_DEBUG(X) X
 

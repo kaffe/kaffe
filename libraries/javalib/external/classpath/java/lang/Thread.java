@@ -813,8 +813,11 @@ public class Thread implements Runnable
   {
 
     // Check parameters
-    if (ms < 0 || ns < 0 || ns > 999999)
-      throw new IllegalArgumentException();
+    if (ms < 0 )
+      throw new IllegalArgumentException("Negative milliseconds: " + ms);
+
+    if (ns < 0 || ns > 999999)
+      throw new IllegalArgumentException("Nanoseconds ouf of range: " + ns);
 
     // Really sleep
     VMThread.sleep(ms, ns);

@@ -47,7 +47,7 @@ import javax.swing.plaf.basic.BasicButtonListener;
 /**
  * A listener for buttons under the {@link MetalLookAndFeel}.
  * 
- * @see MetalButtonUI#createButtonListener()
+ * @see MetalButtonUI#createButtonListener
  */
 class MetalButtonListener extends BasicButtonListener 
 {

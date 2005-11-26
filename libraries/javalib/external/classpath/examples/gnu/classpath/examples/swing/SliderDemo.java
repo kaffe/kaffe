@@ -59,27 +59,39 @@ public class SliderDemo extends JFrame implements ActionListener
   public SliderDemo(String frameTitle) 
   {
     super(frameTitle);
-    getContentPane().add(createContent());
-  }
-       
-  private JPanel createContent() 
-  {
-    JPanel content = new JPanel(new BorderLayout());
-    JPanel panel = new JPanel(new GridLayout(1, 2));
-    panel.add(createHorizontalPanel());
-    panel.add(createVerticalPanel());
-    content.add(panel);
+    JPanel content = createContent();
     JPanel closePanel = new JPanel();
-    enabledCheckBox = new JCheckBox("Enabled");
-    enabledCheckBox.setSelected(true);
-    enabledCheckBox.setActionCommand("TOGGLE_ENABLED");
-    enabledCheckBox.addActionListener(this);
-    closePanel.add(enabledCheckBox);
     JButton closeButton = new JButton("Close");
     closeButton.setActionCommand("CLOSE");
     closeButton.addActionListener(this);
     closePanel.add(closeButton);
     content.add(closePanel, BorderLayout.SOUTH);
+    getContentPane().add(content);
+  }
+       
+  /**
+   * Returns a panel with the demo content.  The panel
+   * uses a BorderLayout(), and the BorderLayout.SOUTH area
+   * is empty, to allow callers to add controls to the 
+   * bottom of the panel if they want to (a close button is
+   * added if this demo is being run as a standalone demo).
+   */       
+  JPanel createContent() 
+  {
+    JPanel content = new JPanel(new BorderLayout());
+    JPanel panel = new JPanel(new GridLayout(1, 2));
+    panel.add(createHorizontalPanel());
+    panel.add(createVerticalPanel());
+    enabledCheckBox = new JCheckBox("Enabled");
+    enabledCheckBox.setSelected(true);
+    enabledCheckBox.setActionCommand("TOGGLE_ENABLED");
+    enabledCheckBox.addActionListener(this);
+    JPanel checkBoxPanel = new JPanel();
+    checkBoxPanel.add(enabledCheckBox);
+    JPanel panel2 = new JPanel(new BorderLayout());
+    panel2.add(panel);
+    panel2.add(checkBoxPanel, BorderLayout.SOUTH);
+    content.add(panel2);
     return content;        
   }
     

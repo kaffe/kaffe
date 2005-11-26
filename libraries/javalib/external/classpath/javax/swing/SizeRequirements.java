@@ -142,13 +142,26 @@ public class SizeRequirements implements Serializable
   public static SizeRequirements
   getTiledSizeRequirements(SizeRequirements[] children)
   {
-    SizeRequirements result = new SizeRequirements();
+    long minimum = 0;
+    long preferred = 0;
+    long maximum = 0;
     for (int i = 0; i < children.length; i++)
       {
-        result.minimum += children[i].minimum;
-        result.preferred += children[i].preferred;
-        result.maximum += children[i].maximum;
+        minimum += children[i].minimum;
+        preferred += children[i].preferred;
+        maximum += children[i].maximum;
       }
+    // Overflow check.
+    if (minimum > Integer.MAX_VALUE)
+      minimum = Integer.MAX_VALUE;
+    if (preferred > Integer.MAX_VALUE)
+      preferred = Integer.MAX_VALUE;
+    if (maximum > Integer.MAX_VALUE)
+      maximum = Integer.MAX_VALUE;
+    SizeRequirements result = new SizeRequirements((int) minimum,
+                                                   (int) preferred,
+                                                   (int) maximum,
+                                                   0.5F);
     return result;
   }
 
@@ -338,12 +351,10 @@ public class SizeRequirements implements Serializable
                                     int[] spans, int span)
   {
     // Sum up (maxSize - prefSize) over all children
-    int sumDelta = 0;
+    long sumDelta = 0;
     for (int i = 0; i < children.length; i++)
       {
         sumDelta += children[i].maximum - children[i].preferred;
-        if (sumDelta < 0)
-          sumDelta = Integer.MAX_VALUE;
       }
 
     // If we have sumDelta == 0, then all components have prefSize == maxSize
@@ -356,7 +367,7 @@ public class SizeRequirements implements Serializable
       {
         double factor = ((double) (children[i].maximum - children[i].preferred))
                         / ((double) sumDelta);
-        spans[i] -= factor * (span - allocated);
+        spans[i] += factor * (allocated - span);
       }
   }
 
@@ -424,16 +435,8 @@ public class SizeRequirements implements Serializable
                                                boolean forward)
   {
     // First we compute the position of the baseline.
-    float left = 0;
-    float right = 0;
-    for (int i = 0; i < children.length; i++)
-      {
-        float myLeft = children[i].preferred * children[i].alignment;
-        float myRight = children[i].preferred - myLeft;
-        left = Math.max(myLeft, left);
-        right = Math.max(myRight, right);
-      }
-    int baseline = (int) ((left / (left + right)) * allocated);
+    float baseline = allocated * total.alignment;
+
     // Now we can layout the components along the baseline.
     for (int i = 0; i < children.length; i++)
       {
@@ -457,7 +460,7 @@ public class SizeRequirements implements Serializable
    * @param allocated
    * @param spanAndOffset
    */
-  private static void adjustFromRight(SizeRequirements reqs, int baseline,
+  private static void adjustFromRight(SizeRequirements reqs, float baseline,
                                       int allocated, int[] spanAndOffset)
   {
     float right = allocated - baseline;
@@ -470,14 +473,9 @@ public class SizeRequirements implements Serializable
     if (right / (1.F - reqs.alignment) * reqs.alignment > allocated - baseline)
       right = ((float) (allocated - baseline))
              / reqs.alignment * (1.F - reqs.alignment);
-    // If we are below the minimum, then adjust upwards.
-      float minRight = ((float) reqs.minimum) * (1.F - reqs.alignment);
-    if (right / (1.F - reqs.alignment) < reqs.minimum)
-      right = Math.max(minRight, maxRight);
 
     spanAndOffset[0] = (int) (right / (1.F - reqs.alignment));
-    spanAndOffset[1] = baseline -
-                       (int) (((float) spanAndOffset[0]) * reqs.alignment);
+    spanAndOffset[1] = (int) (baseline - spanAndOffset[0] * reqs.alignment);
   }
 
   /**
@@ -488,7 +486,7 @@ public class SizeRequirements implements Serializable
    * @param allocated
    * @param spanAndOffset
    */
-  private static void adjustFromLeft(SizeRequirements reqs, int baseline,
+  private static void adjustFromLeft(SizeRequirements reqs, float baseline,
                                      int allocated, int[] spanAndOffset)
   {
     float left = baseline;
@@ -502,14 +500,8 @@ public class SizeRequirements implements Serializable
       left = ((float) (allocated - baseline))
              / (1.F - reqs.alignment) * reqs.alignment;
 
-    // If we are below the minimum, then adjust upwards.
-    float minLeft = ((float) reqs.minimum) * reqs.alignment;
-    if (left / reqs.alignment < reqs.minimum)
-      left = Math.max(minLeft, maxLeft);
-
     spanAndOffset[0] = (int) (left / reqs.alignment);
-    spanAndOffset[1] = baseline -
-                       (int) (((float) spanAndOffset[0]) * reqs.alignment);
+    spanAndOffset[1] = (int) (baseline - spanAndOffset[0] * reqs.alignment);
   }
 
   /**

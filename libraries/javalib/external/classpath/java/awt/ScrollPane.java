@@ -401,7 +401,7 @@ setScrollPosition(int x, int y)
 public void
 addNotify()
 {
-  if (!isDisplayable ())
+  if (peer != null)
     return;
 
   setPeer((ComponentPeer)getToolkit().createScrollPane(this));

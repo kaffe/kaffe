@@ -38,7 +38,7 @@ exception statement from your version. */
 
 package gnu.CORBA.Poa;
 
-import gnu.CORBA.Functional_ORB;
+import gnu.CORBA.OrbFunctional;
 import gnu.CORBA.IOR;
 import gnu.CORBA.Connected_objects.cObject;
 import gnu.CORBA.DynAn.gnuDynAnyFactory;
@@ -58,7 +58,6 @@ import org.omg.CORBA.Policy;
 import org.omg.CORBA.PolicyError;
 import org.omg.CORBA.portable.ObjectImpl;
 import org.omg.PortableInterceptor.PolicyFactory;
-import org.omg.PortableServer.POA;
 import org.omg.PortableServer.Servant;
 import org.omg.PortableServer.POAManagerPackage.State;
 import org.omg.PortableServer.POAPackage.InvalidPolicy;
@@ -72,7 +71,7 @@ import java.util.Properties;
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
 public class ORB_1_4
-  extends Functional_ORB
+  extends OrbFunctional
 {
   /**
    * The root POA.
@@ -103,7 +102,7 @@ public class ORB_1_4
     super();
     try
       {
-        rootPOA = new gnuPOA(null, "RootPOA", null, policySets.rootPoa(), this);
+        rootPOA = new gnuPOA(null, "RootPOA", null, StandardPolicies.rootPoa(), this);
       }
     catch (InvalidPolicy ex)
       {
@@ -133,7 +132,7 @@ public class ORB_1_4
       {
         try
           {
-            activeObjectMap.Obj exists = rootPOA.findObject(forObject);
+            AOM.Obj exists = rootPOA.findObject(forObject);
             if (exists == null)
               throw new OBJECT_NOT_EXIST(forObject == null ? "null"
                 : forObject.toString());
@@ -204,9 +203,9 @@ public class ORB_1_4
     IOR ior = super.createIOR(ref);
     if (iIor != null)
       {
-        activeObjectMap.Obj obj = rootPOA.findIorKey(ior.key);
+        AOM.Obj obj = rootPOA.findIorKey(ior.key);
 
-        POA poa;
+        gnuPOA poa;
 
         // Null means that the object was connected to the ORB directly.
         if (obj == null)
@@ -218,6 +217,7 @@ public class ORB_1_4
 
         // This may modify the ior.
         iIor.establish_components(info);
+        iIor.components_established(info);
       }
     return ior;
   }

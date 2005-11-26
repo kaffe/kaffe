@@ -591,8 +591,7 @@ public class DTD
    * @param name the name of the entity
    * @param type the type of the entity, a bitwise combination
    * of GENERAL, PARAMETER, SYSTEM and PUBLIC.
-   * @throws an error if the parameter is both GENERAL and PARAMETER
-   * of both PUBLIC and SYSTEM.
+   *
    * @return the created entity
    */
   private Entity newEntity(String name, int type)

@@ -56,8 +56,7 @@ import javax.swing.plaf.basic.BasicSliderUI;
 /**
  * A UI delegate for the {@link JSlider} component.
  */
-public class MetalSliderUI
-  extends BasicSliderUI
+public class MetalSliderUI extends BasicSliderUI
 {
   /**
    * A property change handler that updates the rendered component in response
@@ -66,13 +65,14 @@ public class MetalSliderUI
    * the {@link MetalLookAndFeel}.
    */
   protected class MetalPropertyListener
-      extends BasicSliderUI.PropertyChangeHandler
+    extends BasicSliderUI.PropertyChangeHandler
   {
     /**
      * Creates a new listener.
      */
     protected MetalPropertyListener()
     {
+      // Nothing to do here.
     }
     
     /**
@@ -149,11 +149,11 @@ public class MetalSliderUI
   }
 
   /**
-   * Returns an instance of MetalSliderUI.
+   * Returns a new instance of <code>MetalSliderUI</code>.
    *
    * @param component the component (ignored).
    *
-   * @return an instance of MetalSliderUI
+   * @return A new instance of <code>MetalSliderUI</code>.
    */
   public static ComponentUI createUI(JComponent component)
   {

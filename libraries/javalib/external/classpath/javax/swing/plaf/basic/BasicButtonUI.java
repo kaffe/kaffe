@@ -38,7 +38,6 @@ exception statement from your version. */
 
 package javax.swing.plaf.basic;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -51,8 +50,8 @@ import javax.swing.Icon;
 import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
-import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.plaf.ButtonUI;
 import javax.swing.plaf.ComponentUI;
@@ -76,8 +75,6 @@ public class BasicButtonUI extends ButtonUI
   protected int defaultTextShiftOffset = 0;
 
   private int textShiftOffset;
-
-  private Color focusColor;
 
   /**
    * Factory method to create an instance of BasicButtonUI for a given
@@ -155,19 +152,14 @@ public class BasicButtonUI extends ButtonUI
    */
   protected void installDefaults(AbstractButton b)
   {
-    UIDefaults defaults = UIManager.getLookAndFeelDefaults();
     String prefix = getPropertyPrefix();
-    b.setFont(defaults.getFont(prefix + "font"));
-    focusColor = defaults.getColor(prefix + "focus");
-    b.setForeground(defaults.getColor(prefix + "foreground"));
-    b.setBackground(defaults.getColor(prefix + "background"));
-    b.setMargin(defaults.getInsets(prefix + "margin"));
-    b.setBorder(defaults.getBorder(prefix + "border"));
-    b.setIconTextGap(defaults.getInt(prefix + "textIconGap"));
+    LookAndFeel.installColorsAndFont(b, prefix + "background",
+                                     prefix + "foreground", prefix + "font");
+    LookAndFeel.installBorder(b, prefix + "border");
+    b.setMargin(UIManager.getInsets(prefix + "margin"));
+    b.setIconTextGap(UIManager.getInt(prefix + "textIconGap"));
     b.setInputMap(JComponent.WHEN_FOCUSED, 
-                  (InputMap) defaults.get(prefix + "focusInputMap"));
-    b.setRolloverEnabled(defaults.getBoolean(prefix + "rollover"));
-    b.setOpaque(true);
+                  (InputMap) UIManager.get(prefix + "focusInputMap"));
   }
 
   /**
@@ -403,11 +395,11 @@ public class BasicButtonUI extends ButtonUI
    */
   protected void paintButtonPressed(Graphics g, AbstractButton b)
   {
-    if (b.isContentAreaFilled())
+    if (b.isContentAreaFilled() && b.isOpaque())
       {
-	Rectangle area = new Rectangle();
-	SwingUtilities.calculateInnerArea(b, area);
-        g.setColor(b.getBackground().darker());
+        Rectangle area = new Rectangle();
+        SwingUtilities.calculateInnerArea(b, area);
+        g.setColor(UIManager.getColor(getPropertyPrefix() + "shadow"));
         g.fillRect(area.x, area.y, area.width, area.height);
       }
   }
@@ -450,9 +442,8 @@ public class BasicButtonUI extends ButtonUI
       }
     else
       {
-        UIDefaults defaults = UIManager.getLookAndFeelDefaults();
         String prefix = getPropertyPrefix();
-        g.setColor(defaults.getColor(prefix + "disabledText"));
+        g.setColor(UIManager.getColor(prefix + "disabledText"));
         g.drawString(text, textRect.x, textRect.y + fm.getAscent());
       }
   } 

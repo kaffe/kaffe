@@ -37,7 +37,11 @@ exception statement from your version. */
 
 package javax.print.attribute.standard;
 
+import javax.print.attribute.EnumSyntax;
+
 /**
+ * An enumeration of media size names, conforming to RFC 2911.
+ *
  * @author Michael Koch (konqueror@gmx.de)
  */
 public class MediaSizeName extends Media
@@ -131,5 +135,17 @@ public class MediaSizeName extends Media
   protected MediaSizeName(int value)
   {
     super(value);
+  }
+
+  protected EnumSyntax[] getEnumValueTable()
+  {
+    // FIXME
+    return null;
+  }
+
+  protected String[] getStringTable()
+  {
+    // FIXME
+    return null;
   }
 }

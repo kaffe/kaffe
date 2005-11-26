@@ -674,9 +674,9 @@ public class UIDefaults extends Hashtable
       return null;
     try 
       {
-        if (loader != null)
-          return loader.loadClass (className);    
-        return Class.forName (className);
+        if (loader == null)
+          loader = ClassLoader.getSystemClassLoader();
+        return loader.loadClass (className);
       }
     catch (Exception e)
       {

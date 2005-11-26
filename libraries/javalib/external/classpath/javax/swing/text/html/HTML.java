@@ -1196,6 +1196,7 @@ public class HTML
    */
   public HTML()
   {
+    // Nothing to do here.
   }
 
   /**

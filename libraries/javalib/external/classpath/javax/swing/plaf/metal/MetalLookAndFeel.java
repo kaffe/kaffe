@@ -40,7 +40,6 @@ package javax.swing.plaf.metal;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Insets;
 
 import javax.swing.LookAndFeel;
 import javax.swing.UIDefaults;
@@ -49,12 +48,23 @@ import javax.swing.plaf.BorderUIResource;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.InsetsUIResource;
+import javax.swing.plaf.BorderUIResource.LineBorderUIResource;
 import javax.swing.plaf.basic.BasicLookAndFeel;
 
 
 /**
  * A custom look and feel that is designed to look similar across different
- * operating systems.
+ * operating systems.  To install this look and feel, add the following code 
+ * (or something similar) near the start of your application:</p>
+ * <pre>
+ * try
+ * {
+ * &nbsp;&nbsp;UIManager.setLookAndFeel(new MetalLookAndFeel());
+ * }
+ * catch (UnsupportedLookAndFeelException e)
+ * {
+ * &nbsp;&nbsp;e.printStackTrace();
+ * }</pre>
  */
 public class MetalLookAndFeel extends BasicLookAndFeel
 {	   
@@ -690,8 +700,10 @@ public class MetalLookAndFeel extends BasicLookAndFeel
       "CheckBoxUI", "javax.swing.plaf.metal.MetalCheckBoxUI",
       "ComboBoxUI", "javax.swing.plaf.metal.MetalComboBoxUI",
       "DesktopIconUI", "javax.swing.plaf.metal.MetalDesktopIconUI",
+      "FileChooserUI", "javax.swing.plaf.metal.MetalFileChooserUI",
       "InternalFrameUI", "javax.swing.plaf.metal.MetalInternalFrameUI",
       "LabelUI", "javax.swing.plaf.metal.MetalLabelUI",
+      "MenuBarUI", "javax.swing.plaf.metal.MetalMenuBarUI",
       "PopupMenuSeparatorUI",
       "javax.swing.plaf.metal.MetalPopupMenuSeparatorUI",
       "ProgressBarUI", "javax.swing.plaf.metal.MetalProgressBarUI",
@@ -780,7 +792,7 @@ public class MetalLookAndFeel extends BasicLookAndFeel
       "Button.foreground", getControlTextColor(),
       "Button.highlight", getControlHighlight(),
       "Button.light", getControlHighlight(),
-      "Button.margin", new Insets(2, 14, 2, 14),
+      "Button.margin", new InsetsUIResource(2, 14, 2, 14),
       "Button.select", getControlShadow(),
       "Button.shadow", getControlShadow(),
 
@@ -856,6 +868,22 @@ public class MetalLookAndFeel extends BasicLookAndFeel
       "FormattedTextField.selectionBackground", getTextHighlightColor(),
       "FormattedTextField.selectionForeground", getHighlightedTextColor(),
 
+      "FileChooser.upFolderIcon", 
+          MetalIconFactory.getFileChooserUpFolderIcon(),
+      "FileChooser.listViewIcon", 
+          MetalIconFactory.getFileChooserListViewIcon(),
+      "FileChooser.newFolderIcon", 
+          MetalIconFactory.getFileChooserNewFolderIcon(),
+      "FileChooser.homeFolderIcon", 
+          MetalIconFactory.getFileChooserHomeFolderIcon(),
+      "FileChooser.detailsViewIcon", 
+          MetalIconFactory.getFileChooserDetailViewIcon(),
+
+      "FileView.computerIcon", MetalIconFactory.getTreeComputerIcon(),
+      "FileView.directoryIcon", MetalIconFactory.getTreeFolderIcon(),
+      "FileView.fileIcon", MetalIconFactory.getTreeLeafIcon(),
+      "FileView.floppyDriveIcon", MetalIconFactory.getTreeFloppyDriveIcon(),
+      "FileView.hardDriveIcon", MetalIconFactory.getTreeHardDriveIcon(),
 
       "InternalFrame.activeTitleBackground", getWindowTitleBackground(),
       "InternalFrame.activeTitleForeground", getWindowTitleForeground(),
@@ -884,17 +912,22 @@ public class MetalLookAndFeel extends BasicLookAndFeel
       "Label.font", getControlTextFont(),
       "Label.foreground", getSystemTextColor(),
 
+      "List.font", getControlTextFont(),
       "List.background", getWindowBackground(),
       "List.foreground", getUserTextColor(),
       "List.selectionBackground", getTextHighlightColor(),
       "List.selectionForeground", getHighlightedTextColor(),
+      "List.focusCellHighlightBorder", 
+        new LineBorderUIResource(MetalLookAndFeel.getFocusColor()),
 
       "Menu.acceleratorFont", new FontUIResource("Dialog", Font.PLAIN, 10),
       "Menu.acceleratorForeground", getAcceleratorForeground(),
       "Menu.acceleratorSelectionForeground", getAcceleratorSelectedForeground(),
+      "Menu.arrowIcon", MetalIconFactory.getMenuArrowIcon(),
       "Menu.background", getMenuBackground(),
       "Menu.border", new MetalBorders.MenuItemBorder(),
       "Menu.borderPainted", Boolean.TRUE,
+      "Menu.checkIcon", MetalIconFactory.getMenuItemCheckIcon(),
       "Menu.disabledForeground", getMenuDisabledForeground(),
       "Menu.font", getControlTextFont(),
       "Menu.foreground", getMenuForeground(),
@@ -911,6 +944,7 @@ public class MetalLookAndFeel extends BasicLookAndFeel
       "MenuItem.acceleratorFont", new FontUIResource("Dialog", Font.PLAIN, 10),
       "MenuItem.acceleratorForeground", getAcceleratorForeground(),
       "MenuItem.acceleratorSelectionForeground", getAcceleratorSelectedForeground(),
+      "MenuItem.arrowIcon", MetalIconFactory.getMenuItemArrowIcon(),
       "MenuItem.background", getMenuBackground(),
       "MenuItem.border", new MetalBorders.MenuItemBorder(),
       "MenuItem.disabledForeground", getMenuDisabledForeground(),
@@ -1007,6 +1041,7 @@ public class MetalLookAndFeel extends BasicLookAndFeel
       "ScrollBar.thumbShadow", getPrimaryControlDarkShadow(),
       "ScrollBar.track", getControl(),
       "ScrollBar.trackHighlight", getControlDarkShadow(),
+      "ScrollBar.width", new Integer(17),
 
       "ScrollPane.background", getControl(),
       "ScrollPane.border", new MetalBorders.ScrollPaneBorder(),
@@ -1061,7 +1096,8 @@ public class MetalLookAndFeel extends BasicLookAndFeel
       "Table.focusCellBackground", getWindowBackground(),
       "Table.focusCellForeground", getControlTextColor(),
       "Table.foreground", getControlTextColor(),
-      "Table.focusCellHighlightBorder", getControlShadow(),
+      "Table.focusCellHighlightBorder",
+      new BorderUIResource.LineBorderUIResource(getControlShadow()),
       "Table.focusCellBackground", getWindowBackground(),
       "Table.gridColor", getControlDarkShadow(),
       "Table.selectionBackground", new ColorUIResource(204, 204, 255),
@@ -1151,7 +1187,7 @@ public class MetalLookAndFeel extends BasicLookAndFeel
       "Tree.line", getPrimaryControl(),
       "Tree.openIcon", MetalIconFactory.getTreeFolderIcon(),
       "Tree.rightChildIndent", new Integer(13),
-      "Tree.rowHeight", new Integer(20),
+      "Tree.rowHeight", new Integer(0),
       "Tree.scrollsOnExpand", Boolean.TRUE,
       "Tree.selectionBackground", getTextHighlightColor(),
       "Tree.selectionBorder", new BorderUIResource.LineBorderUIResource(new Color(102, 102, 153)),
@@ -1190,4 +1226,13 @@ public class MetalLookAndFeel extends BasicLookAndFeel
     defaults.putDefaults(uiDefaults);
   }
 
+  /**
+   * Returns the current theme setting for the Metal L&amp;F.
+   *
+   * @return the current theme setting for the Metal L&amp;F
+   */
+  public static MetalTheme getCurrentTheme()
+  {
+    return theme;
+  }
 }

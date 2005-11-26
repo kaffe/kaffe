@@ -85,20 +85,13 @@ public class JApplet extends Applet
   /**
    * @specnote rootPaneCheckingEnabled is false to comply with J2SE 5.0
    */
-  protected boolean rootPaneCheckingEnabled=false;
-
-  /**
-   * Tells us if we're in the initialization stage.
-   * If so, adds go to top-level Container, otherwise they go
-   * to the content pane for this container
-   */
-  private boolean initStageDone = false;
+  protected boolean rootPaneCheckingEnabled = false;
 
   public JApplet()
   {
     super.setLayout(new BorderLayout(1, 1));
     getRootPane(); // Will do set/create.
-    initStageDone = true; // Init stage is now over.
+    setRootPaneCheckingEnabled(true); // Init stage is now over.
   }
 
   public Dimension getPreferredSize()
@@ -110,13 +103,8 @@ public class JApplet extends Applet
   {
     // Check if we're in initialization stage.  If so, call super.setLayout
     // otherwise, valid calls go to the content pane
-    if (initStageDone)
-      {
-        if (isRootPaneCheckingEnabled())
-          throw new Error("Cannot set layout. Use getContentPane().setLayout()"
-                           + "instead.");
-        getContentPane().setLayout(manager);
-      }
+    if (isRootPaneCheckingEnabled())
+      getContentPane().setLayout(manager);
     else
       super.setLayout(manager);
   }
@@ -176,15 +164,10 @@ public class JApplet extends Applet
   {
     // If we're adding in the initialization stage use super.add.
     // Otherwise pass the add onto the content pane.
-    if (!initStageDone)
-      super.addImpl(comp, constraints, index);
+    if (isRootPaneCheckingEnabled())
+      getContentPane().add(comp, constraints, index);
     else
-      {
-        if (isRootPaneCheckingEnabled())
-          throw new Error("Do not use add() on JApplet directly. Use "
-                           + "getContentPane().add() instead");
-        getContentPane().add(comp, constraints, index);
-      }
+      super.addImpl(comp, constraints, index);
   }
 
   public AccessibleContext getAccessibleContext()
@@ -206,7 +189,7 @@ public class JApplet extends Applet
 
   protected String paramString()
   {
-    return "JFrame";
+    return super.paramString();
   }
 
   protected void processKeyEvent(KeyEvent e)

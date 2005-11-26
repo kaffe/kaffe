@@ -112,8 +112,7 @@ public class DefaultEditorKit extends EditorKit
      */
     public void actionPerformed(ActionEvent event)
     {
-      // FIXME: Implement me. Tookit.getSystemClipboard should be used
-      // for that.
+      getTextComponent(event).copy();
     }
   }
 
@@ -144,8 +143,7 @@ public class DefaultEditorKit extends EditorKit
      */
     public void actionPerformed(ActionEvent event)
     {
-      // FIXME: Implement me. Tookit.getSystemClipboard should be used
-      // for that.
+      getTextComponent(event).cut();
     }
   }
 
@@ -174,8 +172,7 @@ public class DefaultEditorKit extends EditorKit
      */
     public void actionPerformed(ActionEvent event)
     {
-      // FIXME: Implement me. Tookit.getSystemClipboard should be used
-      // for that.
+      getTextComponent(event).paste();
     }
   }
 
@@ -216,19 +213,9 @@ public class DefaultEditorKit extends EditorKit
         return;
 
       JTextComponent t = getTextComponent(event);
-      if (t != null)
-        {
-          try
-            {
-              t.getDocument().insertString(t.getCaret().getDot(),
-                                           event.getActionCommand(), null);
-            }
-          catch (BadLocationException be)
-            {
-              // FIXME: we're not authorized to throw this.. swallow it?
-            }
-        }
-    }
+      if (t != null && t.isEnabled() && t.isEditable())
+        t.replaceSelection(event.getActionCommand());
+    }    
   }
 
   /**
@@ -283,6 +270,8 @@ public class DefaultEditorKit extends EditorKit
      */
     public void actionPerformed(ActionEvent event)
     {
+      // FIXME: Figure out what this Action is supposed to do. Obviously text
+      // that is entered by the user is inserted through DefaultKeyTypedAction.
     }
   }
 
@@ -307,7 +296,8 @@ public class DefaultEditorKit extends EditorKit
      */
     public void actionPerformed(ActionEvent event)
     {
-      // FIXME: Implement this.
+      JTextComponent t = getTextComponent(event);
+      t.replaceSelection("\t");
     }
   }
 
@@ -689,6 +679,7 @@ public class DefaultEditorKit extends EditorKit
    */
   public DefaultEditorKit()
   {
+    // Nothing to do here.
   }
 
   /**

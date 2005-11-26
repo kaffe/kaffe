@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package javax.swing;
 
+import gnu.classpath.SystemProperties;
+
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -130,12 +132,10 @@ public class JViewport extends JComponent implements Accessible
 
   /**
    * A {@link java.awt.event.ComponentListener} that listens for
-   * changes of the view's size. This class forbids changes of the view
-   * component's size that would exceed the viewport's size.
+   * changes of the view's size. This triggers a revalidate() call on the
+   * viewport.
    */
-  protected class ViewListener
-    extends ComponentAdapter
-    implements Serializable
+  protected class ViewListener extends ComponentAdapter implements Serializable
   {
     private static final long serialVersionUID = -2812489404285958070L;
 
@@ -144,41 +144,19 @@ public class JViewport extends JComponent implements Accessible
      */
     protected ViewListener()
     {
+      // Nothing to do here.
     }
 
     /**
      * Receives notification when a component (in this case: the view
-     * component) changes it's size.
+     * component) changes it's size. This simply triggers a revalidate() on the
+     * viewport.
      *
      * @param ev the ComponentEvent describing the change
      */
     public void componentResized(ComponentEvent ev)
     {
-      // According to some tests that I did with Sun's implementation
-      // this class is supposed to make sure that the view component
-      // is not resized to a larger size than the viewport.
-      // This is not documented anywhere. What I did is: I subclassed JViewport
-      // and ViewListener and 'disabled' the componentResized method by
-      // overriding it and not calling super.componentResized().
-      // When this method is disabled I can set the size on the view component
-      // normally, when it is enabled, it gets immediatly resized back,
-      // after a resize attempt that would exceed the Viewport's size.
-      Component comp = ev.getComponent();
-      Dimension newSize = comp.getSize();
-      Dimension viewportSize = getSize();
-      boolean revert = false;
-      if (newSize.width > viewportSize.width)
-        {
-          newSize.width = viewportSize.width;
-          revert = true;
-        }
-      if (newSize.height > viewportSize.height)
-        {
-          newSize.height = viewportSize.height;
-          revert = true;
-        }
-      if (revert == true)
-        comp.setSize(newSize);
+      revalidate();
     }
   }
 
@@ -187,7 +165,13 @@ public class JViewport extends JComponent implements Accessible
   public static final int BACKINGSTORE_SCROLL_MODE = 2;
 
   private static final long serialVersionUID = -6925142919680527970L;
-  
+
+  /**
+   * The default scrollmode to be used by all JViewports as determined by
+   * the system property gnu.javax.swing.JViewport.scrollMode.
+   */
+  private static final int defaultScrollMode;
+
   protected boolean scrollUnderway;
   protected boolean isViewSizeSet;
 
@@ -260,12 +244,36 @@ public class JViewport extends JComponent implements Accessible
 
   boolean damaged = true;
 
+  /**
+   * A flag indicating if the size of the viewport has changed since the
+   * last repaint. This is used in double buffered painting to check if we
+   * need a new double buffer, or can reuse the old one.
+   */
+  boolean sizeChanged = true;
+
+  /**
+   * Initializes the default setting for the scrollMode property.
+   */
+  static
+  {
+    String scrollModeProp =
+      SystemProperties.getProperty("gnu.javax.swing.JViewport.scrollMode",
+                         "BLIT");
+    int myScrollMode;
+    if (scrollModeProp.equalsIgnoreCase("simple"))
+      defaultScrollMode = SIMPLE_SCROLL_MODE;
+    else if (scrollModeProp.equalsIgnoreCase("backingstore"))
+      defaultScrollMode = BACKINGSTORE_SCROLL_MODE;
+    else
+      defaultScrollMode = BLIT_SCROLL_MODE;
+  }
+
   public JViewport()
   {
     setOpaque(true);
-    setScrollMode(BLIT_SCROLL_MODE);
-    setLayout(createLayoutManager());
+    setScrollMode(defaultScrollMode);
     updateUI();
+    setLayout(createLayoutManager());
     lastPaintPosition = new Point();
     cachedBlitFrom = new Point();
     cachedBlitTo = new Point();
@@ -356,6 +364,8 @@ public class JViewport extends JComponent implements Accessible
 
   public void setViewPosition(Point p)
   {
+    if (getViewPosition().equals(p))
+      return;
     Component view = getView();
     if (view != null)
       {
@@ -414,12 +424,8 @@ public class JViewport extends JComponent implements Accessible
 
   public void setView(Component v)
   {
-    while (getComponentCount() > 0)
-      {
-        if (viewListener != null)
-          getView().removeComponentListener(viewListener);
-        remove(0);
-      }
+    if (viewListener != null)
+      getView().removeComponentListener(viewListener);
 
     if (v != null)
       {
@@ -429,31 +435,25 @@ public class JViewport extends JComponent implements Accessible
         add(v);
         fireStateChanged();
       }
-  }
-
-  public void revalidate()
-  {
-    damaged = true;
-    fireStateChanged();
-    super.revalidate();
+    revalidate();
+    repaint();
   }
 
   public void reshape(int x, int y, int w, int h)
   {
-    damaged = true;
-    boolean changed = 
-      (x != getX()) 
-      || (y != getY()) 
-      || (w != getWidth())
-      || (h != getHeight());
+    if (w != getWidth() || h != getHeight())
+      sizeChanged = true;
     super.reshape(x, y, w, h);
-    if (changed)
-      fireStateChanged();
+    if (sizeChanged)
+      {
+        damaged = true;
+        fireStateChanged();
+      }
   }
-    
-  public final Insets getInsets() 
+
+  public final Insets getInsets()
   {
-    return new Insets(0,0,0,0);
+    return new Insets(0, 0, 0, 0);
   }
 
   public final Insets getInsets(Insets insets)
@@ -467,6 +467,14 @@ public class JViewport extends JComponent implements Accessible
     return insets;
   }
     
+
+  /**
+   * Overridden to return <code>false</code>, so the JViewport's paint method
+   * gets called instead of directly calling the children. This is necessary
+   * in order to get a useful clipping and translation on the children.
+   *
+   * @return <code>false</code>
+   */
   public boolean isOptimizedDrawingEnabled()
   {
     return false;
@@ -572,38 +580,34 @@ public class JViewport extends JComponent implements Accessible
    */
   public void scrollRectToVisible(Rectangle contentRect)
   {
+    Component view = getView();
+    if (view == null)
+      return;    
+      
     Point pos = getViewPosition();
     Rectangle viewBounds = getView().getBounds();
     Rectangle portBounds = getBounds();
     
-    // FIXME: should validate the view if it is not valid, however
-    // this may cause excessive validation when the containment
-    // hierarchy is being created.
-    
-    // if contentRect is larger than the portBounds, center the view
-    if (contentRect.height > portBounds.height || 
-        contentRect.width > portBounds.width)
-      {
-        setViewPosition(new Point(contentRect.x, contentRect.y));
-        return;
-      }
-    
-    // Y-DIRECTION
-    if (contentRect.y < -viewBounds.y)
-      setViewPosition(new Point(pos.x, contentRect.y));
-    else if (contentRect.y + contentRect.height > 
-             -viewBounds.y + portBounds.height)
-      setViewPosition (new Point(pos.x, contentRect.y - 
-                                 (portBounds.height - contentRect.height)));
-    
-    // X-DIRECTION
-    pos = getViewPosition();
-    if (contentRect.x < -viewBounds.x)
-      setViewPosition(new Point(contentRect.x, pos.y));
-    else if (contentRect.x + contentRect.width > 
-             -viewBounds.x + portBounds.width)
-      setViewPosition (new Point(contentRect.x - 
-                                 (portBounds.width - contentRect.width), pos.y));
+    if (isShowing())
+      getView().validate();
+
+    // If the bottom boundary of contentRect is below the port
+    // boundaries, scroll up as necessary.
+    if (contentRect.y + contentRect.height + viewBounds.y > portBounds.height)
+      pos.y = contentRect.y + contentRect.height - portBounds.height;
+    // If contentRect.y is above the port boundaries, scroll down to
+    // contentRect.y.
+    if (contentRect.y + viewBounds.y < 0)
+      pos.y = contentRect.y;
+    // If the right boundary of contentRect is right from the port
+    // boundaries, scroll left as necessary.
+    if (contentRect.x + contentRect.width + viewBounds.x > portBounds.width)
+      pos.x = contentRect.x + contentRect.width - portBounds.width;
+    // If contentRect.x is left from the port boundaries, scroll right to
+    // contentRect.x.
+    if (contentRect.x + viewBounds.x < 0)
+      pos.x = contentRect.x;
+    setViewPosition(pos);
   }
 
   /**
@@ -617,6 +621,25 @@ public class JViewport extends JComponent implements Accessible
     if (accessibleContext == null)
       accessibleContext = new AccessibleJViewport();
     return accessibleContext;
+  }
+
+  /**
+   * Forward repaint to parent to make sure only one paint is performed by the
+   * RepaintManager.
+   *
+   * @param tm number of milliseconds to defer the repaint request
+   * @param x the X coordinate of the upper left corner of the dirty area
+   * @param y the Y coordinate of the upper left corner of the dirty area
+   * @param w the width of the dirty area
+   * @param h the height of the dirty area
+   */
+  public void repaint(long tm, int x, int y, int w, int h)
+  {
+    Component parent = getParent();
+    if (parent != null)
+      {
+        parent.repaint(tm, x + getX(), y + getY(), w, h);
+      }
   }
 
   protected void addImpl(Component comp, Object constraints, int index)
@@ -772,7 +795,7 @@ public class JViewport extends JComponent implements Accessible
         translated = true;
         view.paint(g);
       } 
-    finally 
+    finally
       {
         if (translated)
           g.translate (pos.x, pos.y);
@@ -793,9 +816,10 @@ public class JViewport extends JComponent implements Accessible
   {
     // If we have no backing store image yet or the size of the component has
     // changed, we need to rebuild the backing store.
-    if (backingStoreImage == null || damaged)
+    if (backingStoreImage == null || sizeChanged)
       {
         backingStoreImage = createImage(getWidth(), getHeight());
+        sizeChanged = false;
         Graphics g2 = backingStoreImage.getGraphics();
         paintSimple(g2);
         g2.dispose();

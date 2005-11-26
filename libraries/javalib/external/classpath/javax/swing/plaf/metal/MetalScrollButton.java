@@ -38,6 +38,7 @@ exception statement from your version. */
 
 package javax.swing.plaf.metal;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -206,13 +207,13 @@ public class MetalScrollButton extends BasicArrowButton
         g.drawLine(w - 2, 2, w - 2, h - 1);
         
         g.setColor(MetalLookAndFeel.getControlHighlight());
-        g.drawLine(1, 1, 1, h - 1);
-        g.drawLine(1, 1, w - 1, 1);
+        g.drawLine(1, 1, 1, h - 2);
+        g.drawLine(1, 1, w - 3, 1);
         g.drawLine(w - 1, 1, w - 1, h - 1);
       
         g.setColor(MetalLookAndFeel.getControl());
         g.drawLine(1, h - 1, 1, h - 1);
-        g.drawLine(w - 1, 1, w - 1, 1);
+        g.drawLine(w - 2, 1, w - 2, 1);
       }
     else
       {

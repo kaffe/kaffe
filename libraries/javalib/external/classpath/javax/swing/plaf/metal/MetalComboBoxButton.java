@@ -38,7 +38,7 @@ exception statement from your version. */
 
 package javax.swing.plaf.metal;
 
-import java.awt.FontMetrics;
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.Rectangle;
@@ -48,7 +48,6 @@ import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JList;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 /**
@@ -101,6 +100,8 @@ public class MetalComboBoxButton extends JButton {
       CellRendererPane pane, JList list)
   {
     super();
+    if (cb == null)
+      throw new NullPointerException("Null 'cb' argument");
     comboBox = cb;
     comboIcon = i;
     iconOnly = onlyIcon;
@@ -211,102 +212,30 @@ public class MetalComboBoxButton extends JButton {
       }
     else
       {
-        String text = "";
         Object selected = comboBox.getModel().getSelectedItem();
-        if (selected != null) 
-          text = selected.toString();
+        if (selected == null)
+          selected = "";
         Rectangle bounds = comboBox.getBounds();
         Rectangle innerArea = SwingUtilities.calculateInnerArea(this, null);
+        Insets insets = comboBox.getInsets();
+        Rectangle renderArea = new Rectangle(innerArea.x, innerArea.y, 
+            innerArea.width - comboIcon.getIconWidth() - 4, innerArea.height);
+        Component cellRenderer 
+            = comboBox.getRenderer().getListCellRendererComponent(this.listBox,
+                    selected, comboBox.getSelectedIndex(), false, false);
+        cellRenderer.setBackground(comboBox.getBackground());
+        cellRenderer.setEnabled(comboBox.isEnabled());
+        rendererPane.paintComponent(g, cellRenderer, this, renderArea);
         if (comboBox.hasFocus())
           {
             g.setColor(MetalLookAndFeel.getFocusColor());
             g.drawRect(innerArea.x, innerArea.y - 1, innerArea.width - 1, 
                     innerArea.height);
           }
-        Insets insets = comboBox.getInsets();
         int iconX = bounds.width - insets.right - comboIcon.getIconWidth() - 7;
         int iconY = insets.top 
             + (bounds.height - comboIcon.getIconHeight()) / 2; 
         comboIcon.paintIcon(comboBox, g, iconX, iconY);
-        if (comboBox.isEnabled())
-          g.setColor(MetalLookAndFeel.getBlack());
-        else
-          g.setColor(MetalLookAndFeel.getControlDisabled());
-        Rectangle viewArea = new Rectangle(innerArea.x, innerArea.y,
-                innerArea.width - comboIcon.getIconWidth() - 7, 
-                innerArea.height);
-        FontMetrics fm = g.getFontMetrics(comboBox.getFont());
-        Rectangle textR = new Rectangle();
-        text = SwingUtilities.layoutCompoundLabel(fm, text, null, 
-            SwingConstants.CENTER, SwingConstants.LEFT, 
-            SwingConstants.CENTER, SwingConstants.RIGHT, 
-            viewArea, new Rectangle(), textR, 0);
-        // FIXME: this truncation should be done within layoutCompoundLabel()
-        text = truncateText(text, 
-                innerArea.width - comboIcon.getIconWidth() - 7, fm);
-        int yAdj = fm.getDescent() + fm.getLeading();
-        g.setFont(comboBox.getFont());
-        g.drawString(text, textR.x, textR.y + textR.height - yAdj);
       }
   }
-  
-  /**
-   * A utility method that checks the width of a string and, if necessary,
-   * truncates it (adding a '...' suffix to indicate the truncation) to fit
-   * within the specified width.
-   * 
-   * FIXME: this method performs a function that needs to be incorporated into
-   * the SwingUtilities.layoutCompoundLabel() code.  But that method does some
-   * multi-line calculations that I don't understand yet, so for now this code
-   * is local.
-   * 
-   * @param text  the text.
-   * @param width  the available width.
-   * @param fm  the font metrics.
-   * 
-   * @return The text, truncated if necessary.
-   */
-  private static String truncateText(String text, int width, FontMetrics fm)
-  {  
-    if (text == null)
-      return null;
-    int textWidth = fm.stringWidth(text);
-    if (width > 0 && width < textWidth)
-      {
-        int dotWidth = fm.stringWidth("...");
-        int available = width - dotWidth;
-        if (available > 0)
-          {
-            int lower = 0;
-            int upper = text.length();
-            while (upper > lower)
-              {
-                if (fm.stringWidth(text.substring(0, upper)) <= available)
-                  lower = upper;  // we're finished  
-                else 
-                  {
-                    if (lower == upper - 1)
-                      upper = lower;  // we're finished
-                    else
-                      {
-                        int mid = lower + (upper - lower) / 2;
-                        if (fm.stringWidth(text.substring(0, mid)) <= available)
-                          lower = mid;
-                        else
-                          upper = mid;
-                      }
-                  }
-              }
-            if (upper < text.length())
-              text = text.substring(0, upper) + "...";
-          }
-        else
-          {
-            // there's not even enough space for the "..."
-            text = ""; 
-          }
-      }
-    return text;
-  }
-
 }

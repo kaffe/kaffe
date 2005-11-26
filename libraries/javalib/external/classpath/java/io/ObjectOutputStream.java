@@ -363,7 +363,7 @@ public class ObjectOutputStream extends OutputStream
 
 	    throw new NotSerializableException(clazz.getName()
 					       + " in "
-					       + currentObject.getClass());
+					       + obj.getClass());
 	  } // end pseudo-loop
       }
     catch (ObjectStreamException ose)
@@ -548,7 +548,7 @@ public class ObjectOutputStream extends OutputStream
    * version)</code> is provided to change the default protocol
    * version.
    *
-   * For an explination of the differences beween the two protocols
+   * For an explanation of the differences between the two protocols
    * see XXX: the Java ObjectSerialization Specification.
    *
    * @exception IOException if <code>version</code> is not a valid

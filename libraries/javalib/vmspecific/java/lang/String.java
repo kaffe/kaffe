@@ -965,4 +965,16 @@ final native public static synchronized void unintern0(String str);
   {
     return Pattern.compile(regex).split(this, 0);
   }
+
+
+  /**
+   * Returns true iff this String contains the sequence of Characters
+   * described in s.
+   * @param s the CharSequence
+   * @return true iff this String contains s
+   */
+  public boolean contains (CharSequence s)
+  {
+    return this.indexOf(s.toString()) != -1;
+  }
 }

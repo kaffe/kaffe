@@ -72,13 +72,13 @@ public class UnknownExceptionCtxHandler
         if (current.length > 0)
           System.arraycopy(current, 0, c, 0, current.length);
 
-        cdrBufOutput output = new cdrBufOutput();
+        BufferedCdrOutput output = new BufferedCdrOutput();
 
         if (details instanceof OutputStream)
           output.setOrb(((OutputStream) output).orb());
 
-        if (details instanceof cdrOutput)
-          ((cdrOutput) details).cloneSettings(output);
+        if (details instanceof AbstractCdrOutput)
+          ((AbstractCdrOutput) details).cloneSettings(output);
 
         write(output, exception);
 
@@ -98,7 +98,7 @@ public class UnknownExceptionCtxHandler
   /**
    * Write data about unknown exception.
    */
-  public static void write(cdrBufOutput output, Throwable t)
+  public static void write(BufferedCdrOutput output, Throwable t)
   {
     t.fillInStackTrace();
     output.write_Value(t);
@@ -121,7 +121,7 @@ public class UnknownExceptionCtxHandler
    * 
    * @return the Throwable, extracted from context, on null, if this has failed.
    */
-  public static Throwable read(cdrBufInput input, ServiceContext[] contexts)
+  public static Throwable read(BufferredCdrInput input, ServiceContext[] contexts)
   {
     input.mark(Integer.MAX_VALUE);
 

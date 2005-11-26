@@ -454,7 +454,7 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetDispatchKeyEvent
  * Find the origin of a widget's window.
  */
 JNIEXPORT void JNICALL 
-Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetGetLocationOnScreen
+Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWindowGetLocationOnScreen
   (JNIEnv * env, jobject obj, jintArray jpoint)
 {
   void *ptr;
@@ -465,13 +465,36 @@ Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetGetLocationOnScreen
   ptr = NSA_GET_PTR (env, obj);
   point = (*env)->GetIntArrayElements (env, jpoint, 0);
 
-  gdk_window_get_origin (GTK_WIDGET (ptr)->window, point, point+1);
+  gdk_window_get_root_origin (GTK_WIDGET (ptr)->window, point, point+1);
 
-  if (!GTK_IS_CONTAINER (ptr))
-    {
-      *point += GTK_WIDGET(ptr)->allocation.x;
-      *(point+1) += GTK_WIDGET(ptr)->allocation.y;
-    }
+  (*env)->ReleaseIntArrayElements(env, jpoint, point, 0);
+
+  gdk_threads_leave ();
+}
+
+/*
+ * Find the origin of a widget
+ */
+JNIEXPORT void JNICALL 
+Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetGetLocationOnScreen
+  (JNIEnv * env, jobject obj, jintArray jpoint)
+{
+  void *ptr;
+  jint *point;
+  GtkWidget *widget;
+
+  gdk_threads_enter ();
+
+  ptr = NSA_GET_PTR (env, obj);
+  point = (*env)->GetIntArrayElements (env, jpoint, 0);
+
+  widget = GTK_WIDGET(ptr);
+  while(gtk_widget_get_parent(widget) != NULL)
+    widget = gtk_widget_get_parent(widget);
+  gdk_window_get_position (GTK_WIDGET(widget)->window, point, point+1);
+
+  *point += GTK_WIDGET(ptr)->allocation.x;
+  *(point+1) += GTK_WIDGET(ptr)->allocation.y;
 
   (*env)->ReleaseIntArrayElements(env, jpoint, point, 0);
 

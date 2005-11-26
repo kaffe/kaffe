@@ -612,7 +612,7 @@ public class JTableHeader extends JComponent
 
   public Rectangle getHeaderRect(int column)
   {
-    Rectangle r = getTable().getCellRect(-1, column, true);
+    Rectangle r = getTable().getCellRect(-1, column, false);
     r.height = getHeight();
     return r;
   }

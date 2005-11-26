@@ -39,7 +39,7 @@ exception statement from your version. */
 package org.omg.CORBA;
 
 import gnu.CORBA.Minor;
-import gnu.CORBA.primitiveTypeCode;
+import gnu.CORBA.typecodes.PrimitiveTypeCode;
 
 import org.omg.CORBA.portable.InputStream;
 import org.omg.CORBA.portable.OutputStream;

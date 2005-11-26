@@ -163,6 +163,10 @@ public class JButton extends AbstractButton
    */
   public void removeNotify()
   {
+    JRootPane root = SwingUtilities.getRootPane(this);
+    if (root != null && root.getDefaultButton() == this)
+      root.setDefaultButton(null);
+    super.removeNotify();
   }
 
   public void setDefaultCapable(boolean defaultCapable)

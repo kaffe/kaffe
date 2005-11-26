@@ -49,6 +49,9 @@ import javax.swing.UIManager;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicSeparatorUI;
 
+/**
+ * A UI delegate for the {@link JSeparator} component.
+ */
 public class MetalSeparatorUI
   extends BasicSeparatorUI
 {
@@ -58,7 +61,7 @@ public class MetalSeparatorUI
   private static MetalSeparatorUI instance = null;
 
   /**
-   * Constructs a new instance of MetalSeparatorUI.
+   * Constructs a new instance of <code>MetalSeparatorUI</code>.
    */
   public MetalSeparatorUI()
   {
@@ -66,11 +69,11 @@ public class MetalSeparatorUI
   }
 
   /**
-   * Returns an instance of MetalSeparatorUI.
+   * Returns a shared instance of <code>MetalSeparatorUI</code>.
    *
    * @param component the component for which we return an UI instance
    *
-   * @return an instance of MetalSeparatorUI
+   * @return A shared instance of <code>MetalSeparatorUI</code>.
    */
   public static ComponentUI createUI(JComponent component)
   {

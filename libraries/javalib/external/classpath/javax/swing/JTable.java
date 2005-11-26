@@ -40,13 +40,15 @@ package javax.swing;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.FocusListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DateFormat;
@@ -54,10 +56,18 @@ import java.text.NumberFormat;
 import java.util.Date;
 import java.util.EventObject;
 import java.util.Hashtable;
+import java.util.Locale;
 import java.util.Vector;
 
 import javax.accessibility.Accessible;
+import javax.accessibility.AccessibleComponent;
 import javax.accessibility.AccessibleContext;
+import javax.accessibility.AccessibleExtendedTable;
+import javax.accessibility.AccessibleRole;
+import javax.accessibility.AccessibleSelection;
+import javax.accessibility.AccessibleStateSet;
+import javax.accessibility.AccessibleTable;
+import javax.accessibility.AccessibleTableModelChange;
 import javax.swing.event.CellEditorListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
@@ -78,15 +88,852 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import javax.swing.text.Caret;
 
-public class JTable extends JComponent
+public class JTable
+  extends JComponent
   implements TableModelListener, Scrollable, TableColumnModelListener,
              ListSelectionListener, CellEditorListener, Accessible
 {
   /**
+   * Provides accessibility support for <code>JTable</code>.
+   *
+   * @author Roman Kennke (kennke@aicas.com)
+   */
+  protected class AccessibleJTable
+    extends AccessibleJComponent
+    implements AccessibleSelection, ListSelectionListener, TableModelListener,
+    TableColumnModelListener, CellEditorListener, PropertyChangeListener,
+    AccessibleExtendedTable
+  {
+
+    /**
+     * Provides accessibility support for table cells.
+     *
+     * @author Roman Kennke (kennke@aicas.com)
+     */
+    protected class AccessibleJTableCell
+      extends AccessibleContext
+      implements Accessible, AccessibleComponent
+    {
+
+      /**
+       * The table of this cell.
+       */
+      private JTable table;
+
+      /**
+       * The row index of this cell.
+       */
+      private int row;
+
+      /**
+       * The column index of this cell.
+       */
+      private int column;
+
+      /**
+       * The index of this cell inside the AccessibleJTable parent.
+       */
+      private int index;
+
+      /**
+       * Creates a new <code>AccessibleJTableCell</code>.
+       *
+       * @param t the table
+       * @param r the row
+       * @param c the column
+       * @param i the index of this cell inside the accessible table parent
+       */
+      public AccessibleJTableCell(JTable t, int r, int c, int i)
+      {
+        table = t;
+        row = r;
+        column = c;
+        index = i;
+      }
+
+      /**
+       * Returns the accessible row for the table cell.
+       *
+       * @return the accessible row for the table cell
+       */
+      public AccessibleRole getAccessibleRole()
+      {
+        // TODO: What is the role of the table cell?
+        return AccessibleRole.UNKNOWN;
+      }
+
+      /**
+       * Returns the accessible state set of this accessible table cell.
+       *
+       * @return the accessible state set of this accessible table cell
+       */
+      public AccessibleStateSet getAccessibleStateSet()
+      {
+        // TODO: What state shoiuld be returned here?
+        return new AccessibleStateSet();
+      }
+
+      /**
+       * Returns the index of this cell in the parent object.
+       *
+       * @return the index of this cell in the parent object
+       */
+      public int getAccessibleIndexInParent()
+      {
+        return index;
+      }
+
+      /**
+       * Returns the number of children of this object. Table cells cannot have
+       * children, so we return <code>0</code> here.
+       *
+       * @return <code>0</code>
+       */
+      public int getAccessibleChildrenCount()
+      {
+        return 0;
+      }
+
+      /**
+       * Returns the accessible child at index <code>i</code>. Table cells
+       * don't have children, so we return <code>null</code> here.
+       *
+       * @return <code>null</code>
+       */
+      public Accessible getAccessibleChild(int i)
+      {
+        return null;
+      }
+
+      /**
+       * Returns the locale setting for this accessible table cell.
+       *
+       * @return the locale setting for this accessible table cell
+       */
+      public Locale getLocale()
+      {
+        // TODO: For now, we return english here. This must be fixed as soon
+        // as we have a localized Swing.
+        return Locale.ENGLISH;
+      }
+
+      /**
+       * Returns the accessible context of this table cell. Since accessible
+       * table cells are their own accessible context, we return
+       * <code>this</code>.
+       *
+       * @return the accessible context of this table cell
+       */
+      public AccessibleContext getAccessibleContext()
+      {
+        return this;
+      }
+
+      /**
+       * Returns the background color of this cell.
+       *
+       * @return the background color of this cell
+       */
+      public Color getBackground()
+      {
+        return table.getBackground();
+      }
+
+      /**
+       * Sets the background of the cell. Since table cells cannot have
+       * individual background colors, this method does nothing. Set the
+       * background directly on the table instead.
+       * 
+       * @param color not used
+       */
+      public void setBackground(Color color)
+      {
+        // This method does nothing. See API comments.
+      }
+
+      /**
+       * Returns the foreground color of the table cell.
+       *
+       * @return the foreground color of the table cell
+       */
+      public Color getForeground()
+      {
+        return table.getForeground();
+      }
+
+      /**
+       * Sets the foreground of the cell. Since table cells cannot have
+       * individual foreground colors, this method does nothing. Set the
+       * foreground directly on the table instead.
+       * 
+       * @param color not used
+       */
+      public void setForeground(Color color)
+      {
+        // This method does nothing. See API comments.
+      }
+
+      /**
+       * Returns the cursor for this table cell.
+       *
+       * @return the cursor for this table cell
+       */
+      public Cursor getCursor()
+      {
+        return table.getCursor();
+      }
+
+      /**
+       * Sets the cursor of the cell. Since table cells cannot have
+       * individual cursors, this method does nothing. Set the
+       * cursor directly on the table instead.
+       * 
+       * @param cursor not used
+       */
+      public void setCursor(Cursor cursor)
+      {
+        // This method does nothing. See API comments.
+      }
+
+      /**
+       * Returns the font of the table cell.
+       *
+       * @return the font of the table cell
+       */
+      public Font getFont()
+      {
+        return table.getFont();
+      }
+
+      /**
+       * Sets the font of the cell. Since table cells cannot have
+       * individual fonts, this method does nothing. Set the
+       * font directly on the table instead.
+       * 
+       * @param font not used
+       */
+      public void setFont(Font font)
+      {
+        // This method does nothing. See API comments.
+      }
+
+      /**
+       * Returns the font metrics for a specified font.
+       *
+       * @param font the font for which we return the metrics
+       *
+       * @return the font metrics for a specified font
+       */
+      public FontMetrics getFontMetrics(Font font)
+      {
+        return table.getFontMetrics(font);
+      }
+
+      /**
+       * Returns <code>true</code> if this table cell is enabled,
+       * <code>false</code> otherwise.
+       *
+       * @return <code>true</code> if this table cell is enabled,
+       *         <code>false</code> otherwise
+       */
+      public boolean isEnabled()
+      {
+        return table.isEnabled();
+      }
+
+      /**
+       * Table cells cannot be disabled or enabled individually, so this method
+       * does nothing. Set the enabled flag on the table itself.
+       *
+       * @param b not used here
+       */
+      public void setEnabled(boolean b)
+      {
+        // This method does nothing. See API comments.
+      }
+
+      /**
+       * Returns <code>true</code> if this cell is visible, <code>false</code>
+       * otherwise.
+       *
+       * @return <code>true</code> if this cell is visible, <code>false</code>
+       *         otherwise
+       */
+      public boolean isVisible()
+      {
+        return table.isVisible();
+      }
+
+      /**
+       * The visibility cannot be set on individual table cells, so this method
+       * does nothing. Set the visibility on the table itself.
+       *
+       * @param b not used
+       */
+      public void setVisible(boolean b)
+      {
+        // This method does nothing. See API comments.
+      }
+
+      /**
+       * Returns <code>true</code> if this table cell is currently showing on
+       * screen.
+       *
+       * @return <code>true</code> if this table cell is currently showing on
+       *         screen
+       */
+      public boolean isShowing()
+      {
+        return table.isShowing();
+      }
+
+      /**
+       * Returns <code>true</code> if this table cell contains the location
+       * at <code>point</code>, <code>false</code> otherwise.
+       * <code>point</code> is interpreted as relative to the coordinate system
+       * of the table cell.
+       *
+       * @return <code>true</code> if this table cell contains the location
+       *         at <code>point</code>, <code>false</code> otherwise
+       */
+      public boolean contains(Point point)
+      {
+        Rectangle cellRect = table.getCellRect(row, column, true);
+        cellRect.x = 0;
+        cellRect.y = 0;
+        return cellRect.contains(point);
+      }
+
+      /**
+       * Returns the screen location of the table cell.
+       *
+       * @return the screen location of the table cell
+       */
+      public Point getLocationOnScreen()
+      {
+        Point tableLoc = table.getLocationOnScreen();
+        Rectangle cellRect = table.getCellRect(row, column, true);
+        tableLoc.x += cellRect.x;
+        tableLoc.y += cellRect.y;
+        return tableLoc;
+      }
+
+      /**
+       * Returns the location of this cell relative to the table's bounds.
+       *
+       * @return the location of this cell relative to the table's bounds
+       */
+      public Point getLocation()
+      {
+        Rectangle cellRect = table.getCellRect(row, column, true);
+        return new Point(cellRect.x, cellRect.y);
+      }
+
+      /**
+       * The location of the table cells cannot be manipulated directly, so
+       * this method does nothing.
+       *
+       * @param point not used
+       */
+      public void setLocation(Point point)
+      {
+        // This method does nothing. See API comments.
+      }
+
+      /**
+       * Returns the bounds of the cell relative to its table.
+       *
+       * @return the bounds of the cell relative to its table
+       */
+      public Rectangle getBounds()
+      {
+        return table.getCellRect(row, column, true);
+      }
+
+      /**
+       * The bounds of the table cells cannot be manipulated directly, so
+       * this method does nothing.
+       *
+       * @param rectangle not used
+       */
+      public void setBounds(Rectangle rectangle)
+      {
+        // This method does nothing. See API comments.
+      }
+
+      /**
+       * Returns the size of the table cell.
+       *
+       * @return the size of the table cell
+       */
+      public Dimension getSize()
+      {
+        Rectangle cellRect = table.getCellRect(row, column, true);
+        return new Dimension(cellRect.width, cellRect.height);
+      }
+
+      /**
+       * The size cannot be set on table cells directly, so this method does
+       * nothing.
+       *
+       * @param dimension not used
+       */
+      public void setSize(Dimension dimension)
+      {
+        // This method does nothing. See API comments.
+      }
+
+      /**
+       * Table cells have no children, so we return <code>null</code> here.
+       *
+       * @return <code>null</code>
+       */
+      public Accessible getAccessibleAt(Point point)
+      {
+        return null;
+      }
+
+      /**
+       * Returns <code>true</code> if this table cell is focus traversable,
+       * <code>false</code> otherwise.
+       *
+       * @return <code>true</code> if this table cell is focus traversable,
+       *         <code>false</code> otherwise
+       */
+      public boolean isFocusTraversable()
+      {
+        return table.isFocusable();
+      }
+
+      /**
+       * Requests that this table cell gets the keyboard focus.
+       */
+      public void requestFocus()
+      {
+        // We first set the selection models' lead selection to this cell.
+        table.getColumnModel().getSelectionModel()
+        .setLeadSelectionIndex(column);
+        table.getSelectionModel().setLeadSelectionIndex(row);
+        // Now we request that the table receives focus.
+        table.requestFocus();
+      }
+
+      /**
+       * Adds a focus listener to this cell. The focus listener is really
+       * added to the table, so there is no way to find out when an individual
+       * cell changes the focus.
+       *
+       * @param listener the focus listener to add
+       */
+      public void addFocusListener(FocusListener listener)
+      {
+        table.addFocusListener(listener);
+      }
+
+      /**
+       * Removes a focus listener from the cell. The focus listener is really
+       * removed from the table.
+       *
+       * @param listener the listener to remove
+       */
+      public void removeFocusListener(FocusListener listener)
+      {
+        table.removeFocusListener(listener);
+      }
+        
+    }
+
+    protected class AccessibleJTableModelChange
+      implements AccessibleTableModelChange
+    {
+      protected int type;
+      protected int firstRow;
+      protected int lastRow;
+      protected int firstColumn;
+      protected int lastColumn;
+
+      protected AccessibleJTableModelChange(int type, int firstRow,
+                                            int lastRow, int firstColumn,
+                                            int lastColumn)
+      {
+        this.type = type;
+        this.firstRow = firstRow;
+        this.lastRow = lastRow;
+        this.firstColumn = firstColumn;
+        this.lastColumn = lastColumn;
+      }
+
+      public int getType()
+      {
+        return type;
+      }
+
+      public int getFirstRow()
+      {
+        return firstRow;
+      }
+
+      public int getLastRow()
+      {
+        return lastRow;
+      }
+
+      public int getFirstColumn()
+      {
+        return firstColumn;
+      }
+
+      public int getLastColumn()
+      {
+        return lastColumn;
+      }
+    }
+
+    /**
+     * Creates a new <code>AccessibleJTable</code>.
+     *
+     * @since JDK1.5
+     */
+    protected AccessibleJTable()
+    {
+      getModel().addTableModelListener(this);
+      getSelectionModel().addListSelectionListener(this);
+      getColumnModel().addColumnModelListener(this);
+      getCellEditor().addCellEditorListener(this);
+    }
+
+    /**
+     * Returns the number of selected items in this table.
+     */
+    public int getAccessibleSelectionCount()
+    {
+      return getSelectedColumnCount();
+    }
+
+    public Accessible getAccessibleSelection(int i)
+    {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    public boolean isAccessibleChildSelected(int i)
+    {
+      // TODO Auto-generated method stub
+      return false;
+    }
+
+    public void addAccessibleSelection(int i)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    public void removeAccessibleSelection(int i)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    public void clearAccessibleSelection()
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    public void selectAllAccessibleSelection()
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    public void valueChanged(ListSelectionEvent event)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    /**
+     * Receives notification when the table model changes. Depending on the
+     * type of change, this method calls {@link #tableRowsInserted} or
+     * {@link #tableRowsDeleted}.
+     *
+     * @param event the table model event
+     */
+    public void tableChanged(TableModelEvent event)
+    {
+      switch (event.getType())
+        {
+        case TableModelEvent.INSERT:
+          tableRowsInserted(event);
+          break;
+        case TableModelEvent.DELETE:
+          tableRowsDeleted(event);
+          break;
+        }
+    }
+
+    /**
+     * Receives notification when one or more rows have been inserted into the
+     * table.
+     *
+     * @param event the table model event
+     */
+    public void tableRowsInserted(TableModelEvent event)
+    {
+      // TODO: What to do here, if anything? This might be a hook method for
+      // subclasses...
+    }
+
+    /**
+     * Receives notification when one or more rows have been deleted from the
+     * table.
+     *
+     * @param event the table model event
+     */
+    public void tableRowsDeleted(TableModelEvent event)
+    {
+      // TODO: What to do here, if anything? This might be a hook method for
+      // subclasses...
+    }
+
+    public void columnAdded(TableColumnModelEvent event)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    public void columnMarginChanged(ChangeEvent event)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    public void columnMoved(TableColumnModelEvent event)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    public void columnRemoved(TableColumnModelEvent event)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    public void columnSelectionChanged(ListSelectionEvent event)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    public void editingCanceled(ChangeEvent event)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    public void editingStopped(ChangeEvent event)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    /**
+     * Receives notification when any of the JTable's properties changes. This
+     * is used to replace the listeners on the table's model, selection model,
+     * column model and cell editor.
+     *
+     * @param e the property change event
+     */
+    public void propertyChange(PropertyChangeEvent e)
+    {
+      String propName = e.getPropertyName(); 
+      if (propName.equals("tableModel"))
+        {
+          TableModel oldModel = (TableModel) e.getOldValue();
+          oldModel.removeTableModelListener(this);
+          TableModel newModel = (TableModel) e.getNewValue();
+          newModel.addTableModelListener(this);
+        }
+      else if (propName.equals("columnModel"))
+        {
+          TableColumnModel oldModel = (TableColumnModel) e.getOldValue();
+          oldModel.removeColumnModelListener(this);
+          TableColumnModel newModel = (TableColumnModel) e.getNewValue();
+          newModel.addColumnModelListener(this);
+        }
+      else if (propName.equals("selectionModel"))
+        {
+          ListSelectionModel oldModel = (ListSelectionModel) e.getOldValue();
+          oldModel.removeListSelectionListener(this);
+          ListSelectionModel newModel = (ListSelectionModel) e.getNewValue();
+          newModel.addListSelectionListener(this);
+        }
+      else if (propName.equals("cellEditor"))
+        {
+          CellEditor oldEd = (CellEditor) e.getOldValue();
+          oldEd.removeCellEditorListener(this);
+          CellEditor newEd = (CellEditor) e.getNewValue();
+          newEd.addCellEditorListener(this);
+        }
+    }
+
+    public int getAccessibleRow(int index)
+    {
+      // TODO Auto-generated method stub
+      return 0;
+    }
+
+    public int getAccessibleColumn(int index)
+    {
+      // TODO Auto-generated method stub
+      return 0;
+    }
+
+    public int getAccessibleIndex(int r, int c)
+    {
+      // TODO Auto-generated method stub
+      return 0;
+    }
+
+    public Accessible getAccessibleCaption()
+    {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    public void setAccessibleCaption(Accessible caption)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    public Accessible getAccessibleSummary()
+    {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    public void setAccessibleSummary(Accessible summary)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    public int getAccessibleRowCount()
+    {
+      // TODO Auto-generated method stub
+      return 0;
+    }
+
+    public int getAccessibleColumnCount()
+    {
+      // TODO Auto-generated method stub
+      return 0;
+    }
+
+    public Accessible getAccessibleAt(int r, int c)
+    {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    public int getAccessibleRowExtentAt(int r, int c)
+    {
+      // TODO Auto-generated method stub
+      return 0;
+    }
+
+    public int getAccessibleColumnExtentAt(int r, int c)
+    {
+      // TODO Auto-generated method stub
+      return 0;
+    }
+
+    public AccessibleTable getAccessibleRowHeader()
+    {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    public void setAccessibleRowHeader(AccessibleTable header)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    public AccessibleTable getAccessibleColumnHeader()
+    {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    public void setAccessibleColumnHeader(AccessibleTable header)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    public Accessible getAccessibleRowDescription(int r)
+    {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    public void setAccessibleRowDescription(int r, Accessible description)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    public Accessible getAccessibleColumnDescription(int c)
+    {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    public void setAccessibleColumnDescription(int c, Accessible description)
+    {
+      // TODO Auto-generated method stub
+      
+    }
+
+    public boolean isAccessibleSelected(int r, int c)
+    {
+      // TODO Auto-generated method stub
+      return false;
+    }
+
+    public boolean isAccessibleRowSelected(int r)
+    {
+      // TODO Auto-generated method stub
+      return false;
+    }
+
+    public boolean isAccessibleColumnSelected(int c)
+    {
+      // TODO Auto-generated method stub
+      return false;
+    }
+
+    public int[] getSelectedAccessibleRows()
+    {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    public int[] getSelectedAccessibleColumns()
+    {
+      // TODO Auto-generated method stub
+      return null;
+    }
+      
+  }
+  /**
    * Handles property changes from the <code>TableColumn</code>s of this
    * <code>JTable</code>.
    *
-   * More specifically, this triggers a {@link #revalidate} call if the
+   * More specifically, this triggers a {@link #revalidate()} call if the
    * preferredWidth of one of the observed columns changes.
    */
   class TableColumnPropertyChangeHandler implements PropertyChangeListener
@@ -102,10 +949,13 @@ public class JTable extends JComponent
       if (ev.getPropertyName().equals("preferredWidth"))
         {
           JTableHeader header = getTableHeader();
-          TableColumn col = (TableColumn) ev.getSource();
-          header.setResizingColumn(col);
-          doLayout();
-          header.setResizingColumn(null);
+	  if (header != null)
+	    {
+	      TableColumn col = (TableColumn) ev.getSource();
+	      header.setResizingColumn(col);
+	      doLayout();
+	      header.setResizingColumn(null);
+	    }
         }
     }
   }
@@ -393,7 +1243,7 @@ public class JTable extends JComponent
    * property when the {@link #dataModel} property is changed. 
    *
    * @see #setModel(TableModel)
-   * @see #createColumnsFromModel()
+   * @see #createDefaultColumnsFromModel()
    * @see #setColumnModel(TableColumnModel)
    * @see #setAutoCreateColumnsFromModel(boolean)
    * @see #getAutoCreateColumnsFromModel()
@@ -516,7 +1366,7 @@ public class JTable extends JComponent
   /**
    * Whether or not drag-and-drop is enabled on this table.
    *
-   * @see #setDragEnabled()
+   * @see #setDragEnabled(boolean)
    * @see #getDragEnabled()
    */
   private boolean dragEnabled;
@@ -673,24 +1523,28 @@ public class JTable extends JComponent
    */
   public JTable (TableModel dm, TableColumnModel cm, ListSelectionModel sm)
   {
-    setModel(dm == null ? createDefaultDataModel() : dm);
-    setSelectionModel(sm == null ? createDefaultSelectionModel() : sm);
-
+    boolean autoCreate = false;
     if (cm != null)
-      {
         setColumnModel(cm);
-        setAutoCreateColumnsFromModel(false);
-      }
     else 
       {
         setColumnModel(createDefaultColumnModel());
-        setAutoCreateColumnsFromModel(true);
-      }
+        autoCreate = true;
+      }        
+    setSelectionModel(sm == null ? createDefaultSelectionModel() : sm);
+    setModel(dm == null ? createDefaultDataModel() : dm);
+    setAutoCreateColumnsFromModel(autoCreate);
     initializeLocalVars();
-    // The next two lines are for compliance with the JDK which starts
-    // the JLists associated with a JTable  with both lead selection 
-    // indices at 0, rather than -1 as in regular JLists
+    // The following four lines properly set the lead selection indices.
+    // After this, the UI will handle the lead selection indices.
+    // FIXME: this should probably not be necessary, if the UI is installed
+    // before the TableModel is set then the UI will handle things on its
+    // own, but certain variables need to be set before the UI can be installed
+    // so we must get the correct order for all the method calls in this
+    // constructor.
+    selectionModel.setAnchorSelectionIndex(0);    
     selectionModel.setLeadSelectionIndex(0);
+    columnModel.getSelectionModel().setAnchorSelectionIndex(0);
     columnModel.getSelectionModel().setLeadSelectionIndex(0);
     updateUI();
   }    
@@ -912,14 +1766,19 @@ public class JTable extends JComponent
     if ((event.getFirstRow() ==TableModelEvent.HEADER_ROW)
         && autoCreateColumnsFromModel)
 
-        createDefaultColumnsFromModel();
+      createDefaultColumnsFromModel();
 
     // If the structure changes, we need to revalidate, since that might
     // affect the size parameters of the JTable. Otherwise we only need
     // to perform a repaint to update the view.
-    if (event.getType() == TableModelEvent.INSERT
-        || event.getType() == TableModelEvent.DELETE)
+    if (event.getType() == TableModelEvent.INSERT)
       revalidate();
+    else if (event.getType() == TableModelEvent.DELETE)
+      {
+        if (dataModel.getRowCount() == 0)
+          clearSelection();
+        revalidate();
+      }
     repaint();
   }
 
@@ -940,7 +1799,6 @@ public class JTable extends JComponent
   {
     if (point != null)
       {
-        int x0 = getLocation().x;
         int ncols = getColumnCount();
         Dimension gap = getIntercellSpacing();
         TableColumnModel cols = getColumnModel();
@@ -970,10 +1828,8 @@ public class JTable extends JComponent
   {
     if (point != null)
       {
-        int y0 = getLocation().y;
         int nrows = getRowCount();
-        Dimension gap = getIntercellSpacing();
-        int height = getRowHeight() + (gap == null ? 0 : gap.height);
+        int height = getRowHeight();
         int y = point.y;
 
         for (int i = 0; i < nrows; ++i)
@@ -1040,7 +1896,7 @@ public class JTable extends JComponent
    * @return The current value of the selectedRow property
    */
   public int getSelectedRow ()
-  {
+  {    
     return selectionModel.getMinSelectionIndex();
   }
   
@@ -1129,16 +1985,13 @@ public class JTable extends JComponent
       }
   }
 
-
-
   public TableCellRenderer getCellRenderer(int row, int column)
   {
     TableCellRenderer renderer =
       columnModel.getColumn(column).getCellRenderer();
-    
     if (renderer == null)
-      renderer = getDefaultRenderer(dataModel.getColumnClass(column));
-    
+      renderer = getDefaultRenderer(getColumnClass(column));
+
     return renderer;
   }
 
@@ -1184,19 +2037,29 @@ public class JTable extends JComponent
                                    int row,
                                    int column)
   {
-    boolean rsa = getRowSelectionAllowed();
-    boolean csa = getColumnSelectionAllowed();
-    boolean rs = rsa ? getSelectionModel().isSelectedIndex(row) : false;
-    boolean cs = csa ? columnModel.getSelectionModel().isSelectedIndex(column) : false;
-    boolean isSelected = ((rsa && csa && rs && cs) 
-                          || (rsa && !csa && rs) 
-                          || (!rsa && csa && cs));
-    
+
+    boolean rowSelAllowed = getRowSelectionAllowed();
+    boolean colSelAllowed = getColumnSelectionAllowed();
+    boolean isSel = false;
+    if (rowSelAllowed && colSelAllowed || !rowSelAllowed && !colSelAllowed)
+      isSel = isCellSelected(row, column);
+    else
+      isSel = isRowSelected(row) && getRowSelectionAllowed()
+           || isColumnSelected(column) && getColumnSelectionAllowed();
+
+    // Determine the focused cell. The focused cell is the cell at the
+    // leadSelectionIndices of the row and column selection model.
+    ListSelectionModel rowSel = getSelectionModel();
+    ListSelectionModel colSel = getColumnModel().getSelectionModel();
+    boolean hasFocus = hasFocus() && isEnabled()
+                       && rowSel.getLeadSelectionIndex() == row
+                       && colSel.getLeadSelectionIndex() == column;
+
     return renderer.getTableCellRendererComponent(this,
                                                   dataModel.getValueAt(row, 
 						                       convertColumnIndexToModel(column)),
-                                                  isSelected,
-                                                  false, // hasFocus
+                                                  isSel,
+                                                  hasFocus,
                                                   row, column);
   }
 
@@ -1362,7 +2225,6 @@ public class JTable extends JComponent
     int lo = lsm.getMinSelectionIndex();
     int hi = lsm.getMaxSelectionIndex();
     int j = 0;
-    java.util.ArrayList ls = new java.util.ArrayList();
     if (lo != -1 && hi != -1)
       {
         switch (lsm.getSelectionMode())
@@ -1682,7 +2544,9 @@ public class JTable extends JComponent
     // Don't do anything if setting the current model again.
     if (dataModel == m)
       return;
-    
+
+    TableModel oldModel = dataModel;
+
     // Remove table as TableModelListener from old model.
     if (dataModel != null)
       dataModel.removeTableModelListener(this);
@@ -1699,7 +2563,10 @@ public class JTable extends JComponent
         if (autoCreateColumnsFromModel)
           createDefaultColumnsFromModel();
       }
-    
+
+    // This property is bound, so we fire a property change event.
+    firePropertyChange("model", oldModel, dataModel);
+
     // Repaint table.
     revalidate();
     repaint();
@@ -2113,7 +2980,7 @@ public class JTable extends JComponent
 
   public Class getColumnClass(int column)
   {
-    return dataModel.getColumnClass(column);
+    return getModel().getColumnClass(column);
   }
   
   public String getColumnName(int column)

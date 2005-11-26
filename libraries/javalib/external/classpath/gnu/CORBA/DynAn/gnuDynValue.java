@@ -67,7 +67,7 @@ import java.io.Serializable;
  *
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public class gnuDynValue extends abstractRecord implements DynValue,
+public class gnuDynValue extends RecordAny implements DynValue,
   Serializable
 {
   /**
@@ -244,7 +244,7 @@ public class gnuDynValue extends abstractRecord implements DynValue,
   /**
    * Create a new instance.
    */
-  protected abstractRecord newInstance(TypeCode oType, TypeCode aType,
+  protected RecordAny newInstance(TypeCode oType, TypeCode aType,
     gnuDynAnyFactory aFactory, ORB anOrb
   )
   {

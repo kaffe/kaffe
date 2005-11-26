@@ -49,6 +49,7 @@ public class BasicFormattedTextFieldUI extends BasicTextFieldUI
 {
   public BasicFormattedTextFieldUI()
   {
+    // Nothing to do here.
   }
 
   public static ComponentUI createUI(JComponent c)

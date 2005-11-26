@@ -40,7 +40,12 @@ package javax.swing.text;
 
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.text.BreakIterator;
+
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 /**
  * A set of utilities to deal with text. This is used by several other classes
@@ -233,16 +238,16 @@ public class Utilities
     int pos;
     int currentX = x0;
 
-    for (pos = p0; pos < s.getEndIndex(); pos++)
+    for (pos = p0; pos < s.count; pos++)
       {
-        char nextChar = s.array[pos];
+        char nextChar = s.array[s.offset+pos];
         if (nextChar == 0)
           {
             if (! round)
               pos--;
             break;
           }
-        if (nextChar != '\n')
+        if (nextChar != '\t')
           currentX += fm.charWidth(nextChar);
         else
           {
@@ -251,7 +256,7 @@ public class Utilities
             else
               currentX = (int) te.nextTabStop(currentX, pos);
           }
-        if (currentX >= x)
+        if (currentX > x)
           {
             if (! round)
               pos--;
@@ -485,5 +490,122 @@ public class Utilities
               return low;
           }
       }
+  }
+  
+  /**
+   * Determine where to break the text in the given Segment, attempting to find
+   * a word boundary.
+   * @param s the Segment that holds the text
+   * @param metrics the font metrics used for calculating the break point
+   * @param x0 starting view location representing the start of the text
+   * @param x the target view location
+   * @param e the TabExpander used for expanding tabs (if this is null tabs
+   * are expanded to 1 space)
+   * @param startOffset the offset in the Document of the start of the text
+   * @return the offset at which we should break the text
+   */
+  public static final int getBreakLocation(Segment s, FontMetrics metrics,
+                                           int x0, int x, TabExpander e,
+                                           int startOffset)
+  {
+    int mark = Utilities.getTabbedTextOffset(s, metrics, x0, x, e, startOffset);
+    BreakIterator breaker = BreakIterator.getWordInstance();
+    breaker.setText(s.toString());
+    
+    // If mark is equal to the end of the string, just use that position
+    if (mark == s.count)
+      return mark;
+    
+    // Try to find a word boundary previous to the mark at which we 
+    // can break the text
+    int preceding = breaker.preceding(mark + 1);
+    
+    if (preceding != 0)
+      return preceding;
+    else
+      // If preceding is 0 we couldn't find a suitable word-boundary so
+      // just break it on the character boundary
+      return mark;
+  }
+
+  /**
+   * Returns the paragraph element in the text component <code>c</code> at
+   * the specified location <code>offset</code>.
+   *
+   * @param c the text component
+   * @param offset the offset of the paragraph element to return
+   *
+   * @return the paragraph element at <code>offset</code>
+   */
+  public static final Element getParagraphElement(JTextComponent c, int offset)
+  {
+    Document doc = c.getDocument();
+    Element par = null;
+    if (doc instanceof StyledDocument)
+      {
+        StyledDocument styledDoc = (StyledDocument) doc;
+        par = styledDoc.getParagraphElement(offset);
+      }
+    else
+      {
+        Element root = c.getDocument().getDefaultRootElement();
+        int parIndex = root.getElementIndex(offset);
+        par = root.getElement(parIndex);
+      }
+    return par;
+  }
+
+  /**
+   * Returns the document position that is closest above to the specified x
+   * coordinate in the row containing <code>offset</code>.
+   *
+   * @param c the text component
+   * @param offset the offset
+   * @param x the x coordinate
+   *
+   * @return  the document position that is closest above to the specified x
+   *          coordinate in the row containing <code>offset</code>
+   *
+   * @throws BadLocationException if <code>offset</code> is not a valid offset
+   */
+  public static final int getPositionAbove(JTextComponent c, int offset, int x)
+    throws BadLocationException
+  {
+    View rootView = c.getUI().getRootView(c);
+    Rectangle r = c.modelToView(offset);
+    int offs = c.viewToModel(new Point(x, r.y));
+    int pos = rootView.getNextVisualPositionFrom(offs,
+                                    Position.Bias.Forward,
+                                    SwingUtilities.calculateInnerArea(c, null),
+                                    SwingConstants.NORTH,
+                                    new Position.Bias[1]);
+    return pos;
+  }
+
+  /**
+   * Returns the document position that is closest below to the specified x
+   * coordinate in the row containing <code>offset</code>.
+   *
+   * @param c the text component
+   * @param offset the offset
+   * @param x the x coordinate
+   *
+   * @return  the document position that is closest above to the specified x
+   *          coordinate in the row containing <code>offset</code>
+   *
+   * @throws BadLocationException if <code>offset</code> is not a valid offset
+   */
+  public static final int getPositionBelow(JTextComponent c, int offset, int x)
+    throws BadLocationException
+  {
+    View rootView = c.getUI().getRootView(c);
+    Rectangle r = c.modelToView(offset);
+    int offs = c.viewToModel(new Point(x, r.y));
+    int pos = rootView.getNextVisualPositionFrom(offs,
+                                    Position.Bias.Forward,
+                                    SwingUtilities.calculateInnerArea(c, null),
+                                    SwingConstants.SOUTH,
+                                    new Position.Bias[1]);
+    return pos;
   }
 }

@@ -41,6 +41,7 @@ import java.awt.AWTError;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Insets;
 import java.awt.LayoutManager2;
 import java.io.Serializable;
 
@@ -397,9 +398,14 @@ public class OverlayLayout implements LayoutManager2, Serializable
         offsetsY = new int[len];
         spansX = new int[len];
         spansY = new int[len];
-        SizeRequirements.calculateAlignedPositions(target.getWidth(), xTotal,
+
+        Insets in = target.getInsets();
+        int width = target.getWidth() - in.left - in.right;
+        int height = target.getHeight() - in.top - in.bottom;
+
+        SizeRequirements.calculateAlignedPositions(width, xTotal,
                                                    xChildren, offsetsX, spansX);
-        SizeRequirements.calculateAlignedPositions(target.getHeight(), yTotal,
+        SizeRequirements.calculateAlignedPositions(height, yTotal,
                                                    yChildren, offsetsY, spansY);
       }
   }

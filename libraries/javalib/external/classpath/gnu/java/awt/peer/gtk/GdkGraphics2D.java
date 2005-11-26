@@ -154,7 +154,7 @@ public class GdkGraphics2D extends Graphics2D
 
   public Graphics create(int x, int y, int width, int height)
   {
-    return new GdkGraphics2D(width, height);
+    return new GdkGraphics2D(this, x, y, width, height);
   }
 
   private void fail_g2d ()
@@ -207,6 +207,13 @@ public class GdkGraphics2D extends Graphics2D
     setTransform(transform);
     setClip(clip);
     stateStack = new Stack();
+  }
+
+  GdkGraphics2D(GdkGraphics2D g, int x, int y, int widht, int height)
+  {
+    this(g);
+    translate(x, y);
+    clipRect(0, 0, widht, height);
   }
 
   GdkGraphics2D(int width, int height)
@@ -1395,7 +1402,8 @@ public class GdkGraphics2D extends Graphics2D
 
   public void copyArea(int x, int y, int width, int height, int dx, int dy)
   {
-    throw new java.lang.UnsupportedOperationException();
+    GdkGraphics2D g = (GdkGraphics2D) create(x, y, width, height);
+    gdkDrawDrawable(g, x + dx, y + dy);
   }
 
   public void drawArc(int x, int y, int width, int height, int startAngle,

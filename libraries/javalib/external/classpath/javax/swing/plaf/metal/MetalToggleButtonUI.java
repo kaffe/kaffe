@@ -47,15 +47,15 @@ import java.awt.Rectangle;
 import javax.swing.AbstractButton;
 import javax.swing.JComponent;
 import javax.swing.JToggleButton;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicButtonUI;
 import javax.swing.plaf.basic.BasicToggleButtonUI;
 
 /**
- * A UI delegate for {@link JToggleButton} components.
+ * A UI delegate for the {@link JToggleButton} component.
  */
 public class MetalToggleButtonUI
   extends BasicToggleButtonUI
@@ -71,11 +71,11 @@ public class MetalToggleButtonUI
   protected Color disabledTextColor;
 
   /**
-   * Returns an instance of MetalToggleButtonUI.
+   * Returns a new instance of <code>MetalToggleButtonUI</code>.
    *
    * @param component the component for which we return an UI instance
    *
-   * @return an instance of MetalToggleButtonUI
+   * @return A new instance of <code>MetalToggleButtonUI</code>.
    */
   public static ComponentUI createUI(JComponent component)
   {
@@ -83,15 +83,11 @@ public class MetalToggleButtonUI
   }
 
   /**
-   * Constructs a new instance of MetalToggleButtonUI.
+   * Constructs a new instance of <code>MetalToggleButtonUI</code>.
    */
   public MetalToggleButtonUI()
   {
     super();
-    UIDefaults defaults = UIManager.getLookAndFeelDefaults();
-    focusColor = defaults.getColor(getPropertyPrefix() + "focus");
-    selectColor = defaults.getColor(getPropertyPrefix() + "select");
-    disabledTextColor = defaults.getColor(getPropertyPrefix() + "disabledText");
   }
 
   /**
@@ -115,9 +111,12 @@ public class MetalToggleButtonUI
   }
 
   /**
-   * Returns the color for the text label of disabled buttons.
+   * Returns the color for the text label of disabled buttons.  The value 
+   * is initialised in the {@link #installDefaults(AbstractButton)} method
+   * by reading the <code>ToggleButton.disabledText</code> item from the UI 
+   * defaults.
    *
-   * @return the color for the text label of disabled buttons
+   * @return The color for the text label of disabled buttons.
    */
   protected Color getDisabledTextColor()
   {
@@ -131,9 +130,10 @@ public class MetalToggleButtonUI
    */
   public void installDefaults(AbstractButton b)
   {
-    // FIXME: for now, this override just changes the visibility of the method
-    // in the super-class, to satisfy japi...but there must be something else.
     super.installDefaults(b);
+    focusColor = UIManager.getColor(getPropertyPrefix() + "focus");
+    selectColor = UIManager.getColor(getPropertyPrefix() + "select");
+    disabledTextColor = UIManager.getColor(getPropertyPrefix() + "disabledText");
   }
   
   /**
@@ -144,11 +144,14 @@ public class MetalToggleButtonUI
    */
   protected void paintButtonPressed(Graphics g, AbstractButton b)
   {
-    Color saved = g.getColor();
-    Rectangle bounds = SwingUtilities.getLocalBounds(b);
-    g.setColor(selectColor);
-    g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
-    g.setColor(saved);
+    if (b.isContentAreaFilled() && b.isOpaque())
+      {
+        Color saved = g.getColor();
+        Rectangle bounds = SwingUtilities.getLocalBounds(b);
+        g.setColor(selectColor);
+        g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
+        g.setColor(saved);
+      }
   }
   
   /**
@@ -195,6 +198,24 @@ public class MetalToggleButtonUI
     Rectangle fr = iconRect.union(textRect);
     g.drawRect(fr.x - 1, fr.y - 1, fr.width + 1, fr.height + 1);
     g.setColor(saved);    
+  }
+
+  /**
+   * If the property <code>ToggleButton.gradient</code> is set, then a gradient
+   * is painted as background, otherwise the normal superclass behaviour is
+   * called.
+   */
+  public void update(Graphics g, JComponent c)
+  {
+    if (c.isOpaque() && UIManager.get(getPropertyPrefix() + "gradient") != null)
+      {
+        MetalUtils.paintGradient(g, 0, 0, c.getWidth(), c.getHeight(),
+                                 SwingConstants.VERTICAL,
+                                 getPropertyPrefix() + "gradient");
+        paint(g, c);
+      }
+    else
+      super.update(g, c);
   }
   
 }

@@ -128,10 +128,20 @@ public final class AccessControlContext
   public void checkPermission(Permission perm) throws AccessControlException
   {
     if (protectionDomains.length == 0)
-      throw new AccessControlException ("permission not granted");
+      throw new AccessControlException ("permission " 
+					+ perm 
+					+ " not granted: no protection domains");
+
     for (int i = 0; i < protectionDomains.length; i++)
-      if (!protectionDomains[i].implies(perm))
-        throw new AccessControlException ("permission not granted");
+      {
+	final ProtectionDomain domain = protectionDomains[i];
+	if (!domain.implies(perm))
+	  throw new AccessControlException ("permission " 
+					    + perm 
+					    + " not granted: " 
+					    + domain 
+					    + " does not imply it.");
+      }
   }
 
   /**

@@ -124,6 +124,35 @@ public abstract class BindingIteratorHelper
         return new _BindingIteratorStub(delegate);
       }
   }
+  
+  /**
+   * Narrow the given object to the BindingIterator. No type-checking is
+   * performed to verify that the object actually supports the requested type.
+   * The {@link BAD_OPERATION} will be thrown if unsupported operations are
+   * invoked on the new returned reference, but no failure is expected at the
+   * time of the unchecked_narrow.
+   * 
+   * @param obj the object to cast.
+   * 
+   * @return the casted binding iterator.
+   * 
+   * @since 1.5 
+   * 
+   * @see OMG issue 4158.
+   */
+  public static BindingIterator unchecked_narrow(org.omg.CORBA.Object obj)
+  {
+    if (obj == null)
+      return null;
+    else if (obj instanceof BindingIterator)
+      return (BindingIterator) obj;
+    else
+      {
+        // Do not call the _is_a(..).
+        Delegate delegate = ((ObjectImpl) obj)._get_delegate();
+        return new _BindingIteratorStub(delegate);
+      }    
+  }
 
   /**
    * Read the exception from the given CDR stream.

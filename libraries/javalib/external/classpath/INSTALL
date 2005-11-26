@@ -127,8 +127,7 @@ gives a complete list.
   --enable-Werror         whether to compile C code with -Werror which turns
                           any compiler warning into a compilation failure
                           default=no
-  --enable-xmlj           compile native libxml/xslt library default=no
-  --with-gjdoc		      generate documentation using gjdoc default=no
+  --with-gjdoc            generate documentation using gjdoc default=no
   --with-jay              Regenerate the parsers with jay must be given the
                           path to the jay executable
 

@@ -38,8 +38,8 @@ exception statement from your version. */
 
 package gnu.CORBA.GIOP;
 
-import gnu.CORBA.CDR.cdrInput;
-import gnu.CORBA.CDR.cdrOutput;
+import gnu.CORBA.CDR.AbstractCdrInput;
+import gnu.CORBA.CDR.AbstractCdrOutput;
 
 import org.omg.CORBA.BAD_INV_ORDER;
 import org.omg.CORBA.BAD_PARAM;
@@ -137,15 +137,15 @@ public class ServiceContext
    * 
    * @param istream a stream to read from.
    */
-  public static ServiceContext read(cdrInput istream)
+  public static ServiceContext read(AbstractCdrInput istream)
   {
     int id = istream.read_ulong();
 
     switch (id)
       {
-        case cxCodeSet.ID:
+        case CodeSetServiceContext.ID:
 
-          cxCodeSet codeset = new cxCodeSet();
+          CodeSetServiceContext codeset = new CodeSetServiceContext();
           codeset.readContext(istream);
           return codeset;
 
@@ -161,7 +161,7 @@ public class ServiceContext
   /**
    * Read a sequence of contexts from the input stream.
    */
-  public static ServiceContext[] readSequence(cdrInput istream)
+  public static ServiceContext[] readSequence(AbstractCdrInput istream)
   {
     int size = istream.read_long();
     ServiceContext[] value = new gnu.CORBA.GIOP.ServiceContext[size];
@@ -175,7 +175,7 @@ public class ServiceContext
    * 
    * @param ostream a stream to write the data to.
    */
-  public void write(cdrOutput ostream)
+  public void write(AbstractCdrOutput ostream)
   {
     ostream.write_ulong(context_id);
     ostream.write_sequence(context_data);
@@ -184,7 +184,7 @@ public class ServiceContext
   /**
    * Write the sequence of contexts into the input stream.
    */
-  public static void writeSequence(cdrOutput ostream, ServiceContext[] value)
+  public static void writeSequence(AbstractCdrOutput ostream, ServiceContext[] value)
   {
     ostream.write_long(value.length);
     for (int i = 0; i < value.length; i++)

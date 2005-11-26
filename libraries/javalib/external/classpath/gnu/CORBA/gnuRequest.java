@@ -38,12 +38,12 @@ exception statement from your version. */
 
 package gnu.CORBA;
 
-import gnu.CORBA.CDR.cdrBufInput;
-import gnu.CORBA.CDR.cdrBufOutput;
+import gnu.CORBA.CDR.BufferredCdrInput;
+import gnu.CORBA.CDR.BufferedCdrOutput;
 import gnu.CORBA.GIOP.MessageHeader;
 import gnu.CORBA.GIOP.ReplyHeader;
 import gnu.CORBA.GIOP.RequestHeader;
-import gnu.CORBA.GIOP.cxCodeSet;
+import gnu.CORBA.GIOP.CodeSetServiceContext;
 import gnu.CORBA.Interceptor.gnuClientRequestInfo;
 import gnu.CORBA.Poa.ORB_1_4;
 
@@ -135,8 +135,8 @@ public class gnuRequest extends Request implements Cloneable
   /**
    * The empty byte array.
    */
-  private static final binaryReply EMPTY =
-    new binaryReply(null, new MessageHeader(), new byte[ 0 ]);
+  private static final RawReply EMPTY =
+    new RawReply(null, new MessageHeader(), new byte[ 0 ]);
 
   /**
    * The context holder for methods ctx(Context) and ctx().
@@ -223,7 +223,7 @@ public class gnuRequest extends Request implements Cloneable
    * The request arguments in the case when they are directly written into the
    * parameter buffer.
    */
-  protected streamRequest m_parameter_buffer;
+  protected StreamBasedRequest m_parameter_buffer;
 
   /**
    * The array of slots.
@@ -295,8 +295,8 @@ public class gnuRequest extends Request implements Cloneable
     orb = an_orb;
 
     // Take the interceptor from the ORB.
-    if (orb instanceof Restricted_ORB)
-      m_interceptor = ((Restricted_ORB) orb).iClient;
+    if (orb instanceof OrbRestricted)
+      m_interceptor = ((OrbRestricted) orb).iClient;
 
     if (m_interceptor != null && orb instanceof ORB_1_4)
       {
@@ -333,12 +333,12 @@ public class gnuRequest extends Request implements Cloneable
    * Get the parameter stream, where the invocation arguments should be written
    * if they are written into the stream directly.
    */
-  public streamRequest getParameterStream()
+  public StreamBasedRequest getParameterStream()
   {
-    m_parameter_buffer = new streamRequest();
+    m_parameter_buffer = new StreamBasedRequest();
     m_parameter_buffer.request = this;
     m_parameter_buffer.setVersion(ior.Internet.version);
-    m_parameter_buffer.setCodeSet(cxCodeSet.negotiate(ior.Internet.CodeSets));
+    m_parameter_buffer.setCodeSet(CodeSetServiceContext.negotiate(ior.Internet.CodeSets));
     m_parameter_buffer.setOrb(orb);
     m_parameter_buffer.setBigEndian(Big_endian);
 
@@ -346,7 +346,7 @@ public class gnuRequest extends Request implements Cloneable
     // correctly.
     if (ior.Internet.version.until_inclusive(1, 1))
       {
-        cdrBufOutput measure = new cdrBufOutput();
+        BufferedCdrOutput measure = new BufferedCdrOutput();
         measure.setOffset(12);
         if (m_rqh == null)
           m_rqh = new gnu.CORBA.GIOP.v1_0.RequestHeader();
@@ -514,8 +514,8 @@ public class gnuRequest extends Request implements Cloneable
                 try
                   {
                     ObjectImpl impl = (ObjectImpl) e.forward;
-                    Simple_delegate delegate =
-                      (Simple_delegate) impl._get_delegate();
+                    SimpleDelegate delegate =
+                      (SimpleDelegate) impl._get_delegate();
                     ior = delegate.getIor();
                   }
                 catch (Exception ex)
@@ -722,7 +722,8 @@ public class gnuRequest extends Request implements Cloneable
    * 
    * @return the server response in binary form.
    */
-public synchronized binaryReply submit() throws ForwardRequest
+  public synchronized RawReply submit()
+    throws ForwardRequest
   {
     gnu.CORBA.GIOP.MessageHeader header = new gnu.CORBA.GIOP.MessageHeader();
 
@@ -743,26 +744,25 @@ public synchronized binaryReply submit() throws ForwardRequest
       m_interceptor.send_request(m_info);
 
     // Prepare the submission.
-    cdrBufOutput request_part = new cdrBufOutput();
+    BufferedCdrOutput request_part = new BufferedCdrOutput();
 
     request_part.setOffset(header.getHeaderSize());
     request_part.setVersion(header.version);
-    request_part.setCodeSet(cxCodeSet.negotiate(ior.Internet.CodeSets));
+    request_part.setCodeSet(CodeSetServiceContext.negotiate(ior.Internet.CodeSets));
     request_part.setOrb(orb);
     request_part.setBigEndian(header.isBigEndian());
 
     // This also sets the stream encoding to the encoding, specified
     // in the header.
     rh.write(request_part);
-    
+
     if (m_args != null && m_args.count() > 0)
       {
         write_parameters(header, request_part);
 
         if (m_parameter_buffer != null)
-          throw new BAD_INV_ORDER("Please either add parameters or " +
-            "write them into stream, but not both " + "at once."
-          );
+          throw new BAD_INV_ORDER("Please either add parameters or "
+            + "write them into stream, but not both " + "at once.");
       }
 
     if (m_parameter_buffer != null)
@@ -790,12 +790,15 @@ public synchronized binaryReply submit() throws ForwardRequest
           {
             // The BindException may be thrown under very heavy parallel
             // load. For some time, just wait, exceptiong the socket to free.
-            Open:
-            for (int i = 0; i < PAUSE_STEPS; i++)
+            Open: for (int i = 0; i < PAUSE_STEPS; i++)
               {
                 try
                   {
-                    socket = new Socket(ior.Internet.host, ior.Internet.port);
+                    if (orb instanceof OrbFunctional)
+                      socket = ((OrbFunctional) orb).socketFactory.createClientSocket(
+                        ior.Internet.host, ior.Internet.port);
+                    else
+                      socket = new Socket(ior.Internet.host, ior.Internet.port);
                     break Open;
                   }
                 catch (BindException ex)
@@ -817,9 +820,8 @@ public synchronized binaryReply submit() throws ForwardRequest
           }
 
         if (socket == null)
-          throw new NO_RESOURCES(ior.Internet.host + ":" + ior.Internet.port +
-            " in use"
-          );
+          throw new NO_RESOURCES(ior.Internet.host + ":" + ior.Internet.port
+            + " in use");
         socket.setKeepAlive(true);
 
         OutputStream socketOutput = socket.getOutputStream();
@@ -836,29 +838,27 @@ public synchronized binaryReply submit() throws ForwardRequest
             MessageHeader response_header = new MessageHeader();
             InputStream socketInput = socket.getInputStream();
             response_header.read(socketInput);
-            
-            byte [] r;
-            if (orb instanceof Functional_ORB)
+
+            byte[] r;
+            if (orb instanceof OrbFunctional)
               {
-                Functional_ORB fo = (Functional_ORB) orb;
-                r =response_header.readMessage(socketInput, socket, 
+                OrbFunctional fo = (OrbFunctional) orb;
+                r = response_header.readMessage(socketInput, socket,
                   fo.TOUT_WHILE_READING, fo.TOUT_AFTER_RECEIVING);
               }
             else
               r = response_header.readMessage(socketInput, null, 0, 0);
-              
-            return new binaryReply(orb, response_header, r);
+
+            return new RawReply(orb, response_header, r);
           }
         else
           return EMPTY;
       }
     catch (IOException io_ex)
       {
-        COMM_FAILURE m =
-          new COMM_FAILURE("Unable to open a socket at " + ior.Internet.host + ":" +
-            ior.Internet.port, 0xC9,
-            CompletionStatus.COMPLETED_NO
-          );
+        COMM_FAILURE m = new COMM_FAILURE("Unable to open a socket at "
+          + ior.Internet.host + ":" + ior.Internet.port, 0xC9,
+          CompletionStatus.COMPLETED_NO);
         m.initCause(io_ex);
         throw m;
       }
@@ -868,7 +868,7 @@ public synchronized binaryReply submit() throws ForwardRequest
           {
             if (socket != null && !socket.isClosed())
               {
-                socket.setSoTimeout(Functional_ORB.TANDEM_REQUESTS);
+                socket.setSoTimeout(OrbFunctional.TANDEM_REQUESTS);
                 SocketRepository.put_socket(key, socket);
               }
           }
@@ -936,12 +936,12 @@ public synchronized binaryReply submit() throws ForwardRequest
   private void p_invoke()
     throws SystemException, ForwardRequest
   {
-    binaryReply response = submit();
+    RawReply response = submit();
 
     if (m_rph == null)
       m_rph = response.header.create_reply_header();
 
-    cdrBufInput input = response.getStream();
+    BufferredCdrInput input = response.getStream();
     input.setOrb(orb);
 
     m_rph.read(input);
@@ -1026,7 +1026,7 @@ public synchronized binaryReply submit() throws ForwardRequest
           gnuAny exc = new gnuAny();
           exc.setOrb(orb);
 
-          exc.insert_Streamable(new streamReadyHolder(input));
+          exc.insert_Streamable(new StreamHolder(input));
 
           UnknownUserException unuex = new UnknownUserException(exc);
           m_environment.exception(unuex);
@@ -1072,7 +1072,7 @@ public synchronized binaryReply submit() throws ForwardRequest
   /**
    * Read exception id without changing the stream pointer position.
    */
-  void readExceptionId(cdrBufInput input)
+  void readExceptionId(BufferredCdrInput input)
   {
     input.mark(2048);
     m_exception_id = input.read_string();
@@ -1088,7 +1088,7 @@ public synchronized binaryReply submit() throws ForwardRequest
    * @throws MARSHAL if the attempt to write the parameters has failde.
    */
   protected void write_parameter_buffer(MessageHeader header,
-    cdrBufOutput request_part
+    BufferedCdrOutput request_part
   ) throws MARSHAL
   {
     try
@@ -1116,7 +1116,7 @@ public synchronized binaryReply submit() throws ForwardRequest
    * @throws MARSHAL if the attempt to write the parameters has failde.
    */
   protected void write_parameters(MessageHeader header,
-    cdrBufOutput request_part
+    BufferedCdrOutput request_part
   ) throws MARSHAL
   {
     // Align after 1.2, but only once.
@@ -1167,7 +1167,7 @@ public synchronized binaryReply submit() throws ForwardRequest
    */
   public TaggedProfile effective_profile()
   {
-    cdrBufOutput buf = new cdrBufOutput(512);
+    BufferedCdrOutput buf = new BufferedCdrOutput(512);
     buf.setOrb(orb);
     ior.Internet.write(buf);
 
@@ -1182,7 +1182,7 @@ public synchronized binaryReply submit() throws ForwardRequest
    */
   public org.omg.CORBA.Object effective_target()
   {
-    return new IOR_contructed_object(orb, ior);
+    return new IorObject(orb, ior);
   }
 
   /**
@@ -1194,7 +1194,7 @@ public synchronized binaryReply submit() throws ForwardRequest
     if (id == TAG_CODE_SETS.value)
       {
         // Codesets are encoded separately.
-        cdrBufOutput buf = new cdrBufOutput(512);
+        BufferedCdrOutput buf = new BufferedCdrOutput(512);
         buf.setOrb(orb);
         ior.Internet.CodeSets.write(buf);
 
@@ -1295,7 +1295,7 @@ public synchronized binaryReply submit() throws ForwardRequest
       return m_forwarding_target;
 
     if (m_forward_ior != null)
-      return new IOR_contructed_object(orb, m_forward_ior);
+      return new IorObject(orb, m_forward_ior);
     else
       return null;
   }

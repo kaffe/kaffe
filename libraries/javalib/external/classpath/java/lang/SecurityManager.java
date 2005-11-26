@@ -424,7 +424,7 @@ public class SecurityManager
   public void checkAccess(Thread thread)
   {
     if (thread.getThreadGroup() != null 
-	&& thread.getThreadGroup().getParent() != null)
+	&& thread.getThreadGroup().getParent() == null)
       checkPermission(new RuntimePermission("modifyThread"));
   }
 
@@ -457,7 +457,7 @@ public class SecurityManager
    */
   public void checkAccess(ThreadGroup g)
   {
-    if (g.getParent() != null)
+    if (g.getParent() == null)
       checkPermission(new RuntimePermission("modifyThreadGroup"));
   }
 

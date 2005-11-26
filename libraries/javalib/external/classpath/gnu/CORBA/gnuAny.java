@@ -39,8 +39,10 @@ exception statement from your version. */
 package gnu.CORBA;
 
 import gnu.CORBA.CDR.Vio;
-import gnu.CORBA.CDR.cdrBufInput;
-import gnu.CORBA.CDR.cdrBufOutput;
+import gnu.CORBA.CDR.BufferredCdrInput;
+import gnu.CORBA.CDR.BufferedCdrOutput;
+import gnu.CORBA.typecodes.PrimitiveTypeCode;
+import gnu.CORBA.typecodes.StringTypeCode;
 
 import org.omg.CORBA.Any;
 import org.omg.CORBA.AnyHolder;
@@ -98,7 +100,7 @@ public class gnuAny
    * not intialized.
    */
   protected static final TypeCode nullType =
-    new primitiveTypeCode(TCKind.tk_null);
+    new PrimitiveTypeCode(TCKind.tk_null);
 
   /**
    * The Streamable, representing the value, held by this gnuAny.
@@ -137,11 +139,11 @@ public class gnuAny
    */
   public gnuAny Clone()
   {
-    cdrBufOutput out = new cdrBufOutput();
+    BufferedCdrOutput out = new BufferedCdrOutput();
     out.setOrb(orb);
     out.write_any(this);
 
-    cdrBufInput in = new cdrBufInput(out.buffer.toByteArray());
+    BufferredCdrInput in = new BufferredCdrInput(out.buffer.toByteArray());
     in.setOrb(orb);
     return (gnuAny) in.read_any();
   }
@@ -152,18 +154,18 @@ public class gnuAny
    */
   public org.omg.CORBA.portable.InputStream create_input_stream()
   {
-    if (has instanceof universalHolder)
+    if (has instanceof GeneralHolder)
       {
-        universalHolder u = (universalHolder) has;
+        GeneralHolder u = (GeneralHolder) has;
         return u.getInputStream();
       }
     else
       {
-        cdrBufOutput out = new cdrBufOutput();
+        BufferedCdrOutput out = new BufferedCdrOutput();
         out.setOrb(orb);
         write_value(out);
 
-        cdrBufInput in = new cdrBufInput(out.buffer.toByteArray());
+        BufferredCdrInput in = new BufferredCdrInput(out.buffer.toByteArray());
         in.setOrb(orb);
         return in;
       }
@@ -174,7 +176,7 @@ public class gnuAny
    */
   public org.omg.CORBA.portable.OutputStream create_output_stream()
   {
-    cdrBufOutput stream = new cdrBufOutput();
+    BufferedCdrOutput stream = new BufferedCdrOutput();
     stream.setOrb(orb);
     return stream;
   }
@@ -194,11 +196,11 @@ public class gnuAny
       if (has.equals(((gnuAny) other).has))
         return true;
 
-    cdrBufOutput a = new cdrBufOutput();
+    BufferedCdrOutput a = new BufferedCdrOutput();
     a.setOrb(orb);
     write_value(a);
 
-    cdrBufOutput b = new cdrBufOutput();
+    BufferedCdrOutput b = new BufferedCdrOutput();
     b.setOrb(orb);
     other.write_value(b);
 
@@ -219,7 +221,7 @@ public class gnuAny
       {
         Adler32 adler = new Adler32();
 
-        cdrBufOutput a = new cdrBufOutput();
+        BufferedCdrOutput a = new BufferedCdrOutput();
         a.setOrb(orb);
         write_value(a);
         
@@ -692,7 +694,7 @@ public class gnuAny
     else
       has = new StringHolder(x);
 
-    typecode = new stringTypeCode(TCKind.tk_string);
+    typecode = new StringTypeCode(TCKind.tk_string);
   }
 
   /** {@inheritDoc} */
@@ -779,20 +781,20 @@ public class gnuAny
           }
         else
           {
-            has = holderFactory.createHolder(a_type);
+            has = HolderLocator.createHolder(a_type);
             if (has == null)
               {
                 // Use the Universal Holder that reads till the end of stream.
                 // This works with the extract/insert pair of the typical
                 // Helper.
-                cdrBufOutput buffer = new cdrBufOutput();
+                BufferedCdrOutput buffer = new BufferedCdrOutput();
                 buffer.setOrb(orb);
-                has = new universalHolder(buffer);
+                has = new GeneralHolder(buffer);
               }
           }
         type(a_type);
 
-        if (!(has instanceof universalHolder) &&
+        if (!(has instanceof GeneralHolder) &&
             (kind == TCKind._tk_value_box))
           {
             // The streamable only contains operations for
@@ -821,7 +823,7 @@ public class gnuAny
       return typecode;
     else if (xKind >= 0)
       {
-        typecode = new primitiveTypeCode(TCKind.from_int(xKind));
+        typecode = new PrimitiveTypeCode(TCKind.from_int(xKind));
         return typecode;
       }
     else
@@ -874,8 +876,8 @@ public class gnuAny
           if (!(xKind == TCKind._tk_alias && has._type().kind().value() == kind))
             {
               BAD_OPERATION bad = new BAD_OPERATION("Extracting "
-                + typeNamer.nameIt(kind) + " when stored "
-                + typeNamer.nameIt(xKind));
+                + TypeKindNamer.nameIt(kind) + " when stored "
+                + TypeKindNamer.nameIt(xKind));
               bad.minor = Minor.Any;
               throw bad;
             }
@@ -886,8 +888,8 @@ public class gnuAny
           if (!(type().kind().value() == TCKind._tk_alias && has._type().kind().value() == kind))
             {
               BAD_OPERATION bad = new BAD_OPERATION("Extracting "
-                + typeNamer.nameIt(kind) + " stored "
-                + typeNamer.nameIt(type()));
+                + TypeKindNamer.nameIt(kind) + " stored "
+                + TypeKindNamer.nameIt(type()));
               bad.minor = Minor.Any;
               throw bad;
             }

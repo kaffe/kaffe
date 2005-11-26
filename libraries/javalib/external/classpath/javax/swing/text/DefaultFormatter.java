@@ -175,7 +175,10 @@ public class DefaultFormatter extends JFormattedTextField.AbstractFormatter
               catch (ParseException pe)
                 {
                   // if that happens, something serious must be wrong
-                  throw new AssertionError("values must be parseable");
+                  AssertionError ae;
+		  ae = new AssertionError("values must be parseable");
+		  ae.initCause(pe);
+		  throw ae;
                 }
             }
         }

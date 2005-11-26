@@ -50,10 +50,9 @@ import javax.swing.JComponent;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JViewport;
+import javax.swing.LookAndFeel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.ScrollPaneLayout;
-import javax.swing.UIDefaults;
-import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.ComponentUI;
@@ -186,15 +185,30 @@ public class BasicScrollPaneUI extends ScrollPaneUI
      */
     public void propertyChange(PropertyChangeEvent e)
     {
-      if (e.getPropertyName().equals("viewport"))
+      String propName = e.getPropertyName();
+      if (propName.equals("viewport"))
         updateViewport(e);
-      else if (e.getPropertyName().equals("rowHeader"))
+      else if (propName.equals("rowHeader"))
         updateRowHeader(e);
-      else if (e.getPropertyName().equals("columnHeader"))
+      else if (propName.equals("columnHeader"))
         updateColumnHeader(e);
-      else if (e.getPropertyName().equals("horizontalScrollBarPolicy")
+      else if (propName.equals("horizontalScrollBarPolicy")
           || e.getPropertyName().equals("verticalScrollBarPolicy"))
         updateScrollBarDisplayPolicy(e);
+      else if (propName.equals("verticalScrollBar"))
+        {
+          JScrollBar oldSb = (JScrollBar) e.getOldValue();
+          oldSb.getModel().removeChangeListener(vsbChangeListener);
+          JScrollBar newSb = (JScrollBar) e.getNewValue();
+          newSb.getModel().addChangeListener(vsbChangeListener);
+        }
+      else if (propName.equals("horizontalScrollBar"))
+        {
+          JScrollBar oldSb = (JScrollBar) e.getOldValue();
+          oldSb.getModel().removeChangeListener(hsbChangeListener);
+          JScrollBar newSb = (JScrollBar) e.getNewValue();
+          newSb.getModel().addChangeListener(hsbChangeListener);
+        }
     }
 
   }
@@ -216,6 +230,7 @@ public class BasicScrollPaneUI extends ScrollPaneUI
      */
     public void mouseWheelMoved(MouseWheelEvent event)
     {
+      // TODO: Implement this properly.
     }
 
   }
@@ -256,11 +271,10 @@ public class BasicScrollPaneUI extends ScrollPaneUI
   protected void installDefaults(JScrollPane p)
   {
     scrollpane = p;
-    UIDefaults defaults = UIManager.getLookAndFeelDefaults();
-    p.setForeground(defaults.getColor("ScrollPane.foreground"));
-    p.setBackground(defaults.getColor("ScrollPane.background"));
-    p.setFont(defaults.getFont("ScrollPane.font"));
-    p.setBorder(defaults.getBorder("ScrollPane.border"));
+    LookAndFeel.installColorsAndFont(p, "ScrollPane.background",
+                                     "ScrollPane.foreground",
+                                     "ScrollPane.font");
+    LookAndFeel.installBorder(p, "ScrollPane.border");
     p.setOpaque(true);
   }
 

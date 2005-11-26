@@ -39,7 +39,7 @@ exception statement from your version. */
 package org.omg.CORBA;
 
 import gnu.CORBA.Minor;
-import gnu.CORBA.Restricted_ORB;
+import gnu.CORBA.OrbRestricted;
 import gnu.CORBA.TypeCodeHelper;
 
 import org.omg.CORBA.portable.InputStream;
@@ -98,7 +98,7 @@ public abstract class UnionMemberHelper
                   }
                 active = true;
 
-                ORB orb = Restricted_ORB.Singleton;
+                ORB orb = OrbRestricted.Singleton;
 
                 StructMember[] members = new StructMember[ 4 ];
                 TypeCode member;

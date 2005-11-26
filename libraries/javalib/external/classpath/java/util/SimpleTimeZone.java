@@ -468,6 +468,7 @@ public class SimpleTimeZone extends TimeZone
    * @param dayOfWeek The day of week where daylight savings start.
    * @param time The time in milliseconds standard time where daylight
    * savings start.
+   * @exception IllegalArgumentException if parameters are out of range.
    * @see SimpleTimeZone
    */
   public void setStartRule(int month, int day, int dayOfWeek, int time)

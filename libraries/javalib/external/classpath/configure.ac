@@ -6,7 +6,7 @@ dnl -----------------------------------------------------------
 dnl define([AC_CACHE_LOAD], )dnl
 dnl define([AC_CACHE_SAVE], )dnl
 
-AC_INIT([GNU Classpath],[0.19-pre],[classpath@gnu.org],[classpath])
+AC_INIT([GNU Classpath],[0.20-pre],[classpath@gnu.org],[classpath])
 AC_CONFIG_SRCDIR(java/lang/System.java)
 
 AC_CANONICAL_TARGET
@@ -118,7 +118,7 @@ AM_CONDITIONAL(CREATE_ALSA_LIBRARIES, test "x${COMPILE_ALSA}" = xyes)
 dnl -----------------------------------------------------------
 dnl DSSI code (enabled by default)
 dnl -----------------------------------------------------------
-AC_ARG_ENABLE([alsa],
+AC_ARG_ENABLE([dssi],
               [AS_HELP_STRING(--disable-dssi,compile DSSI providers (enable by --enable-dssi) [default=yes])],
               [case "${enableval}" in
                 yes) COMPILE_DSSI=yes ;;
@@ -338,17 +338,28 @@ if test "x${COMPILE_JNI}" = xyes; then
 
   dnl Check for AWT related gthread/gtk
   if test "x${COMPILE_GTK_PEER}" = xyes; then
-     AC_PATH_XTRA
-     if test "$no_x" = yes; then
-         AC_MSG_ERROR([GTK+ peers requested but no X library available])
-     fi
-     dnl We explicitly want the XTest Extension for Robot support.
-     AC_CHECK_LIB([Xtst], [XTestQueryExtension], [true],
-		  [AC_MSG_ERROR([libXtst NOT found, required for GdkRobot])],
-		  [${X_LIBS}])
-     PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.4 gthread-2.0 >= 2.2 gdk-pixbuf-2.0)
-     AC_SUBST(GTK_CFLAGS)
-     AC_SUBST(GTK_LIBS)
+    AC_PATH_XTRA
+    if test "$no_x" = yes; then
+        AC_MSG_ERROR([GTK+ peers requested but no X library available])
+    fi
+    dnl We explicitly want the XTest Extension for Robot support.
+    AC_CHECK_LIB([Xtst], [XTestQueryExtension], [true],
+       	  [AC_MSG_ERROR([libXtst NOT found, required for GdkRobot])],
+       	  [${X_LIBS}])
+    PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.4 gthread-2.0 >= 2.2 gdk-pixbuf-2.0)
+
+    if test "x${enable_gtk_cairo}" = xyes; then
+      PKG_CHECK_MODULES(CAIRO, cairo >= 0.5.0)
+    fi
+
+    PKG_CHECK_MODULES(PANGOFT2, pangoft2)
+  
+    AC_SUBST(GTK_CFLAGS)
+    AC_SUBST(GTK_LIBS)
+    AC_SUBST(CAIRO_LIBS)
+    AC_SUBST(CAIRO_CFLAGS)
+    AC_SUBST(PANGOFT2_LIBS)
+    AC_SUBST(PANGOFT2_CFLAGS)
   fi
 
   dnl Check for AWT related Qt4
@@ -366,48 +377,39 @@ if test "x${COMPILE_JNI}" = xyes; then
 	AC_MSG_WARN([QWidget not found])))
 	AC_CHECK_PROG(MOC, [moc], [moc])
     fi
-  if test "x$HAVE_QT4" = "xno"; then
-    AC_MSG_NOTICE([Looking for QT_CFLAGS and QT_LIBS without pkg-config])
-    case "$host_os" in
-      darwin*)
-	AC_ARG_WITH([qtdir],
-	  [AS_HELP_STRING([--with-qtdir=DIR],
-	  [Qt4 installation directory used for OS-X.
-	  For other systems use pkg-config.])],
-	  [QT4DIR=$withval]
-	  )
-	if test x"$QT4DIR" = x ; then
-	  AC_MSG_ERROR([*** No path for Qt4 --with-qtdir option given])
-	fi
-	AC_MSG_RESULT([QT4DIR... $QT4DIR])
-	AC_CHECK_PROG(MOC, [moc], [$QT4DIR/bin/moc], [], $QT4DIR/bin)
-	if test x"$MOC" = x; then
-	  AC_MSG_ERROR([*** This is not the right Qt installation])
-	fi
-	QT_CFLAGS="-F$QT4DIR/lib -I$QT4DIR/lib/QtCore.framework/Headers"
-	QT_CFLAGS="$QT_CFLAGS -I$QT4DIR/lib/QtGui.framework/Headers"
-	QT_LIBS="-Xlinker -F$QT4DIR/lib -Xlinker -framework -Xlinker QtCore"
-	QT_LIBS="$QT_LIBS -Xlinker -framework -Xlinker QtGui"
-	;;
-      *)
-	AC_MSG_ERROR([*** Please check PKG_CONFIG_PATH or the version
-	of your installed Qt4 installation.])
-	;;
-    esac
+    if test "x$HAVE_QT4" = "xno"; then
+      AC_MSG_NOTICE([Looking for QT_CFLAGS and QT_LIBS without pkg-config])
+      case "$host_os" in
+  	darwin*)
+  	  AC_ARG_WITH([qt4dir],
+  	    [AS_HELP_STRING([--with-qt4dir=DIR],
+  	    [Qt4 installation directory used for OS-X.
+  	    For other systems use pkg-config.])],
+  	    [QT4DIR=$withval]
+  	    )
+  	  if test x"$QT4DIR" = x ; then
+  	    AC_MSG_ERROR([*** No path for Qt4 --with-qt4dir option given])
+  	  fi
+  	  AC_MSG_RESULT([QT4DIR... $QT4DIR])
+  	  AC_CHECK_PROG(MOC, [moc], [$QT4DIR/bin/moc], [], $QT4DIR/bin)
+  	  if test x"$MOC" = x; then
+  	    AC_MSG_ERROR([*** This is not the right Qt installation])
+  	  fi
+  	  QT_CFLAGS="-F$QT4DIR/lib -I$QT4DIR/lib/QtCore.framework/Headers"
+  	  QT_CFLAGS="$QT_CFLAGS -I$QT4DIR/lib/QtGui.framework/Headers"
+  	  QT_LIBS="-Xlinker -F$QT4DIR/lib -Xlinker -framework -Xlinker QtCore"
+  	  QT_LIBS="$QT_LIBS -Xlinker -framework -Xlinker QtGui"
+  	  ;;
+  	*)
+  	  AC_MSG_ERROR([*** Please check PKG_CONFIG_PATH or the version
+  	  of your installed Qt4 installation.])
+  	  ;;
+      esac
+    fi
+    AC_MSG_NOTICE([Set QT_CFLAGS... $QT_CFLAGS])
+    AC_SUBST(QT_CFLAGS)
+    AC_SUBST(QT_LIBS)
   fi
-  AC_MSG_NOTICE([Set QT_CFLAGS... $QT_CFLAGS])
-  AC_SUBST(QT_CFLAGS)
-  AC_SUBST(QT_LIBS)
-fi
-
-  if test "x${enable_gtk_cairo}" = xyes; then
-    PKG_CHECK_MODULES(CAIRO, cairo >= 0.5.0)
-    PKG_CHECK_MODULES(PANGOFT2, pangoft2)
-  fi
-  AC_SUBST(CAIRO_LIBS)
-  AC_SUBST(CAIRO_CFLAGS)
-  AC_SUBST(PANGOFT2_LIBS)
-  AC_SUBST(PANGOFT2_CFLAGS)
 fi
 
 CLASSPATH_WITH_JAVAH

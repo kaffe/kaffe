@@ -41,6 +41,7 @@ package java.awt.datatransfer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
   * This class maps between native platform type names and DataFlavors.
@@ -54,9 +55,10 @@ import java.util.Map;
 public final class SystemFlavorMap implements FlavorMap, FlavorTable
 {
   /**
-   * The default (instance) flavor map.
+   * The map which maps the thread's <code>ClassLoaders</code> to 
+   * <code>SystemFlavorMaps</code>.
    */
-  private static FlavorMap defaultFlavorMap;
+  private static final Map systemFlavorMaps = new WeakHashMap();
 
   /**
    * Private constructor.
@@ -98,14 +100,31 @@ public final class SystemFlavorMap implements FlavorMap, FlavorTable
   }
 
   /**
-   * Returns the default (instance) (System)FlavorMap.
+   * Returns the (System)FlavorMap for the current thread's
+   * ClassLoader.
    */
   public static FlavorMap getDefaultFlavorMap ()
   {
-    if (defaultFlavorMap == null)
-      defaultFlavorMap = new SystemFlavorMap ();
-
-    return defaultFlavorMap;
+    ClassLoader classLoader = Thread.currentThread()
+        .getContextClassLoader();
+    
+    //if ContextClassLoader not set, use system default 
+    if(classLoader == null)
+      {
+        classLoader = ClassLoader.getSystemClassLoader();
+      }
+    
+    synchronized(systemFlavorMaps)
+      {
+        FlavorMap map = (FlavorMap) 
+            systemFlavorMaps.get(classLoader);
+        if(map == null) 
+          {
+            map = new SystemFlavorMap();
+            systemFlavorMaps.put(classLoader, map);
+          }
+        return map;
+      }
   }
 
   /**

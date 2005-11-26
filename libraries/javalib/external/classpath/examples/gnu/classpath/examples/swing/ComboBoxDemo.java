@@ -24,6 +24,7 @@ package gnu.classpath.examples.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -31,12 +32,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
+import javax.swing.plaf.metal.MetalIconFactory;
 
 /**
  * A simple demo showing various combo boxes in different states.
@@ -46,6 +51,24 @@ public class ComboBoxDemo
   implements ActionListener 
 {
  
+  class CustomCellRenderer extends DefaultListCellRenderer
+  {
+    public Component getListCellRendererComponent(JList list,
+                                              Object value,
+                                              int index,
+                                              boolean isSelected,
+                                              boolean cellHasFocus)
+    {
+      DefaultListCellRenderer result = (DefaultListCellRenderer) 
+          super.getListCellRendererComponent(list, value, index, isSelected, 
+	  cellHasFocus);
+      Icon icon = (Icon) value;
+      result.setIcon(icon);
+      result.setText("Index = " + index);
+      return result;
+    }
+  }
+
   private JCheckBox comboState1;  
   private JComboBox combo1;
   private JComboBox combo2;
@@ -66,6 +89,10 @@ public class ComboBoxDemo
   private JComboBox combo9;
   private JComboBox combo10;
   
+  private JCheckBox comboState6;
+  private JComboBox combo11;
+  private JComboBox combo12;
+  
   /**
    * Creates a new demo instance.
    * 
@@ -74,25 +101,34 @@ public class ComboBoxDemo
   public ComboBoxDemo(String title) 
   {
     super(title);
-    getContentPane().add(createContent());
-  }
-       
-  private JPanel createContent() 
-  {
-    JPanel content = new JPanel(new BorderLayout());
-    JPanel panel = new JPanel(new GridLayout(5, 1));
-    panel.add(createPanel1());
-    panel.add(createPanel2());
-    panel.add(createPanel3());
-    panel.add(createPanel4());
-    panel.add(createPanel5());
-    content.add(panel);
+    JPanel content = createContent();
     JPanel closePanel = new JPanel();
     JButton closeButton = new JButton("Close");
     closeButton.setActionCommand("CLOSE");
     closeButton.addActionListener(this);
     closePanel.add(closeButton);
     content.add(closePanel, BorderLayout.SOUTH);
+    getContentPane().add(content);
+  }
+       
+  /**
+   * Returns a panel with the demo content.  The panel
+   * uses a BorderLayout(), and the BorderLayout.SOUTH area
+   * is empty, to allow callers to add controls to the 
+   * bottom of the panel if they want to (a close button is
+   * added if this demo is being run as a standalone demo).
+   */       
+  JPanel createContent() 
+  {
+    JPanel content = new JPanel(new BorderLayout());
+    JPanel panel = new JPanel(new GridLayout(6, 1));
+    panel.add(createPanel1());
+    panel.add(createPanel2());
+    panel.add(createPanel3());
+    panel.add(createPanel4());
+    panel.add(createPanel5());
+    panel.add(createPanel6());
+    content.add(panel);
     return content;        
   }
     
@@ -234,6 +270,41 @@ public class ComboBoxDemo
     return panel;
   }
 
+  /**
+   * This panel contains combo boxes with a custom renderer.
+   * 
+   * @return A panel.
+   */
+  private JPanel createPanel6() 
+  {
+    JPanel panel = new JPanel(new BorderLayout());
+    this.comboState6 = new JCheckBox("Enabled", true);
+    this.comboState6.setActionCommand("COMBO_STATE6");
+    this.comboState6.addActionListener(this);
+    panel.add(this.comboState6, BorderLayout.EAST);
+        
+    JPanel controlPanel = new JPanel();
+    controlPanel.setBorder(BorderFactory.createTitledBorder("Custom Renderer: "));
+    this.combo11 = new JComboBox(new Object[] {
+            MetalIconFactory.getFileChooserHomeFolderIcon(),
+            MetalIconFactory.getFileChooserNewFolderIcon()});
+    this.combo11.setPreferredSize(new Dimension(100, 30));
+    this.combo11.setRenderer(new CustomCellRenderer());
+    this.combo12 = new JComboBox(new Object[] {
+            MetalIconFactory.getFileChooserHomeFolderIcon(),
+            MetalIconFactory.getFileChooserNewFolderIcon()});
+    this.combo12.setPreferredSize(new Dimension(100, 30));
+    this.combo12.setRenderer(new CustomCellRenderer());
+    this.combo12.setEditable(true);
+        
+    controlPanel.add(combo11);
+    controlPanel.add(combo12);
+        
+    panel.add(controlPanel);
+     
+    return panel;
+  }
+
   public void actionPerformed(ActionEvent e) 
   {
     if (e.getActionCommand().equals("COMBO_STATE1")) 
@@ -260,6 +331,11 @@ public class ComboBoxDemo
     {
       combo9.setEnabled(comboState5.isSelected());
       combo10.setEnabled(comboState5.isSelected());
+    }
+    else if (e.getActionCommand().equals("COMBO_STATE6")) 
+    {
+      combo11.setEnabled(comboState6.isSelected());
+      combo12.setEnabled(comboState6.isSelected());
     }
     else if (e.getActionCommand().equals("CLOSE"))
     {

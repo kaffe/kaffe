@@ -536,15 +536,15 @@ public class URLClassLoader extends SecureClassLoader
     Resource getResource(String name)
     {
       try 
-	{
-	  File file = new File(dir, name).getCanonicalFile();
-	  if (file.exists() && !file.isDirectory())
-	    return new FileResource(this, file);
-	}
+ 	{
+ 	  File file = new File(dir, name).getCanonicalFile();
+ 	  if (file.exists() && !file.isDirectory())
+ 	    return new FileResource(this, file);
+ 	}
       catch (IOException e)
-	{
-	  // Fall through...
-	}
+ 	{
+ 	  // Fall through...
+ 	}
       return null;
     }
   }
@@ -754,13 +754,21 @@ public class URLClassLoader extends SecureClassLoader
   }
 
   /**
-   * Adds an array of new locations to the end of the internal URL store.
+   * Adds an array of new locations to the end of the internal URL
+   * store.  Called from the the constructors. Should not call to the
+   * protected addURL() method since that can be overridden and
+   * subclasses are not yet in a good state at this point.
+   * jboss 4.0.3 for example depends on this.
+   *
    * @param newUrls the locations to add
    */
   private void addURLs(URL[] newUrls)
   {
     for (int i = 0; i < newUrls.length; i++)
-      addURL(newUrls[i]);
+      {
+	urls.add(newUrls[i]);
+	addURLImpl(newUrls[i]);
+      }
   }
 
   /**
@@ -865,47 +873,47 @@ public class URLClassLoader extends SecureClassLoader
     // construct the class (and watch out for those nasty IOExceptions)
     try
       {
-        byte[] data;
-        InputStream in = resource.getInputStream();
-        try
-          {
-            int length = resource.getLength();
-            if (length != -1)
-              {
-                // We know the length of the data.
-                // Just try to read it in all at once
-                data = new byte[length];
-                int pos = 0;
-                while (length - pos > 0)
-                  {
-                    int len = in.read(data, pos, length - pos);
-                    if (len == -1)
-                      throw new EOFException("Not enough data reading from: "
-                                             + in);
-                    pos += len;
-                  }
-              }
-            else
-              {
-                // We don't know the data length.
-                // Have to read it in chunks.
-                ByteArrayOutputStream out = new ByteArrayOutputStream(4096);
-                byte[] b = new byte[4096];
-                int l = 0;
-                while (l != -1)
-                  {
-                    l = in.read(b);
-                    if (l != -1)
-                      out.write(b, 0, l);
-                  }
-                data = out.toByteArray();
-              }
-          }
-        finally
-          {
-            in.close();
-          }
-        final byte[] classData = data;
+	byte[] data;
+	InputStream in = resource.getInputStream();
+	try
+	  {
+	    int length = resource.getLength();
+	    if (length != -1)
+	      {
+		// We know the length of the data.
+		// Just try to read it in all at once
+		data = new byte[length];
+		int pos = 0;
+		while (length - pos > 0)
+		  {
+		    int len = in.read(data, pos, length - pos);
+		    if (len == -1)
+		      throw new EOFException("Not enough data reading from: "
+					     + in);
+		    pos += len;
+		  }
+	      }
+	    else
+	      {
+		// We don't know the data length.
+		// Have to read it in chunks.
+		ByteArrayOutputStream out = new ByteArrayOutputStream(4096);
+		byte[] b = new byte[4096];
+		int l = 0;
+		while (l != -1)
+		  {
+		    l = in.read(b);
+		    if (l != -1)
+		      out.write(b, 0, l);
+		  }
+		data = out.toByteArray();
+	      }
+	  }
+	finally
+	  {
+	    in.close();
+	  }
+	final byte[] classData = data;
 
         // Now get the CodeSource
         final CodeSource source = resource.getCodeSource();

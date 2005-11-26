@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package gnu.javax.rmi.CORBA;
 
+import gnu.CORBA.ObjectCreator;
+
 
 /**
  * This class produces delegates, using the system properties. If not
@@ -91,8 +93,7 @@ public class DelegateFactory
       }
     try
       {
-        Class dclass = Class.forName(dcname, true,
-          Thread.currentThread().getContextClassLoader());
+        Class dclass = ObjectCreator.forName(dcname);
         return dclass.newInstance();
       }
     catch (Exception e)

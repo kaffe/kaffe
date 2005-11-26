@@ -278,6 +278,11 @@ public abstract class TDataLine
 	{
 		notifyLineEvent(new LineEvent(this, type, getFramePosition()));
 	}
+
+	public long getLongFramePosition()
+	{
+		return 0;
+	}
 }
 
 

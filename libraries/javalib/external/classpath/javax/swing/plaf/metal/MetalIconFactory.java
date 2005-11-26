@@ -52,6 +52,8 @@ import javax.swing.JInternalFrame;
 import javax.swing.JRadioButton;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSlider;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.plaf.UIResource;
 
 
@@ -66,6 +68,12 @@ public class MetalIconFactory implements Serializable
     
   /** A constant representing "light". */
   public static final boolean LIGHT = true;
+  
+  /** A shared instance of the MenuArrowIcon. */
+  private static Icon menuArrow;
+  
+  /** A shared instance of the MenuItemArrowIcon. */
+  private static Icon menuItemArrow;
     
   /**
    * An icon displayed for {@link JCheckBoxMenuItem} components.
@@ -77,6 +85,7 @@ public class MetalIconFactory implements Serializable
      */
     public CheckBoxMenuItemIcon() 
     {
+      // Nothing to do here.
     }
       
     /**
@@ -144,14 +153,15 @@ public class MetalIconFactory implements Serializable
    * 
    * @see MetalIconFactory#getFileChooserDetailViewIcon()
    */
-  private static class FileChooserDetailViewIcon 
-      implements Icon, Serializable {
-    
+  private static class FileChooserDetailViewIcon implements Icon, Serializable
+  {
+
     /**
      * Creates a new icon.
      */
     public FileChooserDetailViewIcon() 
     {
+      // Nothing to do here.
     }
       
     /**
@@ -223,14 +233,15 @@ public class MetalIconFactory implements Serializable
    * 
    * @see MetalIconFactory#getFileChooserHomeFolderIcon()
    */
-  private static class FileChooserHomeFolderIcon 
-      implements Icon, Serializable {
-        
+  private static class FileChooserHomeFolderIcon implements Icon, Serializable
+  {
+
     /**
      * Creates a new icon.
      */
     public FileChooserHomeFolderIcon() 
     {
+      // Nothing to do here.
     }
 
     /**
@@ -318,6 +329,7 @@ public class MetalIconFactory implements Serializable
      */
     public FileChooserListViewIcon() 
     {
+      // Nothing to do here.
     }
     
     /**
@@ -406,14 +418,14 @@ public class MetalIconFactory implements Serializable
    * 
    * @see MetalIconFactory#getFileChooserNewFolderIcon()
    */
-  private static class FileChooserNewFolderIcon 
-      implements Icon, Serializable 
+  private static class FileChooserNewFolderIcon  implements Icon, Serializable
   {
     /** 
      * Creates a new icon.
      */
     public FileChooserNewFolderIcon() 
     {
+      // Nothing to do here.
     }
     
     /**
@@ -478,8 +490,7 @@ public class MetalIconFactory implements Serializable
    * 
    * @see MetalIconFactory#getFileChooserNewFolderIcon()
    */
-  private static class FileChooserUpFolderIcon 
-    extends FileChooserNewFolderIcon
+  private static class FileChooserUpFolderIcon extends FileChooserNewFolderIcon
     implements Icon, Serializable 
   {
     /**
@@ -487,6 +498,7 @@ public class MetalIconFactory implements Serializable
      */
     public FileChooserUpFolderIcon() 
     {
+      // Nothing to do here.
     }
     
     /**
@@ -531,13 +543,15 @@ public class MetalIconFactory implements Serializable
     }
 
     /**
-     * Returns the height of the icon, in pixels.
+     * Returns the height of the icon, in pixels.  The height returned is 
+     * <code>16</code> plus the value returned by 
+     * {@link #getAdditionalHeight()}.
      * 
      * @return The height of the icon.
      */
     public int getIconHeight() 
     {
-      return 16;
+      return 16 + getAdditionalHeight();
     }
     
     /**
@@ -570,9 +584,11 @@ public class MetalIconFactory implements Serializable
     }
     
     /**
-     * Returns the additional height (???).
+     * Returns the additional height for the icon.  The 
+     * {@link #getIconHeight()} method adds this value to the icon height it
+     * returns.  Subclasses can override this method to adjust the icon height.
      * 
-     * @return The additional height.
+     * @return The additional height (<code>0</code> unless overridden).
      */
     public int getAdditionalHeight() 
     {
@@ -606,13 +622,15 @@ public class MetalIconFactory implements Serializable
     }
     
     /**
-     * Returns the height of the icon, in pixels.
+     * Returns the height of the icon, in pixels.  The height returned is 
+     * <code>16</code> plus the value returned by 
+     * {@link #getAdditionalHeight()}.
      * 
      * @return The height of the icon.
      */
     public int getIconHeight() 
     {
-      return 16;
+      return 16 + getAdditionalHeight();
     }
 
     /**
@@ -643,9 +661,11 @@ public class MetalIconFactory implements Serializable
     }
     
     /**
-     * Returns the additional height (???).
+     * Returns the additional height for the icon.  The 
+     * {@link #getIconHeight()} method adds this value to the icon height it
+     * returns.  Subclasses can override this method to adjust the icon height.
      * 
-     * @return The additional height.
+     * @return The additional height (<code>0</code> unless overridden).
      */
     public int getAdditionalHeight() 
     {
@@ -670,7 +690,7 @@ public class MetalIconFactory implements Serializable
    * 
    * @since 1.3
    */
-  public static class PaletteCloseIcon 
+  public static class PaletteCloseIcon
     implements Icon, Serializable, UIResource
   {
     /**
@@ -732,8 +752,7 @@ public class MetalIconFactory implements Serializable
    *
    * @author Roman Kennke (roman@kennke.org)
    */
-  static class RadioButtonIcon
-    implements Icon, UIResource, Serializable
+  static class RadioButtonIcon implements Icon, UIResource, Serializable
   {
 
     /**
@@ -768,6 +787,10 @@ public class MetalIconFactory implements Serializable
      */
     public void paintIcon(Component c, Graphics g, int x, int y) 
     {
+      if (UIManager.get("RadioButton.gradient") != null)
+        MetalUtils.paintGradient(g, x, y, getIconWidth(), getIconHeight(),
+                              SwingConstants.VERTICAL, "RadioButton.gradient");
+
       Color savedColor = g.getColor();
       JRadioButton b = (JRadioButton) c;
       
@@ -847,14 +870,14 @@ public class MetalIconFactory implements Serializable
   /**
    * An icon displayed for {@link JRadioButtonMenuItem} components.
    */
-  private static class RadioButtonMenuItemIcon 
-      implements Icon, Serializable 
+  private static class RadioButtonMenuItemIcon implements Icon, Serializable 
   {
     /**
      * Creates a new icon instance.
      */
     public RadioButtonMenuItemIcon() 
-    {  
+    {
+      // Nothing to do here.
     }
 
     /**
@@ -924,8 +947,7 @@ public class MetalIconFactory implements Serializable
    * The icon used to display the thumb control on a horizontally oriented
    * {@link JSlider} component.
    */
-  private static class HorizontalSliderThumbIcon 
-      implements Icon, Serializable 
+  private static class HorizontalSliderThumbIcon  implements Icon, Serializable
   {
 
     /**
@@ -933,6 +955,7 @@ public class MetalIconFactory implements Serializable
      */
     public HorizontalSliderThumbIcon() 
     {
+      // Nothing to do here.
     }
     
     /**
@@ -1042,7 +1065,7 @@ public class MetalIconFactory implements Serializable
    * An icon used for the 'close' button in the title frame of a 
    * {@link JInternalFrame}.
    */
-  private static class InternalFrameCloseIcon implements Icon, Serializable 
+  private static class InternalFrameCloseIcon implements Icon, Serializable
   {
     /** The icon size in pixels. */
     private int size;
@@ -1158,8 +1181,8 @@ public class MetalIconFactory implements Serializable
   /**
    * The icon displayed at the top-left corner of a {@link JInternalFrame}.
    */
-  private static class InternalFrameDefaultMenuIcon 
-      implements Icon, Serializable 
+  private static class InternalFrameDefaultMenuIcon
+    implements Icon, Serializable 
   {
        
     /**
@@ -1167,6 +1190,7 @@ public class MetalIconFactory implements Serializable
      */
     public InternalFrameDefaultMenuIcon() 
     {
+      // Nothing to do here.
     }
     
     /**
@@ -1229,8 +1253,8 @@ public class MetalIconFactory implements Serializable
    * maximise an internal frame, this icon will replace the 'maximise' icon to
    * provide a 'restore' option.
    */
-  private static class InternalFrameAltMaximizeIcon 
-      implements Icon, Serializable 
+  private static class InternalFrameAltMaximizeIcon
+    implements Icon, Serializable 
   {
     /** The icon size in pixels. */
     private int size;
@@ -1340,8 +1364,7 @@ public class MetalIconFactory implements Serializable
    * An icon used for the 'maximize' button in the title frame of a 
    * {@link JInternalFrame}.
    */
-  private static class InternalFrameMaximizeIcon 
-      implements Icon, Serializable 
+  private static class InternalFrameMaximizeIcon implements Icon, Serializable
   {
     
     /**
@@ -1349,6 +1372,7 @@ public class MetalIconFactory implements Serializable
      */
     public InternalFrameMaximizeIcon() 
     {
+      // Nothing to do here.
     }
     
     /**
@@ -1452,8 +1476,7 @@ public class MetalIconFactory implements Serializable
   /**
    * An icon used in the title frame of a {@link JInternalFrame}.
    */
-  private static class InternalFrameMinimizeIcon 
-      implements Icon, Serializable 
+  private static class InternalFrameMinimizeIcon implements Icon, Serializable
   {
   
     /**
@@ -1461,6 +1484,7 @@ public class MetalIconFactory implements Serializable
      */
     public InternalFrameMinimizeIcon() 
     {
+      // Nothing to do here.
     }
     
     /**
@@ -1556,13 +1580,14 @@ public class MetalIconFactory implements Serializable
    * The icon used to display the thumb control on a horizontally oriented
    * {@link JSlider} component.
    */
-  private static class VerticalSliderThumbIcon implements Icon, Serializable 
+  private static class VerticalSliderThumbIcon implements Icon, Serializable
   {
     /**
      * Creates a new instance.
      */
     public VerticalSliderThumbIcon() 
     {
+      // Nothing to do here.
     }
     
     /**
@@ -1673,7 +1698,7 @@ public class MetalIconFactory implements Serializable
    * A tree control icon.  This icon can be in one of two states: expanded and
    * collapsed.
    */
-  public static class TreeControlIcon implements Icon, Serializable 
+  public static class TreeControlIcon implements Icon, Serializable
   {
     
     /** ???. */
@@ -1806,19 +1831,21 @@ public class MetalIconFactory implements Serializable
   /**
    * A tree folder icon.
    */
-  public static class TreeFolderIcon extends FolderIcon16 
+  public static class TreeFolderIcon extends FolderIcon16
   {
     /**
      * Creates a new instance.
      */
     public TreeFolderIcon() 
-    {     
+    {
+      // Nothing to do here.
     }
     
     /**
-     * Returns the additional height (???).
+     * Returns the additional height for this icon, in this case <code>2</code>
+     * pixels.
      * 
-     * @return The additional height.
+     * @return <code>2</code>.
      */
     public int getAdditionalHeight() 
     {
@@ -1839,19 +1866,21 @@ public class MetalIconFactory implements Serializable
   /**
    * A tree leaf icon.
    */
-  public static class TreeLeafIcon extends FileIcon16 
+  public static class TreeLeafIcon extends FileIcon16
   {
     /**
      * Creates a new instance.
      */
     public TreeLeafIcon() 
     {
+      // Nothing to do here.
     }
     
     /**
-     * Returns the additional height (???).
+     * Returns the additional height for this icon, in this case <code>4</code>
+     * pixels.
      * 
-     * @return The additional height.
+     * @return <code>4</code>.
      */
     public int getAdditionalHeight() 
     {
@@ -1874,15 +1903,15 @@ public class MetalIconFactory implements Serializable
    * 
    * @see MetalIconFactory#getTreeHardDriveIcon()
    */
-  private static class TreeHardDriveIcon 
-      implements Icon, Serializable 
+  private static class TreeHardDriveIcon implements Icon, Serializable
   {
 
     /**
      * Creates a new icon instance.
      */
     public TreeHardDriveIcon() 
-    { 
+    {
+      // Nothing to do here.
     }
 
     /**
@@ -1984,15 +2013,15 @@ public class MetalIconFactory implements Serializable
    * 
    * @see MetalIconFactory#getTreeFloppyDriveIcon()
    */
-  private static class TreeFloppyDriveIcon 
-      implements Icon, Serializable 
+  private static class TreeFloppyDriveIcon implements Icon, Serializable
   {
 
     /**
      * Creates a new icon instance.
      */
     public TreeFloppyDriveIcon() 
-    { 
+    {
+      // Nothing to do here.
     }
 
     /**
@@ -2060,14 +2089,15 @@ public class MetalIconFactory implements Serializable
    * 
    * @see MetalIconFactory#getTreeComputerIcon()
    */
-  private static class TreeComputerIcon implements Icon, Serializable 
+  private static class TreeComputerIcon implements Icon, Serializable
   {
 
     /**
      * Creates a new icon instance.
      */
     public TreeComputerIcon() 
-    { 
+    {
+      // Nothing to do here.
     }
 
     /**
@@ -2125,15 +2155,52 @@ public class MetalIconFactory implements Serializable
     }        
   }  
     
+  /** The icon returned by {@link #getCheckBoxIcon()}. */
+  private static Icon checkBoxIcon;
+  
+  /** The icon returned by {@link #getCheckBoxMenuItemIcon()}. */
+  private static Icon checkBoxMenuItemIcon;
+  
+  /** The icon returned by {@link #getFileChooserDetailViewIcon()}. */
+  private static Icon fileChooserDetailViewIcon;
+
+  /** The icon returned by {@link #getFileChooserHomeFolderIcon()}. */
+  private static Icon fileChooserHomeFolderIcon;
+
+  /** The icon returned by {@link #getFileChooserListViewIcon()}. */
+  private static Icon fileChooserListViewIcon;
+
+  /** The icon returned by {@link #getFileChooserNewFolderIcon()}. */
+  private static Icon fileChooserNewFolderIcon;
+
+  /** The icon returned by {@link #getFileChooserUpFolderIcon()}. */
+  private static Icon fileChooserUpFolderIcon;
+
   /** The cached RadioButtonIcon instance. */
   private static RadioButtonIcon radioButtonIcon;
 
+  /** The icon returned by {@link #getRadioButtonMenuItemIcon()}. */
+  private static Icon radioButtonMenuItemIcon;
+
+  /** The icon returned by {@link #getInternalFrameDefaultMenuIcon()}. */
+  private static Icon internalFrameDefaultMenuIcon;
+
+  /** The icon returned by {@link #getTreeComputerIcon()}. */
+  private static Icon treeComputerIcon;
+  
+  /** The icon instance returned by {@link #getTreeFloppyDriveIcon()}. */
+  private static Icon treeFloppyDriveIcon;
+  
+  /** The icon instance returned by {@link #getTreeHardDriveIcon()}. */
+  private static Icon treeHardDriveIcon;
+  
   /**
    * Creates a new instance.  All the methods are static, so creating an 
    * instance isn't necessary.
    */
   public MetalIconFactory() 
-  {   
+  {
+    // Nothing to do here.
   }
 
   /**
@@ -2145,7 +2212,9 @@ public class MetalIconFactory implements Serializable
    */
   public static Icon getCheckBoxIcon() 
   {
-    return new MetalCheckBoxIcon();
+    if (checkBoxIcon == null)
+      checkBoxIcon = new MetalCheckBoxIcon();
+    return checkBoxIcon;
   }
   
   /**
@@ -2156,7 +2225,9 @@ public class MetalIconFactory implements Serializable
    */
   public static Icon getCheckBoxMenuItemIcon() 
   {
-    return new CheckBoxMenuItemIcon();
+    if (checkBoxMenuItemIcon == null)
+      checkBoxMenuItemIcon = new CheckBoxMenuItemIcon();
+    return checkBoxMenuItemIcon;
   }
 
   /**
@@ -2166,7 +2237,9 @@ public class MetalIconFactory implements Serializable
    */
   public static Icon getFileChooserDetailViewIcon() 
   {
-    return new FileChooserDetailViewIcon();
+    if (fileChooserDetailViewIcon == null)
+      fileChooserDetailViewIcon = new FileChooserDetailViewIcon();
+    return fileChooserDetailViewIcon;
   }
     
   /**
@@ -2176,7 +2249,9 @@ public class MetalIconFactory implements Serializable
    */
   public static Icon getFileChooserHomeFolderIcon() 
   {
-    return new FileChooserHomeFolderIcon();        
+    if (fileChooserHomeFolderIcon == null)
+      fileChooserHomeFolderIcon = new FileChooserHomeFolderIcon();
+    return fileChooserHomeFolderIcon;        
   }
     
   /**
@@ -2186,7 +2261,9 @@ public class MetalIconFactory implements Serializable
    */
   public static Icon getFileChooserListViewIcon() 
   {
-    return new FileChooserListViewIcon();
+    if (fileChooserListViewIcon == null)
+      fileChooserListViewIcon = new FileChooserListViewIcon();
+    return fileChooserListViewIcon;
   }
     
   /**
@@ -2196,7 +2273,9 @@ public class MetalIconFactory implements Serializable
    */
   public static Icon getFileChooserNewFolderIcon() 
   {
-    return new FileChooserNewFolderIcon();
+    if (fileChooserNewFolderIcon == null)
+      fileChooserNewFolderIcon = new FileChooserNewFolderIcon();
+    return fileChooserNewFolderIcon;
   }
     
   /**
@@ -2206,7 +2285,9 @@ public class MetalIconFactory implements Serializable
    */
   public static Icon getFileChooserUpFolderIcon() 
   {
-    return new FileChooserUpFolderIcon();
+    if (fileChooserUpFolderIcon == null)
+      fileChooserUpFolderIcon = new FileChooserUpFolderIcon();
+    return fileChooserUpFolderIcon;
   }
 
   /**
@@ -2228,7 +2309,9 @@ public class MetalIconFactory implements Serializable
    */
   public static Icon getRadioButtonMenuItemIcon() 
   {
-    return new RadioButtonMenuItemIcon();
+    if (radioButtonMenuItemIcon == null)
+      radioButtonMenuItemIcon = new RadioButtonMenuItemIcon();
+    return radioButtonMenuItemIcon;
   }
 
   /**
@@ -2263,7 +2346,9 @@ public class MetalIconFactory implements Serializable
    */
   public static Icon getInternalFrameDefaultMenuIcon() 
   {
-    return new InternalFrameDefaultMenuIcon();
+    if (internalFrameDefaultMenuIcon == null)
+      internalFrameDefaultMenuIcon = new InternalFrameDefaultMenuIcon();
+    return internalFrameDefaultMenuIcon;
   }
   
   /**
@@ -2353,33 +2438,137 @@ public class MetalIconFactory implements Serializable
   }
 
   /**
-   * Returns a 16x16 icon representing a computer.
+   * Returns a <code>16x16</code> icon representing a computer.
    * 
    * @return The icon.
    */
   public static Icon getTreeComputerIcon() 
   {
-    return new TreeComputerIcon();        
+    if (treeComputerIcon == null)
+      treeComputerIcon = new TreeComputerIcon();
+    return treeComputerIcon;        
   }
     
   /**
-   * Returns a 16x16 icon representing a floppy disk.
+   * Returns a <code>16x16</code> icon representing a floppy disk.
    * 
    * @return The icon.
    */
   public static Icon getTreeFloppyDriveIcon() 
   {
-    return new TreeFloppyDriveIcon();
+    if (treeFloppyDriveIcon == null)
+      treeFloppyDriveIcon = new TreeFloppyDriveIcon();
+    return treeFloppyDriveIcon;
   }
     
   /**
-   * Returns a 16x16 icon representing a hard disk.
+   * Returns a <code>16x16</code> icon representing a hard disk.
    * 
    * @return The icon.
    */
   public static Icon getTreeHardDriveIcon() 
   {
-    return new TreeHardDriveIcon();
+    if (treeHardDriveIcon == null)
+      treeHardDriveIcon = new TreeHardDriveIcon();
+    return treeHardDriveIcon;
   }
 
+  /**
+   * Returns a new instance of a 4 x 8 icon showing a small black triangle that
+   * points to the right.  This is displayed in menu items that have a 
+   * sub menu.
+   * 
+   * @return The icon.
+   */
+  public static Icon getMenuArrowIcon()
+  {
+    if (menuArrow == null)
+      menuArrow = new Icon()
+      {
+        public int getIconHeight()
+        {
+          return 8;
+        }
+
+        public int getIconWidth()
+        {
+          return 4;
+        }
+
+        public void paintIcon(Component c, Graphics g, int x, int y)
+        {
+          Color saved = g.getColor();
+          g.setColor(Color.BLACK);
+          for (int i = 0; i < 4; i++)
+            g.drawLine(x + i, y + i, x + i, y + 7 - i);
+          g.setColor(saved);
+        }
+      };
+    return menuArrow;
+  }
+  
+  /**
+   * Returns a new instance of a 4 x 8 icon showing a small black triangle that
+   * points to the right. This is displayed in menu items that have a sub menu.
+   * 
+   * @return The icon.
+   */
+  public static Icon getMenuItemArrowIcon()
+  {
+    if (menuItemArrow == null)
+      menuItemArrow = new Icon()
+      {
+        public int getIconHeight()
+        {
+          return 8;
+        }
+
+        public int getIconWidth()
+        {
+          return 4;
+        }
+
+        public void paintIcon(Component c, Graphics g, int x, int y)
+        {
+          Color saved = g.getColor();
+          g.setColor(Color.BLACK);
+          for (int i = 0; i < 4; i++)
+            g.drawLine(x + i, y + i, x + i, y + 7 - i);
+          g.setColor(saved);
+        }
+      };
+    return menuItemArrow;
+  }
+  
+  /**
+   * Returns a new instance of a 13 x 13 icon showing a small black check mark.
+   * 
+   * @return The icon.
+   */
+  public static Icon getMenuItemCheckIcon()
+  {
+    return new Icon()
+    {
+      public int getIconHeight()
+      {
+        return 13;
+      }
+
+      public int getIconWidth()
+      {
+        return 13;
+      }
+
+      public void paintIcon(Component c, Graphics g, int x, int y)
+      {
+        Color saved = g.getColor();
+        g.setColor(Color.BLACK);
+        g.drawLine(3 + x, 5 + y, 3 + x, 9 + y);
+        g.drawLine(4 + x, 5 + y, 4 + x, 9 + y);
+        g.drawLine(5 + x, 7 + y, 9 + x, 3 + y);
+        g.drawLine(5 + x, 8 + y, 9 + x, 4 + y);
+        g.setColor(saved);
+      }
+    };
+  }
 }

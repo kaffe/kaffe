@@ -40,6 +40,8 @@ package javax.swing.text;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
@@ -49,6 +51,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.EventListener;
 
+import javax.swing.JComponent;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
@@ -64,6 +69,41 @@ import javax.swing.event.EventListenerList;
 public class DefaultCaret extends Rectangle
   implements Caret, FocusListener, MouseListener, MouseMotionListener
 {
+
+  /**
+   * Controls the blinking of the caret.
+   *
+   * @author Roman Kennke (kennke@aicas.com)
+   * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
+   */
+  private class BlinkTimerListener implements ActionListener
+  {
+    /**
+     * Forces the next event to be ignored. The next event should be ignored
+     * if we force the caret to appear. We do not know how long will it take
+     * to fire the comming event; this may be near immediately. Better to leave
+     * the caret visible one iteration longer.
+     */
+    boolean ignoreNextEvent;
+    
+    /**
+     * Receives notification when the blink timer fires and updates the visible
+     * state of the caret.
+     * 
+     * @param event the action event
+     */
+    public void actionPerformed(ActionEvent event)
+    {
+      if (ignoreNextEvent)
+        ignoreNextEvent = false;
+      else
+        {
+          visible = !visible;
+          repaint();
+        }
+    }
+  }
+
   /**
    * Listens for changes in the text component's document and updates the
    * caret accordingly.
@@ -84,27 +124,43 @@ public class DefaultCaret extends Rectangle
     }
 
     /**
-     * Receives notification that some text has been removed from the text
-     * component. The caret is moved backwards accordingly.
+     * Receives notification that some text has been inserted from the text
+     * component. The caret is moved forward accordingly.
      *
      * @param event the document event
      */
     public void insertUpdate(DocumentEvent event)
     {
-      int dot = getDot();
-      setDot(dot + event.getLength());
+      if (policy == ALWAYS_UPDATE || 
+          (SwingUtilities.isEventDispatchThread() && 
+           policy == UPDATE_WHEN_ON_EDT))
+        {        
+          int dot = getDot();
+          setDot(dot + event.getLength());
+        }
     }
 
     /**
-     * Receives notification that some text has been inserte into the text
-     * component. The caret is moved forwards accordingly.
+     * Receives notification that some text has been removed into the text
+     * component. The caret is moved backwards accordingly.
      *
      * @param event the document event
      */
     public void removeUpdate(DocumentEvent event)
     {
-      int dot = getDot();
-      setDot(dot - event.getLength());
+      if (policy == ALWAYS_UPDATE || 
+          (SwingUtilities.isEventDispatchThread() && 
+           policy == UPDATE_WHEN_ON_EDT))
+        {
+          int dot = getDot();
+          setDot(dot - event.getLength());
+        }
+      else if (policy == NEVER_UPDATE)
+        {
+          int docLength = event.getDocument().getLength();
+          if (getDot() > docLength)
+            setDot(docLength);
+        }
     }
   }
 
@@ -140,7 +196,36 @@ public class DefaultCaret extends Rectangle
 
   /** The serialization UID (compatible with JDK1.5). */
   private static final long serialVersionUID = 4325555698756477346L;
+  
+  /**
+   * Indicates the Caret position should always be updated after Document
+   * changes even if the updates are not performed on the Event Dispatching
+   * thread.
+   * 
+   * @since 1.5
+   */
+  public static final int ALWAYS_UPDATE = 2;
 
+  /**
+   * Indicates the Caret position should not be changed unless the Document
+   * length becomes less than the Caret position, in which case the Caret
+   * is moved to the end of the Document.
+   * 
+   * @since 1.5
+   */
+  public static final int NEVER_UPDATE = 1;
+  
+  /** 
+   * Indicates the Caret position should be updated only if Document changes
+   * are made on the Event Dispatcher thread.
+   *  
+   * @since 1.5
+   */
+  public static final int UPDATE_WHEN_ON_EDT = 0;
+  
+  /** Keeps track of the current update policy **/
+  int policy = UPDATE_WHEN_ON_EDT;
+    
   /**
    * The <code>ChangeEvent</code> that is fired by {@link #fireStateChanged()}.
    */
@@ -192,15 +277,65 @@ public class DefaultCaret extends Rectangle
   private Point magicCaretPosition = null;
 
   /**
-   * Indicates if this <code>Caret</code> is currently visible or not.
+   * Indicates if this <code>Caret</code> is currently visible or not. This is
+   * package private to avoid an accessor method.
    */
-  private boolean visible = true;
+  boolean visible = false;
 
   /**
    * The current highlight entry.
    */
   private Object highlightEntry;
 
+  private Timer blinkTimer;
+  
+  private BlinkTimerListener blinkListener;
+
+  /**
+   * Creates a new <code>DefaultCaret</code> instance.
+   */
+  public DefaultCaret()
+  {
+    // Nothing to do here.
+  }
+
+  /**
+   * Sets the Caret update policy.
+   *    
+   * @param policy the new policy.  Valid values are:
+   * ALWAYS_UPDATE: always update the Caret position, even when Document
+   * updates don't occur on the Event Dispatcher thread.
+   * NEVER_UPDATE: don't update the Caret position unless the Document
+   * length becomes less than the Caret position (then update the
+   * Caret to the end of the Document).
+   * UPDATE_WHEN_ON_EDT: update the Caret position when the 
+   * Document updates occur on the Event Dispatcher thread.  This is the 
+   * default.
+   * 
+   * @since 1.5
+   * @throws IllegalArgumentException if policy is not one of the above.
+   */
+  public void setUpdatePolicy (int policy)
+  {
+    if (policy != ALWAYS_UPDATE && policy != NEVER_UPDATE
+        && policy != UPDATE_WHEN_ON_EDT)
+      throw new 
+        IllegalArgumentException
+        ("policy must be ALWAYS_UPDATE, NEVER__UPDATE, or UPDATE_WHEN_ON_EDT");
+    this.policy = policy;
+  }
+  
+  /**
+   * Gets the caret update policy.
+   * 
+   * @return the caret update policy.
+   * @since 1.5
+   */
+  public int getUpdatePolicy ()
+  {
+    return policy;
+  }
+  
   /**
    * Moves the caret position when the mouse is dragged over the text
    * component, modifying the selection accordingly.
@@ -209,7 +344,7 @@ public class DefaultCaret extends Rectangle
    */
   public void mouseDragged(MouseEvent event)
   {
-    // FIXME: Implement this properly.
+    moveCaret(event);
   }
 
   /**
@@ -239,7 +374,7 @@ public class DefaultCaret extends Rectangle
    */
   public void mouseClicked(MouseEvent event)
   {
-    // FIXME: Implement this properly.
+    // TODO: Implement double- and triple-click behaviour here.
   }
 
   /**
@@ -261,6 +396,7 @@ public class DefaultCaret extends Rectangle
    */
   public void mouseExited(MouseEvent event)
   {
+    // Nothing to do here.
   }
 
   /**
@@ -273,7 +409,7 @@ public class DefaultCaret extends Rectangle
    */
   public void mousePressed(MouseEvent event)
   {
-    // FIXME: Implement this properly.
+    positionCaret(event);
   }
 
   /**
@@ -294,15 +430,45 @@ public class DefaultCaret extends Rectangle
    */
   public void focusGained(FocusEvent event)
   {
+    setVisible(true);    
+    updateTimerStatus();
   }
 
   /**
    * Sets the caret to <code>invisible</code>.
-   *
+   * 
    * @param event the <code>FocusEvent</code>
    */
   public void focusLost(FocusEvent event)
   {
+    if (event.isTemporary() == false)
+      {
+        setVisible(false);
+        // Stop the blinker, if running.
+        if (blinkTimer != null && blinkTimer.isRunning())
+          blinkTimer.stop();
+      }
+  }
+  
+  /**
+   * Install (if not present) and start the timer, if the caret must blink. The
+   * caret does not blink if it is invisible, or the component is disabled or
+   * not editable.
+   */
+  private void updateTimerStatus()
+  {
+    if (textComponent.isEnabled() && textComponent.isEditable())
+      {
+        if (blinkTimer == null)
+          initBlinkTimer();
+        if (!blinkTimer.isRunning())
+          blinkTimer.start();
+      }
+    else
+      {
+        if (blinkTimer != null)
+          blinkTimer.stop();
+      }
   }
 
   /**
@@ -313,7 +479,8 @@ public class DefaultCaret extends Rectangle
    */
   protected void moveCaret(MouseEvent event)
   {
-    // FIXME: Implement this properly.
+    int newDot = getComponent().viewToModel(event.getPoint());
+    moveDot(newDot);
   }
 
   /**
@@ -324,7 +491,8 @@ public class DefaultCaret extends Rectangle
    */
   protected void positionCaret(MouseEvent event)
   {
-    // FIXME: Implement this properly.
+    int newDot = getComponent().viewToModel(event.getPoint());
+    setDot(newDot);
   }
 
   /**
@@ -344,6 +512,11 @@ public class DefaultCaret extends Rectangle
     textComponent.removePropertyChangeListener(propertyChangeListener);
     propertyChangeListener = null;
     textComponent = null;
+
+    // Deinstall blink timer if present.
+    if (blinkTimer != null)
+      blinkTimer.stop();
+    blinkTimer = null;
   }
 
   /**
@@ -363,6 +536,7 @@ public class DefaultCaret extends Rectangle
     textComponent.addPropertyChangeListener(propertyChangeListener);
     documentListener = new DocumentHandler();
     textComponent.getDocument().addDocumentListener(documentListener);
+
     repaint();
   }
 
@@ -470,7 +644,7 @@ public class DefaultCaret extends Rectangle
    */
   protected final void repaint()
   {
-    textComponent.repaint(this);
+    getComponent().repaint(x, y, width, height);
   }
 
   /**
@@ -481,7 +655,8 @@ public class DefaultCaret extends Rectangle
    */
   public void paint(Graphics g)
   {
-    if (textComponent == null)
+    JTextComponent comp = getComponent();
+    if (comp == null)
       return;
 
     int dot = getDot();
@@ -489,25 +664,33 @@ public class DefaultCaret extends Rectangle
 
     try
       {
-	rect = textComponent.modelToView(dot);
+        rect = textComponent.modelToView(dot);
       }
     catch (BadLocationException e)
       {
-	// This should never happen as dot should be always valid.
-	return;
+        assert false : "Unexpected bad caret location: " + dot;
+        return;
       }
 
     if (rect == null)
       return;
-    
-    // First we need to delete the old caret.
-    // FIXME: Implement deleting of old caret.
-    
+
+    // Check if paint has possibly been called directly, without a previous
+    // call to damage(). In this case we need to do some cleanup first.
+    if ((x != rect.x) || (y != rect.y))
+      {
+        repaint(); // Erase previous location of caret.
+        x = rect.x;
+        y = rect.y;
+        width = 1;
+        height = rect.height;
+      }
+
     // Now draw the caret on the new position if visible.
     if (visible)
       {
-	g.setColor(textComponent.getCaretColor());
-	g.drawLine(rect.x, rect.y, rect.x, rect.y + rect.height);
+        g.setColor(textComponent.getCaretColor());
+        g.drawLine(rect.x, rect.y, rect.x, rect.y + rect.height);
       }
   }
 
@@ -598,6 +781,8 @@ public class DefaultCaret extends Rectangle
    */
   public void setBlinkRate(int rate)
   {
+    if (blinkTimer != null)
+      blinkTimer.setDelay(rate);
     blinkRate = rate;
   }
 
@@ -623,27 +808,71 @@ public class DefaultCaret extends Rectangle
    */
   public void moveDot(int dot)
   {
-    this.dot = dot;
-    handleHighlight();
-    repaint();
+    if (dot >= 0)
+      {
+        this.dot = dot;
+        handleHighlight();
+        adjustVisibility(this);
+        appear();
+      }
   }
 
   /**
    * Sets the current position of this <code>Caret</code> within the
-   * <code>Document</code>. This also sets the <code>mark</code> to the
-   * new location.
-   *
-   * @param dot the new position to be set
-   *
+   * <code>Document</code>. This also sets the <code>mark</code> to the new
+   * location.
+   * 
+   * @param dot
+   *          the new position to be set
    * @see #moveDot(int)
    */
   public void setDot(int dot)
   {
-    this.dot = dot;
-    this.mark = dot;
-    handleHighlight();
-    repaint();
+    if (dot >= 0)
+      {
+        this.mark = dot;
+        this.dot = dot;
+        handleHighlight();
+        adjustVisibility(this);
+        appear();
+      }
   }
+  
+  /**
+   * Show the caret (may be hidden due blinking) and adjust the timer not to
+   * hide it (possibly immediately).
+   * 
+   * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
+   */
+  void appear()
+  {
+    // All machinery is only required if the carret is blinking.
+    if (blinkListener != null)
+      {
+        blinkListener.ignoreNextEvent = true;
+
+        // If the caret is visible, erase the current position by repainting
+        // over.
+        if (visible)
+          repaint();
+
+        // Draw the caret in the new position.
+        visible = true;
+
+        Rectangle area = null;
+        try
+          {
+            area = getComponent().modelToView(getDot());
+          }
+        catch (BadLocationException ex)
+          {
+            assert false : "Unexpected bad caret location: " + getDot();
+          }
+        if (area != null)
+          damage(area);
+      }
+    repaint();
+  }  
 
   /**
    * Returns <code>true</code> if this <code>Caret</code> is currently visible,
@@ -668,7 +897,18 @@ public class DefaultCaret extends Rectangle
     if (v != visible)
       {
         visible = v;
-        repaint();
+        updateTimerStatus();
+        Rectangle area = null;
+        try
+          {            
+            area = getComponent().modelToView(getDot());
+          }
+        catch (BadLocationException ex)
+          {
+            assert false: "Unexpected bad caret location: " + getDot();
+          }
+        if (area != null)
+          damage(area);
       }
   }
 
@@ -682,5 +922,48 @@ public class DefaultCaret extends Rectangle
   protected Highlighter.HighlightPainter getSelectionPainter()
   {
     return DefaultHighlighter.DefaultPainter;
+  }
+
+  /**
+   * Updates the carets rectangle properties to the specified rectangle and
+   * repaints the caret.
+   *
+   * @param r the rectangle to set as the caret rectangle
+   */
+  protected void damage(Rectangle r)
+  {
+    if (r == null)
+      return;
+    x = r.x;
+    y = r.y;
+    width = 1;
+    // height is normally set in paint and we leave it untouched. However, we
+    // must set a valid value here, since otherwise the painting mechanism
+    // sets a zero clip and never calls paint.
+    if (height <= 0)
+      height = getComponent().getHeight();
+    repaint();
+  }
+
+  /**
+   * Adjusts the text component so that the caret is visible. This default
+   * implementation simply calls
+   * {@link JComponent#scrollRectToVisible(Rectangle)} on the text component.
+   * Subclasses may wish to change this.
+   */
+  protected void adjustVisibility(Rectangle rect)
+  {
+    getComponent().scrollRectToVisible(rect);
+  }
+
+  /**
+   * Initializes the blink timer.
+   */
+  private void initBlinkTimer()
+  {
+    // Setup the blink timer.
+    blinkListener = new BlinkTimerListener();
+    blinkTimer = new Timer(getBlinkRate(), blinkListener);
+    blinkTimer.setRepeats(true);
   }
 }

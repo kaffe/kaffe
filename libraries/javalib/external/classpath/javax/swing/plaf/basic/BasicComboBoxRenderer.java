@@ -156,6 +156,7 @@ public class BasicComboBoxRenderer
      */
     public UIResource()
     {
+      // Nothing to do here.
     }
   }
 }

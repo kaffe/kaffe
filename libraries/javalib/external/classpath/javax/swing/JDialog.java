@@ -102,13 +102,6 @@ public class JDialog extends Dialog implements Accessible, WindowConstants,
   /** Whether JDialogs are decorated by the Look and Feel. */
   private static boolean decorated;
 
-  /**
-   * Whether we're in the init stage or not.
-   * If so, adds and layouts are for top-level, otherwise they're for the
-   * content pane
-   */
-  private boolean initStageDone = false;
-
   /* Creates a new non-modal JDialog with no title 
    * using a shared Frame as the owner.
    */
@@ -259,7 +252,7 @@ public class JDialog extends Dialog implements Accessible, WindowConstants,
     invalidate();
     // Now that initStageDone is true, adds and layouts apply to contentPane,
     // not top-level.
-    initStageDone = true;
+    setRootPaneCheckingEnabled(true);
   }
 
   /**
@@ -330,13 +323,8 @@ public class JDialog extends Dialog implements Accessible, WindowConstants,
   {
     // Check if we're in initialization stage. If so, call super.setLayout
     // otherwise, valid calls go to the content pane.
-    if (initStageDone)
-      {
-        if (isRootPaneCheckingEnabled())
-          throw new Error("Cannot set top-level layout.  Use"
-                           + " getConentPane().setLayout instead.");
-          getContentPane().setLayout(manager);
-      }
+    if (isRootPaneCheckingEnabled())
+      getContentPane().setLayout(manager);
     else
       super.setLayout(manager);
   }
@@ -460,15 +448,10 @@ public class JDialog extends Dialog implements Accessible, WindowConstants,
   {
     // If we're adding in the initialization stage use super.add.
     // Otherwise pass the add onto the content pane.
-    if (!initStageDone)
-      super.addImpl(comp, constraints, index);
+    if (isRootPaneCheckingEnabled())
+      getContentPane().add(comp, constraints, index);
     else
-      {
-        if (isRootPaneCheckingEnabled())
-          throw new Error("Do not add directly to JDialog."
-                          + " Use getContentPane().add instead.");
-        getContentPane().add(comp, constraints, index);
-      }
+      super.addImpl(comp, constraints, index);
   }
 
   /**

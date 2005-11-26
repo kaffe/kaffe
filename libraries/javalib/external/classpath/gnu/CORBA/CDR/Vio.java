@@ -474,35 +474,35 @@ public abstract class Vio
       {
         if ((value_tag & vf_CHUNKING) != 0)
           {
-            cdrBufOutput output = createBuffer(input, 1024);
+            BufferedCdrOutput output = createBuffer(input, 1024);
             // Read the current (not a nested one) value in this spec case.
             readNestedValue(value_tag, input, output, -1);
-            cdrBufInput ci = new cdrBufInput(output.buffer.getBuffer());
+            BufferredCdrInput ci = new BufferredCdrInput(output.buffer.getBuffer());
             ci.setRunTime(output.getRunTime());
 
-            input = new noHeaderInput(ci, input);
+            input = new HeadlessInput(ci, input);
           }
         else
           {
-            if (input instanceof cdrBufInput)
+            if (input instanceof BufferredCdrInput)
               {
                 // Highly probable case.
-                input = new noHeaderInput((cdrBufInput) input, null);
+                input = new HeadlessInput((BufferredCdrInput) input, null);
               }
-            else if (input instanceof noHeaderInput)
+            else if (input instanceof HeadlessInput)
               {
-                // There is no need to instantiate one more noHeaderInput
+                // There is no need to instantiate one more HeadlessInput
                 // as we can just reset.
-                ((noHeaderInput) input).subsequentCalls = false;
+                ((HeadlessInput) input).subsequentCalls = false;
               }
             else
               {
-                cdrBufOutput bout = new cdrBufOutput();
+                BufferedCdrOutput bout = new BufferedCdrOutput();
                 int c;
                 while ((c = input.read()) >= 0)
                   bout.write((byte) c);
-                input = new noHeaderInput(
-                  (cdrBufInput) bout.create_input_stream(), input);
+                input = new HeadlessInput(
+                  (BufferredCdrInput) bout.create_input_stream(), input);
               }
           }
       }
@@ -520,14 +520,14 @@ public abstract class Vio
   /**
    * Create a buffer, inheriting critical settings from the passed input stream.
    */
-  private static cdrBufOutput createBuffer(InputStream input, int proposed_size)
+  private static BufferedCdrOutput createBuffer(InputStream input, int proposed_size)
   {
-    cdrBufOutput bout;
-    bout = new cdrBufOutput(2 * proposed_size + 256);
+    BufferedCdrOutput bout;
+    bout = new BufferedCdrOutput(2 * proposed_size + 256);
 
-    if (input instanceof cdrBufInput)
+    if (input instanceof BufferredCdrInput)
       {
-        cdrBufInput in = (cdrBufInput) input;
+        BufferredCdrInput in = (BufferredCdrInput) input;
         bout.setBigEndian(in.isBigEndian());
       }
 
@@ -551,7 +551,7 @@ public abstract class Vio
    * @return the tag that ended the nested value.
    */
   public static int readNestedValue(int value_tag, InputStream input,
-    cdrBufOutput output, int level)
+    BufferedCdrOutput output, int level)
     throws IOException
   {
     String id = null;
@@ -668,8 +668,8 @@ public abstract class Vio
     if (value != null)
       g.objectWritten(value, position);
 
-    if (input instanceof noHeaderInput)
-      ((noHeaderInput) input).subsequentCalls = false;
+    if (input instanceof HeadlessInput)
+      ((HeadlessInput) input).subsequentCalls = false;
 
     boolean ok = true;
 
@@ -1034,9 +1034,9 @@ public abstract class Vio
 
         if (!ok)
           {
-            if (output instanceof cdrBufOutput)
+            if (output instanceof BufferedCdrOutput)
               {
-                cdrBufOutput b = (cdrBufOutput) output;
+                BufferedCdrOutput b = (BufferedCdrOutput) output;
                 if (b.runtime == null)
                   b.runtime = new gnuRuntime(null, value);
               }
@@ -1070,7 +1070,7 @@ public abstract class Vio
    * Read the indirection data and return the object that was already written to
    * this stream.
    * 
-   * @param an_input the input stream, must be cdrBufInput.
+   * @param an_input the input stream, must be BufferredCdrInput.
    */
   static Serializable readIndirection(InputStream an_input)
   {

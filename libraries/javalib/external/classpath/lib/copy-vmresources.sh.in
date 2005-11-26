@@ -1,6 +1,7 @@
 #! @SHELL@
 # @configure_input@
 
+top_srcdir=@top_srcdir@
 vmdirs=`echo "@vm_classes@" | sed 's%:% %g'`
 destMetaDir=`pwd`/META-INF
 destResDir=`pwd`

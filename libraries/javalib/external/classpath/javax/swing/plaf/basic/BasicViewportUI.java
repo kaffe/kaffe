@@ -39,7 +39,7 @@ exception statement from your version. */
 package javax.swing.plaf.basic;
 
 import javax.swing.JComponent;
-import javax.swing.UIManager;
+import javax.swing.LookAndFeel;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.ViewportUI;
 
@@ -48,10 +48,12 @@ public class BasicViewportUI extends ViewportUI
   protected void installDefaults(JComponent c)
   {
     c.setOpaque(true);
-    c.setBackground(UIManager.getColor("Viewport.background"));
+    LookAndFeel.installColorsAndFont(c, "Viewport.background",
+                                     "Viewport.foreground", "Viewport.font");
   }
   protected void uninstallDefaults(JComponent c)
   {
+    // TODO: Implement this properly.
   }
 
   public static ComponentUI createUI(JComponent c)

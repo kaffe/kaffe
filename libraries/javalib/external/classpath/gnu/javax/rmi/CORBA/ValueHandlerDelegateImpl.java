@@ -40,7 +40,9 @@ package gnu.javax.rmi.CORBA;
 
 import gnu.CORBA.CDR.gnuRuntime;
 
+import org.omg.CORBA.BAD_PARAM;
 import org.omg.CORBA.CustomMarshal;
+import org.omg.CORBA.portable.OutputStream;
 import org.omg.CORBA.portable.Streamable;
 import org.omg.SendingContext.RunTime;
 
@@ -50,6 +52,7 @@ import java.io.Serializable;
 import java.rmi.Remote;
 
 import javax.rmi.CORBA.ValueHandler;
+import javax.rmi.CORBA.ValueHandlerMultiFormat;
 
 /**
  * Implementation of the ValueHandler.
@@ -57,9 +60,31 @@ import javax.rmi.CORBA.ValueHandler;
  * @author Audrius Meskauskas (AudriusA@Bioinformatics.org) (implementation)
  */
 public class ValueHandlerDelegateImpl
-  extends gnuRmiUtil
-  implements ValueHandler
+  extends RmiUtilities
+  implements ValueHandler, ValueHandlerMultiFormat
 {
+  /** 
+   * Return the maximal supported stream format version. We currently
+   * support the version 1.
+   * 
+   * TODO Support the version 2.
+   */
+  public byte getMaximumStreamFormatVersion()
+  {
+    return 1;
+  }
+
+  /**
+   * Write value using the given stream format version.
+   */
+  public void writeValue(OutputStream output, Serializable value, byte version)
+  {
+    if (version!=1)
+      throw new BAD_PARAM("Unsupported stream format version "+version);
+    else 
+      writeValue(output, value);
+  }
+
   /**
    * This implementation associates RunTime with stream rather than with the
    * value handler and this method is not used in the implementation. It is

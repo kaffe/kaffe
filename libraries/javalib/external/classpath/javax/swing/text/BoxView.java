@@ -155,8 +155,9 @@ public class BoxView
    * automatically when any of the child view changes its preferences
    * via {@link #preferenceChanged(View, boolean, boolean)}.
    *
-   * The layout will be updated the next time when {@link #setSize()} is
-   * called, typically from within the {@link #paint()} method.
+   * The layout will be updated the next time when 
+   * {@link #setSize(float, float)} is called, typically from within the 
+   * {@link #paint(Graphics, Shape)} method.
    *
    * Valid values for the axis are {@link View#X_AXIS} and
    * {@link View#Y_AXIS}.
@@ -216,7 +217,7 @@ public class BoxView
    * @param alloc the allocated region for the child to paint into
    * @param index the index of the child to be painted
    *
-   * @see {@link #childAllocation}
+   * @see #childAllocation(int, Rectangle)
    */
   protected void paintChild(Graphics g, Rectangle alloc, int index)
   {
@@ -306,7 +307,8 @@ public class BoxView
       {
         copy.setBounds(inside);
         childAllocation(i, copy);
-        if (!copy.isEmpty())
+        if (!copy.isEmpty()
+            && g.hitClip(copy.x, copy.y, copy.width, copy.height))
           paintChild(g, copy, i);
       }
   }
@@ -474,7 +476,6 @@ public class BoxView
   protected View getViewAtPoint(int x, int y, Rectangle r)
   {
     View result = null;
-
     int count = getViewCount();
     Rectangle copy = new Rectangle(r);
 
@@ -488,7 +489,9 @@ public class BoxView
             break;
           }
       }
-
+    
+    if (result == null && count > 0)
+      return getView(count - 1);
     return result;
   }
 
@@ -496,10 +499,12 @@ public class BoxView
    * Computes the allocation for a child <code>View</code>. The parameter
    * <code>a</code> stores the allocation of this <code>CompositeView</code>
    * and is then adjusted to hold the allocation of the child view.
-   *
-   * @param index the index of the child <code>View</code>
-   * @param a the allocation of this <code>CompositeView</code> before the
-   *        call, the allocation of the child on exit
+   * 
+   * @param index
+   *          the index of the child <code>View</code>
+   * @param a
+   *          the allocation of this <code>CompositeView</code> before the
+   *          call, the allocation of the child on exit
    */
   protected void childAllocation(int index, Rectangle a)
   {
@@ -534,7 +539,7 @@ public class BoxView
    *        to layout the children
    * @param axis the axis along which the layout is performed
    * @param offsets the array that holds the offsets of the children on exit
-   * @param offsets the array that holds the spans of the children on exit
+   * @param spans the array that holds the spans of the children on exit
    */
   protected void layoutMajorAxis(int targetSpan, int axis, int[] offsets,
                                  int[] spans)
@@ -554,7 +559,7 @@ public class BoxView
    *        to layout the children
    * @param axis the axis along which the layout is performed
    * @param offsets the array that holds the offsets of the children on exit
-   * @param offsets the array that holds the spans of the children on exit
+   * @param spans the array that holds the spans of the children on exit
    */
   protected void layoutMinorAxis(int targetSpan, int axis, int[] offsets,
                                  int[] spans)
@@ -562,7 +567,13 @@ public class BoxView
     SizeRequirements[] childReqs = getChildRequirements(axis);
     // Calculate the spans and offsets using the SizeRequirements uility
     // methods.
-    SizeRequirements.calculateAlignedPositions(targetSpan, null, childReqs,
+    // TODO: This might be an opportunity for performance optimization. Here
+    // we could use a cached instance of SizeRequirements instead of passing
+    // null to baselineRequirements. However, this would involve rewriting
+    // the baselineRequirements() method to not use the SizeRequirements
+    // utility method, since they cannot reuse a cached instance.
+    SizeRequirements total = baselineRequirements(axis, null);
+    SizeRequirements.calculateAlignedPositions(targetSpan, total, childReqs,
                                                offsets, spans);
     validateLayout(axis);
   }
@@ -664,7 +675,7 @@ public class BoxView
    *
    * @param axis the axis to examine, either <code>X_AXIS</code> or
    *        <code>Y_AXIS</code>
-   * @param index the index of the child for for which to return the span
+   * @param childIndex the index of the child for for which to return the span
    *
    * @return the span for the child view with the given index for the specified
    *         axis
@@ -683,7 +694,7 @@ public class BoxView
    *
    * @param axis the axis to examine, either <code>X_AXIS</code> or
    *        <code>Y_AXIS</code>
-   * @param index the index of the child for for which to return the span
+   * @param childIndex the index of the child for for which to return the span
    *
    * @return the offset for the child view with the given index for the
    *         specified axis
@@ -712,5 +723,39 @@ public class BoxView
       return 0.5F;
     else
       return baselineRequirements(axis, null).alignment;
+  }
+  
+  /**
+   * Called by a child View when its preferred span has changed.
+   * 
+   * @param width indicates that the preferred width of the child changed.
+   * @param height indicates that the preferred height of the child changed.
+   * @param child the child View. 
+   */
+  public void preferenceChanged (View child, boolean width, boolean height)
+  {
+    if (width)
+      xLayoutValid = false;
+    if (height)
+      yLayoutValid = false;
+    super.preferenceChanged(child, width, height);
+  }
+  
+  /**
+   * Maps the document model position <code>pos</code> to a Shape
+   * in the view coordinate space.  This method overrides CompositeView's
+   * method to make sure the children are allocated properly before
+   * calling the super's behaviour.
+   */
+  public Shape modelToView(int pos, Shape a, Position.Bias bias)
+      throws BadLocationException
+  {
+    // Make sure everything is allocated properly and then call super
+    if (!isAllocationValid())
+      {
+        Rectangle bounds = a.getBounds();
+        setSize(bounds.width, bounds.height);
+      }
+    return super.modelToView(pos, a, bias);
   }
 }

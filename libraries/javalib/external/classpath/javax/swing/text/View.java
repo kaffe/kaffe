@@ -594,4 +594,52 @@ public abstract class View implements SwingConstants
     for (int i = 0; i < count; ++i)
       getView(i).dump(indent + 1);
   }
+
+  /**
+   * Returns the document position that is (visually) nearest to the given
+   * document position <code>pos</code> in the given direction <code>d</code>.
+   *
+   * @param pos the document position
+   * @param b the bias for <code>pos</code>
+   * @param a the allocation for this view
+   * @param d the direction, must be either {@link SwingConstants#NORTH},
+   *        {@link SwingConstants#SOUTH}, {@link SwingConstants#WEST} or
+   *        {@link SwingConstants#EAST}
+   * @param biasRet an array of {@link Position.Bias} that can hold at least
+   *        one element, which is filled with the bias of the return position
+   *        on method exit
+   *
+   * @return the document position that is (visually) nearest to the given
+   *         document position <code>pos</code> in the given direction
+   *         <code>d</code>
+   *
+   * @throws BadLocationException if <code>pos</code> is not a valid offset in
+   *         the document model
+   * @throws IllegalArgumentException if <code>d</code> is not a valid direction
+   */
+  public int getNextVisualPositionFrom(int pos, Position.Bias b,
+                                       Shape a, int d,
+                                       Position.Bias[] biasRet)
+    throws BadLocationException
+  {
+    int ret = pos;
+    switch (d)
+    {
+      case WEST:
+        ret = pos - 1;
+        break;
+      case EAST:
+        ret = pos + 1;
+        break;
+      case NORTH:
+        // TODO: Implement this
+        break;
+      case SOUTH:
+        // TODO: Implement this
+        break;
+      default:
+        throw new IllegalArgumentException("Illegal value for d");
+    }
+    return ret;
+  }
 }

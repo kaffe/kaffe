@@ -1116,7 +1116,7 @@ public class SwingUtilities
    * <pre>
    *  [{@link javax.swing.JComponent#getActionMap()}] 
    *          --&gt; [{@link javax.swing.ActionMap}] 
-   *     parent --&gt; [{@link javax.swing.text.KeymapActionMap}] 
+   *     parent --&gt; [{@link javax.swing.text.JTextComponent.KeymapActionMap}] 
    *       parent --&gt; [{@link javax.swing.plaf.ActionMapUIResource}]
    * </pre>
    *
@@ -1138,14 +1138,12 @@ public class SwingUtilities
     else
       {
         ActionMap parent = child.getParent();
-        while(parent != null)
+        while (parent != null && !(parent instanceof ActionMapUIResource))
           {
             child = parent;
             parent = child.getParent();
           }
-
-        if (child != null)
-          child.setParent(uiActionMap);
+        child.setParent(uiActionMap);
       }
   }
 
@@ -1159,7 +1157,7 @@ public class SwingUtilities
    * <pre>
    *  [{@link javax.swing.JComponent#getInputMap()}] 
    *          --&gt; [{@link javax.swing.InputMap}] 
-   *     parent --&gt; [{@link javax.swing.text.KeymapWrapper}] 
+   *     parent --&gt; [{@link javax.swing.text.JTextComponent.KeymapWrapper}] 
    *       parent --&gt; [{@link javax.swing.plaf.InputMapUIResource}]
    * </pre>
    *
@@ -1181,11 +1179,13 @@ public class SwingUtilities
       component.setInputMap(condition, uiInputMap);
     else
       {
-        while(child.getParent() != null
-              && !(child.getParent() instanceof InputMapUIResource))
-          child = child.getParent();
-        if (child != null)
-          child.setParent(uiInputMap);
+        InputMap parent = child.getParent();
+        while (parent != null && !(parent instanceof InputMapUIResource))
+          {
+            child = parent;
+            parent = parent.getParent();
+          }
+        child.setParent(uiInputMap);
       }
   }
 

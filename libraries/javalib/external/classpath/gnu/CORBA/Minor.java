@@ -272,5 +272,11 @@ public interface Minor
    * submitting large number of requests.
    */
   int Threads = 21 | vendor;
+  
+  /**
+   * The IOR starts with file://, http:// or ftp://, but this local or remote
+   * resource is not accessible.
+   */
+  int Missing_IOR = 22 | vendor;
 
 }

@@ -565,6 +565,13 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics2D_gdkDrawDrawable
 
   /* gdk_flush(); */
 
+  if (!GDK_IS_DRAWABLE (src->drawable) || 
+   !GDK_IS_DRAWABLE (dst->drawable))
+    {
+      gdk_threads_leave ();
+      return;
+    }
+
   gdk_drawable_get_size (src->drawable, &s_width, &s_height);
   gdk_drawable_get_size (dst->drawable, &d_width, &d_height);
   width = min (s_width, d_width);
@@ -780,12 +787,13 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics2D_setGradientUnlocked
   if (peer_is_disposed(env, obj))
     return;
 
-  if (gr->debug) printf ("setGradient (%f,%f) -> (%f,%f); (%d,%d,%d,%d) -> (%d,%d,%d,%d)\n",
-			 x1, y1, 
-			 x2, y2, 
-			 r1, g1, b1, a1, 
-			 r2, g2, b2, a2);
-  
+  if (gr->debug)
+    printf ("setGradientUnlocked (%f,%f) -> (%f,%f); (%d,%d,%d,%d) -> (%d,%d,%d,%d)\n",
+	    x1, y1,
+	    x2, y2,
+	    r1, g1, b1, a1,
+	    r2, g2, b2, a2);
+
   if (cyclic)
     surf = cairo_surface_create_similar (gr->surface, CAIRO_FORMAT_ARGB32, 3, 2);
   else
@@ -906,8 +914,9 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics2D_setTexturePixelsUnlocked
   gr = (struct graphics2d *) NSA_GET_G2D_PTR (env, obj);
   g_assert (gr != NULL);
 
-  if (gr->debug) printf ("setTexturePixels (%d pixels, %dx%d, stride: %d)\n",
-			 (*env)->GetArrayLength (env, jarr), w, h, stride);
+  if (gr->debug)
+    printf ("setTexturePixelsUnlocked (%d pixels, %dx%d, stride: %d)\n",
+	    (*env)->GetArrayLength (env, jarr), w, h, stride);
 
   if (gr->pattern)
     cairo_pattern_destroy (gr->pattern);
@@ -960,8 +969,9 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics2D_drawPixels
   gr = (struct graphics2d *) NSA_GET_G2D_PTR (env, obj);
   g_assert (gr != NULL);
 
-  if (gr->debug) printf ("drawPixels (%d pixels, %dx%d, stride: %d)\n",
-			 (*env)->GetArrayLength (env, java_pixels), w, h, stride);
+  if (gr->debug)
+    printf ("drawPixels (%d pixels, %dx%d, stride: %d)\n",
+	    (*env)->GetArrayLength (env, java_pixels), w, h, stride);
 
   native_pixels = (*env)->GetIntArrayElements (env, java_pixels, NULL);
   native_matrix = (*env)->GetDoubleArrayElements (env, java_matrix, NULL);
@@ -1081,10 +1091,11 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics2D_cairoSetMatrixUnlocked
   g_assert (native_matrix != NULL);
   g_assert ((*env)->GetArrayLength (env, java_matrix) == 6);
 
-  if (gr->debug) printf ("cairo_set_matrix [ %f, %f, %f, %f, %f, %f ]\n",
-			 native_matrix[0], native_matrix[1],
-			 native_matrix[2], native_matrix[3],
-			 native_matrix[4], native_matrix[5]);
+  if (gr->debug)
+    printf ("cairo_matrix_init [ %f, %f, %f, %f, %f, %f ]\n",
+	    native_matrix[0], native_matrix[1],
+	    native_matrix[2], native_matrix[3],
+	    native_matrix[4], native_matrix[5]);
 
   {
     cairo_matrix_t mat;
@@ -1272,7 +1283,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics2D_cairoDrawGlyphVector
   (*env)->ReleaseFloatArrayElements (env, java_positions, native_positions, 0);
   (*env)->ReleaseIntArrayElements (env, java_codes, native_codes, 0);
 
-  begin_drawing_operation (env, gr);  
+  begin_drawing_operation (env, gr);
   cairo_show_glyphs (gr->cr, glyphs, n);
   end_drawing_operation (env, gr);
 
@@ -1440,7 +1451,8 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics2D_cairoSetRGBAColorUnlocked
      draw to a PixBuf, you must exchange the R and B components of your
      color. */
 
-  if (gr->debug) printf ("cairo_set_source_rgb (%f, %f, %f)\n", r, g, b);
+  if (gr->debug)
+    printf ("cairo_set_source_rgba (%f, %f, %f, %f)\n", r, g, b, a);
 
   if (gr->drawbuf)
     cairo_set_source_rgba (gr->cr, b, g, r, a);
@@ -1731,7 +1743,9 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics2D_cairoCurveTo
 
   gr = (struct graphics2d *) NSA_GET_G2D_PTR (env, obj);
   g_assert (gr != NULL);
-  if (gr->debug) printf ("cairo_curve_to (%f, %f), (%f, %f), (%f, %f)\n", x1, y1, x2, y2, x3, y3);
+  if (gr->debug)
+    printf ("cairo_curve_to (%f, %f), (%f, %f), (%f, %f)\n",
+	    x1, y1, x2, y2, x3, y3);
   cairo_curve_to (gr->cr, x1, y1, x2, y2, x3, y3);
 
   gdk_threads_leave();
@@ -1797,7 +1811,9 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics2D_cairoRelCurveTo
 
   gr = (struct graphics2d *) NSA_GET_G2D_PTR (env, obj);
   g_assert (gr != NULL);
-  if (gr->debug) printf ("cairo_rel_curve_to (%f, %f), (%f, %f), (%f, %f)\n", dx1, dy1, dx2, dy2, dx3, dy3);
+  if (gr->debug)
+    printf ("cairo_rel_curve_to (%f, %f), (%f, %f), (%f, %f)\n",
+	    dx1, dy1, dx2, dy2, dx3, dy3);
   cairo_rel_curve_to (gr->cr, dx1, dy1, dx2, dy2, dx3, dy3);
 
   gdk_threads_leave();
@@ -1825,7 +1841,8 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics2D_cairoRectangle
       return;
     }
 
-  if (gr->debug) printf ("cairo_rectangle (%f, %f) (%f, %f)\n", x, y, width, height);
+  if (gr->debug)
+    printf ("cairo_rectangle (%f, %f) (%f, %f)\n", x, y, width, height);
   cairo_rectangle (gr->cr, x, y, width, height);
 
   gdk_threads_leave();
@@ -1955,7 +1972,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics2D_cairoSurfaceSetFilterUnlocked
 
   gr = (struct graphics2d *) NSA_GET_G2D_PTR (env, obj);
   g_assert (gr != NULL);
-  if (gr->debug) printf ("cairo_surface_set_filter %d\n", filter);   
+  if (gr->debug) printf ("cairo_pattern_set_filter %d\n", filter);
   switch ((enum java_awt_rendering_hints_filter) filter)
     {
     case java_awt_rendering_hints_VALUE_INTERPOLATION_NEAREST_NEIGHBOR:

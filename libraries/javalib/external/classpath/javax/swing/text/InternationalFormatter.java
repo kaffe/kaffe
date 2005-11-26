@@ -78,6 +78,8 @@ public class InternationalFormatter
     minimum = null;
     maximum = null;
     format = null;
+    setCommitsOnValidEdit(false);
+    setOverwriteMode(false);
   }
 
   /**

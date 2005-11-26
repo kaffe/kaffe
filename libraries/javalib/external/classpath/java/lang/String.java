@@ -233,6 +233,7 @@ public final class String implements Serializable, Comparable, CharSequence
    * @param count the number of characters from data to copy
    * @throws NullPointerException if data is null
    * @throws IndexOutOfBoundsException if (offset &lt; 0 || count &lt; 0
+   *         || offset + count &lt; 0 (overflow)
    *         || offset + count &gt; data.length)
    *         (while unspecified, this is a StringIndexOutOfBoundsException)
    */
@@ -256,6 +257,7 @@ public final class String implements Serializable, Comparable, CharSequence
    * @param count the number of characters from ascii to copy
    * @throws NullPointerException if ascii is null
    * @throws IndexOutOfBoundsException if (offset &lt; 0 || count &lt; 0
+   *         || offset + count &lt; 0 (overflow)
    *         || offset + count &gt; ascii.length)
    *         (while unspecified, this is a StringIndexOutOfBoundsException)
    * @see #String(byte[])
@@ -267,8 +269,13 @@ public final class String implements Serializable, Comparable, CharSequence
    */
   public String(byte[] ascii, int hibyte, int offset, int count)
   {
-    if (offset < 0 || count < 0 || offset + count > ascii.length)
-      throw new StringIndexOutOfBoundsException();
+    if (offset < 0)
+      throw new StringIndexOutOfBoundsException("offset: " + offset);
+    if (count < 0)
+      throw new StringIndexOutOfBoundsException("count: " + count);
+    if (offset + count < 0 || offset + count > ascii.length)
+      throw new StringIndexOutOfBoundsException("offset + count: "
+						+ (offset + count));
     value = new char[count];
     this.offset = 0;
     this.count = count;
@@ -327,8 +334,13 @@ public final class String implements Serializable, Comparable, CharSequence
   public String(byte[] data, int offset, int count, String encoding)
     throws UnsupportedEncodingException
   {
-    if (offset < 0 || count < 0 || offset + count > data.length)
-      throw new StringIndexOutOfBoundsException();
+    if (offset < 0)
+      throw new StringIndexOutOfBoundsException("offset: " + offset);
+    if (count < 0)
+      throw new StringIndexOutOfBoundsException("count: " + count);
+    if (offset + count < 0 || offset + count > data.length)
+      throw new StringIndexOutOfBoundsException("offset + count: "
+						+ (offset + count));
     try 
       {
         CharsetDecoder csd = Charset.forName(encoding).newDecoder();
@@ -402,8 +414,13 @@ public final class String implements Serializable, Comparable, CharSequence
    */
   public String(byte[] data, int offset, int count)
   {
-    if (offset < 0 || count < 0 || offset + count > data.length)
-      throw new StringIndexOutOfBoundsException();
+    if (offset < 0)
+      throw new StringIndexOutOfBoundsException("offset: " + offset);
+    if (count < 0)
+      throw new StringIndexOutOfBoundsException("count: " + count);
+    if (offset + count < 0 || offset + count > data.length)
+      throw new StringIndexOutOfBoundsException("offset + count: "
+						+ (offset + count));
     int o, c;
     char[] v;
     String encoding;
@@ -512,8 +529,13 @@ public final class String implements Serializable, Comparable, CharSequence
    */
   String(char[] data, int offset, int count, boolean dont_copy)
   {
-    if (offset < 0 || count < 0 || offset + count > data.length)
-      throw new StringIndexOutOfBoundsException();
+    if (offset < 0)
+      throw new StringIndexOutOfBoundsException("offset: " + offset);
+    if (count < 0)
+      throw new StringIndexOutOfBoundsException("count: " + count);
+    if (offset + count < 0 || offset + count > data.length)
+      throw new StringIndexOutOfBoundsException("offset + count: "
+						+ (offset + count));
     if (dont_copy)
       {
         value = data;
@@ -1605,6 +1627,7 @@ public final class String implements Serializable, Comparable, CharSequence
    * @return String containing the chars from data[offset..offset+count]
    * @throws NullPointerException if data is null
    * @throws IndexOutOfBoundsException if (offset &lt; 0 || count &lt; 0
+   *         || offset + count &lt; 0 (overflow)
    *         || offset + count &gt; data.length)
    *         (while unspecified, this is a StringIndexOutOfBoundsException)
    * @see #String(char[], int, int)
@@ -1625,6 +1648,7 @@ public final class String implements Serializable, Comparable, CharSequence
    * @return String containing the chars from data[offset..offset+count]
    * @throws NullPointerException if data is null
    * @throws IndexOutOfBoundsException if (offset &lt; 0 || count &lt; 0
+   *         || offset + count &lt; 0 (overflow)
    *         || offset + count &gt; data.length)
    *         (while unspecified, this is a StringIndexOutOfBoundsException)
    * @see #String(char[], int, int)
@@ -1848,5 +1872,44 @@ public final class String implements Serializable, Comparable, CharSequence
       }
 
     return value;
+  }
+  
+  /**
+   * Returns true iff this String contains the sequence of Characters
+   * described in s.
+   * @param s the CharSequence
+   * @return true iff this String contains s
+   */
+  public boolean contains (CharSequence s)
+  {
+    return this.indexOf(s.toString()) != -1;
+  }
+  
+  /**
+   * Returns a string that is this string with all instances of the sequence
+   * represented by <code>target</code> replaced by the sequence in 
+   * <code>replacement</code>.
+   * @param target the sequence to be replaced
+   * @param replacement the sequence used as the replacement
+   * @return the string constructed as above
+   */
+  public String replace (CharSequence target, CharSequence replacement)
+  {
+    String targetString = target.toString();
+    String replaceString = replacement.toString();
+    int targetLength = target.length();
+    int replaceLength = replacement.length();
+    
+    int startPos = this.indexOf(targetString);
+    StringBuilder result = new StringBuilder(this);    
+    while (startPos != -1)
+      {
+        // Replace the target with the replacement
+        result.replace(startPos, startPos + targetLength, replaceString);
+
+        // Search for a new occurrence of the target
+        startPos = result.indexOf(targetString, startPos + replaceLength);
+      }
+    return result.toString();
   }
 }

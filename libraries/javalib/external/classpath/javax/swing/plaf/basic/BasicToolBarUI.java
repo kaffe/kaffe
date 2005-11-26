@@ -66,10 +66,10 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
+import javax.swing.LookAndFeel;
 import javax.swing.RootPaneContainer;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.event.MouseInputListener;
@@ -404,6 +404,8 @@ public class BasicToolBarUI extends ToolBarUI implements SwingConstants
     boolean tmp = ((loc == SwingConstants.NORTH)
                   || (loc == SwingConstants.SOUTH) || (loc == -1));
 
+    cachedOrientation = toolBar.getOrientation();
+    cachedBounds = toolBar.getSize();
     if (((cachedOrientation == SwingConstants.HORIZONTAL) && tmp)
         || ((cachedOrientation == VERTICAL) && ! tmp))
       {
@@ -571,9 +573,6 @@ public class BasicToolBarUI extends ToolBarUI implements SwingConstants
 
     dragWindow = createDragWindow(toolBar);
 
-    cachedBounds = toolBar.getPreferredSize();
-    cachedOrientation = toolBar.getOrientation();
-
     nonRolloverBorder = createNonRolloverBorder();
     rolloverBorder = createRolloverBorder();
 
@@ -587,18 +586,16 @@ public class BasicToolBarUI extends ToolBarUI implements SwingConstants
    */
   protected void installDefaults()
   {
-    UIDefaults defaults = UIManager.getLookAndFeelDefaults();
+    LookAndFeel.installBorder(toolBar, "ToolBar.border");
+    LookAndFeel.installColorsAndFont(toolBar, "ToolBar.background",
+                                     "ToolBar.foreground", "ToolBar.font");
 
-    toolBar.setBorder(defaults.getBorder("ToolBar.border"));
-    toolBar.setBackground(defaults.getColor("ToolBar.background"));
-    toolBar.setForeground(defaults.getColor("ToolBar.foreground"));
-    toolBar.setFont(defaults.getFont("ToolBar.font"));
+    dockingBorderColor = UIManager.getColor("ToolBar.dockingForeground");
+    dockingColor = UIManager.getColor("ToolBar.dockingBackground");
 
-    dockingBorderColor = defaults.getColor("ToolBar.dockingForeground");
-    dockingColor = defaults.getColor("ToolBar.dockingBackground");
-
-    floatingBorderColor = defaults.getColor("ToolBar.floatingForeground");
-    floatingColor = defaults.getColor("ToolBar.floatingBackground");
+    floatingBorderColor = UIManager.getColor("ToolBar.floatingForeground");
+    floatingColor = UIManager.getColor("ToolBar.floatingBackground");
+    setRolloverBorders(toolBar.isRollover());
   }
 
   /**
@@ -1019,6 +1016,7 @@ public class BasicToolBarUI extends ToolBarUI implements SwingConstants
      */
     public void mouseMoved(MouseEvent e)
     {
+      // TODO: What should be done here, if anything?
     }
 
     /**
@@ -1062,7 +1060,7 @@ public class BasicToolBarUI extends ToolBarUI implements SwingConstants
       isDragging = true;
 
       if (dragWindow != null)
-	dragWindow.setOffset(new Point(e.getX(), e.getY()));
+	dragWindow.setOffset(new Point(cachedBounds.width/2, cachedBounds.height/2));
 
       dragTo(e.getPoint(), origin);
     }

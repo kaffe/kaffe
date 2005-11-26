@@ -48,7 +48,6 @@ import java.beans.PropertyChangeListener;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JScrollBar;
-import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicScrollBarUI;
@@ -56,8 +55,7 @@ import javax.swing.plaf.basic.BasicScrollBarUI;
 /**
  * A UI delegate for the {@link JScrollBar} component.
  */
-public class MetalScrollBarUI
-  extends BasicScrollBarUI
+public class MetalScrollBarUI extends BasicScrollBarUI
 {
   
   /**
@@ -75,6 +73,7 @@ public class MetalScrollBarUI
      */
     public MetalScrollBarPropertyChangeHandler()
     {
+      // Nothing to do here.
     }
     
     /**
@@ -103,16 +102,22 @@ public class MetalScrollBarUI
   /** The name for the 'free standing' property. */
   public static final String FREE_STANDING_PROP = "JScrollBar.isFreeStanding";
 
-  /** The minimum thumb size */
-  private static final Dimension MIN_THUMB_SIZE = new Dimension(17, 17);
+  /** The minimum thumb size for a scroll bar that is not free standing. */
+  private static final Dimension MIN_THUMB_SIZE = new Dimension(15, 15);
 
+  /** The minimum thumb size for a scroll bar that is free standing. */
+  private static final Dimension MIN_THUMB_SIZE_FREE_STANDING 
+    = new Dimension(17, 17);
+  
   /** The button that increases the value in the scroll bar. */
   protected MetalScrollButton increaseButton;
   
   /** The button that decreases the value in the scroll bar. */
   protected MetalScrollButton decreaseButton;
   
-  /** The scroll bar width. */
+  /** 
+   * The scroll bar width. 
+   */
   protected int scrollBarWidth;
   
   /** 
@@ -121,10 +126,17 @@ public class MetalScrollBarUI
    * scroll bar which is not free standing has borders missing from one
    * side, and relies on being part of another container with its own borders
    * to look right visually. */
-  protected boolean isFreeStanding;
+  protected boolean isFreeStanding = true;
+  
+  /** 
+   * The color for the scroll bar shadow (this is read from the UIDefaults in 
+   * the installDefaults() method).
+   */
+  Color scrollBarShadowColor;
   
   /**
-   * Constructs a new instance of MetalScrollBarUI.
+   * Constructs a new instance of <code>MetalScrollBarUI</code>, with no
+   * specific initialisation.
    */
   public MetalScrollBarUI()
   {
@@ -132,11 +144,11 @@ public class MetalScrollBarUI
   }
 
   /**
-   * Returns an instance of MetalScrollBarUI.
+   * Returns a new instance of <code>MetalScrollBarUI</code>.
    *
    * @param component the component for which we return an UI instance
    *
-   * @return an instance of MetalScrollBarUI
+   * @return An instance of MetalScrollBarUI
    */
   public static ComponentUI createUI(JComponent component)
   {
@@ -154,6 +166,7 @@ public class MetalScrollBarUI
     // that we can do this).
     Boolean prop = (Boolean) scrollbar.getClientProperty(FREE_STANDING_PROP);
     isFreeStanding = (prop == null ? true : prop.booleanValue());
+    scrollBarShadowColor = UIManager.getColor("ScrollBar.shadow");
     super.installDefaults();
   }
     
@@ -181,9 +194,10 @@ public class MetalScrollBarUI
    */
   protected JButton createDecreaseButton(int orientation)
   {
-    UIDefaults defaults = UIManager.getLookAndFeelDefaults();
-    scrollBarWidth = defaults.getInt("ScrollBar.width");
-    return new MetalScrollButton(orientation, scrollBarWidth, isFreeStanding);
+    scrollBarWidth = UIManager.getInt("ScrollBar.width");
+    decreaseButton = new MetalScrollButton(orientation, scrollBarWidth, 
+            isFreeStanding);
+    return decreaseButton;
   }
 
   /**
@@ -197,9 +211,10 @@ public class MetalScrollBarUI
    */
   protected JButton createIncreaseButton(int orientation)
   {
-    UIDefaults defaults = UIManager.getLookAndFeelDefaults();
-    scrollBarWidth = defaults.getInt("ScrollBar.width");
-    return new MetalScrollButton(orientation, scrollBarWidth, isFreeStanding);
+    scrollBarWidth = UIManager.getInt("ScrollBar.width");
+    increaseButton = new MetalScrollButton(orientation, scrollBarWidth, 
+            isFreeStanding);
+    return increaseButton;
   }
   
   /**
@@ -243,7 +258,7 @@ public class MetalScrollBarUI
         g.drawLine(x, y, x + w - 1, y);
         g.drawLine(x + w - 1, y, x + w - 1, y + h - 1);
         
-        g.setColor(MetalLookAndFeel.getControlShadow());
+        g.setColor(scrollBarShadowColor);
         g.drawLine(x + 1, y + 1, x + 1, y + h - 1);
         g.drawLine(x + 1, y + 1, x + w - 2, y + 1);
         
@@ -251,14 +266,21 @@ public class MetalScrollBarUI
           {
             g.setColor(MetalLookAndFeel.getControlDarkShadow());
             g.drawLine(x, y + h - 2, x + w - 1, y + h - 2);
-            g.setColor(MetalLookAndFeel.getControlShadow());
+            g.setColor(scrollBarShadowColor);
             g.drawLine(x, y + h - 1, x + w - 1, y + h - 1);
           }
       }
     else
       {
         g.setColor(MetalLookAndFeel.getControlDisabled());
-        g.drawRect(x, y, w - 1, h - 1);
+        if (isFreeStanding)
+          g.drawRect(x, y, w - 1, h - 1);
+        else
+          {
+            g.drawLine(x, y, x + w - 1, y);
+            g.drawLine(x, y, x, y + h - 1);
+            g.drawLine(x + w - 1, y, x + w - 1, y + h - 1);
+          }
       }
   }
     
@@ -272,7 +294,7 @@ public class MetalScrollBarUI
    * @param w  the width for the track bounds.
    * @param h  the height for the track bounds.
    */
-  protected void paintTrackVertical(Graphics g, JComponent c, 
+  private void paintTrackVertical(Graphics g, JComponent c, 
       int x, int y, int w, int h)
   {
     if (c.isEnabled())
@@ -282,10 +304,9 @@ public class MetalScrollBarUI
         g.drawLine(x, y, x + w - 1, y);
         g.drawLine(x, y + h - 1, x + w - 1, y + h - 1);
         
-        g.setColor(MetalLookAndFeel.getControlShadow());
+        g.setColor(scrollBarShadowColor);
         g.drawLine(x + 1, y + 1, x + w - 1, y + 1);
         g.drawLine(x + 1, y + 1, x + 1, y + h - 2);
-        g.drawLine(x + 1, y + h - 2, x + w - 1, y + h - 2);
         
         if (isFreeStanding) 
           {
@@ -298,7 +319,14 @@ public class MetalScrollBarUI
     else
       {
         g.setColor(MetalLookAndFeel.getControlDisabled());
-        g.drawRect(x, y, w - 1, h - 1);
+        if (isFreeStanding)
+          g.drawRect(x, y, w - 1, h - 1);
+        else
+          {
+            g.drawLine(x, y, x + w - 1, y);
+            g.drawLine(x, y, x, y + h - 1);
+            g.drawLine(x, y + h - 1, x + w - 1, y + h - 1);
+          }
       }
   }
 
@@ -314,54 +342,133 @@ public class MetalScrollBarUI
     // a disabled scrollbar has no thumb in the metal look and feel
     if (!c.isEnabled())
       return;
-    
-    // first we fill the background
-    g.setColor(thumbColor);
-    g.fillRect(thumbBounds.x, thumbBounds.y, thumbBounds.width,
-               thumbBounds.height);
-
-    // draw the outer dark line
-    int hAdj = 1;
-    int wAdj = 1;
     if (scrollbar.getOrientation() == HORIZONTAL)
-      hAdj++;
-    else
-      wAdj++;
-    
-    g.setColor(new Color(102, 102, 153));
-    g.drawRect(thumbBounds.x, thumbBounds.y, thumbBounds.width - wAdj,
-               thumbBounds.height - hAdj);
-
-    // draw the inner light line
-    g.setColor(thumbHighlightColor);
-    g.drawLine(thumbBounds.x + 1, thumbBounds.y + 1,
-               thumbBounds.x + thumbBounds.width - 2,
-               thumbBounds.y + 1);
-    g.drawLine(thumbBounds.x + 1, thumbBounds.y + 1,
-               thumbBounds.x + 1,
-               thumbBounds.y + thumbBounds.height - 2);
-
-    // draw the shadow line
-    UIDefaults def = UIManager.getLookAndFeelDefaults();
-    g.setColor(def.getColor("ScrollBar.shadow"));
-    g.drawLine(thumbBounds.x + 1, thumbBounds.y + thumbBounds.height,
-               thumbBounds.x + thumbBounds.width,
-               thumbBounds.y + thumbBounds.height);
+      paintThumbHorizontal(g, c, thumbBounds);
+    else 
+      paintThumbVertical(g, c, thumbBounds);
 
     // draw the pattern
     MetalUtils.fillMetalPattern(c, g, thumbBounds.x + 3, thumbBounds.y + 3,
-                                thumbBounds.width - 6, thumbBounds.height - 6,
-                                thumbHighlightColor, new Color(102, 102, 153));
+            thumbBounds.width - 6, thumbBounds.height - 6,
+            thumbHighlightColor, thumbLightShadowColor);
   }
 
   /**
-   * This method returns the minimum thumb size.
+   * Paints the thumb for a horizontal scroll bar.
+   * 
+   * @param g  the graphics device.
+   * @param c  the scroll bar component.
+   * @param thumbBounds  the thumb bounds.
+   */
+  private void paintThumbHorizontal(Graphics g, JComponent c, 
+          Rectangle thumbBounds) 
+  {
+    int x = thumbBounds.x;
+    int y = thumbBounds.y;
+    int w = thumbBounds.width;
+    int h = thumbBounds.height;
+    
+    // first we fill the background
+    g.setColor(thumbColor);
+    if (isFreeStanding)
+      g.fillRect(x, y, w, h - 1);
+    else
+      g.fillRect(x, y, w, h);
+    
+    // then draw the dark box
+    g.setColor(thumbLightShadowColor);
+    if (isFreeStanding)
+      g.drawRect(x, y, w - 1, h - 2);
+    else
+      {
+        g.drawLine(x, y, x + w - 1, y);
+        g.drawLine(x, y, x, y + h - 1);
+        g.drawLine(x + w - 1, y, x + w - 1, y + h -1);
+      }
+    
+    // then the highlight
+    g.setColor(thumbHighlightColor);
+    if (isFreeStanding)
+      {
+        g.drawLine(x + 1, y + 1, x + w - 3, y + 1);
+        g.drawLine(x + 1, y + 1, x + 1, y + h - 3);
+      }
+    else
+      {
+        g.drawLine(x + 1, y + 1, x + w - 3, y + 1);
+        g.drawLine(x + 1, y + 1, x + 1, y + h - 1);
+      }
+    
+    // draw the shadow line
+    g.setColor(UIManager.getColor("ScrollBar.shadow"));
+    g.drawLine(x + w, y + 1, x + w, y + h - 1);
+
+  }
+  
+  /**
+   * Paints the thumb for a vertical scroll bar.
+   * 
+   * @param g  the graphics device.
+   * @param c  the scroll bar component.
+   * @param thumbBounds  the thumb bounds.
+   */
+  private void paintThumbVertical(Graphics g, JComponent c, 
+          Rectangle thumbBounds)
+  {
+    int x = thumbBounds.x;
+    int y = thumbBounds.y;
+    int w = thumbBounds.width;
+    int h = thumbBounds.height;
+    
+    // first we fill the background
+    g.setColor(thumbColor);
+    if (isFreeStanding)
+      g.fillRect(x, y, w - 1, h);
+    else
+      g.fillRect(x, y, w, h);
+     
+    // then draw the dark box
+    g.setColor(thumbLightShadowColor);
+    if (isFreeStanding)
+      g.drawRect(x, y, w - 2, h - 1);
+    else
+      {
+        g.drawLine(x, y, x + w - 1, y);
+        g.drawLine(x, y, x, y + h - 1);
+        g.drawLine(x, y + h - 1, x + w - 1, y + h - 1);
+      }
+    
+    // then the highlight
+    g.setColor(thumbHighlightColor);
+    if (isFreeStanding)
+      {
+        g.drawLine(x + 1, y + 1, x + w - 3, y + 1);
+        g.drawLine(x + 1, y + 1, x + 1, y + h - 3);
+      }
+    else
+      {
+        g.drawLine(x + 1, y + 1, x + w - 1, y + 1);
+        g.drawLine(x + 1, y + 1, x + 1, y + h - 3);
+      }
+    
+    // draw the shadow line
+    g.setColor(UIManager.getColor("ScrollBar.shadow"));
+    g.drawLine(x + 1, y + h, x + w - 2, y + h);
+  }
+  
+  /**
+   * Returns the minimum thumb size.  For a free standing scroll bar the 
+   * minimum size is <code>17 x 17</code> pixels, whereas for a non free 
+   * standing scroll bar the minimum size is <code>15 x 15</code> pixels.
    *
    * @return The minimum thumb size.
    */
   protected Dimension getMinimumThumbSize()
   {
-    return MIN_THUMB_SIZE;
+    if (isFreeStanding)
+      return MIN_THUMB_SIZE_FREE_STANDING;
+    else
+      return MIN_THUMB_SIZE;
   }
   
 }

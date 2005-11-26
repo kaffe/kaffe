@@ -234,8 +234,8 @@ public class JMenuBar extends JComponent implements Accessible, MenuElement
    */
   public void addNotify()
   {
-    // FIXME: Should register this menu bar with the keyboard manager     
     super.addNotify();
+    KeyboardManager.getManager().registerJMenuBar(this);
   }
 
   public AccessibleContext getAccessibleContext()
@@ -474,6 +474,63 @@ public class JMenuBar extends JComponent implements Accessible, MenuElement
   }
 
   /**
+   * This method overrides JComponent.processKeyBinding to allow the 
+   * JMenuBar to check all the child components (recursiveley) to see 
+   * if they'll consume the event.
+   * 
+   * @param ks the KeyStroke for the event
+   * @param e the KeyEvent for the event
+   * @param condition the focus condition for the binding
+   * @param pressed true if the key is pressed 
+   */
+  protected boolean processKeyBinding(KeyStroke ks, KeyEvent e, int condition,
+                                      boolean pressed)
+  {
+    // See if the regular JComponent behavior consumes the event
+    if (super.processKeyBinding(ks, e, condition, pressed))
+      return true;
+    
+    // If not, have to recursively check all the child menu elements to see 
+    // if they want it    
+    MenuElement[] children = getSubElements();
+    for (int i = 0; i < children.length; i++)
+      if (processKeyBindingHelper(children[i], ks, e, condition, pressed))
+        return true;
+    return false;
+  }
+  
+  /**
+   * This is a helper method to recursively check the children of this
+   * JMenuBar to see if they will consume a key event via key bindings.  
+   * This is used for menu accelerators.
+   * @param menuElement the menuElement to check (and check all its children)
+   * @param ks the KeyStroke for the event
+   * @param e the KeyEvent that may be consumed
+   * @param condition the focus condition for the binding
+   * @param pressed true if the key was pressed
+   * @return true <code>menuElement</code> or one of its children consume
+   * the event (processKeyBinding returns true for menuElement or one of
+   * its children).
+   */
+  static boolean processKeyBindingHelper(MenuElement menuElement, KeyStroke ks,
+                                         KeyEvent e, int condition,
+                                         boolean pressed)
+  {
+    // First check the menuElement itself, if it's a JComponent
+    if (menuElement instanceof JComponent
+        && ((JComponent) menuElement).processKeyBinding(ks, e, condition,
+                                                        pressed))
+      return true;
+    
+    // If that didn't consume it, check all the children recursively
+    MenuElement[] children = menuElement.getSubElements();
+    for (int i = 0; i < children.length; i++)
+      if (processKeyBindingHelper(children[i], ks, e, condition, pressed))
+        return true;
+    return false;
+  }
+  
+  /**
    * Process mouse events forwarded from MenuSelectionManager. This method
    * doesn't do anything. It is here to conform to the MenuElement interface.
    *
@@ -494,7 +551,7 @@ public class JMenuBar extends JComponent implements Accessible, MenuElement
    */
   public void removeNotify()
   {
-    // Must unregister this menu bar with the current keyboard manager.
+    KeyboardManager.getManager().unregisterJMenuBar(this);
     super.removeNotify();
   }
 
@@ -520,9 +577,14 @@ public class JMenuBar extends JComponent implements Accessible, MenuElement
    * Sets help menu for this menu bar
    *
    * @param menu help menu
+   *
+   * @specnote The specification states that this method is not yet implemented
+   *           and should throw an exception.
    */
   public void setHelpMenu(JMenu menu)
   {
+    // We throw an Error here, just as Sun's JDK does.
+    throw new Error("setHelpMenu() not yet implemented.");
   }
 
   /**

@@ -594,7 +594,8 @@ public final class Class implements Serializable
     ClassLoader cl = getClassLoader();
     if (cl != null)
       return cl.getPackage(getPackagePortion(getName()));
-    return null;
+    else
+      return VMClassLoader.getPackage(getPackagePortion(getName()));
   }
 
   /**

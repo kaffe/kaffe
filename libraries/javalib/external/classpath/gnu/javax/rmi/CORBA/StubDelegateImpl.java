@@ -38,9 +38,10 @@ exception statement from your version. */
 
 package gnu.javax.rmi.CORBA;
 
+import gnu.CORBA.ObjectCreator;
 import gnu.CORBA.Unexpected;
-import gnu.CORBA.CDR.cdrBufInput;
-import gnu.CORBA.CDR.cdrBufOutput;
+import gnu.CORBA.CDR.BufferredCdrInput;
+import gnu.CORBA.CDR.BufferedCdrOutput;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -193,7 +194,7 @@ public class StubDelegateImpl
 
     try
       {
-        tieClass = Class.forName(tn);
+        tieClass = ObjectCreator.forName(tn);
         t = (Tie) tieClass.newInstance();
         if (self instanceof Remote)
           Util.registerTarget(t, (Remote) self);
@@ -271,7 +272,7 @@ public class StubDelegateImpl
     throws IOException, ClassNotFoundException
   {
     byte[] b = (byte[]) input.readObject();
-    cdrBufInput in = new cdrBufInput(b);
+    BufferredCdrInput in = new BufferredCdrInput(b);
 
     if (orb != null)
       in.setOrb(orb);
@@ -300,7 +301,7 @@ public class StubDelegateImpl
   public void writeObject(Stub self, ObjectOutputStream output, ORB orb)
     throws IOException
   {
-    cdrBufOutput out = new cdrBufOutput();
+    BufferedCdrOutput out = new BufferedCdrOutput();
     out.setOrb(orb == null ? self._orb() : orb);
     out.write_Object(self);
 

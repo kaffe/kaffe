@@ -38,15 +38,18 @@ exception statement from your version. */
 
 package org.omg.CORBA;
 
-import gnu.CORBA.Restricted_ORB;
-import gnu.CORBA.fixedTypeCode;
-import gnu.CORBA.generalTypeCode;
+import gnu.CORBA.OrbFocused;
+import gnu.CORBA.ObjectCreator;
+import gnu.CORBA.OrbRestricted;
 import gnu.CORBA.gnuContext;
-import gnu.CORBA.primitiveTypeCode;
-import gnu.CORBA.recordTypeCode;
-import gnu.CORBA.recursiveTypeCode;
+import gnu.CORBA.typecodes.FixedTypeCode;
+import gnu.CORBA.typecodes.GeneralTypeCode;
+import gnu.CORBA.typecodes.PrimitiveTypeCode;
+import gnu.CORBA.typecodes.RecordTypeCode;
+import gnu.CORBA.typecodes.RecursiveTypeCode;
 
 import org.omg.CORBA.ORBPackage.InconsistentTypeCode;
+import org.omg.PortableInterceptor.ObjectReferenceTemplate;
 
 import java.applet.Applet;
 
@@ -58,17 +61,17 @@ import java.io.IOException;
 import java.util.Properties;
 
 /**
- * A central class in CORBA implementation, responsible for sending and
- * handling remote invocations. ORB also works as a factory for
- * creating instances of certain CORBA classes.
- *
- * Despite the core library contains the fully working CORBA implementation,
- * it also provides a simple way to plug-in the alternative CORBA support.
- * This is done by replacing the ORB. The alternative ORB can be specified
- * via properties, passed to ORB.Init(...).
- *
- * When creating an ORB instance, the class name
- * is searched in the following locations:
+ * A central class in CORBA implementation, responsible for sending and handling
+ * remote invocations. ORB also works as a factory for creating instances of
+ * certain CORBA classes.
+ * 
+ * Despite the core library contains the fully working CORBA implementation, it
+ * also provides a simple way to plug-in the alternative CORBA support. This is
+ * done by replacing the ORB. The alternative ORB can be specified via
+ * properties, passed to ORB.Init(...).
+ * 
+ * When creating an ORB instance, the class name is searched in the following
+ * locations:
  * <p>
  * 1. Applet parameter or application string array, if any.<br>
  * 2. The properties parameter, if any.<br>
@@ -76,25 +79,65 @@ import java.util.Properties;
  * 4. The orb.properties file located in the user.home directory (if any).<br>
  * 5. The orb.properties file located in the java.home/lib directory (if any).
  * </p>
- *
- * The supported properties are:
- * <table border="1">
- * <tr><td> org.omg.CORBA.ORBClass</td><td>The class,
- *   implementing the functional ORB, returned by
- *   {@link #init(Applet, Properties)} or
- *   {@link #init(String[], Properties)} </td></tr>
- * <tr><td>org.omg.CORBA.ORBSingletonClass</td><td>The class,
- *   implementing the restricted ORB, returned by
- *   {@link #init()}.
- * </td></tr>
- * <tr><td>org.omg.CORBA.ORBInitRef</td><td>Specifies the
- * initial reference, accessible by name with the method
- * {@link #resolve_initial_references(String)}.
- * </table>
- * The command line accepts the same properties as a keys. When specifying
- * in the command line, the prefix org.omg.CORBA can be omitted,
- * for instance<code> -ORBInitRef NameService=IOR:aabbccdd....</code>
- *
+ * 
+ * The supported properties are: <table border="1">
+ * <tr>
+ * <td> org.omg.CORBA.ORBClass</td>
+ * <td>The class, implementing the functional ORB, returned by
+ * {@link #init(Applet, Properties)} or {@link #init(String[], Properties)}
+ * </td>
+ * </tr>
+ * <tr>
+ * <td>org.omg.CORBA.ORBSingletonClass</td>
+ * <td>The class, implementing the restricted ORB, returned by {@link #init()}.
+ * </td>
+ * </tr>
+ * <tr>
+ * <td>org.omg.CORBA.ORBInitRef</td>
+ * <td>Specifies the initial reference, accessible by name with the method
+ * {@link #resolve_initial_references(String)}.</td>
+ * </tr>
+ * <tr>
+ * <td>org.omg.CORBA.ORBid</td>
+ * <td>Specifies the name (ORB Id) of this ORB. The ORB Id is later accessible
+ * by {@link ObjectReferenceTemplate#orb_id}. The default value includes the
+ * hashcode of the ORB instance that is normally different for each ORB. 
+ * </td>
+ * </tr>
+ * <tr>
+ * <td>org.omg.CORBA.ServerId</td>
+ * <td>Specifies the name (Server Id) of this server. This property assigns
+ * value to the <i>static</i> field, ensuring that all ORB's on the same jre
+ * have the same Server Id. It is normally set as the system property. The
+ * server Id is later accessible as {@link ObjectReferenceTemplate#server_id}.
+ * </td>
+ * </tr>
+ * <tr>
+ * <td>gnu.CORBA.ListenerPort</td>
+ * <td>Specifies that this ORB should serve all its objects on a single port
+ * (for example, "1234") or on a specified port range (for example,
+ * "1100-1108"). The property is used when working with firewals and serves as a
+ * replacement for the proprietary properties like com.ibm.CORBA.ListenerPort
+ * or com.sun.CORBA.POA.ORBPersistentServerPort. The specified port or range
+ * should not overlap with the values, specified for other ORB's.
+ * </td>
+ * </tr>
+ * <tr>
+ * <td>gnu.Corba.SocketFactory</td>
+ * <td>Sets the user-defined server and client socket factory for the ORB being
+ * currently instantiated. Serves as a replacement of the proprietary
+ * property com.sun.CORBA.connection.ORBSocketFactoryClass. To have multiple
+ * types of sockets, instantiate several ORB's with this property each time
+ * set to the different value. 
+ * The factory must implement gnu.CORBA.interfaces.SocketFactory.
+ * </td>
+ * </tr>
+ * </table> 
+ * <p>The command line accepts the same properties as a keys. When
+ * specifying in the command line, the prefix org.omg.CORBA can be omitted, for
+ * instance<code> -ORBInitRef NameService=IOR:aabbccdd....</code>
+ * </p>
+ * 
  * @author Audrius Meskauskas (AudriusA@Bioinformatics.org)
  */
 public abstract class ORB
@@ -114,18 +157,21 @@ public abstract class ORB
    */
   private static final String RESTRICTED_ORB =
     "org.omg.CORBA.ORBSingletonClass";
-
+  
+  private static final String LISTENER_PORT =
+    OrbFocused.LISTENER_PORT;
+  
   /**
    * The class, implementing the default fully functional ORB.
    */
   private static final String DEFAULT_FUNCTIONAL_ORB =
     gnu.CORBA.Poa.ORB_1_4.class.getName();
-
-  /**
-   * The class, implementing the default restricted ORB.
-   */
-  private static final String DEFAULT_RESTRICTED_ORB =
-    gnu.CORBA.Restricted_ORB.class.getName();
+  
+  private static final String DEFAULT_FOCUSED_ORB =
+    gnu.CORBA.OrbFocused.class.getName();
+  
+  // There is no need for name of the default restricted ORB as it is 
+  // singleton and it is more effectively referred directly.
 
   /**
    * Connect the given CORBA object to this ORB. After the object is
@@ -359,7 +405,7 @@ public abstract class ORB
    */
   public TypeCode create_fixed_tc(short digits, short scale)
   {
-    fixedTypeCode r = new fixedTypeCode();
+    FixedTypeCode r = new FixedTypeCode();
     r.setDigits(digits);
     r.setScale(scale);
     return r;
@@ -579,7 +625,7 @@ public abstract class ORB
    */
   public TypeCode create_abstract_interface_tc(String id, String name)
   {
-    generalTypeCode t = new generalTypeCode(TCKind.tk_abstract_interface);
+    GeneralTypeCode t = new GeneralTypeCode(TCKind.tk_abstract_interface);
     t.setName(name);
     t.setId(id);
     return t;
@@ -595,7 +641,7 @@ public abstract class ORB
    */
   public TypeCode create_native_tc(String id, String name)
   {
-    generalTypeCode t = new generalTypeCode(TCKind.tk_native);
+    GeneralTypeCode t = new GeneralTypeCode(TCKind.tk_native);
     t.setName(name);
     t.setId(id);
     return t;
@@ -629,11 +675,11 @@ public abstract class ORB
    */
   public TypeCode create_recursive_sequence_tc(int bound, int offset)
   {
-    recordTypeCode r = new recordTypeCode(TCKind.tk_struct);
+    RecordTypeCode r = new RecordTypeCode(TCKind.tk_struct);
     for (int i = 0; i < offset; i++)
       r.add(new StructMember());
 
-    TypeCode recurs = new primitiveTypeCode(TCKind.tk_sequence);
+    TypeCode recurs = new PrimitiveTypeCode(TCKind.tk_sequence);
 
     r.add(new StructMember("", recurs, null));
     return r;
@@ -648,7 +694,7 @@ public abstract class ORB
    */
   public TypeCode create_recursive_tc(String id)
   {
-    return new recursiveTypeCode(id);
+    return new RecursiveTypeCode(id);
   }
 
   /**
@@ -658,7 +704,7 @@ public abstract class ORB
                                       TypeCode boxed_type
                                      )
   {
-    generalTypeCode t = new generalTypeCode(TCKind.tk_value_box);
+    GeneralTypeCode t = new GeneralTypeCode(TCKind.tk_value_box);
     t.setName(name);
     t.setId(id);
     t.setContentType(boxed_type);
@@ -672,7 +718,7 @@ public abstract class ORB
                                   TypeCode concrete_base, ValueMember[] members
                                  )
   {
-    recordTypeCode r = new recordTypeCode(TCKind.tk_value);
+    RecordTypeCode r = new RecordTypeCode(TCKind.tk_value);
     r.setId(id);
     r.setName(name);
     r.setTypeModifier(type_modifier);
@@ -779,9 +825,9 @@ public abstract class ORB
    */
   public static ORB init()
   {
-    String orb_cn = getORBName(null, RESTRICTED_ORB);
+    String orb_cn = getCumulatedProperty(null, RESTRICTED_ORB);
     if (orb_cn == null)
-      return Restricted_ORB.Singleton;
+      return OrbRestricted.Singleton;
     else
       return createORB(null, orb_cn);
   }
@@ -804,6 +850,11 @@ public abstract class ORB
   public static ORB init(Applet applet, Properties props)
   {
     String ocn = applet.getParameter(FUNCTIONAL_ORB);
+    String lp = applet.getParameter(LISTENER_PORT);
+    
+    if (ocn==null && lp!=null)
+      ocn = DEFAULT_FOCUSED_ORB;
+    
     ORB orb = createORB(props, ocn);
     orb.set_parameters(applet, props);
 
@@ -811,39 +862,43 @@ public abstract class ORB
   }
 
   /**
-   * Creates the working instance of ORB for a
-   * standalone application.
-   *
-   * By default the built-in fully functional ORB is returned. The ORB class
-   * is found as described in the header of this class.
-   *
+   * Creates the working instance of ORB for a standalone application.
+   * 
+   * By default the built-in fully functional ORB is returned. The ORB class is
+   * found as described in the header of this class.
+   * 
    * @param args the parameters, passed to the applications
-   * <code>main(String[] args)</code> method, may be <code>null</code>.
-   * The parameter -org.omg.CORBA.ORBClass <class name>
-   * if present, defines the used ORB implementation class. If this
-   * property is not present, the ORB class is found as described in the
-   * class header.
-
-   *
+   * <code>main(String[] args)</code> method, may be <code>null</code>. The
+   * parameter -org.omg.CORBA.ORBClass <class name> if present, defines the used
+   * ORB implementation class. If this property is not present, the ORB class is
+   * found as described in the class header.
+   * 
    * @param props application specific properties, may be <code>null</code>.
-   *
+   * 
    * @return a newly created functional derivative of this abstract class.
    */
   public static ORB init(String[] args, Properties props)
   {
     String ocn = null;
+    String lp = null;
 
     String orbKey = "-" + FUNCTIONAL_ORB;
+    String lpKey = "-" + LISTENER_PORT;
 
     if (args != null)
       if (args.length >= 2)
         {
           for (int i = 0; i < args.length - 1; i++)
             {
-              if (args [ i ].equals(orbKey))
-                ocn = args [ i + 1 ];
+              if (args[i].equals(orbKey))
+                ocn = args[i + 1];
+              if (args[i].equals(lpKey))
+                lp = args[i + 1];
             }
         }
+
+    if (lp != null && ocn == null)
+      ocn = DEFAULT_FOCUSED_ORB;
 
     ORB orb = createORB(props, ocn);
 
@@ -853,9 +908,9 @@ public abstract class ORB
 
   /**
    * List the initially available CORBA objects (services).
-   *
+   * 
    * @return a list of services.
-   *
+   * 
    * @see #resolve_initial_references(String)
    */
   public abstract String[] list_initial_services();
@@ -985,6 +1040,12 @@ public abstract class ORB
    * that runs on the given host at the given port. The ORB expects to find 
    * there the {@link org.omg.CosNaming.NamingContext} under the key 
    * "NameService.<br>
+   * 7. file://[file name] Read the object definition string from the 
+   * file system<br>
+   * 8. http://[url] Read the object definition string from the provided
+   * url.<br>
+   * 9. ftp://[url] Read the object definition string from the provided
+   * url.<br>
    * 
    * <p>The default port is always 2809. The default iiop version is 1.0
    * that now may not always be supported, so we would recommend to specify
@@ -1074,23 +1135,10 @@ public abstract class ORB
   protected abstract void set_parameters(Applet app, Properties props);
 
   /**
-   * Checks if the communication over network is allowed.
-   * @throws java.lang.SecurityException
+   * Get the property with the given name, searching in the standard
+   * places for the ORB properties.
    */
-  private static final void checkNetworkingPermission(String host, int port)
-                                               throws SecurityException
-  {
-    SecurityManager security = System.getSecurityManager();
-    if (security != null)
-      {
-        security.checkConnect(host, port);
-      }
-  }
-
-  /**
-   * Get the ORB class name.
-   */
-  private static String getORBName(Properties props, String property)
+  private static String getCumulatedProperty(Properties props, String property)
   {
     String orb_cn = null;
 
@@ -1105,7 +1153,7 @@ public abstract class ORB
 
     if (orb_cn == null)
       orb_cn = checkFile(property, "java.home", "lib");
-
+    
     return orb_cn;
   }
 
@@ -1148,10 +1196,10 @@ public abstract class ORB
 
   /**
    * Create ORB when its name is possibly known.
-   *
+   * 
    * @param props properties, possibly containing the ORB name.
-   * @param orbClassName the direct ORB class name, overriding
-   * other possible locations, or null if not specified.
+   * @param orbClassName the direct ORB class name, overriding other possible
+   * locations, or null if not specified.
    */
   private static ORB createORB(Properties props, String orbClassName)
   {
@@ -1159,15 +1207,21 @@ public abstract class ORB
 
     if (orbClassName == null)
       {
-        orbClassName = getORBName(props, FUNCTIONAL_ORB);
+        orbClassName = getCumulatedProperty(props, FUNCTIONAL_ORB);
 
         if (orbClassName == null)
-          orbClassName = DEFAULT_FUNCTIONAL_ORB;
+          {
+            String lp = getCumulatedProperty(props, LISTENER_PORT);
+            if (lp != null)
+              orbClassName = DEFAULT_FOCUSED_ORB;
+            else
+              orbClassName = DEFAULT_FUNCTIONAL_ORB;
+          }
       }
 
     try
       {
-        orb = (ORB) Class.forName(orbClassName).newInstance();
+        orb = (ORB) ObjectCreator.forName(orbClassName).newInstance();
       }
     catch (ClassNotFoundException ex)
       {

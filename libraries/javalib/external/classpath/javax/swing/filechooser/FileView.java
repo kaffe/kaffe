@@ -56,6 +56,7 @@ public abstract class FileView
    */
   public FileView() 
   {
+    // Nothing to do here.
   } 
 
   /**

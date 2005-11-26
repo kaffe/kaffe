@@ -46,8 +46,6 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.Vector;
 
 import javax.accessibility.Accessible;
@@ -213,10 +211,6 @@ public class JComboBox extends JComponent implements ItemSelectable,
     this(new DefaultComboBoxModel());
   }
 
-  private void writeObject(ObjectOutputStream stream) throws IOException
-  {
-  }
-
   /**
    * This method returns true JComboBox is editable and false otherwise
    *
@@ -311,7 +305,8 @@ public class JComboBox extends JComponent implements ItemSelectable,
     // Stores old data model for event notification.
     ComboBoxModel oldDataModel = dataModel;
     dataModel = newDataModel;
-
+    selectedItemReminder = newDataModel.getSelectedItem();
+    
     // Notifies the listeners of the model change.
     firePropertyChange("model", oldDataModel, dataModel);
   }
@@ -901,8 +896,9 @@ public class JComboBox extends JComponent implements ItemSelectable,
 
     // Fire ItemEvent to indicate that new item is selected    
     Object newSelection = getSelectedItem();
-    fireItemStateChanged(new ItemEvent(this, ItemEvent.ITEM_STATE_CHANGED,
-                                       newSelection, ItemEvent.SELECTED));
+    if (newSelection != null)
+      fireItemStateChanged(new ItemEvent(this, ItemEvent.ITEM_STATE_CHANGED,
+                                         newSelection, ItemEvent.SELECTED));
 
     // Fire Action Event to JComboBox's registered listeners					 				 
     fireActionEvent();
@@ -1026,19 +1022,19 @@ public class JComboBox extends JComponent implements ItemSelectable,
    */
   public void processKeyEvent(KeyEvent e)
   {
-  }
-
-  /**
-   * This method always returns false to indicate that JComboBox  itself is
-   * not focus traversable.
-   *
-   * @return false to indicate that JComboBox itself is not focus traversable.
-   *
-   * @deprecated
-   */
-  public boolean isFocusTraversable()
-  {
-    return false;
+    if (e.getKeyCode() == KeyEvent.VK_TAB)
+      setPopupVisible(false);
+    else if (keySelectionManager != null)
+      {
+        int i = keySelectionManager.selectionForKey(e.getKeyChar(),
+                                                    getModel());
+        if (i >= 0)
+          setSelectedIndex(i);
+        else
+          super.processKeyEvent(e);
+      }
+    else
+      super.processKeyEvent(e);
   }
 
   /**
@@ -1048,6 +1044,7 @@ public class JComboBox extends JComponent implements ItemSelectable,
    */
   public void setKeySelectionManager(KeySelectionManager aManager)
   {
+    keySelectionManager = aManager;
   }
 
   /**
@@ -1212,6 +1209,7 @@ public class JComboBox extends JComponent implements ItemSelectable,
 
     protected AccessibleJComboBox()
     {
+      // Nothing to do here.
     }
 
     public int getAccessibleChildrenCount()
@@ -1271,18 +1269,22 @@ public class JComboBox extends JComponent implements ItemSelectable,
 
     public void addAccessibleSelection(int value0)
     {
+      // TODO: Implement this properly.
     }
 
     public void removeAccessibleSelection(int value0)
     {
+      // TODO: Implement this properly.
     }
 
     public void clearAccessibleSelection()
     {
+      // TODO: Implement this properly.
     }
 
     public void selectAllAccessibleSelection()
     {
+      // TODO: Implement this properly.
     }
   }
 }

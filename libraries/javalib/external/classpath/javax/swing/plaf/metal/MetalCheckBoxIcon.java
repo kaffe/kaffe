@@ -44,11 +44,12 @@ import java.io.Serializable;
 
 import javax.swing.Icon;
 import javax.swing.JCheckBox;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.plaf.UIResource;
 
 /**
- * An {@link Icon} implementation for {@link JCheckBox}es in the
- * Metal Look &amp; Feel.
+ * An {@link Icon} used by the {@link MetalCheckBoxUI} class.
  *
  * @author Roman Kennke (roman@kennke.org)
  */
@@ -129,6 +130,9 @@ public class MetalCheckBoxIcon
    */
   public void paintIcon(Component c, Graphics g, int x, int y)
   {
+    if (UIManager.get("CheckBox.gradient") != null)
+      MetalUtils.paintGradient(g, x, y, getIconWidth(), getIconHeight(),
+                               SwingConstants.VERTICAL, "CheckBox.gradient");
     border.paintBorder(c, g, x, y, getIconWidth(), getIconHeight());
     JCheckBox cb = (JCheckBox) c;
     if (cb.isSelected())

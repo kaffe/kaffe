@@ -50,9 +50,9 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.InputMethodListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
@@ -72,7 +72,6 @@ import javax.swing.JViewport;
 import javax.swing.KeyStroke;
 import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
-import javax.swing.Timer;
 import javax.swing.TransferHandler;
 import javax.swing.UIManager;
 import javax.swing.event.CaretEvent;
@@ -89,6 +88,7 @@ public abstract class JTextComponent extends JComponent
   /**
    * AccessibleJTextComponent
    */
+  // FIXME: This inner class is a complete stub and needs to be implemented.
   public class AccessibleJTextComponent extends AccessibleJComponent
     implements AccessibleText, CaretListener, DocumentListener
   {
@@ -99,6 +99,7 @@ public abstract class JTextComponent extends JComponent
      */
     public AccessibleJTextComponent()
     {
+      // Nothing to do here.
     }
 
     /**
@@ -297,48 +298,6 @@ public abstract class JTextComponent extends JComponent
     {
       this.key = key;
       this.actionName = actionName;
-    }
-  }
-
-  /**
-   * The timer that lets the caret blink.
-   */
-  private class CaretBlinkTimer extends Timer implements ActionListener
-  {
-    /**
-     * Creates a new CaretBlinkTimer object with a default delay of 1 second.
-     */
-    public CaretBlinkTimer()
-    {
-      super(1000, null);
-      addActionListener(this);
-    }
-
-    /**
-     * Lets the caret blink.
-     */
-    public void actionPerformed(ActionEvent ev)
-    {
-      Caret c = caret;
-      if (c != null)
-        c.setVisible(!c.isVisible());
-    }
-
-    /**
-     * Updates the blink delay according to the current caret.
-     */
-    public void update()
-    {
-      stop();
-      Caret c = caret;
-      if (c != null)
-        {
-          setDelay(c.getBlinkRate());
-          if (editable)
-            start();
-          else
-            c.setVisible(false);
-        }
     }
   }
 
@@ -698,8 +657,6 @@ public abstract class JTextComponent extends JComponent
   private char focusAccelerator = '\0';
   private NavigationFilter navigationFilter;
 
-  private CaretBlinkTimer caretBlinkTimer;
-
   /**
    * Get a Keymap from the global keymap table, by name.
    *
@@ -907,7 +864,7 @@ public abstract class JTextComponent extends JComponent
     Hashtable acts = new Hashtable(actions.length);
     for (int i = 0; i < actions.length; ++i)
       acts.put(actions[i].getValue(Action.NAME), actions[i]);
-    for (int i = 0; i < bindings.length; ++i)
+      for (int i = 0; i < bindings.length; ++i)
       if (acts.containsKey(bindings[i].actionName))
         map.addActionForKeyStroke(bindings[i].key, (Action) acts.get(bindings[i].actionName));
   }
@@ -957,8 +914,6 @@ public abstract class JTextComponent extends JComponent
         creatingKeymap = true;
       }
 
-    caretBlinkTimer = new CaretBlinkTimer();
-
     setFocusable(true);
     setEditable(true);
     enableEvents(AWTEvent.KEY_EVENT_MASK);
@@ -966,17 +921,33 @@ public abstract class JTextComponent extends JComponent
     
     // need to do this after updateUI()
     if (creatingKeymap)
-      loadKeymap(defkeymap, 
-                 new KeyBinding[] { 
-                   new KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0),
-                                  DefaultEditorKit.backwardAction),
-                   new KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0),
-                                  DefaultEditorKit.forwardAction),
-                   new KeyBinding(KeyStroke.getKeyStroke("typed \b"),
-                                  DefaultEditorKit.deletePrevCharAction),
-                   new KeyBinding(KeyStroke.getKeyStroke("typed \u007f"),
-                                  DefaultEditorKit.deleteNextCharAction)                   
-                 },
+      loadKeymap(
+                 defkeymap,
+                 new KeyBinding[] {
+                     new KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0),
+                                    DefaultEditorKit.backwardAction),
+                     new KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0),
+                                    DefaultEditorKit.forwardAction),
+                     new KeyBinding(KeyStroke.getKeyStroke("typed \b"),
+                                    DefaultEditorKit.deletePrevCharAction),
+                     new KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_X, 
+                                                           KeyEvent.CTRL_DOWN_MASK),
+                                    DefaultEditorKit.cutAction),
+                     new KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_C, 
+                                                           KeyEvent.CTRL_DOWN_MASK),
+                                    DefaultEditorKit.copyAction),
+                     new KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_V, 
+                                                           KeyEvent.CTRL_DOWN_MASK),
+                                    DefaultEditorKit.pasteAction),
+                     new KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 
+                                                            KeyEvent.SHIFT_DOWN_MASK),
+                                     DefaultEditorKit.selectionBackwardAction),
+                     new KeyBinding(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 
+                                                           KeyEvent.SHIFT_DOWN_MASK),
+                                    DefaultEditorKit.selectionForwardAction),
+                     new KeyBinding(KeyStroke.getKeyStroke("typed \u007f"),
+                                    DefaultEditorKit.deleteNextCharAction)
+                                    },
                  getActions());
   }
 
@@ -1197,14 +1168,6 @@ public abstract class JTextComponent extends JComponent
     if (editable == newValue)
       return;
 
-    if (newValue == true)
-      caretBlinkTimer.start();
-    else
-      {
-        caretBlinkTimer.stop();
-        caret.setVisible(false);
-      }
-
     boolean oldValue = editable;
     editable = newValue;
     firePropertyChange("editable", oldValue, newValue);
@@ -1232,8 +1195,6 @@ public abstract class JTextComponent extends JComponent
     
     Caret oldCaret = caret;
     caret = newCaret;
-
-    caretBlinkTimer.update();
 
     if (caret != null)
       caret.install(this);
@@ -1402,7 +1363,7 @@ public abstract class JTextComponent extends JComponent
     start = Math.max(start, 0);
     start = Math.min(start, length);
 
-    end = Math.max(end, 0);
+    end = Math.max(end, start);
     end = Math.min(end, length);
 
     setCaretPosition(start);
@@ -1419,7 +1380,6 @@ public abstract class JTextComponent extends JComponent
 
   public synchronized void replaceSelection(String content)
   {
-    System.err.println("replaceSelection");
     int dot = caret.getDot();
     int mark = caret.getMark();
 
@@ -1673,5 +1633,20 @@ public abstract class JTextComponent extends JComponent
              throws IOException
   {
     output.write(getText());
-  }  
+  }
+
+  /**
+   * Returns the tooltip text for this text component for the given mouse
+   * event. This forwards the call to
+   * {@link TextUI#getToolTipText(JTextComponent, Point)}.
+   *
+   * @param ev the mouse event
+   *
+   * @return the tooltip text for this text component for the given mouse
+   *         event
+   */
+  public String getToolTipText(MouseEvent ev)
+  {
+    return getUI().getToolTipText(this, ev.getPoint());
+  }
 }

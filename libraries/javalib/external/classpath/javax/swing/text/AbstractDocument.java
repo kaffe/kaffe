@@ -535,38 +535,19 @@ public abstract class AbstractDocument implements Document, Serializable
     // Just return when no text to insert was given.
     if (text == null || text.length() == 0)
       return;
-    
     DefaultDocumentEvent event =
       new DefaultDocumentEvent(offset, text.length(),
 			       DocumentEvent.EventType.INSERT);
     
     writeLock();
-    UndoableEdit temp = content.insertString(offset, text);
-    writeUnlock();
-    
-    GapContent.UndoInsertString changes = null;
-    if (content instanceof GapContent)
-      changes = (GapContent.UndoInsertString) temp;
+    UndoableEdit undo = content.insertString(offset, text);
     insertUpdate(event, attributes);
+    writeUnlock();
 
-    if (changes != null)
-      {
-        // We need to add an ElementChange to our DocumentEvent
-        // so let's set up the parameters
-        Element root = getDefaultRootElement();
-        int start = root.getElementIndex(changes.where);
-        int end = root.getElementIndex(changes.where+changes.length);
-
-        Element[] removed = new Element[1];
-        removed[0] = root;
-        Element[] added = new Element[end - start + 1];
-        for (int i = start; i <= end; i++)
-          added[i - start] = root.getElement(i);
-    
-        ElementEdit edit = new ElementEdit(root, root.getElementIndex(changes.where), removed, added);    
-        event.addEdit(edit);
-      }
-    fireInsertUpdate(event);
+    if (event.modified)
+      fireInsertUpdate(event);
+    if (undo != null)
+      fireUndoableEditUpdate(new UndoableEditEvent(this, undo));
   }
 
   /**
@@ -692,20 +673,8 @@ public abstract class AbstractDocument implements Document, Serializable
       new DefaultDocumentEvent(offset, length,
 			       DocumentEvent.EventType.REMOVE);
     
-    // Here we set up the parameters for an ElementChange, if one
-    // needs to be added to the DocumentEvent later
-    Element root = getDefaultRootElement();
-    int start = root.getElementIndex(offset);
-    int end = root.getElementIndex(offset + length);
-    
-    Element[] removed = new Element[end - start + 1];
-    for (int i = start; i <= end; i++)
-      removed[i - start] = root.getElement(i);
-    
     removeUpdate(event);
 
-    Element[] added = new Element[1];
-    added[0] = root.getElement(start);
     boolean shouldFire = content.getString(offset, length).length() != 0;
     
     writeLock();
@@ -713,17 +682,6 @@ public abstract class AbstractDocument implements Document, Serializable
     writeUnlock();
     
     postRemoveUpdate(event);
-    
-    GapContent.UndoRemove changes = null;
-    if (content instanceof GapContent)
-      changes = (GapContent.UndoRemove) temp;
-
-    if (changes != null)
-      {
-        // We need to add an ElementChange to our DocumentEvent
-        ElementEdit edit = new ElementEdit (root, start, removed, added);
-        event.addEdit(edit);
-      }
     
     if (shouldFire)
       fireRemoveUpdate(event);
@@ -861,6 +819,7 @@ public abstract class AbstractDocument implements Document, Serializable
    */
   public void setAsynchronousLoadPriority(int p)
   {
+    // TODO: Implement this properly.
   }
 
   /**
@@ -909,7 +868,7 @@ public abstract class AbstractDocument implements Document, Serializable
   {
     synchronized (documentCV)
     {
-        if (currentWriter.equals(Thread.currentThread()))
+        if (Thread.currentThread().equals(currentWriter))
           {
             currentWriter = null;
             documentCV.notifyAll();
@@ -1575,6 +1534,7 @@ public abstract class AbstractDocument implements Document, Serializable
                                                       + "must not be thrown "
                                                       + "here.");
               err.initCause(ex);
+	      throw err;
             }
           b.append("]\n");
         }
@@ -1850,6 +1810,12 @@ public abstract class AbstractDocument implements Document, Serializable
     Hashtable changes;
 
     /**
+     * Indicates if this event has been modified or not. This is used to
+     * determine if this event is thrown.
+     */
+    boolean modified;
+
+    /**
      * Creates a new <code>DefaultDocumentEvent</code>.
      *
      * @param offset the starting offset of the change
@@ -1863,6 +1829,7 @@ public abstract class AbstractDocument implements Document, Serializable
       this.length = length;
       this.type = type;
       changes = new Hashtable();
+      modified = false;
     }
 
     /**
@@ -1877,6 +1844,7 @@ public abstract class AbstractDocument implements Document, Serializable
       // XXX - Fully qualify ElementChange to work around gcj bug #2499.
       if (edit instanceof DocumentEvent.ElementChange)
         {
+          modified = true;
           DocumentEvent.ElementChange elEdit =
             (DocumentEvent.ElementChange) edit;
           changes.put(elEdit.getElement(), elEdit);
@@ -2161,7 +2129,10 @@ public abstract class AbstractDocument implements Document, Serializable
      */
     public String getName()
     {
-      return ContentElementName;
+      String name = super.getName();
+      if (name == null)
+        name = ContentElementName;
+      return name;
     }
 
     /**

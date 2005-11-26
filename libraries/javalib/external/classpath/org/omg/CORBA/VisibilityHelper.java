@@ -38,7 +38,7 @@ exception statement from your version. */
 
 package org.omg.CORBA;
 
-import gnu.CORBA.Restricted_ORB;
+import gnu.CORBA.OrbRestricted;
 
 import org.omg.CORBA.portable.InputStream;
 import org.omg.CORBA.portable.OutputStream;
@@ -83,9 +83,9 @@ public abstract class VisibilityHelper
     if (typeCode == null)
       {
         TypeCode tshort =
-          Restricted_ORB.Singleton.get_primitive_tc(TCKind.tk_short);
+          OrbRestricted.Singleton.get_primitive_tc(TCKind.tk_short);
         typeCode =
-          Restricted_ORB.Singleton.create_alias_tc(id(), "Visibility", tshort);
+          OrbRestricted.Singleton.create_alias_tc(id(), "Visibility", tshort);
       }
     return typeCode;
   }

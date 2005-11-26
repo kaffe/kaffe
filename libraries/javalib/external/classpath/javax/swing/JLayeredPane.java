@@ -38,9 +38,12 @@ exception statement from your version. */
 
 package javax.swing;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.awt.Shape;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
@@ -158,6 +161,8 @@ public class JLayeredPane extends JComponent implements Accessible
   TreeMap layers;               // Layer Number (Integer) -> Layer Size (Integer)
   Hashtable componentToLayer;   // Component -> Layer Number (Integer)
 
+  private transient Rectangle rectCache;
+  
   public JLayeredPane()
   {
     layers = new TreeMap ();
@@ -250,29 +255,37 @@ public class JLayeredPane extends JComponent implements Accessible
     ret[1] = getComponents ().length;
     Iterator i = layers.entrySet ().iterator ();
     while (i.hasNext())
-	    {
+      {
         Map.Entry pair = (Map.Entry) i.next();
         Integer layerNum = (Integer) pair.getKey ();
         Integer layerSz = (Integer) pair.getValue ();
-        if (layerNum.intValue() == layer.intValue())
+        int layerInt = layerNum.intValue();
+        if (layerInt == layer.intValue())
           {
             ret[0] = ret[1] - layerSz.intValue ();
-            return ret;
+            break;
+          }
+        // In the following case there exists no layer with the specified
+        // number, so we return an empty interval here with the index at which
+        // such a layer would be inserted
+        else if (layerInt > layer.intValue())
+          {
+            ret[1] = ret[0];
+            break;
           }
         else
           {
             ret[1] -= layerSz.intValue ();
           }
-	    }
-    // should have found the layer during iteration
-    throw new IllegalArgumentException ();
+      }
+    return ret;
   }
 
   /**
    * Increments the recorded size of a given layer.
    *
    * @param layer the layer number to increment.
-   * @see #incrLayer()
+   * @see #incrLayer
    */
   private void incrLayer(Integer layer)
   {
@@ -286,7 +299,7 @@ public class JLayeredPane extends JComponent implements Accessible
    * Decrements the recorded size of a given layer.
    *
    * @param layer the layer number to decrement.
-   * @see #decrLayer()
+   * @see #incrLayer
    */
   private void decrLayer(Integer layer)
   {
@@ -580,6 +593,7 @@ public class JLayeredPane extends JComponent implements Accessible
     decrLayer(new Integer(layer));
     componentToLayer.remove(c);
     super.remove(index);
+    // FIXME: Figure out if this call is correct.
     revalidate();
   }
 
@@ -628,7 +642,7 @@ public class JLayeredPane extends JComponent implements Accessible
    * @param index an ignored parameter, for compatibility.
    */
   protected void addImpl(Component comp, Object layerConstraint, int index) 
-  {        	
+  {
     Integer layer;
     if (layerConstraint != null && layerConstraint instanceof Integer)
       layer = (Integer) layerConstraint;
@@ -642,10 +656,8 @@ public class JLayeredPane extends JComponent implements Accessible
     componentToLayer.put (comp, layer);
     incrLayer (layer);
 	
-    super.addImpl(comp, null, newIdx);	
-    revalidate();
-    repaint();
-  }     
+    super.addImpl(comp, null, newIdx);
+  }
 
   /**
    * Sets the layer property for a JComponent.
@@ -682,8 +694,25 @@ public class JLayeredPane extends JComponent implements Accessible
    */
   public void paint(Graphics g)
   {
-    g.setColor(getBackground());
-    g.fillRect(0, 0, getWidth(), getHeight());
+    if (isOpaque())
+      {
+        Color oldColor = g.getColor();
+        Rectangle clip = g.getClipBounds();
+        g.setColor(getBackground());
+        g.fillRect(clip.x, clip.y, clip.width, clip.height);
+        g.setColor(oldColor);
+      }
     super.paint(g);
+  }
+
+  /**
+   * Overridden to return <code>false</code>, since <code>JLayeredPane</code>
+   * cannot guarantee that its children don't overlap.
+   *
+   * @return <code>false</code>
+   */
+  public boolean isOptimizedDrawingEnabled()
+  {
+    return false;
   }
 }

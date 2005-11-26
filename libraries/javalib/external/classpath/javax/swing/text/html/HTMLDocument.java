@@ -45,7 +45,6 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Element;
 import javax.swing.text.ElementIterator;
-import javax.swing.text.AbstractDocument.BranchElement;
 import javax.swing.text.html.HTML.Tag;
 
 /**
@@ -186,6 +185,7 @@ public class HTMLDocument extends DefaultStyledDocument
 
   public void processHTMLFrameHyperlinkEvent(HTMLFrameHyperlinkEvent event)
   {
+    // TODO: Implement this properly.
   }
   
   /**

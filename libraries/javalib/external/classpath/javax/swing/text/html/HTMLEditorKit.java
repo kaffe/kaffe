@@ -46,6 +46,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.StyledEditorKit;
+import javax.swing.text.html.parser.ParserDelegator;
 
 /**
  * This class is NOT implemented. This file currently holds only
@@ -79,7 +80,7 @@ public class HTMLEditorKit
                               )
                         throws IOException;
   }
-  
+
   /**
    * The "hook" that receives all information about the HTML document
    * structure while parsing it. The methods are invoked by parser
@@ -97,9 +98,9 @@ public class HTMLEditorKit
     /**
      * The parser calls this method after it finishes parsing the document.
      */
-    public void flush()
-               throws BadLocationException
+    public void flush() throws BadLocationException
     {
+      // TODO: What to do here, if anything?
     }
 
     /**
@@ -109,6 +110,7 @@ public class HTMLEditorKit
      */
     public void handleComment(char[] comment, int position)
     {
+      // TODO: What to do here, if anything?
     }
 
     /**
@@ -119,6 +121,7 @@ public class HTMLEditorKit
      */
     public void handleEndOfLineString(String end_of_line)
     {
+      // TODO: What to do here, if anything?
     }
 
     /**
@@ -130,6 +133,7 @@ public class HTMLEditorKit
      */
     public void handleEndTag(HTML.Tag tag, int position)
     {
+      // TODO: What to do here, if anything?
     }
 
     /**
@@ -140,6 +144,7 @@ public class HTMLEditorKit
      */
     public void handleError(String message, int position)
     {
+      // TODO: What to do here, if anything?
     }
 
     /**
@@ -150,9 +155,9 @@ public class HTMLEditorKit
      * @param position The tag position in the text being parsed.
      */
     public void handleSimpleTag(HTML.Tag tag, MutableAttributeSet attributes,
-                                int position
-                               )
+                                int position)
     {
+      // TODO: What to do here, if anything?
     }
 
     /**
@@ -166,6 +171,7 @@ public class HTMLEditorKit
                                int position
                               )
     {
+      // TODO: What to do here, if anything?
     }
 
     /**
@@ -175,6 +181,7 @@ public class HTMLEditorKit
      */
     public void handleText(char[] text, int position)
     {
+      // TODO: What to do here, if anything?
     }
   }
 
@@ -248,15 +255,26 @@ public class HTMLEditorKit
    * The "ident paragraph right" action.
    */
   public static final String PARA_INDENT_RIGHT = "html-para-indent-right";
-  
+
   /**
    * Create a text storage model for this type of editor.
-   * 
+   *
    * @return the model
    */
   public Document createDefaultDocument()
   {
     HTMLDocument document = new HTMLDocument();
     return document;
+  }
+
+  /**
+   * Get the parser that this editor kit uses for reading HTML streams. This
+   * method can be overridden to use the alternative parser.
+   *
+   * @return the HTML parser (by default, {@link ParserDelegator}).
+   */
+  protected Parser getParser()
+  {
+    return new ParserDelegator();
   }
 }

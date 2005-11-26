@@ -90,7 +90,8 @@ public class BasicTextFieldUI extends BasicTextUI
   {
     if (event.getPropertyName().equals("editable"))
       {
-        if (textComponent.isEditable())
+        boolean editable = ((Boolean) event.getNewValue()).booleanValue();
+        if (editable)
           textComponent.setBackground(background);
         else 
           textComponent.setBackground(inactiveBackground);

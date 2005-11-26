@@ -39,7 +39,7 @@ exception statement from your version. */
 package org.omg.CORBA;
 
 import gnu.CORBA.Minor;
-import gnu.CORBA.Restricted_ORB;
+import gnu.CORBA.OrbRestricted;
 
 import org.omg.CORBA.portable.BoxedValueHelper;
 import org.omg.CORBA.portable.InputStream;
@@ -74,7 +74,7 @@ public class WStringValueHelper
    * The Wide String typecode.
    */
   private static final TypeCode twString =
-    Restricted_ORB.Singleton.create_wstring_tc(0);
+    OrbRestricted.Singleton.create_wstring_tc(0);
 
   /**
    * Returns the String Value repository Id.
@@ -182,7 +182,7 @@ public class WStringValueHelper
   {
     if (typecode == null)
       {
-        ORB orb = Restricted_ORB.Singleton;
+        ORB orb = OrbRestricted.Singleton;
         typecode =
           orb.create_value_box_tc(id(), "WStringValue", twString);
       }

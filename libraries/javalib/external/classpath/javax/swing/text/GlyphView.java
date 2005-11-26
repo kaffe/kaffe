@@ -72,6 +72,7 @@ public class GlyphView extends View implements TabableView, Cloneable
      */
     public GlyphPainter()
     {
+      // Nothing to do here.
     }
 
     /**
@@ -456,9 +457,6 @@ public class GlyphView extends View implements TabableView, Cloneable
                            Bias[] biasRet)
     {
       Rectangle b = a.getBounds();
-      assert b.contains(x, y) : "The coordinates are expected to be within the "
-                                + "view's bounds: x=" + x + ", y=" + y
-                                + "a=" + a;
       int pos = getBoundedPosition(v, v.getStartOffset(), b.x, x - b.x);
       return pos;
     }
@@ -665,8 +663,11 @@ public class GlyphView extends View implements TabableView, Cloneable
       }
     catch (BadLocationException ex)
       {
-        throw new AssertionError("BadLocationException must not be thrown "
-                                 + "here");
+	AssertionError ae;
+        ae = new AssertionError("BadLocationException must not be thrown "
+				+ "here");
+	ae.initCause(ex);
+	throw ae;
       }
     FontMetrics fm = null; // Fetch font metrics somewhere.
     return Utilities.getTabbedTextWidth(seg, fm, 0, null, p0);
@@ -713,8 +714,11 @@ public class GlyphView extends View implements TabableView, Cloneable
       }
     catch (BadLocationException ex)
       {
-        throw new AssertionError("BadLocationException should not be "
-                                 + "thrown here. p0 = " + p0 + ", p1 = " + p1);
+	AssertionError ae;
+        ae = new AssertionError("BadLocationException should not be "
+				+ "thrown here. p0 = " + p0 + ", p1 = " + p1);
+	ae.initCause(ex);
+	throw ae;
       }
 
     return txt;

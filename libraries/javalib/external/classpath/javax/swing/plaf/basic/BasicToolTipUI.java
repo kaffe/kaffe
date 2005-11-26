@@ -48,10 +48,9 @@ import java.awt.Toolkit;
 
 import javax.swing.JComponent;
 import javax.swing.JToolTip;
+import javax.swing.LookAndFeel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.UIDefaults;
-import javax.swing.UIManager;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.ToolTipUI;
 
@@ -149,11 +148,9 @@ public class BasicToolTipUI extends ToolTipUI
    */
   protected void installDefaults(JComponent c)
   {
-    UIDefaults defaults = UIManager.getLookAndFeelDefaults();
-    c.setBackground(defaults.getColor("ToolTip.background"));
-    c.setForeground(defaults.getColor("ToolTip.foreground"));
-    c.setFont(defaults.getFont("ToolTip.font"));
-    c.setBorder(defaults.getBorder("ToolTip.border"));
+    LookAndFeel.installColorsAndFont(c, "ToolTip.background",
+                                     "ToolTip.foreground", "ToolTip.font");
+    LookAndFeel.installBorder(c, "ToolTip.border");
   }
 
   /**
@@ -163,6 +160,7 @@ public class BasicToolTipUI extends ToolTipUI
    */
   protected void installListeners(JComponent c)
   {
+    // TODO: Implement this properly.
   }
 
   /**
@@ -231,6 +229,7 @@ public class BasicToolTipUI extends ToolTipUI
    */
   protected void uninstallListeners(JComponent c)
   {
+    // TODO: Implement this properly.
   }
 
   /**

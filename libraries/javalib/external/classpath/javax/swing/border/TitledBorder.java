@@ -58,8 +58,7 @@ import javax.swing.UIManager;
  *
  * @author Sascha Brawer (brawer@dandelis.ch)
  */
-public class TitledBorder
-  extends AbstractBorder
+public class TitledBorder extends AbstractBorder
 {
   /**
    * A value for the <code>titlePosition</code> property that vertically

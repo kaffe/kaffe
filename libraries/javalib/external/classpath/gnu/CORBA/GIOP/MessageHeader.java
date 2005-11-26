@@ -44,8 +44,8 @@ import gnu.CORBA.CDR.BigEndianInputStream;
 import gnu.CORBA.CDR.BigEndianOutputStream;
 import gnu.CORBA.CDR.LittleEndianInputStream;
 import gnu.CORBA.CDR.LittleEndianOutputStream;
-import gnu.CORBA.CDR.abstractDataInputStream;
-import gnu.CORBA.CDR.abstractDataOutputStream;
+import gnu.CORBA.CDR.AbstractDataInput;
+import gnu.CORBA.CDR.AbstractDataOutput;
 
 import org.omg.CORBA.MARSHAL;
 import org.omg.CORBA.portable.IDLEntity;
@@ -292,7 +292,7 @@ public class MessageHeader
 
         version = Version.read_version(istream);
 
-        abstractDataInputStream din;
+        AbstractDataInput din;
 
         flags = (byte) istream.read();
 
@@ -336,7 +336,7 @@ public class MessageHeader
   {
     try
       {
-        abstractDataOutputStream dout;
+        AbstractDataOutput dout;
 
         if (isBigEndian())
           dout = new BigEndianOutputStream(out);

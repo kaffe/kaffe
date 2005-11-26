@@ -108,10 +108,10 @@ public class JSpinner extends JComponent
     /**
      * DOCUMENT ME!
      */
-    public void commitEdit()
-      throws ParseException
+    public void commitEdit() throws ParseException
     {
-    } /* TODO */
+      // TODO: Implement this properly.
+    }
 
     /**
      * DOCUMENT ME!
@@ -184,7 +184,8 @@ public class JSpinner extends JComponent
      */
     public void propertyChange(PropertyChangeEvent event)
     {
-    } /* TODO */
+      // TODO: Implement this properly.
+    }
     
     /**
      * DOCUMENT ME!
@@ -193,11 +194,12 @@ public class JSpinner extends JComponent
      */
     public void stateChanged(ChangeEvent event)
     {
-    } /* TODO */
+      // TODO: Implement this properly.
+    }
     
-    /* no-ops */
     public void removeLayoutComponent(Component child)
     {
+      // Nothing to do here.
     }
 
     /**
@@ -208,6 +210,7 @@ public class JSpinner extends JComponent
      */
     public void addLayoutComponent(String name, Component child)
     {
+      // Nothing to do here.
     }
   }
 

@@ -38,10 +38,10 @@ exception statement from your version. */
 
 package gnu.CORBA.Poa;
 
-import gnu.CORBA.CDR.cdrOutput;
+import gnu.CORBA.CDR.AbstractCdrOutput;
 import gnu.CORBA.IOR;
 import gnu.CORBA.IorProvider;
-import gnu.CORBA.streamRequest;
+import gnu.CORBA.StreamBasedRequest;
 
 import org.omg.CORBA.ARG_INOUT;
 import org.omg.CORBA.Bounds;
@@ -251,7 +251,7 @@ public class LocalDelegate
     operation = method;
 
     // Check if the object is not explicitly deactivated.
-    activeObjectMap.Obj e = poa.aom.get(Id);
+    AOM.Obj e = poa.aom.get(Id);
     if (e != null && e.isDeactiveted())
       {
         if (poa.servant_activator != null || poa.servant_locator != null)
@@ -301,20 +301,20 @@ public class LocalDelegate
   {
     try
       {
-        streamRequest sr = (streamRequest) output;
+        StreamBasedRequest sr = (StreamBasedRequest) output;
 
         LocalRequest lr = (LocalRequest) sr.request;
         InvokeHandler handler = lr.object.getHandler(lr.operation(), lr.cookie,
           false);
 
-        if (handler instanceof dynImpHandler)
+        if (handler instanceof DynamicImpHandler)
           {
             // The local request known how to handle it, but the different
             // method must be called.
             lr.invoke();
 
             // The encapsulation will inherit orb, endian, charsets, etc.
-            cdrOutput buf = sr.createEncapsulation();
+            AbstractCdrOutput buf = sr.createEncapsulation();
 
             // Write all request parameters to the buffer stream.
             if (lr.env().exception() != null)

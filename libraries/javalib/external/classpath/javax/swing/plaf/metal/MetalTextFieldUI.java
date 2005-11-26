@@ -38,14 +38,17 @@ exception statement from your version. */
 
 package javax.swing.plaf.metal;
 
-import java.util.HashMap;
+import java.beans.PropertyChangeEvent;
 
 import javax.swing.JComponent;
+import javax.swing.JTextField;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicTextFieldUI;
 
-public class MetalTextFieldUI
-  extends BasicTextFieldUI
+/**
+ * A UI delegate for the {@link JTextField} component.
+ */
+public class MetalTextFieldUI extends BasicTextFieldUI
 {
   /**
    * Constructs a new instance of MetalTextFieldUI.
@@ -56,14 +59,24 @@ public class MetalTextFieldUI
   }
 
   /**
-   * Returns an instance of MetalTextFieldUI.
+   * Returns a new instance of <code>MetalTextFieldUI</code>.
    *
    * @param component the component for which we return an UI instance
    *
-   * @return an instance of MetalTextFieldUI
+   * @return A new instance of <code>MetalTextFieldUI</code>.
    */
   public static ComponentUI createUI(JComponent component)
   {
     return new MetalTextFieldUI();
+  }
+  
+  /**
+   * This method gets called when a bound property is changed on the associated
+   * JTextComponent. This is a hook which UI implementations may change to 
+   * reflect how the UI displays bound properties of JTextComponent subclasses.
+   */
+  public void propertyChange(PropertyChangeEvent evt)
+  {
+    super.propertyChange(evt);
   }
 }

@@ -45,8 +45,9 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 
 import javax.swing.AbstractButton;
+import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.UIDefaults;
+import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.UIResource;
@@ -54,8 +55,7 @@ import javax.swing.plaf.basic.BasicButtonListener;
 import javax.swing.plaf.basic.BasicButtonUI;
 
 /**
- * The Metal Look &amp; Feel implementation for
- * {@link javax.swing.AbstractButton}s.
+ * A UI delegate for the {@link JButton} component.
  *
  * @author Roman Kennke (roman@kennke.org)
  */
@@ -78,10 +78,9 @@ public class MetalButtonUI
   public MetalButtonUI()
   {
     super();
-    UIDefaults def = UIManager.getLookAndFeelDefaults();
-    focusColor = def.getColor(getPropertyPrefix() + "focus");
-    selectColor = def.getColor(getPropertyPrefix() + "select");
-    disabledTextColor = def.getColor(getPropertyPrefix() + "disabledText");
+    focusColor = UIManager.getColor(getPropertyPrefix() + "focus");
+    selectColor = UIManager.getColor(getPropertyPrefix() + "select");
+    disabledTextColor = UIManager.getColor(getPropertyPrefix() + "disabledText");
   }
 
   /**
@@ -135,11 +134,8 @@ public class MetalButtonUI
   public void installDefaults(AbstractButton button)
   {
     super.installDefaults(button);
-    if (button.isRolloverEnabled())
-      {
-        if (button.getBorder() instanceof UIResource)
-          button.setBorder(MetalBorders.getRolloverBorder());
-      }
+    button.setRolloverEnabled(UIManager.getBoolean(
+                                            getPropertyPrefix() + "rollover"));
   }
     
   /**
@@ -148,8 +144,7 @@ public class MetalButtonUI
   public void uninstallDefaults(AbstractButton button) 
   {
     super.uninstallDefaults(button);
-    if (button.getBorder() instanceof UIResource)
-      button.setBorder(null);
+    button.setRolloverEnabled(false);
   }
 
   /**
@@ -192,13 +187,13 @@ public class MetalButtonUI
    */
   protected void paintFocus(Graphics g, AbstractButton b, Rectangle viewRect,
           Rectangle textRect, Rectangle iconRect) {
-    if (b.hasFocus() && b.isFocusPainted())
+    if (b.isEnabled() && b.hasFocus() && b.isFocusPainted())
     {
       Color savedColor = g.getColor();
       g.setColor(getFocusColor());
       Rectangle focusRect = iconRect.union(textRect);
-      g.drawRect(focusRect.x - 1, focusRect.y - 1,
-                 focusRect.width + 1, focusRect.height + 1);
+      g.drawRect(focusRect.x - 1, focusRect.y,
+                 focusRect.width + 1, focusRect.height);
       g.setColor(savedColor);
     }
   }
@@ -229,5 +224,25 @@ public class MetalButtonUI
         g.setColor(getDisabledTextColor());
         g.drawString(text, textRect.x, textRect.y + fm.getAscent());
       }  
+  }
+
+  /**
+   * If the property <code>Button.gradient</code> is set, then a gradient is
+   * painted as background, otherwise the normal superclass behaviour is
+   * called.
+   */
+  public void update(Graphics g, JComponent c)
+  {
+    AbstractButton b = (AbstractButton) c;
+    if (b.isOpaque() && UIManager.get(getPropertyPrefix() + "gradient") != null
+        && !b.getModel().isPressed() && b.isEnabled())
+      {
+        MetalUtils.paintGradient(g, 0, 0, c.getWidth(), c.getHeight(),
+                                 SwingConstants.VERTICAL,
+                                 getPropertyPrefix() + "gradient");
+        paint(g, c);
+      }
+    else
+      super.update(g, c);
   }
 }

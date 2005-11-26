@@ -430,7 +430,7 @@ public class BorderLayout implements LayoutManager2, java.io.Serializable
    */
   public float getLayoutAlignmentX(Container parent)
   {
-    return(parent.getAlignmentX());
+    return 0.5F;
   }
 
   /**
@@ -445,7 +445,7 @@ public class BorderLayout implements LayoutManager2, java.io.Serializable
    */
   public float getLayoutAlignmentY(Container parent)
   {
-    return(parent.getAlignmentY());
+    return 0.5F;
   }
 
   /**

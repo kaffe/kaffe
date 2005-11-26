@@ -65,9 +65,9 @@ import javax.swing.BoundedRangeModel;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JSlider;
+import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -709,16 +709,14 @@ public class BasicSliderUI extends SliderUI
    */
   protected void installDefaults(JSlider slider)
   {
-    UIDefaults defaults = UIManager.getLookAndFeelDefaults();
-
-    slider.setForeground(defaults.getColor("Slider.foreground"));
-    slider.setBackground(defaults.getColor("Slider.background"));
-    shadowColor = defaults.getColor("Slider.shadow");
-    highlightColor = defaults.getColor("Slider.highlight");
-    focusColor = defaults.getColor("Slider.focus");
-    slider.setBorder(defaults.getBorder("Slider.border"));
+    LookAndFeel.installColors(slider, "Slider.background",
+                              "Slider.foreground");
+    LookAndFeel.installBorder(slider, "Slider.border");
+    shadowColor = UIManager.getColor("Slider.shadow");
+    highlightColor = UIManager.getColor("Slider.highlight");
+    focusColor = UIManager.getColor("Slider.focus");
+    focusInsets = UIManager.getInsets("Slider.focusInsets");
     slider.setOpaque(true);
-    focusInsets = defaults.getInsets("Slider.focusInsets");
   }
 
   /**

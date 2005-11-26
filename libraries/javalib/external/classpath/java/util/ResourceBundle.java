@@ -419,7 +419,11 @@ public abstract class ResourceBundle
 	  }
       }
 
-    throw new MissingResourceException("Bundle " + baseName + " not found",
+    throw new MissingResourceException("Bundle " + baseName 
+				       + " not found for locale "
+				       + locale
+				       + " by classloader "
+				       + classLoader,
 				       baseName, "");
   }
 

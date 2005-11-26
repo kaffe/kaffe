@@ -45,6 +45,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.LayoutManager;
+import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
@@ -375,6 +376,11 @@ public class BasicSplitPaneDivider extends Container
       {
 	dividerSize = getSize();
 	border.paintBorder(this, g, 0, 0, dividerSize.width, dividerSize.height);
+      }
+    if (splitPane.isOneTouchExpandable())
+      {
+        ((BasicArrowButton) rightButton).paint(g);
+        ((BasicArrowButton) leftButton).paint(g);
       }
   }
 
@@ -802,6 +808,7 @@ public class BasicSplitPaneDivider extends Container
      */
     protected DividerLayout()
     {
+      // Nothing to do here.
     }
 
     /**

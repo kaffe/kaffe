@@ -56,7 +56,9 @@ public abstract class FileFilter
   /**
    * Default constructor.
    */
-  public FileFilter() {
+  public FileFilter()
+  {
+    // Nothing to do here.
   }
 
   /**

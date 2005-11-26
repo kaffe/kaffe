@@ -73,7 +73,6 @@ import javax.swing.event.TreeWillExpandListener;
 import javax.swing.plaf.TreeUI;
 import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.DefaultTreeSelectionModel;
 import javax.swing.tree.ExpandVetoException;
@@ -84,9 +83,7 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-public class JTree
-		extends	JComponent
-			implements Scrollable, Accessible
+public class JTree extends JComponent implements Scrollable, Accessible
 {
 
   /**
@@ -977,7 +974,7 @@ public class JTree
     /**
      * Returns the number of items currently selected.
      * 
-     * @param the number of selected accessibles.
+     * @return the number of selected accessibles.
      */
     public int getAccessibleSelectionCount()
     {
@@ -1194,6 +1191,7 @@ public class JTree
      */
     protected TreeModelHandler()
     {
+      // Nothing to do here.
     }
 
     /**
@@ -1268,6 +1266,7 @@ public class JTree
      */
     protected TreeSelectionRedirector()
     {
+      // Nothing to do here.
     }
 
     /**
@@ -1303,6 +1302,7 @@ public class JTree
      */
     protected EmptySelectionModel()
     {
+      // Nothing to do here.
     }
 
     /**
@@ -1480,7 +1480,7 @@ public class JTree
     updateUI();
     setRootVisible(true);
     setModel(model);
-    setSelectionModel(EmptySelectionModel.sharedInstance());
+    setSelectionModel(new EmptySelectionModel());
   }
 
   /**
@@ -1585,8 +1585,6 @@ public class JTree
   public void updateUI()
   {
     setUI((TreeUI) UIManager.getUI(this));
-    revalidate();
-    repaint();
   }
 
   /**
@@ -1601,13 +1599,13 @@ public class JTree
 
   /**
    * Gets the AccessibleContext associated with this
-   * <code>JToggleButton</code>.
+   * <code>JTree</code>.
    * 
    * @return the associated context
    */
   public AccessibleContext getAccessibleContext()
   {
-    return null;
+    return new AccessibleJTree();
   }
 
   /**
@@ -1632,14 +1630,14 @@ public class JTree
     return 1;
   }
 
-  public boolean getScrollableTracksViewportWidth()
+  public boolean getScrollableTracksViewportHeight()
   {
     if (getParent() instanceof JViewport)
       return ((JViewport) getParent()).getHeight() > getPreferredSize().height;
     return false;
   }
 
-  public boolean getScrollableTracksViewportHeight()
+  public boolean getScrollableTracksViewportWidth()
   {
     if (getParent() instanceof JViewport)
       return ((JViewport) getParent()).getWidth() > getPreferredSize().width;
@@ -2048,13 +2046,27 @@ public class JTree
   {
     if (path == null)
       return;
-
+    
+    Object[] oPath = path.getPath();
+    TreePath temp = new TreePath(oPath[0]);
+    boolean stop = false;
+    int i = 1;
+    while (!stop)
+      {
+        while (isVisible(temp))
+          if (i < oPath.length)
+            temp = temp.pathByAddingChild(oPath[i++]);
+          else
+            {
+              stop = true;
+              break;
+            }
+        makeVisible(temp);
+      }
     Rectangle rect = getPathBounds(path);
-
-    if (rect == null)
-      return;
-
     scrollRectToVisible(rect);
+    revalidate();
+    repaint();
   }
 
   public void scrollRowToVisible(int row)
@@ -2333,6 +2345,7 @@ public class JTree
       }
     catch (ExpandVetoException ev)
       {
+        // We do nothing if attempt has been vetoed.
       }
     setExpandedState(path, false);
     fireTreeCollapsed(path);
@@ -2351,8 +2364,8 @@ public class JTree
 
   public void expandPath(TreePath path)
   {
-    // Don't expand if last path component is a leaf node.
-    if ((path == null) || (treeModel.isLeaf(path.getLastPathComponent())))
+    // Don't expand if path is null
+    if (path == null)
       return;
 
     try
@@ -2361,6 +2374,7 @@ public class JTree
       }
     catch (ExpandVetoException ev)
       {
+        // We do nothing if attempt has been vetoed.
       }
 
     setExpandedState(path, true);
@@ -2575,7 +2589,7 @@ public class JTree
 
     if (!isExpanded(parent) && parent != null)
       doExpandParents(parent, false);
-
+    
     nodeStates.put(path, state ? EXPANDED : COLLAPSED);
   }
 
@@ -2583,7 +2597,6 @@ public class JTree
   {
     if (path == null)
       return;
-    TreePath parent = path.getParentPath();
 
     doExpandParents(path, state);
   }
@@ -2637,7 +2650,7 @@ public class JTree
   {
     if (path == null)
       return;
-
+    
     expandPath(path.getParentPath());
   }
 
@@ -2885,7 +2898,7 @@ public class JTree
           }
       }
   }
-  
+
   /**
    * Sent when the tree has changed enough that we need to resize the bounds, 
    * but not enough that we need to remove the expanded node set (e.g nodes

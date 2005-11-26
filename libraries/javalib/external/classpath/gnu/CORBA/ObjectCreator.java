@@ -39,10 +39,12 @@ exception statement from your version. */
 package gnu.CORBA;
 
 import gnu.CORBA.CDR.UnknownExceptionCtxHandler;
-import gnu.CORBA.CDR.cdrBufInput;
-import gnu.CORBA.CDR.cdrBufOutput;
-import gnu.CORBA.CDR.cdrInput;
+import gnu.CORBA.CDR.BufferredCdrInput;
+import gnu.CORBA.CDR.BufferedCdrOutput;
+import gnu.CORBA.CDR.AbstractCdrInput;
 import gnu.CORBA.GIOP.ServiceContext;
+import gnu.CORBA.typecodes.RecordTypeCode;
+import gnu.classpath.VMStackWalker;
 
 import org.omg.CORBA.Any;
 import org.omg.CORBA.CompletionStatus;
@@ -139,14 +141,14 @@ public class ObjectCreator
               suffix = "";
             try
               {
-                known = Class.forName(toClassName(JAVA_PREFIX, idl) + suffix);
+                known = forName(toClassName(JAVA_PREFIX, idl) + suffix);
                 object = known.newInstance();
               }
             catch (Exception ex)
               {
                 try
                   {
-                    known = Class.forName(toClassName(CLASSPATH_PREFIX, idl)
+                    known = forName(toClassName(CLASSPATH_PREFIX, idl)
                       + suffix);
                     object = known.newInstance();
                   }
@@ -202,11 +204,11 @@ public class ObjectCreator
 
         if (uEx != null)
           {
-            cdrBufInput in = new cdrBufInput(uEx.context_data);
+            BufferredCdrInput in = new BufferredCdrInput(uEx.context_data);
             in.setOrb(in.orb());
-            if (input instanceof cdrInput)
+            if (input instanceof AbstractCdrInput)
               {
-                ((cdrInput) input).cloneSettings(in);
+                ((AbstractCdrInput) input).cloneSettings(in);
               }
 
             Throwable t = UnknownExceptionCtxHandler.read(in, contexts);
@@ -343,7 +345,7 @@ public class ObjectCreator
 
             try
               {
-                c = Class.forName(cn);
+                c = forName(cn);
                 m_classes.put(IDL, c);
                 return c;
               }
@@ -438,7 +440,7 @@ public class ObjectCreator
     try
       {
         String helperClassName = object.getClass().getName() + "Helper";
-        Class helperClass = Class.forName(helperClassName);
+        Class helperClass = forName(helperClassName);
 
         Method insert = helperClass.getMethod("insert", new Class[] {
           Any.class, object.getClass() });
@@ -461,7 +463,7 @@ public class ObjectCreator
   {
     try
       {
-        cdrBufOutput output = new cdrBufOutput();
+        BufferedCdrOutput output = new BufferedCdrOutput();
 
         String m_exception_id = getRepositoryId(exception.getClass());
         output.write_string(m_exception_id);
@@ -470,11 +472,11 @@ public class ObjectCreator
 
         String name = getDefaultName(m_exception_id);
 
-        universalHolder h = new universalHolder(output);
+        GeneralHolder h = new GeneralHolder(output);
 
         into.insert_Streamable(h);
 
-        recordTypeCode r = new recordTypeCode(TCKind.tk_except);
+        RecordTypeCode r = new RecordTypeCode(TCKind.tk_except);
         r.setId(m_exception_id);
         r.setName(name);
         into.type(r);
@@ -534,7 +536,7 @@ public class ObjectCreator
         try
           {
             String helper = toHelperName(idl);
-            c = Class.forName(helper);
+            c = forName(helper);
 
             m_helpers.put(idl, c);
             return c;
@@ -544,6 +546,45 @@ public class ObjectCreator
             return null;
           }
       }
-
+  }
+  
+  /**
+   * Load the class with the given name. This method tries to use the context
+   * class loader first. If this fails, it searches for the suitable class
+   * loader in the caller stack trace. This method is a central point where all
+   * requests to find a class by name are delegated.
+   */
+  public static Class forName(String className) throws ClassNotFoundException
+  {
+    try
+      {
+        return Class.forName(className, true,
+                             Thread.currentThread().getContextClassLoader());
+      }
+    catch (ClassNotFoundException nex)
+      {
+        /**
+         * Returns the first user defined class loader on the call stack, or
+         * null when no non-null class loader was found.
+         */
+        Class[] ctx = VMStackWalker.getClassContext();
+        for (int i = 0; i < ctx.length; i++)
+          {
+            // Since we live in a class loaded by the bootstrap
+            // class loader, getClassLoader is safe to call without
+            // needing to be wrapped in a privileged action.
+            ClassLoader cl = ctx[i].getClassLoader();
+            try
+              {
+                if (cl != null)
+                  return Class.forName(className, true, cl);
+              }
+            catch (ClassNotFoundException nex2)
+              {
+                // Try next.
+              }
+          }
+      }
+    throw new ClassNotFoundException(className);
   }
 }

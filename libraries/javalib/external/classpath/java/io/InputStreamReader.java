@@ -249,8 +249,12 @@ public class InputStreamReader extends Reader
     this.in = in;
     this.decoder = decoder;
 
+    Charset charset = decoder.charset();
     try {
-	maxBytesPerChar = decoder.charset().newEncoder().maxBytesPerChar();
+      if (charset == null)
+        maxBytesPerChar = 1f;
+      else
+        maxBytesPerChar = charset.newEncoder().maxBytesPerChar();
     } catch(UnsupportedOperationException _){
 	maxBytesPerChar = 1f;
     } 
@@ -258,7 +262,10 @@ public class InputStreamReader extends Reader
     decoder.onMalformedInput(CodingErrorAction.REPLACE);
     decoder.onUnmappableCharacter(CodingErrorAction.REPLACE);
     decoder.reset();
-    encoding = EncodingHelper.getOldCanonical(decoder.charset().name());      
+    if (charset == null)
+      encoding = "US-ASCII";
+    else
+      encoding = EncodingHelper.getOldCanonical(decoder.charset().name());      
   }
   
   /**

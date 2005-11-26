@@ -288,51 +288,11 @@ public abstract class KeyboardFocusManager
     KeyboardFocusManager manager;
 
     if (m == null)
-      manager = createFocusManager();
+      manager = new DefaultKeyboardFocusManager();
     else
       manager = m;
 
     currentKeyboardFocusManagers.put (currentGroup, manager);
-  }
-
-  /**
-   * Creates a KeyboardFocusManager. The exact class is determined by the
-   * system property 'gnu.java.awt.FocusManager'. If this is not set,
-   * we default to DefaultKeyboardFocusManager.
-   */
-  private static KeyboardFocusManager createFocusManager()
-  {
-    String fmClassName = System.getProperty("gnu.java.awt.FocusManager",
-                                       "java.awt.DefaultKeyboardFocusManager");
-    try
-      {
-        Class fmClass = Class.forName(fmClassName);
-        KeyboardFocusManager fm = (KeyboardFocusManager) fmClass.newInstance();
-        return fm;
-      }
-    catch (ClassNotFoundException ex)
-      {
-        System.err.println("The class " + fmClassName + " cannot be found.");
-        System.err.println("Check the setting of the system property");
-        System.err.println("gnu.java.awt.FocusManager");
-        return null;
-      }
-    catch (InstantiationException ex)
-      {
-        System.err.println("The class " + fmClassName + " cannot be");
-        System.err.println("instantiated.");
-        System.err.println("Check the setting of the system property");
-        System.err.println("gnu.java.awt.FocusManager");
-        return null;
-      }
-    catch (IllegalAccessException ex)
-      {
-        System.err.println("The class " + fmClassName + " cannot be");
-        System.err.println("accessed.");
-        System.err.println("Check the setting of the system property");
-        System.err.println("gnu.java.awt.FocusManager");
-        return null;
-      }
   }
 
   /**

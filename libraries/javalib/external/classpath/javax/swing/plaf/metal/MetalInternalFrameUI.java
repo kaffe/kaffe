@@ -47,15 +47,15 @@ import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
 
 /**
- * A UI delegate for the {@link JInternalFrame} component under the 
- * {@link MetalLookAndFeel}.
+ * A UI delegate for the {@link JInternalFrame} component.
  */
 public class MetalInternalFrameUI
   extends BasicInternalFrameUI
 {
   /** 
-   * The key for the client property that controls whether the internal frame
-   * is displayed using the palette style. 
+   * The key (<code>JInternalFrame.isPalette</code>) for the client property 
+   * that controls whether the internal frame is displayed using the palette 
+   * style. 
    */
   protected static String IS_PALETTE = "JInternalFrame.isPalette";
 

@@ -81,6 +81,8 @@ public class JProgressBar extends JComponent implements SwingConstants,
   /**
    * AccessibleJProgressBar
    */
+  // FIXME: This inner class is a complete stub and needs to be implemented
+  // properly.
   protected class AccessibleJProgressBar extends AccessibleJComponent
     implements AccessibleValue
   {
@@ -91,6 +93,7 @@ public class JProgressBar extends JComponent implements SwingConstants,
      */
     protected AccessibleJProgressBar()
     {
+      // Nothing to do here.
     } 
 
     /**
