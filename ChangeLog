@@ -1,5 +1,10 @@
 2005-11-26  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* kaffe/kaffevm/systems/unix-pthreads/syscalls.c
+	(jthreadedRecvFrom): Fixed infinite loop.
+
+2005-11-26  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* Resynchronized GNU Classpath to 2005-11-26.
 
 	* developers/resync-classpath.sh: Partially automated the update of the

@@ -94,7 +94,7 @@ waitForTimeout(int fd, int timeout)
   
   FD_ZERO(&rset);
   FD_SET(fd,&rset);
-  
+
   return selectHelper(fd+1, &rset, NULL, NULL, timeout);
 }
 
@@ -613,6 +613,10 @@ jthreadedRecvfrom(int fd, void* buf, size_t len, int flags,
 		BREAK_IF_LATE(deadline, timeout)
 
 		r = recvfrom(fd, buf, len, flags, from, fromlen);
+		if (r >= 0 || !(errno == EWOULDBLOCK || errno == EINTR
+			|| errno == EAGAIN)) {
+			break;
+		}
 	}
 	jthread_set_blocking(fd, blocking);
 	SET_RETURN_OUT(r, out, r)
