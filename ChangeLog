@@ -1,5 +1,12 @@
 2005-11-27  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* kaffe/kaffevm/kaffe-gc/gc-refs.c
+	(insertInWeakRef, findWeakRef): New internal function.
+	(KaffeGC_addWeakRef): Fixed a deadlock if GC is triggered in some of
+	the malloc call.
+
+2005-11-27  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* developers/math_symbols: Added more symbols to be renamed
 	(needed for darwin5).
 

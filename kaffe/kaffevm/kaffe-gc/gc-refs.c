@@ -189,48 +189,86 @@ resizeWeakReferenceObject(Collector *collector, weakRefObject *obj, unsigned int
   while (1);
 }
 
-bool
-KaffeGC_addWeakRef(Collector *collector, void* mem, void** refobj)
+static weakRefObject *
+findWeakRefObject(void *mem)
 {
   int idx;
   weakRefObject* obj;
 
   idx = REFOBJHASH(mem);
 
-  lockStaticMutex(&weakRefLock);
   for (obj = weakRefObjects.hash[idx]; obj != 0; obj = obj->next) {
     /* Found it - just register a new weak reference */
-    if (obj->mem == mem) {
-      obj->ref++;
-
-      if (obj->ref >= obj->allRefSize)
-	if (!resizeWeakReferenceObject(collector, obj, obj->ref * 2 + 1))
-	  {
-	    unlockStaticMutex(&weakRefLock);
-	    return false;
-	  }
-
-      obj->allRefs[obj->ref-1] = refobj;
-
-      unlockStaticMutex(&weakRefLock);
-      return true;
-    }
+    if (obj->mem == mem)
+      return obj;
   }
 
+  return NULL;
+}     
+
+static bool
+insertInWeakRef(Collector *collector, weakRefObject *obj, void **refobj)
+{
+  obj->ref++;
+  
+  if (obj->ref >= obj->allRefSize)
+    if (!resizeWeakReferenceObject(collector, obj, obj->ref * 2 + 1))
+      return false;
+  
+  obj->allRefs[obj->ref-1] = refobj;
+
+  return true;
+}
+
+bool
+KaffeGC_addWeakRef(Collector *collector, void* mem, void** refobj)
+{
+  weakRefObject* obj, *obj2;
+  int idx;
+
+  lockStaticMutex(&weakRefLock);
+  obj = findWeakRefObject(mem);
+  if (obj != NULL)
+    {
+      bool ret = insertInWeakRef(collector, obj, refobj);
+      
+      unlockStaticMutex(&weakRefLock);
+      return ret;
+    }
+
   /* Not found - create a new one */
+  unlockStaticMutex(&weakRefLock);
   obj = (weakRefObject*)KGC_malloc(collector, sizeof(weakRefObject), KGC_ALLOC_REF);
   if (obj == NULL)
-    {
-      unlockStaticMutex(&weakRefLock);
-      return false;
-    }
+    return false;
 
   obj->mem = mem;
   obj->ref = 1;
-  unlockStaticMutex(&weakRefLock);
   obj->allRefs = (void ***)KGC_malloc(collector, sizeof(void ***), KGC_ALLOC_REF);
   lockStaticMutex(&weakRefLock);
   obj->allRefs[0] = refobj;
+
+  /* Now we check whether has inserted the reference
+   * in the meantime.
+   */
+  obj2 = findWeakRefObject(mem);
+  if (obj2 != NULL)
+    {
+      bool ret;
+      
+      /* Calling free is safe as the GC thread is not
+       * called at that time.
+       */
+      KGC_free(collector, obj->allRefs);
+      KGC_free(collector, obj);
+
+      ret = insertInWeakRef(collector, obj2, refobj);
+      unlockStaticMutex(&weakRefLock);
+
+      return ret;
+    }
+
+  idx = REFOBJHASH(mem);
   obj->next = weakRefObjects.hash[idx];
   weakRefObjects.hash[idx] = obj;
   unlockStaticMutex(&weakRefLock);
