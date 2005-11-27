@@ -48,6 +48,28 @@
 	* libraries/javalib/vmspecific/java/lang/String.java
 	(contains): Imported from GNU Classpath.
 
+2005-11-25  Alexander Boettcher  <alex@kaffe.org>
+
+	* configure.ac: add thread binding drops-l4threads
+	* initial checkin of DROPS/L4 port:
+	config/i386/drops/config.frag
+	config/i386/drops/jit-md.h
+	config/i386/drops/jit3-md.h
+	config/i386/drops/md.c
+	config/i386/drops/md.h
+	kaffe/kaffevm/systems/drops-l4threads/Makefile.am
+	kaffe/kaffevm/systems/drops-l4threads/Makefile.frag
+	kaffe/kaffevm/systems/drops-l4threads/Makefile.in
+	kaffe/kaffevm/systems/drops-l4threads/jsignal.h
+	kaffe/kaffevm/systems/drops-l4threads/jthread.h
+	kaffe/kaffevm/systems/drops-l4threads/l4_loader.h
+	kaffe/kaffevm/systems/drops-l4threads/l4thread.c
+	kaffe/kaffevm/systems/drops-l4threads/l4thread.h
+	kaffe/kaffevm/systems/drops-l4threads/lock-impl.h
+	kaffe/kaffevm/systems/drops-l4threads/signal.c
+	kaffe/kaffevm/systems/drops-l4threads/syscalls.c
+	kaffe/kaffevm/systems/drops-l4threads/thread-impl.h 
+
 2005-11-25  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/systems/drops-l4threads/syscalls.c
