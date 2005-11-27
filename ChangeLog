@@ -1,3 +1,10 @@
+2005-11-27  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* developers/math_symbols: Added more symbols to be renamed
+	(needed for darwin5).
+
+	* libraries/clib/fdlibm/namespace.h: Regenerated.
+	
 2005-11-26  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/systems/unix-pthreads/syscalls.c
