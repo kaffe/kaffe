@@ -1,3 +1,14 @@
+2005-11-28  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	*
+	libraries/javalib/vmspecific/gnu/java/nio/charset/UTF_16Decoder.java,
+	libraries/javalib/vmspecific/gnu/java/nio/charset/UnicodeLittle.java,
+	libraries/javalib/vmspecific/gnu/java/nio/charset/iconv/IconvProvider.java:
+	Removed.
+
+	* libraries/javalib/Makefile.am,libraries/javalib/Makefile.in:
+	Deleted lines listing removed files.
+
 2005-11-27  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/kaffe-gc/gc-refs.c

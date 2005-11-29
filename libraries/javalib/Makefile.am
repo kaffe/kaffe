@@ -653,9 +653,6 @@ EXTRA_DIST= \
 	vmspecific/gnu/java/net/SysInetAddressImpl.java \
 	vmspecific/gnu/java/nio/VMPipe.java \
 	vmspecific/gnu/java/nio/VMSelector.java \
-	vmspecific/gnu/java/nio/charset/UTF_16Decoder.java \
-	vmspecific/gnu/java/nio/charset/UnicodeLittle.java \
-	vmspecific/gnu/java/nio/charset/iconv/IconvProvider.java \
 	vmspecific/java/io/VMFile.java \
 	vmspecific/java/io/VMObjectInputStream.java \
 	vmspecific/java/io/VMObjectStreamClass.java \
