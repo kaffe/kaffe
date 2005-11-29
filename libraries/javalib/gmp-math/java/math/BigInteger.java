@@ -413,6 +413,11 @@ public boolean isProbablePrime(int certainty) {
 	return (true);
 }
 
+public static BigInteger probablePrime(int bitLength,
+                                       Random rnd) {
+    return new BigInteger(bitLength, 100, rnd);
+}
+
 public int compareTo(Object obj) {
 	return compareTo((BigInteger)obj);
 }

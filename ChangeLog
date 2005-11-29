@@ -1,3 +1,8 @@
+2005-11-29  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* libraries/javalib/gmp-math/java/math/BigInteger.java
+	(probablePrime): Implemented.
+
 2005-11-28  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	*
