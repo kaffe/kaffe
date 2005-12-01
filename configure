@@ -49259,6 +49259,8 @@ subdirs="$subdirs libltdl"
 
           ac_config_files="$ac_config_files kaffe/kaffevm/systems/oskit-pthreads/Makefile"
 
+          ac_config_files="$ac_config_files kaffe/kaffevm/systems/drops-l4threads/Makefile"
+
           ac_config_files="$ac_config_files kaffe/kaffevm/systems/beos-native/Makefile"
 
           ac_config_files="$ac_config_files kaffe/kaffevm/systems/unix-pthreads/Makefile"
@@ -50213,6 +50215,7 @@ do
   "kaffe/kaffevm/systems/Makefile" ) CONFIG_FILES="$CONFIG_FILES kaffe/kaffevm/systems/Makefile" ;;
   "kaffe/kaffevm/systems/unix-jthreads/Makefile" ) CONFIG_FILES="$CONFIG_FILES kaffe/kaffevm/systems/unix-jthreads/Makefile" ;;
   "kaffe/kaffevm/systems/oskit-pthreads/Makefile" ) CONFIG_FILES="$CONFIG_FILES kaffe/kaffevm/systems/oskit-pthreads/Makefile" ;;
+  "kaffe/kaffevm/systems/drops-l4threads/Makefile" ) CONFIG_FILES="$CONFIG_FILES kaffe/kaffevm/systems/drops-l4threads/Makefile" ;;
   "kaffe/kaffevm/systems/beos-native/Makefile" ) CONFIG_FILES="$CONFIG_FILES kaffe/kaffevm/systems/beos-native/Makefile" ;;
   "kaffe/kaffevm/systems/unix-pthreads/Makefile" ) CONFIG_FILES="$CONFIG_FILES kaffe/kaffevm/systems/unix-pthreads/Makefile" ;;
   "kaffe/kaffevm/verifier/Makefile" ) CONFIG_FILES="$CONFIG_FILES kaffe/kaffevm/verifier/Makefile" ;;

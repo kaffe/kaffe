@@ -14,6 +14,13 @@
 /* ------------------------------------------------------------------------ */
 
 /*
+ * DROPS/L4Env loader shared library interface.
+ */
+#if defined(DROPS_SHARED_LIBRARIES)
+   #include <l4_loader.h>
+#endif
+
+/*
  * MACH style shared library interface.
  */
 #if defined(HAVE_MACH_O_RLD_H)

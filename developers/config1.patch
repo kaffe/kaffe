@@ -1,0 +1,17 @@
+Index: config.sub
+===================================================================
+RCS file: /cvs/kaffe/kaffe/scripts/config.sub,v
+retrieving revision 1.12
+diff -u -r1.12 config.sub
+--- config.sub	25 Oct 2005 15:44:00 -0000	1.12
++++ config.sub	1 Dec 2005 21:55:38 -0000
+@@ -1315,6 +1315,9 @@
+ 	-kaos*)
+ 		os=-kaos
+ 		;;
++	-*drops)
++		os=-drops
++		;;
+ 	-zvmoe)
+ 		os=-zvmoe
+ 		;;

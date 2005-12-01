@@ -1,3 +1,21 @@
+2005-12-02  Alexander Boettcher  <alex@kaffe.org>
+
+	* configure: add thread binding drops-l4threads
+	* developers/config1.patch,
+	  developers/config2.patch,
+	  developers/config3.patch: new - DROPS patches of config.subs in
+	  scripts, libltdl and libraries/javalib/external/classpath
+	* developers/autogen.sh: add configX.patch files (X=1..3)
+	* scripts/config.sub,
+	  libltdl/config.sub,
+	  libraries/javalib/external/classpath/config.sub: patched by
+	configX.patch (X=1..3) in order to enable cross compiling for OS DROPS
+	
+	* kaffe/kaffevm/slib.h: include DROPS/L4Env specific header file (located at
+	kaffe/kaffevm/systems/drops-l4threads/l4_loader.h), this enables the
+	look up of symbols in shared libraries by the DROPS loader/exec
+	service
+
 2005-11-29  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* libraries/javalib/gmp-math/java/math/BigInteger.java

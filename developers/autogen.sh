@@ -146,3 +146,19 @@ autoconf # -Wall
 
   autoreconf -i # -Wall
 )
+
+# drops specific patches
+(
+  cd scripts
+  patch -p0 <../developers/config1.patch
+)
+
+(
+  cd libltdl
+  patch -p0 <../developers/config2.patch
+)
+
+(
+  cd libraries/javalib/external/classpath
+  patch -p0 <../../../../developers/config3.patch
+)
