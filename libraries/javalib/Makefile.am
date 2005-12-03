@@ -47,6 +47,7 @@ install-hook:
 
 EXTRA_DIST= \
 	    Makefile.am.in \
+	    logging.properties \
 	vmspecific/META-INF/MANIFEST.MF \
 	vmspecific/META-INF/services/javax.sound.sampled.spi.AudioFileReader \
 	vmspecific/META-INF/services/javax.sound.sampled.spi.AudioFileWriter \

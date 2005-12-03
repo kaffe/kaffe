@@ -7,4 +7,4 @@
 # of this file. 
 
 SUBDIRS = $(THREAD_SYSTEM)
-DIST_SUBDIRS = unix-jthreads unix-pthreads oskit-pthreads beos-native
+DIST_SUBDIRS = unix-jthreads unix-pthreads oskit-pthreads drops-l4threads beos-native

@@ -419,7 +419,7 @@ JAVA_CLASSES = \
 	Exceptions.class \
 	VirtualMethod.class
 
-TESTS_ENVIRONMENT = env TEST_CLASSES="$(JAVA_CLASSES)" `BOOTCLASSPATH="."; export BOOTCLASSPATH; . $(top_builddir)/BUILD_ENVIRONMENT; sed 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
+TESTS_ENVIRONMENT = env TEST_CLASSES="$(JAVA_CLASSES)" `. $(top_builddir)/BUILD_ENVIRONMENT; BOOTCLASSPATH=.:\$${BOOTCLASSPATH}; export BOOTCLASSPATH; sed 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
 CPATH = .:$(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
 TESTS = $(check_PROGRAMS)
 XFAIL_TESTS = 
@@ -799,7 +799,7 @@ ParameterizedMethods.class: $(srcdir)/ParameterizedMethods.java
 	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/ParameterizedMethods.java
 
 ParameterizedMathMethods.class: $(srcdir)/ParameterizedMathMethods.java
-	$(JAVA_COMPLIER) -g -classpath $(CPATH) -d . $(srcdir)/ParameterizedMathMethods.java
+	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/ParameterizedMathMethods.java
 
 ParameterizedLogicalMethods.class: $(srcdir)/ParameterizedLogicalMethods.java
 	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/ParameterizedLogicalMethods.java

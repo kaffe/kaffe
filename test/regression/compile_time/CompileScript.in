@@ -11,7 +11,7 @@
 # University of Utah, http://www.cs.utah.edu/flux/
 
 : ${JAVA=kaffe}
-test -z "@JIKES@" || : ${JIKES="@JIKES@ -nowarn"}
-: ${JAVAC=${JIKES-"env CLASSPATH=$CLASSPATH $JAVA -noverify at.dms.kjc.Main"}" -classpath \"$CLASSPATH\""}
+test -z "@JAVA_COMPILER@" || : ${JAVA_COMPILER="@JAVA_COMPILER@ -nowarn"}
+: ${JAVAC=${JAVA_COMPILER-"env CLASSPATH=$CLASSPATH $JAVA -noverify at.dms.kjc.Main"}" -classpath \"$CLASSPATH\""}
 
 exec $JAVAC -classpath $CLASSPATH -d . $*

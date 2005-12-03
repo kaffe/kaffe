@@ -1,5 +1,25 @@
 2005-12-03  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* Makefile.am,
+	test/internal/Makefile.am:
+	Fixed BOOTCLASSPATH.
+
+	* kaffe/kaffevm/systems/Makefile.am,
+	libraries/javalib/Makefile.am.in,
+	test/regression/TestScript.in,
+	test/regression/compile_time/CompileScript.in,
+	test/regression/compiler/CompileScript.in,
+	test/regression/run_time/CompileScript.in
+	Use JAVA_COMPILER instead of JIKES
+	
+	* Makefile.in,
+	kaffe/kaffevm/systems/Makefile.in,
+	libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	test/internal/Makefile.in: Regenerated
+	
+2005-12-03  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* Removed a few spurious backup files from
 	libraries/javalib/vmspecific
 

@@ -47,3 +47,4 @@ install-hook:
 
 EXTRA_DIST= \
 	    Makefile.am.in \
+	    logging.properties \
