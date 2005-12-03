@@ -1,5 +1,16 @@
 2005-12-03  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* Removed a few spurious backup files from
+	libraries/javalib/vmspecific
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in:
+	Regenerated.
+
+	* developers/update-vm-list: Updated to forget backup files.
+
+2005-12-03  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* configure.ac: Added a new option "--with-ecj" to be able
 	to compile with ecj. Reworked the java compiler detection.
 	

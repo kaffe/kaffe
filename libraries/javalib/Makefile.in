@@ -968,20 +968,13 @@ EXTRA_DIST = \
 	vmspecific/gnu/java/net/DNSJavaInetAddressImpl.java \
 	vmspecific/gnu/java/net/InetAddressImpl.java \
 	vmspecific/gnu/java/net/PlainDatagramSocketImpl.java \
-	vmspecific/gnu/java/net/PlainDatagramSocketImpl.java~ \
 	vmspecific/gnu/java/net/PlainSocketImpl.java \
-	vmspecific/gnu/java/net/PlainSocketImpl.java~ \
 	vmspecific/gnu/java/net/SysInetAddressImpl.java \
 	vmspecific/gnu/java/nio/VMPipe.java \
-	vmspecific/gnu/java/nio/VMPipe.java~ \
 	vmspecific/gnu/java/nio/VMSelector.java \
-	vmspecific/gnu/java/nio/VMSelector.java~ \
 	vmspecific/java/io/VMFile.java \
-	vmspecific/java/io/VMFile.java~ \
 	vmspecific/java/io/VMObjectInputStream.java \
-	vmspecific/java/io/VMObjectInputStream.java~ \
 	vmspecific/java/io/VMObjectStreamClass.java \
-	vmspecific/java/io/VMObjectStreamClass.java~ \
 	vmspecific/java/lang/Class.java \
 	vmspecific/java/lang/ClassLoader.java \
 	vmspecific/java/lang/Runtime.java \
@@ -990,9 +983,7 @@ EXTRA_DIST = \
 	vmspecific/java/lang/VMClassLoader.java \
 	vmspecific/java/lang/VMCompiler.java \
 	vmspecific/java/lang/VMDouble.java \
-	vmspecific/java/lang/VMDouble.java~ \
 	vmspecific/java/lang/VMFloat.java \
-	vmspecific/java/lang/VMFloat.java~ \
 	vmspecific/java/lang/VMObject.java \
 	vmspecific/java/lang/VMProcess.java \
 	vmspecific/java/lang/VMRuntime.java \
@@ -1007,16 +998,12 @@ EXTRA_DIST = \
 	vmspecific/java/lang/reflect/VMProxy.java \
 	vmspecific/java/net/InetAddress.java \
 	vmspecific/java/net/VMInetAddress.java \
-	vmspecific/java/net/VMInetAddress.java~ \
 	vmspecific/java/net/VMNetworkInterface.java \
-	vmspecific/java/net/VMNetworkInterface.java~ \
 	vmspecific/java/nio/VMDirectByteBuffer.java \
-	vmspecific/java/nio/VMDirectByteBuffer.java~ \
 	vmspecific/java/nio/channels/VMChannels.java \
 	vmspecific/java/security/VMAccessController.java \
 	vmspecific/java/util/LocaleData.java \
 	vmspecific/java/util/VMTimeZone.java \
-	vmspecific/java/util/VMTimeZone.java~ \
 	vmspecific/java/util/mime/MimeType.java \
 	vmspecific/java/util/mime/MimeTypeParameterList.java \
 	vmspecific/java/util/mime/MimeTypeParseException.java \
@@ -1027,11 +1014,8 @@ EXTRA_DIST = \
 	vmspecific/java/util/zip/Inflater.java \
 	vmspecific/java/util/zip/ZipEntry.java \
 	vmspecific/java/util/zip/ZipFile.java \
-	vmspecific/java/util/zip/ZipFile.java~ \
 	vmspecific/java/util/zip/ZipInputStream.java \
-	vmspecific/java/util/zip/ZipInputStream.java~ \
 	vmspecific/java/util/zip/ZipOutputStream.java \
-	vmspecific/java/util/zip/ZipOutputStream.java~ \
 	vmspecific/org/kaffe/beans/editors/BooleanEditor.java \
 	vmspecific/org/kaffe/beans/editors/ByteEditor.java \
 	vmspecific/org/kaffe/beans/editors/DoubleEditor.java \
@@ -1043,11 +1027,8 @@ EXTRA_DIST = \
 	vmspecific/org/kaffe/io/AccessibleBAOStream.java \
 	vmspecific/org/kaffe/io/NullOutputStream.java \
 	vmspecific/org/kaffe/io/StdErrorStream.java \
-	vmspecific/org/kaffe/io/StdErrorStream.java~ \
 	vmspecific/org/kaffe/io/StdInputStream.java \
-	vmspecific/org/kaffe/io/StdInputStream.java~ \
 	vmspecific/org/kaffe/io/StdOutputStream.java \
-	vmspecific/org/kaffe/io/StdOutputStream.java~ \
 	vmspecific/org/kaffe/jar/ExecJar.java \
 	vmspecific/org/kaffe/jar/ExecJarName.java \
 	vmspecific/org/kaffe/lang/ClassPathReader.java \
@@ -1064,16 +1045,13 @@ EXTRA_DIST = \
 	vmspecific/org/kaffe/security/Randomness.java \
 	vmspecific/org/kaffe/security/UnixRandomness.java \
 	vmspecific/org/kaffe/security/provider/Kaffe.java \
-	vmspecific/org/kaffe/security/provider/Kaffe.java~ \
 	vmspecific/org/kaffe/security/provider/MD2.java \
 	vmspecific/org/kaffe/security/provider/MD4.java \
 	vmspecific/org/kaffe/security/provider/MD5.java \
 	vmspecific/org/kaffe/security/provider/SHA.java \
 	vmspecific/org/kaffe/security/provider/SHA1PRNG.java \
-	vmspecific/org/kaffe/security/provider/SHA1PRNG.java~ \
 	vmspecific/org/kaffe/security/provider/UpdateDigest.java \
 	vmspecific/org/kaffe/tools/jar/Jar.java \
-	vmspecific/org/kaffe/tools/jar/Jar.java~ \
 	vmspecific/org/kaffe/tools/jar/XPFile.java \
 	vmspecific/org/kaffe/tools/jar/XPFileInputStream.java \
 	vmspecific/org/kaffe/tools/jar/XPFileOutputStream.java \
@@ -1118,9 +1096,7 @@ EXTRA_DIST = \
 	vmspecific/org/kaffe/util/locale/Language_zh.java \
 	vmspecific/org/kaffe/util/log/LogClient.java \
 	vmspecific/org/kaffe/util/log/LogStream.java \
-	vmspecific/org/kaffe/util/log/LogStream.java~ \
 	vmspecific/org/kaffe/util/log/SimpleLogViewer.java \
-	vmspecific/org/kaffe/util/log/SimpleLogViewer.java~ \
 	vmspecific/org/kaffe/util/zip/SwitchInflater.java \
 	vmspecific/org/metastatic/jessie/Base64.java \
 	vmspecific/org/metastatic/jessie/CertificateHandler.java \
