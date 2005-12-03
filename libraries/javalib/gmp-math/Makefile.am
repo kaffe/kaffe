@@ -51,4 +51,4 @@ jar-classes $(CLASSFILE): $(LIBDIR)/stamp
 	rm -f $(CLASSFILE)
 	$(JAR_CMD1)
 
-export JIKES srcdir top_builddir LIBDIR
+export JAVA_COMPILER srcdir top_builddir LIBDIR

@@ -90,52 +90,52 @@ TESTS_ENVIRONMENT = env TEST_CLASSES="$(JAVA_CLASSES)" `BOOTCLASSPATH="."; expor
 CPATH = .:$(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
 
 ConstMethods.class: $(srcdir)/ConstMethods.java
-	$(JIKES) -g -classpath $(CPATH) -d . $(srcdir)/ConstMethods.java
+	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/ConstMethods.java
 
 ConstMathMethods.class: $(srcdir)/ConstMathMethods.java
-	$(JIKES) -g -classpath $(CPATH) -d . $(srcdir)/ConstMathMethods.java
+	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/ConstMathMethods.java
 
 ParameterizedMethods.class: $(srcdir)/ParameterizedMethods.java
-	$(JIKES) -g -classpath $(CPATH) -d . $(srcdir)/ParameterizedMethods.java
+	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/ParameterizedMethods.java
 
 ParameterizedMathMethods.class: $(srcdir)/ParameterizedMathMethods.java
-	$(JIKES) -g -classpath $(CPATH) -d . $(srcdir)/ParameterizedMathMethods.java
+	$(JAVA_COMPLIER) -g -classpath $(CPATH) -d . $(srcdir)/ParameterizedMathMethods.java
 
 ParameterizedLogicalMethods.class: $(srcdir)/ParameterizedLogicalMethods.java
-	$(JIKES) -g -classpath $(CPATH) -d . $(srcdir)/ParameterizedLogicalMethods.java
+	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/ParameterizedLogicalMethods.java
 
 ParameterizedBitwiseMethods.class: $(srcdir)/ParameterizedBitwiseMethods.java
-	$(JIKES) -g -classpath $(CPATH) -d . $(srcdir)/ParameterizedBitwiseMethods.java
+	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/ParameterizedBitwiseMethods.java
 
 ControlFlowMethods.class: $(srcdir)/ControlFlowMethods.java
-	$(JIKES) -g -classpath $(CPATH) -d . $(srcdir)/ControlFlowMethods.java
+	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/ControlFlowMethods.java
 
 StaticMethodCall.class: $(srcdir)/StaticMethodCall.java
-	$(JIKES) -g -classpath $(CPATH) -d . $(srcdir)/StaticMethodCall.java
+	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/StaticMethodCall.java
 
 TypeConversion.class: $(srcdir)/TypeConversion.java
-	$(JIKES) -g -classpath $(CPATH) -d . $(srcdir)/TypeConversion.java
+	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/TypeConversion.java
 
 StaticFields.class: $(srcdir)/StaticFields.java
-	$(JIKES) -g -classpath $(CPATH) -d . $(srcdir)/StaticFields.java
+	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/StaticFields.java
 
 PrimitiveArrays.class: $(srcdir)/PrimitiveArrays.java
-	$(JIKES) -g -classpath $(CPATH) -d . $(srcdir)/PrimitiveArrays.java
+	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/PrimitiveArrays.java
 
 ObjectFields.class: $(srcdir)/ObjectFields.java
-	$(JIKES) -g -classpath $(CPATH) -d . $(srcdir)/ObjectFields.java
+	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/ObjectFields.java
 
 MethodOptimizations.class: $(srcdir)/MethodOptimizations.java
-	$(JIKES) -g -classpath $(CPATH) -d . $(srcdir)/MethodOptimizations.java
+	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/MethodOptimizations.java
 
 NativeMethodCall.class java/lang/System.class java/lang/VMSystem.class: $(srcdir)/NativeMethodCall.java   $(srcdir)/java/lang/VMSystem.java $(srcdir)/java/lang/System.java
-	$(JIKES) -g -classpath $(CPATH) -d . $(srcdir)/java/lang/VMSystem.java $(srcdir)/java/lang/System.java $(srcdir)/NativeMethodCall.java
+	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/java/lang/VMSystem.java $(srcdir)/java/lang/System.java $(srcdir)/NativeMethodCall.java
 
 Exceptions.class: $(srcdir)/Exceptions.java
-	$(JIKES) -g -classpath $(CPATH) -d . $(srcdir)/Exceptions.java
-	
+	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/Exceptions.java
+
 VirtualMethod.class: $(srcdir)/VirtualMethod.java
-	$(JIKES) -g -classpath $(CPATH) -d . $(srcdir)/VirtualMethod.java
+	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/VirtualMethod.java
 
 jit_stub.o: java/lang/System.class java/lang/VMSystem.class $(JAVA_CLASSES)
 

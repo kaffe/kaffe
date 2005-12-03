@@ -748,6 +748,21 @@ AM_CONDITIONAL(USE_PRECOMPILED_RT_JAR, test x$use_glibj_zip = xtrue)
 AC_SUBST(PATH_TO_RT_JAR)
 
 dnl =========================================================================
+dnl Use ecj
+dnl =========================================================================
+
+
+AC_ARG_WITH([ecj],
+	    AS_HELP_STRING([--with-ecj=ECJ],
+			   [Define to use ECJ as the java compiler instead of jikes]),
+	   [JAVA_COMPILER="$withval"
+	    use_ecj=yes],
+	   [use_ecj=no])
+
+AC_MSG_CHECKING([whether to use ecj])
+AC_MSG_RESULT($use_ecj)
+
+dnl =========================================================================
 dnl Use jikes
 dnl =========================================================================
 
@@ -755,12 +770,17 @@ AC_CHECK_PROG(JIKESPROG, jikes, jikes)
 AC_ARG_WITH([jikes],
             AS_HELP_STRING([--with-jikes<=JIKES>],
                            [Define to use jikes compiler @<:@default=yes@:>@.  If yes, use jikes +Pno-switchcheck +Pno-shadow +E]),
-	[JIKES="$withval"],
-	[with_jikes="yes"])
+	[JIKESPROG="$withval"
+	 use_jikes="yes"],
+	[use_jikes="no"])
+
+if test x"$use_ecj" = xno -a x"$use_jikes" = xno; then
+	use_jikes="yes";
+fi
 
 AC_MSG_CHECKING([whether to use jikes])
 
-case $with_jikes in
+case $use_jikes in
 yes)
 	if test x"$JIKESPROG" = x"" ; then
 	  if  test x$use_glibj_zip = xtrue ; then
@@ -769,25 +789,35 @@ yes)
 	    AC_MSG_ERROR([No jikes compiler found. It is required to build Kaffe's class library. Recommended is jikes version 1.21 or higher.])
           fi
 	fi
-	JIKES="$JIKESPROG +Pno-switchcheck +Pno-shadow +E"
-	use_jikes="yes ($JIKES)"
+	JAVA_COMPILER="$JIKESPROG +Pno-switchcheck +Pno-shadow +E"
+	use_jikes="yes ($JAVA_COMPILER)"
 	;;
 no)
 	use_jikes="no"
-	  if  test x$use_glibj_zip = xtrue ; then
-	    AC_MSG_WARN([You have to use jikes 1.21 or higher to build kaffe's regression tests, or to pass a different external java compiler to configure script.])
-          else
-	    AC_MSG_ERROR([You have to use jikes 1.21 or higher to build kaffe's class library, or to pass a different external java compiler to configure script.])
-          fi
-	;;
-*)
-	JIKES="$with_jikes"
-	use_jikes="yes ($JIKES)"
 	;;
 esac
 
 AC_MSG_RESULT($use_jikes)
-AC_SUBST(JIKES)
+
+dnl =========================================================================
+dnl Set the java compiler variable.
+dnl =========================================================================
+
+if test x"use_ecj" = x"yes" -a x"use_jikes" = x"yes"; then
+	AC_MSG_ERROR([You must specify only one compiler])
+fi
+
+if test x"$JAVA_COMPILER" = x; then
+	if  test x$use_glibj_zip = xtrue ; then
+		AC_MSG_WARN([You need a java compiler to build kaffe's regression tests, or to pass a different external java compiler to configure script.])
+	else
+		AC_MSG_ERROR([You need a java compiler to build kaffe's class library, or to pass a different external java compiler to configure script.])
+	fi
+fi
+AC_MSG_CHECKING([which java compiler])
+AC_MSG_RESULT($JAVA_COMPILER)
+
+AC_SUBST(JAVA_COMPILER)
 
 dnl =========================================================================
 dnl Look for trampoline code if in JIT mode
@@ -850,7 +880,7 @@ fi
 AC_CHECK_PROG(JASMIN, jasmin, jasmin)
 
 AM_CONDITIONAL(HAVE_ZIP, test x"$ZIP" != x"")
-AM_CONDITIONAL(HAVE_JIKES, test x"$JIKES" != x"")
+AM_CONDITIONAL(HAVE_JAVAC, test x"$JAVA_COMPILER" != x"")
 AM_CONDITIONAL(HAVE_MKTEMP, test x"$MKTEMP" != x"")
 AM_CONDITIONAL(HAVE_JASMIN, test x"$JASMIN" != x"")
 

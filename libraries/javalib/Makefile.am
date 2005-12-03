@@ -40,7 +40,10 @@ jrelib_DATA= \
 	     logging.properties \
 	     $(MAYBE_GLIBJ_ZIP)
 
-export JIKES
+export JAVA_COMPILER
+
+install-hook:
+	$(LN_S) ${jrelibdir}/glibj.zip ${jrelibdir}/rt.jar
 
 EXTRA_DIST= \
 	    Makefile.am.in \
@@ -649,13 +652,20 @@ EXTRA_DIST= \
 	vmspecific/gnu/java/net/DNSJavaInetAddressImpl.java \
 	vmspecific/gnu/java/net/InetAddressImpl.java \
 	vmspecific/gnu/java/net/PlainDatagramSocketImpl.java \
+	vmspecific/gnu/java/net/PlainDatagramSocketImpl.java~ \
 	vmspecific/gnu/java/net/PlainSocketImpl.java \
+	vmspecific/gnu/java/net/PlainSocketImpl.java~ \
 	vmspecific/gnu/java/net/SysInetAddressImpl.java \
 	vmspecific/gnu/java/nio/VMPipe.java \
+	vmspecific/gnu/java/nio/VMPipe.java~ \
 	vmspecific/gnu/java/nio/VMSelector.java \
+	vmspecific/gnu/java/nio/VMSelector.java~ \
 	vmspecific/java/io/VMFile.java \
+	vmspecific/java/io/VMFile.java~ \
 	vmspecific/java/io/VMObjectInputStream.java \
+	vmspecific/java/io/VMObjectInputStream.java~ \
 	vmspecific/java/io/VMObjectStreamClass.java \
+	vmspecific/java/io/VMObjectStreamClass.java~ \
 	vmspecific/java/lang/Class.java \
 	vmspecific/java/lang/ClassLoader.java \
 	vmspecific/java/lang/Runtime.java \
@@ -664,7 +674,9 @@ EXTRA_DIST= \
 	vmspecific/java/lang/VMClassLoader.java \
 	vmspecific/java/lang/VMCompiler.java \
 	vmspecific/java/lang/VMDouble.java \
+	vmspecific/java/lang/VMDouble.java~ \
 	vmspecific/java/lang/VMFloat.java \
+	vmspecific/java/lang/VMFloat.java~ \
 	vmspecific/java/lang/VMObject.java \
 	vmspecific/java/lang/VMProcess.java \
 	vmspecific/java/lang/VMRuntime.java \
@@ -679,12 +691,16 @@ EXTRA_DIST= \
 	vmspecific/java/lang/reflect/VMProxy.java \
 	vmspecific/java/net/InetAddress.java \
 	vmspecific/java/net/VMInetAddress.java \
+	vmspecific/java/net/VMInetAddress.java~ \
 	vmspecific/java/net/VMNetworkInterface.java \
+	vmspecific/java/net/VMNetworkInterface.java~ \
 	vmspecific/java/nio/VMDirectByteBuffer.java \
+	vmspecific/java/nio/VMDirectByteBuffer.java~ \
 	vmspecific/java/nio/channels/VMChannels.java \
 	vmspecific/java/security/VMAccessController.java \
 	vmspecific/java/util/LocaleData.java \
 	vmspecific/java/util/VMTimeZone.java \
+	vmspecific/java/util/VMTimeZone.java~ \
 	vmspecific/java/util/mime/MimeType.java \
 	vmspecific/java/util/mime/MimeTypeParameterList.java \
 	vmspecific/java/util/mime/MimeTypeParseException.java \
@@ -700,32 +716,6 @@ EXTRA_DIST= \
 	vmspecific/java/util/zip/ZipInputStream.java~ \
 	vmspecific/java/util/zip/ZipOutputStream.java \
 	vmspecific/java/util/zip/ZipOutputStream.java~ \
-	vmspecific/javax/sound/sampled/AudioFileFormat.java \
-	vmspecific/javax/sound/sampled/AudioFormat.java \
-	vmspecific/javax/sound/sampled/AudioInputStream.java \
-	vmspecific/javax/sound/sampled/AudioPermission.java \
-	vmspecific/javax/sound/sampled/AudioSystem.java \
-	vmspecific/javax/sound/sampled/BooleanControl.java \
-	vmspecific/javax/sound/sampled/Clip.java \
-	vmspecific/javax/sound/sampled/CompoundControl.java \
-	vmspecific/javax/sound/sampled/Control.java \
-	vmspecific/javax/sound/sampled/DataLine.java \
-	vmspecific/javax/sound/sampled/EnumControl.java \
-	vmspecific/javax/sound/sampled/FloatControl.java \
-	vmspecific/javax/sound/sampled/Line.java \
-	vmspecific/javax/sound/sampled/LineEvent.java \
-	vmspecific/javax/sound/sampled/LineListener.java \
-	vmspecific/javax/sound/sampled/LineUnavailableException.java \
-	vmspecific/javax/sound/sampled/Mixer.java \
-	vmspecific/javax/sound/sampled/Port.java \
-	vmspecific/javax/sound/sampled/ReverbType.java \
-	vmspecific/javax/sound/sampled/SourceDataLine.java \
-	vmspecific/javax/sound/sampled/TargetDataLine.java \
-	vmspecific/javax/sound/sampled/UnsupportedAudioFileException.java \
-	vmspecific/javax/sound/sampled/spi/AudioFileReader.java \
-	vmspecific/javax/sound/sampled/spi/AudioFileWriter.java \
-	vmspecific/javax/sound/sampled/spi/FormatConversionProvider.java \
-	vmspecific/javax/sound/sampled/spi/MixerProvider.java \
 	vmspecific/org/kaffe/beans/editors/BooleanEditor.java \
 	vmspecific/org/kaffe/beans/editors/ByteEditor.java \
 	vmspecific/org/kaffe/beans/editors/DoubleEditor.java \
@@ -737,8 +727,11 @@ EXTRA_DIST= \
 	vmspecific/org/kaffe/io/AccessibleBAOStream.java \
 	vmspecific/org/kaffe/io/NullOutputStream.java \
 	vmspecific/org/kaffe/io/StdErrorStream.java \
+	vmspecific/org/kaffe/io/StdErrorStream.java~ \
 	vmspecific/org/kaffe/io/StdInputStream.java \
+	vmspecific/org/kaffe/io/StdInputStream.java~ \
 	vmspecific/org/kaffe/io/StdOutputStream.java \
+	vmspecific/org/kaffe/io/StdOutputStream.java~ \
 	vmspecific/org/kaffe/jar/ExecJar.java \
 	vmspecific/org/kaffe/jar/ExecJarName.java \
 	vmspecific/org/kaffe/lang/ClassPathReader.java \
@@ -755,6 +748,7 @@ EXTRA_DIST= \
 	vmspecific/org/kaffe/security/Randomness.java \
 	vmspecific/org/kaffe/security/UnixRandomness.java \
 	vmspecific/org/kaffe/security/provider/Kaffe.java \
+	vmspecific/org/kaffe/security/provider/Kaffe.java~ \
 	vmspecific/org/kaffe/security/provider/MD2.java \
 	vmspecific/org/kaffe/security/provider/MD4.java \
 	vmspecific/org/kaffe/security/provider/MD5.java \

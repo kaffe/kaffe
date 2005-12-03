@@ -354,4 +354,4 @@ $(CLASSFILE): $(LIBDIR)/stamp
 	$(JAR_CMD3)
 	mv $@.new $@
 
-export JIKES top_builddir LIBDIR srcdir
+export JAVA_COMPILER top_builddir LIBDIR srcdir

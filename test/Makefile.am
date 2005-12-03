@@ -6,7 +6,7 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-if HAVE_JIKES
+if HAVE_JAVAC
 INTERNAL_TEST = internal
 endif
 

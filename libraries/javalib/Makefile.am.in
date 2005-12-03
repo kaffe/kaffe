@@ -40,7 +40,10 @@ jrelib_DATA= \
 	     logging.properties \
 	     $(MAYBE_GLIBJ_ZIP)
 
-export JIKES
+export JAVA_COMPILER
+
+install-hook:
+	$(LN_S) ${jrelibdir}/glibj.zip ${jrelibdir}/rt.jar
 
 EXTRA_DIST= \
 	    Makefile.am.in \
