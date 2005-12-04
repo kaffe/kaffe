@@ -105,7 +105,7 @@ class MetalSplitPaneDivider extends BasicSplitPaneDivider
   /**
    * This helper class acts as the Layout Manager for the divider.
    */
-  protected class MetalDividerLayout implements LayoutManager
+  public class MetalDividerLayout implements LayoutManager
   {
     /** The right button. */
     BasicArrowButton rb;
@@ -116,7 +116,7 @@ class MetalSplitPaneDivider extends BasicSplitPaneDivider
     /**
      * Creates a new DividerLayout object.
      */
-    protected MetalDividerLayout()
+    public MetalDividerLayout()
     {
       // Nothing to do here
     }
@@ -132,7 +132,7 @@ class MetalSplitPaneDivider extends BasicSplitPaneDivider
       // Nothing to do here, constraints are set depending on
       // orientation in layoutContainer
     }
-
+    
     /**
      * This method is called to lay out the container.
      *

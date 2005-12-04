@@ -424,8 +424,9 @@ public class JViewport extends JComponent implements Accessible
 
   public void setView(Component v)
   {
-    if (viewListener != null)
-      getView().removeComponentListener(viewListener);
+    Component currView = getView();
+    if (viewListener != null && currView != null)
+      currView.removeComponentListener(viewListener);
 
     if (v != null)
       {

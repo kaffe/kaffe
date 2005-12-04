@@ -4791,7 +4791,12 @@ p   * <li>the set of backward traversal keys
   void dispatchEventImpl(AWTEvent e)
   {
     Event oldEvent = translateEvent (e);
-
+    // This boolean tells us not to process focus events when the focus
+    // opposite component is the same as the focus component.
+    boolean ignoreFocus = 
+      (e instanceof FocusEvent && 
+       ((FocusEvent)e).getComponent() == ((FocusEvent)e).getOppositeComponent());
+    
     if (oldEvent != null)
       postEvent (oldEvent);
 
@@ -4822,7 +4827,8 @@ p   * <li>the set of backward traversal keys
                 break;
               }
           }
-        if (e.id != PaintEvent.PAINT && e.id != PaintEvent.UPDATE)
+        if (e.id != PaintEvent.PAINT && e.id != PaintEvent.UPDATE
+            && !ignoreFocus)
           processEvent(e);
       }
 

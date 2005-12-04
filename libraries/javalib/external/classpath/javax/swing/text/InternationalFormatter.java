@@ -228,6 +228,8 @@ public class InternationalFormatter
   public String valueToString(Object value)
     throws ParseException
   {
+    if (value == null)
+      return "";
     if (format != null)
       return format.format(value);
     else

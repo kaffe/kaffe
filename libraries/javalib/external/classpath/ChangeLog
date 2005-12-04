@@ -1,3 +1,329 @@
+2005-12-04  Mark Wielaard  <mark@klomp.org>
+
+	* javax/swing/TransferHandler
+	(TransferAction.actionPerformed): Beep and return when clipboard
+	is null.
+	(getClipboard): Return null when access denied.
+	(clipboard): Removed static field.
+
+2005-12-03  Mark Wielaard  <mark@klomp.org>
+
+	* configure.ac (AC_CONFIG_FILES): Removed
+	native/jni/sampled-jack/Makefile.
+	(AC_ARG_ENABLE [jack]): Removed.
+
+2005-12-02  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* javax/swing/text/InternationalFormatter.java:
+	(valueToString): If argument is null return empty String.
+
+2005-12-02  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* javax/swing/JFormattedTextField.java: Added docs all over.
+	(AbstractFormatter.clone): Implemented.
+	(AbstractFormatter.getActions): Implemented.
+	(AbstractFormatter.getDocumentFilter): Implemented.
+	(AbstractFormatter.getNavigationFilter): Implemented.
+	(AbstractFormatter.install): Install the DocumentFilter and 
+	NavigationFilter.  Properly catch ParseException.  Added FIXME to add
+	custom Actions to the JFormattedTextField.
+	(AbstractFormatter.uninstall): Remove the DocumentFilter and 
+	NavigationFilter.  Added FIXME to remove the custom Actions.
+	(JFormattedTextField(AbstractFormatter)): Call the single argument
+	constructor that takes in an AbstractFormatterFactory.  This avoids a 
+	call to setValue that shouldn't occur.
+	(JFormattedTextField(AbstractFormatterFactory): Call 
+	setFormatterFactory instead of calling the 2-argument constructor which
+	would also make an unwanted call to setValue.
+	(JFormattedTextField(AbstractFormatterFactory, Object)): Switch the 
+	order of the calls to setValue and setFormatterFactory.  This ensures
+	that the passed in factory is actually the one used, not one generated
+	by setValue.
+	(commitEdit): Implemented.
+	(setFormatter): Removed incorrect early escape if the parameter is the 
+	same as the current formatter.  
+	(setFormatterFactory): If formatterFactory is null set the formatter to
+	null as	well.
+	(setValue): Don't set the text here, this is done when we call 
+	setFormatter and it calls AbstractFormatter.install.  Create a 
+	formatter factory if one doesn't exist already. Call setFormatter to
+	get an appropriate formatter from the factory.
+	(createFormatter): Changed this to createFormatterFactory because we
+	should return a factory, not just a formatter.
+	(createFormatterFactory): New method adapted from createFormatter.
+
+2005-12-01  Anthony Green  <green@redhat.com>
+
+        PR bootstrap/25207
+        * configure.ac: Make sure we have an alsa library in addition to
+        the headers.  This extra test is required for systems with
+        multilibs.
+
+2005-11-30  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* javax/swing/JFormattedTextField.java:
+	(AbstractFormatter.install): Try to set the text of the formatted text
+	field using this formatter.
+	(FormatterFactoryWrapper): Removed this unneeded class, this is handled
+	by DefaultFormatterFactory now.
+	(formatter): New field.
+	(JFormattedTextField(Format)): Implemented.
+	(JFormattedTextField(AbstractFormatter)): Instantiate a 
+	DefaultFormatterFactory instead of a FormatterFactoryWrapper.
+	(JFormattedTextField(AbstractFormatterFactory, Object)): Call setValue
+	and setFormatterFactory instead of setting variables directly because
+	more needs to be done than just setting the value of the variables.
+	(JFormattedTextField(Object value)): Call setValue instead of setting 
+	the variable directly.
+	(getAppropriateFormatterFactory): New implementation method.
+	(getFormatter): Don't use the formatter factory here, just return 
+	the cached formatter.
+	(processFocusEvent): Set the formatter to the appropriate one as 
+	determined by the formatter factory.
+	(setFormatter): Don't get the old formatter from the factory, just use
+	the cached formatter.  Uninstall the old formatter. Install the new
+	formatter. Cache the new formatter.  Don't create a new formatter
+	factory.
+	(setFormatterFactory): Set the formatter according to the new formatter
+	factory.
+	(setValue): Moved the setting of the value variable to above the call
+	to createFormatter so that an appropriate formatter is created.  Cache
+	the formatter that is created.
+	(createFormatter): If argument is a Number, use a NumberFormatter.
+	* javax/swing/text/DefaultFormatter.java:
+	(valueToString): If argument is null return empty String.
+
+2005-11-30  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/plaf/basic/BasicFileChooserUI.java
+	(actionPerformed): Added check to determine if 
+	parentPath is null.
+	(actionPerformed): Set selected file and files to null
+	if 'cancel' was clicked.
+	(mouseClicked): Cleaned up code a bit and set the selected
+	files if multi-selection is enabled. Also, added code to 
+	set the file name in the text field if the selection mode
+	is DIRECTORIES_ONLY.
+	* javax/swing/plaf/metal/MetalFileChooserUI.java
+	(actionPerformed): No need to set fileListPanel, it is
+	set in createList.
+	(actionPerformed): Likewise.
+	(propertyChange): If the dialog type is SAVE, then the
+	approve button text should change depending on what
+	is currently selected. It should say 'Open', if a 
+	directory is currently selected.
+	(actionPerformed): Fixed check.
+	(mouseClicked): Added code to set the file name in 
+	the text field if the selection mode
+	is DIRECTORIES_ONLY.
+	(editFile): Adjusted y position of editing text field in table.
+	(installListeners): Added code to initially install listeners 
+	to the list.
+	(createList): Cleaned up and made more efficent.
+	(createDetailsView): No need to set intercellSpacing.
+	(updateTable): Cleaned up and made more efficent.
+	
+2005-11-30  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	Fixes bug #25165
+	* java/awt/Component.java:
+	(processFocusEvent): Don't check if focus opposite is the same as the
+	receiving Component, this is now done in dispatchEventImpl.
+	(dispatchEventImpl): Don't dispatch FocusEvents whose opposite 
+	Components are the same.
+
+2005-11-30  Wolfgang Baer  <WBaer@gmx.de>
+
+	* javax/print/attribute/standard/Compression.java: 
+	Added java docs to class and methods.
+	(getStringTable): New overridden method.
+	(getEnumValueTable): New overridden method.
+	(stringTable): New field.
+	(enumValueTable): New field.
+	* javax/print/attribute/standard/ColorSupported.java: 
+	Added java docs to class and methods.
+	(getStringTable): New overridden method.
+	(getEnumValueTable): New overridden method.
+	(stringTable): New field.
+	(enumValueTable): New field.
+	* javax/print/attribute/standard/Chromaticity.java: 
+	Added java docs to class and methods.
+	(getStringTable): New overridden method.
+	(getEnumValueTable): New overridden method.
+	(stringTable): New field.
+	(enumValueTable): New field.
+
+2005-11-30  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* java/awt/Component.java:
+	(processFocusEvent): Don't dispatch events if the focus opposite is the
+	same as the receiving Component.
+
+2005-11-30  Robert Schuster  <robertschuster@fsfe.org>
+
+	* java/beans/PropertyChangeSupport.java:
+	(fireIndexedPropertyChange): Completed statement.
+
+2005-11-30  Robert Schuster  <robertschuster@fsfe.org>
+
+	* java/beans/PropertyChangeSupport.java:
+	(fireIndexedPropertyChange): Removed argument checking.
+
+2005-11-30  Jan Roehrich  <jan@roehrich.info>
+
+	* java/awt/datatransfer/SystemFlavorMap.java
+	(isJavaMIMEType): implemented.
+	(GNU_JAVA_MIME_PREFIX): added constant.
+	(decodeJavaMIMEType): implemented.
+	(encodeJavaMIMEType): implemented.
+	(encodeDataFlavor): implemented.
+
+2005-11-30  Jan Roehrich  <jan@roehrich.info>
+
+	* java/awt/datatransfer/SystemFlavorMap.java
+	Some minor codestyle fixes.
+	(nativeToFlavorMap): removed generalization.
+	(flavorToNativeMap): likewise.
+
+2005-11-29  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/plaf/metal/MetalFileChooserUI.java
+	(actionPerformed): Changed to update list with all 
+	selected intervals, and to use fileTablePanel instead.
+	(actionPerformed): Likewise.
+	(propertyChange): Changed to use addSelectionInterval
+	instead of setSelectionInterval.
+	(uninstallComponents): Uninstalled fileTablePanel.
+	(installListeners): Moved code to createList, so listeners
+	are installed for every list that may be created.
+	(createList): Added code to remove and install listeners on
+	list.
+	(createDetailsView): Changed to use own panel. Also, added
+	code to set the selection mode.
+
+2005-11-29  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/plaf/metal/MetalFileChooserUI.java
+	(mouseClicked): Fixed checks to prevent NPE.
+
+2005-11-29  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/JViewport.java
+	(setView): Added check to prevent NPE.
+	* javax/swing/plaf/basic/BasicFileChooserUI.java
+	(ListLabelRenderer): Removed class, never used.
+	* javax/swing/plaf/metal/MetalFileChooserUI.java
+	(DetailTableModel): Removed, not needed.
+	(TableFileRenderer): Implemented to override some color
+	and icon defaults in the default table renderer.
+	(actionPerformed): Set selection in list, if something was
+	selected in the table.
+	(actionPerformed): Set selection in table, if something was
+	selected in the list.
+	(propertyChange): Added code to set the selection for the table, 
+	as well as the list. This depends on what view we are in.
+	(editFile): Fixed to call scrollRectToVisible instead.
+	(TableClickListener): Implemented new private class to take
+	care of double clicking (changing/opening directories/files)
+	and single clicking (editing).
+	(TableClickListener.mouseClicked): Implemented
+	(TableClickListener.editFile): Implemented
+	(TableClickListener.completeEditing): Implemented
+	(TableClickListener.EditingActionListener): Implemented
+	(TableClickListener.closeDialog): Implemented
+	(installListeners): Added code to initialize listener fields.
+	(uninstallListeners): Added code to uninstall all listeners.
+	(createList): Changed to use scrollPane field.
+	(createDetailsView): Changed to use updateTable function. Set
+	some characteristics for the table: column selection, renderer,
+	listener etc.
+	(updateTable): Implemented to changed/add/remove rows from the
+	table, as needed.
+	(removeControlButtons): Added repaint, revalidate calls.
+	(ensureFileIsVisible): Removed. Does the same thing as super.
+	(rescanCurrentDirectory): Added check for different views.
+	(setDirectorySelected): Removed. Does the same thing as super.
+	(getDirectoryName): Removed. Does the same thing as super.
+	(setDirectoryName): Removed. Does the same thing as super.
+	(valueChanged): Changed comment.
+
+2005-11-29  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* javax/swing/text/DefaultFormatterFactory.java: New class.
+
+2005-11-29  Tom Tromey  <tromey@redhat.com>
+
+	PR classpath/25141:
+	* java/net/URL.java (URL): Use context's stream handler.
+
+2005-11-29  Jan Roehrich  <jan@roehrich.info>
+
+	* java/awt/datatransfer/SystemFlavorMap.java
+	(nativeToFlavorMap): added field.
+	(flavorToNativeMap): added field.
+	(addFlavorForUnencodedNative): added method.
+	(setNativesForFlavor): added method.
+	(addUnencodedNativeForFlavor): added method.
+	(setFlavorsForNative): added method.
+
+2005-11-28  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/plaf/metal/MetalFileChooserUI.java
+	(DetailTableModel): New Class implemented to override selected
+	methods in DefaultTableModel. More methods will be added later.
+	(ListViewActionListener): New class implemented. 
+	(DetailViewActionListener): New class implemented.
+	(completeEditing): Set boolean to false.
+	(mouseClicked): Added check to make sure editing only starts when
+	left mouse button is clicked.
+	(editFile): Set boolean to true.
+	(actionPerformed): Set boolean to false.
+	(createList): Commented out wrap code until JList bug is fixed.
+	(createActionMap): Added action for cancelSelection.
+	(createDetailsView): Partially implemented to display details view
+	table. 
+	(formatSize): Private function added to convert bytes to an
+	appropriate size String for the table.
+	(getPreferredSize): Implemented.
+	(getMinimumSize): Implemented.
+	(addControlButtons): Added action listeners for detailButton and listButton.
+	(setDirectorySelected): Added API documentation.
+	(getDirectoryName): Likewise.
+	(setDirectoryName): Likewise.
+	(valueChanged): Likewise.
+
+2005-11-28  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/JList.java
+	(init): Layout should not be set to FlowLayout. JDK sets it to null.
+	* javax/swing/plaf/metal/MetalFileChooserUI.java
+	(mouseClicked): Changed to call completeEditing when double-clicked.
+	(editFile): Fixed to add an action listener to the editing field. Editing
+	for filechooser now works.
+	(completeEditing): Fixed renaming to create a new file object and rescan the
+	directory if renaming was successful. Added code to cancel editing as well.
+	(EditingActionListener): New class to listen for notify action and to complete
+	editing when enter is pressed. Otherwise, editing is cancelled.
+	* javax/swing/plaf/metal/MetalSplitPaneDivider.java
+	(MetalDividerLayout): Changed to public.
+	(MetalDividerLayout.init): Likewise.
+
+2005-11-27  Christian Thalinger  <twisti@complang.tuwien.ac.at>
+
+	* java/util/logging/XMLFormatter.java (format): Don't call 
+	getMillis() twice.
+
+2005-11-27  Tom Tromey  <tromey@redhat.com>
+
+	* java/beans/PropertyChangeSupport.java (fireIndexedPropertyChange):
+	New methods.
+	* java/beans/IndexedPropertyChangeEvent.java: New file.
+
+2005-11-26  Tom Tromey  <tromey@redhat.com>
+
+	* java/lang/StackTraceElement.java (StackTraceElement): New
+	constructor.
+
 2005-11-25  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* native/jni/java-io/javaio.c, native/jni/java-io/javaio.h:
@@ -29177,3 +29503,7 @@
 Local Variables:
 coding: iso-latin-1-unix	
 End:
+2005-12-02  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* javax/swing/text/InternationalFormatter.java:
+	(valueToString): If argument is null return empty String.
