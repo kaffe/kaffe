@@ -1,3 +1,7 @@
+2005-12-04  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* libraries/javalib/external/classpath: Resynched GNU Classpath.
+	
 2005-12-04  Dalibor Topic  <robilad@kaffe.org>
 
 	* configure.ac: Set compiler to ecj or jikes,
