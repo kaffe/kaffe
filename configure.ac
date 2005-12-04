@@ -784,8 +784,10 @@ AC_ARG_WITH([jikes],
 	 use_jikes="yes"],
 	[use_jikes="no"])
 
-if test x"$use_ecj" = xno -a x"$use_jikes" = xno; then
+if test x"$use_ecj" = x"no" ; then 
+  if test x"$use_jikes" = x"no"; then
 	use_jikes="yes";
+  fi
 fi
 
 AC_MSG_CHECKING([whether to use jikes])
@@ -800,14 +802,14 @@ yes)
           fi
 	fi
 	JAVA_COMPILER="$JIKESPROG +Pno-switchcheck +Pno-shadow +E"
-	use_jikes="yes ($JAVA_COMPILER)"
+	msg_use_jikes="yes ($JAVA_COMPILER)"
 	;;
 no)
-	use_jikes="no"
+	msg_use_jikes="no"
 	;;
 esac
 
-AC_MSG_RESULT($use_jikes)
+AC_MSG_RESULT($msg_use_jikes)
 
 dnl =========================================================================
 dnl Set the java compiler variable.
@@ -1786,11 +1788,11 @@ AC_ARG_ENABLE([xawt-xi18n],
 	AS_HELP_STRING([--disable-xawt-xi18n],
 		[disable build of Xi18n support of Xlib AWT backend (enabled by default)]),
 	[],
-	[enable_xawt-i18n=yes]
+	[enable_xawt_xi18n=yes]
 )
 
 XI18N_CFLAGS=
-if test x"$enable_xawt-i18n" = xyes; then
+if test x"$enable_xawt_xi18n" = xyes; then
 	XI18N_CFLAGS="-DKAFFE_I18N"  
 fi
 AC_SUBST(XI18N_CFLAGS)
@@ -2319,8 +2321,13 @@ old_configure_args="$ac_configure_args"
 # Unfortunately, many gcj versions are incapable of compiling GNU 
 # Classpath, while many versions of jikes seem to make it through. :/
 # This should be preset to gcjx, once gcjx is merged in.
-if test x"$with_jikes" = x"yes"; then
+
+if test x"$use_jikes" = x"yes"; then
   ac_configure_args="$ac_configure_args --with-jikes"
+fi
+
+if test x"$use_ecj" = x"yes"; then
+  ac_configure_args="$ac_configure_args --with-ecj"
 fi
 
 ac_configure_args="$ac_configure_args --disable-core-jni"

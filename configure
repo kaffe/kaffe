@@ -25214,8 +25214,10 @@ else
   use_jikes="no"
 fi;
 
-if test x"$use_ecj" = xno -a x"$use_jikes" = xno; then
+if test x"$use_ecj" = x"no" ; then
+  if test x"$use_jikes" = x"no"; then
 	use_jikes="yes";
+  fi
 fi
 
 echo "$as_me:$LINENO: checking whether to use jikes" >&5
@@ -25234,15 +25236,15 @@ echo "$as_me: error: No jikes compiler found. It is required to build Kaffe's cl
           fi
 	fi
 	JAVA_COMPILER="$JIKESPROG +Pno-switchcheck +Pno-shadow +E"
-	use_jikes="yes ($JAVA_COMPILER)"
+	msg_use_jikes="yes ($JAVA_COMPILER)"
 	;;
 no)
-	use_jikes="no"
+	msg_use_jikes="no"
 	;;
 esac
 
-echo "$as_me:$LINENO: result: $use_jikes" >&5
-echo "${ECHO_T}$use_jikes" >&6
+echo "$as_me:$LINENO: result: $msg_use_jikes" >&5
+echo "${ECHO_T}$msg_use_jikes" >&6
 
 
 if test x"use_ecj" = x"yes" -a x"use_jikes" = x"yes"; then
@@ -46712,12 +46714,12 @@ if test "${enable_xawt_xi18n+set}" = set; then
   enableval="$enable_xawt_xi18n"
 
 else
-  enable_xawt-i18n=yes
+  enable_xawt_xi18n=yes
 
 fi;
 
 XI18N_CFLAGS=
-if test x"$enable_xawt-i18n" = xyes; then
+if test x"$enable_xawt_xi18n" = xyes; then
 	XI18N_CFLAGS="-DKAFFE_I18N"
 fi
 
@@ -49245,8 +49247,13 @@ old_configure_args="$ac_configure_args"
 # Unfortunately, many gcj versions are incapable of compiling GNU
 # Classpath, while many versions of jikes seem to make it through. :/
 # This should be preset to gcjx, once gcjx is merged in.
-if test x"$with_jikes" = x"yes"; then
+
+if test x"$use_jikes" = x"yes"; then
   ac_configure_args="$ac_configure_args --with-jikes"
+fi
+
+if test x"$use_ecj" = x"yes"; then
+  ac_configure_args="$ac_configure_args --with-ecj"
 fi
 
 ac_configure_args="$ac_configure_args --disable-core-jni"
