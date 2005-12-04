@@ -755,7 +755,12 @@ dnl =========================================================================
 AC_ARG_WITH([ecj],
 	    AS_HELP_STRING([--with-ecj=ECJ],
 			   [Define to use ECJ as the java compiler instead of jikes]),
-	   [JAVA_COMPILER="$withval"
+	   [
+            if test x"$withval" = x"yes" ; then
+              JAVA_COMPILER="ecj" 
+            else 
+              JAVA_COMPILER="$withval" 
+            fi
 	    use_ecj=yes],
 	   [use_ecj=no])
 
@@ -770,7 +775,12 @@ AC_CHECK_PROG(JIKESPROG, jikes, jikes)
 AC_ARG_WITH([jikes],
             AS_HELP_STRING([--with-jikes<=JIKES>],
                            [Define to use jikes compiler @<:@default=yes@:>@.  If yes, use jikes +Pno-switchcheck +Pno-shadow +E]),
-	[JIKESPROG="$withval"
+	[
+          if test x"$withval" = x"yes" ; then
+            JIKESPROG="jikes" 
+          else 
+            JIKESPROG="$withval" 
+          fi
 	 use_jikes="yes"],
 	[use_jikes="no"])
 

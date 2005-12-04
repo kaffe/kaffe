@@ -1,3 +1,9 @@
+2005-12-04  Dalibor Topic  <robilad@kaffe.org>
+
+	* configure.ac: Set compiler to ecj or jikes,
+	if the user does not explicitely specify a path
+	to the compiler.
+
 2005-12-03  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* Makefile.am,

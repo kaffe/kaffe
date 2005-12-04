@@ -25147,7 +25147,12 @@ fi
 # Check whether --with-ecj or --without-ecj was given.
 if test "${with_ecj+set}" = set; then
   withval="$with_ecj"
-  JAVA_COMPILER="$withval"
+
+            if test x"$withval" = x"yes" ; then
+              JAVA_COMPILER="ecj"
+            else
+              JAVA_COMPILER="$withval"
+            fi
 	    use_ecj=yes
 else
   use_ecj=no
@@ -25198,7 +25203,12 @@ fi
 # Check whether --with-jikes or --without-jikes was given.
 if test "${with_jikes+set}" = set; then
   withval="$with_jikes"
-  JIKESPROG="$withval"
+
+          if test x"$withval" = x"yes" ; then
+            JIKESPROG="jikes"
+          else
+            JIKESPROG="$withval"
+          fi
 	 use_jikes="yes"
 else
   use_jikes="no"
