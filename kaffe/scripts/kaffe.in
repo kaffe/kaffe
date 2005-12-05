@@ -55,7 +55,7 @@ if test x"$(uname -m)"x = x"ia64"x; then
 fi
 
 if test x"${KAFFEHOME+set}"x != x"set"x; then
-  KAFFEHOME="@prefix@"
+  KAFFEHOME="@jredir@"
 fi
 export KAFFEHOME
 

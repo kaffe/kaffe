@@ -109,6 +109,7 @@ getHeavyLock(volatile iLock* volatile * lkp, volatile iLock *heavyLock)
 		  while (!COMPARE_AND_EXCHANGE(lkp, lk, (iLock *)(((uintp)heavyLock) | 1)))
 		    lk = *lkp;
 		  
+		  heavyLock->hlockHolder = KTHREAD(current)();
 		  /* Remind the holder. */
 		  heavyLock->holder = lk;
 		  if (lk != LOCKFREE)

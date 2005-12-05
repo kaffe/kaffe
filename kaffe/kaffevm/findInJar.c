@@ -48,7 +48,7 @@
    in a ClassLoader.  */
 #define HANDLE_MANIFEST_CLASSPATH	1
 
-#define KLASSES_JAR	"Klasses.jar"
+#define KLASSES_JAR	"rt.jar"
 
 classpathEntry* classpath;
 
@@ -475,10 +475,10 @@ discoverClasspath(const char* home)
 		return;
 	}
 
-	/* Add '.' and <home>/Klasses.jar at the beginning */
+	/* Add '.' and <home>/lib/rt.jar at the beginning */
 	addClasspath(".");
-	buf = KMALLOC(strlen(home) + strlen(KLASSES_JAR) + 2);
-	sprintf(buf, "%s/%s", home, KLASSES_JAR);
+	buf = KMALLOC(strlen(home) + strlen(KLASSES_JAR) + 6);
+	sprintf(buf, "%s/lib/%s", home, KLASSES_JAR);
 	addClasspath(buf);
 	KFREE(buf);
 
