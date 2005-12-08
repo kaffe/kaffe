@@ -153,7 +153,6 @@ public class ViewportLayout implements LayoutManager, Serializable
       }
     else
       {
-        viewPref.height = viewMinimum.height;
         int overextension = portLowerRight.y - viewPref.height;
         if (overextension > 0)
             portBounds.y -= overextension;
@@ -168,13 +167,17 @@ public class ViewportLayout implements LayoutManager, Serializable
       }
     else
       {
-        viewPref.width = viewMinimum.width;
         int overextension = portLowerRight.x - viewPref.width;
         if (overextension > 0)
             portBounds.x -= overextension;
       }
 
     port.setViewPosition(portBounds.getLocation());
+    // TODO: I doubt that the size should really be touched here, except when
+    // the view is somehow smaller than its minimumSize. I would think that
+    // when the size of a view is set manually to a fixed value, that this
+    // value should be left unchanged, and not reset to the preferred or
+    // minimum size. -- Roman Kennke
     port.setViewSize(viewPref);
   }
 }

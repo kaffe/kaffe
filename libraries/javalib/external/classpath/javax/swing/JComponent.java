@@ -2740,7 +2740,7 @@ public abstract class JComponent extends Container implements Serializable
    */
   public void updateUI()
   {
-    System.out.println("update UI not overwritten in class: " + this);
+    // Nothing to do here.
   }
 
   public static Locale getDefaultLocale()

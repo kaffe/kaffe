@@ -1,3 +1,90 @@
+2005-12-07  Tom Tromey  <tromey@redhat.com>
+
+	* java/lang/Float.java (toHexString): New method.
+	* java/lang/Double.java (toHexString): New method.
+
+2005-12-07  Gary Benson  <gbenson@redhat.com>
+
+	* java/io/RandomAccessFile.java (RandomAccessFile): Don't create
+	DataOutputStream for read-only files to avoid unnecessary security
+	manager check.
+
+2005-12-07  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	Fixes bug #25273
+	* java/text/DecimalFormat.java(scanFormat): Don't set
+	minimumIntegerDigits to 0. 
+
+2005-12-06  Anthony Balkissoon  <abalkiss@redhat.com> 
+
+	* javax/swing/BoxLayout.java:
+	(maximumLayoutSize): Add Insets to Dimension and then check for 
+	overflow.
+
+2005-12-06  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* java/awt/GridBagLayout.java (ArrangeGrid): Use info rather than
+	layoutInfo in the component for loop.  Cache layout information
+	after resizing components.
+
+2005-12-06  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	Fixes bug #25233
+	* javax/swing/BoxLayout.java:
+	(maximumLayoutSize): Don't add the Insets to the Dimension calculated 
+	in checkTotalRequirements().
+
+2005-12-06  Roman Kennke  <kennke@aicas.com>
+
+	PR classpath/25256
+	* java/awt/Container.java
+	(LightweightDispatcher.acquireComponentForMouseEvent): Fixed
+	the MOUSE_RELEASED flag and || conditional.
+
+2005-12-06  Christian Thalinger  <twisti@complang.tuwien.ac.at>
+
+	* java/lang/String.java (String): Better out-of-bounds and 
+	overflow checks.
+
+2005-12-06  Mark Wielaard  <mark@klomp.org>
+
+	* javax/swing/LookAndFeel.java (toString): Include description and
+	Class name.
+
+2005-12-06  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* java/awt/BorderLayout.java:
+	(maximumLayoutSize): Don't calculate anything, just return a new 
+	Dimension with Integer.MAX_VALUE for both dimensions.
+
+2005-12-06  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JComponent.java
+	(updateUI): Removed unneeded warning.
+
+2005-12-06  Roman Kennke  <kennke@aicas.com>
+
+	PR classpath/25256
+	* java/awt/Container.java
+	(LightweightDispatcher.acquireComponentForMouseEvent): When we
+	receive a MOUSE_RELEASED then dispatch it to the same component
+	that received the original MOUSE_PRESSED. This is needed for
+	correct dragging behaviour.
+
+2005-12-06  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/ViewportLayout.java
+	(layoutContainer): Don't set the view to it's minimumSize when the
+	port is larger than the view. Rather it should left at it's
+	preferred size. Also, I added a comment explaining a possible bug
+	in this method.
+
+2005-12-05  Mark Wielaard  <mark@klomp.org>
+
+	Fixes bug classpath/25257
+	* lib/Makefile.am (FOUND_ECJ): Remove -warn typeHiding, unchecked and
+	varargsCast flags for non-generic code.
+
 2005-12-04  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* java/net/URL.java (URL): Check whether context is null before
@@ -1258,8 +1345,9 @@
 
 	PR classpath/PR24721
 	* javax/swing/text/BoxView.java
-	(getViewAtPoint): Added check in to return the last view, if one exists and
-	the point was not contained in the rectangle. This is what the JDK does.
+	(getViewAtPoint): Added check in to return the last view, if one
+	exists and the point was not contained in the rectangle. This is
+	what the JDK does.
 	* javax/swing/text/CompositeView.java
 	(viewToModel): Fixed API documentation. Added check to make sure
 	x and y are greater than 0. Otherwise, 0 is returned.
@@ -1267,8 +1355,8 @@
 	(moveDot): Added check to match API specs.
 	(setDot): Likewise.
 	* javax/swing/text/GlyphView.java
-	(viewToModel): Removed assert. This is not needed here. The point does not
-	need to be in the rectangle.
+	(viewToModel): Removed assert. This is not needed here. The point
+	does not need to be in the rectangle.
 
 2005-11-17  Roman Kennke  <kennke@aicas.com>
 
@@ -1327,12 +1415,12 @@
 2005-11-17  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
         
 	PR 24911
-	* classpath/examples/Makefile.am
+	* examples/Makefile.am
 	(EXAMPLE_JAVA_FILES): Extended by /*/*/*.java and /*/*/*/*.java.
 	(READMES): New category.
 	(ALL_EXAMPLE_FILES): Extended by READMES category. 
 
-2004-11-17  Bryce McKinlay  <mckinlay@redhat.com>
+2005-11-17  Bryce McKinlay  <mckinlay@redhat.com>
 
 	* gnu/java/net/protocol/jar/Connection.java (getHeaderField):
 	Implemented.

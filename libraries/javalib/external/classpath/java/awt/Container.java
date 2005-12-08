@@ -2157,12 +2157,18 @@ class LightweightDispatcher implements Serializable
         break;
       }
 
-    if (me.getID() == MouseEvent.MOUSE_PRESSED && modifiers > 0
+    if (me.getID() == MouseEvent.MOUSE_RELEASED
+        || me.getID() == MouseEvent.MOUSE_PRESSED && modifiers > 0
         || me.getID() == MouseEvent.MOUSE_DRAGGED)
       {
         // If any of the following events occur while a button is held down,
         // they should be dispatched to the same component to which the
         // original MOUSE_PRESSED event was dispatched:
+        //   - MOUSE_RELEASED: This is important for correct dragging
+        //     behaviour, otherwise the release goes to an arbitrary component
+        //     outside of the dragged component. OTOH, if there is no mouse
+        //     drag while the mouse is pressed, the component under the mouse
+        //     is the same as the previously pressed component anyway.
         //   - MOUSE_PRESSED: another button pressed while the first is held
         //     down
         //   - MOUSE_DRAGGED

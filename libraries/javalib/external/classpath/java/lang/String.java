@@ -273,7 +273,8 @@ public final class String implements Serializable, Comparable, CharSequence
       throw new StringIndexOutOfBoundsException("offset: " + offset);
     if (count < 0)
       throw new StringIndexOutOfBoundsException("count: " + count);
-    if (offset + count < 0 || offset + count > ascii.length)
+    // equivalent to: offset + count < 0 || offset + count > ascii.length
+    if (ascii.length - offset < count)
       throw new StringIndexOutOfBoundsException("offset + count: "
 						+ (offset + count));
     value = new char[count];
@@ -338,7 +339,8 @@ public final class String implements Serializable, Comparable, CharSequence
       throw new StringIndexOutOfBoundsException("offset: " + offset);
     if (count < 0)
       throw new StringIndexOutOfBoundsException("count: " + count);
-    if (offset + count < 0 || offset + count > data.length)
+    // equivalent to: offset + count < 0 || offset + count > data.length
+    if (data.length - offset < count)
       throw new StringIndexOutOfBoundsException("offset + count: "
 						+ (offset + count));
     try 
@@ -418,7 +420,8 @@ public final class String implements Serializable, Comparable, CharSequence
       throw new StringIndexOutOfBoundsException("offset: " + offset);
     if (count < 0)
       throw new StringIndexOutOfBoundsException("count: " + count);
-    if (offset + count < 0 || offset + count > data.length)
+    // equivalent to: offset + count < 0 || offset + count > data.length
+    if (data.length - offset < count)
       throw new StringIndexOutOfBoundsException("offset + count: "
 						+ (offset + count));
     int o, c;
@@ -533,7 +536,8 @@ public final class String implements Serializable, Comparable, CharSequence
       throw new StringIndexOutOfBoundsException("offset: " + offset);
     if (count < 0)
       throw new StringIndexOutOfBoundsException("count: " + count);
-    if (offset + count < 0 || offset + count > data.length)
+    // equivalent to: offset + count < 0 || offset + count > data.length
+    if (data.length - offset < count)
       throw new StringIndexOutOfBoundsException("offset + count: "
 						+ (offset + count));
     if (dont_copy)
