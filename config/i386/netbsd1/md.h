@@ -42,10 +42,10 @@
 #include <sys/ucontext.h>
 
 /* older netbsd's could have this macro missing, so we provide it */
-#ifdef _UC_MACHINE_SP
+#ifndef _UC_MACHINE_SP
 #define _UC_MACHINE_SP(uc)      ((uc)->uc_mcontext.__gregs[_REG_UESP])
 #endif
-#ifdef _UC_MACHINE_PC
+#ifndef _UC_MACHINE_PC
 #define _UC_MACHINE_PC(uc)      ((uc)->uc_mcontext.__gregs[_REG_EIP])
 #endif
 
