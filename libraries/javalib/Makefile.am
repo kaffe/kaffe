@@ -48,11 +48,11 @@ install-hook:
 EXTRA_DIST= \
 	    Makefile.am.in \
 	    logging.properties \
+	vmspecific/META-INF/MANIFEST.MF \
 	vmspecific/META-INF/services/javax.sound.sampled.spi.AudioFileReader \
 	vmspecific/META-INF/services/javax.sound.sampled.spi.AudioFileWriter \
 	vmspecific/META-INF/services/javax.sound.sampled.spi.FormatConversionProvider \
 	vmspecific/META-INF/services/javax.sound.sampled.spi.MixerProvider \
-	vmspecific/META-INF/MANIFEST.MF \
 	vmspecific/com/jcraft/jzlib/Adler32.java \
 	vmspecific/com/jcraft/jzlib/Deflate.java \
 	vmspecific/com/jcraft/jzlib/InfBlocks.java \
@@ -111,12 +111,14 @@ EXTRA_DIST= \
 	vmspecific/gnu/bytecodecvssnap/ZipLoader.java \
 	vmspecific/gnu/bytecodecvssnap/dump.java \
 	vmspecific/gnu/bytecodecvssnap/package.html \
-	vmspecific/gnu/classpath/jdwp/VMFrame.java \
-	vmspecific/gnu/classpath/jdwp/VMIdManager.java \
-	vmspecific/gnu/classpath/jdwp/VMVirtualMachine.java \
 	vmspecific/gnu/classpath/Configuration.java.in \
 	vmspecific/gnu/classpath/VMStackWalker.java \
 	vmspecific/gnu/classpath/VMSystemProperties.java \
+	vmspecific/gnu/classpath/jdwp/VMFrame.java \
+	vmspecific/gnu/classpath/jdwp/VMIdManager.java \
+	vmspecific/gnu/classpath/jdwp/VMVirtualMachine.java \
+	vmspecific/gnu/crypto/Properties.java \
+	vmspecific/gnu/crypto/Registry.java \
 	vmspecific/gnu/crypto/assembly/Assembly.java \
 	vmspecific/gnu/crypto/assembly/Cascade.java \
 	vmspecific/gnu/crypto/assembly/CascadeStage.java \
@@ -131,8 +133,7 @@ EXTRA_DIST= \
 	vmspecific/gnu/crypto/assembly/Transformer.java \
 	vmspecific/gnu/crypto/assembly/TransformerException.java \
 	vmspecific/gnu/crypto/assembly/package.html \
-	vmspecific/gnu/crypto/Properties.java \
-	vmspecific/gnu/crypto/Registry.java \
+	vmspecific/gnu/crypto/auth/Password.java \
 	vmspecific/gnu/crypto/auth/callback/AWTCallbackHandler.java \
 	vmspecific/gnu/crypto/auth/callback/AbstractCallbackHandler.java \
 	vmspecific/gnu/crypto/auth/callback/ConsoleCallbackHandler.java \
@@ -140,7 +141,6 @@ EXTRA_DIST= \
 	vmspecific/gnu/crypto/auth/callback/Engine.java \
 	vmspecific/gnu/crypto/auth/callback/GnuCallbacks.java \
 	vmspecific/gnu/crypto/auth/callback/MessagesBundle.properties \
-	vmspecific/gnu/crypto/auth/Password.java \
 	vmspecific/gnu/crypto/cipher/Anubis.java \
 	vmspecific/gnu/crypto/cipher/BaseCipher.java \
 	vmspecific/gnu/crypto/cipher/Blowfish.java \
@@ -165,8 +165,8 @@ EXTRA_DIST= \
 	vmspecific/gnu/crypto/der/DERValue.java \
 	vmspecific/gnu/crypto/der/DERWriter.java \
 	vmspecific/gnu/crypto/der/OID.java \
-	vmspecific/gnu/crypto/exp/ust/UST.java \
 	vmspecific/gnu/crypto/exp/Helix.java \
+	vmspecific/gnu/crypto/exp/ust/UST.java \
 	vmspecific/gnu/crypto/hash/BaseHash.java \
 	vmspecific/gnu/crypto/hash/HashFactory.java \
 	vmspecific/gnu/crypto/hash/Haval.java \
@@ -183,6 +183,10 @@ EXTRA_DIST= \
 	vmspecific/gnu/crypto/hash/Tiger.java \
 	vmspecific/gnu/crypto/hash/Whirlpool.java \
 	vmspecific/gnu/crypto/hash/package.html \
+	vmspecific/gnu/crypto/jce/GnuCrypto.java \
+	vmspecific/gnu/crypto/jce/GnuSasl.java \
+	vmspecific/gnu/crypto/jce/GnuSecurity.java \
+	vmspecific/gnu/crypto/jce/PBKDF2SecretKeyFactory.java \
 	vmspecific/gnu/crypto/jce/cipher/AESSpi.java \
 	vmspecific/gnu/crypto/jce/cipher/ARCFourSpi.java \
 	vmspecific/gnu/crypto/jce/cipher/AnubisSpi.java \
@@ -198,10 +202,6 @@ EXTRA_DIST= \
 	vmspecific/gnu/crypto/jce/cipher/SquareSpi.java \
 	vmspecific/gnu/crypto/jce/cipher/TripleDESSpi.java \
 	vmspecific/gnu/crypto/jce/cipher/TwofishSpi.java \
-	vmspecific/gnu/crypto/jce/GnuCrypto.java \
-	vmspecific/gnu/crypto/jce/GnuSasl.java \
-	vmspecific/gnu/crypto/jce/GnuSecurity.java \
-	vmspecific/gnu/crypto/jce/PBKDF2SecretKeyFactory.java \
 	vmspecific/gnu/crypto/jce/hash/HavalSpi.java \
 	vmspecific/gnu/crypto/jce/hash/MD2Spi.java \
 	vmspecific/gnu/crypto/jce/hash/MD4Spi.java \
@@ -295,6 +295,17 @@ EXTRA_DIST= \
 	vmspecific/gnu/crypto/jce/spec/BlockCipherParameterSpec.java \
 	vmspecific/gnu/crypto/jce/spec/TMMHParameterSpec.java \
 	vmspecific/gnu/crypto/jce/spec/UMac32ParameterSpec.java \
+	vmspecific/gnu/crypto/key/BaseKeyAgreementParty.java \
+	vmspecific/gnu/crypto/key/GnuSecretKey.java \
+	vmspecific/gnu/crypto/key/IKeyAgreementParty.java \
+	vmspecific/gnu/crypto/key/IKeyPairCodec.java \
+	vmspecific/gnu/crypto/key/IKeyPairGenerator.java \
+	vmspecific/gnu/crypto/key/IncomingMessage.java \
+	vmspecific/gnu/crypto/key/KeyAgreementException.java \
+	vmspecific/gnu/crypto/key/KeyAgreementFactory.java \
+	vmspecific/gnu/crypto/key/KeyPairCodecFactory.java \
+	vmspecific/gnu/crypto/key/KeyPairGeneratorFactory.java \
+	vmspecific/gnu/crypto/key/OutgoingMessage.java \
 	vmspecific/gnu/crypto/key/dh/DHKeyPairRawCodec.java \
 	vmspecific/gnu/crypto/key/dh/DiffieHellmanKeyAgreement.java \
 	vmspecific/gnu/crypto/key/dh/DiffieHellmanReceiver.java \
@@ -313,17 +324,6 @@ EXTRA_DIST= \
 	vmspecific/gnu/crypto/key/dss/DSSPrivateKey.java \
 	vmspecific/gnu/crypto/key/dss/DSSPublicKey.java \
 	vmspecific/gnu/crypto/key/dss/FIPS186.java \
-	vmspecific/gnu/crypto/key/BaseKeyAgreementParty.java \
-	vmspecific/gnu/crypto/key/GnuSecretKey.java \
-	vmspecific/gnu/crypto/key/IKeyAgreementParty.java \
-	vmspecific/gnu/crypto/key/IKeyPairCodec.java \
-	vmspecific/gnu/crypto/key/IKeyPairGenerator.java \
-	vmspecific/gnu/crypto/key/IncomingMessage.java \
-	vmspecific/gnu/crypto/key/KeyAgreementException.java \
-	vmspecific/gnu/crypto/key/KeyAgreementFactory.java \
-	vmspecific/gnu/crypto/key/KeyPairCodecFactory.java \
-	vmspecific/gnu/crypto/key/KeyPairGeneratorFactory.java \
-	vmspecific/gnu/crypto/key/OutgoingMessage.java \
 	vmspecific/gnu/crypto/key/package.html \
 	vmspecific/gnu/crypto/key/rsa/GnuRSAKey.java \
 	vmspecific/gnu/crypto/key/rsa/GnuRSAPrivateKey.java \
@@ -402,6 +402,17 @@ EXTRA_DIST= \
 	vmspecific/gnu/crypto/pad/TLS1.java \
 	vmspecific/gnu/crypto/pad/WrongPaddingException.java \
 	vmspecific/gnu/crypto/pad/package.html \
+	vmspecific/gnu/crypto/pki/GnuPKIExtension.java \
+	vmspecific/gnu/crypto/pki/PolicyNodeImpl.java \
+	vmspecific/gnu/crypto/pki/Util.java \
+	vmspecific/gnu/crypto/pki/X500Name.java \
+	vmspecific/gnu/crypto/pki/X509CRLEntryImpl.java \
+	vmspecific/gnu/crypto/pki/X509CRLImpl.java \
+	vmspecific/gnu/crypto/pki/X509CRLSelectorImpl.java \
+	vmspecific/gnu/crypto/pki/X509CertPath.java \
+	vmspecific/gnu/crypto/pki/X509CertSelectorImpl.java \
+	vmspecific/gnu/crypto/pki/X509CertificateBuilder.java \
+	vmspecific/gnu/crypto/pki/X509CertificateImpl.java \
 	vmspecific/gnu/crypto/pki/ext/AuthorityKeyIdentifier.java \
 	vmspecific/gnu/crypto/pki/ext/BasicConstraints.java \
 	vmspecific/gnu/crypto/pki/ext/CRLNumber.java \
@@ -418,17 +429,6 @@ EXTRA_DIST= \
 	vmspecific/gnu/crypto/pki/ext/SubjectAlternativeNames.java \
 	vmspecific/gnu/crypto/pki/ext/SubjectKeyIdentifier.java \
 	vmspecific/gnu/crypto/pki/io/Base64InputStream.java \
-	vmspecific/gnu/crypto/pki/GnuPKIExtension.java \
-	vmspecific/gnu/crypto/pki/PolicyNodeImpl.java \
-	vmspecific/gnu/crypto/pki/Util.java \
-	vmspecific/gnu/crypto/pki/X500Name.java \
-	vmspecific/gnu/crypto/pki/X509CRLEntryImpl.java \
-	vmspecific/gnu/crypto/pki/X509CRLImpl.java \
-	vmspecific/gnu/crypto/pki/X509CRLSelectorImpl.java \
-	vmspecific/gnu/crypto/pki/X509CertPath.java \
-	vmspecific/gnu/crypto/pki/X509CertSelectorImpl.java \
-	vmspecific/gnu/crypto/pki/X509CertificateBuilder.java \
-	vmspecific/gnu/crypto/pki/X509CertificateImpl.java \
 	vmspecific/gnu/crypto/pki/provider/CollectionCertStoreImpl.java \
 	vmspecific/gnu/crypto/pki/provider/DSAParameters.java \
 	vmspecific/gnu/crypto/pki/provider/DSASignature.java \
@@ -463,9 +463,6 @@ EXTRA_DIST= \
 	vmspecific/gnu/crypto/prng/RandomEventListener.java \
 	vmspecific/gnu/crypto/prng/UMacGenerator.java \
 	vmspecific/gnu/crypto/prng/package.html \
-	vmspecific/gnu/crypto/sasl/anonymous/AnonymousClient.java \
-	vmspecific/gnu/crypto/sasl/anonymous/AnonymousServer.java \
-	vmspecific/gnu/crypto/sasl/anonymous/AnonymousUtil.java \
 	vmspecific/gnu/crypto/sasl/AuthInfo.java \
 	vmspecific/gnu/crypto/sasl/AuthInfoProviderFactory.java \
 	vmspecific/gnu/crypto/sasl/ClientFactory.java \
@@ -486,13 +483,16 @@ EXTRA_DIST= \
 	vmspecific/gnu/crypto/sasl/ServerFactory.java \
 	vmspecific/gnu/crypto/sasl/ServerMechanism.java \
 	vmspecific/gnu/crypto/sasl/UserAlreadyExistsException.java \
-	vmspecific/gnu/crypto/sasl/package.html \
+	vmspecific/gnu/crypto/sasl/anonymous/AnonymousClient.java \
+	vmspecific/gnu/crypto/sasl/anonymous/AnonymousServer.java \
+	vmspecific/gnu/crypto/sasl/anonymous/AnonymousUtil.java \
 	vmspecific/gnu/crypto/sasl/crammd5/CramMD5AuthInfoProvider.java \
 	vmspecific/gnu/crypto/sasl/crammd5/CramMD5Client.java \
 	vmspecific/gnu/crypto/sasl/crammd5/CramMD5Registry.java \
 	vmspecific/gnu/crypto/sasl/crammd5/CramMD5Server.java \
 	vmspecific/gnu/crypto/sasl/crammd5/CramMD5Util.java \
 	vmspecific/gnu/crypto/sasl/crammd5/PasswordFile.java \
+	vmspecific/gnu/crypto/sasl/package.html \
 	vmspecific/gnu/crypto/sasl/plain/PasswordFile.java \
 	vmspecific/gnu/crypto/sasl/plain/PlainAuthInfoProvider.java \
 	vmspecific/gnu/crypto/sasl/plain/PlainClient.java \
@@ -512,8 +512,13 @@ EXTRA_DIST= \
 	vmspecific/gnu/crypto/sasl/srp/ServerStore.java \
 	vmspecific/gnu/crypto/sasl/srp/StoreEntry.java \
 	vmspecific/gnu/crypto/sasl/srp/package.html \
+	vmspecific/gnu/crypto/sig/BaseSignature.java \
+	vmspecific/gnu/crypto/sig/ISignature.java \
+	vmspecific/gnu/crypto/sig/ISignatureCodec.java \
+	vmspecific/gnu/crypto/sig/SignatureFactory.java \
 	vmspecific/gnu/crypto/sig/dss/DSSSignature.java \
 	vmspecific/gnu/crypto/sig/dss/DSSSignatureRawCodec.java \
+	vmspecific/gnu/crypto/sig/package.html \
 	vmspecific/gnu/crypto/sig/rsa/EME_PKCS1_V1_5.java \
 	vmspecific/gnu/crypto/sig/rsa/EMSA_PKCS1_V1_5.java \
 	vmspecific/gnu/crypto/sig/rsa/EMSA_PSS.java \
@@ -521,23 +526,6 @@ EXTRA_DIST= \
 	vmspecific/gnu/crypto/sig/rsa/RSAPKCS1V1_5Signature.java \
 	vmspecific/gnu/crypto/sig/rsa/RSAPSSSignature.java \
 	vmspecific/gnu/crypto/sig/rsa/RSAPSSSignatureRawCodec.java \
-	vmspecific/gnu/crypto/sig/BaseSignature.java \
-	vmspecific/gnu/crypto/sig/ISignature.java \
-	vmspecific/gnu/crypto/sig/ISignatureCodec.java \
-	vmspecific/gnu/crypto/sig/SignatureFactory.java \
-	vmspecific/gnu/crypto/sig/package.html \
-	vmspecific/gnu/crypto/tool/keytool/Command.java \
-	vmspecific/gnu/crypto/tool/keytool/Delete.java \
-	vmspecific/gnu/crypto/tool/keytool/Export.java \
-	vmspecific/gnu/crypto/tool/keytool/GenKey.java \
-	vmspecific/gnu/crypto/tool/keytool/Import.java \
-	vmspecific/gnu/crypto/tool/keytool/List.java \
-	vmspecific/gnu/crypto/tool/keytool/Main.java \
-	vmspecific/gnu/crypto/tool/keytool/MessagesBundle.properties \
-	vmspecific/gnu/crypto/tool/keytool/Path.java \
-	vmspecific/gnu/crypto/tool/keytool/Revoke.java \
-	vmspecific/gnu/crypto/tool/keytool/Sign.java \
-	vmspecific/gnu/crypto/tool/keytool/Trust.java \
 	vmspecific/gnu/crypto/tool/CipherSpeed.java \
 	vmspecific/gnu/crypto/tool/Ent.java \
 	vmspecific/gnu/crypto/tool/HashSpeed.java \
@@ -550,6 +538,18 @@ EXTRA_DIST= \
 	vmspecific/gnu/crypto/tool/SaslConnection.java \
 	vmspecific/gnu/crypto/tool/SaslS.java \
 	vmspecific/gnu/crypto/tool/SimpleCallbackHandler.java \
+	vmspecific/gnu/crypto/tool/keytool/Command.java \
+	vmspecific/gnu/crypto/tool/keytool/Delete.java \
+	vmspecific/gnu/crypto/tool/keytool/Export.java \
+	vmspecific/gnu/crypto/tool/keytool/GenKey.java \
+	vmspecific/gnu/crypto/tool/keytool/Import.java \
+	vmspecific/gnu/crypto/tool/keytool/List.java \
+	vmspecific/gnu/crypto/tool/keytool/Main.java \
+	vmspecific/gnu/crypto/tool/keytool/MessagesBundle.properties \
+	vmspecific/gnu/crypto/tool/keytool/Path.java \
+	vmspecific/gnu/crypto/tool/keytool/Revoke.java \
+	vmspecific/gnu/crypto/tool/keytool/Sign.java \
+	vmspecific/gnu/crypto/tool/keytool/Trust.java \
 	vmspecific/gnu/crypto/util/Base64.java \
 	vmspecific/gnu/crypto/util/ExpirableObject.java \
 	vmspecific/gnu/crypto/util/PRNG.java \
@@ -660,7 +660,6 @@ EXTRA_DIST= \
 	vmspecific/java/io/VMFile.java \
 	vmspecific/java/io/VMObjectInputStream.java \
 	vmspecific/java/io/VMObjectStreamClass.java \
-	vmspecific/java/lang/ref/Reference.java \
 	vmspecific/java/lang/Class.java \
 	vmspecific/java/lang/ClassLoader.java \
 	vmspecific/java/lang/Runtime.java \
@@ -676,6 +675,7 @@ EXTRA_DIST= \
 	vmspecific/java/lang/VMSystem.java \
 	vmspecific/java/lang/VMThread.java \
 	vmspecific/java/lang/VMThrowable.java \
+	vmspecific/java/lang/ref/Reference.java \
 	vmspecific/java/lang/reflect/Array.java \
 	vmspecific/java/lang/reflect/Constructor.java \
 	vmspecific/java/lang/reflect/Field.java \
@@ -684,9 +684,11 @@ EXTRA_DIST= \
 	vmspecific/java/net/InetAddress.java \
 	vmspecific/java/net/VMInetAddress.java \
 	vmspecific/java/net/VMNetworkInterface.java \
-	vmspecific/java/nio/channels/VMChannels.java \
 	vmspecific/java/nio/VMDirectByteBuffer.java \
+	vmspecific/java/nio/channels/VMChannels.java \
 	vmspecific/java/security/VMAccessController.java \
+	vmspecific/java/util/LocaleData.java \
+	vmspecific/java/util/VMTimeZone.java \
 	vmspecific/java/util/mime/MimeType.java \
 	vmspecific/java/util/mime/MimeTypeParameterList.java \
 	vmspecific/java/util/mime/MimeTypeParseException.java \
@@ -699,8 +701,6 @@ EXTRA_DIST= \
 	vmspecific/java/util/zip/ZipFile.java \
 	vmspecific/java/util/zip/ZipInputStream.java \
 	vmspecific/java/util/zip/ZipOutputStream.java \
-	vmspecific/java/util/LocaleData.java \
-	vmspecific/java/util/VMTimeZone.java \
 	vmspecific/org/kaffe/beans/editors/BooleanEditor.java \
 	vmspecific/org/kaffe/beans/editors/ByteEditor.java \
 	vmspecific/org/kaffe/beans/editors/DoubleEditor.java \
@@ -726,6 +726,9 @@ EXTRA_DIST= \
 	vmspecific/org/kaffe/management/Debug.java \
 	vmspecific/org/kaffe/management/JIT.java \
 	vmspecific/org/kaffe/management/XProfiler.java \
+	vmspecific/org/kaffe/security/LameRandomness.java \
+	vmspecific/org/kaffe/security/Randomness.java \
+	vmspecific/org/kaffe/security/UnixRandomness.java \
 	vmspecific/org/kaffe/security/provider/Kaffe.java \
 	vmspecific/org/kaffe/security/provider/MD2.java \
 	vmspecific/org/kaffe/security/provider/MD4.java \
@@ -733,33 +736,12 @@ EXTRA_DIST= \
 	vmspecific/org/kaffe/security/provider/SHA.java \
 	vmspecific/org/kaffe/security/provider/SHA1PRNG.java \
 	vmspecific/org/kaffe/security/provider/UpdateDigest.java \
-	vmspecific/org/kaffe/security/LameRandomness.java \
-	vmspecific/org/kaffe/security/Randomness.java \
-	vmspecific/org/kaffe/security/UnixRandomness.java \
 	vmspecific/org/kaffe/tools/jar/Jar.java \
 	vmspecific/org/kaffe/tools/jar/XPFile.java \
 	vmspecific/org/kaffe/tools/jar/XPFileInputStream.java \
 	vmspecific/org/kaffe/tools/jar/XPFileOutputStream.java \
 	vmspecific/org/kaffe/tools/jar/XPFileReader.java \
 	vmspecific/org/kaffe/tools/jar/XPFileWriter.java \
-	vmspecific/org/kaffe/util/locale/Country.java \
-	vmspecific/org/kaffe/util/locale/CountryCodes.java \
-	vmspecific/org/kaffe/util/locale/Country_de.java \
-	vmspecific/org/kaffe/util/locale/Country_en.java \
-	vmspecific/org/kaffe/util/locale/Country_fr.java \
-	vmspecific/org/kaffe/util/locale/Country_it.java \
-	vmspecific/org/kaffe/util/locale/Country_ja.java \
-	vmspecific/org/kaffe/util/locale/Country_ko.java \
-	vmspecific/org/kaffe/util/locale/Country_zh.java \
-	vmspecific/org/kaffe/util/locale/Language.java \
-	vmspecific/org/kaffe/util/locale/LanguageCodes.java \
-	vmspecific/org/kaffe/util/locale/Language_de.java \
-	vmspecific/org/kaffe/util/locale/Language_en.java \
-	vmspecific/org/kaffe/util/locale/Language_fr.java \
-	vmspecific/org/kaffe/util/locale/Language_it.java \
-	vmspecific/org/kaffe/util/locale/Language_ja.java \
-	vmspecific/org/kaffe/util/locale/Language_ko.java \
-	vmspecific/org/kaffe/util/locale/Language_zh.java \
 	vmspecific/org/kaffe/util/Assert.java \
 	vmspecific/org/kaffe/util/Base64.java \
 	vmspecific/org/kaffe/util/DateParser.java \
@@ -779,13 +761,28 @@ EXTRA_DIST= \
 	vmspecific/org/kaffe/util/UNIXTimeZone.java \
 	vmspecific/org/kaffe/util/UTF8.java \
 	vmspecific/org/kaffe/util/VectorSnapshot.java \
+	vmspecific/org/kaffe/util/locale/Country.java \
+	vmspecific/org/kaffe/util/locale/CountryCodes.java \
+	vmspecific/org/kaffe/util/locale/Country_de.java \
+	vmspecific/org/kaffe/util/locale/Country_en.java \
+	vmspecific/org/kaffe/util/locale/Country_fr.java \
+	vmspecific/org/kaffe/util/locale/Country_it.java \
+	vmspecific/org/kaffe/util/locale/Country_ja.java \
+	vmspecific/org/kaffe/util/locale/Country_ko.java \
+	vmspecific/org/kaffe/util/locale/Country_zh.java \
+	vmspecific/org/kaffe/util/locale/Language.java \
+	vmspecific/org/kaffe/util/locale/LanguageCodes.java \
+	vmspecific/org/kaffe/util/locale/Language_de.java \
+	vmspecific/org/kaffe/util/locale/Language_en.java \
+	vmspecific/org/kaffe/util/locale/Language_fr.java \
+	vmspecific/org/kaffe/util/locale/Language_it.java \
+	vmspecific/org/kaffe/util/locale/Language_ja.java \
+	vmspecific/org/kaffe/util/locale/Language_ko.java \
+	vmspecific/org/kaffe/util/locale/Language_zh.java \
 	vmspecific/org/kaffe/util/log/LogClient.java \
 	vmspecific/org/kaffe/util/log/LogStream.java \
 	vmspecific/org/kaffe/util/log/SimpleLogViewer.java \
 	vmspecific/org/kaffe/util/zip/SwitchInflater.java \
-	vmspecific/org/metastatic/jessie/https/ChunkedInputStream.java \
-	vmspecific/org/metastatic/jessie/https/Connection.java \
-	vmspecific/org/metastatic/jessie/https/Handler.java \
 	vmspecific/org/metastatic/jessie/Base64.java \
 	vmspecific/org/metastatic/jessie/CertificateHandler.java \
 	vmspecific/org/metastatic/jessie/ConsoleCertificateHandler.java \
@@ -800,6 +797,15 @@ EXTRA_DIST= \
 	vmspecific/org/metastatic/jessie/SRPManagerParameters.java \
 	vmspecific/org/metastatic/jessie/SRPTrustManager.java \
 	vmspecific/org/metastatic/jessie/StaticTrustAnchors.java \
+	vmspecific/org/metastatic/jessie/https/ChunkedInputStream.java \
+	vmspecific/org/metastatic/jessie/https/Connection.java \
+	vmspecific/org/metastatic/jessie/https/Handler.java \
+	vmspecific/org/metastatic/jessie/pki/GnuPKIExtension.java \
+	vmspecific/org/metastatic/jessie/pki/Util.java \
+	vmspecific/org/metastatic/jessie/pki/X500Name.java \
+	vmspecific/org/metastatic/jessie/pki/X509CRLEntryImpl.java \
+	vmspecific/org/metastatic/jessie/pki/X509CRLImpl.java \
+	vmspecific/org/metastatic/jessie/pki/X509CertificateImpl.java \
 	vmspecific/org/metastatic/jessie/pki/der/BitString.java \
 	vmspecific/org/metastatic/jessie/pki/der/DER.java \
 	vmspecific/org/metastatic/jessie/pki/der/DEREncodingException.java \
@@ -821,12 +827,6 @@ EXTRA_DIST= \
 	vmspecific/org/metastatic/jessie/pki/ext/ReasonCode.java \
 	vmspecific/org/metastatic/jessie/pki/ext/SubjectAlternativeNames.java \
 	vmspecific/org/metastatic/jessie/pki/ext/SubjectKeyIdentifier.java \
-	vmspecific/org/metastatic/jessie/pki/GnuPKIExtension.java \
-	vmspecific/org/metastatic/jessie/pki/Util.java \
-	vmspecific/org/metastatic/jessie/pki/X500Name.java \
-	vmspecific/org/metastatic/jessie/pki/X509CRLEntryImpl.java \
-	vmspecific/org/metastatic/jessie/pki/X509CRLImpl.java \
-	vmspecific/org/metastatic/jessie/pki/X509CertificateImpl.java \
 	vmspecific/org/metastatic/jessie/pki/io/ASN1ParsingException.java \
 	vmspecific/org/metastatic/jessie/pki/io/Base64InputStream.java \
 	vmspecific/org/metastatic/jessie/pki/provider/DSAParameters.java \
@@ -1015,11 +1015,6 @@ EXTRA_DIST= \
 	vmspecific/org/tritonus/sampled/mixer/esd/EsdTargetDataLine.java \
 	vmspecific/org/tritonus/sampled/mixer/esd/EsdUtils.java \
 	vmspecific/org/tritonus/sampled/mixer/esd/package.html \
-	vmspecific/org/tritonus/share/midi/MidiUtils.java \
-	vmspecific/org/tritonus/share/midi/TMidiDevice.java \
-	vmspecific/org/tritonus/share/midi/TMidiFileFormat.java \
-	vmspecific/org/tritonus/share/midi/TSequencer.java \
-	vmspecific/org/tritonus/share/midi/package.html \
 	vmspecific/org/tritonus/share/ArraySet.java \
 	vmspecific/org/tritonus/share/GlobalInfo.java \
 	vmspecific/org/tritonus/share/StringHashedSet.java \
@@ -1027,15 +1022,12 @@ EXTRA_DIST= \
 	vmspecific/org/tritonus/share/TDebug.java \
 	vmspecific/org/tritonus/share/TNotifier.java \
 	vmspecific/org/tritonus/share/TSettings.java \
+	vmspecific/org/tritonus/share/midi/MidiUtils.java \
+	vmspecific/org/tritonus/share/midi/TMidiDevice.java \
+	vmspecific/org/tritonus/share/midi/TMidiFileFormat.java \
+	vmspecific/org/tritonus/share/midi/TSequencer.java \
+	vmspecific/org/tritonus/share/midi/package.html \
 	vmspecific/org/tritonus/share/package.html \
-	vmspecific/org/tritonus/share/sampled/convert/TAsynchronousFilteredAudioInputStream.java \
-	vmspecific/org/tritonus/share/sampled/convert/TAudioInputStream.java \
-	vmspecific/org/tritonus/share/sampled/convert/TEncodingFormatConversionProvider.java \
-	vmspecific/org/tritonus/share/sampled/convert/TFormatConversionProvider.java \
-	vmspecific/org/tritonus/share/sampled/convert/TMatrixFormatConversionProvider.java \
-	vmspecific/org/tritonus/share/sampled/convert/TSimpleFormatConversionProvider.java \
-	vmspecific/org/tritonus/share/sampled/convert/TSynchronousFilteredAudioInputStream.java \
-	vmspecific/org/tritonus/share/sampled/convert/package.html \
 	vmspecific/org/tritonus/share/sampled/AudioFileTypes.java \
 	vmspecific/org/tritonus/share/sampled/AudioFormatSet.java \
 	vmspecific/org/tritonus/share/sampled/AudioFormats.java \
@@ -1045,7 +1037,14 @@ EXTRA_DIST= \
 	vmspecific/org/tritonus/share/sampled/FloatSampleBuffer.java \
 	vmspecific/org/tritonus/share/sampled/TConversionTool.java \
 	vmspecific/org/tritonus/share/sampled/TVolumeUtils.java \
-	vmspecific/org/tritonus/share/sampled/package.html \
+	vmspecific/org/tritonus/share/sampled/convert/TAsynchronousFilteredAudioInputStream.java \
+	vmspecific/org/tritonus/share/sampled/convert/TAudioInputStream.java \
+	vmspecific/org/tritonus/share/sampled/convert/TEncodingFormatConversionProvider.java \
+	vmspecific/org/tritonus/share/sampled/convert/TFormatConversionProvider.java \
+	vmspecific/org/tritonus/share/sampled/convert/TMatrixFormatConversionProvider.java \
+	vmspecific/org/tritonus/share/sampled/convert/TSimpleFormatConversionProvider.java \
+	vmspecific/org/tritonus/share/sampled/convert/TSynchronousFilteredAudioInputStream.java \
+	vmspecific/org/tritonus/share/sampled/convert/package.html \
 	vmspecific/org/tritonus/share/sampled/file/AudioOutputStream.java \
 	vmspecific/org/tritonus/share/sampled/file/HeaderlessAudioOutputStream.java \
 	vmspecific/org/tritonus/share/sampled/file/TAudioFileFormat.java \
@@ -1074,8 +1073,7 @@ EXTRA_DIST= \
 	vmspecific/org/tritonus/share/sampled/mixer/TPort.java \
 	vmspecific/org/tritonus/share/sampled/mixer/TSoftClip.java \
 	vmspecific/org/tritonus/share/sampled/mixer/package.html \
-	vmspecific/org/w3c/dom/bootstrap/DOMImplementationRegistry.java \
-	vmspecific/org/w3c/dom/bootstrap/package.html \
+	vmspecific/org/tritonus/share/sampled/package.html \
 	vmspecific/org/w3c/dom/Attr.java \
 	vmspecific/org/w3c/dom/CDATASection.java \
 	vmspecific/org/w3c/dom/CharacterData.java \
@@ -1104,7 +1102,8 @@ EXTRA_DIST= \
 	vmspecific/org/w3c/dom/Text.java \
 	vmspecific/org/w3c/dom/TypeInfo.java \
 	vmspecific/org/w3c/dom/UserDataHandler.java \
-	vmspecific/org/w3c/dom/package.html \
+	vmspecific/org/w3c/dom/bootstrap/DOMImplementationRegistry.java \
+	vmspecific/org/w3c/dom/bootstrap/package.html \
 	vmspecific/org/w3c/dom/css/CSS2Properties.java \
 	vmspecific/org/w3c/dom/css/CSSCharsetRule.java \
 	vmspecific/org/w3c/dom/css/CSSFontFaceRule.java \
@@ -1205,6 +1204,7 @@ EXTRA_DIST= \
 	vmspecific/org/w3c/dom/ls/LSSerializer.java \
 	vmspecific/org/w3c/dom/ls/LSSerializerFilter.java \
 	vmspecific/org/w3c/dom/ls/package.html \
+	vmspecific/org/w3c/dom/package.html \
 	vmspecific/org/w3c/dom/ranges/DocumentRange.java \
 	vmspecific/org/w3c/dom/ranges/Range.java \
 	vmspecific/org/w3c/dom/ranges/RangeException.java \
@@ -1229,14 +1229,6 @@ EXTRA_DIST= \
 	vmspecific/org/w3c/dom/xpath/XPathNSResolver.java \
 	vmspecific/org/w3c/dom/xpath/XPathNamespace.java \
 	vmspecific/org/w3c/dom/xpath/XPathResult.java \
-	vmspecific/org/xbill/DNS/security/CERTConverter.java \
-	vmspecific/org/xbill/DNS/security/DHPubKey.java \
-	vmspecific/org/xbill/DNS/security/DNSSECVerifier.java \
-	vmspecific/org/xbill/DNS/security/DSAPubKey.java \
-	vmspecific/org/xbill/DNS/security/DSASignature.java \
-	vmspecific/org/xbill/DNS/security/KEYConverter.java \
-	vmspecific/org/xbill/DNS/security/RSAPubKey.java \
-	vmspecific/org/xbill/DNS/security/SIG0Signer.java \
 	vmspecific/org/xbill/DNS/A6Record.java \
 	vmspecific/org/xbill/DNS/AAAARecord.java \
 	vmspecific/org/xbill/DNS/AFSDBRecord.java \
@@ -1342,19 +1334,18 @@ EXTRA_DIST= \
 	vmspecific/org/xbill/DNS/Zone.java \
 	vmspecific/org/xbill/DNS/ZoneTransferException.java \
 	vmspecific/org/xbill/DNS/ZoneTransferIn.java \
+	vmspecific/org/xbill/DNS/security/CERTConverter.java \
+	vmspecific/org/xbill/DNS/security/DHPubKey.java \
+	vmspecific/org/xbill/DNS/security/DNSSECVerifier.java \
+	vmspecific/org/xbill/DNS/security/DSAPubKey.java \
+	vmspecific/org/xbill/DNS/security/DSASignature.java \
+	vmspecific/org/xbill/DNS/security/KEYConverter.java \
+	vmspecific/org/xbill/DNS/security/RSAPubKey.java \
+	vmspecific/org/xbill/DNS/security/SIG0Signer.java \
 	vmspecific/org/xbill/DNS/utils/HMAC.java \
 	vmspecific/org/xbill/DNS/utils/base16.java \
 	vmspecific/org/xbill/DNS/utils/base64.java \
 	vmspecific/org/xbill/DNS/utils/hexdump.java \
-	vmspecific/org/xml/sax/ext/Attributes2.java \
-	vmspecific/org/xml/sax/ext/Attributes2Impl.java \
-	vmspecific/org/xml/sax/ext/DeclHandler.java \
-	vmspecific/org/xml/sax/ext/DefaultHandler2.java \
-	vmspecific/org/xml/sax/ext/EntityResolver2.java \
-	vmspecific/org/xml/sax/ext/LexicalHandler.java \
-	vmspecific/org/xml/sax/ext/Locator2.java \
-	vmspecific/org/xml/sax/ext/Locator2Impl.java \
-	vmspecific/org/xml/sax/ext/package.html \
 	vmspecific/org/xml/sax/AttributeList.java \
 	vmspecific/org/xml/sax/Attributes.java \
 	vmspecific/org/xml/sax/ContentHandler.java \
@@ -1372,7 +1363,15 @@ EXTRA_DIST= \
 	vmspecific/org/xml/sax/SAXParseException.java \
 	vmspecific/org/xml/sax/XMLFilter.java \
 	vmspecific/org/xml/sax/XMLReader.java \
-	vmspecific/org/xml/sax/package.html \
+	vmspecific/org/xml/sax/ext/Attributes2.java \
+	vmspecific/org/xml/sax/ext/Attributes2Impl.java \
+	vmspecific/org/xml/sax/ext/DeclHandler.java \
+	vmspecific/org/xml/sax/ext/DefaultHandler2.java \
+	vmspecific/org/xml/sax/ext/EntityResolver2.java \
+	vmspecific/org/xml/sax/ext/LexicalHandler.java \
+	vmspecific/org/xml/sax/ext/Locator2.java \
+	vmspecific/org/xml/sax/ext/Locator2Impl.java \
+	vmspecific/org/xml/sax/ext/package.html \
 	vmspecific/org/xml/sax/helpers/AttributeListImpl.java \
 	vmspecific/org/xml/sax/helpers/AttributesImpl.java \
 	vmspecific/org/xml/sax/helpers/DefaultHandler.java \
@@ -1384,4 +1383,5 @@ EXTRA_DIST= \
 	vmspecific/org/xml/sax/helpers/XMLFilterImpl.java \
 	vmspecific/org/xml/sax/helpers/XMLReaderAdapter.java \
 	vmspecific/org/xml/sax/helpers/XMLReaderFactory.java \
-	vmspecific/org/xml/sax/helpers/package.html
+	vmspecific/org/xml/sax/helpers/package.html \
+	vmspecific/org/xml/sax/package.html

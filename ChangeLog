@@ -1,3 +1,54 @@
+2005-12-08  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* developers/update-vm-list: Sort files before adding them to
+	Makefile.am
+
+	* configure.ac: Fixed a small problem when a precise ecj is
+	specified in --with-ecj.
+	
+	* configure,
+	libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/external/classpath/Makefile.in,
+	libraries/javalib/external/classpath/aclocal.m4,
+	libraries/javalib/external/classpath/configure,
+	libraries/javalib/external/classpath/examples/Makefile.in,
+	libraries/javalib/external/classpath/external/Makefile.in,
+	libraries/javalib/external/classpath/external/sax/Makefile.in,
+	libraries/javalib/external/classpath/external/w3c_dom/Makefile.in,
+	libraries/javalib/external/classpath/include/Makefile.in,
+	libraries/javalib/external/classpath/lib/Makefile.in,
+	libraries/javalib/external/classpath/native/Makefile.in,
+	libraries/javalib/external/classpath/native/fdlibm/Makefile.in,
+	libraries/javalib/external/classpath/native/jawt/Makefile.in,
+	libraries/javalib/external/classpath/native/jni/Makefile.in,
+	libraries/javalib/external/classpath/native/jni/classpath/Makefile.in,
+	libraries/javalib/external/classpath/native/jni/gtk-peer/Makefile.in,
+	libraries/javalib/external/classpath/native/jni/java-io/Makefile.in,
+	libraries/javalib/external/classpath/native/jni/java-lang/Makefile.in,
+	libraries/javalib/external/classpath/native/jni/java-net/Makefile.in,
+	libraries/javalib/external/classpath/native/jni/java-nio/Makefile.in,
+	libraries/javalib/external/classpath/native/jni/java-util/Makefile.in,
+	libraries/javalib/external/classpath/native/jni/midi-alsa/Makefile.in,
+	libraries/javalib/external/classpath/native/jni/midi-dssi/Makefile.in,
+	libraries/javalib/external/classpath/native/jni/qt-peer/Makefile.in,
+	libraries/javalib/external/classpath/native/jni/xmlj/Makefile.in,
+	libraries/javalib/external/classpath/native/target/Makefile.in,
+	libraries/javalib/external/classpath/native/target/Linux/Makefile.in,
+	libraries/javalib/external/classpath/native/target/generic/Makefile.in,
+	libraries/javalib/external/classpath/resource/Makefile.in,
+	libraries/javalib/external/classpath/scripts/Makefile.in: 
+	Regenerated.
+
+	* test/regression/TestScript.in,
+	test/regression/compile_time/CompileScript.in,
+	test/regression/compiler/CompileScript.in,
+	test/regression/run_time/CompileScript.in: Simplified. Adjusted
+	command lines to be ecj compatible.
+
+	* test/regression/ClassGC.java: Check whether ClassGCTest is already
+	loaded before defining it.
+	
 2005-12-08  Antoine Reilles  <tonio@kaffe.org>
 	* config/i386/netbsd1/md.h: Fixed typo, caused problem for old netbsd
 	* config/alpha/netbsd1/md.h: Fix build for recent netbsd, by adapting

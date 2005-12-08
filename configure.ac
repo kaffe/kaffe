@@ -2327,7 +2327,7 @@ if test x"$use_jikes" = x"yes"; then
 fi
 
 if test x"$use_ecj" = x"yes"; then
-  ac_configure_args="$ac_configure_args --with-ecj"
+  ac_configure_args="$ac_configure_args --with-ecj=${JAVA_COMPILER}"
 fi
 
 ac_configure_args="$ac_configure_args --disable-core-jni"

@@ -42,6 +42,9 @@ public class ClassGC extends ClassLoader {
 	} else {
 	    if (verbose)
 		System.out.println("loading " + name);
+	    c = findLoadedClass(name);
+	    if (c != null)
+		    return c;
 	    try {
 		byte []b = readin(name + ".class");
 		return defineClass(name, b, 0, b.length);
