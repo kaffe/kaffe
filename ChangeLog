@@ -1,3 +1,11 @@
+2005-12-08  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/scripts/appletviewer.in,
+	kaffe/scripts/jar.in: Fixed to look for kaffe specific
+	classes in right directories.
+
+	Reported by:  Alejandro Mery  <amery@geeks.cl>
+
 2005-12-05  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/scripts/kaffe.in: Use jredir instead of prefix as home

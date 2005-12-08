@@ -2,6 +2,6 @@
 # Script to run Appletviewer
 prefix=@prefix@
 exec_prefix=@exec_prefix@
-exec @bindir@/@kaffe_TRANSF@ $JAVA_OPTS kaffe.applet.AppletViewer ${1+"$@"}
+exec @bindir@/@kaffe_TRANSF@ $JAVA_OPTS org.kaffe.applet.AppletViewer ${1+"$@"}
 exit $?
 
