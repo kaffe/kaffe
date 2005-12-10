@@ -42,8 +42,11 @@ jrelib_DATA= \
 
 export JAVA_COMPILER
 
-install-hook:
+install-data-local: installdirs
 	$(LN_S) ${jrelibdir}/glibj.zip ${jrelibdir}/rt.jar
+
+uninstall-local: 
+	$(RM) ${jrelibdir}/rt.jar
 
 EXTRA_DIST= \
 	    Makefile.am.in \
