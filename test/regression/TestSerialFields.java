@@ -626,7 +626,16 @@ public class TestSerialFields
 		String checkName = canonName.substring(0, canonName.length() - 4); // strip version no.
 	
 		Class[] tests = TestSerialFields.class.getDeclaredClasses();
-		// XXX output assumes returned test array is consistently sorted...
+		Arrays.sort(tests, new Comparator() {
+			public int compare(Object o1, Object o2)
+			{
+			    Class c1 = (Class)o1;
+			    Class c2 = (Class)o2;
+
+			    return c1.getName().compareTo(c2.getName());
+			}
+		    });
+
 		for (int i = 0; i < tests.length; i++)
 		{
 			if (tests[i].getName().startsWith(checkName))
@@ -641,65 +650,15 @@ Generating canonical stream
     put x: int=42 
     put y: int=42 
     OK: 132 bytes
-TestSerialFields$Test0016:
-  Deserializing from Test0001 stream...
-    OK. Got: TestSerialFields$Test0016: 42,42
-  Serializing TestSerialFields$Test0016
-    OK: 63 bytes
-
-TestSerialFields$Test0015:
-  Deserializing from Test0001 stream...
-    OK. Got: TestSerialFields$Test0015: 0,0
-  Serializing TestSerialFields$Test0015
-    OK: 108 bytes
-
-TestSerialFields$Test0014:
-  Deserializing from Test0001 stream...
-    Exception: java.lang.IllegalArgumentException
-  Serializing TestSerialFields$Test0014
-    Exception: java.lang.IllegalArgumentException
-
-TestSerialFields$Test0012:
-  Deserializing from Test0001 stream...
-    OK. Got: TestSerialFields$Test0012: 42,42
-  Serializing TestSerialFields$Test0012
-    OK: 63 bytes
-
-TestSerialFields$Test0011:
-  Deserializing from Test0001 stream...
-    OK. Got: TestSerialFields$Test0011 instance
-  Serializing TestSerialFields$Test0011
-    Exception: java.io.NotActiveException
-
-TestSerialFields$Test0010:
+TestSerialFields$Test0001:
   Deserializing from Test0001 stream...
     x: int=42
     y: int=42
-    xodd: (defaulted) Object=null
-    yodd: (defaulted) Object=null
-    OK. Got: TestSerialFields$Test0010 instance
-  Serializing TestSerialFields$Test0010
-    put xodd: string='putfield test string' 
-    put yodd: string='putfield test string' 
-    OK: 133 bytes
-
-TestSerialFields$Test0008:
-  Deserializing from Test0001 stream...
-    x: int=42
-    y: int=42
-    OK. Got: TestSerialFields$Test0008 instance
-  Serializing TestSerialFields$Test0008
+    OK. Got: TestSerialFields$Test0001 x=0; y=0; foo=0
+  Serializing TestSerialFields$Test0001
     put x: int=42 
     put y: int=42 
-    OK: 63 bytes
-
-TestSerialFields$Test0005:
-  Deserializing from Test0001 stream...
-    x: int=42
-    y: int=42
-    OK. Got: TestSerialFields$Test0005 instance
-  Serializing TestSerialFields$Test0005
-    OK: 47 bytes
+    OK: 132 bytes
 
 TestSerialFields$Test0002:
   Deserializing from Test0001 stream...
@@ -713,14 +672,64 @@ TestSerialFields$Test0002:
     put yd: double=6.9 
     OK: 73 bytes
 
-TestSerialFields$Test0001:
+TestSerialFields$Test0005:
   Deserializing from Test0001 stream...
     x: int=42
     y: int=42
-    OK. Got: TestSerialFields$Test0001 x=0; y=0; foo=0
-  Serializing TestSerialFields$Test0001
+    OK. Got: TestSerialFields$Test0005 instance
+  Serializing TestSerialFields$Test0005
+    OK: 47 bytes
+
+TestSerialFields$Test0008:
+  Deserializing from Test0001 stream...
+    x: int=42
+    y: int=42
+    OK. Got: TestSerialFields$Test0008 instance
+  Serializing TestSerialFields$Test0008
     put x: int=42 
     put y: int=42 
-    OK: 132 bytes
+    OK: 63 bytes
+
+TestSerialFields$Test0010:
+  Deserializing from Test0001 stream...
+    x: int=42
+    y: int=42
+    xodd: (defaulted) Object=null
+    yodd: (defaulted) Object=null
+    OK. Got: TestSerialFields$Test0010 instance
+  Serializing TestSerialFields$Test0010
+    put xodd: string='putfield test string' 
+    put yodd: string='putfield test string' 
+    OK: 133 bytes
+
+TestSerialFields$Test0011:
+  Deserializing from Test0001 stream...
+    OK. Got: TestSerialFields$Test0011 instance
+  Serializing TestSerialFields$Test0011
+    Exception: java.io.NotActiveException
+
+TestSerialFields$Test0012:
+  Deserializing from Test0001 stream...
+    OK. Got: TestSerialFields$Test0012: 42,42
+  Serializing TestSerialFields$Test0012
+    OK: 63 bytes
+
+TestSerialFields$Test0014:
+  Deserializing from Test0001 stream...
+    Exception: java.lang.IllegalArgumentException
+  Serializing TestSerialFields$Test0014
+    Exception: java.lang.IllegalArgumentException
+
+TestSerialFields$Test0015:
+  Deserializing from Test0001 stream...
+    OK. Got: TestSerialFields$Test0015: 0,0
+  Serializing TestSerialFields$Test0015
+    OK: 108 bytes
+
+TestSerialFields$Test0016:
+  Deserializing from Test0001 stream...
+    OK. Got: TestSerialFields$Test0016: 42,42
+  Serializing TestSerialFields$Test0016
+    OK: 63 bytes
 
 */

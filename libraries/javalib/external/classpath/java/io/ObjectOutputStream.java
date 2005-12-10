@@ -442,6 +442,10 @@ public class ObjectOutputStream extends OutputStream
         realOutput.writeByte(flags);
 
         ObjectStreamField[] fields = osc.fields;
+
+	if (fields == ObjectStreamClass.INVALID_FIELDS)
+	    throw new InvalidClassException("serialPersistentFields in class " + osc.getName() + " is invalid");
+
         realOutput.writeShort(fields.length);
 
         ObjectStreamField field;

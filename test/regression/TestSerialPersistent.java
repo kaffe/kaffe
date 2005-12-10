@@ -328,7 +328,16 @@ public class TestSerialPersistent
 		throws Exception
 	{
 		Class[] tests = TestSerialPersistent.class.getDeclaredClasses();
-		// XXX output assumes returned test array is consistently sorted...
+		Arrays.sort(tests, new Comparator() {
+			public int compare(Object o1, Object o2)
+			{
+			    Class c1 = (Class)o1;
+			    Class c2 = (Class)o2;
+
+			    return c1.getName().compareTo(c2.getName());
+			}
+		    });
+
 		for (int i = 0; i < tests.length; i++)
 		{
 			check(tests[i]);
@@ -337,67 +346,27 @@ public class TestSerialPersistent
 }
 
 /* Expected Output:
-Checking TestSerialPersistent$Overlap2:
+Checking TestSerialPersistent$ContainsNull:
+   THREW: java.lang.NullPointerException
+Checking TestSerialPersistent$Default:
    [0]: int i
-   [1]: java.lang.String i
+   [1]: java.lang.String s
  Serialization:
-   THREW: java.io.InvalidClassException
-Checking TestSerialPersistent$Overlap1:
+  Ok: 83 bytes.
+Checking TestSerialPersistent$DefaultTransient:
    [0]: int i
-   [1]: java.lang.String i
+   [1]: java.lang.String s
  Serialization:
-   THREW: java.io.InvalidClassException
+  Ok: 92 bytes.
 Checking TestSerialPersistent$Duplicates:
    [0]: int i
    [1]: int i
    [2]: int i
  Serialization:
-  Ok: 76 bytes.
-Checking TestSerialPersistent$TypesMismatch:
-   [0]: int s
-   [1]: java.lang.String i
- Serialization:
-   THREW: java.io.InvalidClassException
-Checking TestSerialPersistent$SubtypeSpec:
-   [0]: int i
-   [1]: java.lang.Object s
- Serialization:
-   THREW: java.io.InvalidClassException
-Checking TestSerialPersistent$NamesMismatch:
-   [0]: long l
-   [1]: java.lang.Class c
- Serialization:
    THREW: java.io.InvalidClassException
 Checking TestSerialPersistent$Empty:
  Serialization:
   Ok: 47 bytes.
-Checking TestSerialPersistent$ReallyWrongType:
-   [0]: int expected
- Serialization:
-  Ok: 72 bytes.
-Checking TestSerialPersistent$WrongType:
-   [0]: int expected
- Serialization:
-  Ok: 66 bytes.
-Checking TestSerialPersistent$NonPrivate:
-   [0]: int expected
- Serialization:
-  Ok: 67 bytes.
-Checking TestSerialPersistent$IsNoFieldsMagic:
- Serialization:
-  Ok: 57 bytes.
-Checking TestSerialPersistent$IsNull:
-   [0]: int i
-   [1]: java.lang.String s
- Serialization:
-  Ok: 82 bytes.
-Checking TestSerialPersistent$ContainsNull:
-   THREW: java.lang.NullPointerException
-Checking TestSerialPersistent$TransientOverlap:
-   [0]: int i
-   [1]: java.lang.String s
- Serialization:
-  Ok: 92 bytes.
 Checking TestSerialPersistent$FieldSort:
    [0]: int ia
    [1]: int ib
@@ -406,6 +375,37 @@ Checking TestSerialPersistent$FieldSort:
    [4]: java.lang.String sb
  Serialization:
   Ok: 116 bytes.
+Checking TestSerialPersistent$IsNoFieldsMagic:
+ Serialization:
+  Ok: 57 bytes.
+Checking TestSerialPersistent$IsNull:
+   [0]: int i
+   [1]: java.lang.String s
+ Serialization:
+  Ok: 82 bytes.
+Checking TestSerialPersistent$NamesMismatch:
+   [0]: long l
+   [1]: java.lang.Class c
+ Serialization:
+   THREW: java.io.InvalidClassException
+Checking TestSerialPersistent$NonPrivate:
+   [0]: int expected
+ Serialization:
+  Ok: 67 bytes.
+Checking TestSerialPersistent$Overlap1:
+   [0]: int i
+   [1]: java.lang.String i
+ Serialization:
+   THREW: java.io.InvalidClassException
+Checking TestSerialPersistent$Overlap2:
+   [0]: int i
+   [1]: java.lang.String i
+ Serialization:
+   THREW: java.io.InvalidClassException
+Checking TestSerialPersistent$ReallyWrongType:
+   [0]: int expected
+ Serialization:
+  Ok: 72 bytes.
 Checking TestSerialPersistent$Subclass:
    [0]: int xi
    [1]: java.lang.String xs
@@ -416,14 +416,23 @@ Checking TestSerialPersistent$Subset:
    [1]: java.lang.String s
  Serialization:
   Ok: 82 bytes.
-Checking TestSerialPersistent$DefaultTransient:
+Checking TestSerialPersistent$SubtypeSpec:
+   [0]: int i
+   [1]: java.lang.Object s
+ Serialization:
+   THREW: java.io.InvalidClassException
+Checking TestSerialPersistent$TransientOverlap:
    [0]: int i
    [1]: java.lang.String s
  Serialization:
   Ok: 92 bytes.
-Checking TestSerialPersistent$Default:
-   [0]: int i
-   [1]: java.lang.String s
+Checking TestSerialPersistent$TypesMismatch:
+   [0]: int s
+   [1]: java.lang.String i
  Serialization:
-  Ok: 83 bytes.
+   THREW: java.io.InvalidClassException
+Checking TestSerialPersistent$WrongType:
+   [0]: int expected
+ Serialization:
+  Ok: 66 bytes.
 */

@@ -1,3 +1,15 @@
+2005-12-10  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* test/regression/TestSerialFields.java,
+	test/regression/TestSerialPersistent.java,
+	test/regression/TestSerialVersions.java: Fixed class ordering
+	problem. Changed output accordingly. We expect an
+	InvalidClassException in Duplicates & Overlap now.
+
+	* libraries/javalib/external/classpath/java/io/ObjectOutputStream.java,
+	libraries/javalib/external/classpath/java/io/ObjectStreamClass.java:
+	Temporary patch before synchronizing with classpath.
+
 2005-12-10  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* FAQ/FAQ.classlibrary-compile: Updated the description of ecj.
