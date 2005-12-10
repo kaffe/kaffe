@@ -102,13 +102,34 @@ The eclipse compiler works as well. ecj is part of the eclipse project:
 
   http://www.eclipse.org
 
+If you cannot find ecj in this project site, just download Eclipse SDK
+(eclipse-SDK-3.1.1 at the time of this writing), and read the document
+"Compiling Java code". Then you will find that the following shell script
+will work as ecj.
+
+#!/bin/sh
+exec path_to_a_working_Java_VM \
+	-classpath path_to_org.eclipse.jdt.core.jar \
+	org.eclipse.jdt.internal.compiler.batch.Main \
+	"$@"
+ 
+By the way, there is a "distribution" of ecj itself in the debian
+repository (ecj-bootstrap).
+
 In order to compile kaffe's class library, you need to set JAVAC_FLAGS
 to "-source 1.4 -bootclasspath /full/path/to/builddir/libraries/javalib/lib/",
 with "/full/path/to/builddir" replaced by the full path to the directory
 where you are building the Kaffe source code.
 
+Now ./configure accepts an option to use ecj:
+
+  --with-ecj=ECJ          Define to use ECJ as the java compiler instead of
+                          jikes
+
+and you do not have to care about JAVAC_FLAGS.
+
 It works with ecj 0.548, pre-3.1.0 milestone-6, and should work with later 
-versions as well.
+versions as well.  The wrapping shell script of ecj shown above also works. 
 
 * kjc
 
