@@ -216,10 +216,9 @@ Java_java_lang_VMProcess_nativeSpawn (JNIEnv * env, jobject this,
     {
       if ((dir = copy_string (env, dirString)) == NULL)
 	goto done;
-      strings[num_strings++] = dir;
     }
 
-  err = KFORKEXEC(strings, NULL, fds, &pid, strings[0]);
+  err = KFORKEXEC(strings, NULL, fds, &pid, dir);
   if (err != 0)
     {
       TARGET_NATIVE_MISC_FORMAT_STRING1 (errbuf,

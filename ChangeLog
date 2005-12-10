@@ -1,3 +1,11 @@
+2005-12-10  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/clib/native/java_lang_VMProcess.c
+	(Java_java_lang_VMProcess_nativeSpawn): Spawn in the correct
+	dir, if one is given.
+
+        Reported by:  Alejandro Mery  <amery@geeks.cl>
+
 2005-12-10  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* test/regression/TestSerialFields.java,
