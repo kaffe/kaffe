@@ -1,5 +1,12 @@
 2005-12-11  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac: Pass on jikes program name to 
+	GNU Classpath's configure script.
+
+	Reported by:  Kiyo Inaba  <inaba@src.ricoh.co.jp>
+
+2005-12-11  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac: Check for SIZE_MAX. Fixes a build issue on Irix.
 
 	Reported by:  Riccardo Mottola  <riccardo@kaffe.org>

@@ -787,6 +787,7 @@ AC_ARG_WITH([jikes],
 if test x"$use_ecj" = x"no" ; then 
   if test x"$use_jikes" = x"no"; then
 	use_jikes="yes";
+	JIKESPROG="jikes";
   fi
 fi
 
@@ -2325,7 +2326,7 @@ old_configure_args="$ac_configure_args"
 # This should be preset to gcjx, once gcjx is merged in.
 
 if test x"$use_jikes" = x"yes"; then
-  ac_configure_args="$ac_configure_args --with-jikes"
+  ac_configure_args="$ac_configure_args --with-jikes=${JIKESPROG}"
 fi
 
 if test x"$use_ecj" = x"yes"; then
