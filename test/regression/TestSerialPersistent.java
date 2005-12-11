@@ -13,7 +13,7 @@ import java.util.*;
 
 public class TestSerialPersistent
 {
-	private static class Default
+	static class Default
 	implements Serializable
 	{
 		private int i;
@@ -22,7 +22,7 @@ public class TestSerialPersistent
 		// No serialPersistentFields specification
 	}
 
-	private static class DefaultTransient
+	static class DefaultTransient
 	implements Serializable
 	{
 		private int i;
@@ -32,7 +32,7 @@ public class TestSerialPersistent
 		// No serialPersistentFields specification
 	}
 
-	private static class Subset
+	static class Subset
 	implements Serializable
 	{
 		private int i;
@@ -46,7 +46,7 @@ public class TestSerialPersistent
 		};
 	}
 
-	private static class Subclass
+	static class Subclass
 	extends Subset
 	implements Serializable
 	{
@@ -61,7 +61,7 @@ public class TestSerialPersistent
 		};
 	}
 
-	private static class FieldSort
+	static class FieldSort
 	implements Serializable
 	{
 		private int ib;
@@ -81,7 +81,7 @@ public class TestSerialPersistent
 		};
 	}
 
-	private static class TransientOverlap
+	static class TransientOverlap
 	implements Serializable
 	{
 		private int i;
@@ -96,7 +96,7 @@ public class TestSerialPersistent
 		};
 	}
 
-	private static class ContainsNull
+	static class ContainsNull
 	implements Serializable
 	{
 		private int i;
@@ -110,7 +110,7 @@ public class TestSerialPersistent
 		};
 	}
 
-	private static class IsNull
+	static class IsNull
 	implements Serializable
 	{
 		private int i;
@@ -120,7 +120,7 @@ public class TestSerialPersistent
 		private static final ObjectStreamField[] serialPersistentFields = null;
 	}
 
-	private static class IsNoFieldsMagic
+	static class IsNoFieldsMagic
 	implements Serializable
 	{
 		private int i;
@@ -130,7 +130,7 @@ public class TestSerialPersistent
 		private static final ObjectStreamField[] serialPersistentFields = ObjectStreamClass.NO_FIELDS;
 	}
 
-	private static class NonPrivate
+	static class NonPrivate
 	implements Serializable
 	{
 		private int expected;
@@ -143,7 +143,7 @@ public class TestSerialPersistent
 		};
 	}
 
-	private static class WrongType
+	static class WrongType
 	implements Serializable
 	{
 		private int expected;
@@ -156,7 +156,7 @@ public class TestSerialPersistent
 		};
 	}
 
-	private static class ReallyWrongType
+	static class ReallyWrongType
 	implements Serializable
 	{
 		private int expected;
@@ -165,7 +165,7 @@ public class TestSerialPersistent
 		public static final int serialPersistentFields = 0x11;
 	}
 
-	private static class Empty
+	static class Empty
 	implements Serializable
 	{
 		private int not_expected_i;
@@ -176,7 +176,7 @@ public class TestSerialPersistent
 		};
 	}
 
-	private static class NamesMismatch
+	static class NamesMismatch
 	implements Serializable
 	{
 		private int not_expected_t;
@@ -189,7 +189,7 @@ public class TestSerialPersistent
 		};
 	}
 
-	private static class SubtypeSpec
+	static class SubtypeSpec
 	implements Serializable
 	{
 		private int i;
@@ -202,7 +202,7 @@ public class TestSerialPersistent
 		};
 	}
 
-	private static class TypesMismatch
+	static class TypesMismatch
 	implements Serializable
 	{
 		private int i;
@@ -216,7 +216,7 @@ public class TestSerialPersistent
 	}
 
 	// XXX JDK1.4 doesn't complain about this case.
-	private static class Duplicates 
+	static class Duplicates 
 	implements Serializable
 	{
 		private int i;
@@ -231,7 +231,7 @@ public class TestSerialPersistent
 
 	// XXX JDK1.4.1 blows up with an internal error in ObjectStreamClass.lookup() on next two test:
 	// See bug 4764280 (fixed in 1.4.2??)
-	private static class Overlap1 // 2nd is correct
+	static class Overlap1 // 2nd is correct
 	implements Serializable
 	{
 		private int i;
@@ -245,7 +245,7 @@ public class TestSerialPersistent
 
 	// XXX JDK1.4.1 blows up with an internal error in ObjectStreamClass.lookup() on next two test:
 	// See bug 4764280 (fixed in 1.4.2??)
-	private static class Overlap2 // 1st is correct
+	static class Overlap2 // 1st is correct
 	implements Serializable
 	{
 		private int i;
@@ -359,9 +359,6 @@ Checking TestSerialPersistent$DefaultTransient:
  Serialization:
   Ok: 92 bytes.
 Checking TestSerialPersistent$Duplicates:
-   [0]: int i
-   [1]: int i
-   [2]: int i
  Serialization:
    THREW: java.io.InvalidClassException
 Checking TestSerialPersistent$Empty:
@@ -393,13 +390,9 @@ Checking TestSerialPersistent$NonPrivate:
  Serialization:
   Ok: 67 bytes.
 Checking TestSerialPersistent$Overlap1:
-   [0]: int i
-   [1]: java.lang.String i
  Serialization:
    THREW: java.io.InvalidClassException
 Checking TestSerialPersistent$Overlap2:
-   [0]: int i
-   [1]: java.lang.String i
  Serialization:
    THREW: java.io.InvalidClassException
 Checking TestSerialPersistent$ReallyWrongType:

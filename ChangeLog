@@ -1,3 +1,9 @@
+2005-12-11  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* test/regression/TestSerialPersistent.java: Fix expected output.
+	At the moment it is exactly the same compared to JDK's. Removed
+	private modifiers.
+
 2005-12-11  Dalibor Topic  <robilad@kaffe.org>
 
 	* configure.ac: Pass on jikes program name to 
