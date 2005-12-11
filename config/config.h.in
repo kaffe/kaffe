@@ -836,6 +836,10 @@
 /* The size of a `__int64', as computed by sizeof. */
 #undef SIZEOF___INT64
 
+/* Define as the maximum value of type 'size_t', if the system doesn't define
+   it. */
+#undef SIZE_MAX
+
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
 

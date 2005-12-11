@@ -1,5 +1,11 @@
 2005-12-11  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac: Check for SIZE_MAX. Fixes a build issue on Irix.
+
+	Reported by:  Riccardo Mottola  <riccardo@kaffe.org>
+
+2005-12-11  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/Makefile.am.in:
 	(install-hook) Renamed to 
 	(install-data-local), so that it gets picked up by automake.

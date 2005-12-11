@@ -1179,6 +1179,8 @@ fi
 dnl needed for valgrind
 AC_CHECK_HEADERS([valgrind/memcheck.h])
 
+gl_SIZE_MAX
+
 dnl =========================================================================
 dnl Select GC to use
 dnl -------------------------------------------------------------------------
