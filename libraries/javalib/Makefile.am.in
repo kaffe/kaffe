@@ -43,7 +43,9 @@ jrelib_DATA= \
 export JAVA_COMPILER
 
 install-data-local: installdirs
-	$(LN_S) ${jrelibdir}/glibj.zip ${jrelibdir}/rt.jar
+	if ! test -f ${jrelibdir}/rt.jar ; then \
+		$(LN_S) ${jrelibdir}/glibj.zip ${jrelibdir}/rt.jar ; \
+	fi
 
 uninstall-local: 
 	$(RM) ${jrelibdir}/rt.jar

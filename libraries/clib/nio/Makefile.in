@@ -88,8 +88,9 @@ am_libjavanio_la_OBJECTS =  \
 	libjavanio_la-java_nio_VMDirectByteBuffer.lo \
 	libjavanio_la-gnu_java_nio_charset_iconv_IconvDecoder.lo \
 	libjavanio_la-gnu_java_nio_charset_iconv_IconvEncoder.lo \
+	libjavanio_la-gnu_java_nio_channels_FileChannelImpl.lo \
 	libjavanio_la-gnu_java_nio_VMSelector.lo \
-	libjavanio_la-gnu_java_nio_channels_FileChannelImpl.lo
+	libjavanio_la-gnu_java_nio_VMPipe.lo
 libjavanio_la_OBJECTS = $(am_libjavanio_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
@@ -388,8 +389,9 @@ libjavanio_la_SOURCES = \
 	java_nio_VMDirectByteBuffer.c \
 	gnu_java_nio_charset_iconv_IconvDecoder.c \
 	gnu_java_nio_charset_iconv_IconvEncoder.c \
+	gnu_java_nio_channels_FileChannelImpl.c \
 	gnu_java_nio_VMSelector.c \
-	gnu_java_nio_channels_FileChannelImpl.c 
+	gnu_java_nio_VMPipe.c 
 
 libjavanio_la_LIBADD = \
         $(LTLIBICONV) \
@@ -466,6 +468,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjavanio_la-gnu_java_nio_VMPipe.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjavanio_la-gnu_java_nio_VMSelector.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjavanio_la-gnu_java_nio_channels_FileChannelImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjavanio_la-gnu_java_nio_charset_iconv_IconvDecoder.Plo@am__quote@
@@ -522,6 +525,13 @@ libjavanio_la-gnu_java_nio_charset_iconv_IconvEncoder.lo: gnu_java_nio_charset_i
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libjavanio_la_CFLAGS) $(CFLAGS) -c -o libjavanio_la-gnu_java_nio_charset_iconv_IconvEncoder.lo `test -f 'gnu_java_nio_charset_iconv_IconvEncoder.c' || echo '$(srcdir)/'`gnu_java_nio_charset_iconv_IconvEncoder.c
 
+libjavanio_la-gnu_java_nio_channels_FileChannelImpl.lo: gnu_java_nio_channels_FileChannelImpl.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libjavanio_la_CFLAGS) $(CFLAGS) -MT libjavanio_la-gnu_java_nio_channels_FileChannelImpl.lo -MD -MP -MF "$(DEPDIR)/libjavanio_la-gnu_java_nio_channels_FileChannelImpl.Tpo" -c -o libjavanio_la-gnu_java_nio_channels_FileChannelImpl.lo `test -f 'gnu_java_nio_channels_FileChannelImpl.c' || echo '$(srcdir)/'`gnu_java_nio_channels_FileChannelImpl.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjavanio_la-gnu_java_nio_channels_FileChannelImpl.Tpo" "$(DEPDIR)/libjavanio_la-gnu_java_nio_channels_FileChannelImpl.Plo"; else rm -f "$(DEPDIR)/libjavanio_la-gnu_java_nio_channels_FileChannelImpl.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gnu_java_nio_channels_FileChannelImpl.c' object='libjavanio_la-gnu_java_nio_channels_FileChannelImpl.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libjavanio_la_CFLAGS) $(CFLAGS) -c -o libjavanio_la-gnu_java_nio_channels_FileChannelImpl.lo `test -f 'gnu_java_nio_channels_FileChannelImpl.c' || echo '$(srcdir)/'`gnu_java_nio_channels_FileChannelImpl.c
+
 libjavanio_la-gnu_java_nio_VMSelector.lo: gnu_java_nio_VMSelector.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libjavanio_la_CFLAGS) $(CFLAGS) -MT libjavanio_la-gnu_java_nio_VMSelector.lo -MD -MP -MF "$(DEPDIR)/libjavanio_la-gnu_java_nio_VMSelector.Tpo" -c -o libjavanio_la-gnu_java_nio_VMSelector.lo `test -f 'gnu_java_nio_VMSelector.c' || echo '$(srcdir)/'`gnu_java_nio_VMSelector.c; \
 @am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjavanio_la-gnu_java_nio_VMSelector.Tpo" "$(DEPDIR)/libjavanio_la-gnu_java_nio_VMSelector.Plo"; else rm -f "$(DEPDIR)/libjavanio_la-gnu_java_nio_VMSelector.Tpo"; exit 1; fi
@@ -529,12 +539,12 @@ libjavanio_la-gnu_java_nio_VMSelector.lo: gnu_java_nio_VMSelector.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libjavanio_la_CFLAGS) $(CFLAGS) -c -o libjavanio_la-gnu_java_nio_VMSelector.lo `test -f 'gnu_java_nio_VMSelector.c' || echo '$(srcdir)/'`gnu_java_nio_VMSelector.c
 
-libjavanio_la-gnu_java_nio_channels_FileChannelImpl.lo: gnu_java_nio_channels_FileChannelImpl.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libjavanio_la_CFLAGS) $(CFLAGS) -MT libjavanio_la-gnu_java_nio_channels_FileChannelImpl.lo -MD -MP -MF "$(DEPDIR)/libjavanio_la-gnu_java_nio_channels_FileChannelImpl.Tpo" -c -o libjavanio_la-gnu_java_nio_channels_FileChannelImpl.lo `test -f 'gnu_java_nio_channels_FileChannelImpl.c' || echo '$(srcdir)/'`gnu_java_nio_channels_FileChannelImpl.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjavanio_la-gnu_java_nio_channels_FileChannelImpl.Tpo" "$(DEPDIR)/libjavanio_la-gnu_java_nio_channels_FileChannelImpl.Plo"; else rm -f "$(DEPDIR)/libjavanio_la-gnu_java_nio_channels_FileChannelImpl.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gnu_java_nio_channels_FileChannelImpl.c' object='libjavanio_la-gnu_java_nio_channels_FileChannelImpl.lo' libtool=yes @AMDEPBACKSLASH@
+libjavanio_la-gnu_java_nio_VMPipe.lo: gnu_java_nio_VMPipe.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libjavanio_la_CFLAGS) $(CFLAGS) -MT libjavanio_la-gnu_java_nio_VMPipe.lo -MD -MP -MF "$(DEPDIR)/libjavanio_la-gnu_java_nio_VMPipe.Tpo" -c -o libjavanio_la-gnu_java_nio_VMPipe.lo `test -f 'gnu_java_nio_VMPipe.c' || echo '$(srcdir)/'`gnu_java_nio_VMPipe.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjavanio_la-gnu_java_nio_VMPipe.Tpo" "$(DEPDIR)/libjavanio_la-gnu_java_nio_VMPipe.Plo"; else rm -f "$(DEPDIR)/libjavanio_la-gnu_java_nio_VMPipe.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gnu_java_nio_VMPipe.c' object='libjavanio_la-gnu_java_nio_VMPipe.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libjavanio_la_CFLAGS) $(CFLAGS) -c -o libjavanio_la-gnu_java_nio_channels_FileChannelImpl.lo `test -f 'gnu_java_nio_channels_FileChannelImpl.c' || echo '$(srcdir)/'`gnu_java_nio_channels_FileChannelImpl.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libjavanio_la_CFLAGS) $(CFLAGS) -c -o libjavanio_la-gnu_java_nio_VMPipe.lo `test -f 'gnu_java_nio_VMPipe.c' || echo '$(srcdir)/'`gnu_java_nio_VMPipe.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

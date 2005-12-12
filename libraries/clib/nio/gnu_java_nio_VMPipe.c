@@ -1,5 +1,5 @@
-/* VMPipe.java -- Reference implementation for VM hooks used by PipeImpl
-   Copyright (C) 2004 Free Software Foundation
+/* gnu_java_nio_VMPipe.c - Native methods for PipeImpl class
+   Copyright (C) 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -7,7 +7,7 @@ GNU Classpath is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
 any later version.
-
+ 
 GNU Classpath is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -35,30 +35,22 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
-package gnu.java.nio;
+#include <config.h>
+#include <errno.h>
 
-import java.io.IOException;
-import java.nio.channels.spi.SelectorProvider;
-import gnu.classpath.Configuration;
+#include <jni.h>
+#include <jcl.h>
 
-/**
- * This class contains the native methods for gnu.java.nio.PipeImpl
- * As such, it needs help from the VM.
- *
- * @author Patrik Reali
- */
-final class VMPipe
+#include "gnu_java_nio_VMPipe.h"
+
+#define IO_EXCEPTION "java/io/IOException"
+
+JNIEXPORT void JNICALL
+Java_gnu_java_nio_VMPipe_init (JNIEnv * env,
+			       jclass cls __attribute__ ((__unused__)),
+			       jobject self __attribute__ ((__unused__)),
+			       jobject provider __attribute__ ((__unused__)))
 {
-
-  static
-  {
-    // load the shared library needed for native methods.
-    if (Configuration.INIT_LOAD_LIBRARY)
-      {
-        System.loadLibrary ("javanio");
-      }
-  }
-
-  static native void init(PipeImpl self, SelectorProvider provider)
-    throws IOException;
+  JCL_ThrowException (env, IO_EXCEPTION,
+		      "gnu.java.nio.VMPipe.init(): not implemented");
 }

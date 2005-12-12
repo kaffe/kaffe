@@ -28,8 +28,9 @@ libjavanio_la_SOURCES = \
 	java_nio_VMDirectByteBuffer.c \
 	gnu_java_nio_charset_iconv_IconvDecoder.c \
 	gnu_java_nio_charset_iconv_IconvEncoder.c \
+	gnu_java_nio_channels_FileChannelImpl.c \
 	gnu_java_nio_VMSelector.c \
-	gnu_java_nio_channels_FileChannelImpl.c 
+	gnu_java_nio_VMPipe.c 
 
 libjavanio_la_LIBADD = \
         $(LTLIBICONV) \
