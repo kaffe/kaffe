@@ -265,4 +265,16 @@ public class HTMLDocument extends DefaultStyledDocument
       return super.getName();
     }
   }
+  
+  /**
+   * Gets the reader for the parser to use when loading the document with HTML. 
+   * 
+   * @param pos - the starting position
+   * @return - the reader
+   */
+  public HTMLEditorKit.ParserCallback getReader(int pos)
+  {
+    // FIXME: Not implemented.
+    return null;
+  }
 }

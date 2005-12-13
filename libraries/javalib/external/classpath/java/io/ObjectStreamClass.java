@@ -63,8 +63,6 @@ import java.util.Vector;
 
 public class ObjectStreamClass implements Serializable
 {
-    static final ObjectStreamField[] INVALID_FIELDS = new ObjectStreamField[0];
-
   /**
    * Returns the <code>ObjectStreamClass</code> for <code>cl</code>.
    * If <code>cl</code> is null, or is not <code>Serializable</code>,
@@ -610,28 +608,6 @@ outer:
 	    fields = getSerialPersistentFields(cl);
 	    if (fields != null)
 	      {
-		ObjectStreamField[] fieldsName = new ObjectStreamField[fields.length];
-		System.arraycopy(fields, 0, fieldsName, 0, fields.length);
-
-		Arrays.sort (fieldsName, new Comparator() {
-			public int compare(Object o1, Object o2)
-			{
-			  ObjectStreamField f1 = (ObjectStreamField)o1;
-			  ObjectStreamField f2 = (ObjectStreamField)o2;
-			    
-			  return f1.getName().compareTo(f2.getName());
-			}
-		    });
-		
-		for (int i=1; i < fields.length; i++)
-		  {
-		    if (fieldsName[i-1].getName().equals(fieldsName[i].getName()))
-			{
-			    fields = INVALID_FIELDS;
-			    return;
-			}
-		  }
-
 		Arrays.sort (fields);
 		// Retrieve field reference.
 		for (int i=0; i < fields.length; i++)

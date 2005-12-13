@@ -83,14 +83,31 @@ public class XMLInputFactoryImpl
     allocator = new XMLEventAllocatorImpl();
   }
 
+  private void configureXMLParser(XMLParser parser)
+  {
+    parser.setResolver(resolver);
+    parser.setReporter(reporter);
+    parser.setValidating(validating);
+    parser.setNamespaceAware(namespaceAware);
+    parser.setCoalescing(coalescing);
+    parser.setReplacingEntityReferences(replacingEntityReferences);
+    parser.setExternalEntities(externalEntities);
+    parser.setSupportDTD(supportDTD);
+  }
+
   public XMLStreamReader createXMLStreamReader(Reader reader)
     throws XMLStreamException
   {
+    /*
     return new XMLStreamReaderImpl(reader, null, null,
                                    resolver, reporter,
                                    validating, namespaceAware,
                                    coalescing, replacingEntityReferences,
                                    externalEntities, supportDTD);
+                                   */
+    XMLParser ret = new XMLParser(reader, null);
+    configureXMLParser(ret);
+    return ret;
   }
   
   public XMLStreamReader createXMLStreamReader(Source source)
@@ -98,21 +115,27 @@ public class XMLInputFactoryImpl
   {
     String systemId = source.getSystemId();
     InputStream in = getInputStream(source);
-    return new XMLStreamReaderImpl(in, null, systemId,
+    /*return new XMLStreamReaderImpl(in, null, systemId,
                                    resolver, reporter,
                                    validating, namespaceAware,
                                    coalescing, replacingEntityReferences,
-                                   externalEntities, supportDTD);
+                                   externalEntities, supportDTD);*/
+    XMLParser ret = new XMLParser(in, systemId);
+    configureXMLParser(ret);
+    return ret;
   }
   
   public XMLStreamReader createXMLStreamReader(InputStream in)
     throws XMLStreamException
   {
-    return new XMLStreamReaderImpl(in, null, null,
+    /*return new XMLStreamReaderImpl(in, null, null,
                                    resolver, reporter,
                                    validating, namespaceAware,
                                    coalescing, replacingEntityReferences,
-                                   externalEntities, supportDTD);
+                                   externalEntities, supportDTD);*/
+    XMLParser ret = new XMLParser(in, null);
+    configureXMLParser(ret);
+    return ret;
   }
   
   public XMLStreamReader createXMLStreamReader(InputStream in, String encoding)

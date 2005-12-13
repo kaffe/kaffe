@@ -38,28 +38,472 @@ exception statement from your version. */
 
 package javax.swing.text.html;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
+import java.awt.Cursor;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
+import java.io.Writer;
 
+import javax.accessibility.Accessible;
+import javax.accessibility.AccessibleContext;
+
+import javax.swing.Action;
+import javax.swing.JEditorPane;
+import javax.swing.text.AbstractDocument;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.BoxView;
+import javax.swing.text.ComponentView;
 import javax.swing.text.Document;
+import javax.swing.text.Element;
+import javax.swing.text.IconView;
+import javax.swing.text.LabelView;
 import javax.swing.text.MutableAttributeSet;
+import javax.swing.text.ParagraphView;
+import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledEditorKit;
+import javax.swing.text.View;
+import javax.swing.text.ViewFactory;
 import javax.swing.text.html.parser.ParserDelegator;
 
 /**
- * This class is NOT implemented. This file currently holds only
- * declarations of the two enclosing classes, necessary for testing
- * the implemented javax.swing.text.html.parser package.
- *
- * @author No authorship is taken, implement the class and be!
- * TODO: replace this header after implementing the class.
+ * @author Lillian Angel (langel at redhat dot com)
  */
 public class HTMLEditorKit
   extends StyledEditorKit
-  implements Serializable, Cloneable
+  implements Serializable, Cloneable, Accessible
 {
+  
+  /**
+   * Fires the hyperlink events on the associated component
+   * when needed.
+   */
+  public static class LinkController
+    extends MouseAdapter
+    implements MouseMotionListener, Serializable
+    {
+      
+      /**
+       * Constructor
+       */
+      public LinkController() 
+      {
+        // FIXME: Anything to do here?
+      }
+      
+      /**
+       * Dispatched when the mouse is clicked. If the component
+       * is read-only, then the clicked event is used to drive an
+       * attempt to follow the reference specified by a link
+       * 
+       * @param e - the mouse event
+       */
+      public void mouseClicked(MouseEvent e)
+      {
+        // FIXME: Not implemented.
+      }
+      
+      /**
+       * Dispatched when the mouse is dragged on a component.
+       * 
+       * @param e - the mouse event.
+       */
+      public void mouseDragged(MouseEvent e)
+      {
+        // FIXME: Not implemented.        
+      }
+      
+      /**
+       * Dispatched when the mouse cursor has moved into the component.
+       * 
+       * @param e - the mouse event.
+       */
+      public void mouseMoved(MouseEvent e)
+      {
+        // FIXME: Not implemented.
+      }
+      
+      /**
+       * If the given position represents a link, then linkActivated is called
+       * on the JEditorPane. Implemented to forward to the method with the same
+       * name, but pos == editor == -1.
+       * 
+       * @param pos - the position
+       * @param editor - the editor pane
+       */
+      protected void activateLink(int pos,
+                                  JEditorPane editor)
+      {
+        // FIXME: Not implemented.
+      }
+    }
+  
+  /**
+   * This class is used to insert a string of HTML into an existing
+   * document. At least 2 HTML.Tags need to be supplied. The first Tag (parentTag)
+   * identifies the parent in the document to add the elements to. The second, (addTag), 
+   * identifies that the first tag should be added to the document as seen in the string.
+   * The parser will generate all appropriate (opening/closing tags_ even if they are not
+   * in the HTML string passed in.
+   */
+  public static class InsertHTMLTextAction
+    extends HTMLTextAction
+    {
+      
+      /**
+       * Tag in HTML to start adding tags from.
+       */
+      protected HTML.Tag addTag;
+      
+      /**
+       * Alternate tag in HTML to start adding tags from if parentTag is
+       * not found and alternateParentTag is not found.
+       */      
+      protected HTML.Tag alternateAddTag;
+      
+      /**
+       * Alternate tag to check if parentTag is not found.
+       */
+      protected HTML.Tag alternateParentTag;
+      
+      /**
+       * HTML to insert.
+       */
+      protected String html;
+      
+      /**
+       * Tag to check for in the document.
+       */
+      protected HTML.Tag parentTag;
+      
+      /**
+       * Initializes all fields.
+       * 
+       * @param name - the name of the document.
+       * @param html - the html to insert
+       * @param parentTag - the parent tag to check for
+       * @param addTag - the tag to start adding from
+       */
+      public InsertHTMLTextAction(String name, String html, 
+                                  HTML.Tag parentTag, HTML.Tag addTag)
+      {
+        this(name, html, parentTag, addTag, null, null);
+      }
+      
+      /**
+       * Initializes all fields and calls super
+       * 
+       * @param name - the name of the document.
+       * @param html - the html to insert
+       * @param parentTag - the parent tag to check for
+       * @param addTag - the tag to start adding from
+       * @param alternateParentTag - the alternate parent tag
+       * @param alternateAddTag - the alternate add tag
+       */
+      public InsertHTMLTextAction(String name, String html, HTML.Tag parentTag, 
+                                  HTML.Tag addTag, HTML.Tag alternateParentTag, 
+                                  HTML.Tag alternateAddTag) 
+      {
+        super(name);
+        this.html = html;
+        this.parentTag = parentTag;
+        this.addTag = addTag;
+        this.alternateParentTag = alternateParentTag;
+        this.alternateAddTag = alternateAddTag;
+      }
+      
+      /**
+       * HTMLEditorKit.insertHTML is called. If an exception is
+       * thrown, it is wrapped in a RuntimeException and thrown.
+       * 
+       * @param editor - the editor to use to get the editorkit
+       * @param doc -
+       *          the Document to insert the HTML into.
+       * @param offset -
+       *          where to begin inserting the HTML.
+       * @param html -
+       *          the String to insert
+       * @param popDepth -
+       *          the number of ElementSpec.EndTagTypes to generate before
+       *          inserting
+       * @param pushDepth -
+       *          the number of ElementSpec.StartTagTypes with a direction of
+       *          ElementSpec.JoinNextDirection that should be generated before
+       * @param addTag -
+       *          the first tag to start inserting into document
+       */
+      protected void insertHTML(JEditorPane editor, HTMLDocument doc,
+                                int offset, String html,
+                                int popDepth, int pushDepth,
+                                HTML.Tag addTag)
+      {
+        try 
+        {
+          super.getHTMLEditorKit(editor).insertHTML(doc, offset, html,
+                                                    popDepth, pushDepth, addTag);
+        }
+        catch (Exception e)
+        {
+          throw new RuntimeException(e);
+        }
+      }
+      
+      /**
+       * Invoked when inserting at a boundary. Determines the number of pops, 
+       * and then the number of pushes that need to be performed. The it calls
+       * insertHTML.
+       * 
+       * @param editor - the editor to use to get the editorkit
+       * @param doc -
+       *          the Document to insert the HTML into.
+       * @param offset -
+       *          where to begin inserting the HTML.
+       * @param insertElement - the element to insert
+       * @param html - the html to insert
+       * @param parentTag - the parent tag
+       * @param addTag - the first tag
+       */
+      protected void insertAtBoundary(JEditorPane editor,
+                                      HTMLDocument doc, int offset,
+                                      Element insertElement,
+                                      String html, HTML.Tag parentTag,
+                                      HTML.Tag addTag)
+      {
+        // FIXME: Not implemented.
+      }
+      
+      /**
+       * Invoked when inserting at a boundary. Determines the number of pops, 
+       * and then the number of pushes that need to be performed. The it calls
+       * insertHTML.
+       * 
+       * @param editor - the editor to use to get the editorkit
+       * @param doc -
+       *          the Document to insert the HTML into.
+       * @param offset -
+       *          where to begin inserting the HTML.
+       * @param insertElement - the element to insert
+       * @param html - the html to insert
+       * @param parentTag - the parent tag
+       * @param addTag - the first tag
+       * 
+       * @deprecated as of v1.3, use insertAtBoundary
+       */
+      protected void insertAtBoundry(JEditorPane editor,
+                                     HTMLDocument doc,
+                                     int offset, Element insertElement,
+                                     String html, HTML.Tag parentTag,
+                                     HTML.Tag addTag)
+      {
+        insertAtBoundary(editor, doc, offset, insertElement,
+                         html, parentTag, addTag);
+      }
+      
+      /**
+       * Inserts the HTML.
+       * 
+       * @param ae - the action performed
+       */
+      public void actionPerformed(ActionEvent ae)
+      {
+        // FIXME: Not implemented.
+      }
+    }
+  
+  /**
+   * Abstract Action class that helps inserting HTML
+   * into an existing document.
+   */
+  public abstract static class HTMLTextAction
+    extends StyledEditorKit.StyledTextAction
+    {
+      
+      /**
+       * Constructor
+       */
+      public HTMLTextAction(String name) 
+      {
+        super(name);
+      }
+      
+      /**
+       * Gets the HTMLDocument from the JEditorPane.
+       * 
+       * @param e - the editor pane
+       * @return the html document.
+       */
+      protected HTMLDocument getHTMLDocument(JEditorPane e)
+      {
+        return (HTMLDocument) e.getDocument();
+      }
+      
+      /**
+       * Gets the HTMLEditorKit
+       *  
+       * @param e - the JEditorPane to get the HTMLEditorKit from.
+       * @return the HTMLEditorKit
+       */
+      protected HTMLEditorKit getHTMLEditorKit(JEditorPane e) 
+      {
+        return (HTMLEditorKit) e.getEditorKit();
+      }
+      
+      /**
+       * Returns an array of Elements that contain the offset.
+       * The first elements corresponds to the roots of the doc.
+       * 
+       * @param doc - the document to get the Elements from.
+       * @param offset - the offset the Elements must contain
+       * @return an array of all the elements containing the offset.
+       */
+      protected Element[] getElementsAt(HTMLDocument doc,
+                                        int offset)
+      {
+        // More efficent than using a Vector
+        Element[] roots = doc.getRootElements();
+        int size = 0;
+        int rootSize = roots.length;
+        
+        // Get total size
+        for (int i = 0; i < rootSize; i++)
+          size += roots[i].getElementCount() + 1;
+        
+        Element[] elements = new Element[size];
+        
+        // Add all roots to the array first
+        for (int j = 0; j < rootSize; j++)
+          elements[j] = roots[j];
+        
+        // Add all the children of the roots
+        for (int k = 0; k < rootSize; k++)
+          {
+            Element current = roots[k];
+            elements[k] = current.getElement(current.getElementIndex(offset));
+          }
+        
+        return elements;
+      }
+      
+      /**
+       * Returns the number of elements, starting at the deepest point, needed
+       * to get an element representing tag. -1 if no elements are found, 0 if
+       * the parent of the leaf at offset represents the tag.
+       * 
+       * @param doc - the document to search
+       * @param offset - the offset to check
+       * @param tag - the tag to look for
+       * @return - the number of elements needed to get an element representing tag.
+       */
+      protected int elementCountToTag(HTMLDocument doc,
+                                      int offset, HTML.Tag tag)
+      {
+        // FIXME: Not implemented.
+        return -1;
+      }
+      
+      /**
+       * Gets the deepest element at offset with the
+       * matching tag.
+       * 
+       * @param doc - the document to search
+       * @param offset - the offset to check for
+       * @param tag - the tag to match
+       * @return - the element that is found, null if not found.
+       */
+      protected Element findElementMatchingTag(HTMLDocument doc,
+                                               int offset, HTML.Tag tag)
+      {
+        // FIXME: Not implemented.
+        return null;
+      }
+    }
+  
+  /**
+   * A {@link ViewFactory} that is able to create {@link View}s for
+   * the <code>Element</code>s that are supported.
+   */
+  public static class HTMLFactory
+    implements ViewFactory
+  {
+    /**
+     * Creates a {@link View} for the specified <code>Element</code>.
+     *
+     * @param element the <code>Element</code> to create a <code>View</code>
+     *        for
+     * @return the <code>View</code> for the specified <code>Element</code>
+     *         or <code>null</code> if the type of <code>element</code> is
+     *         not supported
+     */
+    public View create(Element element)
+    {
+      View view = null;
+      Object attr = element.getAttributes().getAttribute(
+                                StyleConstants.NameAttribute);
+      if (attr instanceof HTML.Tag)
+        {
+          HTML.Tag tag = (HTML.Tag) attr;
+
+          if (tag.equals(HTML.Tag.IMPLIED) || tag.equals(HTML.Tag.P)
+              || tag.equals(HTML.Tag.H1) || tag.equals(HTML.Tag.H2)
+              || tag.equals(HTML.Tag.H3) || tag.equals(HTML.Tag.H4)
+              || tag.equals(HTML.Tag.H5) || tag.equals(HTML.Tag.H6)
+              || tag.equals(HTML.Tag.DT))
+            view = new ParagraphView(element);
+          else if (tag.equals(HTML.Tag.LI) || tag.equals(HTML.Tag.DL)
+                   || tag.equals(HTML.Tag.DD) || tag.equals(HTML.Tag.BODY)
+                   || tag.equals(HTML.Tag.HTML) || tag.equals(HTML.Tag.CENTER)
+                   || tag.equals(HTML.Tag.DIV)
+                   || tag.equals(HTML.Tag.BLOCKQUOTE)
+                   || tag.equals(HTML.Tag.PRE))
+            view = new BlockView(element, View.Y_AXIS);
+          
+          // FIXME: Uncomment when the views have been implemented
+         /* else if (tag.equals(HTML.Tag.CONTENT))
+            view = new InlineView(element); 
+          else if (tag.equals(HTML.Tag.MENU) || tag.equals(HTML.Tag.DIR)
+                   || tag.equals(HTML.Tag.UL) || tag.equals(HTML.Tag.OL))
+            view = new ListView(element);
+          else if (tag.equals(HTML.Tag.IMG))
+            view = new ImageView(element);
+          else if (tag.equals(HTML.Tag.HR))
+            view = new HRuleView(element);
+          else if (tag.equals(HTML.Tag.BR))
+            view = new BRView(element);
+          else if (tag.equals(HTML.Tag.TABLE))
+            view = new TableView(element);
+          else if (tag.equals(HTML.Tag.INPUT) || tag.equals(HTML.Tag.SELECT)
+                   || tag.equals(HTML.Tag.TEXTAREA))
+            view = new FormView(element);
+          else if (tag.equals(HTML.Tag.OBJECT))
+            view = new ObjectView(element);
+          else if (tag.equals(HTML.Tag.FRAMESET))
+            view = new FrameSetView(element);
+          else if (tag.equals(HTML.Tag.FRAME))
+            view = new FrameView(element); */
+        }      
+      
+      if (view == null)
+        {
+          String name = element.getName();
+          if (name.equals(AbstractDocument.ContentElementName))
+            view = new LabelView(element);
+          else if (name.equals(AbstractDocument.ParagraphElementName))
+            view = new ParagraphView(element);
+          else if (name.equals(AbstractDocument.SectionElementName))
+            view = new BoxView(element, View.Y_AXIS);
+          else if (name.equals(StyleConstants.ComponentElementName))
+            view = new ComponentView(element);
+          else if (name.equals(StyleConstants.IconElementName))
+            view = new IconView(element);
+        }
+      return view;
+    }
+  }
+  
   /**
    * The abstract HTML parser declaration.
    */
@@ -76,9 +520,7 @@ public class HTMLEditorKit
      * @throws IOException, normally if the reader throws one.
      */
     public abstract void parse(Reader reader, ParserCallback callback,
-                               boolean ignoreCharSet
-                              )
-                        throws IOException;
+                               boolean ignoreCharSet) throws IOException;
   }
 
   /**
@@ -95,6 +537,14 @@ public class HTMLEditorKit
      */
     public static final Object IMPLIED = "_implied_";
 
+    /**
+     * Constructor
+     */
+    public ParserCallback()
+    {
+      // TODO: What to do here, if anything?
+    }
+    
     /**
      * The parser calls this method after it finishes parsing the document.
      */
@@ -168,8 +618,7 @@ public class HTMLEditorKit
      * @param position The tag position in the text being parsed
      */
     public void handleStartTag(HTML.Tag tag, MutableAttributeSet attributes,
-                               int position
-                              )
+                               int position)
     {
       // TODO: What to do here, if anything?
     }
@@ -257,6 +706,34 @@ public class HTMLEditorKit
   public static final String PARA_INDENT_RIGHT = "html-para-indent-right";
 
   /**
+   * The ViewFactory for HTMLFactory.
+   */
+  HTMLFactory viewFactory;
+  
+  /**
+   * The Cursor for links.
+   */
+  Cursor linkCursor;
+  
+  /**
+   * The default cursor.
+   */
+  Cursor defaultCursor;
+    
+  /**
+   * Gets a factory suitable for producing views of any 
+   * models that are produced by this kit.
+   * 
+   * @return the view factory suitable for producing views.
+   */
+  public ViewFactory getViewFactory()
+  {
+    if (viewFactory == null)
+      viewFactory = new HTMLFactory();
+    return viewFactory;
+  }
+  
+  /**
    * Create a text storage model for this type of editor.
    *
    * @return the model
@@ -276,5 +753,201 @@ public class HTMLEditorKit
   protected Parser getParser()
   {
     return new ParserDelegator();
+  }
+  
+  /**
+   * Inserts HTML into an existing document.
+   * 
+   * @param doc - the Document to insert the HTML into.
+   * @param offset - where to begin inserting the HTML.
+   * @param html - the String to insert
+   * @param popDepth - the number of ElementSpec.EndTagTypes 
+   * to generate before inserting
+   * @param pushDepth - the number of ElementSpec.StartTagTypes 
+   * with a direction of ElementSpec.JoinNextDirection that 
+   * should be generated before
+   * @param insertTag - the first tag to start inserting into document
+   * @throws IOException - on any I/O error
+   * @throws BadLocationException - if pos represents an invalid location
+   * within the document
+   */
+  public void insertHTML(HTMLDocument doc, int offset, String html,
+                         int popDepth, int pushDepth, HTML.Tag insertTag)
+      throws BadLocationException, IOException
+  {
+    // FIXME: Not implemented.
+  }
+  
+  /**
+   * Inserts content from the given stream. Inserting HTML into a non-empty 
+   * document must be inside the body Element, if you do not insert into 
+   * the body an exception will be thrown. When inserting into a non-empty 
+   * document all tags outside of the body (head, title) will be dropped.
+   * 
+   * @param in - the stream to read from
+   * @param doc - the destination for the insertion
+   * @param pos - the location in the document to place the content
+   * @throws IOException - on any I/O error
+   * @throws BadLocationException - if pos represents an invalid location
+   * within the document
+   */
+  public void read(Reader in, Document doc, int pos) throws IOException,
+      BadLocationException
+  {
+    // FIXME: Not implemented.
+  }
+  
+  /**
+   * Writes content from a document to the given stream in 
+   * an appropriate format.
+   * 
+   * @param out - the stream to write to
+   * @param doc - the source for the write
+   * @param pos - the location in the document to get the content.
+   * @param len - the amount to write out
+   * @throws IOException - on any I/O error
+   * @throws BadLocationException - if pos represents an invalid location
+   * within the document
+   */
+  public void write(Writer out, Document doc, int pos, int len)
+      throws IOException, BadLocationException
+  {
+    // FIXME: Not implemented.
+  }
+  
+  /**
+   * Gets the content type that the kit supports.
+   * This kit supports the type text/html.
+   * 
+   * @returns the content type supported.
+   */
+  public String getContentType()
+  {
+    return "text/html";
+  } 
+  
+  /**
+   * Creates a copy of the editor kit.
+   * 
+   * @return a copy of this.
+   */
+  public Object clone()
+  {
+    // FIXME: Need to clone all fields
+    return (HTMLEditorKit) super.clone();
+  }
+  
+  /**
+   * Copies the key/values in elements AttributeSet into set. 
+   * This does not copy component, icon, or element names attributes.
+   * This is called anytime the caret moves over a different location. 
+   * 
+   * @param element - the element to create the input attributes for.
+   * @param set - the set to copy the values into.
+   */
+  protected void createInputAttributes(Element element,
+                                       MutableAttributeSet set)
+  {
+    // FIXME: Not implemented.
+    super.createInputAttributes(element, set);
+  }
+  
+  /**
+   * Called when this is installed into the JEditorPane.
+   * 
+   * @param c - the JEditorPane installed into.
+   */
+  public void install(JEditorPane c)
+  {
+    // FIXME: Anything else to do here?
+    super.install(c);
+  }
+  
+  /**
+   * Called when the this is removed from the JEditorPane.
+   * It unregisters any listeners.
+   * 
+   * @param c - the JEditorPane being removed from.
+   */
+  public void deinstall(JEditorPane c)
+  {
+    // FIXME: Need to uninstall all listeners attached.
+    super.deinstall(c);
+  }
+  
+  /**
+   * Gets the AccessibleContext associated with this.
+   * 
+   * @return the AccessibleContext for this.
+   */
+  public AccessibleContext getAccessibleContext()
+  {
+    // FIXME: Should return an instance of 
+    // javax.swing.text.html.AccessibleHTML$RootHTMLAccessibleContext
+    // Not implemented yet.
+    return null;
+  }
+  
+  /**
+   * Gets the action list. This list is supported by the superclass
+   * augmented by the collection of actions defined locally for style
+   * operations.
+   * 
+   * @return an array of all the actions
+   */
+  public Action[] getActions()
+  {
+    // FIXME: should return different actions?
+    return super.getActions();
+  }
+  
+  /**
+   * Returns the default cursor.
+   * 
+   * @return the default cursor
+   */
+  public Cursor getDefaultCursor()
+  {
+    if (defaultCursor == null)
+      defaultCursor = Cursor.getDefaultCursor();
+    return defaultCursor;
+  }
+  
+  /**
+   * Returns the cursor for links.
+   * 
+   * @return the cursor for links.
+   */
+  public Cursor getLinkCursor()
+  {
+    if (linkCursor == null)
+      linkCursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
+    return linkCursor;
+  }
+  
+  /**
+   * Sets the Cursor for links.
+   * 
+   * @param cursor - the new cursor for links.
+   */
+  public void setLinkCursor(Cursor cursor)
+  {
+    linkCursor = cursor;
+  }
+  
+  /**
+   * Sets the default cursor.
+   * 
+   * @param cursor - the new default cursor.
+   */
+  public void setDefaultCursor(Cursor cursor)
+  {
+    defaultCursor = cursor;
+  }
+  
+  public MutableAttributeSet getInputAttributes()
+  {
+    // FIXME: Anything else to do here?
+    return super.getInputAttributes();
   }
 }

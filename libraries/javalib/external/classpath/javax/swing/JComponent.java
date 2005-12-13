@@ -45,7 +45,6 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.FlowLayout;
 import java.awt.FocusTraversalPolicy;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -621,7 +620,6 @@ public abstract class JComponent extends Container implements Serializable
   public JComponent()
   {
     super();
-    super.setLayout(new FlowLayout());
     setDropTarget(new DropTarget());
     defaultLocale = Locale.getDefault();
     debugGraphicsOptions = DebugGraphics.NONE_OPTION;
@@ -1307,12 +1305,7 @@ public abstract class JComponent extends Container implements Serializable
 
     if (prefSize == null)
       prefSize = super.getPreferredSize();
-    // make sure that prefSize is not smaller than minSize
-    if (minimumSize != null && prefSize != null
-        && (minimumSize.width > prefSize.width
-            || minimumSize.height > prefSize.height))
-        prefSize = new Dimension(Math.max(minimumSize.width, prefSize.width),
-                                 Math.max(minimumSize.height, prefSize.height));
+
     return prefSize;
   }
 

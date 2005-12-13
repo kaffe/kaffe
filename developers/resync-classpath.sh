@@ -15,7 +15,7 @@ echo "Building file/directories listing for new classpath"
     cd ${WORKDIR};
 
     echo "Extracting classpath from CVS"
-    cvs -z3 -d:ext:anoncvs@savannah.gnu.org:/cvsroot/classpath co -P classpath;
+     cvs -z3 -d:pserver:anonymous@cvs.sv.gnu.org:/sources/classpath co -P classpath;
     
     cd classpath;
 

@@ -1,3 +1,195 @@
+2005-12-12  Dalibor Topic  <robilad@kaffe.org>
+
+	Fixes bug #25353
+	* m4/acinclude.m4: Added JIKESWARNINGS makefile variable. 
+	Only add +Pno-shadow to JIKESWARNINGS if not using jikes 1.19.
+	* lib/Makefile.am: Use JIKESWARNINGS instead of explicitely
+	listing the warnings.
+
+2005-12-12  Chris Burdess  <dog@gnu.org>
+
+	* gnu/xml/stream/SAXParser.java,
+	  gnu/xml/stream/SAXParserFactory.java,
+	  gnu/xml/stream/XMLParser.java: SAX parser using StAX implementation.
+
+2005-12-12  Gary Benson  <gbenson@redhat.com>
+
+	* java/security/Security.java (setProperty): Spelling correction.
+	* java/security/Security.java (setProperty): Allow null values.
+
+2005-12-12  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/ViewportLayout.java
+	(layoutContainer): Always check and adjust the size, not only when
+	portSize >= view.minSize.
+
+2005-12-12  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JComponent.java
+	(getPreferredSize): Don't check for the minimumSize. According to
+	a mauve test, this is not necessary.
+
+2005-12-12  Chris Burdess  <dog@gnu.org>
+
+	* gnu/xml/stream/XMLInputFactoryImpl.java,
+	  gnu/xml/stream/CRLFReader.java,
+	  gnu/xml/stream/XMLInputStreamReader.java,
+	  gnu/xml/stream/XMLParser.java: New StAX parser.
+
+2005-12-11  Mark Wielaard  <mark@klomp.org>
+
+	* doc/hacking.texinfo: Add section on branches.
+
+2005-12-11  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* lib/copy-vmresources.sh.in: Added some '.' after find. 
+	
+2005-12-09  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/html/CSS.java:
+	Fixed class signature.
+	* javax/swing/text/html/HTMLEditorKit.java:
+	Fixed class signature.
+	(LinkController): New class added with only stubs. Functions
+	are not implmented yet.
+	(InsertHTMLTextAction): New class. Constructors implemented.
+	(insertHTML): Implemented.
+	(insertAtBoundary): Added, not yet implemented.
+	(insertAtBoundry): Implemented.
+	(actionPerformed): Added, not yet implemented.
+	(HTMLTextAction): New class.
+	(getHTMLDocument): Implemented.
+	(getHTMLEditorKit): Implemented.
+	(getElementsAt): Implemented.
+	(elementCountToTag): Added, not yet implemented.
+	(findElementMatchingTag): Likewise.
+	(getViewFactory): Implemented.
+	(HTMLFactory): Moved to beginning of class, with other inner classes.
+	(ParserCallBack): Added constructor, not yet implemented.
+	(clone): Added, not yet implemented. Calls super.
+	(createInputAttributes): Likewise.
+	(install): Likewise.
+	(deinstall): Likewise.
+	(getActions): Likewise.
+	(getInputAttributes): Likewise.
+	(getDefaultCursor): Implemented.
+	(getLinkCursor): Implemented.
+	(SetLinkCursor): Implemented.
+	(setDefaultLinkCursor): Implemented.
+	(AccessibleContext): Can't implement until AccessibleHTML is
+	implemented. Currently, returns null because accessibility is not supported.
+
+2005-12-09  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* javax/swing/JEditorPane.java:
+	(setText): Allow the EditorKit to read the text into the Document,
+	allowing for other than plain text.
+
+2005-12-09  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/html/HTMLDocument.java
+	(getReader): Added function. Not implemented. It was
+	added so a certain mauve test committed compiles with
+	classpath fine.
+
+2005-12-09  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/html/HTMLEditorKit.java
+	(getViewFactory): Fixed class name of ViewFactory returned.
+	(HTMLFactory): Fixed class name to match API.
+
+2005-12-08  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/html/HTMLEditorKit.java
+	(insertHTML): Added method, not implemented yet.
+	(read): Likewise.
+	(write): Likewise.
+	(getContentType): Implemented.
+	(getViewFactory): Implemented.
+	(HTMLViewFactory): New package-private inner class, implemented.
+
+2005-12-08  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/StyledEditorKit.java
+	(create): Reverted to use BoxView. I need to write
+	a mauve test to be sure about this.
+
+2005-12-08  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/StyledEditorKit.java
+	(create): Changed to use BlockView here instead of BoxView.
+
+2005-12-08  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* javax/swing/JEditorPane.java:
+	(init): Changed to no-argument instead of taking in an EditorKit and
+	passing it to setEditorKit.  Callers will have to call setEditorKit
+	themselves.
+	(JEditorPane()): Changed call to init to have no arguments, call
+	setEditorKit after init.
+	(JEditorPane(String, String)): Likewise.
+	(JEditorPane(URL)): Don't call default constructor, call init and then
+	setEditorKit using the appropriate EditorKit for text/html.
+
+2005-12-08  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* javax/swing/JEditorPane.java:
+	(registerMap): New field.
+	(editorMap): New field.
+	(JEditorPane()): Call init instead of setEditorKit.
+	(JEditorPane(String, String)): Likewise.
+	(init): New method.
+	(createEditorKitForContentType): Implemented and documented.
+	(getEditorKitClassNameForContentType): Likewise.
+	(getEditorKitForContentType): Likewise.
+	(registerEditorKitForContentType): Likewise.
+	(replaceSelection): Call super (this is temporary until the real
+	implementation happens.  There is already a TODO noting that this needs
+	to be implemented.
+	(setEditorKitForContentType): Implemented and documented.
+
+2005-12-08  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/html/BlockView.java:
+	New class added.
+	(BlockView): Implemented.
+	(setParent): Implemented.
+	(calculateMajorAxisRequirements): Added, not fully implemented.
+	(calculateMinorAxisRequirements): Likewise.
+	(layoutMinorAxis): Likewise.
+	(paint): Implemented, but some code is commented out since
+	StyleSheet is not yet implemented.
+	(getAttributes): Likewise.
+	(getResizeWeight): Implemented.
+	(getAlignment): Implemented.
+	(changedUpdate): Implemented.
+	(getPreferredSpan): Implemented.
+	(getMinimumSpan): Implemented.
+	(getMaximumSpan): Implemented.
+	(setPropertiesFromAttributes): Added, not implemented yet. Need
+	to wait for StyleSheet to be implemented.
+
+2005-12-08  Tom Tromey  <tromey@redhat.com>
+
+	* javax/security/auth/login/LoginContext.java (LoginContext): New
+	constructor.
+	* javax/security/auth/login/CredentialNotFoundException.java: New
+	file.
+	* javax/security/auth/login/CredentialExpiredException.java: Extends
+	CredentialException.
+	* javax/security/auth/login/CredentialException.java: New file.
+	* javax/security/auth/login/AccountNotFoundException.java: New file.
+	* javax/security/auth/login/AccountLockedException.java: New file.
+	* javax/security/auth/login/AccountExpiredException.java: Extends
+	AccountException.
+	* javax/security/auth/login/AccountException.java: New file.
+
+2005-12-08  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JComponent.java
+	(JComponent): Don't set a layout here. The default setting should be
+	null.
+
 2005-12-07  Tom Tromey  <tromey@redhat.com>
 
 	* java/lang/Float.java (toHexString): New method.
@@ -152,7 +344,7 @@
 2005-12-01  Anthony Green  <green@redhat.com>
 
         PR bootstrap/25207
-        * configure.ac: Make sure we have an alsa library in addition to
+	* configure.ac: Make sure we have an alsa library in addition to
         the headers.  This extra test is required for systems with
         multilibs.
 
@@ -383,7 +575,8 @@
 	appropriate size String for the table.
 	(getPreferredSize): Implemented.
 	(getMinimumSize): Implemented.
-	(addControlButtons): Added action listeners for detailButton and listButton.
+	(addControlButtons): Added action listeners for detailButton and
+	listButton.
 	(setDirectorySelected): Added API documentation.
 	(getDirectoryName): Likewise.
 	(setDirectoryName): Likewise.
@@ -395,12 +588,14 @@
 	(init): Layout should not be set to FlowLayout. JDK sets it to null.
 	* javax/swing/plaf/metal/MetalFileChooserUI.java
 	(mouseClicked): Changed to call completeEditing when double-clicked.
-	(editFile): Fixed to add an action listener to the editing field. Editing
-	for filechooser now works.
-	(completeEditing): Fixed renaming to create a new file object and rescan the
-	directory if renaming was successful. Added code to cancel editing as well.
-	(EditingActionListener): New class to listen for notify action and to complete
-	editing when enter is pressed. Otherwise, editing is cancelled.
+	(editFile): Fixed to add an action listener to the editing field.
+	Editing	for filechooser now works.
+	(completeEditing): Fixed renaming to create a new file object and
+	rescan the directory if renaming was successful. Added code to cancel
+	editing as well.
+	(EditingActionListener): New class to listen for notify action and
+	to complete editing when enter is pressed. Otherwise, editing is
+	cancelled.
 	* javax/swing/plaf/metal/MetalSplitPaneDivider.java
 	(MetalDividerLayout): Changed to public.
 	(MetalDividerLayout.init): Likewise.
@@ -425,10 +620,8 @@
 
 	* native/jni/java-io/javaio.c, native/jni/java-io/javaio.h:
 	Removed.
-
 	* native/jni/java-io/java_io_VMFile.c: Removed dependency on
 	javaio.h
-
 	* native/jni/java-nio/gnu_java_nio_channels_FileChannelImpl.c:
 	Likewise.
 	
@@ -507,8 +700,8 @@
 	* javax/swing/plaf/metal/MetalFileChooserUI.java
 	(propertyChange): Implemented MULTI_SELECTION_ENABLED_CHANGED_PROPERTY
 	property change.
-	(getListCellRendererComponent): Set opaque property, so background color
-	on cell is painted.
+	(getListCellRendererComponent): Set opaque property, so background
+	color on cell is painted.
 	(SingleClickListener.init): Implemented.
 	(installStrings): Fixed tooltip text strings.
 
@@ -671,8 +864,8 @@
 
 2005-11-25  Christian Thalinger  <twisti@complang.tuwien.ac.at>
 
-        * native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkPixbufDecoder.c 
-        (save_to_stream): Added missing DeleteLocalRef call.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkPixbufDecoder.c 
+	(save_to_stream): Added missing DeleteLocalRef call.
 
 2005-11-24  Sven de Marothy  <sven@physto.se>
 
@@ -789,9 +982,10 @@
 	(paintBottomTabBorder): Likewise.
 	(paintTabBackground): Added call to paint the highlight below the tab.
 	(getColorForGap): Added code to return selected color, if selected.
-	(shouldFillGap): Changed to return false. With JDK, gap is never filled in
-	MetalL&F.
-	(paintHighlightBelowTab): Implemented to paint the highlight on selected tabs.
+	(shouldFillGap): Changed to return false. With JDK, gap is never
+	filled in MetalL&F.
+	(paintHighlightBelowTab): Implemented to paint the highlight on
+	selected tabs.
 	(calculateMaxTabHeight): Removed.
 	(getTabLabelShiftX): Removed.
 	(getTabLabelShiftY): Removed.

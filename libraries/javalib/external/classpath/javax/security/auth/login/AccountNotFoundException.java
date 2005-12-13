@@ -1,5 +1,5 @@
-/* CredentialExpiredException.java
-   Copyright (C) 2004 Free Software Foundation, Inc.
+/* AccountNotFoundException.java -- exception indicating account not found
+   Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -39,26 +39,26 @@ exception statement from your version. */
 package javax.security.auth.login;
 
 /**
- * An exception that signals an attempt to login with a credential that
- * has expired.
+ * An exception indicating that an account was not found.
+ * @since 1.5 
  */
-public class CredentialExpiredException extends CredentialException
+public class AccountNotFoundException extends AccountException
 {
+  private static final long serialVersionUID = 1498349563916294614L;
 
-  // Constant.
-  // -------------------------------------------------------------------------
-
-  private static final long serialVersionUID = -5344739593859737937L;
-
-  // Constructors.
-  // -------------------------------------------------------------------------
-
-  public CredentialExpiredException()
+  /**
+   * Create a new exception object.
+   */
+  public AccountNotFoundException()
   {
   }
 
-  public CredentialExpiredException (String message)
+  /**
+   * Create a new exception with the given detail message.
+   * @param message the detail message
+   */
+  public AccountNotFoundException(String message)
   {
-    super (message);
+    super(message);
   }
 }

@@ -1,5 +1,5 @@
-/* CredentialExpiredException.java
-   Copyright (C) 2004 Free Software Foundation, Inc.
+/* AccountLockedException.java -- exception indicating locked account
+   Copyright (C) 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -39,26 +39,26 @@ exception statement from your version. */
 package javax.security.auth.login;
 
 /**
- * An exception that signals an attempt to login with a credential that
- * has expired.
+ * An exception indicating that an account is locked.
+ * @since 1.5
  */
-public class CredentialExpiredException extends CredentialException
+public class AccountLockedException extends AccountException
 {
+  private static final long serialVersionUID = 8280345554014066334L;
 
-  // Constant.
-  // -------------------------------------------------------------------------
-
-  private static final long serialVersionUID = -5344739593859737937L;
-
-  // Constructors.
-  // -------------------------------------------------------------------------
-
-  public CredentialExpiredException()
+  /**
+   * Create a new exception object.
+   */
+  public AccountLockedException()
   {
   }
 
-  public CredentialExpiredException (String message)
+  /**
+   * Create a new exception with the indicated detail message.
+   * @param message the detail message
+   */
+  public AccountLockedException(String message)
   {
-    super (message);
+    super(message);
   }
 }
