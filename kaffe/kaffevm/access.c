@@ -116,7 +116,7 @@ const char *checkAccessFlags(access_type_t type, accessFlags access_flags)
 }
 
 /*
- * Returns 1 if oc is an instance of c or the superclass of c ...
+ * Returns 1 if oc or its outer class is an instance of c
  */
 static
 int recursive_instanceof(Hjava_lang_Class *c, Hjava_lang_Class *oc)
@@ -153,6 +153,45 @@ int recursive_instanceof(Hjava_lang_Class *c, Hjava_lang_Class *oc)
 	}
 }
 
+/*
+ * Returns 1 if oc is an outer class of c
+ */
+static
+int outerof (Hjava_lang_Class *c, Hjava_lang_Class *oc)
+{
+	innerClass *ic;
+	Hjava_lang_Class *outer;
+	errorInfo einfo;
+
+	outer = NULL;
+       	if( c->this_inner_index >= 0 )
+	{
+		ic = &c->inner_classes[c->this_inner_index];
+		if( ic->outer_class )
+		{
+			outer = getClass(ic->outer_class, c, &einfo);
+			if( outer == NULL )
+			{
+				discardErrorInfo(&einfo);
+			}
+		}
+	}
+	if ( outer != NULL )
+	{
+		if ( oc == outer)
+		{
+			return 1;
+		}
+		else
+		{
+			return outerof(outer, oc);
+		}
+	}
+	else {
+		return 0;
+	}
+}
+
 int checkAccess(struct Hjava_lang_Class *context,
 		struct Hjava_lang_Class *target,
 		accessFlags target_flags)
@@ -165,6 +204,14 @@ int checkAccess(struct Hjava_lang_Class *context,
 	if( context == target )
 	{
 		/* Same class. */
+		class_acc = 1;
+		slot_acc = 1;
+
+		return 1;
+	}
+	else if ( outerof(target, context) )
+	{
+		/* target is within the context. */
 		class_acc = 1;
 		slot_acc = 1;
 
@@ -244,7 +291,10 @@ int checkAccess(struct Hjava_lang_Class *context,
 	{
 		same_package = 1;
 		/* Package */
-		class_acc = 1;
+		if (!(target->accflags & ACC_PROTECTED))
+		{
+			class_acc = 1;
+		}
 	}
 
 	if( target_flags & ACC_PUBLIC )
@@ -263,12 +313,17 @@ int checkAccess(struct Hjava_lang_Class *context,
 		/* Package. */
 		slot_acc = 1;
 	}
+/*
+	Commented out because private members get accessible to
+	any context in the same package if target is a nested class.
+
 	else if( (target->name->data[0] != '[') &&
 		 same_package &&
 		 (target->this_inner_index >= 0) )
 	{
  		slot_acc = 1;
 	}
+*/
 	else if( context->this_inner_index >= 0 )
 	{
 		innerClass *ic;
