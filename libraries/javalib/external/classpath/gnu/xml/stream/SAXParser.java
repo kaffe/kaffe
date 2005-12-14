@@ -92,6 +92,7 @@ class SAXParser
   boolean stringInterning = true;
 
   XMLParser parser;
+  XMLStreamReader reader;
   String encoding;
   String xmlVersion;
   boolean xmlStandalone;
@@ -256,9 +257,9 @@ class SAXParser
       parser = new XMLParser(in, systemId);
     else
       {
-        Reader reader = input.getCharacterStream();
-        if (reader != null)
-          parser = new XMLParser(reader, systemId);
+        Reader r = input.getCharacterStream();
+        if (r != null)
+          parser = new XMLParser(r, systemId);
       }
     if (parser == null)
       {
@@ -268,13 +269,17 @@ class SAXParser
         in = new URL(systemId).openStream();
         parser = new XMLParser(in, systemId);
       }
+    reader = parser;
     
     parser.setValidating(validating);
     parser.setNamespaceAware(namespaceAware);
-    parser.setXIncludeAware(xIncludeAware);
     parser.setStringInterning(stringInterning);
     parser.setResolver(this);
     parser.setReporter(this);
+
+    if (xIncludeAware)
+      reader = new XIncludeFilter(parser, systemId, namespaceAware,
+                                  validating, true);
     
     if (contentHandler != null)
       contentHandler.setDocumentLocator(this);
@@ -287,14 +292,14 @@ class SAXParser
               case XMLStreamConstants.CHARACTERS:
                 if (contentHandler != null)
                   {
-                    char[] b = parser.getTextCharacters();
+                    char[] b = reader.getTextCharacters();
                     contentHandler.characters(b, 0, b.length);
                   }
                 break;
               case XMLStreamConstants.SPACE:
                 if (contentHandler != null)
                   {
-                    char[] b = parser.getTextCharacters();
+                    char[] b = reader.getTextCharacters();
                     // TODO determine whether whitespace is ignorable
                     contentHandler.characters(b, 0, b.length);
                   }
@@ -304,7 +309,7 @@ class SAXParser
                   lexicalHandler.startCDATA();
                 if (contentHandler != null)
                   {
-                    char[] b = parser.getTextCharacters();
+                    char[] b = reader.getTextCharacters();
                     // TODO determine whether whitespace and ignorable
                     contentHandler.characters(b, 0, b.length);
                   }
@@ -314,7 +319,7 @@ class SAXParser
               case XMLStreamConstants.START_ELEMENT:
                 if (contentHandler != null)
                   {
-                    QName name = parser.getName();
+                    QName name = reader.getName();
                     String uri = name.getNamespaceURI();
                     String localName = name.getLocalPart();
                     String prefix = name.getPrefix();
@@ -332,7 +337,7 @@ class SAXParser
               case XMLStreamConstants.END_ELEMENT:
                 if (contentHandler != null)
                   {
-                    QName name = parser.getName();
+                    QName name = reader.getName();
                     String uri = name.getNamespaceURI();
                     String localName = name.getLocalPart();
                     String prefix = name.getPrefix();
@@ -350,22 +355,22 @@ class SAXParser
               case XMLStreamConstants.COMMENT:
                 if (lexicalHandler != null)
                   {
-                    char[] b = parser.getTextCharacters();
+                    char[] b = reader.getTextCharacters();
                     lexicalHandler.comment(b, 0, b.length);
                   }
                 break;
               case XMLStreamConstants.PROCESSING_INSTRUCTION:
                 if (contentHandler != null)
                   {
-                    String target = parser.getPITarget();
-                    String data = parser.getPIData();
+                    String target = reader.getPITarget();
+                    String data = reader.getPIData();
                     contentHandler.processingInstruction(target, data);
                   }
                 break;
               case XMLStreamConstants.START_DOCUMENT:
-                encoding = parser.getEncoding();
-                xmlVersion = parser.getVersion();
-                xmlStandalone = parser.isStandalone();
+                encoding = reader.getEncoding();
+                xmlVersion = reader.getVersion();
+                xmlStandalone = reader.isStandalone();
                 if (contentHandler != null)
                   contentHandler.startDocument();
                 break;
@@ -449,10 +454,10 @@ class SAXParser
 
   public int getIndex(String qName)
   {
-    int len = parser.getAttributeCount();
+    int len = reader.getAttributeCount();
     for (int i = 0; i < len; i++)
       {
-        QName q = parser.getAttributeQName(i);
+        QName q = reader.getAttributeQName(i);
         String localName = q.getLocalPart();
         String prefix = q.getPrefix();
         String qn = ("".equals(prefix)) ? localName : prefix + ":" + localName;
@@ -464,10 +469,10 @@ class SAXParser
 
   public int getIndex(String uri, String localName)
   {
-    int len = parser.getAttributeCount();
+    int len = reader.getAttributeCount();
     for (int i = 0; i < len; i++)
       {
-        QName q = parser.getAttributeQName(i);
+        QName q = reader.getAttributeQName(i);
         String ln = q.getLocalPart();
         String u = q.getNamespaceURI();
         if (u == null && uri != null)
@@ -482,17 +487,17 @@ class SAXParser
 
   public int getLength()
   {
-    return parser.getAttributeCount();
+    return reader.getAttributeCount();
   }
 
   public String getLocalName(int index)
   {
-    return parser.getAttributeName(index);
+    return reader.getAttributeName(index);
   }
 
   public String getQName(int index)
   {
-    QName q = parser.getAttributeQName(index);
+    QName q = reader.getAttributeQName(index);
     String localName = q.getLocalPart();
     String prefix = q.getPrefix();
     return ("".equals(prefix)) ? localName : prefix + ":" + localName;
@@ -500,7 +505,7 @@ class SAXParser
 
   public String getType(int index)
   {
-    return parser.getAttributeType(index);
+    return reader.getAttributeType(index);
   }
 
   public String getType(String qName)
@@ -517,12 +522,12 @@ class SAXParser
 
   public String getURI(int index)
   {
-    return parser.getAttributeNamespace(index);
+    return reader.getAttributeNamespace(index);
   }
 
   public String getValue(int index)
   {
-    return parser.getAttributeValue(index);
+    return reader.getAttributeValue(index);
   }
 
   public String getValue(String qName)
@@ -556,7 +561,7 @@ class SAXParser
 
   public boolean isSpecified(int index)
   {
-    return parser.isAttributeSpecified(index);
+    return reader.isAttributeSpecified(index);
   }
 
   public boolean isSpecified(String qName)
@@ -575,12 +580,14 @@ class SAXParser
   
   public int getColumnNumber()
   {
-    return parser.getColumnNumber();
+    Location l = reader.getLocation();
+    return l.getColumnNumber();
   }
 
   public int getLineNumber()
   {
-    return parser.getLineNumber();
+    Location l = reader.getLocation();
+    return l.getLineNumber();
   }
 
   public String getPublicId()
@@ -590,7 +597,8 @@ class SAXParser
 
   public String getSystemId()
   {
-    return parser.getLocationURI();
+    Location l = reader.getLocation();
+    return l.getLocationURI();
   }
   
   public String getEncoding()

@@ -20,6 +20,14 @@ echo "Building file/directories listing for new classpath"
     cd classpath;
 
     sh ./autogen.sh
+    cd ..
+    mkdir -p build
+    cd build
+    rm -rf ../build/*
+    echo "building classpath distribution"
+    ../classpath/configure --with-jikes && make && make dist
+    tar zxf classpath-*tar.gz
+    cd classpath-*
 
     find . '(' -name "CVS" -o -name "autom4te*" ')' -prune \
 	-o '(' -type d -a !  -name "." ')' \
@@ -55,7 +63,7 @@ done
 
 echo "Copying all files from classpath's CVS"
 for i in `cat ${WORKDIR}/new_file_list`; do
-    cp -f ${WORKDIR}/classpath/${i} ${i};
+    cp -f ${WORKDIR}/build/classpath-*/${i} ${i};
 done
 
 )

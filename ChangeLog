@@ -1,5 +1,17 @@
 2005-12-14  Dalibor Topic  <robilad@kaffe.org>
 
+	* developers/resync-classpath.sh: Make sure that we sync with the 
+	distribution version of GNU Classpath, not with the CVS. That way,
+	all the generated files like .info files are taken care of, without
+	forcing Kaffe CVS users to install additional tools.
+
+	Reported by:  Kiyo Inaba  <inaba@src.ricoh.co.jp>
+
+	* libraries/javalib/external/classpath: Resynched GNU Classpath.
+	Removed various files not present in the distribution tarball.
+
+2005-12-14  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/vmspecific/java/io/ObjectOutputStream.java,
 	libraries/javalib/vmspecific/java/io/ObjectStreamClass.java:
 	Resurrected Guilhem's seralization patches from 2005-12-10 and moved 

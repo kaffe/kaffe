@@ -47,6 +47,7 @@ import java.awt.Cursor;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
+import java.io.StringReader;
 import java.io.Writer;
 
 import javax.accessibility.Accessible;
@@ -65,6 +66,7 @@ import javax.swing.text.LabelView;
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.ParagraphView;
 import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
 import javax.swing.text.StyledEditorKit;
 import javax.swing.text.View;
 import javax.swing.text.ViewFactory;
@@ -338,7 +340,14 @@ public class HTMLEditorKit
        */
       protected HTMLDocument getHTMLDocument(JEditorPane e)
       {
-        return (HTMLDocument) e.getDocument();
+        try
+        {
+          return (HTMLDocument) e.getDocument();
+        }
+        catch (Exception ex)
+        {
+          throw new IllegalArgumentException("Document is not a HTMLDocument.");
+        }
       }
       
       /**
@@ -349,7 +358,15 @@ public class HTMLEditorKit
        */
       protected HTMLEditorKit getHTMLEditorKit(JEditorPane e) 
       {
-        return (HTMLEditorKit) e.getEditorKit();
+        try
+        {
+          return (HTMLEditorKit) e.getEditorKit();
+        }
+        catch (Exception ex)
+        {
+          throw new IllegalArgumentException(
+                                             "EditorKit is not a HTMLEditorKit.");
+        }
       }
       
       /**
@@ -363,28 +380,27 @@ public class HTMLEditorKit
       protected Element[] getElementsAt(HTMLDocument doc,
                                         int offset)
       {
-        // More efficent than using a Vector
-        Element[] roots = doc.getRootElements();
-        int size = 0;
-        int rootSize = roots.length;
-        
-        // Get total size
-        for (int i = 0; i < rootSize; i++)
-          size += roots[i].getElementCount() + 1;
-        
-        Element[] elements = new Element[size];
-        
-        // Add all roots to the array first
-        for (int j = 0; j < rootSize; j++)
-          elements[j] = roots[j];
-        
-        // Add all the children of the roots
-        for (int k = 0; k < rootSize; k++)
+        return getElementsAt(doc.getDefaultRootElement(), offset, 0);
+      }
+      
+      /**
+       * Helper function to get all elements using recursion.
+       */
+      private Element[] getElementsAt(Element root, int offset, int depth)
+      {
+        Element[] elements = null;
+        if (root != null)
           {
-            Element current = roots[k];
-            elements[k] = current.getElement(current.getElementIndex(offset));
+            if (root.isLeaf())
+              {
+                elements = new Element[depth + 1];
+                elements[depth] = root;
+                return elements;
+              }
+            elements = getElementsAt(root.getElement(root.getElementIndex(offset)),
+                                     offset, depth + 1);
+            elements[depth] = root;
           }
-        
         return elements;
       }
       
@@ -393,16 +409,31 @@ public class HTMLEditorKit
        * to get an element representing tag. -1 if no elements are found, 0 if
        * the parent of the leaf at offset represents the tag.
        * 
-       * @param doc - the document to search
-       * @param offset - the offset to check
-       * @param tag - the tag to look for
-       * @return - the number of elements needed to get an element representing tag.
+       * @param doc -
+       *          the document to search
+       * @param offset -
+       *          the offset to check
+       * @param tag -
+       *          the tag to look for
+       * @return - the number of elements needed to get an element representing
+       *         tag.
        */
       protected int elementCountToTag(HTMLDocument doc,
                                       int offset, HTML.Tag tag)
       {
-        // FIXME: Not implemented.
-        return -1;
+        Element root = doc.getDefaultRootElement();
+        int num = -1;
+        Element next = root.getElement(root.getElementIndex(offset));
+        
+        while (!next.isLeaf())
+          {
+            num++;
+            if (next.getAttributes().
+                getAttribute(StyleConstants.NameAttribute).equals(tag))
+              return num;
+            next = next.getElement(next.getElementIndex(offset));
+          }
+        return num;
       }
       
       /**
@@ -417,8 +448,19 @@ public class HTMLEditorKit
       protected Element findElementMatchingTag(HTMLDocument doc,
                                                int offset, HTML.Tag tag)
       {
-        // FIXME: Not implemented.
-        return null;
+        Element element = doc.getDefaultRootElement();
+        Element tagElement = null;
+        
+        while (element != null)
+          {
+            Object otag = element.getAttributes().getAttribute(
+                                     StyleConstants.NameAttribute);
+            if (otag instanceof HTML.Tag && otag.equals(tag))
+              tagElement = element;
+            element = element.getElement(element.getElementIndex(offset));
+          }
+        
+        return tagElement;
       }
     }
   
@@ -542,7 +584,6 @@ public class HTMLEditorKit
      */
     public ParserCallback()
     {
-      // TODO: What to do here, if anything?
     }
     
     /**
@@ -550,7 +591,6 @@ public class HTMLEditorKit
      */
     public void flush() throws BadLocationException
     {
-      // TODO: What to do here, if anything?
     }
 
     /**
@@ -560,7 +600,6 @@ public class HTMLEditorKit
      */
     public void handleComment(char[] comment, int position)
     {
-      // TODO: What to do here, if anything?
     }
 
     /**
@@ -571,7 +610,6 @@ public class HTMLEditorKit
      */
     public void handleEndOfLineString(String end_of_line)
     {
-      // TODO: What to do here, if anything?
     }
 
     /**
@@ -583,7 +621,6 @@ public class HTMLEditorKit
      */
     public void handleEndTag(HTML.Tag tag, int position)
     {
-      // TODO: What to do here, if anything?
     }
 
     /**
@@ -594,7 +631,6 @@ public class HTMLEditorKit
      */
     public void handleError(String message, int position)
     {
-      // TODO: What to do here, if anything?
     }
 
     /**
@@ -607,7 +643,6 @@ public class HTMLEditorKit
     public void handleSimpleTag(HTML.Tag tag, MutableAttributeSet attributes,
                                 int position)
     {
-      // TODO: What to do here, if anything?
     }
 
     /**
@@ -620,7 +655,6 @@ public class HTMLEditorKit
     public void handleStartTag(HTML.Tag tag, MutableAttributeSet attributes,
                                int position)
     {
-      // TODO: What to do here, if anything?
     }
 
     /**
@@ -630,7 +664,6 @@ public class HTMLEditorKit
      */
     public void handleText(char[] text, int position)
     {
-      // TODO: What to do here, if anything?
     }
   }
 
@@ -704,7 +737,7 @@ public class HTMLEditorKit
    * The "ident paragraph right" action.
    */
   public static final String PARA_INDENT_RIGHT = "html-para-indent-right";
-
+  
   /**
    * The ViewFactory for HTMLFactory.
    */
@@ -719,7 +752,31 @@ public class HTMLEditorKit
    * The default cursor.
    */
   Cursor defaultCursor;
+  
+  /**
+   * The parser.
+   */
+  Parser parserDel;
+  
+  /**
+   * The mouse listener used for links.
+   */
+  LinkController mouseListener;
+  
+  /**
+   * Style context for this editor.
+   */
+  StyleContext styleContext;
     
+  /**
+   * Constructs an HTMLEditorKit, creates a StyleContext, and loads the style sheet.
+   */
+  public HTMLEditorKit()
+  {
+    super();    
+    styleContext = new StyleContext();
+  }
+  
   /**
    * Gets a factory suitable for producing views of any 
    * models that are produced by this kit.
@@ -741,18 +798,21 @@ public class HTMLEditorKit
   public Document createDefaultDocument()
   {
     HTMLDocument document = new HTMLDocument();
+    document.setParser(getParser());
     return document;
   }
 
   /**
    * Get the parser that this editor kit uses for reading HTML streams. This
    * method can be overridden to use the alternative parser.
-   *
+   * 
    * @return the HTML parser (by default, {@link ParserDelegator}).
    */
   protected Parser getParser()
   {
-    return new ParserDelegator();
+    if (parserDel == null)
+      parserDel = new ParserDelegator();
+    return parserDel;
   }
   
   /**
@@ -775,7 +835,20 @@ public class HTMLEditorKit
                          int popDepth, int pushDepth, HTML.Tag insertTag)
       throws BadLocationException, IOException
   {
-    // FIXME: Not implemented.
+    Parser parser = getParser();
+    if (offset < 0 || offset > doc.getLength())
+      throw new BadLocationException("Bad location", offset);
+    if (parser == null)
+      throw new IOException("Parser is null.");
+
+    ParserCallback pc = ((HTMLDocument) doc).getReader
+                          (offset, popDepth, pushDepth, insertTag);
+
+    // FIXME: What should ignoreCharSet be set to?
+    
+    // parser.parse inserts html into the buffer
+    parser.parse(new StringReader(html), pc, false);
+    pc.flush();
   }
   
   /**
@@ -794,7 +867,26 @@ public class HTMLEditorKit
   public void read(Reader in, Document doc, int pos) throws IOException,
       BadLocationException
   {
-    // FIXME: Not implemented.
+    if (doc instanceof HTMLDocument)
+      {
+        Parser parser = getParser();
+        if (pos < 0 || pos > doc.getLength())
+          throw new BadLocationException("Bad location", pos);
+        if (parser == null)
+          throw new IOException("Parser is null.");
+
+        ParserCallback pc = ((HTMLDocument) doc).getReader(pos);
+
+        // FIXME: What should ignoreCharSet be set to?
+        
+        // parser.parse inserts html into the buffer
+        parser.parse(in, pc, false);
+        pc.flush();
+      }
+    else
+      // read in DefaultEditorKit is called.
+      // the string is inserted in the document as usual.
+      super.read(in, doc, pos);
   }
   
   /**
@@ -812,7 +904,13 @@ public class HTMLEditorKit
   public void write(Writer out, Document doc, int pos, int len)
       throws IOException, BadLocationException
   {
-    // FIXME: Not implemented.
+    if (doc instanceof HTMLDocument)
+      {
+        // FIXME: Not implemented. Use HTMLWriter.
+        out.write(doc.getText(pos, len));
+      }
+    else
+      super.write(out, doc, pos, len);
   }
   
   /**
@@ -859,8 +957,9 @@ public class HTMLEditorKit
    */
   public void install(JEditorPane c)
   {
-    // FIXME: Anything else to do here?
     super.install(c);
+    mouseListener = new LinkController();
+    c.addMouseListener(mouseListener);
   }
   
   /**
@@ -871,8 +970,9 @@ public class HTMLEditorKit
    */
   public void deinstall(JEditorPane c)
   {
-    // FIXME: Need to uninstall all listeners attached.
     super.deinstall(c);
+    c.removeMouseListener(mouseListener);
+    mouseListener = null;
   }
   
   /**
@@ -897,7 +997,7 @@ public class HTMLEditorKit
    */
   public Action[] getActions()
   {
-    // FIXME: should return different actions?
+    // FIXME: should return different actions, see static fields.
     return super.getActions();
   }
   
@@ -947,7 +1047,7 @@ public class HTMLEditorKit
   
   public MutableAttributeSet getInputAttributes()
   {
-    // FIXME: Anything else to do here?
+    // FIXME: Not implemented.
     return super.getInputAttributes();
   }
 }

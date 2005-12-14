@@ -140,7 +140,6 @@ public class XMLParser
   private boolean externalEntities = false;
   private boolean supportDTD = true;
   private boolean namespaceAware = true;
-  private boolean xIncludeAware = true;
 
   private XMLReporter reporter;
   private XMLResolver resolver;
@@ -205,11 +204,6 @@ public class XMLParser
   public void setSupportDTD(boolean flag)
   {
     supportDTD = flag;
-  }
-
-  public void setXIncludeAware(boolean flag)
-  {
-    xIncludeAware = flag;
   }
 
   public void setReporter(XMLReporter reporter)
@@ -582,7 +576,6 @@ public class XMLParser
     if (XMLInputFactory.SUPPORT_DTD.equals(name))
       return supportDTD ? Boolean.TRUE : Boolean.FALSE;
     // TODO stringInterning
-    // TODO xIncludeAware
     return null;
   }
 

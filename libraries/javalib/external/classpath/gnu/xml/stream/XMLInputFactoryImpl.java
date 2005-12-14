@@ -77,6 +77,7 @@ public class XMLInputFactoryImpl
   protected boolean replacingEntityReferences = true;
   protected boolean externalEntities = true;
   protected boolean supportDTD = true;
+  protected boolean xIncludeAware = false;
 
   public XMLInputFactoryImpl()
   {
@@ -107,6 +108,9 @@ public class XMLInputFactoryImpl
                                    */
     XMLParser ret = new XMLParser(reader, null);
     configureXMLParser(ret);
+    if (xIncludeAware)
+      return new XIncludeFilter(ret, null, namespaceAware, validating,
+                                replacingEntityReferences);
     return ret;
   }
   
@@ -122,6 +126,9 @@ public class XMLInputFactoryImpl
                                    externalEntities, supportDTD);*/
     XMLParser ret = new XMLParser(in, systemId);
     configureXMLParser(ret);
+    if (xIncludeAware)
+      return new XIncludeFilter(ret, systemId, namespaceAware, validating,
+                                replacingEntityReferences);
     return ret;
   }
   
@@ -135,6 +142,9 @@ public class XMLInputFactoryImpl
                                    externalEntities, supportDTD);*/
     XMLParser ret = new XMLParser(in, null);
     configureXMLParser(ret);
+    if (xIncludeAware)
+      return new XIncludeFilter(ret, null, namespaceAware, validating,
+                                replacingEntityReferences);
     return ret;
   }
   

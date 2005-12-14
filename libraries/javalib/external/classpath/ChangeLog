@@ -1,3 +1,121 @@
+2005-12-13  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* javax/swing/text/html/HTMLDocument.java:
+	(HTMLReader.charAttr): Initialize this variable.
+	(HTMLReader.parseBuffer): Initialize this variable.
+	(HTMLReader.popDepth): New field.
+	(HTMLReader.pushDepth): Likewise.
+	(HTMLReader.offset): Likewise.
+	(HTMLReader.insertTag): Likewise.
+	(HTMLReader.insertTagEncountered): Likewise.
+	(HTMLReader.BlockAction.start): Implemented.
+	(HTMLReader.BlockAction.end): Implemented.
+	(HTMLReader.CharacterAction.start): Implemented.
+	(HTMLReader.CharacterAction.end): Implemented.
+	(HTMLReader(int)): Call other constructor with default arguments.
+	(HTMLReader(int, int, int, HTML.Tag)): Save the arguments.
+	(HTMLReader.flush): Implemented.
+	(HTMLReader.handleText): Implemented.
+	(HTMLReader.addContent): Implemented.			
+
+2005-12-13  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/html/HTMLDocument.java
+	(getElement): Implemented.
+	(getElement): Implemented.
+	(setInnerHTML): Added, not fully implemented.
+	(setOuterHTML): Likewise.
+	(insertBeforeStart): Likewise.
+	(insertAfterStart): Likewise.
+	(insertBeforeEnd): Likewise.
+	(insertAfterEnd): Likewise.
+
+2005-12-13  Chris Burdess  <dog@gnu.org>
+
+	* gnu/xml/stream/SAXParser.java,
+	  gnu/xml/stream/XIncludeFilter.java,
+	  gnu/xml/stream/XMLInputFactoryImpl.java,
+	  gnu/xml/stream/XMLParser.java: Addition of XInclude filter.
+
+2005-12-13  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/html/HTMLDocument.java
+	(getReader): Implemented.
+	(getReader): Implemented.
+
+2005-12-13  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/html/HTMLDocument.java
+	(BlockElement.getName): Should use getAttribute because the API says
+	that this function can return null.
+	(RunElement): New class implemented.
+	(RunElement.getName): Implemented.
+	(RunElement.getResolvingParent): Implemented.
+
+2005-12-13  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/html/HTMLEditorKit.java
+	(getHTMLDocument): Fixed implementation to catch exception.
+	(getHTMLEditorKit): Likewise.
+	(getElementsAt): Fixed to use recursion. Now all elements
+	and all their children are added to the array, only using
+	the default root element.
+	(getElementsAt): New private helper function. Uses recursion.
+	(elementCountToTag): Implemented.
+	(findElementMatchingTag): Implemented.
+	(parserCallback): Removed TODO comment. Nothing should be done here.
+	All work for parser, is done in javax/swing/text/html/Parser.java
+	and HTMLDocument.
+	(flush): Likewise.
+	(handleComment): Likewise.
+	(handleEndOfLineString): Likewise.
+	(handleEndTag): Likewise.
+	(handleError): Likewise.
+	(handleSimpleTag): Likewise.
+	(handleStartTag): Likewise.
+	(handleText): Likewise.
+	(HTMLEditorKit): Implemented and added API documentation.
+	(getParser): Fixed implementation to use a field to store the parser.
+	(insertHTML): Implemented.
+	(read): Implemented.
+	(write): Partially implemented.
+	(install): Added code to add the mouse listener.
+	(deinstall): Added code to remove the mouse listener.
+	(getActions): Modified FIXME comment.
+	(getInputAttributes): Likewise.
+
+2005-12-13  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* javax/swing/text/html/HTMLDocument.java:
+	(tokenThreshold): New field.
+	(parser): New field.
+	(getParser): New API method.
+	(setParser): New API method.
+	(getTokenThreshold): New API method.
+	(setTokenThreshold): New API method.
+	(getReader(int, int, int, HTML.Tag)): New API method, not implemented.
+	(HTMLReader): New API class, partially implemented.
+	(HTMLReader.BlockAction): New API class, not implemented.
+	(HTMLReader.CharacterAction): Likewise.
+	(HTMLReader.FormAction): Likewise.
+	(HTMLReader.HiddenAction): Likewise.
+	(HTMLReader.IsindexAction): Likewise.
+	(HTMLReader.ParagraphAction): Likewise.
+	(HTMLReader.PreAction): Likewise.
+	(HTMLReader.SpecialAction): Likewise.
+	(HTMLReader.TagAction): New API class, implemented.
+	* javax/swing/text/html/HTMLEditorKit.java:
+	(createDefaultDocument): Set the parser for the new HTMLDocument.
+	
+2005-12-13  Mark Wielaard  <mark@klomp.org>
+
+	* doc/hacking.texinfo: Add @bullet to all @itemize lists.
+
+2005-12-13  Mark Wielaard  <mark@klomp.org>
+
+	* doc/hacking.texinfo (Branches): Explain "broken" branches a bit
+	more.
+
 2005-12-12  Dalibor Topic  <robilad@kaffe.org>
 
 	Fixes bug #25353
