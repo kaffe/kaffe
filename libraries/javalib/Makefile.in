@@ -973,6 +973,8 @@ EXTRA_DIST = \
 	vmspecific/gnu/java/net/SysInetAddressImpl.java \
 	vmspecific/gnu/java/nio/VMPipe.java \
 	vmspecific/gnu/java/nio/VMSelector.java \
+	vmspecific/java/io/ObjectOutputStream.java \
+	vmspecific/java/io/ObjectStreamClass.java \
 	vmspecific/java/io/VMFile.java \
 	vmspecific/java/io/VMObjectInputStream.java \
 	vmspecific/java/io/VMObjectStreamClass.java \
