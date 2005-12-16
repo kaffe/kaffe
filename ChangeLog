@@ -1,3 +1,12 @@
+2005-12-16  Dalibor Topic  <robilad@kaffe.org>,
+            Alan Eliasen  <eliasen@mindspring.com>
+
+	* libraries/clib/native/math/BigInteger.c:
+	(Java_java_math_BigInteger_assignLong0) Made faster for platforms
+	where a jlong has the size of a long. If the jlong paramter needs to
+	be split into two 32 bit values, use a bitmask to sparete the bits 
+	instead of casting down to jint and up again. Added more comments.
+
 2005-12-14  Dalibor Topic  <robilad@kaffe.org>
 
 	* developers/resync-classpath.sh: Make sure that we sync with the 

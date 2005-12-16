@@ -8,6 +8,7 @@
  * of this file.
  */
 
+#include <limits.h>
 #include <stdio.h>
 
 #include "config.h"
@@ -77,24 +78,42 @@ void
 Java_java_math_BigInteger_assignLong0(JNIEnv* env, jobject r, jlong v)
 {
 	mpz_ptr res;
-	int negative = v < 0 ? -1 : 0;
 
 	res = (*env)->GetObjectField(env, r, number);
 
-	if (negative)
-		v = -v;
-	/* Note that v will remain negative if it's LONG_LONG_MIN.
-	   This is not a problem because any sign copying in the right
-	   shift will be stripped with the cast to jint, and the
-	   number will be considered positive.  Furthermore, in this
-	   case, (jint)v will be zero, so the addition will be a
-	   do-nothing operation.  At last, the number will be made
-	   negative, as appropriate.  */
-	mpz_set_ui(res, (unsigned long)(jint)(v >> 32));
-	mpz_mul_2exp(res, res, 32);
-	mpz_add_ui(res, res, (unsigned long)(jint)v);
-	if (negative)
-		mpz_neg(res, res);
+	/* If a jlong is of the size of a long, we can sinply use the 
+	 * function provided in gmp.
+         */
+	if (sizeof(v) == sizeof(long)) {
+		mpz_set_si(res, v);
+	}
+	else {
+                /* We need to break down v into long sized pieces. Typically
+                 * the case is that a long is 32 bits on a platform, while a jlong
+                 * has 64 bits, so we need to set the upper and lower 32 bits 
+                 * using separate calls to gmp routines.
+                 */
+		const int negative = v < 0 ? -1 : 0;
+		const unsigned int shift_distance = sizeof(long) * CHAR_BIT;
+
+		if (negative)
+			v = -v;
+
+		/* Note that v will remain negative if it's LONG_LONG_MIN.
+		   This is not a problem because any sign copying in the right
+		   shift will be stripped with the cast to jint, and the
+		   number will be considered positive.  Furthermore, in this
+		   case, (jint)v will be zero, so the addition will be a
+		   do-nothing operation.  At last, the number will be made
+		   negative, as appropriate.  */
+
+		mpz_set_ui(res, (unsigned long)((v & 0x7FFFFFFF00000000L) >> shift_distance));
+		mpz_mul_2exp(res, res, shift_distance);
+		mpz_add_ui(res, res, (unsigned long)(v & 0x00000000FFFFFFFFL));
+
+		if (negative)
+			mpz_neg(res, res);
+	}
 }
 
 void
