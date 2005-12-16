@@ -87,6 +87,7 @@ Hjava_lang_Class* javaLangLongClass;
 Hjava_lang_Class* javaLangFloatClass;
 Hjava_lang_Class* javaLangDoubleClass;
 
+Hjava_lang_Class *javaNioBufferClass;
 Hjava_lang_Class *javaNioDirectByteBufferImplClass;
 Hjava_lang_Class *javaNioDirectByteBufferImplReadWriteClass;
 Hjava_lang_Class *gnuClasspathPointerClass;
@@ -381,6 +382,7 @@ initBaseClasses(void)
 	loadStaticClass(&javaLangRefPhantomReference, "java/lang/ref/PhantomReference");
 
 	/* NIO helpers */
+	loadStaticClass(&javaNioBufferClass, "java/nio/Buffer");
 	loadStaticClass(&javaNioDirectByteBufferImplClass, "java/nio/DirectByteBufferImpl");
 	loadStaticClass(&javaNioDirectByteBufferImplReadWriteClass, "java/nio/DirectByteBufferImpl$ReadWrite");
 #if SIZEOF_VOID_P == 4

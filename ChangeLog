@@ -1,5 +1,14 @@
 2005-12-16  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* kaffe/kaffevm/jni/jni-helpers.c
+	(GetDirectBufferAddress): Authorize all classes inheriting 
+	java/nio/Buffer.
+
+	* kaffe/kaffevm/baseClasses.h
+	(initBaseClasses): Preload java/nio/Buffer.
+	
+2005-12-16  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* kaffe/kaffevm/baseClasses.c
 	kaffe/kaffevm/baseClasses.h
 	(initBaseClasses): Resolve java.nio.DirectByteBufferImpl and

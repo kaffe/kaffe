@@ -53,6 +53,7 @@ extern struct Hjava_lang_Class*	javaLangDoubleClass;
 
 extern struct Hjava_lang_Class *javaNioDirectByteBufferImplClass;
 extern struct Hjava_lang_Class *javaNioDirectByteBufferImplReadWriteClass;
+extern struct Hjava_lang_Class *javaNioBufferClass;
 extern struct Hjava_lang_Class *gnuClasspathPointerClass;
 
 extern Field *gnuClasspathPointerAddress;
