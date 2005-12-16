@@ -1,3 +1,27 @@
+2005-12-16  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/baseClasses.c
+	kaffe/kaffevm/baseClasses.h
+	(initBaseClasses): Resolve java.nio.DirectByteBufferImpl and
+	java.nio.DirectByteBufferImpl$ReadWrite and gnu.classpath.Pointer.
+	Also resolve the inner address field.
+	
+	* kaffe/kaffevm/support.c,
+	kaffe/kaffevm/support.h
+	(KNI_lookupFieldC): New function to help resolve fields in a class
+	using a C string.
+
+	* kaffe/kaffevm/jni_i.h,
+	kaffe/kaffevm/jni/jni-fields.c:
+	(GET_STATIC_FIELD, SET_STATIC_FIELD, GET_FIELD, SET_FIELD): Moved
+	to jni_i.h and renamed to KNI_*
+
+	* kaffe/kaffevm/jni/jni-helpers.c
+	(KaffeJNI_NewDirectByteBuffer,
+	KaffeJNI_GetDirectBufferAddress): Use gnu/classpath/Pointer and
+	not RawData as this class has disappeated. These functions uses
+	KNI directly now.
+	
 2005-12-16  Dalibor Topic  <robilad@kaffe.org>,
             Alan Eliasen  <eliasen@mindspring.com>
 
