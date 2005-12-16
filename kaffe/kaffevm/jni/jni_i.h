@@ -84,5 +84,13 @@ unveil(jref w)
 
 #define	END_EXCEPTION_HANDLING()			\
 	thread_data->exceptPtr = ebuf.prev
+
+
+#define	KNI_GET_FIELD(T,O,F)	*(T*)((char*)(O) + FIELD_BOFFSET((Field*)(F)))
+#define	KNI_SET_FIELD(T,O,F,V)	*(T*)((char*)(O) + FIELD_BOFFSET((Field*)(F))) = (V)
+#define	KNI_GET_STATIC_FIELD(T,F)	*(T*)FIELD_ADDRESS((Field*)F)
+#define	KNI_SET_STATIC_FIELD(T,F,V)	*(T*)FIELD_ADDRESS((Field*)F) = (V)
+
+
 #endif
 

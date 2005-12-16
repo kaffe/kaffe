@@ -135,8 +135,9 @@ extern void	KaffeVM_callMethodA(struct _jmethodID*, void*, void*, jvalue*, jvalu
 extern void	KaffeVM_callMethodV(struct _jmethodID*, void*, void*, va_list, jvalue*);
 extern void     KaffeVM_safeCallMethodA(struct _jmethodID*, void*, void*, jvalue*, jvalue*, int);
 extern void     KaffeVM_safeCallMethodV(struct _jmethodID*, void*, void*, va_list, jvalue*);
-extern struct _jmethodID*	lookupClassMethod(struct Hjava_lang_Class*, const char*, const char*, struct _errorInfo*);
-extern struct _jmethodID*	lookupObjectMethod(struct Hjava_lang_Object*, const char*, const char*, struct _errorInfo*);
+extern Method*	lookupClassMethod(struct Hjava_lang_Class*, const char*, const char*, struct _errorInfo*);
+extern Method*	lookupObjectMethod(struct Hjava_lang_Object*, const char*, const char*, struct _errorInfo*);
+extern Field*   KNI_lookupFieldC(struct Hjava_lang_Class*, const char*, bool, struct _errorInfo*);
 
 struct _strconst;
 extern void SignalError(const char *, const char *);

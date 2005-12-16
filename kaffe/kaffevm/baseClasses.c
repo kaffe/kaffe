@@ -87,6 +87,13 @@ Hjava_lang_Class* javaLangLongClass;
 Hjava_lang_Class* javaLangFloatClass;
 Hjava_lang_Class* javaLangDoubleClass;
 
+Hjava_lang_Class *javaNioDirectByteBufferImplClass;
+Hjava_lang_Class *javaNioDirectByteBufferImplReadWriteClass;
+Hjava_lang_Class *gnuClasspathPointerClass;
+
+Field *gnuClasspathPointerAddress;
+Field *directByteBufferImplAddress;
+
 Hjava_lang_Class* javaLangThrowable;
 Hjava_lang_Class* javaLangVMThrowable;
 Hjava_lang_Class* javaLangStackTraceElement;
@@ -373,11 +380,33 @@ initBaseClasses(void)
 	loadStaticClass(&javaLangRefSoftReference, "java/lang/ref/SoftReference");
 	loadStaticClass(&javaLangRefPhantomReference, "java/lang/ref/PhantomReference");
 
+	/* NIO helpers */
+	loadStaticClass(&javaNioDirectByteBufferImplClass, "java/nio/DirectByteBufferImpl");
+	loadStaticClass(&javaNioDirectByteBufferImplReadWriteClass, "java/nio/DirectByteBufferImpl$ReadWrite");
+#if SIZEOF_VOID_P == 4
+	loadStaticClass(&gnuClasspathPointerClass, "gnu/classpath/Pointer32");
+#elif SIZEOF_VOID_P == 8
+	loadStaticClass(&gnuClasspathPointerClass, "gnu/classpath/Pointer64");
+#else
+#error "Unknown pointer size"
+#endif
+
 	DBG(INIT, dprintf("initBaseClasses() done\n"); );
 
 	for (i = 0; stateCompleteClass[i] != NULL; i++) {
 	    if (!processClass(*stateCompleteClass[i], CSTATE_COMPLETE, &einfo))
 	      abortWithEarlyClassFailure(&einfo);
-	}
+	}	
+
+	/* Preresolve some fields which will be used in JNI. */	
+	gnuClasspathPointerAddress = KNI_lookupFieldC(gnuClasspathPointerClass, "data", false, &einfo);
+	directByteBufferImplAddress = KNI_lookupFieldC(javaNioDirectByteBufferImplClass, "address", false, &einfo);
+
+	if (gnuClasspathPointerAddress == NULL ||
+	    directByteBufferImplAddress == NULL)
+	  {
+	    DBG(INIT, dprintf("Cannot resolve fields necessary for NIO operations\n"); );
+	    KAFFEVM_EXIT(-1);
+	  }
 }
 

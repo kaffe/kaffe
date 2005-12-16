@@ -56,6 +56,26 @@
 userProperty* userProperties = NULL;
 
 /**
+ * This function is an helper for lookupField. It creates a UTF string and invoke lookupField
+ * with it.
+ *
+ *
+ */
+Field*  KNI_lookupFieldC(struct Hjava_lang_Class* clazz, const char* fieldName, 
+			 bool isStatic, errorInfo* einfo)
+{
+  Utf8Const *fieldUTF;
+  Field *field;
+
+  checkPtr(fieldUTF = utf8ConstNew(fieldName, -1));
+  field = lookupClassField(clazz, fieldUTF, isStatic, einfo);
+  utf8ConstRelease(fieldUTF);
+
+  return field;
+}
+
+
+/**
  * Call a Java method from native code.
  *
  * @param obj the obj or 0 if the method is static
@@ -329,6 +349,10 @@ KaffeVM_safeCallMethodV(Method* meth, void* func, void* obj, va_list args, jvalu
     
   END_EXCEPTION_HANDLING();
 }
+
+/**
+ * q::
+ */
 
 /**
  * Lookup a method given class, name and signature.

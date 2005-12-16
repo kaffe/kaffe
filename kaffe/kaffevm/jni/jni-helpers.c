@@ -22,61 +22,51 @@
 #include "reflect.h"
 #include "java_lang_reflect_Method.h"
 #include "java_lang_reflect_Field.h"
+#include "soft.h"
+#include "baseClasses.h"
 
-jobject KaffeJNI_NewDirectByteBuffer(JNIEnv *env, void *buffer, jlong size)
+jobject KaffeJNI_NewDirectByteBuffer(JNIEnv *env UNUSED, void *buffer, jlong size)
 {
-  jclass clazz;
-  jclass clazz_rawdata;
-  jmethodID constructor;
-  jmethodID constructor_rawdata;
   jobject bbuf;
-  jobject rawdata;
+  jobject pointer;
 
   BEGIN_EXCEPTION_HANDLING(NULL);
 
-  clazz = (*env)->FindClass(env, "java/nio/DirectByteBufferImpl$ReadWrite");
-  constructor = (*env)->GetMethodID(env, clazz, "<init>", "(Ljava/lang/Object;Lgnu/classpath/RawData;III)V");
+  /* We cannot use FindClass as it uses the loader from the stack trace and we
+   * want to use the bootstrap class loader
+   */
 #if SIZEOF_VOID_P == 4
-  clazz_rawdata = (*env)->FindClass(env, "gnu/classpath/RawData32");
-  constructor_rawdata = (*env)->GetMethodID(env, clazz_rawdata, "<init>", "(I)V");
+  pointer = execute_java_constructor(NULL, NULL, gnuClasspathPointerClass, "(I)V", (jint)buffer);
 #elif SIZEOF_VOID_P == 8
-  clazz_rawdata = (*env)->FindClass(env, "gnu/classpath/RawData64");
-  constructor_rawdata = (*env)->GetMethodID(env, clazz_rawdata, "<init>", "(L)V");
+  pointer = execute_java_constructor(NULL, NULL, gnuClasspathPointerClass, "(J)V", (jlong)buffer);
 #else
 #error "Unknown void pointer width"
 #endif
 
-  rawdata = (*env)->NewObject(env, clazz_rawdata, constructor_rawdata, buffer);
-  
-  bbuf = (*env)->NewObject(env, clazz, constructor, NULL, rawdata, (jint)size, (jint)size, (jint)0);
+  bbuf = execute_java_constructor(NULL, NULL, javaNioDirectByteBufferImplReadWriteClass, "(Ljava/lang/Object;Lgnu/classpath/Pointer;III)V",
+				  NULL, pointer, (jint)size, (jint)size, (jint)0);
 
   END_EXCEPTION_HANDLING();
 
   return bbuf;
 }
 
-void *KaffeJNI_GetDirectBufferAddress(JNIEnv *env, jobject buffer)
+void *KaffeJNI_GetDirectBufferAddress(JNIEnv *env UNUSED, jobject buffer)
 {
-  jfieldID address_field;
+  jobject address_obj;
   void *address;
-  jclass clazz;
-  jobject buffer_local;
+  Hjava_lang_Object *buffer_local;
 
   BEGIN_EXCEPTION_HANDLING(NULL);
 
-  buffer_local = unveil(buffer);
+  buffer_local = (Hjava_lang_Object *)unveil(buffer);
 
-  clazz = (*env)->FindClass(env, "java/nio/DirectByteBufferImpl");
-
-  if (!(*env)->IsInstanceOf(env, buffer_local, clazz))
+  if (!instanceof(javaNioDirectByteBufferImplClass, OBJECT_CLASS(buffer_local)))
     address = NULL;
   else
     {
-      clazz = (*env)->GetObjectClass(env, buffer_local);
-      address_field = (*env)->GetFieldID(env, clazz, "address",
-					 "Lgnu/classpath/RawData;");
-      address = (void *)((*env)->GetObjectField(env, buffer_local,
-						address_field));
+      address_obj = KNI_GET_FIELD(Hjava_lang_Object *, buffer_local, directByteBufferImplAddress);
+      address = KNI_GET_FIELD(void *, address_obj, gnuClasspathPointerAddress);
     }
 
   END_EXCEPTION_HANDLING();
