@@ -1469,6 +1469,17 @@ AC_STRUCT_SOCKADDR_STORAGE
 AC_DECL_IN6ADDR_ANY
 AC_DECL_IN6ADDR_LOOPBACK
 AC_TYPE_SA_FAMILY_T
+AC_CHECK_MEMBER([struct sockaddr.sa_len],
+		[AC_DEFINE(HAVE_SOCKADDR_SA_LEN, 1,
+		           [Defined if we have found sa_len in sockaddr])
+		],,[
+#if defined(HAVE_SYS_TYPES_H)
+#include <sys/types.h>
+#endif
+#if defined(HAVE_SYS_SOCKET_H)
+#include <sys/socket.h>
+#endif
+])
 
 dnl some Linux IPv6 stacks don't have sin6_flowinfo and sin6_scope_id
 dnl in their struct sockaddr_in6

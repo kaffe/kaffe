@@ -515,6 +515,9 @@
 /* Define to 1 if you have the `snprintf' function. */
 #undef HAVE_SNPRINTF
 
+/* Defined if we have found sa_len in sockaddr */
+#undef HAVE_SOCKADDR_SA_LEN
+
 /* Define to 1 if you have the `socket' function. */
 #undef HAVE_SOCKET
 

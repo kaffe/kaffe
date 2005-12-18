@@ -1,4 +1,12 @@
-2005-12-17  Guilhem Lavaux  <guilhem@kaffe.org>
+2005-12-18  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* configure.ac: Check whether struct sockaddr has a sa_len member.
+
+	* replace/ifaddrs_bsd.c: Fixed the parsing of the ifreq array.
+
+	* configure, config/config.h.in: Regenerated.
+	
+2005-12-18  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/classPool.c
 	(classMappingSearch): If we are asking again the same class while

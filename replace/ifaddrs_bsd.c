@@ -93,7 +93,17 @@ int getifaddrs(struct ifaddrs **ifap)
     }
   while (isFull);
 
-  numberOfIfaces = ifc.ifc_len / (sizeof(struct sockaddr) + sizeof(ifr->ifr_name));
+  for (ptr = buf, numberOfIfaces = 0; ptr < buf + ifc.ifc_len; numberOfIfaces++)
+  {
+    ifr = (struct ifreq *) ptr;
+#if defined(HAVE_SOCKADDR_SA_LEN) || defined(__FreeBSD__)
+    len = ifr->ifr_addr.sa_len;	/* length may be greater than sizeof(sockaddr). */
+#else
+    len = getSockAddrLen(&ifr->ifr_addr);
+#endif
+
+    ptr += sizeof(*ifr) - sizeof(struct sockaddr) + len;
+  }
   
   allIfaces = (struct ifaddrs *)malloc(numberOfIfaces * sizeof(struct ifaddrs));
 
@@ -103,22 +113,21 @@ int getifaddrs(struct ifaddrs **ifap)
     
     allIfaces[i].ifa_name = strdup(ifr->ifr_name);
 #if defined(HAVE_SOCKADDR_SA_LEN) || defined(__FreeBSD__)
-    if (ifr->ifr_addr.sa_len > len)
-      len = ifr->ifr_addr.sa_len;	/* length > 16 */
-    else
+    len = ifr->ifr_addr.sa_len;	/* length may be greater than sizeof(sockaddr). */
+#else
+    len = getSockAddrLen(&ifr->ifr_addr);
 #endif
-      len = getSockAddrLen(&ifr->ifr_addr);
 
     allIfaces[i].ifa_addr = (struct sockaddr *)malloc(len);
     allIfaces[i].ifa_next = &allIfaces[i+1];
     
     memcpy(allIfaces[i].ifa_addr, &ifr->ifr_addr, len);
     
-    ptr += sizeof(ifr->ifr_name) + len;
+    ptr += sizeof(*ifr) - sizeof(struct sockaddr) + len;
   }
   allIfaces[i-1].ifa_next = NULL;
   
-  free(ptr);
+  free(buf);
   close(sockfd);
 
   *ifap = allIfaces;
