@@ -152,8 +152,6 @@ ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
-ENABLE_BINRELOC_FALSE = @ENABLE_BINRELOC_FALSE@
-ENABLE_BINRELOC_TRUE = @ENABLE_BINRELOC_TRUE@
 ENABLE_JVMPI_FALSE = @ENABLE_JVMPI_FALSE@
 ENABLE_JVMPI_TRUE = @ENABLE_JVMPI_TRUE@
 ENABLE_XPROF_FALSE = @ENABLE_XPROF_FALSE@
@@ -2050,8 +2048,10 @@ uninstall-info: uninstall-info-recursive
 export JAVA_COMPILER
 
 install-data-local: installdirs
-	if ! test -f ${jrelibdir}/rt.jar ; then \
-		$(LN_S) ${jrelibdir}/glibj.zip ${jrelibdir}/rt.jar ; \
+	if test -f ${jrelibdir}/glibj.zip ; then \
+		if ! test -f ${jrelibdir}/rt.jar ; then \
+			$(LN_S) ${jrelibdir}/glibj.zip ${jrelibdir}/rt.jar ; \
+		fi ; \
 	fi
 
 uninstall-local: 

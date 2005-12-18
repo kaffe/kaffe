@@ -35,6 +35,7 @@ LIBDIR = lib
 
 clean-local:
 	rm -rf $(LIBDIR)
+	rm $(toolslib_DATA)
 
 rebuildLib = $(top_builddir)/libraries/javalib/rebuildLib
 real_builddir = $(shell cd $(top_builddir) && pwd )

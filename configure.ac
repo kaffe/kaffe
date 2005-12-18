@@ -2194,9 +2194,7 @@ AC_CHECK_HEADERS([pthread.h])
 if test x"$ac_cv_header_pthread_h" = x"yes"; then
   dnl We can now check whether we want binreloc
   AM_BINRELOC
-  CFLAGS="$CFLAGS \$(BINRELOC_CFLAGS)"
 fi
-AM_CONDITIONAL(ENABLE_BINRELOC, test x"$enable_binreloc" = x"yes")
 
 dnl =========================================================================
 dnl Set up for local build of kaffeh when cross-compiling
@@ -2306,7 +2304,7 @@ AC_SUBST(kaffeh_TRANSF)
 AC_SUBST(kaffebin_TRANSF)
 
 dnl These are not to be used during configuration, only during build.
-CPPFLAGS="-I$abssrcdir/kaffe/kaffevm -I$abssrcdir/kaffe/kaffevm/$with_engine -I$abssrcdir/kaffe/kaffevm/systems/$with_threads -I\$(top_srcdir)/replace -I\$(top_srcdir)/binreloc -I\$(top_srcdir)/config -I\$(top_srcdir)/include $CPPFLAGS"
+CPPFLAGS="-I$abssrcdir/kaffe/kaffevm -I$abssrcdir/kaffe/kaffevm/$with_engine -I$abssrcdir/kaffe/kaffevm/systems/$with_threads -I\$(top_srcdir)/replace -I\$(top_srcdir)/config -I\$(top_srcdir)/include $CPPFLAGS"
 LIBS="$LIBS $LTLIBS"
 
 dnl Avoid GNU Make $(filter-out -pg,@CFLAGS@) in kaffe/xprof/Makefile.am

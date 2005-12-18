@@ -94,7 +94,12 @@ main(int argc, char* argv[])
 #endif
 
 #if defined(ENABLE_BINRELOC)
-	br_init(NULL);
+        BrInitError error;
+
+        if( br_init(&error) == 0 && error != BR_INIT_ERROR_DISABLED) {
+                printf ("Warning: BinReloc failed to initialize (error code %d)\n", error);
+                printf ("Will fallback to hardcoded default path.\n");
+        };
 #endif
 
 #if defined(HAVE_LC_MESSAGES)

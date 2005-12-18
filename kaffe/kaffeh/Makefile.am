@@ -12,7 +12,7 @@ AM_CPPFLAGS = \
 	-DKAFFEH \
 	-I$(top_builddir)/include \
 	-I$(top_builddir)/config \
-	-I$(top_srcdir)/kaffe/kaffevm/jni
+	-I$(top_srcdir)/kaffe/kaffevm/jni 
 
 bin_PROGRAMS = kaffeh
 

@@ -1,3 +1,34 @@
+2005-12-16  Dalibor Topic  <robilad@kaffe.org>
+
+	Fix for make distcheck and ENABLE_BINRELOC compiler warnings.
+
+	* configure.ac: (CFLAGS, CPPFLAGS) Don't set them to include 
+	$(BINRELOC_GLAGS) as those are already set in the generated 
+	config.h. Do not define ENABLE_BINRELOC explicitely, either.
+	Fixes many compiler warnings regarding duplicate definition
+	of ENABLE_BINRELOC.
+
+	* kaffe/kaffe/main.c,
+	kaffe/kaffeh/main.c: (main) Check for an error during binreloc
+	initialization, as recommended in the binreloc documentation.
+
+	* kaffe/kaffevm/binreloc.c:
+	Check if config.h is generated, and if so, include it.
+
+	* libraries/javalib/Makefile.am.in (install-data-local):
+	Check if glibj.zip exists at desired location, before
+	attempting to symlink to it.
+
+	* tools/javatools/javalib/Makefile.am (clean-local):
+	Remove built tools.jar.
+
+2005-12-18  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* libraries/javalib/external/classpath/lib/Makefile.am:
+	Replaced $(top_distdir) with $(distdir)/.. to make sure
+	that GNU Classpath's class library sources don't end up
+	in the wrong location in kaffe's tarball.
+
 2005-12-18  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* configure.ac: Check whether struct sockaddr has a sa_len member.
