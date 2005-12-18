@@ -161,6 +161,32 @@ java_lang_VMClassLoader_resolveClass(struct Hjava_lang_Class* class)
 	}
 }
 
+struct Hjava_lang_Class*
+java_lang_VMClassLoader_findLoadedClass(Hjava_lang_ClassLoader* loader, Hjava_lang_String* name)
+{
+  Utf8Const *utfClassName;
+  classEntry *centry;
+  errorInfo einfo;
+  Hjava_lang_Class *clazz;
+
+  utfClassName = checkPtr(stringJava2Utf8ConstReplace(name, '.', '/'));
+  
+  /*
+   * See if an entry for that name and class loader already exists
+   * create one if not.
+   */
+  centry = lookupClassEntryInternal(utfClassName, loader);
+  if (centry == NULL)
+    return NULL;
+
+  utf8ConstRelease(utfClassName);
+  
+  if (centry->state >= NMS_LOADED)
+    return centry->data.cl;
+  else
+    return NULL;
+}
+
 
 struct Hjava_lang_Class*
 java_lang_VMClassLoader_loadClass(Hjava_lang_String* jStr, jboolean resolve)

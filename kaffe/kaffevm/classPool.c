@@ -345,7 +345,14 @@ int classMappingSearch(classEntry *ce,
 		case NMS_SEARCHING:
 			if( ce->data.thread == jt )
 			{
+				/* Circularity. */
 				done = 1;
+				retval = 0;
+				postExceptionMessage(
+					einfo,
+					JAVA_LANG(ClassNotFoundException),
+					"%s",
+					ce->name->data);
 				break;
 			}
 			waitStaticCond(&ce->slock, (jlong)0);

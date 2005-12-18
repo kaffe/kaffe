@@ -233,6 +233,7 @@ DBG(SLOWLOCKS,
    
    /* If I hold the heavy lock then just keep on going */
    if (cur == lk->holder) {
+     assert(lk->lockCount < 0xffffffff);
      lk->lockCount++;
      putHeavyLock(lk);
      KTHREAD(enable_stop)();

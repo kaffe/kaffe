@@ -668,7 +668,6 @@ EXTRA_DIST= \
 	vmspecific/java/io/VMObjectInputStream.java \
 	vmspecific/java/io/VMObjectStreamClass.java \
 	vmspecific/java/lang/Class.java \
-	vmspecific/java/lang/ClassLoader.java \
 	vmspecific/java/lang/Runtime.java \
 	vmspecific/java/lang/String.java \
 	vmspecific/java/lang/VMClass.java \

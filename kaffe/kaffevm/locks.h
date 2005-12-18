@@ -51,7 +51,7 @@ typedef struct _iLock {
   jthread_t	mux;
   jthread_t	cv;
   Ksem          sem;
-  uint8         lockCount;
+  uint32        lockCount;
   void*	hlockHolder;
 } iLock;
 

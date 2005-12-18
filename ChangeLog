@@ -1,3 +1,27 @@
+2005-12-17  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/classPool.c
+	(classMappingSearch): If we are asking again the same class while
+	we are loading it then it means we have a circularity problem.
+
+	* kaffe/kaffevm/locks.c:
+	(slowLockMutex): Added an assertion checking.
+
+	* kaffe/kaffevm/locks.h:
+	(iLock.lockCount): Use uint32 instead of uint8.
+
+	* libraries/clib/native/ClassLoader.c
+	(findLoadedClasses): New native function.
+
+	* libraries/javalib/vmspecific/java/lang/ClassLoader.java:
+	Removed.
+
+	* libraries/javalib/vmspecific/java/lang/VMClassLoader.java: 
+	Reimported from GNU Classpath and merged with the older version.
+
+	* libraries/javalib/Makefile.am, libraries/javalib/Makefile.in:
+	Regenerated.
+	
 2005-12-16  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/jni/jni-helpers.c

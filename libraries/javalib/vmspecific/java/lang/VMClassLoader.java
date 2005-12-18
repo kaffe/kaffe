@@ -1,6 +1,6 @@
 /* VMClassLoader.java -- Reference implementation of native interface
    required by ClassLoader
-   Copyright (C) 1998, 2001, 2002, 2004 Free Software Foundation
+   Copyright (C) 1998, 2001, 2002, 2004, 2005 Free Software Foundation
 
 This file is part of GNU Classpath.
 
@@ -36,47 +36,79 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+
 package java.lang;
 
-import java.security.AllPermission;
-import java.security.CodeSource;
-import java.security.Permissions;
-import java.security.ProtectionDomain;
-import java.net.URL;
-import java.io.IOException;
+import gnu.classpath.SystemProperties;
+import gnu.classpath.Configuration;
+
 import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.security.ProtectionDomain;
 import java.util.Enumeration;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.zip.ZipFile;
-import java.util.zip.ZipEntry;
-import java.lang.reflect.Constructor;
-
-import gnu.java.util.EmptyEnumeration;
-import gnu.classpath.SystemProperties;
-
 
 /**
  * java.lang.VMClassLoader is a package-private helper for VMs to implement
  * on behalf of java.lang.ClassLoader.
  *
  * @author John Keiser
- * @author Mark Wielaard <mark@klomp.org>
- * @author Eric Blake <ebb9@email.byu.edu>
+ * @author Mark Wielaard (mark@klomp.org)
+ * @author Eric Blake (ebb9@email.byu.edu)
  */
 final class VMClassLoader
 {
-   private static final Map bootjars = new HashMap();
 
+
+  /** packages loaded by the bootstrap class loader */
+  static final HashMap definedPackages = new HashMap();
+
+  /**
+   * Converts the array string of native package names to
+   * Packages. The packages are then put into the
+   * definedPackages hashMap
+   */
+  static
+  {
+    String[] packages = getBootPackages();
+    
+    if( packages != null)
+      {
+        String specName = 
+              SystemProperties.getProperty("java.specification.name");
+        String vendor =
+              SystemProperties.getProperty("java.specification.vendor");
+        String version =
+              SystemProperties.getProperty("java.specification.version");
+        
+        Package p;
+              
+        for(int i = 0; i < packages.length; i++)
+          {
+            p = new Package(packages[i],
+                  specName,
+                  vendor,
+                  version,
+                  "GNU Classpath",
+                  "GNU",
+                  Configuration.CLASSPATH_VERSION,
+                  null);
+
+            definedPackages.put(packages[i], p);
+          }
+      }
+  }
+
+  
   /**
    * Helper to define a class using a string of bytes. This assumes that
    * the security checks have already been performed, if necessary.
-   *
-   * <strong>For backward compatibility, this just ignores the protection
-   * domain; that is the wrong behavior, and you should directly implement
-   * this method natively if you can.</strong>
    *
    * Implementations of this method are advised to consider the
    * situation where user code modifies the byte array after it has
@@ -93,8 +125,8 @@ final class VMClassLoader
    * @throws ClassFormatError if data is not in proper classfile format
    */
   static final native Class defineClass(ClassLoader cl, String name,
-					byte[] data, int offset, int len,
-					ProtectionDomain pd)
+                                 byte[] data, int offset, int len,
+                                 ProtectionDomain pd)
     throws ClassFormatError;
 
   /**
@@ -113,47 +145,8 @@ final class VMClassLoader
    * if the class wasn't found. Returning null is equivalent to throwing
    * a ClassNotFoundException (but a possible performance optimization).
    */
-   static native Class loadClass(String name, boolean resolve)
-      throws ClassNotFoundException;
-
-
-   private static URL nextResource (StringTokenizer path, String name)
-   {
-      while (path.hasMoreTokens())
-      {
-         File file = new File(path.nextToken());
-
-         if (!file.exists()) {
-            continue;
-         }
-         else if (file.isDirectory()) {
-            file = new File(file, name);
-            if (file.isFile()) {
-               try {
-                  return new URL("file", "", file.getCanonicalPath().replace(File.separatorChar, '/'));
-               } catch (IOException e) {
-               }
-            }
-         }
-         else if (file.isFile()) {
-            ZipFile zip = (ZipFile) bootjars.get(file.getName());
-            try {
-               if (zip == null) {
-                  zip = new ZipFile(file);
-                  bootjars.put(file.getName(), zip);
-               }
-               ZipEntry entry = zip.getEntry(name);
-               if (entry != null && !entry.isDirectory()) {
-                  return new URL("jar:file:"
-                                 + file.getCanonicalPath().replace(File.separatorChar, '/') + "!/" + entry.getName());
-               }
-            } catch (IOException e) {
-            }
-         }
-      }
-
-      return null;
-   }
+  static final native Class loadClass(String name, boolean resolve)
+    throws ClassNotFoundException;
 
   /**
    * Helper to load a resource from the bootstrap class loader.
@@ -163,17 +156,15 @@ final class VMClassLoader
    */
   static URL getResource(String name)
   {
-     String classpath = gnu.classpath.SystemProperties.getProperties().getProperty("sun.boot.class.path");
-
-     StringTokenizer path = new StringTokenizer(classpath, File.pathSeparator);
-
-     if (name.startsWith("/")) {
-        name = name.substring(1);
-     }
-
-     return nextResource (path, name);
+    Enumeration e = getResources(name);
+    if (e.hasMoreElements())
+      return (URL)e.nextElement();
+    return null;
   }
 
+  /** jars from property sun.boot.class.path */
+  static final HashMap bootjars = new HashMap();
+  
   /**
    * Helper to get a list of resources from the bootstrap class loader.
    *
@@ -181,53 +172,102 @@ final class VMClassLoader
    * @return an enumeration of resources
    * @throws IOException if one occurs
    */
-  static Enumeration getResources(String name) throws IOException
+  static Enumeration getResources(String name)
   {
-     String classpath = gnu.classpath.SystemProperties.getProperties().getProperty("sun.boot.class.path");
-
-     StringTokenizer path = new StringTokenizer(classpath, File.pathSeparator);
-
-     if (name.startsWith("/")) {
-        name = name.substring(1);
-     }
-
-     Vector ret = new Vector ();
-
-     for (;;) {
-        URL url = nextResource (path, name);
-
-        if (url == null)
-           break;
-
-        ret.add (url);
-     }
-
-     return ret.elements ();
+    StringTokenizer st = new StringTokenizer(
+      SystemProperties.getProperty("sun.boot.class.path", "."),
+      File.pathSeparator);
+    Vector v = new Vector();
+    while (st.hasMoreTokens())
+      {
+	File file = new File(st.nextToken());
+	if (file.isDirectory())
+	  {
+	    try
+	      {
+                File f = new File(file, name);
+                if (!f.exists()) continue;
+                v.add(new URL("file://" + f.getAbsolutePath()));
+	      }
+	    catch (MalformedURLException e)
+	      {
+		throw new Error(e);
+	      }
+	  }
+	else if (file.isFile())
+	  {
+	    ZipFile zip;
+            synchronized(bootjars)
+              {
+                zip = (ZipFile) bootjars.get(file.getName());
+              }
+            if(zip == null)
+              {
+                try
+	          {
+                    zip = new ZipFile(file);
+                    synchronized(bootjars)
+                      {
+                        bootjars.put(file.getName(), zip);
+                      }
+	          }
+	        catch (IOException e)
+	          {
+		    continue;
+	          }
+              }
+	    String zname = name.startsWith("/") ? name.substring(1) : name;
+	    if (zip.getEntry(zname) == null)
+	      continue;
+	    try
+	      {
+		v.add(new URL("jar:file://"
+		  + file.getAbsolutePath() + "!/" + zname));
+	      }
+	    catch (MalformedURLException e)
+	      {
+		throw new Error(e);
+	      }
+	  }
+      }
+    return v.elements();
   }
 
+
   /**
-   * Helper to get a package from the bootstrap class loader.  The default
-   * implementation of returning null may be adequate, or you may decide
-   * that this needs some native help.
+   * Returns a String[] of native package names. The default
+   * implementation returns an empty array, or you may decide
+   * this needs native help.
+   */
+  private static String[] getBootPackages()
+  {
+    return new String[0];
+  }
+
+
+  /**
+   * Helper to get a package from the bootstrap class loader.
    *
    * @param name the name to find
    * @return the named package, if it exists
    */
   static Package getPackage(String name)
   {
-     return null;
+    return (Package)definedPackages.get(name);
   }
 
+
+  
   /**
-   * Helper to get all packages from the bootstrap class loader.  The default
-   * implementation of returning an empty array may be adequate, or you may
-   * decide that this needs some native help.
+   * Helper to get all packages from the bootstrap class loader.  
    *
    * @return all named packages, if any exist
    */
   static Package[] getPackages()
   {
-     return new Package[0];
+    Package[] packages = new Package[definedPackages.size()];
+    definedPackages.values().toArray(packages);
+    return packages;
   }
 
   /**
@@ -247,15 +287,6 @@ final class VMClassLoader
    * <li>'V' - void</li>
    * </ul>
    *
-   * Note that this is currently a java version that converts the type code
-   * to a string and calls the native <code>getPrimitiveClass(String)</code>
-   * method for backwards compatibility with VMs that used old versions of
-   * GNU Classpath. Please replace this method with a native method
-   * <code>final static native Class getPrimitiveClass(char type);</code>
-   * if your VM supports it. <strong>The java version of this method and
-   * the String version of this method will disappear in a future version
-   * of GNU Classpath</strong>.
-   *
    * @param type the primitive type
    * @return a "bogus" class representing the primitive type
    */
@@ -266,7 +297,6 @@ final class VMClassLoader
 	throw new NoClassDefFoundError("Invalid type specifier: " + type);
     return primitive;
   }
-
 
   /**
    * Helper for java.lang.Integer, Byte, etc to get the TYPE class
@@ -334,21 +364,15 @@ final class VMClassLoader
     return new HashMap();
   }
 
-  static ClassLoader getSystemClassLoader ()
+  static ClassLoader getSystemClassLoader()
   {
-    return ClassLoader.defaultGetSystemClassLoader ();
+    return ClassLoader.defaultGetSystemClassLoader();
   }
 
   /**
-   * Set this field to true if the VM wants to keep its own cache.
+   * Find the class if this class loader previously defined this class
+   * or if this class loader has been recorded as the initiating class loader
+   * for this class.
    */
-  static final boolean USE_VM_CACHE = false;
-
-  /**
-   * If the VM wants to keep its own cache, this method can be replaced.
-   */
-  static Class findLoadedClass(ClassLoader cl, String name)
-  {
-    return (Class) cl.loadedClasses.get(name);
-  }
+  static native Class findLoadedClass(ClassLoader cl, String name);
 }
