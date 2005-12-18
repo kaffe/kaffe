@@ -30,9 +30,12 @@ MAYBE_GLIBJ_ZIP= glibj.zip
 
 glibj.zip: stamp-glibj
 else
-stamp-libj:
+stamp-glibj:
 	@touch stamp-glibj
 endif
+
+clean-local:
+	rm -rf stamp-glibj glibj.zip
 
 SUBDIRS= . external/classpath $(MAYBE_PEERLESS_KAFFE_AWT) $(MAYBE_GMP_JAVA_MATH)
 

@@ -1,3 +1,8 @@
+2005-12-18  Jari Korva  <jpkorva@iki.fi>
+
+	* libraries/javalib/Makefile.am.in:
+	Properly clean up after ourselves when using a prebuilt glibj.zip.
+
 2005-12-18  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/gcFuncs.c

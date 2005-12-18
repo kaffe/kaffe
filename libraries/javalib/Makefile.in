@@ -1972,7 +1972,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-recursive
 
-clean-am: clean-generic clean-libtool mostlyclean-am
+clean-am: clean-generic clean-libtool clean-local mostlyclean-am
 
 distclean: distclean-recursive
 	-rm -f Makefile
@@ -2020,11 +2020,11 @@ uninstall-am: uninstall-info-am uninstall-jrelibDATA uninstall-local
 uninstall-info: uninstall-info-recursive
 
 .PHONY: $(RECURSIVE_TARGETS) CTAGS GTAGS all all-am check check-am \
-	clean clean-generic clean-libtool clean-recursive ctags \
-	ctags-recursive distclean distclean-generic distclean-libtool \
-	distclean-recursive distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am install-data \
-	install-data-am install-data-local install-exec \
+	clean clean-generic clean-libtool clean-local clean-recursive \
+	ctags ctags-recursive distclean distclean-generic \
+	distclean-libtool distclean-recursive distclean-tags distdir \
+	dvi dvi-am html html-am info info-am install install-am \
+	install-data install-data-am install-data-local install-exec \
 	install-exec-am install-info install-info-am \
 	install-jrelibDATA install-man install-strip installcheck \
 	installcheck-am installdirs installdirs-am maintainer-clean \
@@ -2042,8 +2042,11 @@ uninstall-info: uninstall-info-recursive
 @USE_PRECOMPILED_RT_JAR_TRUE@	@touch stamp-glibj
 
 @USE_PRECOMPILED_RT_JAR_TRUE@glibj.zip: stamp-glibj
-@USE_PRECOMPILED_RT_JAR_FALSE@stamp-libj:
+@USE_PRECOMPILED_RT_JAR_FALSE@stamp-glibj:
 @USE_PRECOMPILED_RT_JAR_FALSE@	@touch stamp-glibj
+
+clean-local:
+	rm -rf stamp-glibj glibj.zip
 
 export JAVA_COMPILER
 
