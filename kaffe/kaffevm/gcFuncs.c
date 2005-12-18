@@ -82,7 +82,7 @@ DBG(CLASSGC,
 	assert(clazz->state != CSTATE_COMPLETE || clazz->loader != 0);
 
 #if defined(ENABLE_JVMPI)
-	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_CLASS_UNLOAD) )
+	if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_CLASS_UNLOAD) && clazz->state >= CSTATE_PREPARED)
 	{
 		JVMPI_Event ev;
 

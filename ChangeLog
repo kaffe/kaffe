@@ -1,3 +1,13 @@
+2005-12-18  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/gcFuncs.c
+	(destroyClass): Only send a JVMPI event if a CLASS_LOAD event has
+	been send.
+
+	* kaffe/kaffevm/gc-mem.c
+	(gc_is_heap_unlimited): Do the right check.
+	(gcMalloc): Fixed the debug message.
+	
 2005-12-16  Dalibor Topic  <robilad@kaffe.org>
 
 	Fix for make distcheck and ENABLE_BINRELOC compiler warnings.

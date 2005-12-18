@@ -238,7 +238,7 @@ gc_heap_check(void)
 static inline bool
 gc_heap_is_unlimited(void)
 {
-  return gc_heap_limit != UNLIMITED_HEAP;
+  return gc_heap_limit == UNLIMITED_HEAP;
 }
 
 /*
