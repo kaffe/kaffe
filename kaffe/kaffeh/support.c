@@ -137,7 +137,8 @@ SystemCallInterface Kaffe_SystemCallInterface =
         NULL,		/* getsockname */
         NULL,		/* getpeername */
         NULL,		/* sockclose */
-        NULL,		/* gethostbyname */
+	NULL,		/* sockshutdown */
+ 	NULL,		/* gethostbyname */
         NULL,		/* gethostbyaddr */
         NULL,		/* select */
         NULL,		/* forkexec */
