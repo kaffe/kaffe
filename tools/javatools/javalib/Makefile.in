@@ -549,7 +549,7 @@ uninstall-am: uninstall-info-am uninstall-toolslibDATA
 
 clean-local:
 	rm -rf $(LIBDIR)
-	rm $(toolslib_DATA)
+	rm -f $(toolslib_DATA)
 
 .PHONY: compile-classes classes
 compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(antlr_SRCS) $(gjdoc_jar_SRCS) $(gjdoc_jar_GENSOURCES)
