@@ -1387,161 +1387,6 @@ EXTRA_DIST = \
 	vmspecific/org/tritonus/share/sampled/mixer/TSoftClip.java \
 	vmspecific/org/tritonus/share/sampled/mixer/package.html \
 	vmspecific/org/tritonus/share/sampled/package.html \
-	vmspecific/org/w3c/dom/Attr.java \
-	vmspecific/org/w3c/dom/CDATASection.java \
-	vmspecific/org/w3c/dom/CharacterData.java \
-	vmspecific/org/w3c/dom/Comment.java \
-	vmspecific/org/w3c/dom/DOMConfiguration.java \
-	vmspecific/org/w3c/dom/DOMError.java \
-	vmspecific/org/w3c/dom/DOMErrorHandler.java \
-	vmspecific/org/w3c/dom/DOMException.java \
-	vmspecific/org/w3c/dom/DOMImplementation.java \
-	vmspecific/org/w3c/dom/DOMImplementationList.java \
-	vmspecific/org/w3c/dom/DOMImplementationSource.java \
-	vmspecific/org/w3c/dom/DOMLocator.java \
-	vmspecific/org/w3c/dom/DOMStringList.java \
-	vmspecific/org/w3c/dom/Document.java \
-	vmspecific/org/w3c/dom/DocumentFragment.java \
-	vmspecific/org/w3c/dom/DocumentType.java \
-	vmspecific/org/w3c/dom/Element.java \
-	vmspecific/org/w3c/dom/Entity.java \
-	vmspecific/org/w3c/dom/EntityReference.java \
-	vmspecific/org/w3c/dom/NameList.java \
-	vmspecific/org/w3c/dom/NamedNodeMap.java \
-	vmspecific/org/w3c/dom/Node.java \
-	vmspecific/org/w3c/dom/NodeList.java \
-	vmspecific/org/w3c/dom/Notation.java \
-	vmspecific/org/w3c/dom/ProcessingInstruction.java \
-	vmspecific/org/w3c/dom/Text.java \
-	vmspecific/org/w3c/dom/TypeInfo.java \
-	vmspecific/org/w3c/dom/UserDataHandler.java \
-	vmspecific/org/w3c/dom/bootstrap/DOMImplementationRegistry.java \
-	vmspecific/org/w3c/dom/bootstrap/package.html \
-	vmspecific/org/w3c/dom/css/CSS2Properties.java \
-	vmspecific/org/w3c/dom/css/CSSCharsetRule.java \
-	vmspecific/org/w3c/dom/css/CSSFontFaceRule.java \
-	vmspecific/org/w3c/dom/css/CSSImportRule.java \
-	vmspecific/org/w3c/dom/css/CSSMediaRule.java \
-	vmspecific/org/w3c/dom/css/CSSPageRule.java \
-	vmspecific/org/w3c/dom/css/CSSPrimitiveValue.java \
-	vmspecific/org/w3c/dom/css/CSSRule.java \
-	vmspecific/org/w3c/dom/css/CSSRuleList.java \
-	vmspecific/org/w3c/dom/css/CSSStyleDeclaration.java \
-	vmspecific/org/w3c/dom/css/CSSStyleRule.java \
-	vmspecific/org/w3c/dom/css/CSSStyleSheet.java \
-	vmspecific/org/w3c/dom/css/CSSUnknownRule.java \
-	vmspecific/org/w3c/dom/css/CSSValue.java \
-	vmspecific/org/w3c/dom/css/CSSValueList.java \
-	vmspecific/org/w3c/dom/css/Counter.java \
-	vmspecific/org/w3c/dom/css/DOMImplementationCSS.java \
-	vmspecific/org/w3c/dom/css/DocumentCSS.java \
-	vmspecific/org/w3c/dom/css/ElementCSSInlineStyle.java \
-	vmspecific/org/w3c/dom/css/RGBColor.java \
-	vmspecific/org/w3c/dom/css/Rect.java \
-	vmspecific/org/w3c/dom/css/ViewCSS.java \
-	vmspecific/org/w3c/dom/css/package.html \
-	vmspecific/org/w3c/dom/events/DocumentEvent.java \
-	vmspecific/org/w3c/dom/events/Event.java \
-	vmspecific/org/w3c/dom/events/EventException.java \
-	vmspecific/org/w3c/dom/events/EventListener.java \
-	vmspecific/org/w3c/dom/events/EventTarget.java \
-	vmspecific/org/w3c/dom/events/MouseEvent.java \
-	vmspecific/org/w3c/dom/events/MutationEvent.java \
-	vmspecific/org/w3c/dom/events/UIEvent.java \
-	vmspecific/org/w3c/dom/events/package.html \
-	vmspecific/org/w3c/dom/html2/HTMLAnchorElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLAppletElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLAreaElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLBRElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLBaseElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLBaseFontElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLBodyElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLButtonElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLCollection.java \
-	vmspecific/org/w3c/dom/html2/HTMLDListElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLDirectoryElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLDivElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLDocument.java \
-	vmspecific/org/w3c/dom/html2/HTMLElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLFieldSetElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLFontElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLFormElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLFrameElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLFrameSetElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLHRElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLHeadElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLHeadingElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLHtmlElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLIFrameElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLImageElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLInputElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLIsIndexElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLLIElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLLabelElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLLegendElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLLinkElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLMapElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLMenuElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLMetaElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLModElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLOListElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLObjectElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLOptGroupElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLOptionElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLOptionsCollection.java \
-	vmspecific/org/w3c/dom/html2/HTMLParagraphElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLParamElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLPreElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLQuoteElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLScriptElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLSelectElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLStyleElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLTableCaptionElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLTableCellElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLTableColElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLTableElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLTableRowElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLTableSectionElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLTextAreaElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLTitleElement.java \
-	vmspecific/org/w3c/dom/html2/HTMLUListElement.java \
-	vmspecific/org/w3c/dom/ls/DOMImplementationLS.java \
-	vmspecific/org/w3c/dom/ls/LSException.java \
-	vmspecific/org/w3c/dom/ls/LSInput.java \
-	vmspecific/org/w3c/dom/ls/LSLoadEvent.java \
-	vmspecific/org/w3c/dom/ls/LSOutput.java \
-	vmspecific/org/w3c/dom/ls/LSParser.java \
-	vmspecific/org/w3c/dom/ls/LSParserFilter.java \
-	vmspecific/org/w3c/dom/ls/LSProgressEvent.java \
-	vmspecific/org/w3c/dom/ls/LSResourceResolver.java \
-	vmspecific/org/w3c/dom/ls/LSSerializer.java \
-	vmspecific/org/w3c/dom/ls/LSSerializerFilter.java \
-	vmspecific/org/w3c/dom/ls/package.html \
-	vmspecific/org/w3c/dom/package.html \
-	vmspecific/org/w3c/dom/ranges/DocumentRange.java \
-	vmspecific/org/w3c/dom/ranges/Range.java \
-	vmspecific/org/w3c/dom/ranges/RangeException.java \
-	vmspecific/org/w3c/dom/ranges/package.html \
-	vmspecific/org/w3c/dom/stylesheets/DocumentStyle.java \
-	vmspecific/org/w3c/dom/stylesheets/LinkStyle.java \
-	vmspecific/org/w3c/dom/stylesheets/MediaList.java \
-	vmspecific/org/w3c/dom/stylesheets/StyleSheet.java \
-	vmspecific/org/w3c/dom/stylesheets/StyleSheetList.java \
-	vmspecific/org/w3c/dom/stylesheets/package.html \
-	vmspecific/org/w3c/dom/traversal/DocumentTraversal.java \
-	vmspecific/org/w3c/dom/traversal/NodeFilter.java \
-	vmspecific/org/w3c/dom/traversal/NodeIterator.java \
-	vmspecific/org/w3c/dom/traversal/TreeWalker.java \
-	vmspecific/org/w3c/dom/traversal/package.html \
-	vmspecific/org/w3c/dom/views/AbstractView.java \
-	vmspecific/org/w3c/dom/views/DocumentView.java \
-	vmspecific/org/w3c/dom/views/package.html \
-	vmspecific/org/w3c/dom/xpath/XPathEvaluator.java \
-	vmspecific/org/w3c/dom/xpath/XPathException.java \
-	vmspecific/org/w3c/dom/xpath/XPathExpression.java \
-	vmspecific/org/w3c/dom/xpath/XPathNSResolver.java \
-	vmspecific/org/w3c/dom/xpath/XPathNamespace.java \
-	vmspecific/org/w3c/dom/xpath/XPathResult.java \
 	vmspecific/org/xbill/DNS/A6Record.java \
 	vmspecific/org/xbill/DNS/AAAARecord.java \
 	vmspecific/org/xbill/DNS/AFSDBRecord.java \
@@ -1658,46 +1503,7 @@ EXTRA_DIST = \
 	vmspecific/org/xbill/DNS/utils/HMAC.java \
 	vmspecific/org/xbill/DNS/utils/base16.java \
 	vmspecific/org/xbill/DNS/utils/base64.java \
-	vmspecific/org/xbill/DNS/utils/hexdump.java \
-	vmspecific/org/xml/sax/AttributeList.java \
-	vmspecific/org/xml/sax/Attributes.java \
-	vmspecific/org/xml/sax/ContentHandler.java \
-	vmspecific/org/xml/sax/DTDHandler.java \
-	vmspecific/org/xml/sax/DocumentHandler.java \
-	vmspecific/org/xml/sax/EntityResolver.java \
-	vmspecific/org/xml/sax/ErrorHandler.java \
-	vmspecific/org/xml/sax/HandlerBase.java \
-	vmspecific/org/xml/sax/InputSource.java \
-	vmspecific/org/xml/sax/Locator.java \
-	vmspecific/org/xml/sax/Parser.java \
-	vmspecific/org/xml/sax/SAXException.java \
-	vmspecific/org/xml/sax/SAXNotRecognizedException.java \
-	vmspecific/org/xml/sax/SAXNotSupportedException.java \
-	vmspecific/org/xml/sax/SAXParseException.java \
-	vmspecific/org/xml/sax/XMLFilter.java \
-	vmspecific/org/xml/sax/XMLReader.java \
-	vmspecific/org/xml/sax/ext/Attributes2.java \
-	vmspecific/org/xml/sax/ext/Attributes2Impl.java \
-	vmspecific/org/xml/sax/ext/DeclHandler.java \
-	vmspecific/org/xml/sax/ext/DefaultHandler2.java \
-	vmspecific/org/xml/sax/ext/EntityResolver2.java \
-	vmspecific/org/xml/sax/ext/LexicalHandler.java \
-	vmspecific/org/xml/sax/ext/Locator2.java \
-	vmspecific/org/xml/sax/ext/Locator2Impl.java \
-	vmspecific/org/xml/sax/ext/package.html \
-	vmspecific/org/xml/sax/helpers/AttributeListImpl.java \
-	vmspecific/org/xml/sax/helpers/AttributesImpl.java \
-	vmspecific/org/xml/sax/helpers/DefaultHandler.java \
-	vmspecific/org/xml/sax/helpers/LocatorImpl.java \
-	vmspecific/org/xml/sax/helpers/NamespaceSupport.java \
-	vmspecific/org/xml/sax/helpers/NewInstance.java \
-	vmspecific/org/xml/sax/helpers/ParserAdapter.java \
-	vmspecific/org/xml/sax/helpers/ParserFactory.java \
-	vmspecific/org/xml/sax/helpers/XMLFilterImpl.java \
-	vmspecific/org/xml/sax/helpers/XMLReaderAdapter.java \
-	vmspecific/org/xml/sax/helpers/XMLReaderFactory.java \
-	vmspecific/org/xml/sax/helpers/package.html \
-	vmspecific/org/xml/sax/package.html
+	vmspecific/org/xbill/DNS/utils/hexdump.java
 
 all: all-recursive
 
@@ -1894,7 +1700,7 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/vmspecific/META-INF $(distdir)/vmspecific/META-INF/services $(distdir)/vmspecific/com/jcraft/jzlib $(distdir)/vmspecific/gnu/bytecodecvssnap $(distdir)/vmspecific/gnu/classpath $(distdir)/vmspecific/gnu/classpath/jdwp $(distdir)/vmspecific/gnu/crypto $(distdir)/vmspecific/gnu/crypto/assembly $(distdir)/vmspecific/gnu/crypto/auth $(distdir)/vmspecific/gnu/crypto/auth/callback $(distdir)/vmspecific/gnu/crypto/cipher $(distdir)/vmspecific/gnu/crypto/der $(distdir)/vmspecific/gnu/crypto/exp $(distdir)/vmspecific/gnu/crypto/exp/ust $(distdir)/vmspecific/gnu/crypto/hash $(distdir)/vmspecific/gnu/crypto/jce $(distdir)/vmspecific/gnu/crypto/jce/cipher $(distdir)/vmspecific/gnu/crypto/jce/hash $(distdir)/vmspecific/gnu/crypto/jce/key $(distdir)/vmspecific/gnu/crypto/jce/keyring $(distdir)/vmspecific/gnu/crypto/jce/mac $(distdir)/vmspecific/gnu/crypto/jce/params $(distdir)/vmspecific/gnu/crypto/jce/prng $(distdir)/vmspecific/gnu/crypto/jce/sig $(distdir)/vmspecific/gnu/crypto/jce/spec $(distdir)/vmspecific/gnu/crypto/key $(distdir)/vmspecific/gnu/crypto/key/dh $(distdir)/vmspecific/gnu/crypto/key/dss $(distdir)/vmspecific/gnu/crypto/key/rsa $(distdir)/vmspecific/gnu/crypto/key/srp6 $(distdir)/vmspecific/gnu/crypto/keyring $(distdir)/vmspecific/gnu/crypto/mac $(distdir)/vmspecific/gnu/crypto/mode $(distdir)/vmspecific/gnu/crypto/pad $(distdir)/vmspecific/gnu/crypto/pki $(distdir)/vmspecific/gnu/crypto/pki/ext $(distdir)/vmspecific/gnu/crypto/pki/io $(distdir)/vmspecific/gnu/crypto/pki/provider $(distdir)/vmspecific/gnu/crypto/prng $(distdir)/vmspecific/gnu/crypto/sasl $(distdir)/vmspecific/gnu/crypto/sasl/anonymous $(distdir)/vmspecific/gnu/crypto/sasl/crammd5 $(distdir)/vmspecific/gnu/crypto/sasl/plain $(distdir)/vmspecific/gnu/crypto/sasl/srp $(distdir)/vmspecific/gnu/crypto/sig $(distdir)/vmspecific/gnu/crypto/sig/dss $(distdir)/vmspecific/gnu/crypto/sig/rsa $(distdir)/vmspecific/gnu/crypto/tool $(distdir)/vmspecific/gnu/crypto/tool/keytool $(distdir)/vmspecific/gnu/crypto/util $(distdir)/vmspecific/gnu/getopt $(distdir)/vmspecific/gnu/inet/comsat $(distdir)/vmspecific/gnu/inet/finger $(distdir)/vmspecific/gnu/inet/gopher $(distdir)/vmspecific/gnu/inet/imap $(distdir)/vmspecific/gnu/inet/ldap $(distdir)/vmspecific/gnu/inet/nntp $(distdir)/vmspecific/gnu/inet/pop3 $(distdir)/vmspecific/gnu/inet/smtp $(distdir)/vmspecific/gnu/inet/util $(distdir)/vmspecific/gnu/java/net $(distdir)/vmspecific/gnu/java/nio $(distdir)/vmspecific/java/io $(distdir)/vmspecific/java/lang $(distdir)/vmspecific/java/lang/ref $(distdir)/vmspecific/java/lang/reflect $(distdir)/vmspecific/java/net $(distdir)/vmspecific/java/nio $(distdir)/vmspecific/java/nio/channels $(distdir)/vmspecific/java/security $(distdir)/vmspecific/java/util $(distdir)/vmspecific/java/util/mime $(distdir)/vmspecific/java/util/zip $(distdir)/vmspecific/org/kaffe/beans/editors $(distdir)/vmspecific/org/kaffe/io $(distdir)/vmspecific/org/kaffe/jar $(distdir)/vmspecific/org/kaffe/lang $(distdir)/vmspecific/org/kaffe/management $(distdir)/vmspecific/org/kaffe/security $(distdir)/vmspecific/org/kaffe/security/provider $(distdir)/vmspecific/org/kaffe/tools/jar $(distdir)/vmspecific/org/kaffe/util $(distdir)/vmspecific/org/kaffe/util/locale $(distdir)/vmspecific/org/kaffe/util/log $(distdir)/vmspecific/org/kaffe/util/zip $(distdir)/vmspecific/org/metastatic/jessie $(distdir)/vmspecific/org/metastatic/jessie/https $(distdir)/vmspecific/org/metastatic/jessie/pki $(distdir)/vmspecific/org/metastatic/jessie/pki/der $(distdir)/vmspecific/org/metastatic/jessie/pki/ext $(distdir)/vmspecific/org/metastatic/jessie/pki/io $(distdir)/vmspecific/org/metastatic/jessie/pki/provider $(distdir)/vmspecific/org/metastatic/jessie/provider $(distdir)/vmspecific/org/objectweb/asm153 $(distdir)/vmspecific/org/tritonus/core $(distdir)/vmspecific/org/tritonus/lowlevel/alsa $(distdir)/vmspecific/org/tritonus/lowlevel/esd $(distdir)/vmspecific/org/tritonus/midi/device/alsa $(distdir)/vmspecific/org/tritonus/midi/file $(distdir)/vmspecific/org/tritonus/sampled/convert $(distdir)/vmspecific/org/tritonus/sampled/file $(distdir)/vmspecific/org/tritonus/sampled/mixer/alsa $(distdir)/vmspecific/org/tritonus/sampled/mixer/esd $(distdir)/vmspecific/org/tritonus/share $(distdir)/vmspecific/org/tritonus/share/midi $(distdir)/vmspecific/org/tritonus/share/sampled $(distdir)/vmspecific/org/tritonus/share/sampled/convert $(distdir)/vmspecific/org/tritonus/share/sampled/file $(distdir)/vmspecific/org/tritonus/share/sampled/mixer $(distdir)/vmspecific/org/w3c/dom $(distdir)/vmspecific/org/w3c/dom/bootstrap $(distdir)/vmspecific/org/w3c/dom/css $(distdir)/vmspecific/org/w3c/dom/events $(distdir)/vmspecific/org/w3c/dom/html2 $(distdir)/vmspecific/org/w3c/dom/ls $(distdir)/vmspecific/org/w3c/dom/ranges $(distdir)/vmspecific/org/w3c/dom/stylesheets $(distdir)/vmspecific/org/w3c/dom/traversal $(distdir)/vmspecific/org/w3c/dom/views $(distdir)/vmspecific/org/w3c/dom/xpath $(distdir)/vmspecific/org/xbill/DNS $(distdir)/vmspecific/org/xbill/DNS/security $(distdir)/vmspecific/org/xbill/DNS/utils $(distdir)/vmspecific/org/xml/sax $(distdir)/vmspecific/org/xml/sax/ext $(distdir)/vmspecific/org/xml/sax/helpers
+	$(mkdir_p) $(distdir)/vmspecific/META-INF $(distdir)/vmspecific/META-INF/services $(distdir)/vmspecific/com/jcraft/jzlib $(distdir)/vmspecific/gnu/bytecodecvssnap $(distdir)/vmspecific/gnu/classpath $(distdir)/vmspecific/gnu/classpath/jdwp $(distdir)/vmspecific/gnu/crypto $(distdir)/vmspecific/gnu/crypto/assembly $(distdir)/vmspecific/gnu/crypto/auth $(distdir)/vmspecific/gnu/crypto/auth/callback $(distdir)/vmspecific/gnu/crypto/cipher $(distdir)/vmspecific/gnu/crypto/der $(distdir)/vmspecific/gnu/crypto/exp $(distdir)/vmspecific/gnu/crypto/exp/ust $(distdir)/vmspecific/gnu/crypto/hash $(distdir)/vmspecific/gnu/crypto/jce $(distdir)/vmspecific/gnu/crypto/jce/cipher $(distdir)/vmspecific/gnu/crypto/jce/hash $(distdir)/vmspecific/gnu/crypto/jce/key $(distdir)/vmspecific/gnu/crypto/jce/keyring $(distdir)/vmspecific/gnu/crypto/jce/mac $(distdir)/vmspecific/gnu/crypto/jce/params $(distdir)/vmspecific/gnu/crypto/jce/prng $(distdir)/vmspecific/gnu/crypto/jce/sig $(distdir)/vmspecific/gnu/crypto/jce/spec $(distdir)/vmspecific/gnu/crypto/key $(distdir)/vmspecific/gnu/crypto/key/dh $(distdir)/vmspecific/gnu/crypto/key/dss $(distdir)/vmspecific/gnu/crypto/key/rsa $(distdir)/vmspecific/gnu/crypto/key/srp6 $(distdir)/vmspecific/gnu/crypto/keyring $(distdir)/vmspecific/gnu/crypto/mac $(distdir)/vmspecific/gnu/crypto/mode $(distdir)/vmspecific/gnu/crypto/pad $(distdir)/vmspecific/gnu/crypto/pki $(distdir)/vmspecific/gnu/crypto/pki/ext $(distdir)/vmspecific/gnu/crypto/pki/io $(distdir)/vmspecific/gnu/crypto/pki/provider $(distdir)/vmspecific/gnu/crypto/prng $(distdir)/vmspecific/gnu/crypto/sasl $(distdir)/vmspecific/gnu/crypto/sasl/anonymous $(distdir)/vmspecific/gnu/crypto/sasl/crammd5 $(distdir)/vmspecific/gnu/crypto/sasl/plain $(distdir)/vmspecific/gnu/crypto/sasl/srp $(distdir)/vmspecific/gnu/crypto/sig $(distdir)/vmspecific/gnu/crypto/sig/dss $(distdir)/vmspecific/gnu/crypto/sig/rsa $(distdir)/vmspecific/gnu/crypto/tool $(distdir)/vmspecific/gnu/crypto/tool/keytool $(distdir)/vmspecific/gnu/crypto/util $(distdir)/vmspecific/gnu/getopt $(distdir)/vmspecific/gnu/inet/comsat $(distdir)/vmspecific/gnu/inet/finger $(distdir)/vmspecific/gnu/inet/gopher $(distdir)/vmspecific/gnu/inet/imap $(distdir)/vmspecific/gnu/inet/ldap $(distdir)/vmspecific/gnu/inet/nntp $(distdir)/vmspecific/gnu/inet/pop3 $(distdir)/vmspecific/gnu/inet/smtp $(distdir)/vmspecific/gnu/inet/util $(distdir)/vmspecific/gnu/java/net $(distdir)/vmspecific/gnu/java/nio $(distdir)/vmspecific/java/io $(distdir)/vmspecific/java/lang $(distdir)/vmspecific/java/lang/ref $(distdir)/vmspecific/java/lang/reflect $(distdir)/vmspecific/java/net $(distdir)/vmspecific/java/nio $(distdir)/vmspecific/java/nio/channels $(distdir)/vmspecific/java/security $(distdir)/vmspecific/java/util $(distdir)/vmspecific/java/util/mime $(distdir)/vmspecific/java/util/zip $(distdir)/vmspecific/org/kaffe/beans/editors $(distdir)/vmspecific/org/kaffe/io $(distdir)/vmspecific/org/kaffe/jar $(distdir)/vmspecific/org/kaffe/lang $(distdir)/vmspecific/org/kaffe/management $(distdir)/vmspecific/org/kaffe/security $(distdir)/vmspecific/org/kaffe/security/provider $(distdir)/vmspecific/org/kaffe/tools/jar $(distdir)/vmspecific/org/kaffe/util $(distdir)/vmspecific/org/kaffe/util/locale $(distdir)/vmspecific/org/kaffe/util/log $(distdir)/vmspecific/org/kaffe/util/zip $(distdir)/vmspecific/org/metastatic/jessie $(distdir)/vmspecific/org/metastatic/jessie/https $(distdir)/vmspecific/org/metastatic/jessie/pki $(distdir)/vmspecific/org/metastatic/jessie/pki/der $(distdir)/vmspecific/org/metastatic/jessie/pki/ext $(distdir)/vmspecific/org/metastatic/jessie/pki/io $(distdir)/vmspecific/org/metastatic/jessie/pki/provider $(distdir)/vmspecific/org/metastatic/jessie/provider $(distdir)/vmspecific/org/objectweb/asm153 $(distdir)/vmspecific/org/tritonus/core $(distdir)/vmspecific/org/tritonus/lowlevel/alsa $(distdir)/vmspecific/org/tritonus/lowlevel/esd $(distdir)/vmspecific/org/tritonus/midi/device/alsa $(distdir)/vmspecific/org/tritonus/midi/file $(distdir)/vmspecific/org/tritonus/sampled/convert $(distdir)/vmspecific/org/tritonus/sampled/file $(distdir)/vmspecific/org/tritonus/sampled/mixer/alsa $(distdir)/vmspecific/org/tritonus/sampled/mixer/esd $(distdir)/vmspecific/org/tritonus/share $(distdir)/vmspecific/org/tritonus/share/midi $(distdir)/vmspecific/org/tritonus/share/sampled $(distdir)/vmspecific/org/tritonus/share/sampled/convert $(distdir)/vmspecific/org/tritonus/share/sampled/file $(distdir)/vmspecific/org/tritonus/share/sampled/mixer $(distdir)/vmspecific/org/xbill/DNS $(distdir)/vmspecific/org/xbill/DNS/security $(distdir)/vmspecific/org/xbill/DNS/utils
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
