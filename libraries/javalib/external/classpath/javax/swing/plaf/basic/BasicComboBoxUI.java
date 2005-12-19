@@ -294,8 +294,7 @@ public class BasicComboBoxUI extends ComboBoxUI
     comboBox.addPropertyChangeListener(propertyChangeListener);
 
     focusListener = createFocusListener();
-    comboBox.addFocusListener(focusListener);
-    listBox.addFocusListener(focusListener);
+    editor.addFocusListener(focusListener);
 
     itemListener = createItemListener();
     comboBox.addItemListener(itemListener);
@@ -572,6 +571,7 @@ public class BasicComboBoxUI extends ComboBoxUI
   {
     arrowButton.setEnabled(comboBox.isEnabled());
     arrowButton.setFont(comboBox.getFont());
+    arrowButton.setFocusable(false);
   }
 
   /**
@@ -624,12 +624,14 @@ public class BasicComboBoxUI extends ComboBoxUI
   public void setPopupVisible(JComboBox c, boolean v)
   {
     if (v)
-      {
-        popup.show();
-        popup.getList().requestFocus();
-      }
+      popup.show();
     else
       popup.hide();
+
+    if (comboBox.isEditable())
+      editor.requestFocus();
+    else
+      comboBox.requestFocus();
   }
 
   /**

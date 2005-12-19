@@ -1,3 +1,101 @@
+2005-12-19  Dalibor Topic  <robilad@kaffe.org>
+
+	* native/fdlibm/mprec.h (DEBUG): Include stdlib.h for
+	exit() prototype to fix compiler warning.
+
+2005-12-19  Lillian Angel  <langel@redhat.com>
+	
+	* javax/swing/text/StyledEditorKit.java
+	(createInputAttributes): Fixed. I made a mistake by
+	changing this in my last fix. I have committed a mauve test
+	to verify the set should be cleared first.
+	* javax/swing/text/html/HTMLEditorKit
+	(createInputAttributes): Set is cleared before adding
+	new attributes.
+	* javax/swing/text/html/HTMLDocument.java:
+	Added names to authors.
+	* javax/swing/text/html/default.css:
+	Fixed indentation.
+
+2005-12-19  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/basic/BasicMenuItemUI.java
+	(paintBackground): Also fill background for unselected items here.
+	(paintMenuItem): Call paintBackground() with the background
+	parameter.
+
+2005-12-19  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JComponent.java
+	(findOverlapFreeParent): Fixed component lookup for painting.
+
+2005-12-19  Roman Kennke  <kennke@aicas.com>
+
+	PR classpath/24905
+	* javax/swing/JViewport.java
+	(paintSimple): Call paintComponent() before painting the child, so
+	the background gets cleared correctly.
+
+2005-12-19  Wolfgang Baer  <WBaer@gmx.de>
+
+	* javax/print/attribute/standard/MediaPrintableArea.java:
+	Added and updated javadocs to class and methods.
+	(x): Use int as type.
+	(y): Likewise.
+	(width): Likewise.
+	(height): Likewise.
+	(MediaPrintableArea): Convert values to micrometers.
+	(MediaPrintableArea): Likewise.
+	(getX): Convert return value into choosen units.
+	(getY): Convert return value into choosen units.
+	(getWidth): Convert return value into choosen units.
+	(getHeight): Convert return value into choosen units.
+	(equals): New overridden method.
+	(toString): Likewise.
+	(hashCode): Likewise.
+	(toString): New method.
+	(getPrintableArea): Likewise.
+
+2005-12-19  Wolfgang Baer  <WBaer@gmx.de>
+
+	* javax/print/attribute/standard/Media.java (equals): 
+	Reimplemented to allow future subclasses to behave correctly.
+
+2005-12-19  Roman Kennke  <kennke@aicas.com>
+
+	PR classpath/24195
+	* javax/swing/text/DefaultStyledDocument.java
+	(setParagraphAttributes): Obtain lock for this operation. Exit loop
+	after last paragraph element.
+
+2005-12-19  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/basic/BasicComboBoxUI.java
+	(installListeners): Install focus listener only on editor.
+	(configureArrowButton): Make arrow button not focusable.
+	(setPopupVisible): Request focus for the combobox editor or comboBox,
+	depending on whether the combobox is editable or not.
+	* javax/swing/plaf/basic/BasicComboPopup.java
+	(configureList): Make list not focusable.
+	
+2005-12-19  Wolfgang Baer  <WBaer@gmx.de>
+
+	* javax/print/attribute/standard/JobStateReasons.java: 
+	Added and updated javadocs to class and methods.
+	(JobStateReasons): New constructor.
+	(JobStateReasons): Likewise.
+	(JobStateReasons): Likewise.
+	(JobStateReasons): Likewise.
+	(add): New overridden method.
+	* javax/print/attribute/standard/PrinterStateReasons.java:
+	Added and updated javadocs to class and methods.
+	(PrinterStateReasons): New constructor.
+	(PrinterStateReasons): Likewise.
+	(PrinterStateReasons): Likewise.
+	(PrinterStateReasons): Likewise.
+	(printerStateReasonSet): New method.
+	(put): New overridden method.	
+
 2005-12-18  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* libraries/javalib/external/classpath/lib/Makefile.am:

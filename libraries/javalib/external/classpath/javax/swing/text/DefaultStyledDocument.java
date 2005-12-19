@@ -1380,16 +1380,22 @@ public class DefaultStyledDocument extends AbstractDocument
                                      AttributeSet attributes,
                                      boolean replace)
   {
+    writeLock();
     int index = offset;
     while (index < offset + length)
       {
         AbstractElement par = (AbstractElement) getParagraphElement(index);
+        // If we have already seen this paragraph element, then exit the loop.
+        if (par.getEndOffset() + 1 == index)
+          break;
+
         AttributeContext ctx = getAttributeContext();
         if (replace)
           par.removeAttributes(par);
         par.addAttributes(attributes);
-        index = par.getElementCount();
+        index = par.getEndOffset() + 1;
       }
+    writeUnlock();
   }
 
   /**

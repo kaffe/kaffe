@@ -61,9 +61,11 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.html.HTML.Tag;
 
 /**
- * TODO: This class is not yet completetely implemented.
- *
+ * TODO: Add more comments here 
+ * 
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
+ * @author Anthony Balkissoon (abalkiss@redhat.com)
+ * @author Lillian Angel (langel@redhat.com)
  */
 public class HTMLDocument extends DefaultStyledDocument
 {

@@ -3264,7 +3264,7 @@ public abstract class JComponent extends Container implements Serializable
         Rectangle target = SwingUtilities.convertRectangle(found,
                                                            currentClip,
                                                            newParent);
-        if (target.contains(parRect) || target.intersects(parRect))
+        if (! target.intersection(parRect).equals(target))
           {
             found = newParent;
             currentClip = target;
@@ -3280,10 +3280,12 @@ public abstract class JComponent extends Container implements Serializable
         boolean skip = true;
         for (int i = children.length - 1; i >= 0; i--)
           {
+            boolean nextSkip = skip;
             if (children[i] == parent)
-              skip = false;
+              nextSkip = false;
             if (skip)
               continue;
+            skip = nextSkip;
             Component c = children[i];
             Rectangle compBounds = c.getBounds();
             // If the component completely overlaps the clip in question, we

@@ -1030,6 +1030,7 @@ public class HTMLEditorKit
   protected void createInputAttributes(Element element,
                                        MutableAttributeSet set)
   {
+    set.removeAttributes(set);
     set.addAttributes(element.getAttributes());
     // FIXME: Not fully implemented.
   }

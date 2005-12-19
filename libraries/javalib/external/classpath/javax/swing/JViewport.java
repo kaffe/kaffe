@@ -787,6 +787,9 @@ public class JViewport extends JComponent implements Accessible
    */
   void paintSimple(Graphics g)
   {
+    // We need to call this to properly clear the background.
+    paintComponent(g);
+
     Point pos = getViewPosition();
     Component view = getView();
     boolean translated = false;

@@ -93,14 +93,11 @@ public abstract class Media extends EnumSyntax
    */
   public boolean equals(Object obj)
   {
-    if ((obj instanceof MediaName && this instanceof MediaName)
-        || (obj instanceof MediaTray && this instanceof MediaTray)
-        || (obj instanceof MediaSizeName && this instanceof MediaSizeName))
-      {
-        return ((Media) obj).getValue() == this.getValue();
-      }
+    if (obj == null)
+      return false;
     
-    return false;
+    return (obj.getClass() == this.getClass()
+            && ((Media) obj).getValue() == this.getValue());
   }
 
   /**

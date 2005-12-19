@@ -309,7 +309,8 @@ tt {
   font-family: Monospaced;
 }
 
-ul li {margin-right: 0px;
+ul li {
+  margin-right: 0px;
   margin-left: 0px;
   margin-top: 0px;
   margin-bottom: 0px;

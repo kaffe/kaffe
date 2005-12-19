@@ -86,6 +86,7 @@ typedef unsigned int uint32_t __attribute__((mode(SI)));
 
 #ifdef DEBUG
 #include "stdio.h"
+#include <stdlib.h>
 #define Bug(x) {fprintf(stderr, "%s\n", x); exit(1);}
 #endif
 

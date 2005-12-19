@@ -555,17 +555,16 @@ public class BasicMenuItemUI extends MenuItemUI
     // Menu item is considered to be highlighted when it is selected.
     // But we don't want to paint the background of JCheckBoxMenuItems
     ButtonModel mod = menuItem.getModel();
-    if ((menuItem.isSelected() && checkIcon == null) || (mod != null && 
-        mod.isArmed())
-        && (menuItem.getParent() instanceof MenuElement))
+    if (menuItem.isContentAreaFilled())
       {
-        if (menuItem.isContentAreaFilled())
-          {
-            g.setColor(selectionBackground);
-            g.fillRect(0, 0, menuItem.getWidth(), menuItem.getHeight());
-          }
-      }
-
+        if ((menuItem.isSelected() && checkIcon == null) || (mod != null && 
+            mod.isArmed())
+            && (menuItem.getParent() instanceof MenuElement))
+          g.setColor(selectionBackground);
+        else
+          g.setColor(bgColor);
+        g.fillRect(0, 0, menuItem.getWidth(), menuItem.getHeight());
+      } 
   }
 
   /**
@@ -608,7 +607,7 @@ public class BasicMenuItemUI extends MenuItemUI
     FontMetrics fm = g.getFontMetrics(f);
     SwingUtilities.calculateInnerArea(m, br);
     SwingUtilities.calculateInsetArea(br, m.getInsets(), vr);
-    paintBackground(g, m, m.getBackground());
+    paintBackground(g, m, background);
 
     /*
      * MenuItems insets are equal to menuItems margin, space between text and
