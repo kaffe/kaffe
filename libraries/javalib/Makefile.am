@@ -696,7 +696,6 @@ EXTRA_DIST= \
 	vmspecific/java/nio/VMDirectByteBuffer.java \
 	vmspecific/java/nio/channels/VMChannels.java \
 	vmspecific/java/security/VMAccessController.java \
-	vmspecific/java/util/LocaleData.java \
 	vmspecific/java/util/VMTimeZone.java \
 	vmspecific/java/util/mime/MimeType.java \
 	vmspecific/java/util/mime/MimeTypeParameterList.java \
