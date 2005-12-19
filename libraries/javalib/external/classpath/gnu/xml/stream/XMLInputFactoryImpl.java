@@ -78,22 +78,12 @@ public class XMLInputFactoryImpl
   protected boolean externalEntities = true;
   protected boolean supportDTD = true;
   protected boolean xIncludeAware = false;
+  protected boolean baseAware = true;
+  protected boolean stringInterning = true;
 
   public XMLInputFactoryImpl()
   {
     allocator = new XMLEventAllocatorImpl();
-  }
-
-  private void configureXMLParser(XMLParser parser)
-  {
-    parser.setResolver(resolver);
-    parser.setReporter(reporter);
-    parser.setValidating(validating);
-    parser.setNamespaceAware(namespaceAware);
-    parser.setCoalescing(coalescing);
-    parser.setReplacingEntityReferences(replacingEntityReferences);
-    parser.setExternalEntities(externalEntities);
-    parser.setSupportDTD(supportDTD);
   }
 
   public XMLStreamReader createXMLStreamReader(Reader reader)
@@ -106,8 +96,17 @@ public class XMLInputFactoryImpl
                                    coalescing, replacingEntityReferences,
                                    externalEntities, supportDTD);
                                    */
-    XMLParser ret = new XMLParser(reader, null);
-    configureXMLParser(ret);
+    XMLParser ret = new XMLParser(reader, null,
+                                  validating,
+                                  namespaceAware,
+                                  coalescing,
+                                  replacingEntityReferences,
+                                  externalEntities,
+                                  supportDTD,
+                                  baseAware,
+                                  stringInterning,
+                                  reporter,
+                                  resolver);
     if (xIncludeAware)
       return new XIncludeFilter(ret, null, namespaceAware, validating,
                                 replacingEntityReferences);
@@ -124,8 +123,17 @@ public class XMLInputFactoryImpl
                                    validating, namespaceAware,
                                    coalescing, replacingEntityReferences,
                                    externalEntities, supportDTD);*/
-    XMLParser ret = new XMLParser(in, systemId);
-    configureXMLParser(ret);
+    XMLParser ret = new XMLParser(in, systemId,
+                                  validating,
+                                  namespaceAware,
+                                  coalescing,
+                                  replacingEntityReferences,
+                                  externalEntities,
+                                  supportDTD,
+                                  baseAware,
+                                  stringInterning,
+                                  reporter,
+                                  resolver);
     if (xIncludeAware)
       return new XIncludeFilter(ret, systemId, namespaceAware, validating,
                                 replacingEntityReferences);
@@ -140,8 +148,17 @@ public class XMLInputFactoryImpl
                                    validating, namespaceAware,
                                    coalescing, replacingEntityReferences,
                                    externalEntities, supportDTD);*/
-    XMLParser ret = new XMLParser(in, null);
-    configureXMLParser(ret);
+    XMLParser ret = new XMLParser(in, null,
+                                  validating,
+                                  namespaceAware,
+                                  coalescing,
+                                  replacingEntityReferences,
+                                  externalEntities,
+                                  supportDTD,
+                                  baseAware,
+                                  stringInterning,
+                                  reporter,
+                                  resolver);
     if (xIncludeAware)
       return new XIncludeFilter(ret, null, namespaceAware, validating,
                                 replacingEntityReferences);
@@ -243,6 +260,12 @@ public class XMLInputFactoryImpl
       resolver = (XMLResolver) value;
     else if (name.equals(ALLOCATOR))
       allocator = (XMLEventAllocator) value;
+    else if (name.equals("gnu.xml.stream.stringInterning"))
+      stringInterning = ((Boolean) value).booleanValue();
+    else if (name.equals("gnu.xml.stream.baseAware"))
+      baseAware = ((Boolean) value).booleanValue();
+    else if (name.equals("gnu.xml.stream.xIncludeAware"))
+      xIncludeAware = ((Boolean) value).booleanValue();
     else
       throw new IllegalArgumentException(name);
   }
@@ -268,6 +291,12 @@ public class XMLInputFactoryImpl
       return resolver;
     if (name.equals(ALLOCATOR))
       return allocator;
+    if (name.equals("gnu.xml.stream.stringInterning"))
+      return stringInterning ? Boolean.TRUE : Boolean.FALSE;
+    if (name.equals("gnu.xml.stream.baseAware"))
+      return baseAware ? Boolean.TRUE : Boolean.FALSE;
+    if (name.equals("gnu.xml.stream.xIncludeAware"))
+      return xIncludeAware ? Boolean.TRUE : Boolean.FALSE;
     throw new IllegalArgumentException(name);
   }
 
@@ -281,7 +310,10 @@ public class XMLInputFactoryImpl
       name.equals(SUPPORT_DTD) ||
       name.equals(REPORTER) ||
       name.equals(RESOLVER) ||
-      name.equals(ALLOCATOR);
+      name.equals(ALLOCATOR) ||
+      name.equals("gnu.xml.stream.stringInterning") ||
+      name.equals("gnu.xml.stream.baseAware") ||
+      name.equals("gnu.xml.stream.xIncludeAware");
   }
   
   public void setEventAllocator(XMLEventAllocator allocator)

@@ -21,7 +21,7 @@ for p in ${vmdirs}; do
 	fi;
 
 	(cd ${p};
-	  resfiles=`find ${p} -name "*.properties"`
+	  resfiles=`find . -name "*.properties"`
 	  resdirs=
 	  for i in ${resfiles}; do 
 		  a=`basename ${i}`; 

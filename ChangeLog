@@ -1,3 +1,7 @@
+2005-12-19  Dalibor Topic  <robilad@kaffe.org>
+
+        * libraries/javalib/external/classpath: Resynched GNU Classpath.
+
 2005-12-18  Jari Korva  <jpkorva@iki.fi>
 
 	* libraries/javalib/Makefile.am.in:

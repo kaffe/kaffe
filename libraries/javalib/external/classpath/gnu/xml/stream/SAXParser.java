@@ -74,7 +74,7 @@ import org.xml.sax.ext.Locator2;
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-class SAXParser
+public class SAXParser
   extends javax.xml.parsers.SAXParser
   implements XMLReader, Attributes2, Locator2, XMLResolver, XMLReporter
 {
@@ -86,16 +86,25 @@ class SAXParser
   ErrorHandler errorHandler;
   LexicalHandler lexicalHandler;
 
-  boolean validating;
-  boolean namespaceAware;
-  boolean xIncludeAware;
+  boolean validating = false;
+  boolean namespaceAware = true;
+  boolean xIncludeAware = false;
   boolean stringInterning = true;
+  boolean coalescing = true;
+  boolean replaceERefs = true;
+  boolean externalEntities = true;
+  boolean supportDTD = true;
+  boolean baseAware = true;
 
   XMLParser parser;
   XMLStreamReader reader;
   String encoding;
   String xmlVersion;
   boolean xmlStandalone;
+
+  public SAXParser()
+  {
+  }
 
   SAXParser(boolean validating, boolean namespaceAware, boolean xIncludeAware)
   {
@@ -137,15 +146,20 @@ class SAXParser
     String PROPERTIES = "http://xml.org/sax/properties/";
     if ((FEATURES + "namespaces").equals(name))
       namespaceAware = Boolean.TRUE.equals(value);
-    if ((FEATURES + "string-interning").equals(name))
+    else if ((FEATURES + "string-interning").equals(name))
       stringInterning = Boolean.TRUE.equals(value);
-    if ((FEATURES + "validation").equals(name))
+    else if ((FEATURES + "validation").equals(name))
       validating = Boolean.TRUE.equals(value);
-    if ((PROPERTIES + "declaration-handler").equals(name))
+    else if ((FEATURES + "external-general-entities").equals(name))
+      externalEntities = Boolean.TRUE.equals(value);
+    else if ((FEATURES + "external-parameter-entities").equals(name))
+      externalEntities = Boolean.TRUE.equals(value);
+    else if ((PROPERTIES + "declaration-handler").equals(name))
       declHandler = (DeclHandler) value;
-    if ((PROPERTIES + "lexical-handler").equals(name))
+    else if ((PROPERTIES + "lexical-handler").equals(name))
       lexicalHandler = (LexicalHandler) value;
-    throw new SAXNotSupportedException(name);
+    else
+      throw new SAXNotSupportedException(name);
   }
 
   public Object getProperty(String name)
@@ -167,6 +181,10 @@ class SAXParser
       return Boolean.FALSE;
     if ((FEATURES + "validation").equals(name))
       return validating ? Boolean.TRUE : Boolean.FALSE;
+    if ((FEATURES + "external-general-entities").equals(name))
+      return externalEntities ? Boolean.TRUE : Boolean.FALSE;
+    if ((FEATURES + "external-parameter-entities").equals(name))
+      return externalEntities ? Boolean.TRUE : Boolean.FALSE;
     if ((FEATURES + "xml-1.1").equals(name))
       return Boolean.TRUE;
     if ((PROPERTIES + "declaration-handler").equals(name))
@@ -188,6 +206,7 @@ class SAXParser
     parser = null;
     encoding = null;
     xmlVersion = null;
+    xmlStandalone = false;
   }
 
   // -- XMLReader --
@@ -253,13 +272,34 @@ class SAXParser
     reset();
     String systemId = input.getSystemId();
     InputStream in = input.getByteStream();
+    boolean opened = false;
     if (in != null)
-      parser = new XMLParser(in, systemId);
+      parser = new XMLParser(in, systemId,
+                             validating,
+                             namespaceAware,
+                             coalescing,
+                             replaceERefs,
+                             externalEntities,
+                             supportDTD,
+                             baseAware,
+                             stringInterning,
+                             this,
+                             this);
     else
       {
         Reader r = input.getCharacterStream();
         if (r != null)
-          parser = new XMLParser(r, systemId);
+          parser = new XMLParser(r, systemId,
+                                 validating,
+                                 namespaceAware,
+                                 coalescing,
+                                 replaceERefs,
+                                 externalEntities,
+                                 supportDTD,
+                                 baseAware,
+                                 stringInterning,
+                                 this,
+                                 this);
       }
     if (parser == null)
       {
@@ -267,22 +307,28 @@ class SAXParser
           throw new SAXException("No stream or system ID specified");
         systemId = XMLParser.absolutize(null, systemId);
         in = new URL(systemId).openStream();
-        parser = new XMLParser(in, systemId);
+        opened = true;
+        parser = new XMLParser(in, systemId,
+                               validating,
+                               namespaceAware,
+                               coalescing,
+                               replaceERefs,
+                               externalEntities,
+                               supportDTD,
+                               baseAware,
+                               stringInterning,
+                               this,
+                               this);
       }
     reader = parser;
     
-    parser.setValidating(validating);
-    parser.setNamespaceAware(namespaceAware);
-    parser.setStringInterning(stringInterning);
-    parser.setResolver(this);
-    parser.setReporter(this);
-
     if (xIncludeAware)
       reader = new XIncludeFilter(parser, systemId, namespaceAware,
                                   validating, true);
     
     if (contentHandler != null)
       contentHandler.setDocumentLocator(this);
+    boolean startDocumentDone = false;
     try
       {
         while (parser.hasNext())
@@ -364,6 +410,8 @@ class SAXParser
                   {
                     String target = reader.getPITarget();
                     String data = reader.getPIData();
+                    if (data == null)
+                      data = "";
                     contentHandler.processingInstruction(target, data);
                   }
                 break;
@@ -373,74 +421,128 @@ class SAXParser
                 xmlStandalone = reader.isStandalone();
                 if (contentHandler != null)
                   contentHandler.startDocument();
+                startDocumentDone = true;
                 break;
               case XMLStreamConstants.END_DOCUMENT:
                 if (contentHandler != null)
                   contentHandler.endDocument();
                 break;
               case XMLStreamConstants.DTD:
+                XMLParser.Doctype doctype = parser.doctype;
                 if (lexicalHandler != null)
                   {
-                    String rootName = parser.doctype.rootName;
-                    String publicId = parser.doctype.publicId;
-                    String systemId2 = parser.doctype.systemId;
+                    String rootName = doctype.rootName;
+                    String publicId = doctype.publicId;
+                    String systemId2 = doctype.systemId;
                     lexicalHandler.startDTD(rootName, publicId, systemId2);
                   }
-                if (declHandler != null)
+                for (Iterator i = doctype.entryIterator(); i.hasNext(); )
                   {
-                    for (Iterator i = parser.doctype.elements.entrySet().iterator();
-                         i.hasNext(); )
+                    String entry = (String) i.next();
+                    char c = entry.charAt(0);
+                    String name = entry.substring(1);
+                    if ('E' == c)
                       {
-                        Map.Entry entry = (Map.Entry) i.next();
-                        String name = (String) entry.getKey();
-                        String model = (String) entry.getValue();
-                        declHandler.elementDecl(name, model);
-                      }
-                    for (Iterator i = parser.doctype.attlists.entrySet().iterator();
-                         i.hasNext(); )
-                      {
-                        Map.Entry entry = (Map.Entry) i.next();
-                        String elementName = (String) entry.getKey();
-                        Map attlist = (Map) entry.getValue();
-                        for (Iterator j = attlist.entrySet().iterator();
-                             j.hasNext(); )
+                        // Element decl
+                        if (declHandler != null)
                           {
-                            Map.Entry att = (Map.Entry) j.next();
-                            String name = (String) att.getKey();
-                            XMLParser.AttributeDecl decl =
-                              (XMLParser.AttributeDecl) att.getValue();
-                            String type = decl.type;
-                            String value = decl.value;
-                            String mode = null;
-                            switch (decl.valueType)
-                              {
-                              case XMLParser.ATTRIBUTE_DEFAULT_FIXED:
-                                mode = "#FIXED";
-                                break;
-                              case XMLParser.ATTRIBUTE_DEFAULT_REQUIRED:
-                                mode = "#REQUIRED";
-                                break;
-                              case XMLParser.ATTRIBUTE_DEFAULT_IMPLIED:
-                                mode = "#IMPLIED";
-                                break;
-                              }
-                            declHandler.attributeDecl(elementName, name,
-                                                      type, mode, value);
+                            String model = doctype.getElementModel(name);
+                            declHandler.elementDecl(name, model);
                           }
                       }
-                    // TODO entity declarations
+                    else if ('A' == c)
+                      {
+                        // Attlist decl
+                        if (declHandler != null)
+                          {
+                            for (Iterator j = doctype.attlistIterator(name);
+                                 j.hasNext(); )
+                              {
+                                Map.Entry att = (Map.Entry) j.next();
+                                String aname = (String) att.getKey();
+                                XMLParser.AttributeDecl decl =
+                                  (XMLParser.AttributeDecl) att.getValue();
+                                String type = decl.type;
+                                String value = decl.value;
+                                String mode = null;
+                                switch (decl.valueType)
+                                  {
+                                  case XMLParser.ATTRIBUTE_DEFAULT_FIXED:
+                                    mode = "#FIXED";
+                                    break;
+                                  case XMLParser.ATTRIBUTE_DEFAULT_REQUIRED:
+                                    mode = "#REQUIRED";
+                                    break;
+                                  case XMLParser.ATTRIBUTE_DEFAULT_IMPLIED:
+                                    mode = "#IMPLIED";
+                                    break;
+                                  }
+                                declHandler.attributeDecl(name, aname,
+                                                          type, mode, value);
+                              }
+                          }
+                      }
+                    else if ('e' == c)
+                      {
+                        // Entity decl
+                        Object entity = doctype.getEntity(name);
+                        if (entity instanceof String)
+                          {
+                            if (declHandler != null)
+                              declHandler.internalEntityDecl(name,
+                                                             (String) entity);
+                          }
+                        else
+                          {
+                            XMLParser.ExternalIds ids =
+                              (XMLParser.ExternalIds) entity;
+                            if (ids.notationName != null)
+                              {
+                                if (dtdHandler != null)
+                                  dtdHandler.unparsedEntityDecl(name,
+                                                                ids.publicId,
+                                                                ids.systemId,
+                                                                ids.notationName);
+                              }
+                            else
+                              {
+                                if (declHandler != null)
+                                  declHandler.externalEntityDecl(name,
+                                                                 ids.publicId,
+                                                                 ids.systemId);
+                              }
+                          }
+                      }
+                    else if ('n' == c)
+                      {
+                        // Notation decl
+                        if (dtdHandler != null)
+                          {
+                            XMLParser.ExternalIds ids =
+                              doctype.getNotation(name);
+                            dtdHandler.notationDecl(name, ids.publicId,
+                                                    ids.systemId);
+                          }
+                      }
                   }
                 if (lexicalHandler != null)
                   lexicalHandler.endDTD();
               }
           }
-        reset();
       }
     catch (XMLStreamException e)
       {
+        if (!startDocumentDone && contentHandler != null)
+          contentHandler.startDocument();
         SAXParseException e2 = new SAXParseException(e.getMessage(), this);
         e2.initCause(e);
         throw e2;
+      }
+    finally
+      {
+        if (opened)
+          in.close();
+        reset();
       }
   }
 
@@ -522,7 +624,8 @@ class SAXParser
 
   public String getURI(int index)
   {
-    return reader.getAttributeNamespace(index);
+    String ret = reader.getAttributeNamespace(index);
+    return (ret == null) ? "" : ret;
   }
 
   public String getValue(int index)

@@ -41,20 +41,23 @@ package javax.swing.text.html;
 import java.net.URL;
 
 import java.io.IOException;
-import java.io.StringReader;
 
 import java.util.HashMap;
 import java.util.Stack;
 import java.util.Vector;
 
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.UndoableEditEvent;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Element;
 import javax.swing.text.ElementIterator;
+import javax.swing.text.GapContent;
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
 import javax.swing.text.html.HTML.Tag;
 
 /**
@@ -72,6 +75,152 @@ public class HTMLDocument extends DefaultStyledDocument
   boolean preservesUnknownTags = true;
   int tokenThreshold = Integer.MAX_VALUE;
   HTMLEditorKit.Parser parser;
+  StyleSheet styleSheet;
+  AbstractDocument.Content content;
+  
+  /**
+   * Constructs an HTML document using the default buffer size and a default
+   * StyleSheet.
+   */
+  public HTMLDocument()
+  {
+    this(null);
+  }
+  
+  /**
+   * Constructs an HTML document with the default content storage 
+   * implementation and the specified style/attribute storage mechanism.
+   * 
+   * @param styles - the style sheet
+   */
+  public HTMLDocument(StyleSheet styles)
+  {
+   this(new GapContent(BUFFER_SIZE_DEFAULT), styles);
+  }
+  
+  /**
+   * Constructs an HTML document with the given content storage implementation 
+   * and the given style/attribute storage mechanism.
+   * 
+   * @param c - the document's content
+   * @param styles - the style sheet
+   */
+  public HTMLDocument(AbstractDocument.Content c, StyleSheet styles)
+  {
+    this.content = c;
+    if (styles == null)
+      {
+        styles = new StyleSheet();
+        styles.importStyleSheet(getClass().getResource(HTMLEditorKit.
+                                                       DEFAULT_CSS));
+      }
+    this.styleSheet = styles;
+  }
+  
+  /**
+   * Gets the style sheet with the document display rules (CSS) that were specified 
+   * in the HTML document.
+   * 
+   * @return - the style sheet
+   */
+  public StyleSheet getStyleSheet()
+  {
+    return styleSheet;
+  }
+  
+  /**
+   * Replaces the contents of the document with the given element specifications.
+   * This is called before insert if the loading is done in bursts. This is the
+   * only method called if loading the document entirely in one burst.
+   * 
+   * @param data - the date that replaces the content of the document
+   */
+  protected void create(DefaultStyledDocument.ElementSpec[] data)
+  {
+    // FIXME: Not implemented
+    System.out.println("create not implemented");
+    super.create(data);
+  }
+  
+  /**
+   * This method creates a root element for the new document.
+   * 
+   * @return the new default root
+   */
+  protected AbstractDocument.AbstractElement createDefaultRoot()
+  {
+    // FIXME: Not implemented
+    System.out.println("createDefaultRoot not implemented");
+    return super.createDefaultRoot();
+  }
+  
+  /**
+   * This method returns an HTMLDocument.RunElement object attached to
+   * parent representing a run of text from p0 to p1. The run has 
+   * attributes described by a.
+   * 
+   * @param parent - the parent element
+   * @param a - the attributes for the element
+   * @param p0 - the beginning of the range >= 0
+   * @param p1 - the end of the range >= p0
+   * @return the new element
+   */
+  protected Element createLeafElement(Element parent, AttributeSet a, int p0,
+                                      int p1)
+  {
+    // FIXME: Not implemented
+    System.out.println("createLeafElement not implemented");
+    return super.createLeafElement(parent, a, p0, p1);
+  }
+
+  /** This method returns an HTMLDocument.BlockElement object representing the
+   * attribute set a and attached to parent.
+   * 
+   * @param parent - the parent element
+   * @param a - the attributes for the element
+   * @return the new element
+   */
+  protected Element createBranchElement(Element parent, AttributeSet a)
+  {
+    // FIXME: Not implemented
+    System.out.println("createBranchElement not implemented");
+    return super.createBranchElement(parent, a);
+  }
+  
+  /**
+   * Inserts new elements in bulk. This is how elements get created in the
+   * document. The parsing determines what structure is needed and creates the
+   * specification as a set of tokens that describe the edit while leaving the
+   * document free of a write-lock. This method can then be called in bursts by
+   * the reader to acquire a write-lock for a shorter duration (i.e. while the
+   * document is actually being altered). 
+   * 
+   * @param offset - the starting offset 
+   * @param data - the element data
+   * @throws BadLocationException - if the given position does not
+   * represent a valid location in the associated document.
+   */
+  protected void insert(int offset, DefaultStyledDocument.ElementSpec[] data)
+    throws BadLocationException
+    {
+      super.insert(offset, data);
+    }
+  
+  /**
+   * Updates document structure as a result of text insertion. This will happen
+   * within a write lock. This implementation simply parses the inserted content
+   * for line breaks and builds up a set of instructions for the element buffer.
+   * 
+   * @param chng - a description of the document change
+   * @param attr - the attributes
+   */
+  protected void insertUpdate(AbstractDocument.DefaultDocumentEvent chng, 
+                              AttributeSet attr)
+  {
+    // FIXME: Not implemented
+    System.out.println("insertUpdate not implemented");
+    super.insertUpdate(chng, attr);    
+  }
   
   /**
    * Returns the parser used by this HTMLDocument to insert HTML.
@@ -132,7 +281,7 @@ public class HTMLDocument extends DefaultStyledDocument
   public void setBase(URL u)
   {
     baseURL = u;
-    //TODO: also set the base of the StyleSheet
+    styleSheet.setBase(u);
   }
   
   /**
@@ -319,7 +468,7 @@ public class HTMLDocument extends DefaultStyledDocument
      */
     public String getName()
     {
-      return (String) getAttribute(NameAttribute); 
+      return (String) getAttribute(StyleConstants.NameAttribute); 
     }
   }
   
@@ -351,7 +500,7 @@ public class HTMLDocument extends DefaultStyledDocument
      */
     public String getName()
     {
-      return (String) getAttribute(NameAttribute);      
+      return (String) getAttribute(StyleConstants.NameAttribute);      
     }
     
     /**
@@ -391,6 +540,15 @@ public class HTMLDocument extends DefaultStyledDocument
     int popDepth, pushDepth, offset;
     HTML.Tag insertTag;
     boolean insertTagEncountered = false;
+    
+    /** A temporary variable that helps with the printing out of debug information **/
+    boolean debug = false;
+    
+    void print (String line)
+    {
+      if (debug)
+        System.out.println (line);
+    }
     
     public class TagAction
     {
@@ -448,14 +606,8 @@ public class HTMLDocument extends DefaultStyledDocument
         pushCharacterStyle();
         
         // And create the new one by adding the attributes in <code>a</code>.
-        // FIXME: The next part is commented out due to bugs in other areas.
-        // The bugs may be in the way we handle ElementChange objects or in
-        // the logic in FlowView, but uncommenting these lines causes some
-        // out of bounds errors in FlowView
-        /*
         if (a != null)
-          charAttr.addAttribute(t, a.copyAttributes());
-          */
+          charAttr.addAttribute(t, a.copyAttributes());          
       }
       
       /**
@@ -477,7 +629,7 @@ public class HTMLDocument extends DefaultStyledDocument
       public void start(HTML.Tag t, MutableAttributeSet a)
       {
         // FIXME: Implement.
-        System.out.println ("FormAction.start not implemented");
+        print ("FormAction.start not implemented");
       }
       
       /**
@@ -487,7 +639,7 @@ public class HTMLDocument extends DefaultStyledDocument
       public void end(HTML.Tag t)
       {
         // FIXME: Implement.
-        System.out.println ("FormAction.end not implemented");
+        print ("FormAction.end not implemented");
       } 
     }
     
@@ -500,7 +652,7 @@ public class HTMLDocument extends DefaultStyledDocument
       public void start(HTML.Tag t, MutableAttributeSet a)
       {
         // FIXME: Implement.
-        System.out.println ("HiddenAction.start not implemented");
+        print ("HiddenAction.start not implemented");
       }
       
       /**
@@ -510,7 +662,7 @@ public class HTMLDocument extends DefaultStyledDocument
       public void end(HTML.Tag t)
       {
         // FIXME: Implement.
-        System.out.println ("HiddenAction.end not implemented");
+        print ("HiddenAction.end not implemented");
       } 
     }
     
@@ -523,7 +675,7 @@ public class HTMLDocument extends DefaultStyledDocument
       public void start(HTML.Tag t, MutableAttributeSet a)
       {
         // FIXME: Implement.
-        System.out.println ("IsindexAction.start not implemented");
+        print ("IsindexAction.start not implemented");
       }
       
       /**
@@ -533,7 +685,7 @@ public class HTMLDocument extends DefaultStyledDocument
       public void end(HTML.Tag t)
       {
         // FIXME: Implement.
-        System.out.println ("IsindexAction.end not implemented");
+        print ("IsindexAction.end not implemented");
       } 
     }
     
@@ -546,7 +698,7 @@ public class HTMLDocument extends DefaultStyledDocument
       public void start(HTML.Tag t, MutableAttributeSet a)
       {
         // FIXME: Implement.
-        System.out.println ("ParagraphAction.start not implemented");
+        print ("ParagraphAction.start not implemented");
       }
       
       /**
@@ -556,7 +708,7 @@ public class HTMLDocument extends DefaultStyledDocument
       public void end(HTML.Tag t)
       {
         // FIXME: Implement.
-        System.out.println ("ParagraphAction.end not implemented");
+        print ("ParagraphAction.end not implemented");
       } 
     }
     
@@ -569,7 +721,7 @@ public class HTMLDocument extends DefaultStyledDocument
       public void start(HTML.Tag t, MutableAttributeSet a)
       {
         // FIXME: Implement.
-        System.out.println ("PreAction.start not implemented");
+        print ("PreAction.start not implemented");
       }
       
       /**
@@ -579,7 +731,7 @@ public class HTMLDocument extends DefaultStyledDocument
       public void end(HTML.Tag t)
       {
         // FIXME: Implement.
-        System.out.println ("PreAction.end not implemented");
+        print ("PreAction.end not implemented");
       } 
     }
     
@@ -592,7 +744,7 @@ public class HTMLDocument extends DefaultStyledDocument
       public void start(HTML.Tag t, MutableAttributeSet a)
       {
         // FIXME: Implement.
-        System.out.println ("SpecialAction.start not implemented");
+        print ("SpecialAction.start not implemented");
       }
       
       /**
@@ -602,7 +754,7 @@ public class HTMLDocument extends DefaultStyledDocument
       public void end(HTML.Tag t)
       {
         // FIXME: Implement.
-        System.out.println ("SpecialAction.end not implemented");
+        print ("SpecialAction.end not implemented");
       }                
     }
     
@@ -615,7 +767,7 @@ public class HTMLDocument extends DefaultStyledDocument
       public void start(HTML.Tag t, MutableAttributeSet a)
       {
         // FIXME: Implement.
-        System.out.println ("AreaAction.start not implemented");
+        print ("AreaAction.start not implemented");
       }
       
       /**
@@ -625,7 +777,7 @@ public class HTMLDocument extends DefaultStyledDocument
       public void end(HTML.Tag t)
       {
         // FIXME: Implement.
-        System.out.println ("AreaAction.end not implemented");
+        print ("AreaAction.end not implemented");
       } 
     }
     
@@ -638,7 +790,7 @@ public class HTMLDocument extends DefaultStyledDocument
       public void start(HTML.Tag t, MutableAttributeSet a)
       {
         // FIXME: Implement.
-        System.out.println ("BaseAction.start not implemented");
+        print ("BaseAction.start not implemented");
       }
       
       /**
@@ -648,11 +800,11 @@ public class HTMLDocument extends DefaultStyledDocument
       public void end(HTML.Tag t)
       {
         // FIXME: Implement.
-        System.out.println ("BaseAction.end not implemented");
+        print ("BaseAction.end not implemented");
       } 
     }
     
-    class HeadAction extends TagAction
+    class HeadAction extends BlockAction
     {
       /**
        * This method is called when a start tag is seen for one of the types
@@ -661,7 +813,7 @@ public class HTMLDocument extends DefaultStyledDocument
       public void start(HTML.Tag t, MutableAttributeSet a)
       {
         // FIXME: Implement.
-        System.out.println ("HeadAction.start not implemented: "+t);
+        print ("HeadAction.start not implemented: "+t);
         super.start(t, a);
       }
       
@@ -672,7 +824,7 @@ public class HTMLDocument extends DefaultStyledDocument
       public void end(HTML.Tag t)
       {
         // FIXME: Implement.
-        System.out.println ("HeadAction.end not implemented: "+t);
+        print ("HeadAction.end not implemented: "+t);
         super.end(t);
       } 
     }
@@ -686,7 +838,7 @@ public class HTMLDocument extends DefaultStyledDocument
       public void start(HTML.Tag t, MutableAttributeSet a)
       {
         // FIXME: Implement.
-        System.out.println ("LinkAction.start not implemented");
+        print ("LinkAction.start not implemented");
       }
       
       /**
@@ -696,7 +848,7 @@ public class HTMLDocument extends DefaultStyledDocument
       public void end(HTML.Tag t)
       {
         // FIXME: Implement.
-        System.out.println ("LinkAction.end not implemented");
+        print ("LinkAction.end not implemented");
       } 
     }
     
@@ -709,7 +861,7 @@ public class HTMLDocument extends DefaultStyledDocument
       public void start(HTML.Tag t, MutableAttributeSet a)
       {
         // FIXME: Implement.
-        System.out.println ("MapAction.start not implemented");
+        print ("MapAction.start not implemented");
       }
       
       /**
@@ -719,7 +871,7 @@ public class HTMLDocument extends DefaultStyledDocument
       public void end(HTML.Tag t)
       {
         // FIXME: Implement.
-        System.out.println ("MapAction.end not implemented");
+        print ("MapAction.end not implemented");
       } 
     }
     
@@ -732,7 +884,7 @@ public class HTMLDocument extends DefaultStyledDocument
       public void start(HTML.Tag t, MutableAttributeSet a)
       {
         // FIXME: Implement.
-        System.out.println ("MetaAction.start not implemented");
+        print ("MetaAction.start not implemented");
       }
       
       /**
@@ -742,7 +894,7 @@ public class HTMLDocument extends DefaultStyledDocument
       public void end(HTML.Tag t)
       {
         // FIXME: Implement.
-        System.out.println ("MetaAction.end not implemented");
+        print ("MetaAction.end not implemented");
       } 
     }
     
@@ -755,7 +907,7 @@ public class HTMLDocument extends DefaultStyledDocument
       public void start(HTML.Tag t, MutableAttributeSet a)
       {
         // FIXME: Implement.
-        System.out.println ("StyleAction.start not implemented");
+        print ("StyleAction.start not implemented");
       }
       
       /**
@@ -765,7 +917,7 @@ public class HTMLDocument extends DefaultStyledDocument
       public void end(HTML.Tag t)
       {
         // FIXME: Implement.
-        System.out.println ("StyleAction.end not implemented");
+        print ("StyleAction.end not implemented");
       } 
     }
     
@@ -778,7 +930,7 @@ public class HTMLDocument extends DefaultStyledDocument
       public void start(HTML.Tag t, MutableAttributeSet a)
       {
         // FIXME: Implement.
-        System.out.println ("TitleAction.start not implemented");
+        print ("TitleAction.start not implemented");
       }
       
       /**
@@ -788,7 +940,7 @@ public class HTMLDocument extends DefaultStyledDocument
       public void end(HTML.Tag t)
       {
         // FIXME: Implement.
-        System.out.println ("TitleAction.end not implemented");
+        print ("TitleAction.end not implemented");
       } 
     }    
     
@@ -800,7 +952,7 @@ public class HTMLDocument extends DefaultStyledDocument
     public HTMLReader(int offset, int popDepth, int pushDepth,
                       HTML.Tag insertTag)
     {
-      System.out.println ("HTMLReader created with pop: "+popDepth
+      print ("HTMLReader created with pop: "+popDepth
                           + " push: "+pushDepth + " offset: "+offset
                           + " tag: "+insertTag);
       this.insertTag = insertTag;
@@ -944,7 +1096,8 @@ public class HTMLDocument extends DefaultStyledDocument
      */
     public void flush() throws BadLocationException
     {
-      ElementSpec[] elements = new ElementSpec[parseBuffer.size()];
+      DefaultStyledDocument.ElementSpec[] elements;
+      elements = new DefaultStyledDocument.ElementSpec[parseBuffer.size()];
       parseBuffer.copyInto(elements);
       parseBuffer.removeAllElements();
       insert(offset, elements);
@@ -1057,8 +1210,8 @@ public class HTMLDocument extends DefaultStyledDocument
      */
     public void handleEndOfLineString(String eol)
     {
-      // FIXME: Implement
-      System.out.println ("HTMLReader.handleEndOfLineString not implemented yet");
+      // FIXME: Implement.
+      print ("HTMLReader.handleEndOfLineString not implemented yet");
     }
     
     /**
@@ -1070,7 +1223,7 @@ public class HTMLDocument extends DefaultStyledDocument
     protected void textAreaContent(char[] data)
     {
       // FIXME: Implement.
-      System.out.println ("HTMLReader.textAreaContent not implemented yet");
+      print ("HTMLReader.textAreaContent not implemented yet");
     }
     
     /**
@@ -1081,7 +1234,7 @@ public class HTMLDocument extends DefaultStyledDocument
     protected void preContent(char[] data)
     {
       // FIXME: Implement
-      System.out.println ("HTMLReader.preContent not implemented yet");
+      print ("HTMLReader.preContent not implemented yet");
     }
     
     /**
@@ -1093,8 +1246,12 @@ public class HTMLDocument extends DefaultStyledDocument
      */
     protected void blockOpen(HTML.Tag t, MutableAttributeSet attr)
     {
-      // FIXME: Implement
-      System.out.println ("HTMLReader.blockOpen not implemented yet");
+      printBuffer();
+      DefaultStyledDocument.ElementSpec element;
+      element = new DefaultStyledDocument.ElementSpec(attr.copyAttributes(),
+			DefaultStyledDocument.ElementSpec.StartTagType);
+      parseBuffer.addElement(element);
+      printBuffer();
     }
     
     /**
@@ -1105,8 +1262,12 @@ public class HTMLDocument extends DefaultStyledDocument
      */
     protected void blockClose(HTML.Tag t)
     {
-      // FIXME: Implement
-      System.out.println ("HTMLReader.blockClose not implement yet");
+      printBuffer();
+      DefaultStyledDocument.ElementSpec element;
+      element = new DefaultStyledDocument.ElementSpec(null,
+				DefaultStyledDocument.ElementSpec.EndTagType);
+      parseBuffer.addElement(element);
+      printBuffer();
     }
     
     /**
@@ -1141,24 +1302,26 @@ public class HTMLDocument extends DefaultStyledDocument
       if (charAttr != null)
         attributes = charAttr.copyAttributes();
 
-      ElementSpec element = new ElementSpec(attributes, ElementSpec.ContentType,
-                                            data, offs, length);
+      DefaultStyledDocument.ElementSpec element;
+      element = new DefaultStyledDocument.ElementSpec(attributes,
+			      DefaultStyledDocument.ElementSpec.ContentType,
+                              data, offs, length);
       
+      printBuffer();
       // Add the element to the buffer
       parseBuffer.addElement(element);
+      printBuffer();
 
-      // FIXME: We should really only flush the buffer once we've buffered
-      // more elements than the token threshold.  This is currently the only
-      // way to get text to actually show up and is helping in the development
-      // of this package.
-      try
+      if (parseBuffer.size() > HTMLDocument.this.getTokenThreshold())
         {
-          System.out.println ("FIXME: buffer elements");
-          flush();
-        }
-      catch (BadLocationException ble)
-        {
-          // TODO: what to do here?
+          try
+            {
+              flush();
+            }
+          catch (BadLocationException ble)
+            {
+              // TODO: what to do here?
+            }
         }
     }
     
@@ -1171,7 +1334,15 @@ public class HTMLDocument extends DefaultStyledDocument
     protected void addSpecialElement(HTML.Tag t, MutableAttributeSet a)
     {
       // FIXME: Implement
-      System.out.println ("HTMLReader.addSpecialElement not implemented yet");
+      print ("HTMLReader.addSpecialElement not implemented yet");
+    }
+    
+    void printBuffer()
+    {      
+      print ("\n*********BUFFER**********");
+      for (int i = 0; i < parseBuffer.size(); i ++)
+        print ("  "+parseBuffer.get(i));
+      print ("***************************");
     }
   }
   
@@ -1229,7 +1400,9 @@ public class HTMLDocument extends DefaultStyledDocument
             if (child.getAttributes().containsAttribute(attribute, value))
               return child;
             
-            return getElement(child, attribute, value);
+            Element grandChild = getElement(child, attribute, value);
+            if (grandChild != null)
+              return grandChild;
           }
       }
     return null;
@@ -1369,5 +1542,52 @@ public class HTMLDocument extends DefaultStyledDocument
       throw new IllegalStateException("Parser has not been set");
     //  FIXME: Not implemented fully, use InsertHTML* in HTMLEditorKit?
     System.out.println("insertAfterStart not implemented");
+  }
+  
+  /**
+   * This method sets the attributes associated with the paragraph containing
+   * offset. If replace is false, s is merged with existing attributes. The
+   * length argument determines how many characters are affected by the new
+   * attributes. This is often the entire paragraph.
+   * 
+   * @param offset -
+   *          the offset into the paragraph (must be at least 0)
+   * @param length -
+   *          the number of characters affected (must be at least 0)
+   * @param s -
+   *          the attributes
+   * @param replace -
+   *          whether to replace existing attributes, or merge them
+   */
+  public void setParagraphAttributes(int offset, int length, AttributeSet s,
+                                     boolean replace)
+  {
+    //  FIXME: Not implemented.
+    System.out.println("setParagraphAttributes not implemented");
+    super.setParagraphAttributes(offset, length, s, replace);
+  }
+  
+  /**
+   * This method flags a change in the document.
+   * 
+   *  @param e - the Document event
+   */
+  protected void fireChangedUpdate(DocumentEvent e)
+  {
+    //  FIXME: Not implemented.
+    System.out.println("fireChangedUpdate not implemented");
+    super.fireChangedUpdate(e);    
+  }
+
+  /**
+   * This method fires an event intended to be caught by Undo listeners. It
+   * simply calls the super version inherited from DefaultStyledDocument. With
+   * this method, an HTML editor could easily provide undo support.
+   * 
+   * @param e - the UndoableEditEvent
+   */
+  protected void fireUndoableEditUpdate(UndoableEditEvent e)
+  {
+    super.fireUndoableEditUpdate(e);
   }
 }

@@ -1515,37 +1515,58 @@ public class DefaultStyledDocument extends AbstractDocument
   protected void insert(int offset, ElementSpec[] data)
     throws BadLocationException
   {
-    writeLock();
-    // First we insert the content.
-    int index = offset;
-    for (int i = 0; i < data.length; i++)
+    try
       {
-        ElementSpec spec = data[i];
-        if (spec.getArray() != null && spec.getLength() > 0)
+        // writeLock() and writeUnlock() should always be in a try/finally
+        // block so that locking balance is guaranteed even if some 
+        // exception is thrown.
+        writeLock();
+        
+        // First we collect the content to be inserted.
+        StringBuffer contentBuffer = new StringBuffer();
+        for (int i = 0; i < data.length; i++)
           {
-            String insertString = new String(spec.getArray(), spec.getOffset(),
-                                             spec.getLength());
-            content.insertString(index, insertString);
+            // Collect all inserts into one so we can get the correct
+            // ElementEdit
+            ElementSpec spec = data[i];
+            if (spec.getArray() != null && spec.getLength() > 0)
+              contentBuffer.append(spec.getArray(), spec.getOffset(),
+                                   spec.getLength());
           }
-        index += spec.getLength();
-      }
-    // Update the view structure.
-    DefaultDocumentEvent ev = new DefaultDocumentEvent(offset, index - offset,
-                                               DocumentEvent.EventType.INSERT);
-    for (int i = 0; i < data.length; i++)
-      {
-        ElementSpec spec = data[i];
-        AttributeSet atts = spec.getAttributes();
-        if (atts != null)
-          insertUpdate(ev, atts);
-      }
 
-    // Finally we must update the document structure and fire the insert update
-    // event.
-    buffer.insert(offset, index - offset, data, ev);
-    if (ev.modified)
-      fireInsertUpdate(ev);
-    writeUnlock();
+        int length = contentBuffer.length();
+
+        // If there was no content inserted then exit early.
+        if (length == 0)
+          return;
+
+        UndoableEdit edit = content.insertString(offset,
+                                                 contentBuffer.toString());
+
+        // Create the DocumentEvent with the ElementEdit added
+        DefaultDocumentEvent ev = 
+          new DefaultDocumentEvent(offset,
+                                   length,
+                                   DocumentEvent.EventType.INSERT);
+        ev.addEdit(edit);
+
+        for (int i = 0; i < data.length; i++)
+          {
+            ElementSpec spec = data[i];
+            AttributeSet atts = spec.getAttributes();
+            if (atts != null)
+              insertUpdate(ev, atts);
+          }        
+
+        // Finally we must update the document structure and fire the insert
+        // update event.
+        buffer.insert(offset, length, data, ev);
+        fireInsertUpdate(ev);
+      }
+    finally
+      {
+        writeUnlock();
+      }
   }
 
   /**

@@ -157,8 +157,10 @@ public class BlockView extends BoxView
   public void paint(Graphics g, Shape a)
   {
     Rectangle rect = (Rectangle) a;
-    // FIXME: getStyleSheet().
-         // BoxPainter.paint(g, rect.x, rect.y, rect.width, rect.height, this);
+    // FIXME: not fully implemented
+    getStyleSheet().getBoxPainter(getAttributes()).paint(g, rect.x, rect.y,
+                                                         rect.width,
+                                                         rect.height, this);
     super.paint(g, a);
   }
   
@@ -169,8 +171,7 @@ public class BlockView extends BoxView
    */
   public AttributeSet getAttributes()
   {
-    // FIXME: return getStyleSheet().getViewAttributes(this);
-    return super.getAttributes();
+    return getStyleSheet().getViewAttributes(this);
   }
   
   /**
@@ -284,5 +285,16 @@ public class BlockView extends BoxView
   protected void setPropertiesFromAttributes()
   {
     // FIXME: Not implemented (need to use StyleSheet).
+  }
+  
+  /**
+   * Gets the default style sheet.
+   * 
+   * @return the style sheet
+   */
+  protected StyleSheet getStyleSheet()
+  {
+    // FIXME: Not implemented properly.
+    return new StyleSheet();
   }
 }

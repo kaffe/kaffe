@@ -45,6 +45,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashSet;
+import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
@@ -101,6 +102,8 @@ class XIncludeFilter
   Node current;
   TreeWalker walker;
   HashSet seen = new HashSet();
+  boolean backtracking;
+  boolean lookahead;
   
   Reader includedText;
   char[] buf;
@@ -270,6 +273,13 @@ class XIncludeFilter
     return super.getName();
   }
 
+  public String getNamespaceURI()
+  {
+    if (current != null)
+      return current.getNamespaceURI();
+    return super.getNamespaceURI();
+  }
+
   // TODO namespaces
 
   public String getPIData()
@@ -366,77 +376,79 @@ class XIncludeFilter
   public boolean hasNext()
     throws XMLStreamException
   {
-    if (current != null)
-      return true;
-    if (walker != null)
+    if (!lookahead)
       {
-        Node n = walker.getCurrentNode();
-        if (n.getNodeType() == Node.ELEMENT_NODE)
-          return true;
-        Node next = walker.nextNode();
-        walker.setCurrentNode(n);
-        if (next != null)
-          return true;
-      }
-    if (result != null)
-      {
-        switch (result.getResultType())
+        try
           {
-          case XPathResult.BOOLEAN_TYPE:
-          case XPathResult.NUMBER_TYPE:
-          case XPathResult.STRING_TYPE:
-            return true;
-          case XPathResult.ANY_UNORDERED_NODE_TYPE:
-          case XPathResult.FIRST_ORDERED_NODE_TYPE:
-            return result.getSingleNodeValue() != null;
-          case XPathResult.ORDERED_NODE_ITERATOR_TYPE:
-          case XPathResult.UNORDERED_NODE_ITERATOR_TYPE:
-            return !result.getInvalidIteratorState();
-          case XPathResult.ORDERED_NODE_SNAPSHOT_TYPE:
-          case XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE:
-            return snapshotIndex < result.getSnapshotLength();
+            next();
           }
+        catch (NoSuchElementException e)
+          {
+            event = -1;
+          }
+        lookahead = true;
       }
-    if (includedText != null)
-      return true;
-    return super.hasNext();
+    return (event != -1);
   }
 
   public int next()
     throws XMLStreamException
   {
+    if (lookahead)
+      {
+        lookahead = false;
+        return event;
+      }
+    buf = null;
+    len = 0;
     if (walker != null)
       {
         Node c = walker.getCurrentNode();
-        boolean isStartElement = seen.contains(c);
-        seen.add(c);
-        if (isStartElement)
-          return (event = XMLStreamConstants.START_ELEMENT);
-        Node n = walker.firstChild();
-        if (n == null)
-          n = walker.nextSibling();
-        if (n == null)
+        Node n = null;
+        if (c.getNodeType() == Node.ELEMENT_NODE)
           {
-            if (c.getNodeType() == Node.ELEMENT_NODE)
+            boolean isStartElement = !seen.contains(c);
+            if (isStartElement)
               {
-                // end-element
-                seen.remove(c);
-                do
-                  {
-                    n = walker.parentNode();
-                    if (n == null)
-                      {
-                        walker = null;
-                        break;
-                      }
-                    n = walker.nextSibling();
-                  }
-                while (n == null);
+                seen.add(c);
                 current = c;
-                return (event = XMLStreamConstants.END_ELEMENT);
+                event = XMLStreamConstants.START_ELEMENT;
+                return event;
+              }
+            else if (backtracking)
+              {
+                n = walker.nextSibling();
+                if (n != null)
+                  backtracking = false;
               }
             else
-              current = null;
+              {
+                n = walker.firstChild();
+                if (n == null)
+                  n = walker.nextSibling();
+              }
+          }
+        else
+          {
+            n = walker.firstChild();
+            if (n == null)
+              n = walker.nextSibling();
+          }
+        if (n == null)
+          {
+            current = walker.parentNode();
+            if (current != null && current.getNodeType() == Node.ELEMENT_NODE)
+              {
+                // end-element
+                backtracking = true;
+                event = XMLStreamConstants.END_ELEMENT;
+                return event;
+              }
+            else
+              {
+                walker = null;
+                current = null;
+              }
           }
         else
           {
@@ -449,17 +461,24 @@ class XIncludeFilter
                 String text = n.getNodeValue();
                 buf = text.toCharArray();
                 len = buf.length;
-                return (event = isSpace(buf, len) ?
-                        XMLStreamConstants.SPACE :
-                        XMLStreamConstants.CHARACTERS);
+                event = isSpace(buf, len) ?
+                  XMLStreamConstants.SPACE :
+                  XMLStreamConstants.CHARACTERS;
+                return event;
               case Node.CDATA_SECTION_NODE:
-                return (event = XMLStreamConstants.CDATA);
+                event = XMLStreamConstants.CDATA;
+                return event;
               case Node.COMMENT_NODE:
-                return (event = XMLStreamConstants.COMMENT);
+                event = XMLStreamConstants.COMMENT;
+                return event;
               case Node.PROCESSING_INSTRUCTION_NODE:
-                return (event = XMLStreamConstants.PROCESSING_INSTRUCTION);
+                event = XMLStreamConstants.PROCESSING_INSTRUCTION;
+                return event;
               case Node.ENTITY_REFERENCE_NODE:
-                return (event = XMLStreamConstants.ENTITY_REFERENCE);
+                event = XMLStreamConstants.ENTITY_REFERENCE;
+                return event;
+              default:
+                throw new IllegalStateException();
               }
           }
       }
@@ -473,22 +492,25 @@ class XIncludeFilter
             buf = btext.toCharArray();
             len = buf.length;
             result = null;
-            return (event = XMLStreamConstants.CHARACTERS);
+            event = XMLStreamConstants.CHARACTERS;
+            return event;
           case XPathResult.NUMBER_TYPE:
             double nval = result.getNumberValue();
             String ntext = new Double(nval).toString();
             buf = ntext.toCharArray();
             len = buf.length;
             result = null;
-            return (event = XMLStreamConstants.CHARACTERS);
+            event = XMLStreamConstants.CHARACTERS;
+            return event;
           case XPathResult.STRING_TYPE:
             String stext = result.getStringValue();
             buf = stext.toCharArray();
             len = buf.length;
             result = null;
-            return (event = isSpace(buf, len) ?
-                    XMLStreamConstants.SPACE :
-                    XMLStreamConstants.CHARACTERS);
+            event = isSpace(buf, len) ?
+              XMLStreamConstants.SPACE :
+              XMLStreamConstants.CHARACTERS;
+            return event;
           case XPathResult.ANY_UNORDERED_NODE_TYPE:
           case XPathResult.FIRST_ORDERED_NODE_TYPE:
             Node n1 = result.getSingleNodeValue();
@@ -521,6 +543,8 @@ class XIncludeFilter
             walker = getDocumentTraversal(d3)
               .createTreeWalker(n3, SHOW_FLAGS, null, expandERefs);
             return next();
+          default:
+            throw new IllegalStateException();
           }
       }
     if (includedText != null)
@@ -564,7 +588,8 @@ class XIncludeFilter
                 String xpointer = getAttributeValue(null, "xpointer");
                 String encoding = getAttributeValue(null, "encoding");
                 String accept = getAttributeValue(null, "accept");
-                String acceptLanguage = getAttributeValue(null, "accept-language");
+                String acceptLanguage = getAttributeValue(null,
+                                                          "accept-language");
                 if (includeResource(href, parse, xpointer, encoding,
                                     accept, acceptLanguage))
                   {
@@ -582,13 +607,9 @@ class XIncludeFilter
                             depth--;
                           }
                       }
-                    // Return next event
-                    return next();
                   }
                 else
-                  {
-                    inInclude = true;
-                  }
+                  inInclude = true;
               }
             else if (inInclude && "fallback".equals(localName))
               {
@@ -602,6 +623,7 @@ class XIncludeFilter
                 throw new XMLStreamException("illegal xi element '" +
                                              localName + "'");
               }
+            return next();
           }
         break;
       case XMLStreamConstants.END_ELEMENT:
@@ -623,6 +645,7 @@ class XIncludeFilter
               }
             else if ("fallback".equals(localName))
               inFallback = false;
+            return next();
           }
         break;
       }
@@ -666,6 +689,7 @@ class XIncludeFilter
             snapshotIndex = 0;
             walker = null;
             current = null;
+            backtracking = false;
             
             URLConnection connection = getURLConnection(href, accept,
                                                         acceptLanguage);
@@ -677,7 +701,7 @@ class XIncludeFilter
                 result = null;
                 Node item = doc.getDocumentElement();
                 walker = dt.createTreeWalker(item, SHOW_FLAGS, null,
-                                              expandERefs);
+                                             expandERefs);
               }
             else
               {

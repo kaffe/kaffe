@@ -927,7 +927,47 @@ public class JTable
       // TODO Auto-generated method stub
       return null;
     }
-      
+
+    /**
+     * Returns the accessible row at the specified index.
+     *
+     * @param index the index for which to query the row
+     *
+     * @return the row number at the specified table index
+     */
+    public int getAccessibleRowAtIndex(int index)
+    {
+      // TODO: Back this up by a Mauve test and update API docs accordingly.
+      return index / getColumnCount();
+    }
+
+    /**
+     * Returns the accessible column at the specified index.
+     *
+     * @param index the index for which to query the column
+     *
+     * @return the column number at the specified table index
+     */
+    public int getAccessibleColumnAtIndex(int index)
+    {
+      // TODO: Back this up by a Mauve test and update API docs accordingly.
+      return index % getColumnCount();
+    }
+
+    /**
+     * Returns the accessible child index at the specified column and row.
+     *
+     * @param row the row
+     * @param column the column
+     *
+     * @return the index of the accessible child at the specified row and
+     *         column
+     */
+    public int getAccessibleIndexAt(int row, int column)
+    {
+      // TODO: Back this up by a Mauve test and update API docs accordingly.
+      return row * getColumnCount() + column;
+    }
   }
   /**
    * Handles property changes from the <code>TableColumn</code>s of this
@@ -1462,6 +1502,12 @@ public class JTable
    */
   TableColumnPropertyChangeHandler tableColumnPropertyChangeHandler =
     new TableColumnPropertyChangeHandler();
+
+  /**
+   * Whether cell editors should receive keyboard focus when the table is
+   * activated.
+   */
+  private boolean surrendersFocusOnKeystroke = false;
 
   /**
    * Creates a new <code>JTable</code> instance.
@@ -3280,5 +3326,38 @@ public class JTable
   {
     revalidate();
     repaint();
+  }
+
+  /**
+   * Sets whether cell editors of this table should receive keyboard focus
+   * when the editor is activated by a keystroke. The default setting is
+   * <code>false</code> which means that the table should keep the keyboard
+   * focus until the cell is selected by a mouse click.
+   *
+   * @param value the value to set
+   *
+   * @since 1.4
+   */
+  public void setSurrendersFocusOnKeystroke(boolean value)
+  {
+    // TODO: Implement functionality of this property (in UI impl).
+    surrendersFocusOnKeystroke = value;
+  }
+
+  /**
+   * Returns whether cell editors of this table should receive keyboard focus
+   * when the editor is activated by a keystroke. The default setting is
+   * <code>false</code> which means that the table should keep the keyboard
+   * focus until the cell is selected by a mouse click.
+   *
+   * @return whether cell editors of this table should receive keyboard focus
+   *         when the editor is activated by a keystroke
+   *
+   * @since 1.4
+   */
+  public boolean getSurrendersFocusOnKeystroke()
+  {
+    // TODO: Implement functionality of this property (in UI impl).
+    return surrendersFocusOnKeystroke;
   }
 }

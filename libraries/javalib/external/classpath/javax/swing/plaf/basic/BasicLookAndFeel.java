@@ -41,16 +41,28 @@ package javax.swing.plaf.basic;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.ResourceBundle;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.KeyStroke;
 import javax.swing.LookAndFeel;
 import javax.swing.UIDefaults;
+import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 import javax.swing.plaf.BorderUIResource;
@@ -68,7 +80,67 @@ import javax.swing.text.JTextComponent;
 public abstract class BasicLookAndFeel extends LookAndFeel
   implements Serializable
 {
+  /**
+   * An action that can play an audio file.
+   *
+   * @author Roman Kennke (kennke@aicas.com)
+   */
+  private class AudioAction extends AbstractAction
+  {
+    /**
+     * The UIDefaults key that specifies the sound.
+     */
+    Object key;
+
+    /**
+     * Creates a new AudioAction.
+     *
+     * @param key the key that describes the audio action, normally a filename
+     *        of an audio file relative to the current package
+     */
+    AudioAction(Object key)
+    {
+      this.key = key;
+    }
+
+    /**
+     * Plays the sound represented by this action.
+     *
+     * @param event the action event that triggers this audio action
+     */
+    public void actionPerformed(ActionEvent event)
+    {
+      // We only can handle strings for now.
+      if (key instanceof String)
+        {
+          String name = UIManager.getString(key);
+          InputStream stream = getClass().getResourceAsStream(name);
+          try
+            {
+              Clip clip = AudioSystem.getClip();
+              AudioInputStream audioStream =
+                AudioSystem.getAudioInputStream(stream);
+              clip.open(audioStream);
+            }
+          catch (LineUnavailableException ex)
+            {
+              // Nothing we can do about it.
+            }
+          catch (IOException ex)
+            {
+              // Nothing we can do about it.
+            }
+          catch (UnsupportedAudioFileException e)
+            {
+              // Nothing we can do about it.
+            }
+        }
+    }
+  }
+
   static final long serialVersionUID = -6096995660290287879L;
+
+  private ActionMap audioActionMap;
 
   /**
    * Creates a new instance of the Basic look and feel.
@@ -1174,4 +1246,67 @@ public abstract class BasicLookAndFeel extends LookAndFeel
     };
     defaults.putDefaults(uiDefaults);
   }
-} // class BasicLookAndFeel
+
+  /**
+   * Returns the <code>ActionMap</code> that stores all the actions that are
+   * responsibly for rendering auditory cues.
+   *
+   * @return the action map that stores all the actions that are
+   *         responsibly for rendering auditory cues
+   *
+   * @see #createAudioAction
+   * @see #playSound
+   *
+   * @since 1.4
+   */
+  protected ActionMap getAudioActionMap()
+  {
+    if (audioActionMap != null)
+      audioActionMap = new ActionMap();
+    return audioActionMap;
+  }
+
+  /**
+   * Creates an <code>Action</code> that can play an auditory cue specified by
+   * the key. The UIDefaults value for the key is normally a String that points
+   * to an audio file relative to the current package.
+   *
+   * @param key a UIDefaults key that specifies the sound
+   *
+   * @return an action that can play the sound
+   *
+   * @see #playSound
+   *
+   * @since 1.4
+   */
+  protected Action createAudioAction(Object key)
+  {
+    return new AudioAction(key);
+  }
+
+  /**
+   * Plays the sound of the action if it is listed in
+   * <code>AuditoryCues.playList</code>.
+   *
+   * @param audioAction the audio action to play
+   */
+  protected void playSound(Action audioAction)
+  {
+    if (audioAction instanceof AudioAction)
+      {
+        Object[] playList = (Object[]) UIManager.get("AuditoryCues.playList");
+        for (int i = 0; i < playList.length; ++i)
+          {
+            if (playList[i].equals(((AudioAction) audioAction).key))
+              {
+                ActionEvent ev = new ActionEvent(this,
+                                                 ActionEvent.ACTION_PERFORMED,
+                                                 (String) playList[i]);
+                audioAction.actionPerformed(ev);
+                break;
+              }
+          }
+      }
+  }
+
+}

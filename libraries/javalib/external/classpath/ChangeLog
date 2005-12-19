@@ -1,3 +1,617 @@
+2005-12-18  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* libraries/javalib/external/classpath/lib/Makefile.am:
+	Replaced $(top_distdir) with $(distdir)/.. to make sure
+	that GNU Classpath's class library sources don't end up
+	in the wrong location in kaffe's tarball.
+
+2005-12-18  Nicolas Geoffray <nicolas.geoffray@menlina.com>
+
+	* java/lang/Class.java (getModifiers): Only returns
+	interesting bits. 
+
+2005-12-18  Chris Burdess  <dog@gnu.org>
+
+	* gnu/xml/stream/SAXParser.java,
+	  gnu/xml/stream/XMLParser.java: Various fixes post SAX conformance
+	testing.
+
+2005-12-18  Wolfgang Baer  <WBaer@gmx.de>
+
+	* javax/print/attribute/standard/JobOriginatingUserName.java,
+	* javax/print/attribute/standard/RequestingUserName.java,
+	* javax/print/attribute/standard/JobMessageFromOperator.java,
+	* javax/print/attribute/standard/JobName.java,
+	* javax/print/attribute/standard/OutputDeviceAssigned.java,
+	* javax/print/attribute/standard/PrinterInfo.java,
+	* javax/print/attribute/standard/PrinterLocation.java,
+	* javax/print/attribute/standard/PrinterMakeAndModel.java,
+	* javax/print/attribute/standard/PrinterMessageFromOperator.java,
+	* javax/print/attribute/standard/DocumentName.java,
+	* javax/print/attribute/standard/PrinterName.java:
+	Added and updated javadocs to class and methods.
+
+2005-12-17  Mark Wielaard  <mark@klomp.org>
+
+	* native/fdlibm/Makefile.am (libfdlibm_la_SOURCES): Add namespace.h
+
+2005-12-17  Mark Wielaard  <mark@klomp.org>
+
+	* javax/swing/text/html/HTMLDocument.java (BlockElementgetName):
+	Qualify NameAttribute as comming from StyleConstants.
+	(RunElement.getName): Likewise.
+	(getElement): Check whether grandChild element is null before
+	returning it.
+
+2005-12-17  Mark Wielaard  <mark@klomp.org>
+
+	* javax/swing/text/html/HTMLDocument.java (flush): Qualify ElementSpec
+	type comming from DefaultStyledDocument.
+	(blockOpen): Likewise.
+	(blockClose): Likewise.
+	(addContent): Likewise.
+
+2005-12-17  Mark Wielaard  <mark@klomp.org>
+
+	* lib/copy-vmresources.sh.in: Use dot '.' for find after changing
+	dir to target directory.
+
+2005-12-17  Tom Tromey  <tromey@redhat.com>
+
+	* java/io/File.java (File): Updated javadoc.
+
+2005-12-17  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* native/fdlibm/namespace.h: Regenerated.
+
+	* native/fdlibm/fdlibm.h
+	(isnan): Define explicitly isnan if it is not a macro.
+
+	* scripts/math_symbols: Removed isnan.
+	
+2005-12-17  Wolfgang Baer  <WBaer@gmx.de>
+
+	* javax/print/attribute/standard/CopiesSupported.java: 
+	Added and updated javadocs to class and methods.
+	(CopiesSupported): Throw IllegalArgumentException if 
+	lowerBound is less than 1.
+	(CopiesSupported): Throw IllegalArgumentException if member less than 1.
+	(equals): New overridden method.
+	* javax/print/attribute/standard/JobKOctetsSupported.java: 
+	Added and updated javadocs to class and methods.
+	(JobKOctetsSupported): Throw IllegalArgumentException if 
+	lowerBound is less than 1.
+	(equals): New overridden method.
+	* javax/print/attribute/standard/JobImpressionsSupported.java: 
+	Added and updated javadocs to class and methods.
+	(JobImpressionsSupported): Throw IllegalArgumentException if 
+	lowerBound is less than 1.
+	(equals): New overridden method.
+	* javax/print/attribute/standard/JobMediaSheetsSupported.java: 
+	Added and updated javadocs to class and methods.
+	(JobMediaSheetsSupported): Throw IllegalArgumentException if 
+	lowerBound is less than 1.
+	(equals): New overridden method.
+	* javax/print/attribute/standard/PageRanges.java: 
+	Added and updated javadocs to class and methods.
+	(PageRanges): Throw IllegalArgumentException if member less than 1.
+	(PageRanges): Throw IAE if lowerBound is less than 1.
+	(PageRanges): Throw NPE if members is null.
+	(PageRanges): New constructor.
+	(equals): New overridden method.
+	* javax/print/attribute/standard/NumberUpSupported.java: 
+	Added and updated javadocs to class and methods.
+	(NumberUpSupported): Throw IllegalArgumentException if member less than 1.
+	(NumberUpSupported): Throw IAE if lowerbound less than 1.
+	(NumberUpSupported): Throw NPE if members is null.
+	(equals): New overridden method.
+	* javax/print/attribute/standard/JobHoldUntil.java,
+	* javax/print/attribute/standard/DateTimeAtProcessing.java,
+	* javax/print/attribute/standard/DateTimeAtCompleted.java,
+	* javax/print/attribute/standard/DateTimeAtCreation.java: 
+	Added and updated javadocs to class and methods.
+	* javax/print/attribute/standard/PrinterURI.java,
+	* javax/print/attribute/standard/PrinterMoreInfoManufacturer.java,
+	* javax/print/attribute/standard/PrinterMoreInfo.java,
+	* javax/print/attribute/standard/Destination.java,
+	* javax/print/attribute/standard/PrinterResolution.java: 
+	Added and updated javadocs to class and methods.
+	(equals): New overridden method.
+
+2005-12-17  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* java/io/ObjectOutputStream.java
+	(writeClassDescriptor): Use two argument constructor. Reduced line
+	size.
+	
+2005-12-17  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/basic/BasicLookAndFeel.java
+	(AudioAction): New inner class.
+	(audioActionMap): New field.
+	(getAudioActionMap): New method.
+	(createAudioAction): New method.
+	(playSound): New method.
+
+2005-12-16  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JTable.java
+	(AccessibleJTable.getAccessibleRowAtIndex): New method.
+	(AccessibleJTable.getAccessibleColumnAtIndex): New method.
+	(AccessibleJTable.getAccessibleColumnAtIndex): New method.
+	(surrendersFocusOnKeystroke): New field.
+	(setSurrendersFocusOnKeystroke): New method.
+	(getSurrendersFocusOnKeystroke): New method.
+
+2005-12-16  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/SwingUtilities.java
+	(processKeyBindings): New method. Processes keybindings for
+	non-JComponent derived components.
+
+2005-12-16  Keith Seitz  <keiths@redhat.com>
+
+	* gnu/classpath/jdwp/event/EventManager.java (EventManager): Catch
+	all JdwpExceptions when initializing the event table.
+	(requestEvent): Update to allow throwing JdwpException from
+	VMVirtualMachine methods.
+	(deleteRequest): Likewise.
+	(clearRequests): Likewise.
+	* gnu/classpath/jdwp/Jdwp.java (notify): Catch exceptions
+	from sendEvent and _enforceSuspendPolicy.
+	(sendEvent): Do not catch IOException here.
+	(_enforceSuspendPolicy): Update to allow throwing JdwpException
+	from VMVirtualMachine methods.
+
+2005-12-16  Wolfgang Baer  <WBaer@gmx.de>
+
+	* javax/print/attribute/standard/JobImpressionsCompleted.java:
+	Added and updated javadocs to class and methods.
+	(getName): Fixed name returned by this attribute class.
+	* javax/print/attribute/standard/JobMediaSheetsCompleted.java,
+	* javax/print/attribute/standard/JobKOctetsProcessed.java,
+	* javax/print/attribute/standard/JobImpressions.java,
+	* javax/print/attribute/standard/JobKOctets.java, 
+	* javax/print/attribute/standard/JobMediaSheets.java,
+	* javax/print/attribute/standard/NumberOfInterveningJobs.java,
+	* javax/print/attribute/standard/JobPriority.java,
+	* javax/print/attribute/standard/JobPrioritySupported.java,
+	* javax/print/attribute/standard/NumberOfDocuments.java,
+	* javax/print/attribute/standard/QueuedJobCount.java,
+	* javax/print/attribute/standard/NumberUp.java,
+	* javax/print/attribute/standard/PagesPerMinuteColor.java,
+	* javax/print/attribute/standard/PagesPerMinute.java,
+	* javax/print/attribute/standard/Copies.java: 
+	Added and updated javadocs to class and methods.
+
+2005-12-16  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/StyledEditorKit.java
+	(createInputAttributes): This should copy the element
+	attributes into the set, not clear out the set. Fixed
+	to match the API spec.
+	* javax/swing/text/html/HTMLEditorKit.java
+	(getInputAttributes): Added API documentation. Fixed
+	implementation. Combining all input attributes should
+	not be done here.
+
+2005-12-16  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/html/HTMLDocument.java
+	(HTMLDocument): Fixed. The style sheet is initialized
+	using HTMLEditorKit.
+	(HTMLDocument): Fixed to call this with null as the 
+	style sheet.
+	* javax/swing/text/html/HTMLEditorKit.java:
+	Added new fields.
+	(LinkController): Calls super constructor.
+	(InsertHTMLTextAction): Added comment.
+	(actionPerformed): Partially implemented.
+	(HTMLEditorKit): Fixed to initialize style sheet to
+	default.css.
+	(getParser): Fixed field name.
+	(read): Added code to set base for document.
+	(getContentType): Fixed to return field.
+	(createInputAttributes): Partially implemented.
+	(install): Added FIXME.
+	(deinstall): set field to null.
+	(getInputAttributes): Implemented.
+	* javax/swing/text/html/StyleSheet.java
+	(importStyleSheet): Partially implemented.
+	* javax/swing/text/html/default.css: New file. Default style
+	sheet for HTML.
+
+2005-12-16  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* native/fdlibm/mprec.h, native/fdlibm/fdlibm.h: Added the
+	inclusion of namespace.h
+
+	* native/fdlibm/namespace.h: New file.
+
+	* scripts/build_mathnamespace, scripts/math_symbols: New files.
+
+2005-12-16  Keith Seitz  <keiths@redhat.com>
+
+	* vm/reference/gnu/classpath/jdwp/VMVirtualMachine.java
+	(VMVirtualMachine): All methods now throw JdwpException.
+
+2005-12-16  Wolfgang Baer  <WBaer@gmx.de>
+
+	* javax/print/attribute/standard/MediaSizeName.java: 
+	Added and updated javadocs to class and methods.
+	(getStringTable): Implemented.
+	(getEnumValueTable): Implemented.
+	(stringTable): New field.
+	(enumValueTable): New field.
+	* javax/print/attribute/standard/MediaName.java: 
+	Added and updated javadocs to class and methods.
+	(getStringTable): Implemented.
+	(getEnumValueTable): Implemented.
+	(stringTable): New field.
+	(enumValueTable): New field.
+	(NA_LETTER_WHITE): Fixed value of enum.
+	(NA_LETTER_TRANSPARENT): Likewise.
+	(ISO_A4_WHITE): Likewise.
+	(ISO_A4_TRANSPARENT): Likewise.
+	(serialVersionUID): New field.
+	* javax/print/attribute/standard/Media.java: 
+	Added and updated javadocs to class and methods.
+	(equals): New overridden method.
+	* javax/print/attribute/standard/MediaTray.java: 
+	Added and updated javadocs to class and methods.
+	(getStringTable): Implemented.
+	(getEnumValueTable): Implemented.
+	(stringTable): New field.
+	(enumValueTable): New field.
+	(TOP): Fixed value of enum.
+	(MIDDLE): Likewise.
+	(BOTTOM): Likewise.
+	(ENVELOPE): Likewise.
+	(LARGE_CAPACITY): Likewise.
+	(MAIN): Likewise.
+	(SIDE): Likewise.
+	(serialVersionUID): New field.
+	* javax/print/attribute/standard/PrinterState.java: 
+	Added and updated javadocs to class and methods.
+	(getStringTable): New overridden method.
+	(getEnumValueTable): New overridden method.
+	(stringTable): New field.
+	(enumValueTable): New field.
+	(IDLE): Fixed value of enum.
+	(PROCESSING): Likewise.
+	(STOPPED): Likewise.
+	* javax/print/attribute/standard/JobState.java: 
+	Added and updated javadocs to class and methods.
+	(getStringTable): New overridden method.
+	(getEnumValueTable): New overridden method.
+	(stringTable): New field.
+	(enumValueTable): New field.
+	(PENDING): Fixed value of enum.
+	(PENDING_HELD): Likewise.
+	(PROCESSING): Likewise.
+	(PROCESSING_STOPPED): Likewise.
+	(CANCELED): Likewise.
+	(ABORTED): Likewise.
+	(COMPLETED): Likewise.
+	* javax/print/attribute/standard/SheetCollate.java,
+	* javax/print/attribute/standard/PresentationDirection.java,
+	* javax/print/attribute/standard/ReferenceUriSchemesSupported.java,
+	* javax/print/attribute/standard/PrinterStateReason.java,
+	* javax/print/attribute/standard/JobStateReason.java,
+	* javax/print/attribute/standard/JobSheets.java: 
+	Added and updated javadocs to class and methods.
+	(getStringTable): New overridden method.
+	(getEnumValueTable): New overridden method.
+	(stringTable): New field.
+	(enumValueTable): New field.
+
+2005-12-16  Roman Kennke  <kennke@aicas.com>
+
+	* native/jni/java-nio/java_nio.c
+	Removed obsolete file.
+
+2005-12-16  Tom Tromey  <tromey@redhat.com>
+
+	* java/lang/Class.java (getPackage): Javadoc fix.
+
+2005-12-16  Roman Kennke  <kennke@aicas.com>
+
+	* native/jni/classpath/jcl.c:
+	Only redefine __attribute__ if it's not already defined.
+
+2005-12-16  Roman Kennke  <kennke@aicas.com>
+
+	* java/net/DatagramSocket.java
+	(DatagramSocket(SocketAddress)): Actually use the factory if one
+	is installed.
+
+2005-12-16  Tom Tromey  <tromey@redhat.com>
+
+	* java/io/ObjectInputStream.java: Organized imports.
+
+2005-12-15  Wolfgang Baer  <WBaer@gmx.de>
+
+	* javax/print/attribute/standard/PDLOverrideSupported.java: 
+	Added and updated javadocs to class and methods.
+	(getStringTable): New overridden method.
+	(getEnumValueTable): New overridden method.
+	(stringTable): New field.
+	(enumValueTable): New field.
+	(ATTEMPTED): Fixed value of enum.
+	* javax/print/attribute/standard/PrinterIsAcceptingJobs.java,
+	* javax/print/attribute/standard/Severity.java,
+	* javax/print/attribute/standard/MultipleDocumentHandling.java: 
+	Added and updated javadocs to class and methods.
+	(getStringTable): New overridden method.
+	(getEnumValueTable): New overridden method.
+	(stringTable): New field.
+	(enumValueTable): New field.		
+	* javax/print/attribute/standard/Fidelity.java:
+	Added and updated javadocs to class and methods.
+	(getStringTable): New overridden method.
+	(getEnumValueTable): New overridden method.
+	(stringTable): New field.
+	(enumValueTable): New field.	
+	(getName): Use correct ipp attribute name.	
+	* javax/print/attribute/standard/OrientationRequested.java: 
+	Added and updated javadocs to class and methods.
+	(getStringTable): New overridden method.
+	(getEnumValueTable): New overridden method.
+	(getOffset): New overridden method.
+	(stringTable): New field.
+	(enumValueTable): New field.
+	* javax/print/attribute/standard/PrintQuality.java: 
+	Added and updated javadocs to class and methods.
+	(getStringTable): New overridden method.
+	(getEnumValueTable): New overridden method.
+	(getOffset): New overridden method.
+	(stringTable): New field.
+	(enumValueTable): New field.
+	(DRAFT): Fixed value of enum.
+	(NORMAL): Likewise.
+	(HIGH): Likewise.
+	* javax/print/attribute/standard/Finishings.java: 
+	Added and updated javadocs to class and methods.
+	(getStringTable): New overridden method.
+	(getEnumValueTable): New overridden method.
+	(getOffset): New overridden method.
+	(stringTable): New field.
+	(enumValueTable): New field.
+	(NONE): Fixed value of enum.	
+	(STAPLE): Likewise.
+	(COVER): Likewise.
+	(BIND): Likewise.
+	(SADDLE_STITCH): Likewise.
+	(EDGE_STITCH): Likewise.
+	(STAPLE_TOP_LEFT): Likewise.
+	(STAPLE_BOTTOM_LEFT): Likewise.
+	(STAPLE_TOP_RIGHT): Likewise.
+	(STAPLE_BOTTOM_RIGHT): Likewise.
+	(EDGE_STITCH_LEFT): Likewise.
+	(EDGE_STITCH_TOP): Likewise.
+	(EDGE_STITCH_RIGHT): Likewise.
+	(EDGE_STITCH_BOTTOM): Likewise.
+	(STAPLE_DUAL_LEFT): Likewise.
+	(STAPLE_DUAL_TOP): Likewise.
+	(STAPLE_DUAL_RIGHT): Likewise.
+	(STAPLE_DUAL_BOTTOM): Likewise.
+	* javax/print/attribute/standard/Sides.java:
+	Added and updated javadocs to class and methods.
+	(getStringTable): New overridden method.
+	(getEnumValueTable): New overridden method.
+	(stringTable): New field.
+	(enumValueTable): New field.
+	(DUPLEX): Fixed value of enum.
+	(TUMBLE): Likewise.	
+
+2005-12-15  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* javax/swing/text/AbstractDocument.java:
+	(AbstractElement.getAttribute): If no attribute could be found in the 
+	AttributeSet hierarchy, then try the Element hierarchy instead.
+
+2005-12-15  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/html/HTMLDocument.java
+	(HTMLDocument): Added a FIXME
+	(create): Added stub.
+	(createDefaultRoot): Likewise.
+	(createLeafElement): Likewise.
+	(createBranchElement): Likewise.
+	(insertUpdate): Likewise.
+	(setParagraphAttributes): Likewise.
+	(fireChangedUpdate): Likewise.
+	* javax/swing/text/html/HTMLEditorKit.java
+	(LinkController): Removed FIXME
+	(mouseClicked): Added comment
+	(mouseDragged): Likewise.
+	(mouseMoved): Likewise.
+	(activateLink): Likewise.
+	(insertAtBoundary): Likewise.
+	(HTMLFactory): Added constructor.
+	(HTMLEditorKit): Added FIXME to constructor.
+	* javax/swing/text/html/StyleSheet.java
+	(removeStyleSheet): Fixed implementation.
+
+2005-12-15  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/html/BlockView.java
+	(paint): Partially implemented.
+	(getAttributes): Implemented.
+	(getStyleSheet): Partially implemented.
+	* javax/swing/text/html/HTMLDocument.java
+	(HTMLDocument): New constructor, implemented.
+	(HTMLDocument): Likewise.
+	(HTMLDocument): Likewise.
+	(getStyleSheet): Implemented.
+	* javax/swing/text/html/HTMLEditorKit.java
+	(insertHTML): Fixed indentation.
+	(ParserCallback): Added comments for all methods in this
+	inner class.
+	(getStyleSheet): Implemented.
+	(setStyleSheet): Implemented
+	* javax/swing/text/html/StyleSheet: New class, partially 
+	implemented.
+
+2005-12-15  Caolan McNamara  <caolanm@redhat.com>
+
+	PR classpath/25426:
+	* gnu/xml/dom/DomNode.java (detach): Check whether current is
+	already null.
+
+2005-12-15  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/ViewportLayout.java
+	(layoutContainer): Set width and height before adjusting the
+	location. Only set view size to port size if the port is larger
+	than the views preferredSize.
+
+2005-12-15  Chris Burdess  <dog@gnu.org>
+
+	* gnu/xml/stream/SAXParser.java,
+	  gnu/xml/stream/XMLInputFactoryImpl.java,
+	  gnu/xml/stream/XMLParser.java: Permit setting extended properties
+	  via factory interfaces; make base-aware a parameter.
+
+2005-12-15  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JComponent.java
+	(getPreferredSize): Protect the preferredSize field from
+	modification by creating a new Dimension object from it
+	before returning the value.
+
+2005-12-15  Chris Burdess  <dog@gnu.org>
+
+	Fixes bug classpath/24496:
+	* java/util/Properties.java (loadFromXML): Use StAX instead of SAX
+	  to populate properties.
+
+2005-12-15  Chris Burdess  <dog@gnu.org>
+
+	* gnu/xml/stream/XMLParser.java: Report start-entity and end-entity
+	  events; read text declaration for external entities;
+	  handle XML namespace; handle xml:base; normalize CR/LF pairs
+	  created as a result of mixed text and character entity references.
+
+2005-12-14  Roman Kennke  <kennke@aicas.com>
+
+	* gnu/java/awt/peer/gtk/GdkGraphics.java
+	(cached): New field.
+	(parent): New field.
+	(GdkGraphics(GdkGraphics)): Moved state-copy code to new method
+	copyState().
+	(create): Added re-use of old graphics.
+	(nativeDispose): Renamed native dispose method to nativeDispose().
+	(dispose): New non-native implementation used for caching.
+	(finalize): Overridden to correctly dispose unused graphics.
+	(copyState): New non-native method to correctly copy the non-native
+	state.
+	(nativeCopyState): Renamed native copyState method to
+	nativeCopyState().
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics.c
+	(copyState): Renamed to nativeCopyState.
+	(dispose): Renamed to nativeDispose.
+	* include/gnu_java_awt_peer_gtk_GdkGraphics.h
+	(copyState): Renamed to nativeCopyState.
+	(dispose): Renamed to nativeDispose.
+
+2005-12-14  Riccardo Mottola  <riccardo@kaffe.org>
+
+	* native/fdlibm/ieeefp.h: Fixed detection of big endian on
+	powerpc.
+
+2005-12-14  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* javax/swing/text/DefaultStyledDocument.java:
+	(insert): Put writeLock/writeUnlock combo in a try/finally block. Group
+	all inserts together so that we can add the appropriate ElementEdit to
+	the DocumentEvent.
+	* javax/swing/text/html/HTMLDocument.java:
+	(debug): New field.
+	(print): New method. Changed all System.out.println calls to calls to 
+	this method so that they can be turned on and off via the debug 
+	variable.
+	(HTMLReader.CharacterAction.start): Uncommented code that adds the 
+	argument attributes to the current attributes.
+	(HTMLReader.HeadAction): Changed superclass to BlockAction instead of
+	TagAction.
+	(HTMLReader.blockOpen): Implemented.
+	(HTMLReader.blockClose): Implemented.
+	(HTMLReader.addContent): Added calls to printBuffer so if the debug
+	variable is true we can see what the buffer looks like before and
+	after adding content.  Also put in the proper check so that we only 
+	flush the buffer if we've buffered the appropriate number of elements
+	first.
+	(printBuffer): New method.
+
+2005-12-14  Chris Burdess  <dog@gnu.org>
+
+	* gnu/xml/stream/XIncludeFilter.java: Fix event flow on fallback.
+	* gnu/xml/stream/XMLParser.java: Don't pop namespace context until
+	  after END_ELEMENT has been read; fix CDATA section detection.
+
+2005-12-14  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* java/io/ObjectOutputStream.java
+	(writeClassDescription): Throw an InvalidClassException if
+	fields is INVALID_FIELDS.
+	(lookup): Added some documentation.
+
+	* java/io/ObjectStreamClass.java
+	(setFields): Make fields as INVALID if we detect duplicate
+	entries in serialPersistentFields.
+	
+2005-12-14  Roman Kennke  <kennke@aicas.com>
+
+	Reported by Ingo Proetel <proetel@aicas.com>
+	* java/awt/Container.java
+	(visitChild): Use Graphics.hitClip() to check for clip bounds.
+	Create a new Graphics before painting the child, this protects
+	the current context from beeing irrevocably changed by the child
+	component.
+
+2005-12-14  Tom Tromey  <tromey@redhat.com>
+
+	PR classpath/25389:
+	* java/io/File.java (File): Throw IllegalArgumentException if URI is
+	non-hierarchical.
+
+2005-12-13  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/html/HTMLEditorKit.java
+	(getHTMLEditorKit): Fixed typo.
+
+2005-12-13  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/html/HTMLEditorKit.java
+	(insertHTML): Fixed catching of exceptions.
+	(getHTMLDocument): Likewise.
+	(getHTMLEditorKit): Likewise.
+
+2005-12-13  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/AbstractAction.java:
+	(putValue): Fixed check, should use .equals when comparing
+	objects.
+	* javax/swing/text/StyledEditorKit.java
+	(UnderlineAction): Fixed name.
+	(ItalicAction): Likewise.
+	(BoldAction): Likewise.
+	(getActions): Added more default actions.
+	* javax/swing/text/html/HTMLDocument.java:
+	Removed unneeded import statement.
+	* javax/swing/text/html/HTMLEditorKit.java:
+	Added new field
+	(getActions): Fixed to use augmentList to combine
+	the actions from the super class with the ones from
+	this class.
+
+2005-12-13  Chris Burdess  <dog@gnu.org>
+
+	* gnu/xml/stream/XIncludeFilter.java,
+	  gnu/xml/stream/XMLStreamWriterImpl.java,
+	  gnu/xml/stream/XMLParser.java: XInclude fixes.
+
 2005-12-13  Anthony Balkissoon  <abalkiss@redhat.com>
 
 	* javax/swing/text/html/HTMLDocument.java:

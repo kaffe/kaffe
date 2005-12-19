@@ -1634,30 +1634,19 @@ public class Container extends Component
                           Component comp)
   {
     Rectangle bounds = comp.getBounds();
-    Rectangle oldClip = gfx.getClipBounds();
-    if (oldClip == null)
-      oldClip = bounds;
 
-    Rectangle clip = oldClip.intersection(bounds);
+    if(!gfx.hitClip(bounds.x,bounds.y, bounds.width, bounds.height))
+      return;
 
-    if (clip.isEmpty()) return;
-
-    boolean clipped = false;
-    boolean translated = false;
+    Graphics g2 = gfx.create(bounds.x, bounds.y, bounds.width,
+                             bounds.height);
     try
       {
-        gfx.setClip(clip.x, clip.y, clip.width, clip.height);
-        clipped = true;
-        gfx.translate(bounds.x, bounds.y);
-        translated = true;
-        visitor.visit(comp, gfx);
+        visitor.visit(comp, g2);
       }
     finally
       {
-        if (translated)
-          gfx.translate (-bounds.x, -bounds.y);
-        if (clipped)
-          gfx.setClip (oldClip.x, oldClip.y, oldClip.width, oldClip.height);
+        g2.dispose();
       }
   }
 

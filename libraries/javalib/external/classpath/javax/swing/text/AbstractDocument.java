@@ -1327,7 +1327,14 @@ public abstract class AbstractDocument implements Document, Serializable
      */
     public Object getAttribute(Object key)
     {
-      return attributes.getAttribute(key);
+      Object result = attributes.getAttribute(key);
+      if (result == null && element_parent != null)
+        {
+          AttributeSet parentSet = element_parent.getAttributes();
+          if (parentSet != null)
+            result = parentSet.getAttribute(key);
+        }
+      return result;
     }
 
     /**

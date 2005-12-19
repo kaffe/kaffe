@@ -174,7 +174,7 @@ public abstract class AbstractAction
   public void putValue(String key, Object value)
   {
     Object old = getValue(key);
-    if (old != value)
+    if (old == null || !old.equals(value))
     {
       store.put(key, value);
       firePropertyChange(key, old, value);

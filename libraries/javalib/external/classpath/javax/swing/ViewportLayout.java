@@ -143,8 +143,13 @@ public class ViewportLayout implements LayoutManager, Serializable
     Dimension viewMinimum = view.getMinimumSize();
     Point portLowerRight = new Point(portBounds.x + portBounds.width,
                                      portBounds.y + portBounds.height);
-        
+
     // vertical implementation of the above rules
+    if ((! (view instanceof Scrollable)
+         || ((Scrollable) view).getScrollableTracksViewportHeight())
+        && viewPref.height < portBounds.height)
+      viewPref.height = portBounds.height;
+
     if (portBounds.height >= viewMinimum.height)
       portBounds.y = 0;
     else
@@ -154,11 +159,12 @@ public class ViewportLayout implements LayoutManager, Serializable
             portBounds.y -= overextension;
       }
 
-    if ( !(view instanceof Scrollable)
-        || ((Scrollable)view).getScrollableTracksViewportHeight())
-      viewPref.height = portBounds.height;
-
     // horizontal implementation of the above rules
+    if ((! (view instanceof Scrollable)
+         || ((Scrollable) view).getScrollableTracksViewportWidth())
+        && viewPref.width < portBounds.width)
+      viewPref.width = portBounds.width;
+
     if (portBounds.width >= viewMinimum.width)
       portBounds.x = 0;
     else
@@ -167,9 +173,6 @@ public class ViewportLayout implements LayoutManager, Serializable
         if (overextension > 0)
             portBounds.x -= overextension;
       }
-
-    if ( !(view instanceof Scrollable) || ((Scrollable)view).getScrollableTracksViewportWidth())
-      viewPref.width = portBounds.width;
 
     port.setViewPosition(portBounds.getLocation());
     port.setViewSize(viewPref);

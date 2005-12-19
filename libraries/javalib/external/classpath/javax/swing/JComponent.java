@@ -1294,7 +1294,7 @@ public abstract class JComponent extends Container implements Serializable
   {
     Dimension prefSize = null;
     if (preferredSize != null)
-      prefSize = preferredSize;
+      prefSize = new Dimension(preferredSize);
 
     else if (ui != null)
       {

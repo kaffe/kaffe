@@ -31,6 +31,8 @@
 
 #include <config.h>
 #include "ieeefp.h"
+/* CLASSPATH LOCAL */
+#include "namespace.h"
 
 #if defined HAVE_STDINT_H
 #include <stdint.h>

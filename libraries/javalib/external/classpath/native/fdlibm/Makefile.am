@@ -44,7 +44,8 @@ libfdlibm_la_SOURCES =  \
 			w_log.c \
 			w_pow.c \
 			w_remainder.c \
-			w_sqrt.c 
+			w_sqrt.c \
+			namespace.h
 
 AM_LDFLAGS = @CLASSPATH_MODULE@ 
 

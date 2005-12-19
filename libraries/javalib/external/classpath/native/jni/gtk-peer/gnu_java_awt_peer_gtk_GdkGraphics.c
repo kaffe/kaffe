@@ -99,7 +99,7 @@ static GdkPoint *translate_points (JNIEnv *env, jintArray xpoints,
 static void realize_cb (GtkWidget *widget, jobject jgraphics);
 
 JNIEXPORT void JNICALL
-Java_gnu_java_awt_peer_gtk_GdkGraphics_copyState
+Java_gnu_java_awt_peer_gtk_GdkGraphics_nativeCopyState
   (JNIEnv *env, jobject obj, jobject old)
 {
   struct graphics *g = NULL;
@@ -236,7 +236,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_connectSignals
 }
 
 JNIEXPORT void JNICALL
-Java_gnu_java_awt_peer_gtk_GdkGraphics_dispose
+Java_gnu_java_awt_peer_gtk_GdkGraphics_nativeDispose
   (JNIEnv *env, jobject obj)
 {
   struct graphics *g = NULL;
