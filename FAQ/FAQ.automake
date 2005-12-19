@@ -3,12 +3,12 @@ IMPORTANT NOTE:
 
 - in order to modify the Makefiles and configure.in, you need rather
 recent versions of autoconf and automake: autoconf 2.59 and automake
-1.9.5.
+1.9.6.
 
 - in order to rebuild Makefile.in files and the configure script 
 please run the developers/autogen.sh script in the top level directory.
 Beside the above versions of autoconf and automake, you'll need libtool 
-1.5.18 and gettext 0.14.4.
+1.5.22 and gettext 0.14.5.
 **************************************************************************
 
 Kaffe has adopted GNU automake to ease the maintenance of Makefiles.

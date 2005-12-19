@@ -216,17 +216,10 @@ AUTOMAKE_OPTIONS = no-dependencies foreign
 @CONVENIENCE_LTDL_TRUE@noinst_LTLIBRARIES = libltdlc.la
 CLEANFILES = libltdl.la libltdlc.la
 libltdl_la_SOURCES = ltdl.c
-libltdl_la_LDFLAGS = -no-undefined -version-info 4:1:1
+libltdl_la_LDFLAGS = -no-undefined -version-info 4:4:1
 libltdl_la_LIBADD = $(LIBADD_DL)
 libltdlc_la_SOURCES = ltdl.c
 libltdlc_la_LIBADD = $(LIBADD_DL)
-ltdldatadir = $(datadir)/libtool/libltdl
-ltdldatafiles = COPYING.LIB README acinclude.m4 aclocal.m4 \
-		Makefile.am Makefile.in configure.ac configure \
-		config-h.in config.guess config.sub \
-		install-sh missing ltmain.sh \
-		ltdl.c ltdl.h
-
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -647,12 +640,6 @@ ltdl.lo: ltdl.h config.h
 $(libltdl_la_OBJECTS) $(libltdlc_la_OBJECTS): libtool
 libtool: $(LIBTOOL_DEPS)
 	$(SHELL) ./config.status --recheck
-
-local-install-files: $(ltdldatafiles)
-	-rm -rf $(DESTDIR)$(ltdldatadir)
-	$(mkinstalldirs) $(DESTDIR)$(ltdldatadir)
-	( cd $(srcdir) && $(AMTAR) chf - $(ltdldatafiles); ) \
-	  | ( umask 0 && cd $(DESTDIR)$(ltdldatadir) && $(AMTAR) xf -; )
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

@@ -1,5 +1,5 @@
 /* ltdl.c -- system independent dlopen wrapper
-   Copyright (C) 1998, 1999, 2000, 2004  Free Software Foundation, Inc.
+   Copyright (C) 1998, 1999, 2000, 2004, 2005  Free Software Foundation, Inc.
    Originally by Thomas Tanner <tanner@ffii.org>
    This file is part of GNU Libtool.
 
@@ -625,7 +625,7 @@ argz_create_sep (str, delim, pargz, pargz_len)
   assert (pargz);
   assert (pargz_len);
 
-  /* Make a copy of STR, but replacing each occurence of
+  /* Make a copy of STR, but replacing each occurrence of
      DELIM with '\0'.  */
   argz_len = 1+ LT_STRLEN (str);
   if (argz_len)
@@ -1348,15 +1348,27 @@ sys_wll_open (loader_data, filename)
   if (!searchname)
     return 0;
 
-#if __CYGWIN__
   {
-    char wpath[MAX_PATH];
-    cygwin_conv_to_full_win32_path(searchname, wpath);
-    module = LoadLibrary(wpath);
-  }
+    /* Silence dialog from LoadLibrary on some failures.
+       No way to get the error mode, but to set it,
+       so set it twice to preserve any previous flags. */
+    UINT errormode = SetErrorMode(SEM_FAILCRITICALERRORS);
+    SetErrorMode(errormode | SEM_FAILCRITICALERRORS);
+
+#if defined(__CYGWIN__)
+    {
+      char wpath[MAX_PATH];
+      cygwin_conv_to_full_win32_path (searchname, wpath);
+      module = LoadLibrary (wpath);
+    }
 #else
-  module = LoadLibrary (searchname);
+    module = LoadLibrary (searchname);
 #endif
+
+    /* Restore the error mode. */
+    SetErrorMode(errormode);
+  }
+
   LT_DLFREE (searchname);
 
   /* libltdl expects this function to fail if it is unable
@@ -2541,8 +2553,8 @@ find_module (handle, dir, libdir, dlname, old_name, installed)
 
       /* maybe it was moved to another directory */
       {
-	  if (tryall_dlopen_module (handle,
-				    (const char *) 0, dir, dlname) == 0)
+	  if (dir && (tryall_dlopen_module (handle,
+				    (const char *) 0, dir, dlname) == 0))
 	    return 0;
       }
     }
@@ -2869,12 +2881,6 @@ load_deplibs (handle, deplibs)
 	}
     }
 
-  /* restore the old search path */
-  LT_DLFREE (user_search_path);
-  user_search_path = save_search_path;
-
-  LT_DLMUTEX_UNLOCK ();
-
   if (!depcount)
     {
       errors = 0;
@@ -2961,6 +2967,13 @@ load_deplibs (handle, deplibs)
 
  cleanup:
   LT_DLFREE (names);
+  /* restore the old search path */
+  if (user_search_path) {
+    LT_DLFREE (user_search_path);
+    user_search_path = save_search_path;
+  }
+  LT_DLMUTEX_UNLOCK ();
+
 #endif
 
   return errors;
@@ -3540,7 +3553,14 @@ lt_argz_insert (pargz, pargz_len, before, entry)
 {
   error_t error;
 
-  if ((error = argz_insert (pargz, pargz_len, before, entry)))
+  /* Prior to Sep 8, 2005, newlib had a bug where argz_insert(pargz,
+     pargz_len, NULL, entry) failed with EINVAL.  */
+  if (before)
+    error = argz_insert (pargz, pargz_len, before, entry);
+  else
+    error = argz_append (pargz, pargz_len, entry, 1 + LT_STRLEN (entry));
+
+  if (error)
     {
       switch (error)
 	{
