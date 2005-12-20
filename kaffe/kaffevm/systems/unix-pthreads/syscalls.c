@@ -595,7 +595,7 @@ static int
 jthreadedRecvfrom(int fd, void* buf, size_t len, int flags, 
 	struct sockaddr* from, socklen_t* fromlen, int timeout, ssize_t *out)
 {
-	int r;
+	int r = 0;
 	jlong deadline = 0;
 	int poll_timeout;
 	int blocking = jthread_is_blocking(fd);

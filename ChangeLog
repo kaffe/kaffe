@@ -1,3 +1,8 @@
+2005-12-20  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/systems/unix-pthreads/syscalls.c
+	(jthreadedRecvfrom): Initialize r.
+
 2005-12-19  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffeh/support.c
