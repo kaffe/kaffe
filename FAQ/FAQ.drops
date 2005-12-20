@@ -1,0 +1,150 @@
+Building kaffe on DROPS[1]
+==========================
+
+author: Alexander Boettcher <alex@kaffe.org>
+date: 20.12.2005
+
+Notes about the DROPS port
+--------------------------
+The DROPS port of Kaffe uses its own threading system (drops-l4threads),
+which requires the L4Env [2] threading packet. Additionally, it uses the
+semaphore implementation of L4Env for the KSem interface of Kaffe. Further,
+the DROPS Kaffe port requires the DietLibC port, which does not provide
+the full LibC functionality (state 2005). Therefore, you will find a lot of
+unimplemented functions in the syscall interface of Kaffe, because they are
+not enabled or supported in the DROPS port of the DietLibC.
+ 
+The DROPS port of Kaffe works fine in interpreter mode on x86. JIT is untested.
+
+Configuration/building 
+----------------------
+
+1. Download Kaffe and build a 'native' Kaffe for your operating system and
+   hardware. 
+
+2. Download DROPS and build it [1]. Follow the information provided at the
+   homepage of DROPS. Use Fiasco-UX [4] for first tests ! Fiasco-UX is a port
+   of the Fiasco [3] microkernel to the Linux system-call interface. If 
+   Kaffe runs with Fiasco-UX, it should also run with the Fiasco
+   kernel on real hardware. Kaffe uses the L4 Console for outputs (maybe
+   DoPE[6] in the future ?).
+
+   Required components for Kaffe on DROPS:
+   - Fiasco microkernel
+   - L4Env (L4Con, L4VFS [File support], Thread packet, Semaphore packet, etc.)
+   - DietLibC port (l4/pkg/dietlibc, l4/pkg/libc_support,
+                    l4/pkg/libc_backends_l4env).
+
+3. Cross compile Kaffe for DROPS.
+
+   Go to the l4/pkg directory of your DROPS installation. Create a directory
+   kaffe and call the template for creating a new DROPS packet :
+
+   l4/pkg       : mkdir kaffe
+   l4/pkg       : cd kaffe
+   l4/pkg/kaffe : ../../mk/tmpl/inst
+
+   Enter the server/src directory in l4/pkg/kaffe and use the provided Makefile
+   to crosscompile kaffe. You have to adapt the values of KAFFE_KAFFEH, KAFFE_SRC
+   in the Makefile by setting the right paths to the kaffeh binary of your native
+   Kaffe and of your source code directory of Kaffe.
+
+   Currently, the DietLibC port does not provide a getenv implementation.
+   Therefore, the workaround (implemented in kaffe/config/i386/drops/md.c)
+   getenv implementation looks for a file 'kaffepath.env', where
+   it expects the environment names and values. For example:
+
+   kaffepath.env:
+     BOOTCLASSPATH=/kaffe/rt.jar
+     KAFFELIBRARYPATH=.
+     KAFFECLASSPATH=/kaffe:/kaffe/example.jar
+
+   If Kaffe does not find the file, it uses the standard values from
+   kaffe/config/i386/drops/md.c .
+
+   Finally, in the DROPS directory l4/tool/run-ux you can find a script ('kaffe'),
+   that starts Fiasco-UX, Kaffe and all necessary services of DROPS.
+
+4. Feel free to post your extensions, patches, etc.
+   Maybe, you can and want help us to develop and support Kaffe and Kaffe
+   on DROPS! Any kind of help is welcome.
+
+   Thx.
+
+[1] Dresdner Real-Time Operating System (DROPS) homepage - http://wwwos.inf.tu-dresden.de/drops
+[2] L4 Environment - http://wwwos.inf.tu-dresden.de/l4env
+[3] Fiasco - http://wwwos.inf.tu-dresden.de/fiasco
+[4] Fiasco UX - http://wwwos.inf.tu-dresden.de/fiasco/ux
+[5] DOpE (a real-time window server) - http://wwwos.inf.tu-dresden.de/dope
+[6] Example Makefile
+
+---------------Makefile (l4/pkg/kaffe/server/src)-------
+PKGDIR	?= ../..
+L4DIR	?= $(PKGDIR)/../..
+
+TARGET   = kaffevm
+SYSTEMS  = x86-l4v2
+
+#INSTALL_TARGET =
+
+include $(L4DIR)/mk/prog.mk
+
+L4DIR_ABS        =$(shell cd $(L4DIR);pwd)
+
+#
+# Kaffe configure parameters
+# 
+# adapt KAFFE_KAFFEH, KAFFE_SRC to your environment !
+#
+KAFFE_KAFFEH	 = $(shell cd $(PKGDIR);pwd)/native/kaffe/kaffeh/kaffeh
+KAFFE_SRC        = $(PKGDIR)/contrib
+#
+#
+#
+
+KAFFE_L4_OPTION  = -DARCH_$(ARCH) \
+                   -DDROPS_SHARED_LIBRARIES
+
+KAFFE_CC        = $(CC_x86) -nostdinc -nostdlib -DL4API_l4v2 $(KAFFE_L4_OPTION) -I$(L4DIR_ABS)/include/$(ARCH)/$(L4API) -I$(L4DIR_ABS)/include/$(ARCH) -I$(L4DIR_ABS)/include -I$(L4DIR_ABS)/include/l4/gmp -I$(L4DIR_ABS)/include/dietlibc -I$(GCCDIR_x86)/include -I$(DROPS_STDDIR)/include/$(ARCH)/$(L4API) -I$(DROPS_STDDIR)/include/$(ARCH) -I$(DROPS_STDDIR)/include -I$(L4DIR_ABS)/include/dietlibc -DSIZE_MAX=4294967295U
+
+KAFFE_CXX       = $(KAFFE_CC)
+
+KAFFE_LDFLAGS   = -nostdlib -L$(L4DIR_ABS)/lib/$(ARCH)_$(CPU)/$(L4API) -L$(L4DIR_ABS)/lib/$(ARCH)_$(CPU) -Ttext=0x0154f000 -Wl,-gc-sections
+
+KAFFE_LIBS    = -T$(L4DIR_ABS)/lib/$(ARCH)_$(CPU)/main_stat.ld -lcrt0.o -lloader.s -ldiet_be_l4_start_stop -lc_be_io.o -lc_be_mmap -lc_be_mmap_util -lc_be_socket_io -lc_be_select -ldiet_c -lc_be_simple_mem -lc_be_mmap -lc_be_time -ll4util -lrtc -ll4env -lgcc -ldiet_be_simple_sleep -ll4vfs_select -ll4vfs_select_listener-server -ll4vfs_basic_name_server -ll4vfs_basic_io -ll4vfs_connection -ll4vfs_net_io -ll4vfs_name_server -ldiet_be_l4_start_stop -ll4vfs_common_io -lc_be_file-table
+
+kaffe_configure:
+	if [ ! -e ../build/config.ready ]; then \
+		cd .. \
+		&& mkdir -p build \
+		&& cd build \
+		&& KAFFEH=$(KAFFE_KAFFEH) \
+        	LD_PRELOAD=$(L4DIR_ABS)/tool/gendep/libgendep.so \
+	        LIBS="$(KAFFE_LIBS)" \
+        	LDFLAGS="$(KAFFE_LDFLAGS)" \
+	        CC="$(KAFFE_CC)" \
+        	CXX="$(KAFFE_CXX)" \
+	        $(KAFFE_SRC)/configure --build=i386-linux --host=i386-drops \
+                               --enable-pure-java-math --disable-sound --without-alsa --without-esd \
+                               --with-threads=drops-l4threads --with-engine=intrp \
+                               --disable-boehm-gc-configuration \
+                               --disable-nls --disable-gjdoc --disable-largefile \
+                               --disable-gtk-peer \
+		&& echo "ready" >config.ready; \
+	fi
+
+kaffevm: kaffe_configure
+	ln ../build/kaffe/kaffe/kaffe-bin kaffevm -sf
+	cd ../build \
+	&& make 
+	if [ ! -L ../build/libraries/javalib/rt.jar ]; then \
+		ln -s external/classpath/lib/glibj.zip ../build/libraries/javalib/rt.jar; \
+	fi
+
+clean::
+	rm build -rf
+
+cleanall::
+	rm build -rf
+
+.PHONY: kaffe_configure kaffevm
