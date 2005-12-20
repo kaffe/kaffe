@@ -1,5 +1,10 @@
 2005-12-20  Dalibor Topic  <robilad@kaffe.org>
 
+	* include/Makefile.am: Don't generate include files for 
+	serialization implementation files from GNU Classpath.
+
+2005-12-20  Dalibor Topic  <robilad@kaffe.org>
+
 	* include/Makefile.am: Don't generate include files for nio
 	implementation files from GNU Classpath.
 
