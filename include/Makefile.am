@@ -89,7 +89,6 @@ NOINSTALL_DERIVED_HDRS = \
 	java_util_zip_ZipFile.h \
 	org_kaffe_management_Classpath.h \
 	gnu_java_nio_VMSelector.h \
-	gnu_java_nio_VMPipe.h \
 	gnu_classpath_VMStackWalker.h
 
 DERIVED_HDRS = $(INSTALL_DERIVED_HDRS) $(NOINSTALL_DERIVED_HDRS)

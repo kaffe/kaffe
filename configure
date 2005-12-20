@@ -49538,7 +49538,7 @@ kaffebin_TRANSF=`echo kaffe-bin | sed "s/${EXEEXT}$//" | sed ${program_transform
 
 
 
-CPPFLAGS="-I$abssrcdir/kaffe/kaffevm -I$abssrcdir/kaffe/kaffevm/$with_engine -I$abssrcdir/kaffe/kaffevm/systems/$with_threads -I\$(top_srcdir)/replace -I\$(top_srcdir)/config -I\$(top_srcdir)/include $CPPFLAGS"
+CPPFLAGS="-I$abssrcdir/kaffe/kaffevm -I$abssrcdir/kaffe/kaffevm/$with_engine -I$abssrcdir/kaffe/kaffevm/systems/$with_threads -I\$(top_srcdir)/replace -I\$(top_srcdir)/config -I\$(top_srcdir)/include -I\$(top_srcdir)/libraries/javalib/external/classpath/include $CPPFLAGS"
 LIBS="$LIBS $LTLIBS"
 
 CFLAGS_WITHOUT_PG=""

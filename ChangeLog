@@ -1,5 +1,11 @@
 2005-12-20  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac: Added GNU Classpath's includes to CPPFLAGS.
+
+	* include/Makefile.am: Don't generate include file for VMPipe. 
+
+2005-12-20  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/libraries/clib/native/ClassLoader.c
 	(java_lang_VMClassLoader_findLoadedClass): Removed unused local variables.
 
