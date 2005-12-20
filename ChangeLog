@@ -1,5 +1,10 @@
 2005-12-20  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/libraries/clib/native/ClassLoader.c
+	(java_lang_VMClassLoader_findLoadedClass): Removed unused local variables.
+
+2005-12-20  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/jni/jni-helpers.c
 	(KaffeJNI_GetDirectBufferAddress) Copy buffer internally to fix
 	'clobbered' warning.

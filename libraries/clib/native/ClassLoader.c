@@ -166,8 +166,6 @@ java_lang_VMClassLoader_findLoadedClass(Hjava_lang_ClassLoader* loader, Hjava_la
 {
   Utf8Const *utfClassName;
   classEntry *centry;
-  errorInfo einfo;
-  Hjava_lang_Class *clazz;
 
   utfClassName = checkPtr(stringJava2Utf8ConstReplace(name, '.', '/'));
   
