@@ -53,13 +53,14 @@ jobject KaffeJNI_NewDirectByteBuffer(JNIEnv *env UNUSED, void *buffer, jlong siz
 
 void *KaffeJNI_GetDirectBufferAddress(JNIEnv *env UNUSED, jobject buffer)
 {
+  jobject buffer_obj = buffer;
   jobject address_obj;
   void *address;
   Hjava_lang_Object *buffer_local;
 
   BEGIN_EXCEPTION_HANDLING(NULL);
 
-  buffer_local = (Hjava_lang_Object *)unveil(buffer);
+  buffer_local = (Hjava_lang_Object *)unveil(buffer_obj);
 
   if (!instanceof(javaNioBufferClass, OBJECT_CLASS(buffer_local)))
   {

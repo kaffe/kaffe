@@ -1,5 +1,11 @@
 2005-12-20  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/jni/jni-helpers.c
+	(KaffeJNI_GetDirectBufferAddress) Copy buffer internally to fix
+	'clobbered' warning.
+
+2005-12-20  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/systems/unix-pthreads/syscalls.c
 	(jthreadedRecvfrom): Initialize r.
 
