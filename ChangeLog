@@ -1,5 +1,10 @@
 2005-12-20  Dalibor Topic  <robilad@kaffe.org>
 
+	* include/Makefile.am: Don't generate include files for nio
+	implementation files from GNU Classpath.
+
+2005-12-20  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac: Added GNU Classpath's includes to CPPFLAGS.
 
 	* include/Makefile.am: Don't generate include file for VMPipe. 
