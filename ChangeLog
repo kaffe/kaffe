@@ -1,3 +1,9 @@
+2005-12-21  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/access.c
+	(checkAccess): If target and context are in the same package they are
+	always visible.
+
 2005-12-20  Dalibor Topic  <robilad@kaffe.org>
 
 	* include/Makefile.am: Do not generate unused header java_io_File.h.

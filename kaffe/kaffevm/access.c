@@ -291,10 +291,7 @@ int checkAccess(struct Hjava_lang_Class *context,
 	{
 		same_package = 1;
 		/* Package */
-		if (!(target->accflags & ACC_PROTECTED))
-		{
-			class_acc = 1;
-		}
+		class_acc = 1;
 	}
 
 	if( target_flags & ACC_PUBLIC )
