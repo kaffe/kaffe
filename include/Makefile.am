@@ -44,7 +44,6 @@ NOINSTALL_DERIVED_HDRS = \
 	java_lang_ThreadGroup.h \
 	java_lang_Throwable.h \
 	java_lang_VMThrowable.h \
-	java_io_File.h \
 	java_io_FileInputStream.h \
 	java_io_FileOutputStream.h \
 	java_io_InputStream.h \
