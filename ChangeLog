@@ -1,3 +1,7 @@
+2005-12-20  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/clib/native/Runtime.c: Removed unnecessary include.
+
 2005-12-20  Alexander Boettcher  <alex@kaffe.org>
 
 	* FAQ/FAQ.drops: Initial checkin of drops port FAQ

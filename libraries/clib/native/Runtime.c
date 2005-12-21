@@ -16,7 +16,6 @@
 #include <native.h>
 #include "files.h"
 #include "defs.h"
-#include "java_io_File.h"
 #include "java_lang_String.h"
 #include "java_lang_VMRuntime.h"
 #include "external.h"
