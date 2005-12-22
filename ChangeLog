@@ -1,3 +1,21 @@
+2005-12-22  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/access.c
+	(checkAccess): Simplified to the maximum according to Sun's VM
+	spec we must not check for specific inner classes flags.
+
+	* kaffe/kaffevm/classMethod.c
+	(addInnerClasses): Do not merge inner class access flags with the
+	class flags.
+
+	* libraries/clib/native/Class.c
+	(java_lang_VMClass_getModifiers): Return the right access flags
+	depending on what we are asked and whether the class is nested.
+
+	* test/regression/TestSerialFields.java,
+	test/regression/TestSerialVersions.java: Removed private modifier
+	to be able to run the tests (as for JDK).
+	
 2005-12-22  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* kaffe/kaffevm/access.c

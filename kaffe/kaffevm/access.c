@@ -179,66 +179,9 @@ int checkAccess(struct Hjava_lang_Class *context,
 	 * is protected.  But our experience tells the need for a special
 	 * handling of this case.
 	 */
-	else if( target->accflags & ACC_PROTECTED && instanceof(target, context) )
+	else if( instanceof(target, context) )
 	{
 		class_acc = 1;
-	}
-	else if( target->accflags & ACC_PROTECTED )
-	{
-		/* check whether target is non private innerclass of superclass */
-		innerClass *ict;
-		innerClass *icc;
-		Hjava_lang_Class *outert;
-		Hjava_lang_Class *outerc;
-		errorInfo einfo;
-		ict = icc = NULL;
-		outert = outerc = NULL;
-
-		/* get class containing the accessed class (the target) */
-	       	if( target->this_inner_index >= 0 )
-		{
-			ict = &target->inner_classes[target->this_inner_index];
-			if( ict->outer_class )
-			{
-				outert = getClass(ict->outer_class, target, &einfo);
-				if( outert == NULL )
-				{
-					discardErrorInfo(&einfo);
-				}
-			}
-		}
-		/* get class containing the accessing class (the context) */
-	       	if( context->this_inner_index >= 0 )
-		{
-			icc = &context->inner_classes[context->this_inner_index];
-			if( icc->outer_class )
-			{
-				outerc = getClass(icc->outer_class, context, &einfo);
-				if( outerc == NULL )
-				{
-					discardErrorInfo(&einfo);
-				}
-			}
-		}
-
-		if( outerc != NULL )
-		{
-			if ( recursive_instanceof(target, outerc) )
-			{
-				class_acc = 1;
-			}
-			else if (outert != NULL)
-			{
-				class_acc = recursive_instanceof(outert, outerc);
-			}
-
-		}
-
-		if ( !class_acc && (outert != NULL) )
-		{
-			class_acc = instanceof(outert, context);
-		}
-
 	}
 	
 	if((context->packageLength == target->packageLength) &&

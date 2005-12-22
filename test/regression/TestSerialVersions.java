@@ -21,7 +21,7 @@ public class TestSerialVersions
 
 	public static final long constantUID = 0x42L;
 
-	private static class Test0001 // "original" (pristine) version
+	static class Test0001 // "original" (pristine) version
 	implements Serializable
 	{
 		private static final long serialVersionUID = constantUID;
@@ -34,7 +34,7 @@ public class TestSerialVersions
 		}
 	}
 	
-	private static class Test0002 // mismatch (widen) field types
+	static class Test0002 // mismatch (widen) field types
 	implements Serializable
 	{
 		private static final long serialVersionUID = constantUID;
@@ -47,7 +47,7 @@ public class TestSerialVersions
 		}
 	}
 	
-	private static class Test0003 // mismatch (narrow) field types
+	static class Test0003 // mismatch (narrow) field types
 	implements Serializable
 	{
 		private static final long serialVersionUID = constantUID;
@@ -60,7 +60,7 @@ public class TestSerialVersions
 		}
 	}
 	
-	private static class Test0004 // mismatch (incompatible) field types
+	static class Test0004 // mismatch (incompatible) field types
 	implements Serializable
 	{
 		private static final long serialVersionUID = constantUID;
@@ -73,7 +73,7 @@ public class TestSerialVersions
 		}
 	}
 	
-	private static class Test0005 // missing x,y fields
+	static class Test0005 // missing x,y fields
 	implements Serializable
 	{
 		private static final long serialVersionUID = constantUID;
@@ -84,7 +84,7 @@ public class TestSerialVersions
 		}
 	}
 	
-	private static class Test0052 // missing x (but not y) field
+	static class Test0052 // missing x (but not y) field
 	implements Serializable
 	{
 		private static final long serialVersionUID = constantUID;
@@ -97,7 +97,7 @@ public class TestSerialVersions
 		}
 	}
 	
-	private static class Test0006 // Wrong serialVersionUID
+	static class Test0006 // Wrong serialVersionUID
 	implements Serializable
 	{
 		private static final long serialVersionUID = constantUID + 0x69;
@@ -115,7 +115,7 @@ public class TestSerialVersions
 	// I think the serialPersistentFields are really only used for
 	// *writing* objects (in the default)...
 	// Kaffe now does the "right thing" (throws an exception on this case).
-	private static class Test0007 // Compatible via serialPersistentFields...
+	static class Test0007 // Compatible via serialPersistentFields...
 	implements Serializable
 	{
 		private static final long serialVersionUID = constantUID;
@@ -135,7 +135,7 @@ public class TestSerialVersions
 	}
 	
 
-	private static class Test0008 // Compatible via serialPersistentFields...
+	static class Test0008 // Compatible via serialPersistentFields...
 	implements Serializable
 	{
 		private static final long serialVersionUID = constantUID;
@@ -152,7 +152,7 @@ public class TestSerialVersions
 	}
 	
 
-	private static class Test0009 // Compatible, but bad serialPersistentFields...
+	static class Test0009 // Compatible, but bad serialPersistentFields...
 	implements Serializable
 	{
 		private static final long serialVersionUID = constantUID;
@@ -171,7 +171,7 @@ public class TestSerialVersions
 	}
 	
 
-	private static class Test0010 // Compatible, but different (and invalid) serialPersistentFields...
+	static class Test0010 // Compatible, but different (and invalid) serialPersistentFields...
 	implements Serializable
 	{
 		private static final long serialVersionUID = constantUID;
@@ -190,7 +190,7 @@ public class TestSerialVersions
 	}
 	
 
-	private static class Test0011 // Compatible, but different (and valid) serialPersistentFields...
+	static class Test0011 // Compatible, but different (and valid) serialPersistentFields...
 	implements Serializable
 	{
 		private static final long serialVersionUID = constantUID;
@@ -211,7 +211,7 @@ public class TestSerialVersions
 		}
 	}
 	
-	private static class Test0012 // "Same" as 0011, but with 'transient' keyword
+	static class Test0012 // "Same" as 0011, but with 'transient' keyword
 	implements Serializable
 	{
 		private static final long serialVersionUID = constantUID;
@@ -226,7 +226,7 @@ public class TestSerialVersions
 		}
 	}
 	
-	private static class Test0013 // Battle of the overlapping specs
+	static class Test0013 // Battle of the overlapping specs
 	implements Serializable
 	{
 		private static final long serialVersionUID = constantUID;
@@ -245,7 +245,7 @@ public class TestSerialVersions
 	}
 	
 
-	private static class Test0014 // Type mis-match but with an array
+	static class Test0014 // Type mis-match but with an array
 	implements Serializable
 	{
 		private static final long serialVersionUID = constantUID;

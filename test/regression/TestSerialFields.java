@@ -203,7 +203,7 @@ public class TestSerialFields
 	}
 
 
-	private static class Test0001 // "original" (pristine) version
+	static class Test0001 // "original" (pristine) version
 	implements Serializable
 	{
 		private static final long serialVersionUID = constantUID;
@@ -236,7 +236,7 @@ public class TestSerialFields
 
 	}
 	
-	private static class Test0002 // contains doubles
+	static class Test0002 // contains doubles
 	implements Serializable
 	{
 		private static final long serialVersionUID = constantUID;
@@ -262,7 +262,7 @@ public class TestSerialFields
 		}
 	}
 	
-	private static class Test0005 // missing x,y fields
+	static class Test0005 // missing x,y fields
 	implements Serializable
 	{
 		private static final long serialVersionUID = constantUID;
@@ -287,7 +287,7 @@ public class TestSerialFields
 	}
 	
 
-	private static class Test0008 // Compatible via serialPersistentFields...
+	static class Test0008 // Compatible via serialPersistentFields...
 	implements Serializable
 	{
 		private static final long serialVersionUID = constantUID;
@@ -317,7 +317,7 @@ public class TestSerialFields
 	}
 	
 
-	private static class Test0010 // Compatible, but different (and invalid) serialPersistentFields...
+	static class Test0010 // Compatible, but different (and invalid) serialPersistentFields...
 	implements Serializable
 	{
 		private static final long serialVersionUID = constantUID;
@@ -349,7 +349,7 @@ public class TestSerialFields
 	}
 	
 
-	private static class Test0011 // Compatible, broken writeObject
+	static class Test0011 // Compatible, broken writeObject
 	implements Serializable
 	{
 		private static final long serialVersionUID = constantUID;
@@ -375,7 +375,7 @@ public class TestSerialFields
 		}
 	}
 
-	private static class Test0012 // check defaultReadObject
+	static class Test0012 // check defaultReadObject
 	implements Serializable
 	{
 		private static final long serialVersionUID = constantUID;
@@ -401,7 +401,7 @@ public class TestSerialFields
 		}
 	}
 
-	private static class Test0014 // bogus reads/puts
+	static class Test0014 // bogus reads/puts
 	implements Serializable
 	{
 		private static final long serialVersionUID = constantUID;
@@ -429,7 +429,7 @@ public class TestSerialFields
 		}
 	}
 
-	private static class Test0015 // impossible field names
+	static class Test0015 // impossible field names
 	implements Serializable
 	{
 		private static final long serialVersionUID = constantUID;
@@ -466,7 +466,7 @@ public class TestSerialFields
 
 	// XXX JDK1.4 and Kaffe differ on this one (JDK blows up with multiple 
 	// readFields()) both Kaffe and JDK1.4 are fine with multiple putFields.
-	private static class Test0016 // multiple gets/sets
+	static class Test0016 // multiple gets/sets
 	implements Serializable
 	{
 		private static final long serialVersionUID = constantUID;

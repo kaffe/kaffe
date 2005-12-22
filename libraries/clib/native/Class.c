@@ -291,12 +291,19 @@ java_lang_VMClass_isInstance(struct Hjava_lang_Class* this, struct Hjava_lang_Ob
 
 jint
 java_lang_VMClass_getModifiers(struct Hjava_lang_Class* this,
-			       jboolean ignoreInnerClassAttribute UNUSED)
+			       jboolean ignoreInnerClassAttribute)
 {
 #ifndef ACC_SUPER
 #define ACC_SUPER ACC_SYNCHRONISED
 #endif
-	return (this->accflags & (ACC_MASK & ~ACC_SUPER));
+	accessFlags accflags = this->accflags;
+	
+	if (this->this_inner_index >= 0 && !ignoreInnerClassAttribute)
+	{
+		assert(this->inner_classes != NULL);
+		accflags = this->inner_classes[this->this_inner_index].inner_class_accflags;
+	}
+	return accflags & (ACC_MASK & ~ACC_SUPER);
 }
 
 HArrayOfObject*
@@ -433,8 +440,12 @@ java_lang_VMClass_getDeclaringClass(struct Hjava_lang_Class* this)
 
 	if (unhand(this)->this_inner_index >= 0) {
 		innerClass	*ic = unhand(this)->inner_classes;
+		int oc = ic[unhand(this)->this_inner_index].outer_class;
 
-		ret = getClass (ic[unhand(this)->this_inner_index].outer_class,
+		if (oc == 0)
+		  return NULL;
+
+		ret = getClass (oc,
 				this,
 				&einfo);
 
