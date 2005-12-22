@@ -153,45 +153,6 @@ int recursive_instanceof(Hjava_lang_Class *c, Hjava_lang_Class *oc)
 	}
 }
 
-/*
- * Returns 1 if oc is an outer class of c
- */
-static
-int outerof (Hjava_lang_Class *c, Hjava_lang_Class *oc)
-{
-	innerClass *ic;
-	Hjava_lang_Class *outer;
-	errorInfo einfo;
-
-	outer = NULL;
-       	if( c->this_inner_index >= 0 )
-	{
-		ic = &c->inner_classes[c->this_inner_index];
-		if( ic->outer_class )
-		{
-			outer = getClass(ic->outer_class, c, &einfo);
-			if( outer == NULL )
-			{
-				discardErrorInfo(&einfo);
-			}
-		}
-	}
-	if ( outer != NULL )
-	{
-		if ( oc == outer)
-		{
-			return 1;
-		}
-		else
-		{
-			return outerof(outer, oc);
-		}
-	}
-	else {
-		return 0;
-	}
-}
-
 int checkAccess(struct Hjava_lang_Class *context,
 		struct Hjava_lang_Class *target,
 		accessFlags target_flags)
@@ -209,20 +170,16 @@ int checkAccess(struct Hjava_lang_Class *context,
 
 		return 1;
 	}
-	else if ( outerof(target, context) )
-	{
-		/* target is within the context. */
-		class_acc = 1;
-		slot_acc = 1;
-
-		return 1;
-	}
 	else if( target->accflags & ACC_PUBLIC )
 	{
 		/* Public class. */
 		class_acc = 1;
 	}
-	else if( instanceof(target, context) )
+	/* Sun's VM spec does not refer to the case where the target class
+	 * is protected.  But our experience tells the need for a special
+	 * handling of this case.
+	 */
+	else if( target->accflags & ACC_PROTECTED && instanceof(target, context) )
 	{
 		class_acc = 1;
 	}
@@ -309,51 +266,6 @@ int checkAccess(struct Hjava_lang_Class *context,
 	{
 		/* Package. */
 		slot_acc = 1;
-	}
-/*
-	Commented out because private members get accessible to
-	any context in the same package if target is a nested class.
-
-	else if( (target->name->data[0] != '[') &&
-		 same_package &&
-		 (target->this_inner_index >= 0) )
-	{
- 		slot_acc = 1;
-	}
-*/
-	else if( context->this_inner_index >= 0 )
-	{
-		innerClass *ic;
-
-		/*
-		 * Check for an inner class accessing something in the outer.
-		 */
-		ic = &context->inner_classes[context->this_inner_index];
-		if( ic->outer_class )
-		{
-			Hjava_lang_Class *outer;
-			errorInfo einfo;
-			
-			outer = getClass(ic->outer_class, context, &einfo);
-			if( outer != NULL )
-			{
-				if( (target_flags & ACC_PRIVATE) &&
-				    (target == outer) )
-				{
-					/* XXX Not sure about this. */
-					slot_acc = 1;
-				}
-				else if( (target_flags & ACC_PROTECTED) &&
-					 instanceof(target, outer) )
-				{
-					slot_acc = 1;
-				}
-			}
-			else
-			{
-				discardErrorInfo(&einfo);
-			}
-		}
 	}
 	return( class_acc && slot_acc );
 }

@@ -1,3 +1,9 @@
+2005-12-22  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* kaffe/kaffevm/access.c
+	(outerof): Removed,
+	(checkAccess): Simplified according to Sun's VM spec.
+
 2005-12-21  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/access.c
