@@ -37,7 +37,6 @@
 #include "exception.h"
 #include "system.h"
 #include "defs.h"
-#include "java_io_InputStream.h"
 #include "java_lang_VMSystem.h"
 #include "java_lang_Throwable.h"
 #include <native.h>

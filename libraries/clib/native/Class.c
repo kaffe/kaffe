@@ -28,7 +28,6 @@
 #include "reflect.h"
 #include "access.h"
 
-#include "java_io_InputStream.h"
 #include "java_lang_reflect_Constructor.h"
 #include "java_lang_reflect_Method.h"
 #include "java_lang_reflect_Field.h"

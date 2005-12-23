@@ -22,7 +22,6 @@
 #include "soft.h"
 #include "baseClasses.h"
 #include "exception.h"
-#include "java_io_InputStream.h"
 #include "java_lang_reflect_Field.h"
 #include <native.h>
 #include "defs.h"
