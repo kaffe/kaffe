@@ -388,7 +388,6 @@ NOINSTALL_DERIVED_HDRS = \
 	java_io_FileOutputStream.h \
 	java_io_InputStream.h \
 	java_io_InterruptedIOException.h \
-	java_io_PrintStream.h \
 	java_io_VMFile.h \
 	java_lang_Boolean.h \
 	java_lang_Byte.h \
