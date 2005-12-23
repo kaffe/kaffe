@@ -115,44 +115,6 @@ const char *checkAccessFlags(access_type_t type, accessFlags access_flags)
 	return( retval );
 }
 
-/*
- * Returns 1 if oc or its outer class is an instance of c
- */
-static
-int recursive_instanceof(Hjava_lang_Class *c, Hjava_lang_Class *oc)
-{
-	if ( instanceof(c, oc) )
-	{
-		return 1;
-	}
-	else
-	{
-       		innerClass *ic;
-		Hjava_lang_Class *outer;
-		errorInfo einfo;
-		ic = NULL;
-		outer = NULL;
-
-	       	if( oc->this_inner_index >= 0 )
-		{
-			ic = &oc->inner_classes[oc->this_inner_index];
-			if( ic->outer_class )
-			{
-				outer = getClass(ic->outer_class, oc, &einfo);
-				if( outer == NULL )
-				{
-					discardErrorInfo(&einfo);
-				}
-			}
-		}
-		if ( outer != NULL )
-		{
-			return recursive_instanceof(c, outer);
-		}
-		return 0;
-	}
-}
-
 int checkAccess(struct Hjava_lang_Class *context,
 		struct Hjava_lang_Class *target,
 		accessFlags target_flags)
