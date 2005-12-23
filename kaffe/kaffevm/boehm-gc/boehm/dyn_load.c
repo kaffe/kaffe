@@ -631,7 +631,8 @@ void GC_register_dynamic_libraries()
     }
     for (i = 0; i < needed_sz; i++) {
         flags = addr_map[i].pr_mflags;
-        if ((flags & (MA_BREAK | MA_STACK | MA_PHYS)) != 0) goto irrelevant;
+        if ((flags & (MA_BREAK | MA_STACK | MA_PHYS
+		      | MA_FETCHOP | MA_NOTCACHED)) != 0) goto irrelevant;
         if ((flags & (MA_READ | MA_WRITE)) != (MA_READ | MA_WRITE))
             goto irrelevant;
           /* The latter test is empirically useless in very old Irix	*/
@@ -1140,21 +1141,22 @@ static const char *GC_dyld_name_for_hdr(struct mach_header *hdr) {
 static void GC_dyld_image_add(struct mach_header* hdr, unsigned long slide) {
     unsigned long start,end,i;
     const struct section *sec;
+    if (GC_no_dls) return;
     for(i=0;i<sizeof(GC_dyld_sections)/sizeof(GC_dyld_sections[0]);i++) {
         sec = getsectbynamefromheader(
             hdr,GC_dyld_sections[i].seg,GC_dyld_sections[i].sect);
-            if(sec == NULL || sec->size == 0) continue;
-            start = slide + sec->addr;
-            end = start + sec->size;
-#		ifdef DARWIN_DEBUG
-                GC_printf4("Adding section at %p-%p (%lu bytes) from image %s\n",
-                start,end,sec->size,GC_dyld_name_for_hdr(hdr));
-#			endif
-        GC_add_roots((char*)start,(char*)end);
-        }
+        if(sec == NULL || sec->size == 0) continue;
+        start = slide + sec->addr;
+        end = start + sec->size;
 #	ifdef DARWIN_DEBUG
-    GC_print_static_roots();
-#	endif
+            GC_printf4("Adding section at %p-%p (%lu bytes) from image %s\n",
+                start,end,sec->size,GC_dyld_name_for_hdr(hdr));
+#       endif
+        GC_add_roots((char*)start,(char*)end);
+    }
+#   ifdef DARWIN_DEBUG
+        GC_print_static_roots();
+#   endif
 }
 
 /* This should never be called by a thread holding the lock */
@@ -1167,15 +1169,15 @@ static void GC_dyld_image_remove(struct mach_header* hdr, unsigned long slide) {
         if(sec == NULL || sec->size == 0) continue;
         start = slide + sec->addr;
         end = start + sec->size;
-#		ifdef DARWIN_DEBUG
+#	ifdef DARWIN_DEBUG
             GC_printf4("Removing section at %p-%p (%lu bytes) from image %s\n",
                 start,end,sec->size,GC_dyld_name_for_hdr(hdr));
 #		endif
         GC_remove_roots((char*)start,(char*)end);
     }
-#	ifdef DARWIN_DEBUG
-    GC_print_static_roots();
-#	endif
+#   ifdef DARWIN_DEBUG
+        GC_print_static_roots();
+#   endif
 }
 
 void GC_register_dynamic_libraries() {

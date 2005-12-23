@@ -30,12 +30,7 @@ extra = libgccpp.la
 else
 extra = 
 endif
-
-if GC_CONVENIENCE
 lib_LTLIBRARIES = libgc.la $(extra) 
-else
-noinst_LTLIBRARIES= libgc.la
-endif
 
 include_HEADERS = include/gc.h include/gc_local_alloc.h \
 include/gc_pthread_redirects.h include/gc_config_macros.h \
@@ -50,7 +45,7 @@ asm_libgc_sources =
 endif
 
 libgc_la_SOURCES = allchblk.c alloc.c blacklst.c checksums.c dbg_mlc.c \
-dyn_load.c finalize.c gc_dlopen.c gcj_mlc.c headers.c aix_irix_threads.c \
+dyn_load.c finalize.c gc_dlopen.c gcj_mlc.c headers.c \
 malloc.c mallocx.c mark.c mark_rts.c misc.c new_hblk.c \
 obj_map.c os_dep.c pcr_interface.c ptr_chck.c real_malloc.c reclaim.c \
 solaris_pthreads.c solaris_threads.c specific.c stubborn.c typd_mlc.c \
@@ -110,10 +105,18 @@ include/gc_pthread_redirects.h include/gc_config_macros.h \
 include/gc_mark.h @addincludes@
 
 ## FIXME: we shouldn't have to do this, but automake forces us to.
+if COMPILER_XLC
+  ## XLC neither requires nor tolerates the unnecessary assembler goop
+  ASM_CPP_OPTIONS =
+else
+  ## We use -Wp,-P to strip #line directives.  Irix `as' chokes on
+  ## these.
+  ASM_CPP_OPTIONS = -Wp,-P -x assembler-with-cpp
+endif
 .s.lo:
 ## We use -Wp,-P to strip #line directives.  Irix `as' chokes on
 ## these.
-	$(LTCOMPILE) -Wp,-P -x assembler-with-cpp -c $<
+	$(LTCOMPILE) $(ASM_CPP_OPTIONS) -c $<
 
 ## We have our own definition of LTCOMPILE because we want to use our
 ## CFLAGS, not those passed in from the top level make.

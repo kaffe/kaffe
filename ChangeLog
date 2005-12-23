@@ -1,3 +1,9 @@
+2005-12-23  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/boehm-gc/boehm: Upgraded to Boehm-GC 6.6
+
+	* kaffe/kaffevm/gc2.c: Added JVMPI event emission.
+	
 2005-12-22  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/access.c

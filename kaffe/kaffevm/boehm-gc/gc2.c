@@ -6,7 +6,7 @@
  * Copyright (c) 2001
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
- * Copyright (c) 2004
+ * Copyright (c) 2004-2005
  *      The Kaffe.org's developers. All rights reserved. 
  *      See ChangeLog for details.
  *
@@ -31,6 +31,7 @@
 #include "gc-refs.h"
 #include "gc-kaffe.h"
 #include "gc2.h"
+#include "jvmpi_kaffe.h"
 
 /*
  * This record describes an allocation type.
@@ -152,6 +153,16 @@ finalizeObject(void* ob, UNUSED void* descriptor)
       return;
     }
 
+#if defined(ENABLE_JVMPI)
+  if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_OBJECT_FREE) )
+    {
+      JVMPI_Event ev;
+      
+      ev.event_type = JVMPI_EVENT_OBJECT_FREE;
+      ev.u.obj_free.obj_id = ALIGN_FORWARD(ob);
+      jvmpiPostEvent(&ev);
+    }
+#endif
   KaffeGC_clearWeakRef(&boehm_gc.collector, ALIGN_FORWARD(ob));
 
   if (f->destroy != NULL)

@@ -60,6 +60,10 @@
 #   include <signal.h>
 # endif
 
+#if defined(LINUX) || defined(LINUX_STACKBOTTOM)
+# include <ctype.h>
+#endif
+
 /* Blatantly OS dependent routines, except for those that are related 	*/
 /* to dynamic loading.							*/
 
@@ -80,7 +84,7 @@
 #   define NEED_FIND_LIMIT
 # endif
 
-#if defined(FREEBSD) && defined(I386)
+#if defined(FREEBSD) && (defined(I386) || defined(powerpc) || defined(__powerpc__))
 #  include <machine/trap.h>
 #  if !defined(PCR)
 #    define NEED_FIND_LIMIT
@@ -245,30 +249,11 @@ word GC_apply_to_maps(word (*fn)(char *))
 //  XXXXXXXX-XXXXXXXX r-xp 00000000 30:05 260537     name of mapping...\n
 //  ^^^^^^^^ ^^^^^^^^ ^^^^          ^^
 //  start    end      prot          maj_dev
-//  0        9        18            32
-//  
-//  For 64 bit ABIs:
-//  0	     17	      34	    56
 //
-//  The parser is called with a pointer to the entry and the return value
-//  is either NULL or is advanced to the next entry(the byte after the
-//  trailing '\n'.)
+//  Note that since about auguat 2003 kernels, the columns no longer have
+//  fixed offsets on 64-bit kernels.  Hence we no longer rely on fixed offsets
+//  anywhere, which is safer anyway.
 //
-#if CPP_WORDSZ == 32
-# define OFFSET_MAP_START   0
-# define OFFSET_MAP_END     9
-# define OFFSET_MAP_PROT   18
-# define OFFSET_MAP_MAJDEV 32
-# define ADDR_WIDTH 	    8
-#endif
-
-#if CPP_WORDSZ == 64
-# define OFFSET_MAP_START   0
-# define OFFSET_MAP_END    17
-# define OFFSET_MAP_PROT   34
-# define OFFSET_MAP_MAJDEV 56
-# define ADDR_WIDTH 	   16
-#endif
 
 /*
  * Assign various fields of the first line in buf_ptr to *start, *end,
@@ -277,36 +262,46 @@ word GC_apply_to_maps(word (*fn)(char *))
 char *GC_parse_map_entry(char *buf_ptr, word *start, word *end,
                                 char *prot_buf, unsigned int *maj_dev)
 {
-    char *tok;
+    char *start_start, *end_start, *prot_start, *maj_dev_start;
+    char *p;
+    char *endp;
 
     if (buf_ptr == NULL || *buf_ptr == '\0') {
         return NULL;
     }
 
-    memcpy(prot_buf, buf_ptr+OFFSET_MAP_PROT, 4);
-    				/* do the protections first. */
+    p = buf_ptr;
+    while (isspace(*p)) ++p;
+    start_start = p;
+    GC_ASSERT(isxdigit(*start_start));
+    *start = strtoul(start_start, &endp, 16); p = endp;
+    GC_ASSERT(*p=='-');
+
+    ++p;
+    end_start = p;
+    GC_ASSERT(isxdigit(*end_start));
+    *end = strtoul(end_start, &endp, 16); p = endp;
+    GC_ASSERT(isspace(*p));
+
+    while (isspace(*p)) ++p;
+    prot_start = p;
+    GC_ASSERT(*prot_start == 'r' || *prot_start == '-');
+    memcpy(prot_buf, prot_start, 4);
     prot_buf[4] = '\0';
-
-    if (prot_buf[1] == 'w') {/* we can skip all of this if it's not writable. */
-
-        tok = buf_ptr;
-        buf_ptr[OFFSET_MAP_START+ADDR_WIDTH] = '\0';
-        *start = strtoul(tok, NULL, 16);
-
-        tok = buf_ptr+OFFSET_MAP_END;
-        buf_ptr[OFFSET_MAP_END+ADDR_WIDTH] = '\0';
-        *end = strtoul(tok, NULL, 16);
-
-        buf_ptr += OFFSET_MAP_MAJDEV;
-        tok = buf_ptr;
-        while (*buf_ptr != ':') buf_ptr++;
-        *buf_ptr++ = '\0';
-        *maj_dev = strtoul(tok, NULL, 16);
+    if (prot_buf[1] == 'w') {/* we can skip the rest if it's not writable. */
+	/* Skip past protection field to offset field */
+          while (!isspace(*p)) ++p; while (isspace(*p)) ++p;
+          GC_ASSERT(isxdigit(*p));
+	/* Skip past offset field, which we ignore */
+          while (!isspace(*p)) ++p; while (isspace(*p)) ++p;
+	maj_dev_start = p;
+        GC_ASSERT(isxdigit(*maj_dev_start));
+        *maj_dev = strtoul(maj_dev_start, NULL, 16);
     }
 
-    while (*buf_ptr && *buf_ptr++ != '\n');
+    while (*p && *p++ != '\n');
 
-    return buf_ptr;
+    return p;
 }
 
 #endif /* Need to parse /proc/self/maps. */	
@@ -698,7 +693,7 @@ ptr_t GC_get_stack_base()
 #   if defined(SUNOS5SIGS) || defined(IRIX5) || defined(OSF1) \
     || defined(HURD) || defined(NETBSD)
 	static struct sigaction old_segv_act;
-#	if defined(_sigargs) /* !Irix6.x */ || defined(HPUX) \
+#	if defined(IRIX5) || defined(HPUX) \
 	|| defined(HURD) || defined(NETBSD)
 	    static struct sigaction old_bus_act;
 #	endif
@@ -731,9 +726,11 @@ ptr_t GC_get_stack_base()
 		/* and setting a handler at the same time.		*/
 	        (void) sigaction(SIGSEGV, 0, &old_segv_act);
 	        (void) sigaction(SIGSEGV, &act, 0);
+	        (void) sigaction(SIGBUS, 0, &old_bus_act);
+	        (void) sigaction(SIGBUS, &act, 0);
 #	  else
 	        (void) sigaction(SIGSEGV, &act, &old_segv_act);
-#		if defined(IRIX5) && defined(_sigargs) /* Irix 5.x, not 6.x */ \
+#		if defined(IRIX5) \
 		   || defined(HPUX) || defined(HURD) || defined(NETBSD)
 		    /* Under Irix 5.x or HP/UX, we may get SIGBUS.	*/
 		    /* Pthreads doesn't exist under Irix 5.x, so we	*/
@@ -772,7 +769,7 @@ ptr_t GC_get_stack_base()
 #       if defined(SUNOS5SIGS) || defined(IRIX5) \
 	   || defined(OSF1) || defined(HURD) || defined(NETBSD)
 	  (void) sigaction(SIGSEGV, &old_segv_act, 0);
-#	  if defined(IRIX5) && defined(_sigargs) /* Irix 5.x, not 6.x */ \
+#	  if defined(IRIX5) \
 	     || defined(HPUX) || defined(HURD) || defined(NETBSD)
 	      (void) sigaction(SIGBUS, &old_bus_act, 0);
 #	  endif
@@ -853,7 +850,6 @@ ptr_t GC_get_stack_base()
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <ctype.h>
 
 # define STAT_SKIP 27   /* Number of fields preceding startstack	*/
 			/* field in /proc/self/stat			*/
@@ -950,7 +946,16 @@ ptr_t GC_get_stack_base()
 	  } /* Otherwise it's not safe to add 16 bytes and we fall	*/
 	    /* back to using /proc.					*/
 #	else 
+#	ifdef SPARC
+	  /* Older versions of glibc for 64-bit Sparc do not set
+	   * this variable correctly, it gets set to either zero
+	   * or one.
+	   */
+	  if (__libc_stack_end != (ptr_t) (unsigned long)0x1)
+	    return __libc_stack_end;
+#	else
 	  return __libc_stack_end;
+#	endif
 #	endif
       }
 #   endif
@@ -1384,7 +1389,7 @@ int * etext_addr;
 }
 # endif
 
-# if defined(FREEBSD) && defined(I386) && !defined(PCR)
+# if defined(FREEBSD) && (defined(I386) || defined(powerpc) || defined(__powerpc__)) && !defined(PCR)
 /* Its unclear whether this should be identical to the above, or 	*/
 /* whether it should apply to non-X86 architectures.			*/
 /* For now we don't assume that there is always an empty page after	*/
@@ -1505,7 +1510,7 @@ void GC_register_data_segments()
 # endif
 
 
-# ifdef RS6000
+# if 0 && defined(RS6000)  /* We now use mmap */
 /* The compiler seems to generate speculative reads one past the end of	*/
 /* an allocated object.  Hence we need to make sure that the page 	*/
 /* following the last heap page is also mapped.				*/
@@ -3723,7 +3728,7 @@ static kern_return_t GC_forward_exception(
     exception_behavior_t behavior;
     thread_state_flavor_t flavor;
     
-    thread_state_data_t thread_state;
+    thread_state_t thread_state;
     mach_msg_type_number_t thread_state_count = THREAD_STATE_MAX;
         
     for(i=0;i<GC_old_exc_ports.count;i++)
@@ -3784,13 +3789,19 @@ catch_exception_raise(
     char *addr;
     struct hblk *h;
     int i;
-#ifdef POWERPC
-    thread_state_flavor_t flavor = PPC_EXCEPTION_STATE;
-    mach_msg_type_number_t exc_state_count = PPC_EXCEPTION_STATE_COUNT;
-    ppc_exception_state_t exc_state;
-#else
+#   if defined(POWERPC)
+#     if CPP_WORDSZ == 32
+        thread_state_flavor_t flavor = PPC_EXCEPTION_STATE;
+        mach_msg_type_number_t exc_state_count = PPC_EXCEPTION_STATE_COUNT;
+        ppc_exception_state_t exc_state;
+#     else
+        thread_state_flavor_t flavor = PPC_EXCEPTION_STATE64;
+        mach_msg_type_number_t exc_state_count = PPC_EXCEPTION_STATE64_COUNT;
+        ppc_exception_state64_t exc_state;
+#     endif
+#   else
 #	error FIXME for non-ppc darwin
-#endif
+#   endif
 
     
     if(exception != EXC_BAD_ACCESS || code[0] != KERN_PROTECTION_FAILURE) {
@@ -3950,10 +3961,10 @@ kern_return_t catch_exception_raise_state_identity(
 #      if defined (DRSNX)
 #	 include <sys/sparc/frame.h>
 #      else
-#	 if defined(OPENBSD) || defined(NETBSD)
+#	 if defined(OPENBSD)
 #	   include <frame.h>
 #	 else
-#	   if defined(FREEBSD)
+#	   if defined(FREEBSD) || defined(NETBSD)
 #	     include <machine/frame.h>
 #	   else
 #	     include <sys/frame.h>
@@ -3986,6 +3997,16 @@ kern_return_t catch_exception_raise_state_identity(
 #if NARGS == 0 && NFRAMES % 2 == 0 /* No padding */ \
     && defined(GC_HAVE_BUILTIN_BACKTRACE)
 
+#ifdef REDIRECT_MALLOC
+  /* Deal with possible malloc calls in backtrace by omitting	*/
+  /* the infinitely recursing backtrace.			*/
+# ifdef THREADS
+    __thread 	/* If your compiler doesn't understand this */
+    		/* you could use something like pthread_getspecific.	*/
+# endif
+  GC_in_save_callers = FALSE;
+#endif
+
 void GC_save_callers (info) 
 struct callinfo info[NFRAMES];
 {
@@ -3995,10 +4016,21 @@ struct callinfo info[NFRAMES];
   
   /* We retrieve NFRAMES+1 pc values, but discard the first, since it	*/
   /* points to our own frame.						*/
+# ifdef REDIRECT_MALLOC
+    if (GC_in_save_callers) {
+      info[0].ci_pc = (word)(&GC_save_callers);
+      for (i = 1; i < NFRAMES; ++i) info[i].ci_pc = 0;
+      return;
+    }
+    GC_in_save_callers = TRUE;
+# endif
   GC_ASSERT(sizeof(struct callinfo) == sizeof(void *));
   npcs = backtrace((void **)tmp_info, NFRAMES + IGNORE_FRAMES);
   BCOPY(tmp_info+IGNORE_FRAMES, info, (npcs - IGNORE_FRAMES) * sizeof(void *));
   for (i = npcs - IGNORE_FRAMES; i < NFRAMES; ++i) info[i].ci_pc = 0;
+# ifdef REDIRECT_MALLOC
+    GC_in_save_callers = FALSE;
+# endif
 }
 
 #else /* No builtin backtrace; do it ourselves */
