@@ -76,7 +76,8 @@ import org.xml.sax.ext.Locator2;
  */
 public class SAXParser
   extends javax.xml.parsers.SAXParser
-  implements XMLReader, Attributes2, Locator2, XMLResolver, XMLReporter
+  implements XMLReader, Attributes2, Locator2, XMLReporter,
+             XMLParser.XMLResolver2
 {
 
   ContentHandler contentHandler;
@@ -377,6 +378,16 @@ public class SAXParser
                         uri = "";
                         localName = "";
                       }
+                    else
+                      {
+                        int nc = reader.getNamespaceCount();
+                        for (int i = 0; i < nc; i++)
+                          {
+                            String nsuri = reader.getNamespaceURI(i);
+                            String nsprefix = reader.getNamespacePrefix(i);
+                            contentHandler.startPrefixMapping(nsprefix, nsuri);
+                          }
+                      }
                     contentHandler.startElement(uri, localName, qName, this);
                   }
                 break;
@@ -396,6 +407,15 @@ public class SAXParser
                         localName = "";
                       }
                     contentHandler.endElement(uri, localName, qName);
+                    if (namespaceAware)
+                      {
+                        int nc = reader.getNamespaceCount();
+                        for (int i = 0; i < nc; i++)
+                          {
+                            String nsprefix = reader.getNamespacePrefix(i);
+                            contentHandler.endPrefixMapping(nsprefix);
+                          }
+                      }
                   }
                 break;
               case XMLStreamConstants.COMMENT:
@@ -499,17 +519,26 @@ public class SAXParser
                             if (ids.notationName != null)
                               {
                                 if (dtdHandler != null)
-                                  dtdHandler.unparsedEntityDecl(name,
-                                                                ids.publicId,
-                                                                ids.systemId,
-                                                                ids.notationName);
+                                  {
+                                    String pub = ids.publicId;
+                                    String url = ids.systemId;
+                                    String not = ids.notationName;
+                                    dtdHandler.unparsedEntityDecl(name,
+                                                                  pub,
+                                                                  url,
+                                                                  not);
+                                  }
                               }
                             else
                               {
                                 if (declHandler != null)
-                                  declHandler.externalEntityDecl(name,
-                                                                 ids.publicId,
-                                                                 ids.systemId);
+                                  {
+                                    String pub = ids.publicId;
+                                    String url = ids.systemId;
+                                    declHandler.externalEntityDecl(name,
+                                                                   pub,
+                                                                   url);
+                                  }
                               }
                           }
                       }
@@ -520,8 +549,9 @@ public class SAXParser
                           {
                             XMLParser.ExternalIds ids =
                               doctype.getNotation(name);
-                            dtdHandler.notationDecl(name, ids.publicId,
-                                                    ids.systemId);
+                            String pub = ids.publicId;
+                            String url = ids.systemId;
+                            dtdHandler.notationDecl(name, pub, url);
                           }
                       }
                   }
@@ -536,6 +566,10 @@ public class SAXParser
           contentHandler.startDocument();
         SAXParseException e2 = new SAXParseException(e.getMessage(), this);
         e2.initCause(e);
+        if (errorHandler != null)
+          errorHandler.fatalError(e2);
+        if (contentHandler != null)
+          contentHandler.endDocument();
         throw e2;
       }
     finally
@@ -607,7 +641,9 @@ public class SAXParser
 
   public String getType(int index)
   {
-    return reader.getAttributeType(index);
+    String ret = reader.getAttributeType(index);
+    // SAX doesn't permit ENUMERATION?
+    return ("ENUMERATION".equals(ret)) ? "NMTOKEN" : ret;
   }
 
   public String getType(String qName)
@@ -715,15 +751,22 @@ public class SAXParser
   }
 
   // -- XMLResolver --
-
+  
   public InputStream resolve(String uri)
+    throws XMLStreamException
+  {
+    return resolve(null, uri);
+  }
+
+  public InputStream resolve(String publicId, String systemId)
     throws XMLStreamException
   {
     if (entityResolver != null)
       {
         try
           {
-            InputSource input = entityResolver.resolveEntity(null, uri);
+            InputSource input =
+              entityResolver.resolveEntity(publicId, systemId);
             if (input != null)
               return input.getByteStream();
           }
@@ -776,6 +819,15 @@ public class SAXParser
             throw e2;
           }
       }
+  }
+
+  public static void main(String[] args)
+    throws Exception
+  {
+    SAXParser parser = new SAXParser();
+    InputSource input = new InputSource(args[0]);
+    parser.parse(input, new org.xml.sax.helpers.DefaultHandler());
+    
   }
   
 }

@@ -294,7 +294,8 @@ public class BlockView extends BoxView
    */
   protected StyleSheet getStyleSheet()
   {
-    // FIXME: Not implemented properly.
-    return new StyleSheet();
+    StyleSheet styleSheet = new StyleSheet();
+    styleSheet.importStyleSheet(getClass().getResource(HTMLEditorKit.DEFAULT_CSS));
+    return styleSheet;
   }
 }

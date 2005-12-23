@@ -38,8 +38,10 @@ exception statement from your version. */
 
 package javax.swing.text;
 
+import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -698,6 +700,53 @@ public class DefaultEditorKit extends EditorKit
     new InsertContentAction(),
     new InsertTabAction(),
     new PasteAction(),
+    new TextAction(beginLineAction)
+    {
+      public void actionPerformed(ActionEvent event)
+      {
+        JTextComponent t = getTextComponent(event);
+        try
+        {
+          // TODO: There is a more efficent solution, but
+          // viewToModel doesn't work properly.
+          Point p = t.modelToView(t.getCaret().getDot()).getLocation();
+          int cur = t.getCaretPosition();
+          int y = p.y;
+          while (y == p.y && cur > 0)
+            y = t.modelToView(--cur).getLocation().y;
+          if (cur != 0)
+            cur++;
+          t.setCaretPosition(cur);
+        }
+        catch (BadLocationException ble)
+        {
+          // Do nothing here.
+        }
+      }
+    },
+    new TextAction(endLineAction)
+    {
+      public void actionPerformed(ActionEvent event)
+      {
+        JTextComponent t = getTextComponent(event);
+       try
+       {
+         Point p = t.modelToView(t.getCaret().getDot()).getLocation();
+         int cur = t.getCaretPosition();
+         int y = p.y;
+         int length = t.getDocument().getLength();
+         while (y == p.y && cur < length)
+           y = t.modelToView(++cur).getLocation().y;
+         if (cur != length)
+           cur--;
+         t.setCaretPosition(cur);
+       }
+       catch (BadLocationException ble)
+       {
+         // Nothing to do here
+       }
+      }
+    },
     new TextAction(deleteNextCharAction) 
     { 
       public void actionPerformed(ActionEvent event)
@@ -899,7 +948,7 @@ public class DefaultEditorKit extends EditorKit
 	content.append("\n");
       }
     
-    document.insertString(offset, content.toString(),
+    document.insertString(offset, content.substring(0, content.length() - 1),
 			  SimpleAttributeSet.EMPTY);
   }
 

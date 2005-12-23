@@ -879,7 +879,7 @@ public class HTMLEditorKit
    */
   public Document createDefaultDocument()
   {
-    HTMLDocument document = new HTMLDocument();
+    HTMLDocument document = new HTMLDocument(getStyleSheet());
     document.setParser(getParser());
     return document;
   }
@@ -1152,7 +1152,10 @@ public class HTMLEditorKit
   public StyleSheet getStyleSheet()
   {
     if (styleSheet == null)
-      styleSheet = new StyleSheet();
+      {
+        styleSheet = new StyleSheet();
+        styleSheet.importStyleSheet(getClass().getResource(DEFAULT_CSS));
+      }
     return styleSheet;
   }
   

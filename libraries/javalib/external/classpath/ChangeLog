@@ -1,3 +1,293 @@
+2005-12-23  Chris Burdess  <dog@gnu.org>
+
+	* gnu/xml/stream/SAXParser.java,
+	  gnu/xml/stream/XMLParser.java: Interim commit during W3C XML
+	  conformance testing.
+
+2005-12-22  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/JInternalFrame.java
+	(show): Removed call moveToFront. Listeners already call
+	toFront, which calls moveToFront.
+	* javax/swing/JLayeredPane.java
+	(setPosition): Positions are assigned from the "front" 
+	to the "back", and drawn from the back towards the front. Added
+	a loop to swap all the components, so they are in the correct 
+	layer.
+
+2005-12-22  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* javax/swing/text/DefaultStyledDocument.java:
+	(ElementBuffer.insertContentTag): Get the attributes from the tag. 
+	Return early if direction is JoinNextDirection but there is no next 
+	Element.  
+	(createDefaultRoot): Don't call createBranchElement here just 
+	instantiate a new BranchElement.
+	(insertUpdate): Removed unneeded fields newElement, newElement2.  When
+	building the buffer ElementSpecs, no need to check each time if we 
+	should join to the previous or next Element, just check the first and
+	last ElementSpecs after the buffer has been completely built.
+
+2005-12-22  Tom Tromey  <tromey@redhat.com>
+
+	* .externalToolBuilders/ClasspathJar.launch: New file.
+	* .project: Updated.
+
+2005-12-21  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/plaf/basic/BasicLookAndFeel.java
+	(initComponentDefaults): Added focusInputMaps for
+	Button, CheckBox, EditorPane, List, Slider, TabbedPane,
+	ToggleButton, Tree. Also, removed TODO comments that
+	dealt with icons. BasicLookAndFeel does not have icons.
+
+2005-12-22  Mark Wielaard  <mark@klomp.org>
+
+	* gnu/java/nio/charset/Provider.java (provider): Wrap initialization
+	of standard provider in a PrivilegedAction.
+	
+2005-12-21  Lillian Angel  <langel@redhat.com>
+	
+	* javax/swing/plaf/basic/BasicLookAndFeel.java
+	(initComponentDefaults): Added focus input map for
+	EditorPane. Removed keyBindings.
+	* javax/swing/plaf/basic/BasicTextUI.java
+	(createKeyMap): Added check to prevent NPE.
+
+2005-12-21  Lillian Angel  <langel@redhat.com>
+
+	PR classpath/25517
+	* javax/swing/plaf/basic/BasicLookAndFeel.java
+	(initComponentDefaults): Added focus map for FormattedTextField. Mauve
+	test updated for this.
+	* javax/swing/plaf/basic/BasicTextUI.java
+	(createKeyMap): Fixed to get key bindings from the input map. There
+	is not .keyBindings default in BasicL&F (same with the JDK).
+	(installKeyBoardActions): Removed unneeded code.	
+
+2005-12-21  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/plaf/basic/BasicLookAndFeel.java
+	(initComponentDefaults): Typo in mauve test. Reverted last patch.
+
+2005-12-21  Mark Wielaard  <mark@klomp.org>
+
+	* include/Makefile.am: Rename gnu_java_awt_peer_gtk_CairoGraphics.h
+	to gnu_java_awt_peer_gtk_GdkGraphics2D.h.
+
+2005-12-21  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* .project: Add ClasspathHeaders.launch.
+	* .externalToolBuilders/Autogen.launch: Run automatically when
+	Makefile.am or configure.ac is updated.
+	* .externalToolBuilders/CompileNative.launch: Run automatically.
+	* .externalToolBuilders/Configure.launch: Run automatically when
+	top-level Makefile.in changes.
+	* include/Makefile.am (CLASSDIR): New variable.  Replace lib
+	references with $(CLASSDIR).
+	* .externalToolBuilders/ClasspathHeaders.launch: New builder.
+
+2005-12-21  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/plaf/basic/BasicLookAndFeel.java
+	(initComponentDefaults): Fixed key binding for TextField.focusInputMap.
+
+2005-12-21  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* javax/swing/text/DefaultEditorKit.java:
+	(read): Changed the call to insertString to leave out the trailing
+	new line.
+
+2005-12-21  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/UIDefaults.java
+	(createValue): Added check in. Bind might be an instance of KeyStroke.
+	* javax/swing/plaf/basic/BasicLookAndFeel.java
+	(initComponentDefaults): Changed key bindings for PasswordField, TextArea,
+	TextPane, TextField to be instances of KeyStroke.
+	* javax/swing/plaf/basic/BasicTextUI.java
+	(installKeyBoardActions): Added call to replace textComponent's top-level
+	action map to parentActionMap. Also, removed unneeded code.
+
+2005-12-21  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* javax/swing/text/DefaultStyledDocument.java:
+	(insertUpdate): If the AttributeSet argument is null use an empty 
+	AttributeSet for comparisons. No need to create a new LeafElement to 
+	compare AttributeSets (ie - remove the hack added yesterday).
+	* javax/swing/text/StyleContext.java:
+	(SmallAttributeSet.isEqual): Don't return false for null arguments, 
+	this should throw an NPE instead.  Also, for performance, check that
+	sizes are equal and one set contains the other, rather than checking 
+	that each set contains the other.
+
+2005-12-20  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/plaf/basic/BasicLookAndFeel.java
+	(initComponentDefaults): Added all key bindings for PasswordField
+	focusInputMap.
+
+2005-12-20  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/UIDefaults.java:
+	(LazyInputMap): InputMap should be an InputMapUIResource.
+	* javax/swing/plaf/basic/BasicLookAndFeel.java
+	(initComponentDefaults): Added all key bindings for Text*.
+	* javax/swing/plaf/basic/BasicTextUI.java
+	(installKeyboardActions): Fixed call to replaceUIActionMap
+	to create a new ActionMap from textComponent's actions. Prevents
+	an infinite loop. Fixed loop to set the parentActionMap and the 
+	parentInputMap.
+	(ActionListenerProxy): Removed. No longer needed.
+	(convertModifiers): Likewise.
+	(creatActionMap): New function creates the action map to
+	be installed on the text component.
+
+2005-12-20  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/plaf/basic/BasicLookAndFeel.java
+	(initComponentDefaults): Added focusInputMap added
+	for PasswordField.
+	* javax/swing/text/JTextComponent.java
+	(allKeys): Fixed to prevent NPE.
+
+2005-12-20  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/plaf/basic/BasicLookAndFeel.java
+	(initClassDefaults): Fixed typo.
+	(initComponentDefaults): Removed keyBindings defaults for
+	Text*. Added focusInputMap for Text*.
+	* javax/swing/plaf/basic/BasicTextUI.java
+	(installKeyBoardActions): Added code to load the focusInputMap
+	and install all the actions for each key.
+	(ActionListenerProxy): New class implemented.
+	(converModifiers): New method to convert the modifiers.
+	(getActionMap): Removed function. Not needed.
+	(createActionMap): Likewise.
+	* javax/swing/text/JTextComponent.java
+	(JTextComponent): Removed code to load the keymap.
+
+2005-12-20  Lillian Angel <langel@redhat.com>
+	
+	* javax/swing/text/DefaultEditorKit.java:
+	Added implementation for beginLineAction and
+	endLineAction.
+	* javax/swing/text/JTextComponent.java
+	(JTextComponent): Added key bindings for HOME and END.
+
+2005-12-20  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/plaf/basic/BasicTreeUI.java
+	(pathWasExpanded): Removed unneeded revalidate call.
+	(pathWasCollapsed): Likewise.
+	(installUI): Fixed to check for null root.
+	(paint): Fixed to always update path.
+	(toggleExpandState): Removed call to update path.
+	(editingStopped): Likewise.
+	(editingCanceled): Likewise.
+	(treeStructureChanged): Likewise.
+	(treeExpanded): Likewise.
+	(treeCollapsed): Likewise.
+	(treeNodesChanged): Likewise.	
+	(treeNodesInserted): Likewise.
+	(treeNodesRemoved): Likewise.
+	(updateCurrentVisiblePath): Added check for null root. If root is null,
+	nothing should be painted or in the path.
+	* javax/swing/tree/DefaultTreeModel.java
+	(setRoot): Root can be null.
+
+2005-12-20  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	Fixes bug #25506
+	* javax/swing/text/AbstractDocument.java:
+	(insertString): Fire insert update whether the DocumentEvent was
+	changed or not.
+
+2005-12-20  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* javax/swing/text/DefaultStyledDocument.java:
+	(ElementBuffer.insertContentTag): If the direction is 
+	OriginateDirection split all the time, don't check the attribute sets.
+	Removed the special case for the first insertion.  These cases should
+	fall under the direction JoinPreviousDirection. Changed the comments to
+	reflect this.
+	(insertUpdate): Added a hack to get the right result when comparing
+	the attributes of the new ElementSpec to the attributes of either
+	the previous or next Element.
+
+2005-12-19  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/html/CSSParser.java
+	(CSSParser): Initialized tokenBuffer with some
+	arbitrary size. This makes append much more efficent since
+	a new array will not been created with each append.
+	(append): Fixed append to create a new larger array if
+	needed.
+	(nextToken): Finished implemented. Should decrease the
+	tokenBufferLength if an identifier was read. This way " and '
+	are not added to the buffer.
+	(parse): Implemented to call the appropriate parsing function
+	based on parameter.
+	(getNextStatement): Implemented.
+	(parseAtRule): Added some helpful comments for implementing.
+	(parseRuleSet): Likewise.
+	(parseIdentifiers): Likewise.
+	(readComment): Likewise.
+	* javax/swing/text/html/StyleSheet.java
+	(addRule): Implemented.
+	(loadRules): Implemented.
+	(importStyleSheet): Removed implementation for now. It causes
+	a loop. Added FIXME
+	(startRule): Implemented.
+	(handleProperty): Implemented.
+	(addSelector): Implemented.
+
+2005-12-19  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/html/BlockView.java
+	(getStyleSheet): Implemented.
+	* javax/swing/text/html/CSSParser.java: New private class,
+	partially implemented.
+	* javax/swing/text/html/HTMLEditorKit.java
+	(createDefaultDocument): Fixed to create HTMLDocument with
+	default style sheet.
+	(getStyleSheet): Fixed to initialize style sheet if null.
+	* javax/swing/text/html/StyleSheet.java
+	(CssParser): New private inner class, partially implemented.
+
+2005-12-19  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* javax/swing/text/DefaultStyledDocument.java:
+	(endOffset): New field.
+	(ElementBuffer.insert): If length is 0 return early.  Set the endOffset
+	variable here.
+	(ElementBuffer.insertContentTag): Added special case for when insertion
+	covers entire range of the current Element.  Replaced (offset + length)
+	with endOffset everywhere.  Added checks to see if the insertion has 
+	the same attributes as the surrounding Element(s), in which case we
+	don't split them, we join them.
+	(SectionElement.getName): Return the field SectionElementName instead 
+	of hardcoding a return value.
+	(getLogicalStyle): As the specs require, if the attributes from the 
+	resolve parent aren't of type Style, return null.
+	(setCharacterAttributes): Exit early if length is 0.  Obtain a 
+	write lock for the body of this method.  Changed the way we iterate
+	through the paragraphs to be more efficient and more intuitive.  Added
+	AttributeUndoableEdits to the DocumentEvent and fired the 
+	UndoableEditUpdate.
+	(setLogicalStyle): Return early if the Element is null.  Obtain a write
+	lock for the body of this method.  Fire the appropriate DocumentEvent.
+	(setParagraphAttributes): Changed the way we iterated through the 
+	paragraphs because it was incorrect and unintuitive.  Obtained a write
+	lock within a try/finally block.  Added AttributeUndoableEdits to the 
+	DocumentEvent and fired the event.
+	(insertUpdate): Changed the way we iterate because we cannot assume 
+	the Segment holds the characters starting from index 0.  Give the 
+	startTag the same attributes as the paragraph.  Removed the useless
+	offset += len line because len is 0.
+	(printElements): New temporary debugging method.
+	(attributeSetsAreSame): New method.
+
 2005-12-19  Dalibor Topic  <robilad@kaffe.org>
 
 	* native/fdlibm/mprec.h (DEBUG): Include stdlib.h for

@@ -1,7 +1,5 @@
-This is
-../../../../../../kaffe/libraries/javalib/external/classpath/doc/hacking.info,
-produced by makeinfo version 4.7 from
-../../../../../../kaffe/libraries/javalib/external/classpath/doc/hacking.texinfo.
+This is ../../classpath/doc/hacking.info, produced by makeinfo version
+4.7 from ../../classpath/doc/hacking.texinfo.
 
    This file contains important information you will need to know if you
 are going to hack on the GNU Classpath project code.
@@ -1647,34 +1645,34 @@ a `Character' object.
 
 
 Tag Table:
-Node: Top560
-Node: Introduction2867
-Node: Requirements3770
-Node: Volunteering7430
-Node: Project Goals9549
-Node: Needed Tools and Libraries12580
-Node: Programming Standards17461
-Node: Source Code Style Guide18488
-Node: Hacking Code25509
-Node: Branches30373
-Node: Writing ChangeLogs32986
-Node: Programming Goals35935
-Node: Portability36904
-Node: Utility Classes37927
-Node: Robustness38883
-Node: Java Efficiency40216
-Node: Native Efficiency41102
-Node: Security44195
-Node: API Compatibility44843
-Node: Serialization45105
-Node: Deprecated Methods46702
-Node: Specification Sources49133
-Node: Naming Conventions51572
-Node: Character Conversions55074
-Node: Localization60702
-Node: String Collation64953
-Node: Break Iteration65682
-Node: Date Formatting and Parsing66334
-Node: Decimal/Currency Formatting and Parsing68443
+Node: Top470
+Node: Introduction2777
+Node: Requirements3680
+Node: Volunteering7340
+Node: Project Goals9459
+Node: Needed Tools and Libraries12490
+Node: Programming Standards17371
+Node: Source Code Style Guide18398
+Node: Hacking Code25419
+Node: Branches30283
+Node: Writing ChangeLogs32896
+Node: Programming Goals35845
+Node: Portability36814
+Node: Utility Classes37837
+Node: Robustness38793
+Node: Java Efficiency40126
+Node: Native Efficiency41012
+Node: Security44105
+Node: API Compatibility44753
+Node: Serialization45015
+Node: Deprecated Methods46612
+Node: Specification Sources49043
+Node: Naming Conventions51482
+Node: Character Conversions54984
+Node: Localization60612
+Node: String Collation64863
+Node: Break Iteration65592
+Node: Date Formatting and Parsing66244
+Node: Decimal/Currency Formatting and Parsing68353
 
 End Tag Table

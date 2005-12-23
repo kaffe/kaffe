@@ -63,7 +63,7 @@ done
 
 echo "Copying all files from classpath's CVS"
 for i in `cat ${WORKDIR}/new_file_list`; do
-    cp -f ${WORKDIR}/build/classpath-*/${i} ${i};
+    cp -pf ${WORKDIR}/build/classpath-*/${i} ${i};
 done
 
 )

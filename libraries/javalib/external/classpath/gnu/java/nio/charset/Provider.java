@@ -39,6 +39,8 @@ package gnu.java.nio.charset;
 
 import java.nio.charset.Charset;
 import java.nio.charset.spi.CharsetProvider;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -232,8 +234,16 @@ public final class Provider extends CharsetProvider
 
   public static synchronized Provider provider ()
   {
+    // The default provider is safe to instantiate.
     if (singleton == null)
-      singleton = new Provider ();
+      singleton = (Provider) AccessController.doPrivileged
+	(new PrivilegedAction()
+	  {
+	    public Object run()
+	    {
+	      return new Provider();
+	    }
+	  });
     return singleton;
   }
 }

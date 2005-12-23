@@ -544,8 +544,7 @@ public abstract class AbstractDocument implements Document, Serializable
     insertUpdate(event, attributes);
     writeUnlock();
 
-    if (event.modified)
-      fireInsertUpdate(event);
+    fireInsertUpdate(event);
     if (undo != null)
       fireUndoableEditUpdate(new UndoableEditEvent(this, undo));
   }

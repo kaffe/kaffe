@@ -1201,7 +1201,6 @@ public class BasicTreeUI extends TreeUI
   protected void pathWasExpanded(TreePath path)
   {
     validCachedPreferredSize = false;
-    tree.revalidate();
     tree.repaint();
   }
 
@@ -1211,7 +1210,6 @@ public class BasicTreeUI extends TreeUI
   protected void pathWasCollapsed(TreePath path)
   {
     validCachedPreferredSize = false;
-    tree.revalidate();
     tree.repaint();
   }
 
@@ -1354,9 +1352,13 @@ public class BasicTreeUI extends TreeUI
     setModel(mod);
     if (mod != null)
       {
-        TreePath path = new TreePath(mod.getRoot());
-        if (!tree.isExpanded(path))
-          toggleExpandState(path);
+        Object root = mod.getRoot();
+        if (root != null)
+          {
+            TreePath path = new TreePath(root);
+            if (!tree.isExpanded(path))
+              toggleExpandState(path);
+          }
       }
     treeSelectionModel = tree.getSelectionModel();
 
@@ -1406,8 +1408,7 @@ public class BasicTreeUI extends TreeUI
   public void paint(Graphics g, JComponent c)
   {
     JTree tree = (JTree) c;
-    if (currentVisiblePath == null)
-      updateCurrentVisiblePath();
+    updateCurrentVisiblePath();
 
     Rectangle clip = g.getClipBounds();
     Insets insets = tree.getInsets();
@@ -1636,7 +1637,7 @@ public class BasicTreeUI extends TreeUI
         tree.add(editingComponent.getParent());
         editingComponent.getParent().validate();
         validCachedPreferredSize = false;
-        tree.revalidate();
+        
         ((JTextField) editingComponent).requestFocusInWindow(false);
         editorTimer.start();
         return true;
@@ -1725,7 +1726,6 @@ public class BasicTreeUI extends TreeUI
       tree.collapsePath(path);
     else
       tree.expandPath(path);
-    updateCurrentVisiblePath();
   }
 
   /**
@@ -2082,7 +2082,6 @@ public class BasicTreeUI extends TreeUI
       tree.requestFocusInWindow(false);
       editorTimer.stop();
       validCachedPreferredSize = false;
-      tree.revalidate();
       tree.repaint();
     }
 
@@ -2113,7 +2112,6 @@ public class BasicTreeUI extends TreeUI
       editorTimer.stop();
       isEditing = false;
       validCachedPreferredSize = false;
-      tree.revalidate();
       tree.repaint();
     }
   }// CellEditorHandler
@@ -2544,8 +2542,6 @@ public class BasicTreeUI extends TreeUI
       if ((event.getPropertyName()).equals("rootVisible"))
         {
           validCachedPreferredSize = false;
-          updateCurrentVisiblePath();
-          tree.revalidate();
           tree.repaint();
         }
     }
@@ -2642,8 +2638,6 @@ public class BasicTreeUI extends TreeUI
     public void treeExpanded(TreeExpansionEvent event)
     {
       validCachedPreferredSize = false;
-      updateCurrentVisiblePath();
-      tree.revalidate();
       tree.repaint();
     }
 
@@ -2656,8 +2650,6 @@ public class BasicTreeUI extends TreeUI
     public void treeCollapsed(TreeExpansionEvent event)
     {
       validCachedPreferredSize = false;
-      updateCurrentVisiblePath();
-      tree.revalidate();
       tree.repaint();
     }
   }// TreeExpansionHandler
@@ -2847,8 +2839,6 @@ public class BasicTreeUI extends TreeUI
     public void treeNodesChanged(TreeModelEvent e)
     {
       validCachedPreferredSize = false;
-      updateCurrentVisiblePath();
-      tree.revalidate();
       tree.repaint();
     }
 
@@ -2863,8 +2853,6 @@ public class BasicTreeUI extends TreeUI
     public void treeNodesInserted(TreeModelEvent e)
     {
       validCachedPreferredSize = false;
-      updateCurrentVisiblePath();
-      tree.revalidate();
       tree.repaint();
     }
 
@@ -2882,8 +2870,6 @@ public class BasicTreeUI extends TreeUI
     public void treeNodesRemoved(TreeModelEvent e)
     {
       validCachedPreferredSize = false;
-      updateCurrentVisiblePath();
-      tree.revalidate();
       tree.repaint();
     }
 
@@ -2902,9 +2888,7 @@ public class BasicTreeUI extends TreeUI
       if (e.getPath().length == 1
           && !e.getPath()[0].equals(treeModel.getRoot()))
         tree.expandPath(new TreePath(treeModel.getRoot()));
-      updateCurrentVisiblePath();
       validCachedPreferredSize = false;
-      tree.revalidate();
       tree.repaint();
     }
   }// TreeModelHandler
@@ -3667,6 +3651,9 @@ public class BasicTreeUI extends TreeUI
       return;
 
     Object next = treeModel.getRoot();
+    if (next == null)
+      return;
+    
     TreePath rootPath = new TreePath(next);
     Rectangle bounds = getPathBounds(tree, rootPath);
     

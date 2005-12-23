@@ -42,15 +42,16 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Serializable;
+import java.io.StringReader;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import java.util.Enumeration;
+import java.util.Vector;
 
 import javax.swing.text.AttributeSet;
 import javax.swing.text.Element;
@@ -137,7 +138,15 @@ public class StyleSheet extends StyleContext
    */
   public void addRule(String rule)
   {
-    // FIXME: Not implemented.
+    CssParser cp = new CssParser();
+    try
+    {
+      cp.parse(base, new StringReader(rule), false, false);
+    }
+    catch (IOException io)
+    {
+      // Do nothing here.
+    }
   }
   
   /**
@@ -167,7 +176,8 @@ public class StyleSheet extends StyleContext
    */
   public void loadRules(Reader in, URL ref) throws IOException
   {
-    // FIXME: Not implemented.
+    CssParser cp = new CssParser();
+    cp.parse(ref, in, false, false);
   }
   
   /**
@@ -263,16 +273,7 @@ public class StyleSheet extends StyleContext
    */
   public void importStyleSheet(URL url)
   {
-    try
-      {
-        // FIXME: Need to make sure url points to a valid CSS document.
-        loadRules(new BufferedReader(new InputStreamReader(url.openStream())),
-                  url);
-      }
-    catch (IOException ioe)
-      {
-        // Do nothing here.
-      }
+    // FIXME: Not implemented
   }
   
   /**
@@ -729,5 +730,208 @@ public class StyleSheet extends StyleContext
     {
       // FIXME: Not implemented.
     }
+  }
+  
+  /**
+   * The parser callback for the CSSParser.
+   */
+  class CssParser implements CSSParser.CSSParserCallback
+  {
+    /** 
+     * A vector of all the selectors. 
+     * Each element is an array of all the selector tokens 
+     * in a single rule. 
+     */
+    Vector selectors;
+
+    /** A vector of all the selector tokens in a rule. */
+    Vector selectorTokens;
+
+    /**  Name of the current property. */
+    String propertyName;
+
+    /** The set of CSS declarations */
+    MutableAttributeSet declaration;
+
+    /** 
+     * True if parsing a declaration, that is the Reader will not 
+     * contain a selector. 
+     */
+    boolean parsingDeclaration;
+
+    /** True if the attributes are coming from a linked/imported style. */
+    boolean isLink;
+
+    /** The base URL */
+    URL base;
+
+    /** The parser */
+    CSSParser parser;
+
+    /**
+     * Constructor
+     */
+    CssParser()
+    {
+      selectors = new Vector();
+      selectorTokens = new Vector();
+      parser = new CSSParser();
+      base = StyleSheet.this.base;
+      declaration = new SimpleAttributeSet();
+    }
+
+    /**
+     * Parses the passed in CSS declaration into an AttributeSet.
+     * 
+     * @param s - the declaration
+     * @return the set of attributes containing the property and value.
+     */
+    public AttributeSet parseDeclaration(String s)
+    {
+      try
+      {
+        return parseDeclaration(new StringReader(s));
+      }
+      catch (IOException e)
+      {
+         // Do nothing here.
+      }
+      return null;
+    }
+
+    /**
+     * Parses the passed in CSS declaration into an AttributeSet.
+     * 
+     * @param r - the reader
+     * @return the attribute set
+     * @throws IOException from the reader
+     */
+    public AttributeSet parseDeclaration(Reader r) throws IOException
+    {
+      parse(base, r, true, false);
+      return declaration;
+    }
+
+    /**
+     * Parse the given CSS stream
+     * 
+     * @param base - the url
+     * @param r - the reader
+     * @param parseDec - True if parsing a declaration
+     * @param isLink - True if parsing a link
+     */
+   public void parse(URL base, Reader r, boolean parseDec, boolean isLink) throws IOException
+   {
+     parsingDeclaration = parseDec;
+     this.isLink = isLink;
+     this.base = base;
+     
+     // flush out all storage
+     propertyName = null;
+     selectors.clear();
+     selectorTokens.clear();
+     declaration.removeAttributes(declaration);
+     
+     parser.parse(r, this, parseDec);
+   }
+
+   /**
+    * Invoked when a valid @import is encountered, 
+    * will call importStyleSheet if a MalformedURLException 
+    * is not thrown in creating the URL.
+    *
+    * @param s - the string after @import
+    */ 
+   public void handleImport(String s)
+    {
+      if (s != null)
+        {
+          try
+            {
+              if (s.startsWith("url(") && s.endsWith(")"))
+                s = s.substring(4, s.length() - 1);
+              if (s.indexOf("\"") >= 0)
+                s = s.replaceAll("\"","");
+
+              URL url = new URL(s);
+              if (url == null && base != null)
+                url = new URL(base, s);
+              
+              importStyleSheet(url);
+            }
+          catch (MalformedURLException e)
+            {
+              // Do nothing here.
+            }
+        }
+    }
+
+   /**
+     * A selector has been encountered.
+     * 
+     * @param s - a selector (e.g. P or UL or even P,)
+     */
+   public void handleSelector(String s)
+   {
+     if (s.endsWith(","))
+       s = s.substring(0, s.length() - 1);
+     
+     selectorTokens.addElement(s);
+     addSelector();
+   }
+
+   /**
+    * Invoked when the start of a rule is encountered.
+    */
+   public void startRule()
+   {
+     addSelector();
+   }
+
+   /**
+    * Invoked when a property name is encountered.
+    *
+    * @param s - the property
+    */
+   public void handleProperty(String s)
+   {
+     propertyName = s;
+   }
+
+  /**
+   * Invoked when a property value is encountered.
+   *
+   * @param s - the value
+   */
+   public void handleValue(String s)
+   {
+     // call addCSSAttribute
+     // FIXME: Not implemented
+   }
+   
+   /**
+    * Invoked when the end of a rule is encountered.
+    */
+   public void endRule()
+   {
+     // FIXME: Not implemented
+     // add rules
+     propertyName = null;
+   }
+
+   /**
+    * Adds the selector to the vector.
+    */
+   private void addSelector()
+   {
+     int length = selectorTokens.size();
+     if (length > 0)
+       {
+         Object[] sel = new Object[length];
+         System.arraycopy(selectorTokens.toArray(), 0, sel, 0, length);
+         selectors.add(sel);
+         selectorTokens.clear();
+       }
+   }
   }
 }
