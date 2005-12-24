@@ -5,6 +5,11 @@
 
 2005-12-23  Dalibor Topic  <robilad@kaffe.org>
 
+	* include/Makefile.am: Do not generate redundant headers 
+	java_lang_VMDouble.h and java_lang_VMFloat.h.
+
+2005-12-23  Dalibor Topic  <robilad@kaffe.org>
+
 	* include/Makefile.am: Do not generate unused headers
 	java_lang_Boolean.h, java_lang_Byte.h, java_lang_Character.h,
 	java_lang_Long.h, java_lang_Short.h.
