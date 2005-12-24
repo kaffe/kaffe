@@ -1,17 +1,17 @@
 package antlr;
 
 /* ANTLR Translator Generator
- * Project led by Terence Parr at http://www.jGuru.com
+ * Project led by Terence Parr at http://www.cs.usfca.edu
  * Software rights: http://www.antlr.org/license.html
  *
- * $Id: ASTFactory.java,v 1.1 2005/09/17 21:38:42 robilad Exp $
+ * $Id: ASTFactory.java,v 1.2 2005/12/24 21:50:48 robilad Exp $
  */
+
+import java.lang.reflect.Constructor;
+import java.util.Hashtable;
 
 import antlr.collections.AST;
 import antlr.collections.impl.ASTArray;
-
-import java.util.Hashtable;
-import java.lang.reflect.Constructor;
 
 /** AST Support code shared by TreeParser and Parser.
  *  We use delegation to share code (and have only one
@@ -89,7 +89,7 @@ public class ASTFactory {
 		}
 		Class c = null;
 		try {
-			c = Class.forName(className);
+			c = Utils.loadClass(className);
 			tokenTypeToASTClassMap.put(new Integer(tokenType), c);
 		}
 		catch (Exception e) {
@@ -217,7 +217,7 @@ public class ASTFactory {
 	public AST create(String className) {
 		Class c = null;
 		try {
-			c = Class.forName(className);
+			c = Utils.loadClass(className);
 		}
 		catch (Exception e) {
 			throw new IllegalArgumentException("Invalid class, "+className);
@@ -232,7 +232,7 @@ public class ASTFactory {
 		Class c = null;
 		AST t = null;
 		try {
-			c = Class.forName(className);
+			c = Utils.loadClass(className);
 			Class[] tokenArgType = new Class[] { antlr.Token.class };
 			try {
 				Constructor ctor = c.getConstructor(tokenArgType);
@@ -375,7 +375,7 @@ public class ASTFactory {
     public void setASTNodeClass(String t) {
         theASTNodeType = t;
         try {
-            theASTNodeTypeClass = Class.forName(t); // get class def
+            theASTNodeTypeClass = Utils.loadClass(t); // get class def
         }
         catch (Exception e) {
             // either class not found,

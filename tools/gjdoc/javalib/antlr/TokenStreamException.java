@@ -1,10 +1,10 @@
 package antlr;
 
 /* ANTLR Translator Generator
- * Project led by Terence Parr at http://www.jGuru.com
+ * Project led by Terence Parr at http://www.cs.usfca.edu
  * Software rights: http://www.antlr.org/license.html
  *
- * $Id: TokenStreamException.java,v 1.1 2005/09/17 21:38:44 robilad Exp $
+ * $Id: TokenStreamException.java,v 1.2 2005/12/24 21:50:49 robilad Exp $
  */
 
 /**
@@ -17,4 +17,12 @@ public class TokenStreamException extends ANTLRException {
     public TokenStreamException(String s) {
         super(s);
     }
+
+	public TokenStreamException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public TokenStreamException(Throwable cause) {
+		super(cause);
+	}
 }

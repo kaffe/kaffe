@@ -390,6 +390,7 @@ antlr_SRCS = \
 	antlr/TokenQueue.java \
 	antlr/FileLineFormatter.java \
 	antlr/BaseAST.java \
+	antlr/Utils.java \
 	antlr/debug/MessageListener.java \
 	antlr/debug/ParserListener.java \
 	antlr/debug/ParserMatchListener.java \

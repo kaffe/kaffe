@@ -1,10 +1,10 @@
 package antlr;
 
 /* ANTLR Translator Generator
- * Project led by Terence Parr at http://www.jGuru.com
+ * Project led by Terence Parr at http://www.cs.usfca.edu
  * Software rights: http://www.antlr.org/license.html
  *
- * $Id: ANTLRStringBuffer.java,v 1.1 2005/09/17 21:38:42 robilad Exp $
+ * $Id: ANTLRStringBuffer.java,v 1.2 2005/12/24 21:50:48 robilad Exp $
  */
 
 // Implementation of a StringBuffer-like object that does not have the

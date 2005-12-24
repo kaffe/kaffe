@@ -1,13 +1,11 @@
 package antlr;
 
 /* ANTLR Translator Generator
- * Project led by Terence Parr at http://www.jGuru.com
+ * Project led by Terence Parr at http://www.cs.usfca.edu
  * Software rights: http://www.antlr.org/license.html
  *
- * $Id: TreeParser.java,v 1.1 2005/09/17 21:38:44 robilad Exp $
+ * $Id: TreeParser.java,v 1.2 2005/12/24 21:50:49 robilad Exp $
  */
-
-import java.util.NoSuchElementException;
 
 import antlr.collections.AST;
 import antlr.collections.impl.BitSet;
@@ -96,7 +94,7 @@ public class TreeParser {
      */
     public static void panic() {
         System.err.println("TreeWalker: panic");
-        System.exit(1);
+        Utils.error("");
     }
 
     /** Parser error-reporting function can be overridden in subclass */

@@ -1,10 +1,10 @@
 package antlr;
 
 /* ANTLR Translator Generator
- * Project led by Terence Parr at http://www.jGuru.com
+ * Project led by Terence Parr at http://www.cs.usfca.edu
  * Software rights: http://www.antlr.org/license.html
  *
- * $Id: BaseAST.java,v 1.1 2005/09/17 21:38:42 robilad Exp $
+ * $Id: BaseAST.java,v 1.2 2005/12/24 21:50:48 robilad Exp $
  */
 
 import antlr.collections.AST;
@@ -320,7 +320,8 @@ public abstract class BaseAST implements AST, Serializable {
         StringBuffer b = new StringBuffer();
         // if verbose and type name not same as text (keyword probably)
         if (verboseStringConversion &&
-            !getText().equalsIgnoreCase(tokenNames[getType()]) &&
+            getText() != null &&
+			!getText().equalsIgnoreCase(tokenNames[getType()]) &&
             !getText().equalsIgnoreCase(StringUtils.stripFrontBack(tokenNames[getType()], "\"", "\""))) {
             b.append('[');
             b.append(getText());

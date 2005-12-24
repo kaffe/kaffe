@@ -1,5 +1,9 @@
 2005-12-24  Dalibor Topic  <robilad@kaffe.org>
 
+        * tools/gjdoc/javalb/antlr: Updated to ANTLR 2.7.6.
+
+2005-12-24  Dalibor Topic  <robilad@kaffe.org>
+
         * tools/gjdoc/javalib: Resynched GNU gjdoc.
 
 2005-12-23  Ito Kazumitsu  <kaz@maczuka.gcd.org>

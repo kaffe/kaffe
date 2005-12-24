@@ -1,10 +1,10 @@
 package antlr;
 
 /* ANTLR Translator Generator
- * Project led by Terence Parr at http://www.jGuru.com
+ * Project led by Terence Parr at http://www.cs.usfca.edu
  * Software rights: http://www.antlr.org/license.html
  *
- * $Id: CharBuffer.java,v 1.1 2005/09/17 21:38:42 robilad Exp $
+ * $Id: CharBuffer.java,v 1.2 2005/12/24 21:50:48 robilad Exp $
  */
 
 /**A Stream of characters fed to the lexer from a InputStream that can
@@ -20,15 +20,15 @@ package antlr;
  * @see antlr.CharQueue
  */
 
-import java.io.Reader; // SAS: changed to properly read text files
 import java.io.IOException;
+import java.io.Reader;
 
 // SAS: Move most functionality into InputBuffer -- just the file-specific
 //      stuff is in here
 
 public class CharBuffer extends InputBuffer {
     // char source
-    transient Reader input;
+    public transient Reader input;
 
     /** Create a character buffer */
     public CharBuffer(Reader input_) { // SAS: for proper text i/o

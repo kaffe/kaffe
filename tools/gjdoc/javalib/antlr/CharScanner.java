@@ -1,17 +1,15 @@
 package antlr;
 
 /* ANTLR Translator Generator
- * Project led by Terence Parr at http://www.jGuru.com
+ * Project led by Terence Parr at http://www.cs.usfca.edu
  * Software rights: http://www.antlr.org/license.html
  *
- * $Id: CharScanner.java,v 1.1 2005/09/17 21:38:42 robilad Exp $
+ * $Id: CharScanner.java,v 1.2 2005/12/24 21:50:48 robilad Exp $
  */
 
 import java.util.Hashtable;
 
 import antlr.collections.impl.BitSet;
-
-import java.io.IOException;
 
 public abstract class CharScanner implements TokenStream {
     static final char NO_CHAR = 0;
@@ -256,7 +254,7 @@ public abstract class CharScanner implements TokenStream {
      */
     public void panic() {
         System.err.println("CharScanner: panic");
-        System.exit(1);
+        Utils.error("");
     }
 
     /** This method is executed by ANTLR internally when it detected an illegal
@@ -271,7 +269,7 @@ public abstract class CharScanner implements TokenStream {
      */
     public void panic(String s) {
         System.err.println("CharScanner; panic: " + s);
-        System.exit(1);
+        Utils.error(s);
     }
 
     /** Parser error-reporting function can be overridden in subclass */
@@ -334,7 +332,7 @@ public abstract class CharScanner implements TokenStream {
 
     public void setTokenObjectClass(String cl) {
         try {
-            tokenObjectClass = Class.forName(cl);
+            tokenObjectClass = Utils.loadClass(cl);
         }
         catch (ClassNotFoundException ce) {
             panic("ClassNotFoundException: " + cl);

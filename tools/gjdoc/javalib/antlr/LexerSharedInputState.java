@@ -4,7 +4,7 @@ package antlr;
  * Project led by Terence Parr at http://www.jGuru.com
  * Software rights: http://www.antlr.org/license.html
  *
- * $Id: LexerSharedInputState.java,v 1.1 2005/09/17 21:38:43 robilad Exp $
+ * $Id: LexerSharedInputState.java,v 1.2 2005/12/24 21:50:48 robilad Exp $
  */
 
 import java.io.Reader;
@@ -26,7 +26,7 @@ public class LexerSharedInputState {
     protected String filename;
 
     public int guessing = 0;
-
+    
     public LexerSharedInputState(InputBuffer inbuf) {
         input = inbuf;
     }
@@ -39,6 +39,34 @@ public class LexerSharedInputState {
         this(new CharBuffer(in));
     }
 
+    public String getFilename() {
+        return filename;
+    }
+
+    public InputBuffer getInput() {
+        return input;
+    }
+    
+    public int getLine()
+    {
+        return line;
+    }
+
+    public int getTokenStartColumn()
+    {
+        return tokenStartColumn;
+    }
+
+    public int getTokenStartLine()
+    {
+        return tokenStartLine;
+    }
+
+    public int getColumn()
+    {
+        return column;
+    }
+
     public void reset() {
         column = 1;
         line = 1;
@@ -49,3 +77,4 @@ public class LexerSharedInputState {
         input.reset();
     }
 }
+
