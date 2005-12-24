@@ -664,10 +664,18 @@ public class RootDocImpl
       implements ResolvedImport
    {
       private String importSpecifier;
+      private String name;
 
       ResolvedImportNotFound(String importSpecifier)
       {
          this.importSpecifier = importSpecifier;
+         int ndx = importSpecifier.lastIndexOf('.');
+         if (ndx >= 0) {
+            this.name = importSpecifier.substring(ndx + 1);
+         }
+         else {
+            this.name = importSpecifier;
+         }
       }
 
       public String toString()
@@ -677,7 +685,10 @@ public class RootDocImpl
 
       public String match(String name)
       {
-         return null; // FIXME!
+	 if (name.equals(this.name))
+	    return this.name;
+	 // FIXME: note that we don't handle on-demand imports here.
+         return null;
       }
 
       public boolean mismatch(String name)

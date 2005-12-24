@@ -20,8 +20,10 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 
 package gnu.classpath.tools.gjdoc.expr;
 
+import java.util.Set;
+
 public interface EvaluatorEnvironment
 {
-   public Object getValue(String identifier)
-      throws UnknownIdentifierException;
+   public Object getValue(String identifier, Set visitedFields)
+      throws IllegalExpressionException, UnknownIdentifierException;
 }

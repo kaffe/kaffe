@@ -25,6 +25,7 @@ import com.sun.javadoc.*;
 import java.lang.reflect.Modifier;
 
 import gnu.classpath.tools.gjdoc.expr.Evaluator;
+import gnu.classpath.tools.gjdoc.expr.CircularExpressionException;
 import gnu.classpath.tools.gjdoc.expr.IllegalExpressionException;
 
 public class FieldDocImpl 
@@ -277,6 +278,10 @@ public class FieldDocImpl
    public String toString() { return name(); }
 
    public Object constantValue() {
+      return constantValue(new HashSet());
+   }
+
+   public Object constantValue(Set visitedFields) {
       if (!isStatic() 
           || !isFinal() 
           || (!type().isPrimitive() && !"java.lang.String".equals(type().qualifiedTypeName()))
@@ -288,10 +293,18 @@ public class FieldDocImpl
       }
       else {
          if (!constantValueEvaluated) {
+
+            visitedFields.add(this);
+
             String expression = "(" + type().typeName() + ")(" + valueLiteral + ")";
             try {
                this.constantValue = Evaluator.evaluate(expression, 
+                                                       visitedFields,
                                                        (ClassDocImpl)containingClass());
+            }
+            catch (CircularExpressionException e) {
+               // FIXME: This should use the error reporter
+               System.err.println("WARNING: Cannot resolve expression for field " + containingClass.qualifiedTypeName() + "." + name() + ": " + e.getMessage());
             }
             catch (IllegalExpressionException ignore) {
             }

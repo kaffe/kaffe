@@ -1359,7 +1359,7 @@ public abstract class AbstractDoclet
 
    protected boolean isSinglePackage()
    {
-      return 1 == getAllPackages().size();
+      return getAllPackages().size() <= 1;
    }
 
    protected PackageDoc getSinglePackage()

@@ -69,6 +69,9 @@ public class ExternalDocSet
 
       URL packageListDirURL;
       if (null != packageListDir) {
+         if (!packageListDir.endsWith("/")) {
+           packageListDir += "/";
+         }
          packageListDirURL = new URL(new File(System.getProperty("user.dir")).toURL(),
                                      packageListDir);
       }
@@ -89,22 +92,27 @@ public class ExternalDocSet
 
       URL gjdocPropertiesURL = new URL(packageListDirURL,
                                        "gjdoc.properties");
-      InputStream propertiesIn = gjdocPropertiesURL.openStream();
-      if (null != in) {
-         Properties properties = new Properties();
-         properties.load(propertiesIn);
-         propertiesIn.close();
+      try {
+          InputStream propertiesIn = gjdocPropertiesURL.openStream();
+          if (null != in) {
+              Properties properties = new Properties();
+              properties.load(propertiesIn);
+              propertiesIn.close();
          
-         String gjdocCompatProperty = properties.getProperty("gjdoc.compat");
-         if (null != gjdocCompatProperty) {
-            javadocCompatible = "true".equals(properties.getProperty("gjdoc.compat"));
-         }
-         else {
-            javadocCompatible = true;
-         }
-      }
-      else {
-         javadocCompatible = true;
+              String gjdocCompatProperty = properties.getProperty("gjdoc.compat");
+              if (null != gjdocCompatProperty) {
+                  javadocCompatible = "true".equals(properties.getProperty("gjdoc.compat"));
+              }
+              else {
+                  javadocCompatible = true;
+              }
+          }
+          else {
+              javadocCompatible = true;
+          }
+      } 
+      catch (FileNotFoundException e) {
+          javadocCompatible = true;
       }
    }
 

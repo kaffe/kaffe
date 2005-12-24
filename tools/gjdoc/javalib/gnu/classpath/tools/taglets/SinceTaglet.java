@@ -22,9 +22,6 @@ package gnu.classpath.tools.taglets;
 
 import java.util.Map;
 
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-
 import com.sun.tools.doclets.Taglet;
 
 import com.sun.javadoc.Tag;
@@ -108,19 +105,32 @@ public class SinceTaglet implements GnuExtendedTaglet {
          return null;
       }
       else {
-         
-         StringBuffer result = new StringBuffer();
-         result.append("<dl class=\"tag list\">");
-         result.append("<dt class=\"tag section header\"><b>");
-         result.append(HEADER);
-         result.append("</b></dt>");
-         for (int i = 0; i < tags.length; ++i) {
-            result.append("<dd>");
-            result.append(inlineTagRenderer.renderInlineTags(tags[i].inlineTags(), context));
-            result.append("</dd>");
+         boolean haveValidTag = false;
+         for (int i = 0; i < tags.length && !haveValidTag; ++i) {
+            if (tags[i].text().length() > 0) {
+               haveValidTag = true;
+            }
          }
-         result.append("</dl>");
-         return result.toString();
+         
+         if (haveValidTag) {
+            StringBuffer result = new StringBuffer();
+            result.append("<dl class=\"tag list\">");
+            result.append("<dt class=\"tag section header\"><b>");
+            result.append(HEADER);
+            result.append("</b></dt>");
+            for (int i = 0; i < tags.length; ++i) {
+               if (tags[i].text().length() > 0) {
+                  result.append("<dd>");
+                  result.append(inlineTagRenderer.renderInlineTags(tags[i].inlineTags(), context));
+                  result.append("</dd>");
+               }
+            }
+            result.append("</dl>");
+            return result.toString();
+         }
+         else {
+            return null;
+         }
       }
    }
 

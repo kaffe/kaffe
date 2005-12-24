@@ -266,7 +266,7 @@ public class ExecutableMemberDocImpl extends MemberDocImpl implements Executable
 	 else
 	    param+=source[endx];
 
-	 if (source[endx]==')')
+	 if (source[endx]==')' && state==STATE_NORMAL)
 	    break;
       }
 

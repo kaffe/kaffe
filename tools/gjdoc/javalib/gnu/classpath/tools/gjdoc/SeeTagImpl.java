@@ -117,8 +117,9 @@ public class SeeTagImpl extends AbstractTagImpl implements SeeTag {
 	 referencedClassName=referencedClass.qualifiedName();
 
 	 if (referencedMemberName!=null) {
+
 	    if (referencedMemberName.indexOf('(')<0) {
-	       referencedMember=((ClassDocImpl)referencedClass).findField(referencedMemberName);
+	       referencedMember=((ClassDocImpl)referencedClass).findFieldRec(referencedMemberName);
                if (null == referencedMember) {
                   MethodDoc[] methods = ((ClassDocImpl)referencedClass).methods();
                   for (int i=0; i<methods.length; ++i) {
@@ -134,6 +135,9 @@ public class SeeTagImpl extends AbstractTagImpl implements SeeTag {
                         }
                      }
                   }
+               }
+               else {
+                  referencedClass = referencedMember.containingClass();
                }
 	    }
 	    else {

@@ -62,20 +62,25 @@ import java.net.MalformedURLException;
 
 import java.nio.charset.Charset;
 
+import java.text.DateFormat;
 import java.text.MessageFormat;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TimeZone;
 import java.util.TreeSet;
 
 public class HtmlDoclet
@@ -132,7 +137,7 @@ public class HtmlDoclet
             }
             else {
                output.beginSpan(CssClass.NAVBAR_ITEM_ENABLED);
-               output.beginAnchor(output.getPathToRoot() + "/index-noframes" + filenameExtension);
+               output.beginAnchor(output.getPathToRoot() + "/overview-summary" + filenameExtension);
                output.print("Overview");
                output.endAnchor();
                output.endSpan(CssClass.NAVBAR_ITEM_ENABLED);
@@ -151,7 +156,7 @@ public class HtmlDoclet
                output.beginSpan(CssClass.NAVBAR_ITEM_ENABLED);
                String packageHref;
                if (isSinglePackage()) {
-                  packageHref = output.getPathToRoot() + "/" + getPackageURL(getSinglePackage()) + "/package-summary" + filenameExtension;
+                  packageHref = output.getPathToRoot() + "/" + getPackageURL(getSinglePackage()) + "package-summary" + filenameExtension;
                }
                else {
                   packageHref = "package-summary" + filenameExtension;
@@ -263,7 +268,7 @@ public class HtmlDoclet
                output.beginSpan(CssClass.NAVBAR_ITEM_ENABLED);
                String treeHref;
                if (isSinglePackage() && overviewLevel) {
-                  treeHref = getPackageURL(getSinglePackage()) + "/tree" + filenameExtension;
+                  treeHref = getPackageURL(getSinglePackage()) + "tree" + filenameExtension;
                }
                else {
                   treeHref = "tree" + filenameExtension;
@@ -537,14 +542,14 @@ public class HtmlDoclet
          output.beginRow();
          output.beginCell(CssClass.NAVBAR_TOP_NAVI);
          if (null != prevPackage) {
-            output.anchor(output.getPathToRoot() + "/" + getPackageURL(prevPackage) + "/package-summary" + filenameExtension, "Prev Package");
+            output.anchor(output.getPathToRoot() + "/" + getPackageURL(prevPackage) + "package-summary" + filenameExtension, "Prev Package");
          }
          else {
             output.print("Prev Package");
          }
          output.print(" | ");
          if (null != nextPackage) {
-            output.anchor(output.getPathToRoot() + "/" + getPackageURL(nextPackage) + "/package-summary" + filenameExtension, "Next Package");
+            output.anchor(output.getPathToRoot() + "/" + getPackageURL(nextPackage) + "package-summary" + filenameExtension, "Next Package");
          }
          else {
             output.print("Next Package");
@@ -775,8 +780,11 @@ public class HtmlDoclet
       output.beginElement("li", "class", "node");
       output.beginElement("div");
       if (node.classDoc.isIncluded()) {
-         output.print(node.classDoc.containingPackage().name());
-         output.print(".");
+         String packageName = node.classDoc.containingPackage().name();
+         if (packageName.length() > 0) {
+            output.print(packageName);
+            output.print(".");
+         }
          output.beginSpan(CssClass.TREE_LINK);
          printType(output, node.classDoc);
          output.endSpan(CssClass.TREE_LINK);
@@ -926,7 +934,7 @@ public class HtmlDoclet
       Iterator it = allPackages.iterator();
       while (it.hasNext()) {
          PackageDoc packageDoc = (PackageDoc)it.next();
-         output.beginAnchor(getPackageURL(packageDoc) + "/tree" + filenameExtension);
+         output.beginAnchor(getPackageURL(packageDoc) + "tree" + filenameExtension);
          output.print(packageDoc.name());
          output.endAnchor();
          if (it.hasNext()) {
@@ -953,7 +961,7 @@ public class HtmlDoclet
       String anchor = null;
       String description = null;
       if (entry instanceof PackageDoc) {
-         output.beginAnchor(getPackageURL((PackageDoc)entry) + "/package-summary" + filenameExtension);
+         output.beginAnchor(getPackageURL((PackageDoc)entry) + "package-summary" + filenameExtension);
          output.print(entry.name());
          output.endAnchor();
          output.print(" - package");
@@ -1037,8 +1045,8 @@ public class HtmlDoclet
       if (isSinglePackage()) {
          output.atomicElement("frame", 
                               new String[] { "src", "name" }, 
-                              new String[] { getPackageURL(getSinglePackage()) + "/classes" + filenameExtension, "classes" });
-         contentURL = getPackageURL(getSinglePackage()) + "/package-summary.html";
+                              new String[] { getPackageURL(getSinglePackage()) + "classes" + filenameExtension, "classes" });
+         contentURL = getPackageURL(getSinglePackage()) + "package-summary.html";
       }
       else {
          output.beginElement("frameset", "rows", "25%,75%");
@@ -1049,7 +1057,7 @@ public class HtmlDoclet
                               new String[] { "src", "name" }, 
                               new String[] { "all-classes" + filenameExtension, "classes" });
          output.endElement("frameset");
-         contentURL = "index-noframes" + filenameExtension;
+         contentURL = "overview-summary" + filenameExtension;
       }
       output.atomicElement("frame", 
                            new String[] { "src", "name" }, 
@@ -1085,7 +1093,7 @@ public class HtmlDoclet
       while (it.hasNext()) {
          PackageDoc packageDoc = (PackageDoc)it.next();
          output.beginSpan(CssClass.PACKAGE_MENU_ENTRY);
-         output.beginAnchor(getPackageURL(packageDoc) + "/classes" + filenameExtension,
+         output.beginAnchor(getPackageURL(packageDoc) + "classes" + filenameExtension,
                             null,
                             "classes");
          if (packageDoc.name().length() > 0) {
@@ -1278,30 +1286,32 @@ public class HtmlDoclet
          }
          output.div(CssClass.INDEX_TITLE, title);
 
-         output.beginDiv(CssClass.INDEX_LETTERS);
+         if (null != letter || getCategorizedIndex().keySet().size() > 1) {
+            output.beginDiv(CssClass.INDEX_LETTERS);
 
-         Iterator it = getCategorizedIndex().keySet().iterator();
-         int n = 1;
-         while (it.hasNext()) {
-            Character c = (Character)it.next();
-            output.beginSpan(CssClass.INDEX_LETTER);
-            if (letter != null) {
-               output.beginAnchor("alphaindex-" + n + filenameExtension);
+            Iterator it = getCategorizedIndex().keySet().iterator();
+            int n = 1;
+            while (it.hasNext()) {
+               Character c = (Character)it.next();
+               output.beginSpan(CssClass.INDEX_LETTER);
+               if (letter != null) {
+                  output.beginAnchor("alphaindex-" + n + filenameExtension);
+               }
+               else {
+                  output.beginAnchor("#" + c);
+               }
+               output.print(c.toString());
+               output.endAnchor();
+               output.endSpan(CssClass.INDEX_LETTER);     
+               output.beginSpan(CssClass.INDEX_LETTER_SPACER);
+               output.print(" ");
+               output.endSpan(CssClass.INDEX_LETTER_SPACER);
+               ++n;
             }
-            else {
-               output.beginAnchor("#" + c);
-            }
-            output.print(c.toString());
-            output.endAnchor();
-            output.endSpan(CssClass.INDEX_LETTER);     
-            output.beginSpan(CssClass.INDEX_LETTER_SPACER);
-            output.print(" ");
-            output.endSpan(CssClass.INDEX_LETTER_SPACER);
-            ++n;
          }
-      }
 
-      output.endDiv(CssClass.INDEX_LETTERS);
+         output.endDiv(CssClass.INDEX_LETTERS);
+      }
 
       if (null != letter) {
          printIndexCategory(output, letter, classList);
@@ -1634,6 +1644,15 @@ public class HtmlDoclet
       output.beginAnchor("http://www.gnu.org/software/classpath/cp-tools/", "", "_top");
       output.print("GNU Classpath Tools");
       output.endAnchor();
+      output.print(", on ");
+      DateFormat format = DateFormat.getDateTimeInstance(DateFormat.LONG,
+							 DateFormat.LONG,
+							 Locale.US);
+      Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"),
+					  Locale.US);
+      format.setCalendar(cal);
+      output.print(format.format(new Date()));
+      output.print(".");
       output.endDiv(CssClass.ABOUT_GENERATOR);
 
       printNavBarBottom(output, "about");
@@ -1704,7 +1723,7 @@ public class HtmlDoclet
       throws IOException
    {
       HtmlPage output = newHtmlPage(new File(getTargetDirectory(),
-                                             "index-noframes" + filenameExtension),
+                                             "overview-summary" + filenameExtension),
                                     ".");
       output.beginPage(getWindowTitle(), 
                        getOutputCharset(),
@@ -1782,7 +1801,7 @@ public class HtmlDoclet
          output.beginRow();
          
          output.beginCell(CssClass.OVERVIEW_SUMMARY_LEFT);
-         output.beginAnchor(getPackageURL(packageDoc) + "/package-summary" + filenameExtension);
+         output.beginAnchor(getPackageURL(packageDoc) + "package-summary" + filenameExtension);
          output.print(packageDoc.name());
          output.endAnchor();
          output.endCell();
@@ -2056,48 +2075,50 @@ public class HtmlDoclet
       else {   
          needSep = true;
 
-         LinkedList superClasses = new LinkedList();
-         for (ClassDoc cd = classDoc; cd != null; cd = cd.superclass()) {
-            superClasses.add(cd);
-         }
-         output.beginDiv(CssClass.CLASS_INHERITANCETREE);
-         output.beginElement("ul", new String[] { "class" }, new String[] { "inheritance 0" });
-         printSuperTreeRec(output, superClasses.listIterator(superClasses.size()), 0);
-         output.endElement("ul");
-         output.endDiv(CssClass.CLASS_INHERITANCETREE);
-
-         if (null != classDoc.containingClass()) {
-            output.beginDiv(CssClass.CLASS_ENCLOSINGCLASS);
-            output.div(CssClass.CLASS_ENCLOSINGCLASS_HEADER, "Enclosing Class:");
-            output.beginDiv(CssClass.CLASS_ENCLOSINGCLASS_ITEM);
-            printType(output, classDoc.containingClass());
-            output.endDiv(CssClass.CLASS_ENCLOSINGCLASS_ITEM);
-            output.endDiv(CssClass.CLASS_ENCLOSINGCLASS);
-         }
-
-         Set implementedInterfaces = getImplementedInterfaces(classDoc);
-
-         printCommaSeparatedTypes(output,
-                                  implementedInterfaces, 
-                                  "Implemented Interfaces:",
-                                  CssClass.CLASS_KNOWNIMPLEMENTING);
-
-
-         List knownDirectSubclasses = getKnownDirectSubclasses(classDoc);
-         if (!knownDirectSubclasses.isEmpty()) {
-            output.beginDiv(CssClass.CLASS_SUBCLASSES);
-            output.div(CssClass.CLASS_SUBCLASSES_HEADER, "Known Direct Subclasses:");
-            output.beginDiv(CssClass.CLASS_SUBCLASSES_ITEM);
-            Iterator it = knownDirectSubclasses.iterator();
-            while (it.hasNext()) {
-               printType(output, (ClassDoc)it.next());
-               if (it.hasNext()) {
-                  output.print(", ");
-               }
+         if (!"java.lang.Object".equals(classDoc.qualifiedName())) {
+            LinkedList superClasses = new LinkedList();
+            for (ClassDoc cd = classDoc; cd != null; cd = cd.superclass()) {
+               superClasses.add(cd);
             }
-            output.endDiv(CssClass.CLASS_SUBCLASSES_ITEM);
-            output.endDiv(CssClass.CLASS_SUBCLASSES_HEADER);
-            output.endDiv(CssClass.CLASS_SUBCLASSES);
+            output.beginDiv(CssClass.CLASS_INHERITANCETREE);
+            output.beginElement("ul", new String[] { "class" }, new String[] { "inheritance 0" });
+            printSuperTreeRec(output, superClasses.listIterator(superClasses.size()), 0);
+            output.endElement("ul");
+            output.endDiv(CssClass.CLASS_INHERITANCETREE);
+            
+            if (null != classDoc.containingClass()) {
+               output.beginDiv(CssClass.CLASS_ENCLOSINGCLASS);
+               output.div(CssClass.CLASS_ENCLOSINGCLASS_HEADER, "Enclosing Class:");
+               output.beginDiv(CssClass.CLASS_ENCLOSINGCLASS_ITEM);
+               printType(output, classDoc.containingClass());
+               output.endDiv(CssClass.CLASS_ENCLOSINGCLASS_ITEM);
+               output.endDiv(CssClass.CLASS_ENCLOSINGCLASS);
+            }
+
+            Set implementedInterfaces = getImplementedInterfaces(classDoc);
+
+            printCommaSeparatedTypes(output,
+                                     implementedInterfaces, 
+                                     "Implemented Interfaces:",
+                                     CssClass.CLASS_KNOWNIMPLEMENTING);
+
+            List knownDirectSubclasses = getKnownDirectSubclasses(classDoc);
+            if (!knownDirectSubclasses.isEmpty()) {
+               output.beginDiv(CssClass.CLASS_SUBCLASSES);
+               output.div(CssClass.CLASS_SUBCLASSES_HEADER, "Known Direct Subclasses:");
+               output.beginDiv(CssClass.CLASS_SUBCLASSES_ITEM);
+               Iterator it = knownDirectSubclasses.iterator();
+               while (it.hasNext()) {
+                  printType(output, (ClassDoc)it.next());
+                  if (it.hasNext()) {
+                     output.print(", ");
+                  }
+               }
+
+               output.endDiv(CssClass.CLASS_SUBCLASSES_ITEM);
+               output.endDiv(CssClass.CLASS_SUBCLASSES_HEADER);
+               output.endDiv(CssClass.CLASS_SUBCLASSES);
+            }
          }
       }
 
@@ -2166,18 +2187,6 @@ public class HtmlDoclet
       boolean haveInheritedMethods = false;
       boolean haveInheritedClasses = false;
       {
-         Iterator it = implementedInterfaces.iterator();
-         while (it.hasNext() && !haveInheritedClasses) {
-            ClassDoc implementedInterface 
-               = (ClassDoc)it.next();
-            if (!"java.io.Serializable".equals(implementedInterface.qualifiedName())
-                && !"java.io.Externalizable".equals(implementedInterface.qualifiedName())) {
-               if (implementedInterface.innerClasses().length > 0) {
-                  haveInheritedClasses = true;
-               }
-            }
-         }
-
          if (!classDoc.isInterface()) {
             ClassDoc superClassDoc = classDoc.superclass();
             while (null != superClassDoc
@@ -2533,6 +2542,7 @@ public class HtmlDoclet
                   }
                   
                   ClassDoc overriddenClassDoc = null;
+                  MemberDoc specifyingSuperMethod = null;
 
                   for (ClassDoc superclassDoc = memberDoc.containingClass().superclass();
                        null != superclassDoc && null == overriddenClassDoc;
@@ -2543,6 +2553,7 @@ public class HtmlDoclet
                         if (methods[j].name().equals(memberDoc.name())
                             && methods[j].signature().equals(((MethodDoc)memberDoc).signature())) {
                            overriddenClassDoc = superclassDoc;
+                           specifyingSuperMethod = methods[j];
                            break;
                         }
                      }
@@ -2553,7 +2564,11 @@ public class HtmlDoclet
                      output.div(CssClass.MEMBER_DETAIL_OVERRIDDEN_HEADER, "Overrides:");
                      output.beginDiv(CssClass.MEMBER_DETAIL_OVERRIDDEN_ITEM);
 
-                     output.print(memberDoc.name() + " in interface ");
+                     output.beginAnchor(getMemberDocURL(output, 
+                                                        specifyingSuperMethod));
+                     output.print(memberDoc.name());
+                     output.endAnchor();
+                     output.print(" in interface ");
                      printType(output, overriddenClassDoc);
 
                      output.endDiv(CssClass.MEMBER_DETAIL_OVERRIDDEN_ITEM);
@@ -2737,7 +2752,12 @@ public class HtmlDoclet
             output.beginCell(CssClass.CLASS_SUMMARY_RIGHT);
             output.beginDiv(CssClass.CLASS_SUMMARY_RIGHT_LIST);
             output.beginDiv(CssClass.CLASS_SUMMARY_RIGHT_SYNOPSIS);
-            output.beginAnchor("#" + getMemberAnchor(memberDoc));
+            if (memberDoc.isClass() || memberDoc.isInterface()) {
+               output.beginAnchor(getClassDocURL(output, (ClassDoc)memberDoc));
+            }
+            else {
+               output.beginAnchor("#" + getMemberAnchor(memberDoc));
+            }
             output.print(memberDoc.name());
             output.endAnchor();
             if (memberDoc.isConstructor() || memberDoc.isMethod()) {
@@ -2824,7 +2844,6 @@ public class HtmlDoclet
       return output.getPathToRoot() 
          + "/"
          + getPackageURL(classDoc.containingPackage()) 
-         + "/"
          + classDoc.name() + filenameExtension;
    }
 
@@ -2915,13 +2934,20 @@ public class HtmlDoclet
    {
       if (packageDoc.name().length() > 0) {
          ExternalDocSet externalDocSet = (ExternalDocSet)packageNameToDocSet.get(packageDoc.name());
+         String url;
          if (null != externalDocSet) {
-            return externalDocSet.getPackageDocURL(packageDoc.name());
+            url = externalDocSet.getPackageDocURL(packageDoc.name());
          }
          else {
-            return packageDoc.name().replace('.', '/');
+            url = packageDoc.name().replace('.', '/');
          }
-      }
+         if (!url.endsWith("/")) {
+            return url + '/';
+         }
+         else {
+            return url;
+         }
+     }
       else {
          return "";
       }
@@ -2938,7 +2964,7 @@ public class HtmlDoclet
                                               classDoc.name());
       }
       else {
-         return getPackageURL(classDoc.containingPackage()) + "/" + classDoc.name() + filenameExtension;
+         return getPackageURL(classDoc.containingPackage()) + classDoc.name() + filenameExtension;
       }
    }
 
@@ -3231,7 +3257,8 @@ public class HtmlDoclet
          result.append("(package private) ");
       }
       result.append(memberDoc.modifiers());
-      if (memberDoc.isClass() && ((ClassDoc)memberDoc).isAbstract()) {
+      if ((memberDoc.isClass() && ((ClassDoc)memberDoc).isAbstract())
+          || (memberDoc.isMethod() && ((MethodDoc)memberDoc).isAbstract())) {
          result.append(" abstract");
       }
       return result.toString();
@@ -3252,7 +3279,8 @@ public class HtmlDoclet
       if (memberDoc.isStatic()) {
          result.append("static");
       }
-      else if (memberDoc.isClass() && ((ClassDoc)memberDoc).isAbstract()) {
+      else if ((memberDoc.isClass() && ((ClassDoc)memberDoc).isAbstract())
+          || (memberDoc.isMethod() && ((MethodDoc)memberDoc).isAbstract())) {
          result.append("abstract");
       }
       return result.toString();
@@ -3539,36 +3567,40 @@ public class HtmlDoclet
       else {
          String referencedClassName = seeTag.referencedClassName();
 
-         Iterator it = packageNameToDocSet.keySet().iterator();
-         String referencedPackageName = null;
-         while (it.hasNext()) {
-            String packageName = (String)it.next();
-            if ((null == referencedPackageName
-                 || packageName.length() > referencedPackageName.length())
-                && referencedClassName.startsWith(packageName + '.')) {
-               referencedPackageName = packageName;
+         if (null != referencedClassName) {
+
+            String referencedPackageName = null;
+
+            Iterator it = packageNameToDocSet.keySet().iterator();
+            while (it.hasNext()) {
+               String packageName = (String)it.next();
+               if ((null == referencedPackageName
+                    || packageName.length() > referencedPackageName.length())
+                   && referencedClassName.startsWith(packageName + '.')) {
+                  referencedPackageName = packageName;
+               }
             }
-         }
 
-         if (null != referencedPackageName) {
-            ExternalDocSet externalDocSet
-               = (ExternalDocSet)packageNameToDocSet.get(referencedPackageName);
+            if (null != referencedPackageName) {
+               ExternalDocSet externalDocSet
+                  = (ExternalDocSet)packageNameToDocSet.get(referencedPackageName);
 
-            String className = referencedClassName.substring(referencedPackageName.length() + 1);
-            href = externalDocSet.getClassDocURL(referencedPackageName,
-                                                 className);
-            label = className;
+               String className = referencedClassName.substring(referencedPackageName.length() + 1);
+               href = externalDocSet.getClassDocURL(referencedPackageName,
+                                                    className);
+               label = className;
 
-            String referencedMemberName = seeTag.referencedMemberName();
+               String referencedMemberName = seeTag.referencedMemberName();
 
-            if (null != referencedMemberName) {
-               label += '.';
-               label += referencedMemberName;
-               href  += '#' + transformReferencedMemberName(referencedMemberName, 
-                                                            externalDocSet.isJavadocCompatible());
-            }
-            else if (null != seeTag.referencedMemberName()) {
-               href = null;
+               if (null != referencedMemberName) {
+                  label += '.';
+                  label += referencedMemberName;
+                  href  += '#' + transformReferencedMemberName(referencedMemberName, 
+                                                               externalDocSet.isJavadocCompatible());
+               }
+               else if (null != seeTag.referencedMemberName()) {
+                  href = null;
+               }
             }
          }
       }

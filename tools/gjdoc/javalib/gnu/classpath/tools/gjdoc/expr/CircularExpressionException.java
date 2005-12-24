@@ -1,4 +1,4 @@
-/* gnu.classpath.tools.gjdoc.expr.Context
+/* gnu.classpath.tools.gjdoc.expr.IllegalExpressionException
    Copyright (C) 2004 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -20,26 +20,16 @@ Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 
 package gnu.classpath.tools.gjdoc.expr;
 
-import java.util.Set;
-
-class Context
+public class CircularExpressionException
+   extends IllegalExpressionException
 {
-   private EvaluatorEnvironment evaluatorEnvironment;
-   private Set visitedFields;
-
-   Context(EvaluatorEnvironment evaluatorEnvironment, Set visitedFields)
+   public CircularExpressionException(String message)
    {
-      this.evaluatorEnvironment = evaluatorEnvironment;
-      this.visitedFields = visitedFields;
+      super(message);
    }
 
-   public EvaluatorEnvironment getEvaluatorEnvironment()
+   public CircularExpressionException(Throwable cause)
    {
-      return evaluatorEnvironment;
-   }
-
-   public Set getVisitedFields()
-   {
-      return visitedFields;
+      super(cause);
    }
 }

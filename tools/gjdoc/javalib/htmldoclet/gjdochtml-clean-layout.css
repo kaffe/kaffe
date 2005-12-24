@@ -158,6 +158,7 @@ ul.inheritance
 li.inheritance
 {
         margin: 0em !important;
+        margin-top: 0.1em !important;
         padding: 0em !important;
         marker-offset: 0em !important;
 }
@@ -170,6 +171,7 @@ ul.inheritance > li.inheritance:before
         padding: 0em !important;
         marker-offset: 0em !important;
         content: url(inherit.png);
+        vertical-align: center !important;
 }
 
 [class="inheritance 0"] > li.inheritance:before
@@ -278,7 +280,7 @@ table.navbar.div td
 {
         margin-bottom: 1.2em;
 }
-
+        
 table.navbar.top
 {
         margin-bottom: 1em !important;
@@ -292,6 +294,7 @@ table.navbar.top
 
 .class.description
 {
+        margin-top: 1em;
         margin-bottom: 0.8em;
 }
 
@@ -389,16 +392,18 @@ h3
         font-size: 1.1em;
 }
 
-.usage.summary .right .synopsis
+.summary .right .synopsis
 {
-        padding-left: 5.25em;
-        text-indent: -5em;
+        padding-left: 5.25em !important;
+        text-indent: -5em !important;
 }
 
-.usage.summary .right .description
+.summary .right .description
 {
-        padding-left: 3em;
-        padding-top: 0.1em;
+        text-indent: 1em !important;
+        padding-top: 0.25em !important;
+        padding-bottom: 0.1em !important;
+        padding-left: 0.25em !important;
 }
 
 td.usage.summary
@@ -441,12 +446,6 @@ td.usage.summary
 ul.tree li.node
 {
         list-style-type: disc;
-}
-
-ul.tree li.node div
-{
-        text-indent: -3em;
-        padding-left: 3em;
 }
 
 ul.tree ul

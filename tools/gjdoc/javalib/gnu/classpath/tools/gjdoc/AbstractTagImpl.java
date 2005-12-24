@@ -75,4 +75,16 @@ public abstract class AbstractTagImpl
    public Map getTagMap() { 
       return tagMap; 
    }
+
+   /**
+    * Debug string containing class, name, text and tagMap.
+    */
+   public String toString()
+   {
+     return (this.getClass().getName()
+	     + "[name=" + name()
+	     + ", text=" + text()
+	     + ", tagMap=" + getTagMap()
+	     + "]");
+   }
 }

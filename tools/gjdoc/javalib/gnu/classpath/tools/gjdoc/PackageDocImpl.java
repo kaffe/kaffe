@@ -183,6 +183,13 @@ class PackageDocImpl extends DocImpl implements GjdocPackageDoc {
 	 return 0;
    }
 
+   public boolean equals(Object o) {
+      if (o!=null && o instanceof PackageDocImpl)
+	 return name().equals(((PackageDocImpl)o).name());
+      else
+	 return false;
+   }
+
    /**
     *  Sets the directory containing this package's source files.
     */

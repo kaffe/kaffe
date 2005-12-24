@@ -467,13 +467,13 @@ public class HtmlPage
       if (setTitle) {
          beginElement("body", 
                       new String[] { "class", "onload" },
-                      new String[] { cssClass.getName(), "top.contentPageLoaded(document.title)" }
+                      new String[] { cssClass.getName(), "if(parent.contentPageLoaded)parent.contentPageLoaded(document.title)" }
                       );
       }
       else {
          beginElement("body",
                       new String[] { "class", "onload" },
-                      new String[] { cssClass.getName(), "top.contentPageLoaded()" }
+                      new String[] { cssClass.getName(), "if(parent.contentPageLoaded)parent.contentPageLoaded()" }
                       );
       }
    }

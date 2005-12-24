@@ -69,6 +69,12 @@ public final class Main
    */
   static final int COVERAGE_PRIVATE = 3;
 
+  /*
+   *  FIXME: This should come from a ResourceBundle
+   */
+  private static final String STRING_TRY_GJDOC_HELP = 
+     "Try `gjdoc --help' for more information.";
+
   /**
    * Grid for looking up whether a particular access level is included in the
    * documentation.
@@ -376,6 +382,7 @@ public final class Main
               //--- Complain if not found
 
               reporter.printError("Unknown option " + option);
+              reporter.printNotice(STRING_TRY_GJDOC_HELP);
               return false;
             }
           }
@@ -459,18 +466,28 @@ public final class Main
 
         String classOrPackage = (String) it.next();
 
-        if (classOrPackage.endsWith(".java")) {
-          File sourceFile = new File(classOrPackage);
-          if (!sourceFile.exists()) {
-          }
-          else if (sourceFile.isDirectory()) {
+        boolean foundSourceFile = false;
 
+        if (classOrPackage.endsWith(".java")) {
+          for (Iterator pit = option_sourcepath.iterator(); pit.hasNext() && !foundSourceFile; ) {
+            File sourceDir = (File)pit.next();
+            File sourceFile = new File(sourceDir, classOrPackage);
+            if (sourceFile.exists() && !sourceFile.isDirectory()) {
+              rootDoc.addSpecifiedSourceFile(sourceFile);
+              foundSourceFile = true;
+              break;
+            }
           }
-          else {
-            rootDoc.addSpecifiedSourceFile(sourceFile);
+          if (!foundSourceFile) {
+            File sourceFile = new File(classOrPackage);
+            if (sourceFile.exists() && !sourceFile.isDirectory()) {
+              rootDoc.addSpecifiedSourceFile(sourceFile);
+              foundSourceFile = true;
+            } 
           }
         }
-        else {
+
+        if (!foundSourceFile) {
         //--- Check for illegal name
 
         if (classOrPackage.startsWith(".")
@@ -546,11 +563,9 @@ public final class Main
 
       //--- Complain if no packages or classes specified
 
-      if (!rootDoc.hasSpecifiedPackagesOrClasses())
-      {
-        reporter.printError("No packages or classes specified.");
+      if (option_help) {
         usage();
-        return false;
+        return true;
       }
 
       //--- Validate custom options passed on command line
@@ -563,6 +578,13 @@ public final class Main
             { customOptionArr, reporter })).booleanValue())
       {
         // Not ok: shutdown system.
+        reporter.printNotice(STRING_TRY_GJDOC_HELP);
+        return false;
+      }
+
+      if (!rootDoc.hasSpecifiedPackagesOrClasses()) {
+        reporter.printError("No packages or classes specified.");
+        reporter.printNotice(STRING_TRY_GJDOC_HELP);
         return false;
       }
 
@@ -1126,7 +1148,9 @@ public final class Main
         rootDoc.setSourceEncoding(option_encoding);
       }
       else {
-        rootDoc.setSourceEncoding("US-ASCII"); // FIXME
+        // be quiet about this for now:
+        // reporter.printNotice("No encoding specified, using platform default: " + System.getProperty("file.encoding"));
+        rootDoc.setSourceEncoding(System.getProperty("file.encoding"));
       }
       rootDoc.setSourcePath(option_sourcepath);
 
@@ -1535,7 +1559,7 @@ public final class Main
    */
   private static void usage()
   {
-    System.err
+    System.out
         .print("\n"
             + "USAGE: gjdoc [options] [packagenames] "
             + "[sourcefiles] [@files]\n\n"

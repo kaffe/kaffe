@@ -24,6 +24,7 @@ import java.io.StringReader;
 import java.math.BigInteger;
 import antlr.RecognitionException;
 import antlr.TokenStreamException;
+import java.util.Set;
 
 public class Evaluator
 {
@@ -33,6 +34,10 @@ public class Evaluator
     *
     *  @param expression the Java expression to evaluate. The
     *  expression string must not include a terminating semicolon.
+    *
+    *  @param source the FieldDoc (part of) whose constant field value
+    *  expression is being evaluated.  Used to prevent circular
+    *  references.
     *
     *  @param environment callback hook used by the Evaluator to query
     *  the value of static fields referenced in the expression.
@@ -46,6 +51,7 @@ public class Evaluator
     *  array access) or references unknown static fields.
     */
    public static Object evaluate(String expression, 
+                                 Set visitedFields,
                                  EvaluatorEnvironment environment)
       throws IllegalExpressionException
    {
@@ -53,7 +59,7 @@ public class Evaluator
          JavaLexer lexer = new JavaLexer(new StringReader(expression));
          JavaRecognizer recognizer = new JavaRecognizer(lexer);
          Expression e = recognizer.expression();
-         ConstantExpression value = e.evaluate(new Context(environment));
+         ConstantExpression value = e.evaluate(new Context(environment, visitedFields));
          return value.asObject();
       }
       catch (RecognitionException e) {

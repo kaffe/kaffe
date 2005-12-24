@@ -24,6 +24,8 @@ import com.sun.javadoc.*;
 import java.util.*;
 import java.io.*;
 import gnu.classpath.tools.gjdoc.expr.EvaluatorEnvironment;
+import gnu.classpath.tools.gjdoc.expr.CircularExpressionException;
+import gnu.classpath.tools.gjdoc.expr.IllegalExpressionException;
 import gnu.classpath.tools.gjdoc.expr.UnknownIdentifierException;
 
 public class ClassDocImpl
@@ -280,7 +282,7 @@ public class ClassDocImpl
    public String typeName() { return name(); }
    
    public String qualifiedTypeName() { 
-      return (containingPackage()!=null && containingPackage()!=PackageDocImpl.DEFAULT_PACKAGE)?(containingPackage().name()+"."+name()):(name()); 
+      return (containingPackage()!=null && !containingPackage().equals(PackageDocImpl.DEFAULT_PACKAGE))?(containingPackage().name()+"."+name()):(name()); 
    }
 
    public String qualifiedName() { return qualifiedTypeName(); }
@@ -614,6 +616,44 @@ public class ClassDocImpl
       }
    }
 
+   public FieldDoc findFieldRec(String name) {
+      return findFieldRec(this, name);
+   }
+
+   private static FieldDoc findFieldRec(ClassDoc classDoc, String name)
+   {
+      FieldDoc field = findField(classDoc, name);
+      if (null!=field) {
+         return field;
+      }
+      else {
+         ClassDoc[] interfaces = classDoc.interfaces();
+         for (int i=0; i<interfaces.length; ++i) {
+            field = findFieldRec(interfaces[i], name);
+            if (null != field) {
+               return field;
+            }
+         }
+         if (null != classDoc.superclass()) {
+            return findFieldRec(classDoc.superclass(), name);
+         }
+         else {
+            return null;
+         }
+      }
+   }
+
+   private static FieldDoc findField(ClassDoc classDoc, String name)
+   {
+      FieldDoc[] fields = classDoc.fields(false);
+      for (int i=0; i<fields.length; ++i) {
+         if (fields[i].name().equals(name)) {
+            return fields[i];
+         }
+      }
+      return null;
+   }
+
    public FieldDoc findField(String fieldName) {
       for (int i=0; i<filteredFields.length; ++i) {
 	 if (filteredFields[i].name().equals(fieldName)) {
@@ -803,8 +843,8 @@ public class ClassDocImpl
 	    cdi = _superclass;
 	 }
       }
-      return null;
-   } 
+      return null; 
+  } 
 
    public static ConstructorDoc findConstructor(ClassDoc classDoc, String nameAndSignature) {
       int ndx=nameAndSignature.indexOf('(');
@@ -955,15 +995,19 @@ public class ClassDocImpl
 
    private Object findFieldValue(String identifier,
                                  ClassDoc classDoc, 
-                                 String fieldName)
-      throws UnknownIdentifierException
+                                 String fieldName,
+                                 Set visitedFields)
+      throws UnknownIdentifierException, IllegalExpressionException
    {
       while (classDoc != null) {
          if (classDoc instanceof ClassDocImpl) {
-            FieldDoc fieldDoc 
-               = ((ClassDocImpl)classDoc).getFieldDoc(fieldName);
-            if (null != fieldDoc) {
-               return fieldDoc.constantValue();
+            FieldDocImpl fieldDoc 
+               = (FieldDocImpl)((ClassDocImpl)classDoc).getFieldDoc(fieldName);
+            if (visitedFields.contains(fieldDoc)) {
+               throw new CircularExpressionException("Circular reference detected");
+            }
+            else if (null != fieldDoc) {
+               return fieldDoc.constantValue(visitedFields);
             }
          }
          else {
@@ -971,10 +1015,13 @@ public class ClassDocImpl
             if (null != _interfaces) {
                for (int i=0; i<_interfaces.length; ++i) {
                   if (_interfaces[i] instanceof ClassDocImpl) { 
-                     FieldDoc fieldDoc 
-                        = ((ClassDocImpl)_interfaces[i]).getFieldDoc(fieldName);
-                     if (null != fieldDoc) {
-                        return fieldDoc.constantValue();
+                     FieldDocImpl fieldDoc 
+                        = (FieldDocImpl)((ClassDocImpl)_interfaces[i]).getFieldDoc(fieldName);
+                     if (visitedFields.contains(fieldDoc)) {
+                        throw new CircularExpressionException("Circular reference detected");
+                     }
+                     else if (null != fieldDoc) {
+                        return fieldDoc.constantValue(visitedFields);
                      }
                   }
                }
@@ -985,8 +1032,8 @@ public class ClassDocImpl
       throw new UnknownIdentifierException(identifier);
    }
    
-   public Object getValue(String identifier)
-      throws UnknownIdentifierException
+   public Object getValue(String identifier, Set visitedFields)
+      throws UnknownIdentifierException, IllegalExpressionException
    {
       int ndx = identifier.lastIndexOf('.');
       if (ndx >= 0) {
@@ -995,14 +1042,14 @@ public class ClassDocImpl
 
          ClassDoc _classDoc = findClass(_className);
          if (null != _classDoc) {
-            return findFieldValue(identifier, _classDoc, _fieldName);
+            return findFieldValue(identifier, _classDoc, _fieldName, visitedFields);
          }
          else {
             throw new UnknownIdentifierException(identifier);
          }
       }
       else {
-         return findFieldValue(identifier, this, identifier);
+         return findFieldValue(identifier, this, identifier, visitedFields);
       }
    }
 

@@ -167,24 +167,35 @@ public class AuthorTaglet implements Taglet {
          return null;
       }
       else {
+         boolean haveValidTag = false;
+         for (int i = 0; i < tags.length && !haveValidTag; ++i) {
+            if (tags[i].text().length() > 0) {
+               haveValidTag = true;
+            }
+         }
          
-         StringBuffer result = new StringBuffer();
-         result.append("<dl class=\"tag list\">");
-         result.append("<dt class=\"tag section header\"><b>");
-         if (tags.length == 1) {
-            result.append(SINGLE_HEADER);
+         if (haveValidTag) {
+            StringBuffer result = new StringBuffer();
+            result.append("<dl class=\"tag list\">");
+            result.append("<dt class=\"tag section header\"><b>");
+            if (tags.length == 1) {
+               result.append(SINGLE_HEADER);
+            }
+            else {
+               result.append(MULTI_HEADER);
+            }
+            result.append("</b></dt>");
+            for (int i = 0; i < tags.length; i++) {
+               result.append("<dd class=\"tag item\">");
+               result.append(replaceEmail(tags[i].text()));
+               result.append("</dd>");
+            }
+            result.append("</dl>");
+            return result.toString();
          }
          else {
-            result.append(MULTI_HEADER);
+            return null;
          }
-         result.append("</b></dt>");
-         for (int i = 0; i < tags.length; i++) {
-            result.append("<dd class=\"tag item\">");
-            result.append(replaceEmail(tags[i].text()));
-            result.append("</dd>");
-         }
-         result.append("</dl>");
-         return result.toString();
       }
    }   
 

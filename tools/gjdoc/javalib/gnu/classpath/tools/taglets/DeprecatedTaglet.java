@@ -22,9 +22,6 @@ package gnu.classpath.tools.taglets;
 
 import java.util.Map;
 
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-
 import com.sun.tools.doclets.Taglet;
 
 import com.sun.javadoc.Tag;

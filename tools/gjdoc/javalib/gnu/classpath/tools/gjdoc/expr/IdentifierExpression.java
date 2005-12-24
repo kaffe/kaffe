@@ -33,7 +33,7 @@ class IdentifierExpression
    public ConstantExpression evaluate(Context context)
       throws IllegalExpressionException
    {
-      Object value = context.getEvaluatorEnvironment().getValue(identifier);
+      Object value = context.getEvaluatorEnvironment().getValue(identifier, context.getVisitedFields());
 
       if (value instanceof Byte) {
          return new ConstantByte(((Byte)value).byteValue());
@@ -62,8 +62,11 @@ class IdentifierExpression
       else if (value instanceof String) {
          return new ConstantString((String)value);
       }
+      else if (null != value) {
+         throw new IllegalExpressionException("Unsupported type " + value.getClass().getName() + " for identifier " + identifier);
+      }
       else {
-         throw new IllegalExpressionException("Unsupported type for identifier " + identifier);
+         throw new IllegalExpressionException("Cannot resolve identifier " + identifier);
       }
    }
 }

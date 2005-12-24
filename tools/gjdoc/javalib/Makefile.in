@@ -475,6 +475,7 @@ gjdoc_jar_SRCS = \
 	gnu/classpath/tools/gjdoc/expr/BinaryRelationExpression.java \
 	gnu/classpath/tools/gjdoc/expr/BinaryShiftExpression.java \
 	gnu/classpath/tools/gjdoc/expr/BitShiftRightExpression.java \
+	gnu/classpath/tools/gjdoc/expr/CircularExpressionException.java \
 	gnu/classpath/tools/gjdoc/expr/ConditionalExpression.java \
 	gnu/classpath/tools/gjdoc/expr/ConstantBoolean.java \
 	gnu/classpath/tools/gjdoc/expr/ConstantByte.java \

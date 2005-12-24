@@ -22,9 +22,6 @@ package gnu.classpath.tools.taglets;
 
 import java.util.Map;
 
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-
 import com.sun.tools.doclets.Taglet;
 
 import com.sun.javadoc.Tag;
@@ -92,22 +89,40 @@ public class VersionTaglet implements Taglet {
          return null;
       }
       else {
-         
-         StringBuffer result = new StringBuffer();
-         result.append("<div class=\"tag list\">");
-         result.append(HEADER);
-         result.append("</div>");
-         result.append("<dl class=\"tag section header\">");
-         result.append("<dt>");
-         for (int i = 0; i < tags.length; i++) {
-            if (i > 0) {
-               result.append(", ");
+         boolean haveValidTag = false;
+         for (int i = 0; i < tags.length && !haveValidTag; ++i) {
+            if (tags[i].text().length() > 0) {
+               haveValidTag = true;
             }
-            result.append(tags[i].text());
          }
-         result.append("</dt>");
-         result.append("</dl>");
-         return result.toString();
+         
+         if (haveValidTag) {
+            
+            StringBuffer result = new StringBuffer();
+            result.append("<dl class=\"tag list\">");
+            result.append("</dl>");
+            result.append("<dt class=\"tag section header\"><b>");
+            result.append(HEADER);
+            result.append("</b></dt><dd>");
+            boolean firstEntry = true;
+            for (int i = 0; i < tags.length; i++) {
+               if (tags[i].text().length() > 0) {
+                  if (!firstEntry) {
+                     result.append(", ");
+                  }
+                  else {
+                     firstEntry = false;
+                  }
+                  result.append(tags[i].text());
+               }
+            }
+            result.append("</dd>");
+            result.append("</dl>");
+            return result.toString();
+         }
+         else {
+            return null;
+         }
       }
    }
 

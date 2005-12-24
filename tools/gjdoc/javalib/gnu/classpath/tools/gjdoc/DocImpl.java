@@ -376,7 +376,10 @@ public abstract class DocImpl implements Doc, TagContainer {
 
 	 case STATE_BEGOFLINE:
 	    if (i==firstSentenceEnd) {
-	       contextTag = addTag(tags, "text", bufToString(), true, contextClass, contextMember, contextTag, false);
+	       AbstractTagImpl newTag = addTag(tags, "text", bufToString(), true, contextClass, contextMember, contextTag, false);
+               if (null != newTag) {
+                  contextTag = newTag;
+               }
 	       setBufLength(0);
 	    }
 
@@ -412,7 +415,10 @@ public abstract class DocImpl implements Doc, TagContainer {
 
 	 case STATE_WHITESPACE:
 	    if (i==firstSentenceEnd) {
-	       contextTag = addTag(tags, "text", bufToString(), true, contextClass, contextMember, contextTag, false);
+	       AbstractTagImpl newTag = addTag(tags, "text", bufToString(), true, contextClass, contextMember, contextTag, false);
+               if (null != newTag) {
+                  contextTag = newTag;
+               }
 	       setBufLength(0);
 	    }
 
@@ -425,7 +431,10 @@ public abstract class DocImpl implements Doc, TagContainer {
 	    }
 	    else if (c=='@' || (c=='{' && peek=='@') || c==EOL) {
 	       if (bufLength()>0) { 
-		  contextTag = addTag(tags, "text", bufToString(), i<firstSentenceEnd, contextClass, contextMember, contextTag, false);
+		  AbstractTagImpl newTag = addTag(tags, "text", bufToString(), i<firstSentenceEnd, contextClass, contextMember, contextTag, false);
+                  if (null != newTag) {
+                     contextTag = newTag;
+                  }
 		  setBufLength(0);
 	       }
 	       if (c=='{') {
@@ -459,9 +468,12 @@ public abstract class DocImpl implements Doc, TagContainer {
 	       }
 	       */
 	    }
-	    else if (c=='@' || (c=='{' && peek=='@') || c==EOL) {
+	    else if (c=='@' || c==EOL) {
 	       paramValue=bufToString();
-	       contextTag = addTag(tags, paramName, paramValue, i<firstSentenceEnd, contextClass, contextMember, contextTag, false);
+	       AbstractTagImpl newTag = addTag(tags, paramName, paramValue, i<firstSentenceEnd, contextClass, contextMember, contextTag, false);
+               if (null != newTag) {
+                  contextTag = newTag;
+               }
 	       setBufLength(0);
 	       if (c=='{') {
 		  ++i;
@@ -497,7 +509,10 @@ public abstract class DocImpl implements Doc, TagContainer {
 	    if (c=='}') {
                // tag without value
 	       paramName=bufToString();
-	       contextTag = addTag(tags, paramName, "", i<firstSentenceEnd, contextClass, contextMember, contextTag, true);
+	       AbstractTagImpl newTag = addTag(tags, paramName, "", i<firstSentenceEnd, contextClass, contextMember, contextTag, true);
+               if (null != newTag) {
+                  contextTag = newTag;
+               }
                state=prevState;
                setBufLength(0);
             }
@@ -519,7 +534,10 @@ public abstract class DocImpl implements Doc, TagContainer {
 	 case STATE_PARAMVALUE:
 	    if (c==EOL) {
 	       paramValue=bufToString();
-	       contextTag = addTag(tags, paramName, paramValue, i<firstSentenceEnd, contextClass, contextMember, contextTag, false);
+	       AbstractTagImpl newTag = addTag(tags, paramName, paramValue, i<firstSentenceEnd, contextClass, contextMember, contextTag, false);
+               if (null != newTag) {
+                  contextTag = newTag;
+               }
 	    }
 	    else if (c=='\n') {
 	       appendToBuf(c);
@@ -537,7 +555,10 @@ public abstract class DocImpl implements Doc, TagContainer {
 	    }
 	    else if (c==EOL || c=='}') {
 	       paramValue=bufToString();
-	       contextTag = addTag(tags, paramName, paramValue, i<firstSentenceEnd, contextClass, contextMember, contextTag, true);
+	       AbstractTagImpl newTag = addTag(tags, paramName, paramValue, i<firstSentenceEnd, contextClass, contextMember, contextTag, true);
+               if (null != newTag) {
+                  contextTag = newTag;
+               }
 	       state=prevState;
 	       setBufLength(0);
 	    }
@@ -558,7 +579,10 @@ public abstract class DocImpl implements Doc, TagContainer {
 	    }
 	    else if (c==EOL) {
 	       if (bufLength()>0) { 
-		  contextTag = addTag(tags, "text", bufToString(), i<firstSentenceEnd, contextClass, contextMember, contextTag, false);
+		  AbstractTagImpl newTag = addTag(tags, "text", bufToString(), i<firstSentenceEnd, contextClass, contextMember, contextTag, false);
+                  if (null != newTag) {
+                     contextTag = newTag;
+                  }
 	       }
 	    }
 	    else {
@@ -579,7 +603,10 @@ public abstract class DocImpl implements Doc, TagContainer {
 	    }
 	    else if (c==EOL) {
 	       if (bufLength()>0) { 
-		  contextTag = addTag(tags, "text", bufToString(), i<firstSentenceEnd, contextClass, contextMember, contextTag, false);
+		  AbstractTagImpl newTag = addTag(tags, "text", bufToString(), i<firstSentenceEnd, contextClass, contextMember, contextTag, false);
+                  if (null != newTag) {
+                     contextTag = newTag;
+                  }
 		  setBufLength(0);
 	       }
 	    }
@@ -593,13 +620,19 @@ public abstract class DocImpl implements Doc, TagContainer {
 
 	 case STATE_TEXT:
 	    if (i==firstSentenceEnd) {
-	       contextTag = addTag(tags, "text", bufToString(), true, contextClass, contextMember, contextTag, false);
+	       AbstractTagImpl newTag = addTag(tags, "text", bufToString(), true, contextClass, contextMember, contextTag, false);
+               if (null != newTag) {
+                  contextTag = newTag;
+               }
 	       setBufLength(0);
 	    }
 
 	    if (c==EOL) {
 	       paramValue=bufToString();
-	       contextTag = addTag(tags, "text", paramValue, i<firstSentenceEnd, contextClass, contextMember, contextTag, false);
+	       AbstractTagImpl newTag = addTag(tags, "text", paramValue, i<firstSentenceEnd, contextClass, contextMember, contextTag, false);
+               if (null != newTag) {
+                  contextTag = newTag;
+               }
 	    }
 	    else if (c=='\n') {
 	       appendToBuf(c);
@@ -607,7 +640,10 @@ public abstract class DocImpl implements Doc, TagContainer {
 	    }
 	    else if (c=='{' && peek=='@') {
 	       paramValue=bufToString();
-	       contextTag = addTag(tags, "text", paramValue, i<firstSentenceEnd, contextClass, contextMember, contextTag, false);
+	       AbstractTagImpl newTag = addTag(tags, "text", paramValue, i<firstSentenceEnd, contextClass, contextMember, contextTag, false);
+               if (null != newTag) {
+                  contextTag = newTag;
+               }
 	       ++i;
                setBufLength(0);
 	       state=STATE_INLINEPARAM;
@@ -680,35 +716,68 @@ public abstract class DocImpl implements Doc, TagContainer {
                                            AbstractTagImpl contextTag,
                                            boolean isInline) {
 
-      AbstractTagImpl tag;
+      AbstractTagImpl tag = null;
+
+      boolean haveValue = (0 != value.trim().length());
+
+      String emptyWarning = "Empty @" + name + " tag.";
 
       if (name.equals("param")) {
-	 tag=new ParamTagImpl(value, contextClass, contextMember);
+         if (haveValue) {
+            tag=new ParamTagImpl(value, contextClass, contextMember);
+         }
+         else {
+            //printWarning(emptyWarning);
+         }
       }
       else if (name.equals("see")) {
-	 tag=new SeeTagImpl(value, contextClass);
+         if (haveValue) {
+            tag=new SeeTagImpl(value, contextClass);
+         }
+         else {
+            //printWarning(emptyWarning);
+         }
       }
       else if (name.equals("link") || name.equals("linkplain")) {
-	 tag=new LinkTagImpl("@" + name, value, contextClass);
-         isInline = true;
+         if (haveValue) {
+            tag=new LinkTagImpl("@" + name, value, contextClass);
+            isInline = true;
+         }
+         else {
+            //printWarning(emptyWarning);
+         }
       }
       else if (name.equals("value")) {
-	 tag=new ValueTagImpl(value, contextClass);
-         isInline = true;
+         if (haveValue) {
+            tag=new ValueTagImpl(value, contextClass);
+            isInline = true;
+         }
+         else {
+            //printWarning(emptyWarning);
+         }
       }
       else if (name.equals("inheritDoc")) {
-         if (value.trim().length() > 0) {
+         if (haveValue) {
             //printWarning("@inheritDoc tags are not supposed to have any content.");
          }
 	 tag=new InheritDocTagImpl(contextClass, contextMember, contextTag);
          isInline = true;
       }
       else if (name.equals("serialField")) {
-	 tag=new SerialFieldTagImpl(value, contextClass, contextMember);
+         if (haveValue) {
+            tag=new SerialFieldTagImpl(value, contextClass, contextMember);
+         }
+         else {
+            //printWarning(emptyWarning);
+         }
       }
       else if (name.equals("throws") || name.equals("exception")) {
-	 Debug.log(1,"adding tag '"+name+"' value '"+value+"'");
-	 tag=new ThrowsTagImpl(value, contextClass, contextMember);
+         if (haveValue) {
+            tag=new ThrowsTagImpl(value, contextClass, contextMember);
+         }
+         else {
+            //printWarning(emptyWarning);
+         }
 	 name="throws";
       }
       else if (name.equals("text")) {
@@ -720,41 +789,46 @@ public abstract class DocImpl implements Doc, TagContainer {
          // FIXME: consider taglets
       }
 
-      if (isInline) {
-	 ((List)tags.get("inline")).add(tag);
-	 if (isFirstSentence) {
-            if (name.equals("text")) {
-               String txt = ((TextTagImpl)tag).getText();
-               Tag newTag;
-               if (txt.startsWith("<p>")) {
-                  newTag = new TextTagImpl(txt.substring(3));
-               }
-               else if (txt.endsWith("</p>")) {
-                  newTag = new TextTagImpl(txt.substring(0, txt.length() - 4));
+      if (tag != null) {
+         if (isInline) {
+            ((List)tags.get("inline")).add(tag);
+            if (isFirstSentence) {
+               if (name.equals("text")) {
+                  String txt = ((TextTagImpl)tag).getText();
+                  Tag newTag;
+                  if (txt.startsWith("<p>")) {
+                     newTag = new TextTagImpl(txt.substring(3));
+                  }
+                  else if (txt.endsWith("</p>")) {
+                     newTag = new TextTagImpl(txt.substring(0, txt.length() - 4));
+                  }
+                  else {
+                     newTag = tag;
+                  }
+                  ((List)tags.get("first")).add(newTag);
+               
                }
                else {
-                  newTag = tag;
+                  ((List)tags.get("first")).add(tag);
                }
-               ((List)tags.get("first")).add(newTag);
-               
             }
-            else {
-               ((List)tags.get("first")).add(tag);
-            }
-	 }
+         }
+         else {
+            ((List)tags.get("all")).add(tag);
+         }
+
+         List l=((List)tags.get(name));
+         if (l==null) {
+            l=new LinkedList();
+            tags.put(name,l);
+         }
+         l.add(tag);
+
+         return isInline ? tag : contextTag;
       }
       else {
-	 ((List)tags.get("all")).add(tag);
+         return null;
       }
-
-      List l=((List)tags.get(name));
-      if (l==null) {
-	 l=new LinkedList();
-	 tags.put(name,l);
-      }
-      l.add(tag);
-
-      return isInline ? tag : contextTag;
    }
 
    // Return all tags in this Doc item. 

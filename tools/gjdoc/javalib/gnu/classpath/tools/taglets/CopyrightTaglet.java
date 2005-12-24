@@ -80,12 +80,27 @@ public class CopyrightTaglet implements Taglet {
          return null;
       }
       else {
-         String result = "<dl>";
-         for (int i = 0; i < tags.length; i++) {
-            result += "<dt><i>Copyright &#169; " + tags[i].text() + "</i></dt>";
+         boolean haveValidTag = false;
+         for (int i = 0; i < tags.length && !haveValidTag; ++i) {
+            if (tags[i].text().length() > 0) {
+               haveValidTag = true;
+            }
          }
-         return result
-            + "</dl>";
+         
+         if (haveValidTag) {
+            StringBuffer result = new StringBuffer();
+            result.append("<dl>");
+            for (int i = 0; i < tags.length; i++) {
+               if (tags[i].text().length() > 0) {
+                  result.append("<dt><i>Copyright &#169; " + tags[i].text() + "</i></dt>");
+               }
+            }
+            result.append("</dl>");
+            return result.toString();
+         }
+         else {
+            return null;
+         }
       }
    }
 }
