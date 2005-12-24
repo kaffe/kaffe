@@ -35,7 +35,6 @@
 #include "itypes.h"
 #include "gc.h"
 #include "md.h"
-#include "java_lang_Cloneable.h"
 #include "gcj/gcj.h"
 #include "xprofiler.h"
 #if defined(KAFFE_FEEDBACK)

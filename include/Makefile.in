@@ -386,15 +386,10 @@ NOINSTALL_DERIVED_HDRS = \
 	java_lang_VMThrowable.h \
 	java_io_InterruptedIOException.h \
 	java_io_VMFile.h \
-	java_lang_Boolean.h \
-	java_lang_Byte.h \
-	java_lang_Character.h \
 	java_lang_ClassLoader.h \
 	java_lang_Cloneable.h \
 	java_lang_Integer.h \
-	java_lang_Long.h \
 	java_lang_Math.h \
-	java_lang_Short.h \
 	java_lang_reflect_Array.h \
 	java_lang_reflect_Constructor.h \
 	java_lang_reflect_Field.h \

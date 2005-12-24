@@ -5,6 +5,17 @@
 
 2005-12-23  Dalibor Topic  <robilad@kaffe.org>
 
+	* include/Makefile.am: Do not generate unused headers
+	java_lang_Boolean.h, java_lang_Byte.h, java_lang_Character.h,
+	java_lang_Long.h, java_lang_Short.h.
+
+2005-12-23  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/baseClasses.c: Do not include unused 
+	header java_io_Cloneable.h.
+
+2005-12-23  Dalibor Topic  <robilad@kaffe.org>
+
 	* include/Makefile.am: Do not generate unused header 
 	java_io_FileInputStream.h.
 
