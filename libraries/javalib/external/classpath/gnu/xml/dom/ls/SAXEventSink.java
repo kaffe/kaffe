@@ -49,13 +49,17 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
 import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
 import org.xml.sax.DTDHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
+import org.xml.sax.XMLReader;
 import org.xml.sax.ext.Attributes2;
 import org.xml.sax.ext.DeclHandler;
 import org.xml.sax.ext.LexicalHandler;
-import gnu.xml.aelfred2.ContentHandler2;
+import org.xml.sax.ext.Locator2;
 import gnu.xml.dom.DomAttr;
 import gnu.xml.dom.DomDocument;
 import gnu.xml.dom.DomDoctype;
@@ -66,7 +70,7 @@ import gnu.xml.dom.DomDoctype;
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 class SAXEventSink
-  implements ContentHandler2, LexicalHandler, DTDHandler, DeclHandler
+  implements ContentHandler, LexicalHandler, DTDHandler, DeclHandler
 {
 
   private static final String XMLNS_URI = XMLConstants.XMLNS_ATTRIBUTE_NS_URI;
@@ -77,6 +81,8 @@ class SAXEventSink
   boolean expandEntityReferences;
   boolean ignoreComments;
   boolean coalescing;
+
+  XMLReader reader; // reference back to the parser to get features
   
   DomDocument doc; // document being constructed
   Node ctx; // current context (parent node)
@@ -110,20 +116,42 @@ class SAXEventSink
     doc.setStrictErrorChecking(false);
     doc.setBuilding(true);
     ctx = doc;
-  }
 
-  public void xmlDecl(String version, String encoding, boolean standalone,
-                      String inputEncoding)
-    throws SAXException
-  {
-    if (interrupted)
-      {
-        return;
-      }
-    doc.setXmlVersion(version);
-    doc.setXmlEncoding(encoding);
+    final String FEATURES = "http://xml.org/sax/features/";
+    final String PROPERTIES = "http://xml.org/sax/properties/";
+    final String GNU_PROPERTIES = "http://gnu.org/sax/properties/";
+
+    boolean standalone = reader.getFeature(FEATURES + "is-standalone");
     doc.setXmlStandalone(standalone);
-    doc.setInputEncoding(inputEncoding);
+    try
+      {
+        String version = (String) reader.getProperty(PROPERTIES +
+                                                     "document-xml-version");
+        doc.setXmlVersion(version);
+      }
+    catch (SAXNotRecognizedException e)
+      {
+      }
+    catch (SAXNotSupportedException e)
+      {
+      }
+    if (locator != null && locator instanceof Locator2)
+      {
+        String encoding = ((Locator2) locator).getEncoding();
+        doc.setInputEncoding(encoding);
+      }
+    try
+      {
+        String encoding = (String) reader.getProperty(GNU_PROPERTIES +
+                                                      "document-xml-encoding");
+        doc.setXmlEncoding(encoding);
+      }
+    catch (SAXNotRecognizedException e)
+      {
+      }
+    catch (SAXNotSupportedException e)
+      {
+      }
   }
 
   public void endDocument()

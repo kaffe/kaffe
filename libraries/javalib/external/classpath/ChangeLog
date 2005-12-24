@@ -1,3 +1,54 @@
+2005-12-24  Tom Tromey  <tromey@redhat.com>
+
+	* java/nio/charset/Charset.java (defaultCharset): Added @since.
+
+2005-12-24  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* gnu/xml/dom/DomNode.java
+	(listeners): Use a HashSet now.
+	(DomNode): Likewise.
+	(compact, trimSize): Reduced to nop with a HashSet.
+	(addEventListener, removeEventListener): Use HashSet
+	operations.
+	(dispatchEvent): Likewise.
+	(notifyNode): Likewise. 
+
+2005-12-24  Chris Burdess  <dog@gnu.org>
+
+	* gnu/xml/stream/SAXParser.java,
+	  gnu/xml/stream/XMLParser.java: DTD validation support for StAX parser.
+
+2005-12-24  Chris Burdess  <dog@gnu.org>
+
+	* doc/README.jaxp: Updated with parameters for SAX-over-StAX driver.
+	* gnu/xml/stream/SAXParser.java,
+	  gnu/xml/stream/XMLParser.java: Conformance fixes for XML 1.1 and
+	  namespace handling.
+	* gnu/xml/dom/ls/DomLSParser.java,
+	  gnu/xml/dom/ls/SAXEventSink.java: Use SAX features and properties to
+	  determine XML declaration details.
+	* gnu/xml/aelfred2/SAXDriver.java,
+	  gnu/xml/aelfred2/XmlParser.java,
+	  gnu/xml/dom/Consumer.java,
+	  gnu/xml/pipeline/DomConsumer.java,
+	  gnu/xml/pipeline/EventFilter.java: Remove ContentHandler2 hack as
+	  DOM Load & Save no longer depends on it
+	* javax/xml/parsers/SAXParserFactory.java,
+	  resource/META-INF/services/javax.xml.parsers.SAXParserFactory: Make
+	  SAX-over-StAX the default SAX implementation.
+
+2005-12-23  Mark Wielaard  <mark@klomp.org>
+
+	Implement workaround suggested in bug #25430.
+	* java/text/Bidi.java: New file.
+
+2005-12-23  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* gnu/xml/dom/DomNode.java
+	(LiveNodeList.handleEvent,
+	LiveNodeList.item, LiveNodeList.getLength): Detach properly the
+	iterator xfrom the DomNode. 
+
 2005-12-23  Chris Burdess  <dog@gnu.org>
 
 	* gnu/xml/stream/SAXParser.java,

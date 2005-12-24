@@ -38,6 +38,7 @@ exception statement from your version. */
 package gnu.xml.dom;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -149,7 +150,7 @@ public abstract class DomNode
   boolean readonly;
 
   // event registrations
-  private ListenerRecord[] listeners;
+  private HashSet listeners;
   private int nListeners;
 
   // DOM Level 3 userData dictionary.
@@ -167,19 +168,6 @@ public abstract class DomNode
    */
   public void compact()
   {
-    if (listeners != null && listeners.length != nListeners)
-      {
-        if (nListeners == 0)
-          {
-            listeners = null;
-          }
-        else
-          {
-            ListenerRecord[] l = new ListenerRecord[nListeners];
-            System.arraycopy(listeners, 0, l, 0, nListeners);
-            listeners = l;
-          }
-      }
   }
 
   /**
@@ -201,6 +189,7 @@ public abstract class DomNode
           }
       }
     this.owner = owner;
+    this.listeners = new HashSet();
   }
   
 
@@ -960,12 +949,6 @@ public abstract class DomNode
    */
   public void trimToSize()
   {
-    if (listeners != null && listeners.length != nListeners)
-      {
-        ListenerRecord[] newKids = new ListenerRecord[length];
-        System.arraycopy(listeners, 0, newKids, 0, nListeners);
-        listeners = newKids;
-      }
   }
 
   /**
@@ -1175,7 +1158,7 @@ public abstract class DomNode
         node.next = null;
         
         node.readonly = false;
-        node.listeners = null;
+        node.listeners = new HashSet();
         node.nListeners = 0;
         return node;
 
@@ -1264,7 +1247,7 @@ public abstract class DomNode
       elementName = name;
       matchAnyURI = "*".equals(uri);
       matchAnyName = "*".equals(name);
-      
+
       DomNode.this.addEventListener("DOMNodeInserted", this, true);
       DomNode.this.addEventListener("DOMNodeRemoved", this, true);
     }
@@ -1274,7 +1257,7 @@ public abstract class DomNode
       if (current != null)
         current.detach();
       current = null;
-      
+
       DomNode.this.removeEventListener("DOMNodeInserted", this, true);
       DomNode.this.removeEventListener("DOMNodeRemoved", this, true);
     }
@@ -1337,6 +1320,8 @@ public abstract class DomNode
           return;
         }
       
+      if (current != null)
+	current.detach();
       current = null;
     }
 
@@ -1355,6 +1340,7 @@ public abstract class DomNode
           lastIndex--;
         }
         Node ret = current.previousNode ();
+	current.detach();
         current = null;
         return ret;
       } 
@@ -1362,9 +1348,11 @@ public abstract class DomNode
       // somewhere after last node
       while (++lastIndex != index)
         current.nextNode ();
-        Node ret = current.nextNode ();
-        current = null;
-        return ret;
+
+      Node ret = current.nextNode ();
+      current.detach();
+      current = null;
+      return ret;
     }
     
     public int getLength()
@@ -1376,7 +1364,7 @@ public abstract class DomNode
         {
           retval++;
         }
-      current = null;
+      iter.detach();
       return retval;
     }
     
@@ -1404,13 +1392,18 @@ public abstract class DomNode
       this.useCapture = useCapture;
     }
 
-    boolean equals(ListenerRecord rec)
+    public boolean equals(Object o)
     {
+      ListenerRecord rec = (ListenerRecord)o;
       return listener == rec.listener
         && useCapture == rec.useCapture
         && type == rec.type;
     }
     
+    public int hashCode()
+    {
+	return listener.hashCode() ^ type.hashCode();
+    }
   }
 
   /**
@@ -1465,30 +1458,12 @@ public abstract class DomNode
                                      EventListener listener,
                                      boolean useCapture)
   {
-    if (listeners == null)
-      {
-        listeners = new ListenerRecord[1];
-      }
-    else if (nListeners == listeners.length)
-      {
-        ListenerRecord[] newListeners =
-          new ListenerRecord[listeners.length + NKIDS_DELTA];
-        System.arraycopy(listeners, 0, newListeners, 0, nListeners);
-        listeners = newListeners;
-      }
-
     // prune duplicates
     ListenerRecord record;
 
     record = new ListenerRecord(type, listener, useCapture);
-    for (int i = 0; i < nListeners; i++)
-      {
-        if (record.equals(listeners[i]))
-          {
-            return;
-          }
-      }
-    listeners [nListeners++] = record;
+    listeners.add(record);
+    nListeners = listeners.size();
   }
 
   // XXX this exception should be discarded from DOM
@@ -1673,11 +1648,14 @@ public abstract class DomNode
                           ListenerRecord[] notificationSet)
   {
     int count = 0;
+    Iterator iter;
+
+    iter = current.listeners.iterator();
 
     // do any of this set of listeners get notified?
-    for (int i = 0; i < current.nListeners; i++)
+    while (iter.hasNext())
       {
-        ListenerRecord rec = current.listeners[i];
+        ListenerRecord rec = (ListenerRecord)iter.next();
 
         if (rec.useCapture != capture)
           {
@@ -1698,6 +1676,7 @@ public abstract class DomNode
           }
         notificationSet[count++] = rec;
       }
+    iter = null;
 
     // Notify just those listeners
     e.currentNode = current; 
@@ -1705,18 +1684,21 @@ public abstract class DomNode
       {
         try
           {
+	    iter = current.listeners.iterator();
             // Late in the DOM CR process (3rd or 4th CR?) the
             // removeEventListener spec became asymmetric with respect
             // to addEventListener ... effect is now immediate.
-            for (int j = 0; j < current.nListeners; j++)
+	    while (iter.hasNext())
               {
-                if (current.listeners[j].equals(notificationSet[i]))
+		ListenerRecord rec = (ListenerRecord)iter.next();
+
+                if (rec.equals(notificationSet[i]))
                   {
                     notificationSet[i].listener.handleEvent(e);
                     break;
                   }
               }
-            
+            iter = null;
           }
         catch (Exception x)
           {
@@ -1734,36 +1716,8 @@ public abstract class DomNode
                                         EventListener listener,
                                         boolean useCapture)
   {
-    for (int i = 0; i < nListeners; i++)
-      {
-        if (listeners[i].listener != listener)
-          {
-            continue;
-          }
-        if (listeners[i].useCapture != useCapture)
-          {
-            continue;
-          }
-        if (!listeners[i].type.equals(type))
-          {
-            continue;
-          }
-
-        if (nListeners == 1)
-          {
-            listeners = null;
-            nListeners = 0;
-          }
-        else
-          {
-            for (int j = i + 1; j < nListeners; j++)
-              {
-                listeners[i++] = listeners[j++];
-              }
-            listeners[--nListeners] = null;
-          }
-        break;
-      }
+    listeners.remove(new ListenerRecord(type, listener, useCapture));
+    nListeners = listeners.size();
     // no exceptions reported
   }
 

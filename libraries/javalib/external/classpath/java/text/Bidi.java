@@ -1,5 +1,5 @@
-/* ContentHandler2.java -- 
-   Copyright (C) 2004 Free Software Foundation, Inc.
+/* Bidi.java -- Bidirectional Algorithm implementation
+   Copyright (C) 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -7,7 +7,7 @@ GNU Classpath is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
 any later version.
-
+ 
 GNU Classpath is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -35,31 +35,36 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
-package gnu.xml.aelfred2;
 
-import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
+package java.text;
 
 /**
- * Extension to the SAX ContentHandler interface to report parsing events
- * and parameters required by DOM Level 3 but not supported by SAX.
+ * Bidirectional Algorithm implementation.
  *
- * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
+ * TODO/FIXME Only one method <code>requiresBidi</code> is implemented
+ * for now by using <code>Character</code>. The full algorithm is <a
+ * href="http://www.unicode.org/unicode/reports/tr9/">Unicode Standard
+ * Annex #9: The Bidirectional Algorithm</a>. A ful implementation is
+ * <a href="http://fribidi.org/">GNU FriBidi</a>.
  */
-public interface ContentHandler2
-  extends ContentHandler
+public class Bidi
 {
-
   /**
-   * Reports the XML declaration.
-   * @param version the value of the version attribute in the XML
-   * declaration
-   * @param encoding the encoding specified in the XML declaration, if any
-   * @param standalone the standalone attribute from the XML declaration
-   * @param inputEncoding the encoding of the XML input
+   * Returns false if all characters in the text between start and end
+   * are all left-to-right text.  WARNING, this implementation is
+   * slow, it calls <code>Character.getDirectionality(char)</code> on
+   * all characters.
    */
-  void xmlDecl(String version, String encoding, boolean standalone,
-               String inputEncoding)
-    throws SAXException;
-  
+  public static boolean requiresBidi(char[] text, int start, int end)
+  {
+    final int LEFT_TO_RIGHT = Character.DIRECTIONALITY_LEFT_TO_RIGHT;
+    for (int i = start; i < end; i++)
+      {
+	char c = text[i];
+	if (Character.getDirectionality(c) != LEFT_TO_RIGHT)
+	  return true;
+      }
+
+    return false;
+  }
 }

@@ -102,6 +102,7 @@ public class SAXParser
   String encoding;
   String xmlVersion;
   boolean xmlStandalone;
+  String xmlEncoding;
 
   public SAXParser()
   {
@@ -143,12 +144,17 @@ public class SAXParser
   {
     if (parser != null)
       throw new IllegalStateException("parsing in progress");
-    String FEATURES = "http://xml.org/sax/features/";
-    String PROPERTIES = "http://xml.org/sax/properties/";
-    if ((FEATURES + "namespaces").equals(name))
+    final String FEATURES = "http://xml.org/sax/features/";
+    final String PROPERTIES = "http://xml.org/sax/properties/";
+    if ((FEATURES + "namespaces").equals(name) ||
+        (FEATURES + "namespace-prefixes").equals(name))
       namespaceAware = Boolean.TRUE.equals(value);
     else if ((FEATURES + "string-interning").equals(name))
       stringInterning = Boolean.TRUE.equals(value);
+    else if ((FEATURES + "use-attributes2").equals(name))
+      {
+        // NOOP
+      }
     else if ((FEATURES + "validation").equals(name))
       validating = Boolean.TRUE.equals(value);
     else if ((FEATURES + "external-general-entities").equals(name))
@@ -166,11 +172,13 @@ public class SAXParser
   public Object getProperty(String name)
     throws SAXNotRecognizedException, SAXNotSupportedException
   {
-    String FEATURES = "http://xml.org/sax/features/";
-    String PROPERTIES = "http://xml.org/sax/properties/";
+    final String FEATURES = "http://xml.org/sax/features/";
+    final String PROPERTIES = "http://xml.org/sax/properties/";
+    final String GNU_PROPERTIES = "http://gnu.org/sax/properties/";
     if ((FEATURES + "is-standalone").equals(name))
       return xmlStandalone ? Boolean.TRUE : Boolean.FALSE;
-    if ((FEATURES + "namespaces").equals(name))
+    if ((FEATURES + "namespaces").equals(name) ||
+        (FEATURES + "namespace-prefixes").equals(name))
       return namespaceAware ? Boolean.TRUE : Boolean.FALSE;
     if ((FEATURES + "string-interning").equals(name))
       return stringInterning ? Boolean.TRUE : Boolean.FALSE;
@@ -194,6 +202,8 @@ public class SAXParser
       return xmlVersion;
     if ((PROPERTIES + "lexical-handler").equals(name))
       return lexicalHandler;
+    if ((GNU_PROPERTIES + "document-xml-encoding").equals(name))
+      return xmlEncoding;
     throw new SAXNotSupportedException(name);
   }
 
@@ -385,6 +395,8 @@ public class SAXParser
                           {
                             String nsuri = reader.getNamespaceURI(i);
                             String nsprefix = reader.getNamespacePrefix(i);
+                            if ("xml".equals(nsprefix))
+                              continue;
                             contentHandler.startPrefixMapping(nsprefix, nsuri);
                           }
                       }
@@ -413,6 +425,8 @@ public class SAXParser
                         for (int i = 0; i < nc; i++)
                           {
                             String nsprefix = reader.getNamespacePrefix(i);
+                            if ("xml".equals(nsprefix))
+                              continue;
                             contentHandler.endPrefixMapping(nsprefix);
                           }
                       }
@@ -439,6 +453,7 @@ public class SAXParser
                 encoding = reader.getEncoding();
                 xmlVersion = reader.getVersion();
                 xmlStandalone = reader.isStandalone();
+                xmlEncoding = reader.getCharacterEncodingScheme();
                 if (contentHandler != null)
                   contentHandler.startDocument();
                 startDocumentDone = true;
@@ -466,8 +481,9 @@ public class SAXParser
                         // Element decl
                         if (declHandler != null)
                           {
-                            String model = doctype.getElementModel(name);
-                            declHandler.elementDecl(name, model);
+                            XMLParser.ContentModel model =
+                              doctype.getElementModel(name);
+                            declHandler.elementDecl(name, model.text);
                           }
                       }
                     else if ('A' == c)
@@ -552,6 +568,29 @@ public class SAXParser
                             String pub = ids.publicId;
                             String url = ids.systemId;
                             dtdHandler.notationDecl(name, pub, url);
+                          }
+                      }
+                    else if ('c' == c)
+                      {
+                        // Comment
+                        if (lexicalHandler != null)
+                          {
+                            String comment = doctype.getComment(name);
+                            char[] b = comment.toCharArray();
+                            lexicalHandler.comment(b, 0, b.length);
+                          }
+                      }
+                    else if ('p' == c)
+                      {
+                        // Processing instruction
+                        if (contentHandler != null)
+                          {
+                            String[] pi = doctype.getPI(name);
+                            String target = pi[0];
+                            String data = pi[1];
+                            if (data == null)
+                              data = "";
+                            contentHandler.processingInstruction(target, data);
                           }
                       }
                   }
