@@ -331,7 +331,7 @@ typedef uintmax_t uatomic_max_t;
   __atomic_val_bysize (__arch_increment, int, mem, __MB, __MB)
 
 #define atomic_increment(mem)						\
-  ({ __atomic_val_bysize (__arch_increment, int, mem, "", ""); (void) 0; })
+  ({ __atomic_val_bysize (__arch_increment, int, mem, __MB, __MB); (void) 0; })
 
 
 /* Atomically decrement value (and return the decremented value).  */

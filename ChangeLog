@@ -1,3 +1,14 @@
+2005-12-25  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* config/mips/atomic.h: Imported from GNU LibC CVS.
+
+	* Imported fixlet from GNU Classpath
+
+	2005-12-25  Chris Burdess  <dog@gnu.org>
+
+        	* resource/META-INF/services/javax.xml.parsers.SAXParserFactory:
+	          Revert to using aelfred2 driver by default.
+
 2005-12-25  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/systems/unix-jthreads/jthread.c:
