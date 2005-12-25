@@ -2272,7 +2272,7 @@ retry:
 		} else {
 			maxWait = firstAlarm - curTime;
 		}
-		DBG(JTHREADDETAIL, dprintf("handleIO(sleep=%d) maxWait=%d\n", canSleep, maxWait); );
+		DBG(JTHREADDETAIL, dprintf("handleIO(sleep=%d) maxWait=%ld\n", canSleep, (long) maxWait); );
 	}
 
 #if USE_POLL

@@ -1,5 +1,10 @@
 2005-12-25  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c:
+	Cast jlong to long in debug statement to fix a compiler warning.
+
+2005-12-25  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/systems/unix-jthreads/jthread.c (start_this_sucker_on_a_new_frame):
 	Removed attribute NONRETURNING to fix a compiler warning.
 
