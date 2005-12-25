@@ -1,10 +1,24 @@
-/* Copyright (C) 2005 Thiemo Seufer
-   Atomic functions for MIPS
+/* Low-level functions for atomic operations. Mips version.
+   Copyright (C) 2005 Free Software Foundation, Inc.
+   This file is part of the GNU C Library.
 
-   This file is free software; you can redistribute it and/or
+   The GNU C Library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Lesser General Public
    License as published by the Free Software Foundation; either
-   version 2.1 of the License, or (at your option) any later version. */
+   version 2.1 of the License, or (at your option) any later version.
+
+   The GNU C Library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
+   License along with the GNU C Library; if not, write to the Free
+   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+   02111-1307 USA.  */
+
+#ifndef _MIPS_BITS_ATOMIC_H
+#define _MIPS_BITS_ATOMIC_H 1
 
 #include "config-int.h"
 #include <sgidefs.h>
@@ -24,491 +38,266 @@ typedef uintptr_t uatomicptr_t;
 typedef intmax_t atomic_max_t;
 typedef uintmax_t uatomic_max_t;
 
-/*
- * MIPS does not have byte and halfword forms of load linked and store
- * conditional. So for MIPS we stub out the 8- and 16-bit forms.
- */
-#define __arch_compare_and_exchange_bool_8_int(mem, newval, oldval, mb1, mb2)	\
-  ({ __builtin_trap (); 0; })
-
-#define __arch_compare_and_exchange_bool_16_int(mem, newval, oldval, mb1, mb2)	\
-  ({ __builtin_trap (); 0; })
-
-#define __arch_compare_and_exchange_val_8_int(mem, newval, oldval, mb1, mb2)	\
-  ({ __builtin_trap (); 0; })
-
-#define __arch_compare_and_exchange_val_16_int(mem, newval, oldval, mb1, mb2)	\
-  ({ __builtin_trap (); 0; })
-
-#ifdef UP
-# define __MB		/* nothing */
+#if _MIPS_SIM == _ABIO32
+#define MIPS_PUSH_MIPS2 ".set	mips2\n\t"
 #else
-# define __MB		"	sync\n"
-# define atomic_full_barrier()	__asm ("sync" : : : "memory");
-# define atomic_read_barrier()	__asm ("sync" : : : "memory");
-# define atomic_write_barrier()	__asm ("sync" : : : "memory");
+#define MIPS_PUSH_MIPS2
 #endif
+
+/* See the comments in <sys/asm.h> about the use of the sync instruction.  */
+#ifndef MIPS_SYNC
+# define MIPS_SYNC	sync
+#endif
+
+#define MIPS_SYNC_STR_2(X) #X
+#define MIPS_SYNC_STR_1(X) MIPS_SYNC_STR_2(X)
+#define MIPS_SYNC_STR MIPS_SYNC_STR_1(MIPS_SYNC)
 
 /* Compare and exchange.  For all of the "xxx" routines, we expect a
    "__prev" and a "__cmp" variable to be provided by the enclosing scope,
    in which values are returned.  */
 
-#define __arch_compare_and_exchange_xxx_32_int(mem, new, old, mb1, mb2) \
-({									\
-  __asm__ __volatile__ (						\
-	"	.set noreorder\n"					\
-		mb1							\
-	"1:	ll	%0,%2\n"					\
-	"	 li	%1,0\n"						\
-	"	bne	%0,%3,2f\n"					\
-	"	move	%1,%4\n"					\
-	"	sc	%1,%2\n"					\
-	"	beqz	%1,1b\n"					\
-	"	 nop\n"							\
-		mb2							\
-	"2:\n"								\
-	"	.set reorder\n"						\
-	:  "=&r" (__prev),						\
-	   "=&r" (__cmp)						\
-	: "R" (*(volatile atomic32_t *)(mem)),				\
-	   "r" ((atomic32_t)(old)),					\
-	   "r" ((atomic32_t)(new))					\
-	: "memory");							\
-})
+#define __arch_compare_and_exchange_xxx_8_int(mem, newval, oldval, rel, acq) \
+  (abort (), __prev = __cmp = 0)
 
-#define __arch_compare_and_exchange_xxx_64_int(mem, new, old, mb1, mb2)	\
-({									\
-  __asm__ __volatile__ (						\
-	"	.set noreorder\n"					\
-		mb1							\
-	"1:	lld	%0,%2\n"					\
-	"	 li	%1,0\n"						\
-	"	bne	%0,%3,2f\n"					\
-	"	move	%1,%4\n"					\
-	"	scd	%1,%2\n"					\
-	"	beqz	%1,1b\n"					\
-	"	 nop\n"							\
-		mb2							\
-	"2:\n"								\
-	"	.set reorder"						\
-	:  "=&r" (__prev),						\
-	   "=&r" (__cmp)						\
-	:  "R" (*(volatile atomic32_t *)(mem)),				\
-	   "r" ((atomic64_t)(old)),					\
-	   "r" ((atomic64_t)(new))					\
-	: "memory");							\
-})
+#define __arch_compare_and_exchange_xxx_16_int(mem, newval, oldval, rel, acq) \
+  (abort (), __prev = __cmp = 0)
 
-/* For all "bool" routines, we return FALSE if exchange successful.  */
+#define __arch_compare_and_exchange_xxx_32_int(mem, newval, oldval, rel, acq) \
+     __asm__ __volatile__ (						      \
+     ".set	push\n\t"						      \
+     MIPS_PUSH_MIPS2							      \
+     rel	"\n"							      \
+     "1:\t"								      \
+     "ll	%0,%4\n\t"						      \
+     "move	%1,$0\n\t"						      \
+     "bne	%0,%2,2f\n\t"						      \
+     "move	%1,%3\n\t"						      \
+     "sc	%1,%4\n\t"						      \
+     "beqz	%1,1b\n"						      \
+     acq	"\n\t"							      \
+     ".set	pop\n"							      \
+     "2:\n\t"								      \
+	      : "=&r" (__prev), "=&r" (__cmp)				      \
+	      : "r" (oldval), "r" (newval), "m" (*mem)			      \
+	      : "memory")
 
-#define __arch_compare_and_exchange_bool_32_int(mem, new, old, mb1, mb2) \
-({ unsigned long __prev; int __cmp;					\
-   __arch_compare_and_exchange_xxx_32_int(mem, new, old, mb1, mb2);	\
-   !__cmp; })
-
-#if _MIPS_SIM == _MIPS_SIM_ABI32
-# define __arch_compare_and_exchange_bool_64_int(mem, new, old, mb1, mb2) \
-  ({ __builtin_trap (); 0; })
+#if _MIPS_SIM == _ABIO32
+/* We can't do an atomic 64-bit operation in O32.  */
+#define __arch_compare_and_exchange_xxx_64_int(mem, newval, oldval, rel, acq) \
+  (abort (), __prev = __cmp = 0)
 #else
-# define __arch_compare_and_exchange_bool_64_int(mem, new, old, mb1, mb2) \
-({ unsigned long __prev; int __cmp;					\
-   __arch_compare_and_exchange_xxx_64_int(mem, new, old, mb1, mb2);	\
-   !__cmp; })
+#define __arch_compare_and_exchange_xxx_64_int(mem, newval, oldval, rel, acq) \
+     __asm__ __volatile__ ("\n"						      \
+     ".set	push\n\t"						      \
+     MIPS_PUSH_MIPS2							      \
+     rel	"\n"							      \
+     "1:\t"								      \
+     "lld	%0,%4\n\t"						      \
+     "move	%1,$0\n\t"						      \
+     "bne	%0,%2,2f\n\t"						      \
+     "move	%1,%3\n\t"						      \
+     "scd	%1,%4\n\t"						      \
+     "beqz	%1,1b\n"						      \
+     acq	"\n\t"							      \
+     ".set	pop\n"							      \
+     "2:\n\t"								      \
+	      : "=&r" (__prev), "=&r" (__cmp)				      \
+	      : "r" (oldval), "r" (newval), "m" (*mem)			      \
+	      : "memory")
 #endif
+
+/* For all "bool" routines, we return FALSE if exchange succesful.  */
+
+#define __arch_compare_and_exchange_bool_8_int(mem, new, old, rel, acq)	\
+({ typeof (*mem) __prev; int __cmp;					\
+   __arch_compare_and_exchange_xxx_8_int(mem, new, old, rel, acq);	\
+   !__cmp; })
+
+#define __arch_compare_and_exchange_bool_16_int(mem, new, old, rel, acq) \
+({ typeof (*mem) __prev; int __cmp;					\
+   __arch_compare_and_exchange_xxx_16_int(mem, new, old, rel, acq);	\
+   !__cmp; })
+
+#define __arch_compare_and_exchange_bool_32_int(mem, new, old, rel, acq) \
+({ typeof (*mem) __prev; int __cmp;					\
+   __arch_compare_and_exchange_xxx_32_int(mem, new, old, rel, acq);	\
+   !__cmp; })
+
+#define __arch_compare_and_exchange_bool_64_int(mem, new, old, rel, acq) \
+({ typeof (*mem) __prev; int __cmp;					\
+   __arch_compare_and_exchange_xxx_64_int(mem, new, old, rel, acq);	\
+   !__cmp; })
 
 /* For all "val" routines, return the old value whether exchange
    successful or not.  */
 
-#define __arch_compare_and_exchange_val_32_int(mem, new, old, mb1, mb2) \
-({ unsigned long __prev; int __cmp;					\
-   __arch_compare_and_exchange_xxx_32_int(mem, new, old, mb1, mb2);	\
+#define __arch_compare_and_exchange_val_8_int(mem, new, old, rel, acq)	\
+({ typeof (*mem) __prev; int __cmp;					\
+   __arch_compare_and_exchange_xxx_8_int(mem, new, old, rel, acq);	\
    (typeof (*mem))__prev; })
 
-#if _MIPS_SIM == _MIPS_SIM_ABI32
-# define __arch_compare_and_exchange_val_64_int(mem, new, old, mb1, mb2) \
-  ({ __builtin_trap (); 0; })
-#else
-# define __arch_compare_and_exchange_val_64_int(mem, new, old, mb1, mb2) \
-({ unsigned long __prev; int __cmp;					\
-   __arch_compare_and_exchange_xxx_64_int(mem, new, old, mb1, mb2);	\
+#define __arch_compare_and_exchange_val_16_int(mem, new, old, rel, acq) \
+({ typeof (*mem) __prev; int __cmp;					\
+   __arch_compare_and_exchange_xxx_16_int(mem, new, old, rel, acq);	\
    (typeof (*mem))__prev; })
-#endif
+
+#define __arch_compare_and_exchange_val_32_int(mem, new, old, rel, acq) \
+({ typeof (*mem) __prev; int __cmp;					\
+   __arch_compare_and_exchange_xxx_32_int(mem, new, old, rel, acq);	\
+   (typeof (*mem))__prev; })
+
+#define __arch_compare_and_exchange_val_64_int(mem, new, old, rel, acq) \
+({ typeof (*mem) __prev; int __cmp;					\
+   __arch_compare_and_exchange_xxx_64_int(mem, new, old, rel, acq);	\
+   (typeof (*mem))__prev; })
 
 /* Compare and exchange with "acquire" semantics, ie barrier after.  */
 
-#define atomic_compare_and_exchange_bool_acq(mem, new, old)		\
-  __atomic_bool_bysize (__arch_compare_and_exchange_bool, int,		\
-		        mem, new, old, "", __MB)
+#define atomic_compare_and_exchange_bool_acq(mem, new, old)	\
+  __atomic_bool_bysize (__arch_compare_and_exchange_bool, int,	\
+		        mem, new, old, "", MIPS_SYNC_STR)
 
-#define atomic_compare_and_exchange_val_acq(mem, new, old)		\
-  __atomic_val_bysize (__arch_compare_and_exchange_val, int,		\
-		       mem, new, old, "", __MB)
+#define atomic_compare_and_exchange_val_acq(mem, new, old)	\
+  __atomic_val_bysize (__arch_compare_and_exchange_val, int,	\
+		       mem, new, old, "", MIPS_SYNC_STR)
 
 /* Compare and exchange with "release" semantics, ie barrier before.  */
 
-#define atomic_compare_and_exchange_bool_rel(mem, new, old)		\
-  __atomic_bool_bysize (__arch_compare_and_exchange_bool, int,		\
-		        mem, new, old, __MB, "")
+#define atomic_compare_and_exchange_bool_rel(mem, new, old)	\
+  __atomic_bool_bysize (__arch_compare_and_exchange_bool, int,	\
+		        mem, new, old, MIPS_SYNC_STR, "")
 
-#define atomic_compare_and_exchange_val_rel(mem, new, old)		\
-  __atomic_val_bysize (__arch_compare_and_exchange_val, int,		\
-		       mem, new, old, __MB, "")
+#define atomic_compare_and_exchange_val_rel(mem, new, old)	\
+  __atomic_val_bysize (__arch_compare_and_exchange_val, int,	\
+		       mem, new, old, MIPS_SYNC_STR, "")
 
 
-/* Atomically store value and return the previous value.  */
 
-#define __arch_exchange_8_int(mem, value, mb1, mb2)			\
-  ({ __builtin_trap (); 0; })
+/* Atomic exchange (without compare).  */
 
-#define __arch_exchange_16_int(mem, value, mb1, mb2)			\
-  ({ __builtin_trap (); 0; })
+#define __arch_exchange_xxx_8_int(mem, newval, rel, acq) \
+  (abort (), 0)
 
-#define __arch_exchange_32_int(mem, value, mb1, mb2)			\
-({									\
-  unsigned int __ret, __tmp;						\
-  __asm__ __volatile__ (						\
-	"	.set noreorder\n"					\
-		mb1							\
-	"1:	ll	%0,%2\n"					\
-	"	move	%1,%3\n"					\
-	"	sc	%1,%2\n"					\
-	"	beqz	%1,1b\n"					\
-	"	 nop\n"							\
-		mb2							\
-	"	.set reorder\n"						\
-	: "=&r" (__ret),						\
-	  "=&r" (__tmp)							\
-	: "R" (*mem),							\
-	  "r" ((unsigned int)(value))					\
-	: "memory");							\
-  __ret; })
+#define __arch_exchange_xxx_16_int(mem, newval, rel, acq) \
+  (abort (), 0)
 
-#if _MIPS_SIM == _MIPS_SIM_ABI32
-# define __arch_exchange_64_int(mem, value, mb1, mb2)			\
-  ({ __builtin_trap (); 0; })
+#define __arch_exchange_xxx_32_int(mem, newval, rel, acq) \
+({ typeof (*mem) __prev; int __cmp;					      \
+     __asm__ __volatile__ ("\n"						      \
+     ".set	push\n\t"						      \
+     MIPS_PUSH_MIPS2							      \
+     rel	"\n"							      \
+     "1:\t"								      \
+     "ll	%0,%3\n\t"						      \
+     "move	%1,%2\n\t"						      \
+     "sc	%1,%3\n\t"						      \
+     "beqz	%1,1b\n"						      \
+     acq	"\n\t"							      \
+     ".set	pop\n"							      \
+     "2:\n\t"								      \
+	      : "=&r" (__prev), "=&r" (__cmp)				      \
+	      : "r" (newval), "m" (*mem)				      \
+	      : "memory");						      \
+  __prev; })
+
+#if _MIPS_SIM == _ABIO32
+/* We can't do an atomic 64-bit operation in O32.  */
+#define __arch_exchange_xxx_64_int(mem, newval, rel, acq) \
+  (abort (), 0)
 #else
-# define __arch_exchange_64_int(mem, value, mb1, mb2)			\
-({									\
-  unsigned long __ret, __tmp;						\
-  __asm__ __volatile__ (						\
-	"	.set noreorder\n"					\
-		mb1							\
-	"1:	lld	%0,%2\n"					\
-	"	move	%1,%3\n"					\
-	"	scd	%1,%2\n"					\
-	"	beqz	%1,1b\n"					\
-	"	 nop\n"							\
-		mb2							\
-	"	.set reorder\n"						\
-	: "=&r" (__ret),						\
-	  "=&r" (__tmp)							\
-	: "R" (*mem),							\
-	  "r" (value)							\
-	: "memory");							\
-  __ret; })
+#define __arch_exchange_xxx_64_int(mem, newval, rel, acq) \
+({ typeof (*mem) __prev; int __cmp;					      \
+     __asm__ __volatile__ ("\n"						      \
+     ".set	push\n\t"						      \
+     MIPS_PUSH_MIPS2							      \
+     rel	"\n"							      \
+     "1:\n"								      \
+     "lld	%0,%3\n\t"						      \
+     "move	%1,%2\n\t"						      \
+     "scd	%1,%3\n\t"						      \
+     "beqz	%1,1b\n"						      \
+     acq	"\n\t"							      \
+     ".set	pop\n"							      \
+     "2:\n\t"								      \
+	      : "=&r" (__prev), "=&r" (__cmp)				      \
+	      : "r" (newval), "m" (*mem)				      \
+	      : "memory");						      \
+  __prev; })
 #endif
 
-#define atomic_exchange_acq(mem, value)					\
-  __atomic_val_bysize (__arch_exchange, int, mem, value, "", __MB)
+#define atomic_exchange_acq(mem, value) \
+  __atomic_val_bysize (__arch_exchange_xxx, int, mem, value, "", MIPS_SYNC_STR)
 
-#define atomic_exchange_rel(mem, value)					\
-  __atomic_val_bysize (__arch_exchange, int, mem, value, __MB, "")
+#define atomic_exchange_rel(mem, value) \
+  __atomic_val_bysize (__arch_exchange_xxx, int, mem, value, MIPS_SYNC_STR, "")
 
 
 /* Atomically add value and return the previous (unincremented) value.  */
 
-#define __arch_exchange_and_add_8_int(mem, value, mb1, mb2)		\
-  ({ __builtin_trap (); 0; })
+#define __arch_exchange_and_add_8_int(mem, newval, rel, acq) \
+  (abort (), (typeof(*mem)) 0)
 
-#define __arch_exchange_and_add_16_int(mem, value, mb1, mb2)		\
-  ({ __builtin_trap (); 0; })
+#define __arch_exchange_and_add_16_int(mem, newval, rel, acq) \
+  (abort (), (typeof(*mem)) 0)
 
-#define __arch_exchange_and_add_32_int(mem, value, mb1, mb2)		\
-({									\
-  unsigned int __ret, __tmp;						\
-  __asm__ __volatile__ (						\
-	"	.set noreorder\n"					\
-		mb1							\
-	"1:	ll	%0,%2\n"					\
-	"	addu	%1,%4,%0\n"					\
-	"	sc	%1,%2\n"					\
-	"	beqz	%1,1b\n"					\
-	"	 nop\n"							\
-		mb2							\
-	"	.set reorder\n"						\
-	: "=&r" (__ret),						\
-	  "=&r" (__tmp)							\
-	: "R" (*mem),							\
-	  "r" ((unsigned int)(value))					\
-	: "memory");							\
-  __ret; })
+#define __arch_exchange_and_add_32_int(mem, value, rel, acq) \
+({ typeof (*mem) __prev; int __cmp;					      \
+     __asm__ __volatile__ ("\n"						      \
+     ".set	push\n\t"						      \
+     MIPS_PUSH_MIPS2							      \
+     rel	"\n"							      \
+     "1:\t"								      \
+     "ll	%0,%3\n\t"						      \
+     "addu	%1,%0,%2\n\t"						      \
+     "sc	%1,%3\n\t"						      \
+     "beqz	%1,1b\n"						      \
+     acq	"\n\t"							      \
+     ".set	pop\n"							      \
+     "2:\n\t"								      \
+	      : "=&r" (__prev), "=&r" (__cmp)				      \
+	      : "r" (value), "m" (*mem)					      \
+	      : "memory");						      \
+  __prev; })
 
-#if _MIPS_SIM == _MIPS_SIM_ABI32
-# define __arch_exchange_and_add_64_int(mem, value, mb1, mb2)		\
-  ({ __builtin_trap (); 0; })
+#if _MIPS_SIM == _ABIO32
+/* We can't do an atomic 64-bit operation in O32.  */
+#define __arch_exchange_and_add_64_int(mem, value, rel, acq) \
+  (abort (), (typeof(*mem)) 0)
 #else
-# define __arch_exchange_and_add_64_int(mem, value, mb1, mb2)		\
-({									\
-  unsigned long __ret, __tmp;						\
-  __asm__ __volatile__ (						\
-	"	.set noreorder\n"					\
-		mb1							\
-	"1:	lld	%0,%2\n"					\
-	"	daddu	%1,%3,%0\n"					\
-	"	scd	%1,%2\n"					\
-	"	beqz	%1,1b\n"					\
-	"	 nop\n"							\
-		mb2							\
-	"	.set reorder\n"						\
-	: "=&r" (__ret),						\
-	  "=&r" (__tmp)							\
-	: "R" (*mem),							\
-	  "r" ((unsigned long)(value))					\
-	: "memory");							\
-  __ret; })
+#define __arch_exchange_and_add_64_int(mem, value, rel, acq) \
+({ typeof (*mem) __prev; int __cmp;					      \
+     __asm__ __volatile__ (						      \
+     ".set	push\n\t"						      \
+     MIPS_PUSH_MIPS2							      \
+     rel	"\n"							      \
+     "1:\t"								      \
+     "lld	%0,%3\n\t"						      \
+     "daddu	%1,%0,%2\n\t"						      \
+     "scd	%1,%3\n\t"						      \
+     "beqz	%1,1b\n"						      \
+     acq	"\n\t"							      \
+     ".set	pop\n"							      \
+     "2:\n\t"								      \
+	      : "=&r" (__prev), "=&r" (__cmp)				      \
+	      : "r" (value), "m" (*mem)					      \
+	      : "memory");						      \
+  __prev; })
 #endif
 
 /* ??? Barrier semantics for atomic_exchange_and_add appear to be 
    undefined.  Use full barrier for now, as that's safe.  */
-#define atomic_exchange_and_add(mem, value)				\
-  __atomic_val_bysize (__arch_exchange_and_add, int, mem, value, __MB, __MB)
+#define atomic_exchange_and_add(mem, value) \
+  __atomic_val_bysize (__arch_exchange_and_add, int, mem, value,	      \
+		       MIPS_SYNC_STR, MIPS_SYNC_STR)
 
+/* TODO: More atomic operations could be implemented efficiently; only the
+   basic requirements are done.  */
 
-/* Atomically increment value (and return the incremented value).  */
+#define atomic_full_barrier() \
+  __asm__ __volatile__ (".set push\n\t"					      \
+			MIPS_PUSH_MIPS2					      \
+			MIPS_SYNC_STR "\n\t"				      \
+			".set pop" : : : "memory")
 
-#define __arch_increment_8_int(mem, mb1, mb2)				\
-  ({ __builtin_trap (); 0; })
-
-#define __arch_increment_16_int(mem, mb1, mb2)				\
-  ({ __builtin_trap (); 0; })
-
-#define __arch_increment_32_int(mem, mb1, mb2)				\
-({									\
-  unsigned int __ret, __tmp;						\
-  __asm__ __volatile__ (						\
-	"	.set noreorder\n"					\
-		mb1							\
-	"1:	ll	%0,%2\n"					\
-	"	addiu	%0,%1,1\n"					\
-	"	sc	%0,%2\n"					\
-	"	beqz	%0,1b\n"					\
-	"	 addiu	%0,%0,1\n"					\
-		mb2							\
-	"	.set reorder\n"						\
-	: "=&r" (__ret),						\
-	  "=&r" (__tmp)							\
-	: "R" (*mem)							\
-	: "memory");							\
-  __ret; })
-
-#if _MIPS_SIM == _MIPS_SIM_ABI32
-# define __arch_increment_64_int(mem, mb1, mb2)				\
-  ({ __builtin_trap (); 0; })
-#else
-# define __arch_increment_64_int(mem, mb1, mb2)				\
-({									\
-  unsigned long __ret, __tmp;						\
-  __asm__ __volatile__ (						\
-	"	.set noreorder\n"					\
-		mb1							\
-	"1:	lld	%0,%2\n"					\
-	"	daddiu	%1,%0,1\n"					\
-	"	scd	%1,%2\n"					\
-	"	beqz	%1,1b\n"					\
-	"	 daddiu	%0,%0,1\n"					\
-		mb2							\
-	"	.set reorder\n"						\
-	: "=&r" (__ret),						\
-	  "=&r" (__tmp)							\
-	: "R" (*mem)							\
-	: "memory");							\
-  __ret; })
-#endif
-
-/* ??? Barrier semantics for atomic_increment_val appear to be 
-   undefined.  Use full barrier for now, as that's safe.  */
-#define atomic_increment_val(mem)					\
-  __atomic_val_bysize (__arch_increment, int, mem, __MB, __MB)
-
-#define atomic_increment(mem)						\
-  ({ __atomic_val_bysize (__arch_increment, int, mem, __MB, __MB); (void) 0; })
-
-
-/* Atomically decrement value (and return the decremented value).  */
-
-#define __arch_decrement_8_int(mem, mb1, mb2)				\
-  ({ __builtin_trap (); 0; })
-
-#define __arch_decrement_16_int(mem, mb1, mb2)				\
-  ({ __builtin_trap (); 0; })
-
-#define __arch_decrement_32_int(mem, mb1, mb2)				\
-({									\
-  unsigned int __ret, __tmp;						\
-  __asm__ __volatile__ (						\
-	"	.set noreorder\n"					\
-		mb1							\
-	"1:	ll	%0,%2\n"					\
-	"	addiu	%1,%0,-1\n"					\
-	"	sc	%1,%2\n"					\
-	"	beqz	%1,1b\n"					\
-	"	 addiu	%0,%0,-1\n"					\
-		mb2							\
-	"	.set reorder\n"						\
-	: "=&r" (__ret),						\
-	  "=&r" (__tmp)							\
-	: "R" (*mem)							\
-	: "memory");							\
-  __ret; })
-
-#if _MIPS_SIM == _MIPS_SIM_ABI32
-# define __arch_decrement_64_int(mem, mb1, mb2)				\
-  ({ __builtin_trap (); 0; })
-#else
-# define __arch_decrement_64_int(mem, mb1, mb2)				\
-({									\
-  unsigned long __ret, __tmp;						\
-  __asm__ __volatile__ (						\
-	"	.set noreorder\n"					\
-		mb1							\
-	"1:	lld	%0,%2\n"					\
-	"	daddiu	%1,%0,-1\n"					\
-	"	scd	%1,%2\n"					\
-	"	beqz	%1,1b\n"					\
-	"	 daddiu	%0,%0,-1\n"					\
-		mb2							\
-	"	.set reorder\n"						\
-	: "=&r" (__ret),						\
-	  "=&r" (__tmp)							\
-	: "R" (*mem)							\
-	: "memory");							\
-  __ret; })
-#endif
-
-/* ??? Barrier semantics for atomic_decrement_val appear to be 
-   undefined.  Use full barrier for now, as that's safe.  */
-#define atomic_decrement_val(mem)					\
-  __atomic_val_bysize (__arch_decrement, int, mem, __MB, __MB)
-
-#define atomic_decrement(mem)						\
-  ({ __atomic_val_bysize (__arch_decrement, int, mem, "", ""); (void) 0; })
-
-
-/* Atomically decrement value and return the previous (undecremented) value.  */
-
-#define __arch_decrement_if_positive_8_int(mem, mb1, mb2)		\
-  ({ __builtin_trap (); 0; })
-
-#define __arch_decrement_if_positive_16_int(mem, mb1, mb2)		\
-  ({ __builtin_trap (); 0; })
-
-#define __arch_decrement_if_positive_32_int(mem, mb1, mb2)		\
-({									\
-  signed int __ret, __tmp;						\
-  __asm__ __volatile__ (						\
-	"	.set noreorder\n"					\
-		mb1							\
-	"1:	ll	%0,%2\n"					\
-	"	addiu	%1,%0,-1\n"					\
-	"	bltz	%1,2f\n"					\
-	"	 nop\n"							\
-	"	sc	%1,%2\n"					\
-	"	beqz	%1,1b\n"					\
-	"	 nop\n"							\
-		mb2							\
-	"2:\n"								\
-	"	.set reorder\n"						\
-	: "=&r" (__ret),						\
-	  "=&r" (__tmp)							\
-	: "R" (*mem)							\
-	: "memory");							\
-  __ret; })
-
-#if _MIPS_SIM == _MIPS_SIM_ABI32
-# define __arch_decrement_if_positive_64_int(mem, mb1, mb2)		\
-  ({ __builtin_trap (); 0; })
-#else
-# define __arch_decrement_if_positive_64_int(mem, mb1, mb2)		\
-({									\
-  signed long __ret, __tmp;						\
-  __asm__ __volatile__ (						\
-	"	.set noreorder\n"					\
-		mb1							\
-	"1:	lld	%0,%2\n"					\
-	"	daddiu	%1,%0,-1\n"					\
-	"	bltz	%1,2f\n"					\
-	"	 nop\n"							\
-	"	scd	%1,%2\n"					\
-	"	beqz	%1,1b\n"					\
-	"	 nop\n"							\
-		mb2							\
-	"2:\n"								\
-	"	.set reorder\n"						\
-	: "=&r" (__ret),						\
-	  "=&r" (__tmp)							\
-	: "R" (*mem)							\
-	: "memory");							\
-  __ret; })
-#endif
-
-#define atomic_decrement_if_positive(mem)				\
-  __atomic_val_bysize (__arch_decrement_if_positive, int, mem, "", __MB)
-
-
-/* Atomically set a bit and return its old value.  */
-
-#define __arch_bit_test_set_8_int(mem, bit, mb1, mb2)			\
-  ({ __builtin_trap (); 0; })
-
-#define __arch_bit_test_set_16_int(mem, bit, mb1, mb2)			\
-  ({ __builtin_trap (); 0; })
-
-#define __arch_bit_test_set_32_int(mem, bit, mb1, mb2)			\
-({									\
-  unsigned int __ret, __tmp;						\
-  __asm__ __volatile__ (						\
-	"	.set noreorder\n"					\
-		mb1							\
-	"1:	ll	%1,%2\n"					\
-	"	or	%0,%1,%3\n"					\
-	"	sc	%0,%2\n"					\
-	"	beqz	%0,1b\n"					\
-	"	 and	%0,%2,%3\n"					\
-		mb2							\
-	"2:\n"								\
-	"	.set reorder\n"						\
-	: "=&r" (__ret),						\
-	  "=&r" (__tmp)							\
-	: "R" (*mem),							\
-	  "r" (1UL << bit)						\
-	: "memory");							\
-  __ret != 0; })
-
-#if _MIPS_SIM == _MIPS_SIM_ABI32
-# define __arch_bit_test_set_64_int(mem, bit, mb1, mb2)			\
-  ({ __builtin_trap (); 0; })
-#else
-# define __arch_bit_test_set_64_int(mem, bit, mb1, mb2)			\
-({									\
-  unsigned long __ret, __tmp;						\
-  __asm__ __volatile__ (						\
-	"	.set noreorder\n"					\
-		mb1							\
-	"1:	lld	%1,%2\n"					\
-	"	or	%0,%1,%3\n"					\
-	"	scd	%0,%2\n"					\
-	"	beqz	%0,1b\n"					\
-	"	 and	%0,%1,%2\n"					\
-		mb2							\
-	"2:\n"								\
-	"	.set reorder\n"						\
-	: "=&r" (__ret),						\
-	  "=&r" (__tmp)							\
-	: "R" (*mem),							\
-	  "r" (1 << bit)						\
-	: "memory");							\
-  __ret; })
-#endif
-
-#define atomic_bit_test_set(mem)					\
-  __atomic_val_bysize (__arch_bit_test_set, int, mem, "", __MB)
+#endif /* bits/atomic.h */
