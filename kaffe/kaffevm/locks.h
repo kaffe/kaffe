@@ -45,14 +45,14 @@ struct Hjava_lang_Object;
  * unlock and for distinguishing recursive invocations).
  */
 typedef struct _iLock {
-  uintp         in_progress;
-  uintp         num_wait;
-  void*		holder;
-  jthread_t	mux;
-  jthread_t	cv;
-  Ksem          sem;
-  uint32        lockCount;
-  void*	hlockHolder;
+  uintp         	in_progress;
+  uintp         	num_wait;
+  volatile void*	holder;
+  jthread_t		mux;
+  jthread_t		cv;
+  Ksem          	sem;
+  uint32        	lockCount;
+  void*			hlockHolder;
 } iLock;
 
 typedef struct _iStaticLock {

@@ -203,8 +203,8 @@ putHeavyLock(volatile iLock* lk)
 
   assert(lk->in_progress == 1);
   
-  lk->hlockHolder = NULL;
-  lk->in_progress = 0;
+  atomic_exchange_acq(&(lk->hlockHolder), NULL);
+  atomic_exchange_acq(&(lk->in_progress), 0);
   if (lk->num_wait != 0)
     KSEM(put)(&(lk->sem));
 }
@@ -323,7 +323,7 @@ void
 locks_internal_slowUnlockMutexIfHeld(iLock** lkp, iLock *heavyLock)
 {
   volatile iLock* lk;
-  void* holder;
+  volatile void* holder;
   jthread_t cur = KTHREAD(current)();
   
   DBG(SLOWLOCKS,
@@ -355,7 +355,7 @@ jboolean
 locks_internal_waitCond(iLock** lkp, iLock *heavyLock, jlong timeout)
 {
   volatile iLock* lk;
-  void* holder;
+  volatile void* holder;
   jthread_t cur = KTHREAD(current)();
   volatile jthread_t *ptr;
   jboolean r;

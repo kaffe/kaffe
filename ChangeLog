@@ -1,3 +1,15 @@
+2005-12-25  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/locks.c (putHeavyLock): Use atomic ops to assign hLockHolder
+	and in_progress.
+
+2005-12-25  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/locks.h (struct _iLock): Made holder volatile to fix compiler warnings.
+
+	* kaffe/kaffevm/locks.c (locks_internal_slowUnlockMutexIfHeld, locks_internal_waitCond):
+	Made holder volatile to fix compiler warnings.
+
 2005-12-25  Dalibor Topic  <robilad@kaffe.org>
 
 	* configure.ac: (--disable-classpath-tools) Added switch to disable 
