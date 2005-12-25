@@ -2106,6 +2106,18 @@ AC_ARG_ENABLE([gjdoc],
 
 AM_CONDITIONAL([COND_GJDOC], [test x"$enable_gjdoc" = x"yes"])
 
+dnl =========================================================================
+dnl Building of classpath tools
+dnl -------------------------------------------------------------------------
+
+AC_ARG_ENABLE([classpath-tools],
+		AS_HELP_STRING([--disable-classpath-tools],
+				[Disable building of classpath tools like javap and rmic]),
+		[],
+		[enable_classpath_tools=yes])
+
+AM_CONDITIONAL([COND_CLASSPATH_TOOLS], [test x"$enable_classpath_tools" = x"yes"])
+
 JAVA_LIBS=" \
 \$(top_builddir)/libraries/clib/native/libjavalang.la \
 \$(top_builddir)/libraries/clib/net/libjavanet.la \
