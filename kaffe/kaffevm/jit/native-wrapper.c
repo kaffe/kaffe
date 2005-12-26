@@ -36,9 +36,9 @@ startJNIcall(void)
 	threadData 	*thread_data = THREAD_DATA();
 	jnirefs* table;
 
-	table = gc_malloc
-	  (sizeof(jnirefs) + sizeof(jref)*DEFAULT_JNIREFS_NUMBER,
-	   KGC_ALLOC_STATIC_THREADDATA);
+	table = checkPtr(gc_malloc
+			 (sizeof(jnirefs) + sizeof(jref)*DEFAULT_JNIREFS_NUMBER,
+			  KGC_ALLOC_STATIC_THREADDATA));
 
 	table->prev = thread_data->jnireferences;
 	thread_data->jnireferences = table;
@@ -103,6 +103,12 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 	 * arguments.
 	 */
 	enterTranslator();
+
+	if (KJIT(setupExitWithOOM)(&info))
+	  {
+	    success = false;
+	    goto exitOOM;
+	  }
 
 #if defined(KAFFE_PROFILER)
 	if (profFlag) {
@@ -452,6 +458,9 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 	if (use_JNI)
 		xmeth->accflags |= ACC_JNI;
 
+	goto done;
+exitOOM:
+	KJIT(cleanupInsnSequence)();
 done:
 	KJIT(resetConstants)();
 	KJIT(resetLabels)();

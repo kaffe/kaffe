@@ -134,6 +134,22 @@ void	startSubBlock(sequence*);
 void	cancelNoWriteback(void);
 jlong	currentTime(void);
 
+static JTHREAD_JMPBUF JIT_jumpExitWithOOM;
+
+void KaffeJIT_exitWithOOM()
+{
+  JTHREAD_LONGJMP(JIT_jumpExitWithOOM, 1);
+}
+
+bool KaffeJIT_setupExitWithOOM(struct _errorInfo* einfo)
+{
+  if (!JTHREAD_SETJMP(JIT_jumpExitWithOOM))
+    return false;
+
+  postOutOfMemory(einfo);
+  return true;
+}
+
 /*
  * By default, we comply with the Java spec and turn stack overflow checks
  * on.  Note that this involves a noticeable performance penalty.  If you
@@ -254,6 +270,12 @@ DBG(MOREJIT,
 	/* Only one in the translator at once. */
 	enterTranslator();
 	startTiming(&jit_time, "jittime");
+
+	if (KaffeJIT_setupExitWithOOM(einfo))
+	  {
+	    success = false;
+	    goto done2;
+	  }
 
 #if defined(KAFFE_PROFILER)
 	if (profFlag) {
@@ -640,6 +662,13 @@ initInsnSequence(Method* meth, int codesize, int localsz, int stacksz,
 	 */
 	KaffeJIT_newConstant(CPref, meth);
 	return true;
+}
+
+/*
+ */
+void KaffeJIT_cleanupInsnSequence()
+{
+  initSeq();
 }
 
 /*

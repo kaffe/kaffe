@@ -92,7 +92,8 @@ KaffeJIT3_newConstant(int type, ...)
 		/* Allocate chunk of constpool elements */
 		cpc = gc_malloc(sizeof(constpoolchunk), KGC_ALLOC_JIT_CONST);
 		/* XXX Ack! */
-		assert(cpc != 0);
+		if (cpc == NULL)
+		  KaffeJIT3_exitWithOOM();
 
 		cpc->next = poolchunks;
 		poolchunks = cpc;

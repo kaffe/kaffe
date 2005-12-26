@@ -99,6 +99,9 @@ setupGlobalRegisters(void)
 
 	/* Allocate an array for the slot pointers and copy them in */
 	slots = gc_malloc((1+maxLocal) * sizeof(SlotInfo*), KGC_ALLOC_JIT_SLOTS);
+	if (slots == NULL)
+	  KaffeJIT3_exitWithOOM();
+
 	for (j = 0; j < maxLocal; j++) {
 		slots[j] = &localinfo[j];
 	}

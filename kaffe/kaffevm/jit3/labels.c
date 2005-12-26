@@ -230,7 +230,8 @@ KaffeJIT3_newLabel(void)
 		
 		/* Allocate chunk of label elements */
 		lc = gc_malloc(sizeof(labelchunk), KGC_ALLOC_JIT_LABELS);
-		assert(lc != NULL);
+		if (lc == NULL)
+		  KaffeJIT3_exitWithOOM();
 
 		lc->next = labelchunks;
 		labelchunks = lc;

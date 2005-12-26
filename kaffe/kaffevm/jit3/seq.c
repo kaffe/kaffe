@@ -57,7 +57,8 @@ nextSeq(void)
 		int i;
 		/* Allocate chunk of sequence elements */
 		sc = gc_malloc(sizeof(sequencechunk), KGC_ALLOC_JIT_SEQ);
-		assert(sc != NULL);
+		if (sc == NULL)
+		  KaffeJIT3_exitWithOOM();
 
 		sc->next = sequencechunks;
 		sequencechunks = sc;

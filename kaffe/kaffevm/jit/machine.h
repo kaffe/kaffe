@@ -167,6 +167,10 @@ bool initInsnSequence(Method *meth, int codesize, int localsz, int stacksz,
 bool finishInsnSequence(struct codeinfo*, nativeCodeInfo*, errorInfo*);
 void installMethodCode(struct codeinfo*, Method*, nativeCodeInfo*);
 
+extern void KaffeJIT_cleanupInsnSequence();
+extern void KaffeJIT_exitWithOOM();
+extern bool KaffeJIT_setupExitWithOOM(errorInfo *einfo);
+
 typedef struct {
         bool BADARRAYINDEX;
         bool NULLPOINTER;

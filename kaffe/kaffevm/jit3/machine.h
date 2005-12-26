@@ -206,6 +206,9 @@ extern struct SlotData** createSpillMask(void);
 extern void     slotAlias(struct _sequence*);
 extern void     startInsn(struct _sequence*);
 extern jboolean translate(Method* xmeth, struct _errorInfo* einfo);
+extern void     KaffeJIT3_exitWithOOM();
+extern jboolean KaffeJIT3_setupExitWithOOM(struct _errorInfo* einfo);
+extern void     KaffeJIT3_cleanupInsnSequence();
 
 /*
  * Some global variables used by the translater which we must export.

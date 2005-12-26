@@ -138,6 +138,22 @@ int profFlag;
 static void printProfilerStats(void);
 #endif
 
+JTHREAD_JMPBUF JIT3_jumpExitWithOOM;
+
+void KaffeJIT3_exitWithOOM()
+{
+  JTHREAD_LONGJMP(JIT3_jumpExitWithOOM, 1);
+}
+
+jboolean KaffeJIT3_setupExitWithOOM(struct _errorInfo* einfo)
+{
+  if (!JTHREAD_SETJMP(JIT3_jumpExitWithOOM))
+    return false;
+
+  postOutOfMemory(einfo);
+  return true;
+}
+
 /*
  * Translate a method into native code.
  *
@@ -270,6 +286,13 @@ DBG(MOREJIT,
 		maxArgs += 1;
 	}
 
+
+	if (KaffeJIT3_setupExitWithOOM(einfo))
+	  {
+	    success = false;
+	    goto oom_error;
+	  }
+
 DBG(MOREJIT,
 	dprintf("Method: %s.%s%s\n", CLASS_CNAME(xmeth->class), xmeth->name->data, METHOD_SIGD(xmeth));
 	for (i = 0; i < maxLocal; i++) {
@@ -390,7 +413,11 @@ SCHK(			sanityCheck();				)
 	{
 		success = false;
 	}
+	goto done;
 
+oom_error:;
+	KaffeJIT3_cleanupInsnSequence();
+	
 done:;
 	KaffeJIT3_resetLabels();
 	KaffeJIT3_resetConstants();
@@ -447,6 +474,22 @@ done3:;
 #endif
 
 	return (success);
+}
+
+void
+KaffeJIT3_cleanupInsnSequence()
+{
+  sequence *s;
+
+  for (s = firstSeq; s != currSeq; s = s->next)
+    {
+      if (s->func != doSpill)
+	continue;
+      
+      /* According to doSpill */
+      gc_free(s->u[1].smask);
+    } 
+  initSeq();
 }
 
 /*
@@ -578,6 +621,7 @@ installMethodCode(void* ignore UNUSED, Method* meth, nativeCodeInfo* code)
 				strlen(METHOD_SIGD(meth)) +
 				1,
 				KGC_ALLOC_JITTEMP);
+		assert(sym != NULL);
 		sprintf(sym,
 			"%s/%s%s",
 			CLASS_CNAME(meth->class),
@@ -1069,7 +1113,9 @@ createSpillMask(void)
 
 	c++; /* Add null slot on the end */
 	mem = gc_malloc(c * sizeof(SlotData*), KGC_ALLOC_JIT_SLOTS);
-
+	if (mem == NULL)
+	  KaffeJIT3_exitWithOOM();
+	
 	i = maxLocal + maxStack + tmpslot;
 	c = 0;
 	for (i--; i >= 0; i--) {
@@ -1295,6 +1341,8 @@ newFakeCall(void* func, uintp currpc)
 		fc = KGC_malloc(main_collector,
 				sizeof(fakeCall),
 				KGC_ALLOC_JIT_FAKE_CALL);
+		if (fc == NULL)
+		  KaffeJIT3_exitWithOOM();
 	}
 #if defined(HAVE_branch_and_link)
 	fc->parent = findFakeCall(func);

@@ -1,4 +1,30 @@
+2005-12-26  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/jit3/machine.h,
+	kaffe/kaffevm/jit3/machine.c
+	(KaffeJIT3_exitWithOOM,
+	KaffeJIT3_setupExitWithOOM): New functions.
+	(KaffeJIT3_cleanupInsnSequence): New function.
+	(translate): Handle OOM cleanly.
+	
+	* kaffe/kaffevm/jit3/seq.c,
+	kaffe/kaffevm/jit3/labels.c,
+	kaffe/kaffevm/jit3/constpool.c,
+	kaffe/kaffevm/jit3/global-regs.c:
+	Throw an OOM if there is no memory anymore (instead
+	of crashing the VM with an assert).
+
+	* kaffe/kaffevm/jit/native-wrapper.c
+	(startJNI): Throw an OOM if it is not possible to allocate
+	a new local ref table.
+	(Kaffe_wrapper): Handle OOM cleanly.
+
+	* kaffe/kaffevm/jit/machine.c
+	(KaffeJIT_exitWithOOM, KaffeJIT_setupExitWithOOM,
+	KaffeJIT_cleanupInsnSequence): New functions.
+	
 2005-12-26  Riccardo Mottola  <riccardo@kaffe.org>
+
 	* config/config-io.h,
 	config/config-math.h,
 	config/config-mem.h,
