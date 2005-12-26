@@ -19,15 +19,15 @@
 #include "gccbuiltin.h"
 
 /* Include the right compare_and_swap definition */
-#if defined(__sparcv9)
-#include "atomic-sparc32v9.h"
-#else /* !defined(__sparcv9) */
 #if defined(__arch64__)
 #include "atomic-sparc64.h"
 #else /* !defined(__arch64__) */
+#if defined(__sparcv9)
+#include "atomic-sparc32v9.h"
+#else /* !defined(__sparcv9) */
 #include "atomic-sparc32.h"
-#endif /* defined(__arch64__) */
 #endif /* defined(__sparcv9) */
+#endif /* defined(__arch64__) */
 
 #include "katomic.h"
 

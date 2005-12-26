@@ -1,3 +1,9 @@
+2005-12-26  Riccardo Mottola  <riccardo@kaffe.org>
+	* config/sparc/atomic-sparc32v9.h, config/sparc/atomic-sparc64.h:
+	fix includes
+	* config/sparc/common.h:
+	change ifdef order to get 64 bit include 64bit file
+
 2005-12-25  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/locks.c (putHeavyLock): Use atomic ops to assign hLockHolder
