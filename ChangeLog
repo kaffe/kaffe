@@ -1,5 +1,12 @@
 2005-12-26  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/jni/jni-refs.c
+	(KaffeJNI_EnsureLocalCapacity): Fix 'clobbered'
+	warning by moving initializazion of local variable after
+	setjmp/longjmp.
+
+2005-12-26  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/methodCache.c,
 	kaffe/kaffevm/methodCache.h:
 	Removed unused files.

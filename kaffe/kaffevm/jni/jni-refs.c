@@ -140,9 +140,11 @@ KaffeJNI_NewGlobalRef(JNIEnv* env, jref obj)
 jint
 KaffeJNI_EnsureLocalCapacity(JNIEnv* env, jint capacity)
 {
-  jint ret = 0;
+  jint ret;
 
   BEGIN_EXCEPTION_HANDLING(-1);
+
+  ret = 0;
 
   if (thread_data->jnireferences->used+capacity > 
       thread_data->jnireferences->frameSize)
