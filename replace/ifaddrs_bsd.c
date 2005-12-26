@@ -69,6 +69,8 @@ int getifaddrs(struct ifaddrs **ifap)
 
   sockfd = socket(AF_INET, SOCK_DGRAM, 0);
 
+  *ifap = NULL;
+
   memset(&ifc, 0, sizeof(struct ifconf));
   do
     {

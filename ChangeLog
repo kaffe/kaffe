@@ -1,5 +1,9 @@
 2005-12-26  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* replace/ifaddrs_bsd.c: Initialize ifap in case of error.
+
+2005-12-26  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* kaffe/kaffevm/jit3/machine.h,
 	kaffe/kaffevm/jit3/machine.c
 	(KaffeJIT3_exitWithOOM,
