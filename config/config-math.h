@@ -8,6 +8,8 @@
  * of this file. 
  */
 
+#include "config.h"
+
 #ifndef __config_math_h
 #define __config_math_h
 

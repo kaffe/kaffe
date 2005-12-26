@@ -8,6 +8,7 @@
  * of this file. 
  */
 
+#include "config.h"
 
 #ifndef __config_signal_h
 #define __config_signal_h

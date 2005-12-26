@@ -8,6 +8,8 @@
  * of this file.
  */
 
+#include "config.h"
+
 #ifndef __config_setjmp_h
 #define __config_setjmp_h
 

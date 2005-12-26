@@ -1,4 +1,18 @@
 2005-12-26  Riccardo Mottola  <riccardo@kaffe.org>
+	* config/config-io.h,
+	config/config-math.h,
+	config/config-mem.h,
+	config/config-net.h,
+	config/config-setjmp.h,
+	config/config-signal.h:
+	added include of config.h
+
+	* config/config.alias,
+	config/powerpc/atomic.h,
+	config/powerpc/bits/atomic.h:
+	added support for POWER cpu
+
+2005-12-26  Riccardo Mottola  <riccardo@kaffe.org>
 	* config/sparc/atomic-sparc32v9.h, config/sparc/atomic-sparc64.h:
 	fix includes
 	* config/sparc/common.h:

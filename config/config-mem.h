@@ -8,8 +8,11 @@
  * of this file. 
  */
 
+#include "config.h"
+
 #ifndef __config_mem_h
 #define __config_mem_h
+
 
 #if defined(HAVE_STRING_H)
 #include <string.h>
