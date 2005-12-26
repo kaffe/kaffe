@@ -93,23 +93,23 @@ am__DEPENDENCIES_3 = $(am__DEPENDENCIES_1) $(ENGINE_NAME)/libengine.la \
 	jni/libkaffejni.la $(top_builddir)/replace/libreplace.la
 am_libkaffevm_la_OBJECTS = libkaffevm_la-access.lo \
 	libkaffevm_la-baseClasses.lo libkaffevm_la-classMethod.lo \
-	libkaffevm_la-classPool.lo libkaffevm_la-methodCache.lo \
-	libkaffevm_la-code-analyse.lo libkaffevm_la-code.lo \
-	libkaffevm_la-constants.lo libkaffevm_la-debug.lo \
-	libkaffevm_la-exception.lo libkaffevm_la-external.lo \
-	libkaffevm_la-file.lo libkaffevm_la-findInJar.lo \
-	libkaffevm_la-fp.lo libkaffevm_la-gc.lo \
-	libkaffevm_la-hashtab.lo libkaffevm_la-inflate.lo \
-	libkaffevm_la-itypes.lo libkaffevm_la-jar.lo \
-	libkaffevm_la-ksem.lo libkaffevm_la-locks.lo \
-	libkaffevm_la-lookup.lo libkaffevm_la-object.lo \
-	libkaffevm_la-readClass.lo libkaffevm_la-soft.lo \
-	libkaffevm_la-stackTrace.lo libkaffevm_la-stats.lo \
-	libkaffevm_la-string.lo libkaffevm_la-stringParsing.lo \
-	libkaffevm_la-support.lo libkaffevm_la-javacall.lo \
-	libkaffevm_la-thread.lo libkaffevm_la-utf8const.lo \
-	libkaffevm_la-gcFuncs.lo libkaffevm_la-reflect.lo \
-	libkaffevm_la-reference.lo libkaffevm_la-binreloc.lo
+	libkaffevm_la-classPool.lo libkaffevm_la-code-analyse.lo \
+	libkaffevm_la-code.lo libkaffevm_la-constants.lo \
+	libkaffevm_la-debug.lo libkaffevm_la-exception.lo \
+	libkaffevm_la-external.lo libkaffevm_la-file.lo \
+	libkaffevm_la-findInJar.lo libkaffevm_la-fp.lo \
+	libkaffevm_la-gc.lo libkaffevm_la-hashtab.lo \
+	libkaffevm_la-inflate.lo libkaffevm_la-itypes.lo \
+	libkaffevm_la-jar.lo libkaffevm_la-ksem.lo \
+	libkaffevm_la-locks.lo libkaffevm_la-lookup.lo \
+	libkaffevm_la-object.lo libkaffevm_la-readClass.lo \
+	libkaffevm_la-soft.lo libkaffevm_la-stackTrace.lo \
+	libkaffevm_la-stats.lo libkaffevm_la-string.lo \
+	libkaffevm_la-stringParsing.lo libkaffevm_la-support.lo \
+	libkaffevm_la-javacall.lo libkaffevm_la-thread.lo \
+	libkaffevm_la-utf8const.lo libkaffevm_la-gcFuncs.lo \
+	libkaffevm_la-reflect.lo libkaffevm_la-reference.lo \
+	libkaffevm_la-binreloc.lo
 am__objects_1 = libkaffevm_la-md.lo
 nodist_libkaffevm_la_OBJECTS = $(am__objects_1)
 libkaffevm_la_OBJECTS = $(am_libkaffevm_la_OBJECTS) \
@@ -458,7 +458,6 @@ libkaffevm_la_SOURCES = \
 	baseClasses.c \
 	classMethod.c \
 	classPool.c \
-	methodCache.c \
 	code-analyse.c \
 	code.c \
 	constants.c \
@@ -497,7 +496,6 @@ noinst_HEADERS = \
 	baseClasses.h \
 	bytecode.h \
 	classMethod.h \
-	methodCache.h \
 	classpath.h \
 	code-analyse.h \
 	code.h \
@@ -629,7 +627,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-locks.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-lookup.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-md.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-methodCache.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-object.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-readClass.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-reference.Plo@am__quote@
@@ -691,13 +688,6 @@ libkaffevm_la-classPool.lo: classPool.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='classPool.c' object='libkaffevm_la-classPool.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-classPool.lo `test -f 'classPool.c' || echo '$(srcdir)/'`classPool.c
-
-libkaffevm_la-methodCache.lo: methodCache.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-methodCache.lo -MD -MP -MF "$(DEPDIR)/libkaffevm_la-methodCache.Tpo" -c -o libkaffevm_la-methodCache.lo `test -f 'methodCache.c' || echo '$(srcdir)/'`methodCache.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libkaffevm_la-methodCache.Tpo" "$(DEPDIR)/libkaffevm_la-methodCache.Plo"; else rm -f "$(DEPDIR)/libkaffevm_la-methodCache.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='methodCache.c' object='libkaffevm_la-methodCache.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-methodCache.lo `test -f 'methodCache.c' || echo '$(srcdir)/'`methodCache.c
 
 libkaffevm_la-code-analyse.lo: code-analyse.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-code-analyse.lo -MD -MP -MF "$(DEPDIR)/libkaffevm_la-code-analyse.Tpo" -c -o libkaffevm_la-code-analyse.lo `test -f 'code-analyse.c' || echo '$(srcdir)/'`code-analyse.c; \

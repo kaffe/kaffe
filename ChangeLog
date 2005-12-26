@@ -1,5 +1,11 @@
 2005-12-26  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/methodCache.c,
+	kaffe/kaffevm/methodCache.h:
+	Removed unused files.
+
+2005-12-26  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffe/main.c,
 	kaffe/kaffevm/classMethod.c,
 	kaffe/kaffevm/gcFuncs.c,
