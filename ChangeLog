@@ -1,3 +1,14 @@
+2005-12-26  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffe/main.c,
+	kaffe/kaffevm/classMethod.c,
+	kaffe/kaffevm/gcFuncs.c,
+	kaffe/kaffevm/jit3/machine.c,
+	kaffe/xprof/feedback.c,
+	kaffe/xprof/xprofiler.c,
+	libraries/clib/management/JIT.c:
+	Don't include methodCache.h.
+
 2005-12-26  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* replace/ifaddrs_bsd.c: Initialize ifap in case of error.

@@ -36,7 +36,6 @@
 #if defined(KAFFE_FEEDBACK)
 #include "feedback.h"
 #endif
-#include "methodCache.h"
 #include "external.h"
 #include "kaffe_jni.h"
 

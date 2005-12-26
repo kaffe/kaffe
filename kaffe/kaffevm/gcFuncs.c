@@ -46,7 +46,6 @@
 #include "jni.h"
 #include "soft.h"
 #include "thread.h"
-#include "methodCache.h"
 #include "jvmpi_kaffe.h"
 #include "methodcalls.h"
 

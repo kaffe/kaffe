@@ -33,7 +33,6 @@
 #include "xprofile-md.h"
 #include "exception.h"
 #include "kaffe/jmalloc.h"
-#include "methodCache.h"
 
 #include "memorySamples.h"
 #include "feedback.h"

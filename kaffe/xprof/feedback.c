@@ -29,7 +29,6 @@
 #include "support.h"
 #include "debug.h"
 #include "stringSupport.h"
-#include "methodCache.h"
 #include "thread.h"
 #include "external.h"
 

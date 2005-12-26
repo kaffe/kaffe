@@ -42,7 +42,6 @@
 #include "md.h"
 #include "jni.h"
 #include "soft.h"
-#include "methodCache.h"
 #include "gcj/gcj.h"
 #include "xprofiler.h"
 #include "debugFile.h"

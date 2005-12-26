@@ -19,7 +19,6 @@
 #include "support.h"
 #include "debug.h"
 #include "stringSupport.h"
-#include "methodCache.h"
 
 /* XXX Temporary for now until we define interface header file that
  * declares "translate"

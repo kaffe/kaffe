@@ -51,7 +51,6 @@
 #include "soft.h"
 #include "thread.h"
 #include "itypes.h"
-#include "methodCache.h"
 #include "support.h"
 #include "xprofiler.h"
 #if defined(KAFFE_FEEDBACK)
