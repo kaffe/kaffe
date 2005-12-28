@@ -203,7 +203,7 @@ putHeavyLock(volatile iLock* lk)
 
   assert(lk->in_progress == 1);
   
-  atomic_exchange_acq(&(lk->hlockHolder), NULL);
+  lk->hlockHolder = NULL;
   atomic_exchange_acq(&(lk->in_progress), 0);
   if (lk->num_wait != 0)
     KSEM(put)(&(lk->sem));
