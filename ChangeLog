@@ -1,5 +1,9 @@
 2005-12-28 Dalibor Topic  <robilad@kaffe.org>
 
+	* WHATSNEW, TODO: Updated.
+
+2005-12-28 Dalibor Topic  <robilad@kaffe.org>
+
 	* developers/README: Added test-kaffe-sh.
 	* developers/test-kaffe-sh: New file.
 
