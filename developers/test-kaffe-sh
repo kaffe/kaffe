@@ -1,0 +1,100 @@
+#rm -rf ~/.ccache/*
+rm -rf /tmp/kaffe
+mkdir /tmp/kaffe
+#mkdir /tmp/kaffe/.ccache
+#ln -s /tmp/kaffe/.ccache ~/.ccache
+
+mkdir /tmp/kaffe/bin
+export PATH=/tmp/kaffe/bin:$PATH
+cd /tmp/kaffe
+
+tar xvf ~/tar*.tar 
+cd tar-1.15.1
+./configure --prefix=/tmp/kaffe && make && make install
+ls -l /tmp/kaffe/bin/tar
+cd /tmp/kaffe
+
+/tmp/kaffe/bin/tar xvf ~/make*.tar 
+cd make-3.80
+./configure --prefix=/tmp/kaffe && make && make install
+ls -l /tmp/kaffe/bin/make
+cd /tmp/kaffe
+export MAKE=/tmp/kaffe/bin/make
+
+/tmp/kaffe/bin/tar xvf ~/zip*.tar
+cd zip-2.31
+make -f unix/Makefile  generic
+cp zip /tmp/kaffe/bin/
+ls -l /tmp/kaffe/bin/zip
+cd /tmp/kaffe
+
+#/tmp/kaffe/bin/tar xvf ~/ccache-*.tar
+#cd ccache*
+#./configure --prefix=/tmp/kaffe && make && make install
+#ls -l  /tmp/kaffe/bin/ccache
+#cd /tmp/kaffe
+
+#export CC="ccache gcc"
+#export CXX="ccache g++"
+
+/tmp/kaffe/bin/tar xvf ~/jikes*.tar
+cd jikes*
+./configure --prefix=/tmp/kaffe && make && make install
+cd ..
+ls -l  /tmp/kaffe/bin/jikes
+
+/tmp/kaffe/bin/tar xvf ~/kaffe*.tar
+
+KVER=/tmp/kaffe/kaffe-1.1.6+cvs
+DEFAULT="--disable-boehm-gc-configuration --disable-sound --disable-native-awt --enable-pure-java-math --with-jikes=/tmp/kaffe/bin/jikes --disable-gtk-peer"
+
+ENG=intrp
+THRD=unix-jthreads
+mkdir $ENG-$THRD
+cd $ENG-$THRD
+$KVER/configure --prefix=/tmp/kaffe/$ENG-$THRD $DEFAULT --with-engine=$ENG --with-threads=$THRD \
+&& make > $ENG-$THRD-build.log 2>&1 && make check >  $ENG-$THRD-check.log 2>&1 && make install
+cd /tmp/kaffe
+
+ENG=jit
+THRD=unix-jthreads
+mkdir $ENG-$THRD
+cd $ENG-$THRD
+$KVER/configure --prefix=/tmp/kaffe/$ENG-$THRD $DEFAULT --with-engine=$ENG --with-threads=$THRD \
+&& make > $ENG-$THRD-build.log 2>&1 && make check >  $ENG-$THRD-check.log 2>&1 && make install 
+cd /tmp/kaffe
+
+ENG=jit3
+THRD=unix-jthreads
+mkdir $ENG-$THRD
+cd $ENG-$THRD
+$KVER/configure --prefix=/tmp/kaffe/$ENG-$THRD $DEFAULT --with-engine=$ENG --with-threads=$THRD \
+&& make > $ENG-$THRD-build.log 2>&1 && make check >  $ENG-$THRD-check.log 2>&1 && make install 
+cd /tmp/kaffe
+
+ENG=intrp
+THRD=unix-pthreads
+mkdir $ENG-$THRD
+cd $ENG-$THRD
+$KVER/configure --prefix=/tmp/kaffe/$ENG-$THRD $DEFAULT --with-engine=$ENG --with-threads=$THRD \
+&& make > $ENG-$THRD-build.log 2>&1 && make check >  $ENG-$THRD-check.log 2>&1 && make install
+cd /tmp/kaffe
+
+ENG=jit
+THRD=unix-pthreads
+mkdir $ENG-$THRD
+cd $ENG-$THRD
+$KVER/configure --prefix=/tmp/kaffe/$ENG-$THRD $DEFAULT --with-engine=$ENG --with-threads=$THRD \
+&& make > $ENG-$THRD-build.log 2>&1 && make check >  $ENG-$THRD-check.log 2>&1 && make install 
+cd /tmp/kaffe
+
+ENG=jit3
+THRD=unix-pthreads
+mkdir $ENG-$THRD
+cd $ENG-$THRD
+$KVER/configure --prefix=/tmp/kaffe/$ENG-$THRD $DEFAULT --with-engine=$ENG --with-threads=$THRD \
+&& make > $ENG-$THRD-build.log 2>&1 && make check >  $ENG-$THRD-check.log 2>&1 && make install 
+cd /tmp/kaffe
+
+
+/tmp/kaffe/bin/tar cvf ~/`uname -n`.tar /tmp/kaffe/*-unix-*/*.log 

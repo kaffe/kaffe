@@ -47,3 +47,7 @@ mauve-kaffe:		KEYS file for kaffe for running mauve tests.
 mauve-results.sh:	Configures and runs mauve with mauve-kaffe
 			KEYS, and creates valid HTML output using
 			mauve-html-gen.pl and jtidy.
+
+test-kaffe-sh:	A script to build and run kaffe on HP's testdrive,
+		collect build and check run logs, and tar them up
+		for download.
