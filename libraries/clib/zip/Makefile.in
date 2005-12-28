@@ -81,8 +81,10 @@ am__installdirs = "$(DESTDIR)$(nativedir)"
 nativeLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(native_LTLIBRARIES)
 am__DEPENDENCIES_1 =
+@COND_INTERNAL_ZLIB_FALSE@am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1)
+@COND_INTERNAL_ZLIB_TRUE@am__DEPENDENCIES_2 = ../zlib/libz.la
 libzip_la_DEPENDENCIES = $(top_builddir)/kaffe/kaffevm/libkaffevm.la \
-	$(am__DEPENDENCIES_1)
+	$(am__DEPENDENCIES_2)
 am_libzip_la_OBJECTS = libzip_la-Adler32.lo libzip_la-CRC32.lo \
 	libzip_la-Deflater.lo libzip_la-Inflater.lo
 libzip_la_OBJECTS = $(am_libzip_la_OBJECTS)
@@ -133,6 +135,8 @@ COND_DIRECT_THREADING_FALSE = @COND_DIRECT_THREADING_FALSE@
 COND_DIRECT_THREADING_TRUE = @COND_DIRECT_THREADING_TRUE@
 COND_GJDOC_FALSE = @COND_GJDOC_FALSE@
 COND_GJDOC_TRUE = @COND_GJDOC_TRUE@
+COND_INTERNAL_ZLIB_FALSE = @COND_INTERNAL_ZLIB_FALSE@
+COND_INTERNAL_ZLIB_TRUE = @COND_INTERNAL_ZLIB_TRUE@
 COND_KAFFE_NANOX_AWT_FALSE = @COND_KAFFE_NANOX_AWT_FALSE@
 COND_KAFFE_NANOX_AWT_TRUE = @COND_KAFFE_NANOX_AWT_TRUE@
 COND_KAFFE_QT_AWT_FALSE = @COND_KAFFE_QT_AWT_FALSE@
@@ -361,7 +365,13 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
-AM_CPPFLAGS = -I$(top_builddir)/include
+@COND_INTERNAL_ZLIB_FALSE@LINKED_ZIP_LIBS = $(ZIP_LIBS)
+@COND_INTERNAL_ZLIB_TRUE@LINKED_ZIP_LIBS = ../zlib/libz.la
+@COND_INTERNAL_ZLIB_TRUE@MAYBE_INTERNAL_ZIP_INCLUDES = -I../zlib/
+AM_CPPFLAGS = \
+	-I$(top_builddir)/include \
+	$(MAYBE_INTERNAL_ZIP_INCLUDES)
+
 native_LTLIBRARIES = libzip.la
 libzip_la_CFLAGS = \
 	$(CFLAGS_PG)
@@ -373,7 +383,7 @@ libzip_la_LDFLAGS = \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
-libzip_la_LIBADD = $(top_builddir)/kaffe/kaffevm/libkaffevm.la $(ZIP_LIBS)
+libzip_la_LIBADD = $(top_builddir)/kaffe/kaffevm/libkaffevm.la $(LINKED_ZIP_LIBS)
 libzip_la_SOURCES = \
 	Adler32.c \
 	CRC32.c \

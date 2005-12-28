@@ -6,7 +6,16 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-AM_CPPFLAGS = -I$(top_builddir)/include
+if COND_INTERNAL_ZLIB
+LINKED_ZIP_LIBS=../zlib/libz.la
+MAYBE_INTERNAL_ZIP_INCLUDES=-I../zlib/
+else
+LINKED_ZIP_LIBS=$(ZIP_LIBS)
+endif
+
+AM_CPPFLAGS = \
+	-I$(top_builddir)/include \
+	$(MAYBE_INTERNAL_ZIP_INCLUDES)
 
 native_LTLIBRARIES = libzip.la
 
@@ -20,7 +29,7 @@ libzip_la_LDFLAGS = \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
-libzip_la_LIBADD = $(top_builddir)/kaffe/kaffevm/libkaffevm.la $(ZIP_LIBS)
+libzip_la_LIBADD = $(top_builddir)/kaffe/kaffevm/libkaffevm.la $(LINKED_ZIP_LIBS)
 
 libzip_la_SOURCES = \
 	Adler32.c \

@@ -1,0 +1,3 @@
+2005-12-28  Dalibor Topic  <robilad@kaffe.org>
+
+	* Makefile.am: Replaced gcj's version by Kaffe's simplified Makefile.am.

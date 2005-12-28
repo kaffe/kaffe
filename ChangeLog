@@ -1,3 +1,16 @@
+2005-12-28 Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/clib/zlib/ : Merged in zlib 1.2.3 from gcc.
+
+	* THIRDPARTY: Added zlib.
+
+	* configure.ac: (--with-internal-zlib) New option.
+
+	* libraries/clib/zip/Makefile.am: Adapted to allow use
+	of internal zlib.
+
+	* libraries/clib/Makefile.am: Use internal zlib if selected.
+
 2005-12-28  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/locks.c

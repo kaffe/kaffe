@@ -2198,6 +2198,15 @@ AC_ARG_ENABLE([direct-threading],
 AM_CONDITIONAL([COND_DIRECT_THREADING], [test x"$enable_direct_threading" = x"yes"])
 
 
+AC_ARG_WITH([internal-zlib],
+	AS_HELP_STRING([--with-internal-zlib],
+		       [Use Kaffe's internal copy of zlib instead of system one]),
+	[],
+	[with_internal_zlib=no]
+)
+
+AM_CONDITIONAL(COND_INTERNAL_ZLIB, test x"$with_internal_zlib" != x"no")
+
 dnl =========================================================================
 dnl Configure Binreloc support
 dnl -------------------------------------------------------------------------
@@ -2414,6 +2423,7 @@ AC_CONFIG_FILES([libraries/clib/io/Makefile])
 AC_CONFIG_FILES([libraries/clib/nio/Makefile])
 AC_CONFIG_FILES([libraries/clib/net/Makefile])
 AC_CONFIG_FILES([libraries/clib/zip/Makefile])
+AC_CONFIG_FILES([libraries/clib/zlib/Makefile])
 AC_CONFIG_FILES([libraries/clib/math/Makefile])
 AC_CONFIG_FILES([libraries/clib/management/Makefile])
 AC_CONFIG_FILES([libraries/clib/security/Makefile])
