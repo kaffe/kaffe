@@ -175,8 +175,10 @@ static inline void jthread_interrupt(jthread_t thread) {
   thread->interrupting = 1;
 
   /* bad hack, because of races ! */
-  if (thread->data.sem.l4sem.counter < 0 )
+  if (thread->data.sem.l4sem.counter < 0 ) {
+    thread->data.sem.failed = true;
     ksem_put(&thread->data.sem);
+  }
 
 }
 

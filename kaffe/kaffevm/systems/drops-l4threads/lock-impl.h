@@ -23,11 +23,13 @@
  typedef int jcondvar;
  typedef struct Ksem{
    l4semaphore_t l4sem;
+   jboolean failed; 
  } Ksem;
 
  static inline void ksem_init(struct Ksem* sem)
  {
-   sem->l4sem = L4SEMAPHORE_INIT(0);
+   sem->l4sem  = L4SEMAPHORE_INIT(0);
+   sem->failed = false;
  }
 
  static inline void ksem_put(struct Ksem* sem)
@@ -44,12 +46,18 @@
    } else {
      ret = !(l4semaphore_down_timed(&sem->l4sem,(unsigned)timeout));
    }
+
+   if (sem->failed == true) {
+     ret = sem->failed = false;
+   }
+   
    return ret;
  }
 
  static inline void ksem_destroy(struct Ksem* sem)
  {
-   sem->l4sem = L4SEMAPHORE_INIT(0);
+   sem->l4sem  = L4SEMAPHORE_INIT(0);
+   sem->failed = false;
  }
 
 #endif /* _drops_lock_impl_h */
