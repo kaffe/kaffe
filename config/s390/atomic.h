@@ -17,7 +17,7 @@
    Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
    02110-1301 USA.  */
 
-#include <stdint.h>
+#include "config-int.h"
 
 typedef int8_t atomic8_t;
 typedef uint8_t uatomic8_t;

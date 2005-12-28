@@ -1,5 +1,13 @@
 2005-12-27  Dalibor Topic  <robilad@kaffe.org>
 
+	config/alpha/atomic.h,
+	config/ia64/atomic.h,
+	config/m68k/atomic.h,
+	config/s390/atomic.h:
+	Include config-int.h instead of stdint.h
+	
+2005-12-27  Dalibor Topic  <robilad@kaffe.org>
+
 	* config/x86_64/atomic.h: Include config-int.h instead of stdint.h
 
 2005-12-26  Dalibor Topic  <robilad@kaffe.org>
