@@ -62,7 +62,9 @@ init_md(void)
 	ieee_set_fp_control(IEEE_TRAP_ENABLE_INV);
 #endif
 
+#if defined(USE_LIBEXC)
 	initStaticLock(&excLock);
+#endif
 }
 
 

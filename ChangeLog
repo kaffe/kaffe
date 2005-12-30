@@ -1,3 +1,27 @@
+2005-12-30  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* config/config-std.h: Include config-int.h before everything
+	to be sure to include inttypes.h first.
+
+	* kaffe/kaffevm/javacall.c
+	(KaffeVM_callMethodA): Do not use args after having called
+	sysdepCallMethod.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-internal.h
+	(jthread_t): Use int and not char for status (fix unalignment
+	problems on alpha).
+
+	* libraries/clib/nio/gnu_java_nio_VMSelector.c:
+	Include jni.h first.
+
+	* config/alpha/osf/md.c:
+	(init_md): Only initialize excLock if LIBEXC is defined.
+	
+	* config/alpha/osd/md.h
+	(SIGNAL_ARGS, SIGNAL_CONTEXT_POINTER, GET_SIGNAL_CONTEXT_POINTER,
+	SIGNAL_PC): Defined.
+	Include kaffe-unix-stack.h
+
 2005-12-29 Alexander Boettcher  <alex@kaffe.org>
 
 	* kaffe/kaffevm/system/drops-l4threads/jthread.h,

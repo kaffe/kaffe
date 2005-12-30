@@ -37,6 +37,7 @@ exception statement from your version. */
 
 #include "config.h"
 #include "jsyscall.h"
+#include <jni.h>
 
 /* <sys/types.h> needs to be included on OSX before <sys/select.h> */
 #if defined(HAVE_SYS_TYPES_H)
@@ -59,7 +60,6 @@ exception statement from your version. */
 
 #include <errno.h>
 
-#include <jni.h>
 #include <jcl.h>
 
 #include "gnu_java_nio_VMSelector.h"

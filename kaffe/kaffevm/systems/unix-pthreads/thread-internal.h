@@ -66,7 +66,7 @@ typedef struct _jthread {
   /* wether this is a daemon thread */
   int			daemon;
   int                   interrupting;
-  char                  status;
+  int                  status;
 
   /* convars and mutexes aren't useful in signal handlers, semaphores are */
   repsem_t                 sem;

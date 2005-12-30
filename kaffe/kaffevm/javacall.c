@@ -136,6 +136,7 @@ KaffeVM_callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* r
 	int numArgs;
 	callMethodInfo call;	
 	jvalue tmp;
+	jvalue *saveargs;
 
 	if (ret == 0) {
 		ret = &tmp;
@@ -148,7 +149,7 @@ KaffeVM_callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* r
 	i = engine_reservedArgs(meth);
 	s = 0;
 	
-	call.args = (jvalue *)alloca((numArgs+engine_reservedArgs(meth)+2)*(sizeof(jvalue)+2));
+	saveargs = call.args = (jvalue *)alloca((numArgs+engine_reservedArgs(meth)+2)*(sizeof(jvalue)+2));
 	call.callsize = (char *)&call.args[numArgs+engine_reservedArgs(meth)+2];
 	call.calltype = (char *)&call.callsize[numArgs+engine_reservedArgs(meth)+2];
 
@@ -273,7 +274,7 @@ KaffeVM_callMethodA(Method* meth, void* func, void* obj, jvalue* args, jvalue* r
 	/* Make the call - system dependent */
 	engine_callMethod(&call);
 
-	memset(call.args, 0, (METHOD_NARGS(meth)+engine_reservedArgs(meth)+2)*(sizeof(jvalue)+2));
+	memset(saveargs, 0, (numArgs+engine_reservedArgs(meth)+2)*(sizeof(jvalue)+2));
 	memset(&call, 0, sizeof(call));
 }
 

@@ -13,6 +13,7 @@
 #define __jsyscall_h
 
 #include "config.h"
+#include "config-int.h"
 
 #if defined(HAVE_NETDB_H)
 #include <netdb.h>
