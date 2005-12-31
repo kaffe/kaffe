@@ -81,13 +81,18 @@ public class Native2ASCII
             for (int i = 0; i < s.length(); i++)
               {
                 char c = s.charAt(i);
-                if (c <= 0xff)
+                if ((int)c <= 127)
                   {
                     sb.append(c);
                   }
                 else
                   {
-                    sb.append("\\u" + Integer.toHexString((int) c));
+                    sb.append("\\u");
+                    if ((int)c <= 0xff)
+                      sb.append("00");
+                    else if ((int)c <= 0xfff)
+                      sb.append("0");
+                    sb.append(Integer.toHexString((int) c));
                   }
               }
             wtr.println(sb.toString());
