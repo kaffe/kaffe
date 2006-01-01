@@ -21,6 +21,8 @@
 
 #include "kaffe-unix-stack.h"
 
+#define KAFFEMD_DISABLE_SETSTACKSIZE
+
 #undef SP_OFFSET
 #define SP_OFFSET 34
 

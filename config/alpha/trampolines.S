@@ -38,11 +38,11 @@ TRAMPOLINE_FUNCTION()
      ldgp	$29,0($27)
      lda        $30,-14*8($30)		# reserve 14 on stack
 
-# Save frame registers
+/*  Save frame registers */
      stq	$26,0*8($30)		# ra
      .prologue 1
 
-# Save register arguments as local variables
+/* Save register arguments as local variables */
      stq	$16,1*8($30)		# a0
      stq	$17,2*8($30)		# a1
      stq	$18,3*8($30)		# a2
@@ -56,14 +56,14 @@ TRAMPOLINE_FUNCTION()
      stt	$f20,11*8($30)
      stt	$f21,12*8($30)
 
-# Compute the address of methodTrampoline.method
+/* Compute the address of methodTrampoline.method */
      lda	$16,8($1)
-# Call C to do the fixup
+/* Call C to do the fixup */
      jsr	$26, C_FUNC_NAME(soft_fixup_trampoline)
      ldgp	$29,0($26)
      mov	$0,$27
 
-# Reload register arguments
+/* Reload register arguments */
      ldq	$16,1*8($30)		# a0
      ldq	$17,2*8($30)		# a1
      ldq	$18,3*8($30)		# a2
@@ -80,10 +80,10 @@ TRAMPOLINE_FUNCTION()
      ldq	$26,0*8($30)		# ra
      lda    $30,14*8($30)		# release stack
 
-# Jump to translated method
+/* Jump to translated method */
      jmp	$31,($27),0
 
-# for __alpha_nextFrame()
+/* for __alpha_nextFrame() */
      ret	$31,($26),1
 
      .end C_FUNC_NAME(alpha_do_fixup_trampoline)

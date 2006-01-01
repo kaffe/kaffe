@@ -15,6 +15,8 @@
 #ifndef __alpha_osf_jit_md_h
 #define __alpha_osf_jit_md_h
 
+#include "gtypes.h"
+
 /**/
 /* Include common information. */
 /**/
@@ -83,7 +85,7 @@ typedef struct _exceptionFrame {
 	char *fp;
 } exceptionFrame;
 
-int __alpha_ra (int *pc);
+int __alpha_ra (uintp pc);
 exceptionFrame *__alpha_nextFrame (exceptionFrame *frame);
 
 /* Extract PC, FP and SP from the given frame */

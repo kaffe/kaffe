@@ -736,7 +736,9 @@ initNativeThreads(int nativestacksize)
 	  }
 	else if (stackSize == KAFFEMD_STACK_INFINITE || stackSize >= threadStackSize)
 	  {
+#ifndef KAFFEMD_DISABLE_SETSTACKSIZE
 	    mdSetStackSize(threadStackSize);
+#endif
 	    /* Last chance. We check whether the size has really been updated. */
 	    stackSize = mdGetStackSize();
 	  }

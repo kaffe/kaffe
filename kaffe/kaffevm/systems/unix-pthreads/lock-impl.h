@@ -46,7 +46,7 @@ jmutex_initialise( jmutex* lk )
    * requests the mutex
    */
   pthread_mutexattr_init( &muxAttr);
-#if defined(_POSIX_THREAD_PROCESS_SHARED) && _POSIX_THREAD_PROCESS_SHARED != -1
+#if defined(_POSIX_THREAD_PROCESS_SHARED) && (_POSIX_THREAD_PROCESS_SHARED+0) != -1
   pthread_mutexattr_setpshared( &muxAttr, PTHREAD_PROCESS_PRIVATE);
 #endif
 #if defined(_POSIX_THREAD_PRIO_INHERIT_POSIX_THREAD_PRIO_PROTECT)
@@ -78,7 +78,7 @@ jcondvar_initialise( jcondvar* cv )
 
   /* init a process private condvar */
   pthread_condattr_init( &cvAttr);
-#if defined(_POSIX_THREAD_PROCESS_SHARED) && _POSIX_THREAD_PROCESS_SHARED != -1
+#if defined(_POSIX_THREAD_PROCESS_SHARED) && (_POSIX_THREAD_PROCESS_SHARED+0) != -1
   pthread_condattr_setpshared( &cvAttr, PTHREAD_PROCESS_PRIVATE);
 #endif
   pthread_cond_init( cv, &cvAttr);

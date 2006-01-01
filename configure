@@ -49599,7 +49599,11 @@ done
 CLASSPATH_INCLUDES="-I\$(top_srcdir)/libraries/clib/target/Linux -I\$(top_srcdir)/libraries/clib/target/generic"
 
 
-old_configure_args="$ac_configure_args"
+
+ac_configure_args=`echo "$ac_configure_args" | sed "s%'CFLAGS=.*'%%g"`
+ac_configure_args="$ac_configure_args 'CFLAGS=${CFLAGS}'"
+ac_cv_env_CFLAGS_value="${CFLAGS}"
+ac_cv_env_CFLAGS_set=set
 
 # Preset the compiler to jikes, since GNU Classpath's default is gcj.
 # Unfortunately, many gcj versions are incapable of compiling GNU

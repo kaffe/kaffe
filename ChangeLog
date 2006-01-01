@@ -1,8 +1,38 @@
+2005-12-31  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* FAQ/FAQ.kaffemd: Added KAFFEMD_DISABLE_SETSTACKSIZE.
+
+	* config/alpha/trampolines.S: Use C comments instead of # to
+	avoid confusing the preprocessor.
+
+	* config/alpha/osf/jit-md.h
+	(__alpha_ra): Use uintp for the first param as implemented in
+	alpha.c.
+	Include gtypes.h for uintp.
+
+	* config/alpha/osf/config.frag: Disable the use of mdSetStackSize
+	because OSF has a weird behaviour.
+
+	* kaffe/kaffevm/thread.c
+	(initNativeThreads): If DISABLE_KAFFEMD_SETSTACKSIZE is set we do
+	not set the stack size limit of the current process.
+
+	* kaffe/kaffevm/systems/unix-pthreads/lock-impl.h
+	(jmutex_initialise, jcondvar_initialise): Fixed the testing of
+	_POSIX_THREAD_PROCESS_SHARED on alpha/osf.
+	
+	* libraries/clib/native/Makefile.am: Use fdlibm from classpath tree.
+
+	* libraries/clib/native/Makefile.in: Regenerated.
+
+	* configure.ac: Handle more
+	precisely CFLAGS passed on the command line.
+
 2005-12-31  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* tools/javatools/javalib/gnu/classpath/tools/native2ascii/Native2ASCII.java:
 	Copied from GNU Classpath (some bugs fixed).
-
+	
 2005-12-30  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* config/config-std.h: Include config-int.h before everything

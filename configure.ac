@@ -2348,7 +2348,13 @@ AC_SUBST(CLASSPATH_INCLUDES)
 dnl -------------------------
 dnl Update args for classpath
 dnl -------------------------
-old_configure_args="$ac_configure_args"
+
+dnl First we remove eventually CFLAGS from the configure call.
+ac_configure_args=`echo "$ac_configure_args" | sed "s%'CFLAGS=.*'%%g"`
+dnl Then we add it again for config.status
+ac_configure_args="$ac_configure_args 'CFLAGS=${CFLAGS}'"
+ac_cv_env_CFLAGS_value="${CFLAGS}"
+ac_cv_env_CFLAGS_set=set
 
 # Preset the compiler to jikes, since GNU Classpath's default is gcj.
 # Unfortunately, many gcj versions are incapable of compiling GNU 

@@ -43,6 +43,13 @@ stack size.
 KAFFEMD_STACK_ERROR is an alias for the special value representing an error for
 mdGetStackSize() (usually 0).
 
+KAFFEMD_DISABLE_SETSTACKSIZE
+----------------------------
+
+If set the VM will not use mdSetStackSize to change stack size limit and
+will use the default one. However it will retrieve the stack size using
+mdGetStackSize().
+
 KAFFEMD_BUGGY_STACKOVERFLOW
 ---------------------------
 
