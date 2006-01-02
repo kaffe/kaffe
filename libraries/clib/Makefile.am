@@ -20,7 +20,6 @@ endif
 SUBDIRS = \
 	zlib \
 	target \
-	fdlibm \
 	native \
 	io \
 	nio \

@@ -49717,8 +49717,6 @@ subdirs="$subdirs libltdl"
 
           ac_config_files="$ac_config_files libraries/clib/target/Linux/Makefile"
 
-          ac_config_files="$ac_config_files libraries/clib/fdlibm/Makefile"
-
           ac_config_files="$ac_config_files libraries/clib/native/Makefile"
 
           ac_config_files="$ac_config_files libraries/clib/io/Makefile"
@@ -50660,7 +50658,6 @@ do
   "libraries/clib/target/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/target/Makefile" ;;
   "libraries/clib/target/generic/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/target/generic/Makefile" ;;
   "libraries/clib/target/Linux/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/target/Linux/Makefile" ;;
-  "libraries/clib/fdlibm/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/fdlibm/Makefile" ;;
   "libraries/clib/native/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/native/Makefile" ;;
   "libraries/clib/io/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/io/Makefile" ;;
   "libraries/clib/nio/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/nio/Makefile" ;;

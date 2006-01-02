@@ -83,7 +83,7 @@ RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	uninstall-recursive
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = zlib target fdlibm native io nio net zip math security \
+DIST_SUBDIRS = zlib target native io nio net zip math security \
 	management awt sound
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
@@ -353,7 +353,6 @@ with_engine = @with_engine@
 SUBDIRS = \
 	zlib \
 	target \
-	fdlibm \
 	native \
 	io \
 	nio \

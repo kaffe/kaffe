@@ -1,4 +1,15 @@
-2005-12-31  Guilhem Lavaux  <guilhem@kaffe.org>
+2006-01-02  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* libraries/clib/fdlibm: Removed.
+
+	* libraries/clib/Makefile.am: Removed fdlibm.
+
+	* configure.ac: Removed libraries/clib/fdlibm/Makefile.
+
+	* libraries/clib/Makefile.in,
+	configure: Regnerated.
+	
+2006-01-01  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* FAQ/FAQ.kaffemd: Added KAFFEMD_DISABLE_SETSTACKSIZE.
 
