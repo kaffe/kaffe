@@ -2198,14 +2198,23 @@ AC_ARG_ENABLE([direct-threading],
 AM_CONDITIONAL([COND_DIRECT_THREADING], [test x"$enable_direct_threading" = x"yes"])
 
 
-AC_ARG_WITH([internal-zlib],
-	AS_HELP_STRING([--with-internal-zlib],
-		       [Use Kaffe's internal copy of zlib instead of system one]),
+AC_ARG_WITH([system-zlib],
+	AS_HELP_STRING([--with-system-zlib],
+		       [Use installed zlib on the system instead of Kaffe's copy]),
 	[],
-	[with_internal_zlib=no]
+	[with_system_zlib=no]
 )
 
-AM_CONDITIONAL(COND_INTERNAL_ZLIB, test x"$with_internal_zlib" != x"no")
+AM_CONDITIONAL(COND_SYSTEM_ZLIB, test x"$with_system_zlib" != x"no")
+
+AC_ARG_ENABLE([fastjar],
+	AS_HELP_STRING([--disable-fastjar],
+		       [Don't build fastjar tool]),
+	[],
+	[enable_fastjar=yes]
+)
+
+AM_CONDITIONAL(COND_FASTJAR, test x"$enable_fastjar" != x"no")
 
 dnl =========================================================================
 dnl Configure Binreloc support
@@ -2383,11 +2392,17 @@ fi
 
 AC_CONFIG_SUBDIRS([libraries/javalib/external/classpath])
 
+AC_CONFIG_SUBDIRS([external/gcc/fastjar])
+
 AC_CONFIG_SUBDIRS([libltdl])
 AC_CONFIG_HEADERS([config/config.h])
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([project.xml project.properties])
 AC_CONFIG_FILES([config/Makefile])
+AC_CONFIG_FILES([external/Makefile])
+AC_CONFIG_FILES([external/gcc/Makefile])
+AC_CONFIG_FILES([external/gcc/zlib/Makefile])
+AC_CONFIG_FILES([external/gcc/fastjar/Makefile])
 AC_CONFIG_FILES([include/Makefile])
 AC_CONFIG_FILES([replace/Makefile])
 AC_CONFIG_FILES([kaffe/Makefile])
@@ -2428,7 +2443,6 @@ AC_CONFIG_FILES([libraries/clib/io/Makefile])
 AC_CONFIG_FILES([libraries/clib/nio/Makefile])
 AC_CONFIG_FILES([libraries/clib/net/Makefile])
 AC_CONFIG_FILES([libraries/clib/zip/Makefile])
-AC_CONFIG_FILES([libraries/clib/zlib/Makefile])
 AC_CONFIG_FILES([libraries/clib/math/Makefile])
 AC_CONFIG_FILES([libraries/clib/management/Makefile])
 AC_CONFIG_FILES([libraries/clib/security/Makefile])

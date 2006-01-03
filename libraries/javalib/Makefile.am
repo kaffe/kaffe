@@ -744,12 +744,6 @@ EXTRA_DIST= \
 	vmspecific/org/kaffe/security/provider/SHA.java \
 	vmspecific/org/kaffe/security/provider/SHA1PRNG.java \
 	vmspecific/org/kaffe/security/provider/UpdateDigest.java \
-	vmspecific/org/kaffe/tools/jar/Jar.java \
-	vmspecific/org/kaffe/tools/jar/XPFile.java \
-	vmspecific/org/kaffe/tools/jar/XPFileInputStream.java \
-	vmspecific/org/kaffe/tools/jar/XPFileOutputStream.java \
-	vmspecific/org/kaffe/tools/jar/XPFileReader.java \
-	vmspecific/org/kaffe/tools/jar/XPFileWriter.java \
 	vmspecific/org/kaffe/util/Assert.java \
 	vmspecific/org/kaffe/util/Base64.java \
 	vmspecific/org/kaffe/util/DateParser.java \

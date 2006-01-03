@@ -1,3 +1,40 @@
+2006-01-03 Dalibor Topic  <robilad@kaffe.org>
+
+	* Makefile.am: (SUBDIRS) Added external subdir.
+	(DIST_SUBDIRS) Added external subdir.
+
+	* THIRDPARTY: Added information on fastjar. Adapted information on
+	zlib.
+
+	* configure.ac: (--with-internal-zlib) Replaced by
+	(--with-system-zlib), so that kaffe now uses the merged in
+	zlib by default, like gcc does.
+	(--disable-fastjar) New option.
+	Added fastjar subdir for configuration, and the Makefile for output.
+
+	* kaffe/scripts/jar.in: Delegate to fastjar
+
+	* libraries/clib/Makefile.am (SUBDIRS): Removed zlib.
+
+	* libraries/clib/zip/Makefile.am (COND_INTERNAL_ZLIB) Replaced by
+	(COND_SYSTEM_ZLIB). Adapted to use internal zlib from external/gcc 
+	directory. 
+
+	* libraries/javalib/Makefile.am: Regenerated.
+
+	* libraries/javalib/vmspecific/org/kaffe/tools/jar/Jar.java 
+	libraries/javalib/vmspecific/org/kaffe/tools/jar/XPFile.java 
+	libraries/javalib/vmspecific/org/kaffe/tools/jar/XPFileInputStream.java 
+	libraries/javalib/vmspecific/org/kaffe/tools/jar/XPFileOutputStream.java 
+	libraries/javalib/vmspecific/org/kaffe/tools/jar/XPFileReader.java 
+	libraries/javalib/vmspecific/org/kaffe/tools/jar/XPFileWriter.java:
+	Removed.
+
+	* libraries/clib/zlib : Moved over to external/gcc/zlib.
+
+	* external/gcc/fastjar: New files. Merged in from gcc 4.0.2. 
+	Slightly adapted the build system to behave well when merged into Kaffe.
+		
 2006-01-02  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* libraries/clib/fdlibm: Removed.

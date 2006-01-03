@@ -1,0 +1,5 @@
+if COND_FASTJAR
+MAYBE_FASTJAR=fastjar
+endif
+
+SUBDIRS = zlib $(MAYBE_FASTJAR)

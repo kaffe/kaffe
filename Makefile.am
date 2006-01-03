@@ -16,6 +16,7 @@ AUTOMAKE_OPTIONS = foreign 1.3e
 
 SUBDIRS = \
 	. \
+	external \
 	libraries/javalib \
 	config \
 	libltdl \
@@ -28,7 +29,17 @@ SUBDIRS = \
 	po \
 	tools
 
-DIST_SUBDIRS = config include replace libltdl kaffe libraries tools test po
+DIST_SUBDIRS = \
+	config \
+	external \
+	include \
+	replace \
+	libltdl \
+	kaffe \
+	libraries \
+	tools \
+	test \
+	po
 
 EXTRA_DIST = \
 	ChangeLog.1 \

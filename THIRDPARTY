@@ -3,7 +3,7 @@ under a GPL compatible license can be merged in. You can find the
 licenses of third party sources either in their respective sources, or
 in license*.terms files in the top directory, or here.
 
-* libraries/clib/zlib
+* external/gcc/zlib
 
 This code has been merged in from gcc Subversion repository. Merged in
 is version 1.2.3 of zlib, which has some small patches from gcc developers.
@@ -41,6 +41,19 @@ zlib is distributed under the zlib license:
 */
 
 More information on zlib is available from http://www.zlib.net.
+
+* external/gcc/fastjar
+
+This code has been merged in from gcc. Kaffe tracks this projects's
+SVN HEAD.
+
+fastjar is distributed under the GNU General Public License Version 2.
+
+See license.terms for the text of the GNU General Public License
+Version 2.
+
+More information on fastjar can be found at
+http://gcc.gnu.org/.
 
 * javax.sound 
 

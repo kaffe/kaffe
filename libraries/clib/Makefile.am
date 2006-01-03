@@ -18,7 +18,6 @@ if COND_NATIVE_SOUND
 endif
 
 SUBDIRS = \
-	zlib \
 	target \
 	native \
 	io \
