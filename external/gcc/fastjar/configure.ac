@@ -52,17 +52,17 @@ AC_CHECK_TYPES([long long],[AC_COMPILE_CHECK_SIZEOF(long long)])
 dnl Check byte order
 AC_C_BIGENDIAN_CROSS
 
-dnl Check for libraries for zip library.
-AC_CHECK_LIB(z,deflate,ZIP_LIBS)
-ZIP_LIBS="$CTLIBS $ZIP_LIBS"
-AC_SUBST(ZIP_LIBS)
-
 AC_ARG_WITH([system-zlib],
         AS_HELP_STRING([--with-system-zlib],
                        [Use installed zlib on the system instead of Kaffe's copy]),
         [],
         [with_system_zlib=no]
 )
+
+if test x"$with_system_zlib" != x"no" ; then
+  # Check for libraries for zip library.
+  AC_CHECK_LIB(z,deflate)
+fi
 
 AM_CONDITIONAL(COND_SYSTEM_ZLIB, test x"$with_system_zlib" != x"no")
 

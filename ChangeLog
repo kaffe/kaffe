@@ -1,5 +1,11 @@
 2006-01-03 Dalibor Topic  <robilad@kaffe.org>
 
+	* external/gcc/Makefile.am: build zlib conditionally.
+
+	* external/gcc/fastjar/configure.ac: Fixed zlib check.
+
+2006-01-03 Dalibor Topic  <robilad@kaffe.org>
+
 	* Makefile.am: (SUBDIRS) Added external subdir.
 	(DIST_SUBDIRS) Added external subdir.
 

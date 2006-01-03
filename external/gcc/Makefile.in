@@ -338,8 +338,9 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
+@COND_SYSTEM_ZLIB_FALSE@MAYBE_ZLIB = zlib
 @COND_FASTJAR_TRUE@MAYBE_FASTJAR = fastjar
-SUBDIRS = zlib $(MAYBE_FASTJAR)
+SUBDIRS = $(MAYBE_ZLIB) $(MAYBE_FASTJAR)
 all: all-recursive
 
 .SUFFIXES:

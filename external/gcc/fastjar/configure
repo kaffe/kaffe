@@ -463,7 +463,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE RM CP CHMOD build build_cpu build_vendor build_os host host_cpu host_vendor host_os EGREP LN_S ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CPP CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL CCLD MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT fastjar_warn_cflags ZIP_LIBS COND_SYSTEM_ZLIB_TRUE COND_SYSTEM_ZLIB_FALSE GENINSRC_TRUE GENINSRC_FALSE LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE RM CP CHMOD build build_cpu build_vendor build_os host host_cpu host_vendor host_os EGREP LN_S ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CPP CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL CCLD MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT fastjar_warn_cflags COND_SYSTEM_ZLIB_TRUE COND_SYSTEM_ZLIB_FALSE GENINSRC_TRUE GENINSRC_FALSE LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -20436,6 +20436,19 @@ echo "$as_me: error: unknown endianess - sorry, please pre-set ac_cv_c_bigendian
 fi
 
 
+
+# Check whether --with-system-zlib or --without-system-zlib was given.
+if test "${with_system_zlib+set}" = set; then
+  withval="$with_system_zlib"
+
+else
+  with_system_zlib=no
+
+fi;
+
+if test x"$with_system_zlib" != x"no" ; then
+  # Check for libraries for zip library.
+
 echo "$as_me:$LINENO: checking for deflate in -lz" >&5
 echo $ECHO_N "checking for deflate in -lz... $ECHO_C" >&6
 if test "${ac_cv_lib_z_deflate+set}" = set; then
@@ -20501,21 +20514,15 @@ fi
 echo "$as_me:$LINENO: result: $ac_cv_lib_z_deflate" >&5
 echo "${ECHO_T}$ac_cv_lib_z_deflate" >&6
 if test $ac_cv_lib_z_deflate = yes; then
-  ZIP_LIBS
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBZ 1
+_ACEOF
+
+  LIBS="-lz $LIBS"
+
 fi
 
-ZIP_LIBS="$CTLIBS $ZIP_LIBS"
-
-
-
-# Check whether --with-system-zlib or --without-system-zlib was given.
-if test "${with_system_zlib+set}" = set; then
-  withval="$with_system_zlib"
-
-else
-  with_system_zlib=no
-
-fi;
+fi
 
 
 
@@ -21301,7 +21308,6 @@ s,@MAINTAINER_MODE_TRUE@,$MAINTAINER_MODE_TRUE,;t t
 s,@MAINTAINER_MODE_FALSE@,$MAINTAINER_MODE_FALSE,;t t
 s,@MAINT@,$MAINT,;t t
 s,@fastjar_warn_cflags@,$fastjar_warn_cflags,;t t
-s,@ZIP_LIBS@,$ZIP_LIBS,;t t
 s,@COND_SYSTEM_ZLIB_TRUE@,$COND_SYSTEM_ZLIB_TRUE,;t t
 s,@COND_SYSTEM_ZLIB_FALSE@,$COND_SYSTEM_ZLIB_FALSE,;t t
 s,@GENINSRC_TRUE@,$GENINSRC_TRUE,;t t
