@@ -1088,6 +1088,8 @@ public class GdkGraphics2D extends Graphics2D
 
   public void setBackground(Color c)
   {
+    if (c == null)
+      c = Color.WHITE;
     bg = c;
   }
 

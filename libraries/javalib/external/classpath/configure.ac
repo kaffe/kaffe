@@ -366,7 +366,7 @@ if test "x${COMPILE_JNI}" = xyes; then
 
   dnl Check for AWT related Qt4
   if test "x${COMPILE_QT_PEER}" = xyes; then
-    PKG_CHECK_MODULES(QT, QtGui >= 4.0.1, HAVE_QT4="yes", HAVE_QT4="no")
+    PKG_CHECK_MODULES(QT, QtCore QtGui >= 4.1.0, HAVE_QT4="yes", HAVE_QT4="no")
     if test "x$HAVE_QT4" = "xyes"; then
       dnl Check needed because in some cases the QtGui includedir
       dnl doesn't contain the subsystem dir.
@@ -555,6 +555,8 @@ AC_ARG_ENABLE([portable-native-sync],
                      ;;
               esac],
               [])
+
+AX_CREATE_STDINT_H([include/config-int.h])
 
 dnl -----------------------------------------------------------
 dnl output files

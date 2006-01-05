@@ -37,6 +37,7 @@ exception statement from your version. */
 
 package gnu.xml.dom.ls;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -45,6 +46,7 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.DocumentType;
 import org.w3c.dom.Element;
 import org.w3c.dom.Entity;
+import org.w3c.dom.EntityReference;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
@@ -63,6 +65,7 @@ import org.xml.sax.ext.Locator2;
 import gnu.xml.dom.DomAttr;
 import gnu.xml.dom.DomDocument;
 import gnu.xml.dom.DomDoctype;
+import gnu.xml.dom.DomNode;
 
 /**
  * A SAX content and lexical handler used to construct a DOM document.
@@ -75,6 +78,15 @@ class SAXEventSink
 
   private static final String XMLNS_URI = XMLConstants.XMLNS_ATTRIBUTE_NS_URI;
   private static final String XMLNS_PREFIX = XMLConstants.XMLNS_ATTRIBUTE;
+  private static final HashSet PREDEFINED_ENTITIES = new HashSet();
+  static
+  {
+    PREDEFINED_ENTITIES.add("amp");
+    PREDEFINED_ENTITIES.add("lt");
+    PREDEFINED_ENTITIES.add("gt");
+    PREDEFINED_ENTITIES.add("quot");
+    PREDEFINED_ENTITIES.add("apos");
+  }
 
   boolean namespaceAware;
   boolean ignoreWhitespace;
@@ -293,7 +305,7 @@ class SAXEventSink
   public void characters(char[] c, int off, int len)
     throws SAXException
   {
-    if (interrupted)
+    if (interrupted || len < 1)
       {
         return;
       }
@@ -329,11 +341,8 @@ class SAXEventSink
       {
         return;
       }
-    if (!inDTD)
-      {
-        Node pi = createProcessingInstruction(target, data);
-        ctx.appendChild(pi);
-      }
+    Node pi = createProcessingInstruction(target, data);
+    ctx.appendChild(pi);
   }
 
   protected Node createProcessingInstruction(String target, String data)
@@ -382,6 +391,8 @@ class SAXEventSink
   public void startEntity(String name)
     throws SAXException
   {
+    if (interrupted)
+      return;
     DocumentType doctype = doc.getDoctype();
     if (doctype == null)
       {
@@ -389,19 +400,9 @@ class SAXEventSink
                                "reference to entity in undeclared doctype");
       }
     if ("[dtd]".equals(name) || name.charAt(0) == '%')
-      {
-        // Ignore DTD and parameter entities
-        ctx = doctype;
-        return;
-      }
-    if ("lt".equals(name) ||
-        "gt".equals(name) ||
-        "amp".equals(name) ||
-        "apos".equals(name) ||
-        "quot".equals(name))
-      {
-        return;
-      }
+      return;
+    if (PREDEFINED_ENTITIES.contains(name))
+      return;
     // Get entity
     NamedNodeMap entities = doctype.getEntities();
     Entity entity = (Entity) entities.getNamedItem(name);
@@ -410,59 +411,47 @@ class SAXEventSink
         throw new SAXException("SAX parser error: " +
                                "reference to undeclared entity: " + name);
       }
-    pushEntity(entity);
+    EntityReference ref = doc.createEntityReference(name);
+    // DomDocument populates with the entity replacement text, remove this
+    Node child = ref.getFirstChild();
+    while (child != null)
+      {
+        Node nextChild = child.getNextSibling();
+        ref.removeChild(child);
+        child = nextChild;
+      }
+    ctx.appendChild(ref);
+    ctx = ref;
   }
 
   public void endEntity(String name)
     throws SAXException
   {
+    if (interrupted)
+      return;
     if ("[dtd]".equals(name) || name.charAt(0) == '%')
-      {
-        // Ignore DTD and parameter entities
-        return;
-      }
-    if ("lt".equals(name) ||
-        "gt".equals(name) ||
-        "amp".equals(name) ||
-        "apos".equals(name) ||
-        "quot".equals(name))
-      {
-        return;
-      }
-    // Get entity
-    Entity entity = popEntity();
-    // TODO resolve external entities to ensure that entity has content
+      return;
+    if (PREDEFINED_ENTITIES.contains(name))
+      return;
+    // Get entity reference
+    EntityReference ref = (EntityReference) ctx;
+    if (!ref.getNodeName().equals(name))
+      throw new SAXException("expecting end of "+ref.getNodeName()+" entity");
+    ctx = ctx.getParentNode();
+    if (ref instanceof DomNode)
+      ((DomNode) ref).makeReadonly();
     if (expandEntityReferences)
       {
-        // Get entity content
-        for (Node child = entity.getFirstChild(); child != null;
-             child = child.getNextSibling())
+        // Move entity content from reference node onto context
+        Node child = ref.getFirstChild();
+        while (child != null)
           {
+            Node nextChild = child.getNextSibling();
             ctx.appendChild(child);
+            child = nextChild;
           }
+        ctx.removeChild(ref);
       }
-    else
-      {
-        Node entityReference = doc.createEntityReference(name);
-        ctx.appendChild(entityReference);
-      }
-  }
-
-  void pushEntity(Node entity)
-  {
-    if (entityCtx == null)
-      {
-        entityCtx = new LinkedList();
-      }
-    entityCtx.addLast(ctx);
-    ctx = entity;
-  }
-
-  Entity popEntity()
-  {
-    Entity ret = (Entity) ctx;
-    ctx = (Node) entityCtx.removeLast();
-    return ret;
   }
 
   public void startCDATA()
@@ -484,11 +473,8 @@ class SAXEventSink
       {
         return;
       }
-    if (!inDTD)
-      {
-        Node comment = createComment(c, off, len);
-        ctx.appendChild(comment);
-      }
+    Node comment = createComment(c, off, len);
+    ctx.appendChild(comment);
   }
 
   protected Node createComment(char[] c, int off, int len)
@@ -505,6 +491,8 @@ class SAXEventSink
       {
         return;
       }
+    if (!inDTD)
+      throw new SAXException("notation decl outside DTD");
     DomDoctype doctype = (DomDoctype) ctx;
     doctype.declareNotation(name, publicId, systemId);
   }
@@ -517,6 +505,8 @@ class SAXEventSink
       {
         return;
       }
+    if (!inDTD)
+      throw new SAXException("unparsed entity decl outside DTD");
     DomDoctype doctype = (DomDoctype) ctx;
     Entity entity = doctype.declareEntity(name, publicId, systemId,
                                           notationName);
@@ -531,6 +521,8 @@ class SAXEventSink
       {
         return;
       }
+    if (!inDTD)
+      throw new SAXException("element decl outside DTD");
     // Ignore fake element declarations generated by ValidationConsumer.
     // If an element is not really declared in the DTD it will not be
     // declared in the document model.
@@ -550,6 +542,8 @@ class SAXEventSink
       {
         return;
       }
+    if (!inDTD)
+      throw new SAXException("attribute decl outside DTD");
     DomDoctype doctype = (DomDoctype) ctx;
     doctype.attributeDecl(eName, aName, type, mode, value);
   }
@@ -561,6 +555,8 @@ class SAXEventSink
       {
         return;
       }
+    if (!inDTD)
+      throw new SAXException("internal entity decl outside DTD");
     DomDoctype doctype = (DomDoctype) ctx;
     Entity entity = doctype.declareEntity(name, null, null, null);
     if (entity != null)
@@ -577,6 +573,8 @@ class SAXEventSink
       {
         return;
       }
+    if (!inDTD)
+      throw new SAXException("external entity decl outside DTD");
     DomDoctype doctype = (DomDoctype) ctx;
     Entity entity = doctype.declareEntity(name, publicId, systemId, null);
   }

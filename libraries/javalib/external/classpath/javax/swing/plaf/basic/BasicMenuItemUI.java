@@ -206,7 +206,10 @@ public class BasicMenuItemUI extends MenuItemUI
             map.remove((KeyStroke)e.getOldValue());
           else
             map = new ComponentInputMapUIResource(menuItem);
-          map.put((KeyStroke)e.getNewValue(), "doClick");
+
+          KeyStroke accelerator = (KeyStroke) e.getNewValue();
+          if (accelerator != null)
+            map.put(accelerator, "doClick");
         }
     }
   }
@@ -485,7 +488,9 @@ public class BasicMenuItemUI extends MenuItemUI
     InputMap focusedWindowMap = SwingUtilities.getUIInputMap(menuItem, JComponent.WHEN_IN_FOCUSED_WINDOW);
     if (focusedWindowMap == null)
       focusedWindowMap = new ComponentInputMapUIResource(menuItem);
-    focusedWindowMap.put(menuItem.getAccelerator(), "doClick");
+    KeyStroke accelerator = menuItem.getAccelerator();
+    if (accelerator != null)
+      focusedWindowMap.put(accelerator, "doClick");
     SwingUtilities.replaceUIInputMap(menuItem, JComponent.WHEN_IN_FOCUSED_WINDOW, focusedWindowMap);
     
     ActionMap UIActionMap = SwingUtilities.getUIActionMap(menuItem);

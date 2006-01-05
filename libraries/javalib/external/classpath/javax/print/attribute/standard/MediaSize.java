@@ -43,47 +43,171 @@ import java.util.ArrayList;
 import javax.print.attribute.Attribute;
 import javax.print.attribute.Size2DSyntax;
 
+/**
+ * The <code>MediaSize</code> printing attribute class specifies the size
+ * of a printing media. The size is defined in portrait orientation with 
+ * x at the bottom edge and y at the left edge.
+ * <p>
+ * There are several media sizes predefined through the nested classes. Further
+ * sizes may be provided by the application. <code>MediaSize</code> is not used
+ * as a printing attribute currently. It may be used to get the actual sizes 
+ * for a named media or to find a suitable <code>MediaSizeName</code> instance
+ * by querying with the needed sizes.
+ * </p> 
+ * <p>
+ * <b>IPP Compatibility:</b> MediaSize is not an IPP 1.1 attribute.
+ * </p>
+ * @see javax.print.attribute.standard.MediaSizeName
+ * 
+ * @author Michael Koch (konqueror@gmx.de)
+ * @author Wolfgang Baer (WBaer@gmx.de)
+ */
 public class MediaSize extends Size2DSyntax
   implements Attribute
 {
   private static final long serialVersionUID = -1967958664615414771L;
 
-  private static ArrayList mediaCache = new ArrayList();
+  private static ArrayList mediaCache;
+  
+  static
+    {
+      mediaCache = new ArrayList();
+
+      MediaSize tmp = MediaSize.ISO.A0;
+      tmp = MediaSize.JIS.B0;
+      tmp = MediaSize.Engineering.A;
+      tmp = MediaSize.NA.LEGAL;
+      tmp = MediaSize.Other.EXECUTIVE;
+    }
   
   private MediaSizeName media;
   
+  /**
+   * Creates a <code>MediaSize</code> object.
+   *
+   * @param x the size in x direction
+   * @param y the size in y direction
+   * @param units the units to use for the sizes
+   *
+   * @exception IllegalArgumentException if x or y &lt; 0 or units &lt; 1
+   */
   public MediaSize(float x, float y, int units)
   {
     super(x, y, units);
+    mediaCache.add(this);
   }
   
+  /**
+   * Creates a <code>MediaSize</code> object associated with the given
+   * media name.
+   *
+   * @param x the size in x direction
+   * @param y the size in y direction
+   * @param units the units to use for the sizes
+   * @param media the media name to associate
+   *
+   * @exception IllegalArgumentException if x or y &lt; 0 or units &lt; 1
+   */
   public MediaSize(float x, float y, int units, MediaSizeName media)
   {
     super(x, y, units);
     this.media = media;
+    mediaCache.add(this);
   }
   
+  /**
+   * Creates a <code>MediaSize</code> object.
+   *
+   * @param x the size in x direction
+   * @param y the size in y direction
+   * @param units the units to use for the sizes
+   *
+   * @exception IllegalArgumentException if x or y &lt; 0 or units &lt; 1
+   */
   public MediaSize(int x, int y, int units)
   {
     super(x, y, units);
+    mediaCache.add(this);
   }
   
+  /**
+   * Creates a <code>MediaSize</code> object associated with the given
+   * media name.
+   *
+   * @param x the size in x direction
+   * @param y the size in y direction
+   * @param units the units to use for the sizes
+   * @param media the media name to associate
+   *
+   * @exception IllegalArgumentException if x or y &lt; 0 or units &lt; 1
+   */
   public MediaSize(int x, int y, int units, MediaSizeName media)
   {
     super(x, y, units);
     this.media = media;
+    mediaCache.add(this);
   }
   
   /**
    * Returns category of this class.
    *
-   * @return the class <code>MediaSize</code> itself
+   * @return The class <code>MediaSize</code> itself.
    */
   public Class getCategory()
   {
     return MediaSize.class;
   }
+    
+  /**
+   * Searches for a MediaSize object with the given dimensions.
+   * If none is found with exact dimensions, the closest match is used.
+   * Afterwards the MediaSizeName of the found MediaSize object is 
+   * returned - which might be null if none is specified.
+   * 
+   * @param x the dimension for x
+   * @param y the dimension for y
+   * @param units the units to be used for comparison
+   * @return the corresponding MediaSizeName object, or null
+   */
+  public static MediaSizeName findMedia(float x, float y, int units)
+  {
+    if (x <= 0.0f || y <= 0.0f)
+      throw new IllegalArgumentException(
+        "x and/or y may not be less or equal 0");
 
+    if (units < 1)
+      throw new IllegalArgumentException("units may not be less then 1");
+
+    MediaSize bestMatch = null;
+    int bestDistance = Integer.MAX_VALUE;
+
+    int xMicro = (int) x * units;
+    int yMicro = (int) y * units;
+
+    for (int i = 0; i < mediaCache.size(); i++)
+      {
+        MediaSize size = (MediaSize) mediaCache.get(i);
+        int dist = (Math.abs(size.getXMicrometers() - xMicro) 
+                    + Math.abs(size.getYMicrometers() - yMicro));
+
+        if (dist < bestDistance)
+          {
+            bestMatch = size;
+            bestDistance = dist;
+          }
+      }
+
+    return bestMatch.getMediaSizeName();
+  }
+  
+  /**
+   * Returns the associated <code>MediaSize</code> instance for the 
+   * given named media <code>MediaSizeName</code> instance.
+   * 
+   * @param media the named media to search for.
+   * @return The corresponding <code>MediaSize</code> instance or 
+   * <code>null</code> if none found.
+   */
   public static MediaSize getMediaSizeForName(MediaSizeName media)
   {
     for (int i = 0; i < mediaCache.size(); i++)
@@ -97,15 +221,38 @@ public class MediaSize extends Size2DSyntax
     return null;
   }
   
+  /**
+   * Tests if the given object is equal to this object.
+   *
+   * @param obj the object to test
+   *
+   * @return <code>true</code> if both objects are equal, 
+   * <code>false</code> otherwise.
+   */
+  public boolean equals(Object obj)
+  {
+    if (!(obj instanceof MediaSize))
+      return false;
+
+    MediaSize tmp = (MediaSize) obj;
+    return (tmp.getXMicrometers() == this.getXMicrometers()
+            && tmp.getYMicrometers() == this.getYMicrometers());
+  }
+  
+  /**
+   * Returns the media name of this size.
+   * 
+   * @return The media name.
+   */
   public MediaSizeName getMediaSizeName()
   {
     return media;
   }
 
   /**
-   * Returns name of this class.
+   * Returns the name of this attribute.
    *
-   * @return the string "media-size"
+   * @return The name "media-size".
    */
   public String getName()
   {
@@ -114,6 +261,8 @@ public class MediaSize extends Size2DSyntax
 
   /**
    * Container class for predefined ISO media sizes.
+   * 
+   * @author Sven de Marothy (sven@physto.se)
    */
   public static final class ISO 
   {
@@ -261,6 +410,8 @@ public class MediaSize extends Size2DSyntax
 
   /**
    * Container class for predefined North American media sizes.
+   * 
+   * @author Sven de Marothy (sven@physto.se)
    */
   public static final class NA
   {
@@ -374,6 +525,8 @@ public class MediaSize extends Size2DSyntax
 
   /**
    * Container class for predefined US Engineering media sizes.
+   * 
+   * @author Sven de Marothy (sven@physto.se)
    */
   public static final class Engineering 
   {
@@ -410,6 +563,8 @@ public class MediaSize extends Size2DSyntax
 
   /**
    * Container class for predefined Japanese JIS media sizes.
+   * 
+   * @author Sven de Marothy (sven@physto.se)
    */
   public static final class JIS 
   {
@@ -602,6 +757,8 @@ public class MediaSize extends Size2DSyntax
 
   /**
    * Container class for miscellaneous media sizes.
+   * 
+   * @author Sven de Marothy (sven@physto.se)
    */
   public static final class Other
   {

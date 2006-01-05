@@ -361,6 +361,16 @@ public abstract class DomNode
             return;
           }
         break;
+      case DOCUMENT_TYPE_NODE:
+        if (!owner.building)
+          break;
+        switch (childNodeType)
+          {
+          case COMMENT_NODE:
+          case PROCESSING_INSTRUCTION_NODE:
+            return;
+          }
+        break;
       }
     if (owner.checkingWellformedness)
       {
@@ -1734,6 +1744,8 @@ public abstract class DomNode
     readonly = false;
     for (DomNode ctx = first; ctx != null; ctx = ctx.next)
       {
+        boolean saved2 = ctx.readonly;
+        ctx.readonly = false;
         switch (ctx.nodeType)
           {
           case TEXT_NODE:
@@ -1749,7 +1761,11 @@ public abstract class DomNode
             int len = attrs.getLength();
             for (int i = 0; i < len; i++)
               {
-                attrs.item(i).normalize();
+                DomNode attr = (DomNode) attrs.item(i);
+                boolean saved3 = attr.readonly;
+                attr.readonly = false;
+                attr.normalize();
+                attr.readonly = saved3;
               }
             // Fall through
           case DOCUMENT_NODE:
@@ -1759,6 +1775,7 @@ public abstract class DomNode
             ctx.normalize();
             break;
           }
+        ctx.readonly = saved2;
       }
     readonly = saved;
   }

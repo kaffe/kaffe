@@ -1,4 +1,4 @@
-/* XMLInputStreamReader.java -- 
+/* BufferedReader.java -- 
    Copyright (C) 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -37,47 +37,37 @@ exception statement from your version. */
 
 package gnu.xml.stream;
 
-import java.io.FilterReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 
 /**
- * A mark-capable reader that can copy its buffer state into another
- * instance with a different encoding.
+ * A mark-capable buffered reader.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-class XMLInputStreamReader
-  extends FilterReader
+class BufferedReader
+  extends Reader
 {
 
-  final InputStream is;
+  static final int DEFAULT_BUFFER_SIZE = 4096;
+
+  final Reader in;
   char[] buf;
   int pos, count, markpos, marklimit, bufferSize;
 
-  XMLInputStreamReader(InputStream is, String encoding)
-    throws UnsupportedEncodingException
+  BufferedReader(Reader in)
   {
-    super(new InputStreamReader(is, encoding));
-    this.is = is;
-    final int size = 2048;
-    buf = new char[size];
-    pos = count = bufferSize = size;
+    this(in, DEFAULT_BUFFER_SIZE);
   }
-
-  XMLInputStreamReader(XMLInputStreamReader reader, String encoding)
-    throws UnsupportedEncodingException
+         
+  BufferedReader(Reader in, int bufferSize)
   {
-    this(reader.is, encoding);
-    buf = reader.buf;
-    pos = reader.pos;
-    count = reader.count;
-    markpos = reader.markpos;
-    marklimit = reader.marklimit;
-    bufferSize = reader.bufferSize;
+    if (bufferSize < 1)
+      throw new IllegalArgumentException();
+    this.in = in;
+    this.bufferSize = bufferSize;
+    buf = new char[bufferSize];
+    pos = count = bufferSize;
   }
 
   public void close()
@@ -86,7 +76,7 @@ class XMLInputStreamReader
     buf = null;
     pos = count = 0;
     markpos = -1;
-    super.close();
+    in.close();
   }
 
   public void mark(int readlimit)
@@ -94,6 +84,7 @@ class XMLInputStreamReader
   {
     marklimit = readlimit;
     markpos = pos;
+    //System.out.println("--mark@"+Integer.toHexString(pos)+":"+marklimit);
   }
 
   public boolean markSupported()
@@ -106,7 +97,7 @@ class XMLInputStreamReader
   {
     if (pos >= count && !refill())
       return -1;
-    //System.out.println("read1:"+new String(buf, pos, 1));
+    //System.out.println("--read1@"+Integer.toHexString(pos)+":"+new String(buf, pos, 1));
     return (int) buf[pos++];
   }
 
@@ -130,7 +121,7 @@ class XMLInputStreamReader
                 
     int ret = Math.min(count - pos, len);
     System.arraycopy(buf, pos, b, off, ret);
-    //System.out.println("read2:"+new String(b, off, ret));
+    //System.out.println("--read2@"+Integer.toHexString(pos)+":"+new String(b, off, ret)+" ("+ret+")");
     pos += ret;
     off += ret;
     len -= ret;
@@ -139,7 +130,7 @@ class XMLInputStreamReader
       {
         int remain = Math.min(count - pos, len);
         System.arraycopy(buf, pos, b, off, remain);
-        //System.out.println("read3:"+new String(b, off, remain));
+        //System.out.println("--read3@"+Integer.toHexString(pos)+":"+new String(b, off, remain));
         pos += remain;
         off += remain;
         len -= remain;
@@ -155,6 +146,7 @@ class XMLInputStreamReader
     if (markpos == -1)
       throw new IOException(buf == null ? "Stream closed." : "Invalid mark.");
     pos = markpos;
+    //System.out.println("--reset@"+Integer.toHexString(pos));
   }
 
   public long skip(long n)
@@ -162,6 +154,7 @@ class XMLInputStreamReader
   {
     if (buf == null)
       throw new IOException("Stream closed.");
+    //System.out.println("--skip:"+n);
     final long origN = n;
     while (n > 0L)
       {
@@ -180,10 +173,13 @@ class XMLInputStreamReader
     if (buf == null)
       throw new IOException("Stream closed.");
 
-    if (markpos == -1 || count - markpos >= marklimit)
+    //System.out.println("--refill:pos="+Integer.toHexString(pos)+" count="+Integer.toHexString(count));
+    int markcount = count - markpos;
+    if (markpos == -1 || markcount >= marklimit)
       {
         markpos = -1;
         pos = count = 0;
+        //System.out.println("--refill1@"+Integer.toHexString(pos));
       }
     else
       {
@@ -192,18 +188,19 @@ class XMLInputStreamReader
           { 
             newbuf = new char[count - markpos + bufferSize];
           }
-        System.arraycopy(buf, markpos, newbuf, 0, count - markpos);
+        System.arraycopy(buf, markpos, newbuf, 0, markcount);
         buf = newbuf;
-        count -= markpos;
+        count = markcount;
         pos -= markpos;
         markpos = 0;
+        //System.out.println("--refill2@"+Integer.toHexString(pos)+":"+Integer.toHexString(count));
       }
 
-    int numread = super.read(buf, count, bufferSize);
-
+    int numread = in.read(buf, count, bufferSize);
     if (numread <= 0)
       return false;
 
+    //System.out.println("--refill3("+Integer.toHexString(numread)+"):"+new String(buf, count, numread));
     count += numread;
     return true;
   }

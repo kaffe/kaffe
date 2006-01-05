@@ -153,7 +153,7 @@ clean-local:
 
 dist-hook:
 	mkdir -p $(distdir)
-	cp -dfR $(top_srcdir)/gnu $(top_srcdir)/java $(top_srcdir)/javax $(top_srcdir)/org $(top_srcdir)/vm $(top_srcdir)/resource $(distdir)/..
+	cp -pdfR $(top_srcdir)/gnu $(top_srcdir)/java $(top_srcdir)/javax $(top_srcdir)/org $(top_srcdir)/vm $(top_srcdir)/resource $(distdir)/..
 # Delete not wanted files.
 	$(FIND) $(distdir)/../gnu $(distdir)/../java $(distdir)/../javax $(distdir)/../org $(distdir)/../vm $(distdir)/../resource -name CVS -print | xargs rm -fr
 	$(FIND) $(distdir)/../gnu $(distdir)/../java $(distdir)/../javax $(distdir)/../org $(distdir)/../vm $(distdir)/../resource -name .cvsignore -print | xargs rm -f

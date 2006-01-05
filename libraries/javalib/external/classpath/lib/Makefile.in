@@ -43,6 +43,7 @@ DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/acattribute.m4 \
 	$(top_srcdir)/m4/accross.m4 $(top_srcdir)/m4/acinclude.m4 \
+	$(top_srcdir)/m4/ax_create_stdint_h.m4 \
 	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/lib-ld.m4 \
 	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
 	$(top_srcdir)/m4/pkg.m4 $(top_srcdir)/configure.ac
@@ -562,7 +563,7 @@ clean-local:
 
 dist-hook:
 	mkdir -p $(distdir)
-	cp -dfR $(top_srcdir)/gnu $(top_srcdir)/java $(top_srcdir)/javax $(top_srcdir)/org $(top_srcdir)/vm $(top_srcdir)/resource $(distdir)/..
+	cp -pdfR $(top_srcdir)/gnu $(top_srcdir)/java $(top_srcdir)/javax $(top_srcdir)/org $(top_srcdir)/vm $(top_srcdir)/resource $(distdir)/..
 # Delete not wanted files.
 	$(FIND) $(distdir)/../gnu $(distdir)/../java $(distdir)/../javax $(distdir)/../org $(distdir)/../vm $(distdir)/../resource -name CVS -print | xargs rm -fr
 	$(FIND) $(distdir)/../gnu $(distdir)/../java $(distdir)/../javax $(distdir)/../org $(distdir)/../vm $(distdir)/../resource -name .cvsignore -print | xargs rm -f

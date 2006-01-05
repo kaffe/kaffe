@@ -109,7 +109,7 @@ class CRLFReader
             in.reset();
             if (i != -1)
               {
-                l = in.read(b, off, i + 1); // read to CR
+                l = in.read(b, off, (i + 1) - off); // read to CR
                 in.read(); // skip LF
                 b[i] = '\n'; // fix CR as LF
               }

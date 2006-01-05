@@ -1,3 +1,410 @@
+2006-01-04  Tom Tromey  <tromey@redhat.com>
+
+	* include/.cvsignore: Ignore config-int.h.
+
+2006-01-04  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/basic/BasicListUI.java
+	(getPreferredSize): Rewritten to match the specs.
+
+2006-01-04  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JFileChooser.java
+	(showOpenDialog): Set fixed width on the dialog.
+	(showSaveDialog): Set fixed width on the dialog.
+	(showDialog): Set fixed width on the dialog.
+
+2006-01-04  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/basic/BasicListUI.java
+	(locationToIndex): Added FIXME about getVisibleRowCount() usage.
+	Adjusted iteration to not use visibleRowCount and instead iterate
+	over the real number of elements in cellHeights.
+	(indexToLocation): Added FIXME about getVisibleRowCount() usage.
+	Adjusted iteration to not use visibleRowCount and instead iterate
+	over the real number of elements in cellHeights.
+
+2006-01-04  Roman Kennke  <kennke@aicas.com>
+
+	* native/jni/java-net/gnu_java_net_VMPlainSocketImpl.c,
+	* native/jni/java-net/gnu_java_net_VMPlainDatagramSocketImpl.c:
+	Added __attribute__((__unused__)) macros to avoid gcc warnings.
+
+2006-01-04  Roman Kennke  <kennke@aicas.com>
+
+	* vm/reference/gnu/java/net/VMPlainSocketImpl.java: New VM class.
+	* vm/reference/gnu/java/net/VMPlainDatagramSocketImpl.java:
+	New VM class.
+	* native/jni/java-net/gnu_java_net_VMPlainSocketImpl.c: New file.
+	* native/jni/java-net/gnu_java_net_VMPlainDatagramSocketImpl.c:
+	New file.
+	* native/jni/java-net/gnu_java_net_PlainDatagramSocketImpl.c:
+	Removed.
+	* native/jni/java-net/gnu_java_net_PlainSocketImpl.c: Removed.
+	* native/jni/java-net/Makefile.am: Adjusted for new source files.
+	* gnu/java/net/PlainDatagramSocketImpl.java: Use new VM interface.
+	* gnu/java/net/PlainSocketImpl.java: Use new VM interface.
+	* include/gnu_java_net_PlainDatagramSocketImpl.h: Removed.
+	* include/gnu_java_net_PlainSocketImpl.h: Removed.
+	* include/gnu_java_net_VMPlainDatagramSocketImpl.h: New header file.
+	* include/gnu_java_net_VMPlainSocketImpl.h: New header file.
+
+2006-01-04  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/plaf/metal/MetalFileChooserUI.java
+	(propertyChange): Fixed to change the combo box label
+	appropriately. Also, fixed to set the textfield's text
+	correctly.
+	(editFile): Fixed size of editing field.
+	(installComponents): Correctly aligned all panels.
+	(installStrings): Fixed to set the label's text
+	appropriately depending on the dialog type.
+
+2006-01-04  Lillian Angel  <langel@redhat.com>
+
+	PR classpath/25473 
+	PR classpath/25479
+	* javax/swing/JTree.java
+	(JTree): Because some L&F defaults have been updated,
+	the selectionMode for the tree needed to be set to SINGLE.
+	* javax/swing/plaf/basic/BasicFileChooserUI.java:
+	Initialized accessoryPanel.
+	* javax/swing/plaf/metal/MetalFileChooserUI.java
+	(installComponents): Added accessoryPanel to the filechooser.
+
+2006-01-04  Dalibor Topic  <robilad@kaffe.org>
+
+	* configure.ac: Added AX_CREATE_STDINT_H
+
+	* include/Makefile.am (DISTCLEANFILES): Remove config-int.h.
+
+	* m4/ax_create_stdint_h.m4: New file.
+
+	* native/fdlibm/mprec.h: Include config-int.h. Removed C99
+	typedefs. Removed stdint.h and inttypes.h includes.
+ 
+2006-01-03  Mark Wielaard  <mark@klomp.org>
+
+	* javax/swing/JMenuItem.java (configurePropertiesFromAction): Only
+	register keyboard action when accelerator is not null.
+	* javax/swing/plaf/basic/BasicMenuItemUI.java (propertyChange): Only
+	re-register accelerator if not null.
+	(installKeyboardActions): Only put accelerator in map when not null.
+
+2006-01-04  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/plaf/basic/BasicLookAndFeel.java
+	(initComponentDefaults): Removed unneeded default.
+	* javax/swing/plaf/metal/MetalLookAndFeel.java
+	(initComponentDefaults): Added and fixed several defaults.
+
+2006-01-04  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/basic/BasicHTML.java: New class.
+
+2006-01-03  Tom Tromey  <tromey@redhat.com>
+
+	* java/io/OutputStreamWriter.java (OutputStreamWriter): Added @since.
+	* java/io/InputStreamReader.java (InputStreamReader): Added @since.
+
+2006-01-03  Mark Wielaard  <mark@klomp.org>
+
+	* org/omg/CORBA/INVALID_ACTIVITY.java: Remove non-ascii characters.
+
+2006-01-03  Mark Wielaard  <mark@klomp.org>
+
+	* javax/swing/plaf/metal/MetalLookAndFeel.java (MetalLookAndFeel):
+	Always call createDefaultTheme().
+	(createDefaultTheme): Check whether theme is still null.
+
+2006-01-03  Mark Wielaard  <mark@klomp.org>
+
+	* gnu/java/awt/peer/gtk/GdkGraphics2D.java (setBackground): Set to
+	Color.WHITE if null.
+
+2006-01-03  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/plaf/metal/MetalLookAndFeel.java
+	(getDescription): Fixed to return the correct string.
+	(getID): Likewise.
+	(getName): Likewise.
+	(getDefaults): Added check to avoid NPE.
+	(getAcceleratorForeground): Likewise.
+	(getAcceleratorSelectedForeground): Likewise.
+	(getBlack): Likewise.
+	(getControl): Likewise.
+	(getControlDarkShadow): Likewise.
+	(getControlDisabled): Likewise.
+	(getControlHighlight): Likewise.
+	(getControlInfo): Likewise.
+	(getControlShadow): Likewise.
+	(getControlTextColor): Likewise.
+	(getControlTextFont): Likewise.
+	(getDesktopColor): Likewise.
+	(getFocusColor): Likewise.
+	(getHighlightedTextColor): Likewise.
+	(getInactiveControlTextColor): Likewise.
+	(getInactiveSystemTextColor): Likewise.
+	(getMenuBackground): Likewise.
+	(getMenuDisabledForeground): Likewise.
+	(getMenuForeground): Likewise.
+	(getMenuSelectedBackground): Likewise.
+	(getMenuSelectedForeground): Likewise.
+	(getMenuTextFont): Likewise.
+	(getPrimaryControl): Likewise.
+	(getPrimaryControlDarkShadow): Likewise.
+	(getPrimaryControlHighlight): Likewise.
+	(getPrimaryControlInfo): Likewise.
+	(getPrimaryControlShadow): Likewise.
+	(getSeparatorBackground): Likewise.
+	(getSeparatorForeground): Likewise.
+	(getSubTextFont): Likewise.
+	(getSystemTextColor): Likewise.
+	(getSystemTextFont): Likewise.
+	(getTextHighlightColor): Likewise.
+	(getUserTextColor): Likewise.
+	(getUserTextFont): Likewise.
+	(getWhite): Likewise.
+	(getWindowBackground): Likewise.
+	(getWindowTitleBackground): Likewise.
+	(getWindowTitleFont): Likewise.
+	(getWindowTitleForeground): Likewise.
+	(getWindowTitleInactiveBackground): Likewise.
+	(getWindowTitleInactiveForeground): Likewise.
+
+2006-01-03  Mark Wielaard  <mark@klomp.org>
+
+	* javax/swing/JTextArea.java
+	(JTextArea(Document,text,int,int)): Only call setText() when text is
+	not null.
+
+2006-01-03  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/plaf/basic/BasicFileChooserUI.java
+	(installStrings): Fixed installation of defaults that
+	were changed in BasicLookAndFeel.
+	* javax/swing/plaf/basic/BasicTabbedPaneUI.java
+	(installDefaults): Fixed installation of defaults that
+	were changed in BasicLookAndFeel.
+
+2006-01-03  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/plaf/basic/BasicLookAndFeel.java
+	(initComponentDefaults): Fixed several defaults that differed
+	from the JDK.
+
+2006-01-03  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/tree/DefaultTreeSelectionModel.java
+	(DefaultTreeSelectionModel): Default should be DISCONTIGUOUS_TREE_SELECTION.
+
+2006-01-03  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/AbstractAction.java
+	(AbstractAction): Fixed to pass in null. Should not be 
+	an empty string. Removed TODO comment.
+	(AbstractAction): Removed TODO comment.
+	* javax/swing/JList.java
+	(init): Default selection mode should be MULTIPLE_INTERVAL_SELECTION.
+	* javax/swing/JMenuItem.java
+	(JMenuItem): Set all defaults if the action passed in is not null.
+	* javax/swing/JProgressBar.java
+	(JProgressBar): Added check to prevent NPE.
+
+2006-01-03  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/plaf/basic/BasicListUI.java
+	(getPreferredSize): The JDK adds some extra space to 
+	the list, so we should as well.
+	* javax/swing/plaf/metal/MetalFileChooserUI.java
+	(getPreferredSize): Should only take the fileListPanel's
+	width into account when getting the size. Also, the buttonPanel's
+	size should not be checked, since it is in the bottomPanel already.
+	(getMinimumSize): Likewise.
+
+2006-01-03  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/JList.java
+	(init): visibleRowCount should be 7, like the JDK.
+	* javax/swing/plaf/metal/MetalFileChooserUI.java
+	(installComponents): No need to add the fileFilterCombo
+	to a panel. It can be added to the row directly.
+
+2006-01-03  Lillian Angel  <langel@redhat.com>
+	
+	PR classpath/25480 PR classpath/25478
+	* javax/swing/plaf/basic/BasicScrollPaneUI.java
+	(updateViewport): Made changes suggested by
+	Chris Lansdown.
+	* javax/swing/plaf/metal/MetalFileChooserUI.java:
+	Removed unneeded import.
+	(createList): Removed comment, JList wrapping 
+	now works.
+	(getPreferredSize): Made changes suggested by
+	Chris Lansdown. Uses fileListPanel, instead
+	of fileList.
+	(getMinimumSize): Uses fileListPanel, instead
+	of fileList.
+	* javax/swing/plaf/metal/MetalRadioButtonUI.java
+	(paintFocus): Fixed height.
+
+2006-01-03  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/basic/BasicListUI.java
+	(locationToIndex): Added check to avoid ArrayOutOfBoundsException.
+
+2006-01-03  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/basic/BasicListUI.java
+	(locationToIndex): Special case for when variable cell heights
+	are possible. (cellHeights is used instead of cellHeight).
+	(indexToLocation): Special case for when variable cell heights
+	are possible. (cellHeights is used instead of cellHeight).
+
+2006-01-03  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/DefaultStyledDocument.java
+	(ElementBuffer.remove): New method.
+	(ElementBuffer.removeUpdate): New method.
+	(removeUpdate): New method.
+
+2006-01-03  Roman Kennke  <kennke@aicas.com>
+
+	* lib/Makefile.am:
+	(dist-hook): Preserve attributes of Java sources when copying to
+	dist dir.
+
+2006-01-03  Raif S. Naffah  <raif@swiftdsl.com.au>
+
+	* AUTHORS: Added self.
+	* java/security/Security.java (getProvider): Ensures provider's name is
+	  not null, not an empty string, and is trimmed before usage.
+
+2006-01-01  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* gnu/CORBA/Poa/AOM.java (add):
+	Changed parameter Object into gnuServantObject.
+	(Obj.object): Changed type to gnuServantObject.
+	(findObject): Rewritten.
+
+2006-01-01  Andreas Tobler  <a.tobler@schweiz.ch>
+
+	* native/jni/qt-peer/mainqtthread.cpp: Remove call to disable double
+	buffering. Ability has gone in Qt-4.1.x.
+
+	* configure.ac (QT_CFLAGS): Check for 4.1.0 version and for QtCore
+	to have the right include flags.
+
+2006-01-01  Raif S. Naffah  <raif@swiftdsl.com.au>
+
+	* java/security/MessageDigest.java (getInstance(String,String)):
+	Use trimmed copy of provider name.
+	* gnu/java/security/Engine.java
+	(getInstance(String,String,Provider,Object[])): Use trimmed copy of
+	service and algorithm names.
+
+2006-01-01  Raif S. Naffah  <raif@swiftdsl.com.au>
+
+	* java/net/InetAddress.java (getAllByName): use LOCALHOST if
+	localhost is null or is an empty string. Trim hostname before
+	lookup.
+
+2005-12-31  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* gnu/CORBA/Poa/gnuPOA.java (reference_to_servant): 
+	Throw WrongAdapter with explaining message.
+
+2005-12-31  Mark Wielaard  <mark@klomp.org>
+
+	* java/text/Bidi.java (requiresBidi): Also test against character
+	types L, EN, ES, ET, AN, CS, S and WS.
+
+2005-12-31  Chris Burdess  <dog@gnu.org>
+
+	* gnu/xml/dom/DomNamedNodeMap.java,
+	  gnu/xml/dom/DomNode.java,
+	  gnu/xml/dom/ls/SAXEventSink.java,
+	  gnu/xml/stream/SAXParser.java,
+	  gnu/xml/stream/XMLParser.java: Fix entity reference DOM construction
+	  and correct DOM tree normalisation.
+
+2005-12-30  Wolfgang Baer  <WBaer@gmx.de>
+
+	* javax/print/AttributeException.java,
+	* javax/print/URIException.java,
+	* javax/print/FlavorException.java,
+	* javax/print/PrintException.java:
+	Added and updated javadocs to class and methods.
+
+2005-12-30  Wolfgang Baer  <WBaer@gmx.de>
+
+	* javax/print/attribute/standard/package.html: Added description.
+	* javax/print/attribute/standard/MediaSize.java: 
+	Added and updated javadocs to class and methods.
+	(static_initializer): Initialize nested class constants.
+	(MediaSize): Add instances to the cache.
+	(MediaSize): Likewise.
+	(MediaSize): Likewise.
+	(MediaSize): Likewise.
+	(findMedia): New method.
+	(equals): Likewise.
+
+2005-12-29  Chris Burdess  <dog@gnu.org>
+
+	* gnu/xml/stream/SAXParser.java,
+	  gnu/xml/stream/XMLParser.java: Additional validity constraint
+	  checking; parameter entity recognition and replacement checks;
+	  checks for xml:space to determine whether whitespace is ignorable;
+	  better start- and end-entity event reporting.
+
+2005-12-28  Chris Burdess  <dog@gnu.org>
+
+	* gnu/xml/stream/CRLFReader.java: Fixed bug where pos > 0.
+	* gnu/xml/stream/XMLParser.java,
+	  gnu/xml/stream/UnicodeReader.java: Use Unicode code points instead
+	  of UTF-16 chars, resolving Unicode surrogates.
+	* resource/META-INF/services/org.xml.sax.driver: Updated legacy SAX
+	  factory mechanism for new SAX driver.
+
+2005-12-27  Chris Burdess  <dog@gnu.org>
+
+	* gnu/java/net/CRLFInputStream.java,
+	  gnu/xml/stream/SAXParser.java,
+	  gnu/xml/stream/XMLParser.java,
+	  resource/META-INF/services/javax.xml.parsers.SAXParserFactory:
+	  Fix XML parser stream issues. Add support for ignorable whitespace
+	  to SAX parser. Allow validating parser to parse invalid files.
+	* gnu/xml/stream/BufferedReader.java,
+	  gnu/xml/stream/XMLInputStreamReader.java: Move buffering
+	  functionality of XMLInputStreamReader to BufferedReader.
+
+2005-12-27  Tom Tromey  <tromey@redhat.com>
+
+	* gnu/java/nio/SelectorImpl.java: Added import.
+
+2005-12-26  Anthony Green  <green@redhat.com>
+
+	* java/net/Socket.java (connect): Don't close the socket on
+	exceptions.
+
+	* gnu/java/nio/SocketChannelImpl.java (read): Compute the right amount 
+	of data to read (dst.remaining()).
+	* gnu/java/nio/DatagramChannelImpl.java (receive): Ditto.
+
+	* gnu/java/nio/SelectorImpl.java (select): Handle OP_CONNECT
+	properly.
+
+2005-12-25  Jeroen Frijters  <jeroen@frijters.net>
+
+	* java/util/Collections.java
+	(binarySearch(List,Object,Comparator)): Changed comparison order
+	for improved compatibility.
+
+2005-12-25  Chris Burdess  <dog@gnu.org>
+
+	* resource/META-INF/services/javax.xml.parsers.SAXParserFactory:
+	  Revert to using aelfred2 driver by default.
+
 2005-12-24  Tom Tromey  <tromey@redhat.com>
 
 	* java/nio/charset/Charset.java (defaultCharset): Added @since.

@@ -1549,9 +1549,9 @@ public class BasicTabbedPaneUI extends TabbedPaneUI implements SwingConstants
     textIconGap = UIManager.getInt("TabbedPane.textIconGap");
     tabRunOverlay = UIManager.getInt("TabbedPane.tabRunOverlay");
 
-    tabInsets = UIManager.getInsets("TabbedPane.tabbedPaneTabInsets");
+    tabInsets = UIManager.getInsets("TabbedPane.tabInsets");
     selectedTabPadInsets = UIManager.getInsets("TabbedPane.tabbedPaneTabPadInsets");
-    tabAreaInsets = UIManager.getInsets("TabbedPane.tabbedPaneTabAreaInsets");
+    tabAreaInsets = UIManager.getInsets("TabbedPane.tabAreaInsets");
     contentBorderInsets = UIManager.getInsets("TabbedPane.tabbedPaneContentBorderInsets");
 
     calcRect = new Rectangle();

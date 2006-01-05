@@ -43,6 +43,7 @@ import java.io.Reader;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.stream.Location;
 import javax.xml.stream.XMLEventReader;
@@ -146,9 +147,12 @@ public class SAXParser
       throw new IllegalStateException("parsing in progress");
     final String FEATURES = "http://xml.org/sax/features/";
     final String PROPERTIES = "http://xml.org/sax/properties/";
-    if ((FEATURES + "namespaces").equals(name) ||
-        (FEATURES + "namespace-prefixes").equals(name))
+    if ((FEATURES + "namespaces").equals(name))
       namespaceAware = Boolean.TRUE.equals(value);
+    else if ((FEATURES + "namespace-prefixes").equals(name))
+      {
+        // NOOP
+      }
     else if ((FEATURES + "string-interning").equals(name))
       stringInterning = Boolean.TRUE.equals(value);
     else if ((FEATURES + "use-attributes2").equals(name))
@@ -177,9 +181,10 @@ public class SAXParser
     final String GNU_PROPERTIES = "http://gnu.org/sax/properties/";
     if ((FEATURES + "is-standalone").equals(name))
       return xmlStandalone ? Boolean.TRUE : Boolean.FALSE;
-    if ((FEATURES + "namespaces").equals(name) ||
-        (FEATURES + "namespace-prefixes").equals(name))
+    if ((FEATURES + "namespaces").equals(name))
       return namespaceAware ? Boolean.TRUE : Boolean.FALSE;
+    if ((FEATURES + "namespace-prefixes").equals(name))
+      return Boolean.TRUE;
     if ((FEATURES + "string-interning").equals(name))
       return stringInterning ? Boolean.TRUE : Boolean.FALSE;
     if ((FEATURES + "use-attributes2").equals(name))
@@ -357,8 +362,10 @@ public class SAXParser
                 if (contentHandler != null)
                   {
                     char[] b = reader.getTextCharacters();
-                    // TODO determine whether whitespace is ignorable
-                    contentHandler.characters(b, 0, b.length);
+                    if (isIgnorableWhitespace(parser, b, false))
+                      contentHandler.ignorableWhitespace(b, 0, b.length);
+                    else
+                      contentHandler.characters(b, 0, b.length);
                   }
                 break;
               case XMLStreamConstants.CDATA:
@@ -367,8 +374,10 @@ public class SAXParser
                 if (contentHandler != null)
                   {
                     char[] b = reader.getTextCharacters();
-                    // TODO determine whether whitespace and ignorable
-                    contentHandler.characters(b, 0, b.length);
+                    if (isIgnorableWhitespace(parser, b, true))
+                      contentHandler.ignorableWhitespace(b, 0, b.length);
+                    else
+                      contentHandler.characters(b, 0, b.length);
                   }
                 if (lexicalHandler != null)
                   lexicalHandler.endCDATA();
@@ -447,6 +456,20 @@ public class SAXParser
                     if (data == null)
                       data = "";
                     contentHandler.processingInstruction(target, data);
+                  }
+                break;
+              case XMLStreamConstants.START_ENTITY:
+                if (lexicalHandler != null)
+                  {
+                    String name = reader.getText();
+                    lexicalHandler.startEntity(name);
+                  }
+                break;
+              case XMLStreamConstants.END_ENTITY:
+                if (lexicalHandler != null)
+                  {
+                    String name = reader.getText();
+                    lexicalHandler.endEntity(name);
                   }
                 break;
               case XMLStreamConstants.START_DOCUMENT:
@@ -617,6 +640,43 @@ public class SAXParser
           in.close();
         reset();
       }
+  }
+
+  private boolean isIgnorableWhitespace(XMLParser reader, char[] b,
+                                        boolean testCharacters)
+  {
+    XMLParser.Doctype doctype = reader.doctype;
+    if (doctype == null)
+      return false;
+    String currentElement = reader.getCurrentElement();
+    // check for xml:space
+    int ac = reader.getAttributeCount();
+    for (int i = 0; i < ac; i++)
+      {
+        QName aname = reader.getAttributeQName(i);
+        if ("space".equals(aname.getLocalPart()) &&
+            XMLConstants.XML_NS_URI.equals(aname.getNamespaceURI()))
+          {
+            if ("preserve".equals(reader.getAttributeValue(i)))
+              return false;
+          }
+      }
+    XMLParser.ContentModel model = doctype.getElementModel(currentElement);
+    if (model == null || model.type != XMLParser.ContentModel.ELEMENT)
+      return false;
+    boolean white = true;
+    if (testCharacters)
+      {
+        for (int i = 0; i < b.length; i++)
+          {
+            if (b[i] != ' ' && b[i] != '\t' && b[i] != '\n' && b[i] != '\r')
+              {
+                white = false;
+                break;
+              }
+          }
+      }
+    return white;
   }
 
   public void parse(String systemId)

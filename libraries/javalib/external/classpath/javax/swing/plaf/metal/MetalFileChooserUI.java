@@ -38,8 +38,6 @@ exception statement from your version. */
 
 package javax.swing.plaf.metal;
 
-import gnu.java.security.action.SetAccessibleAction;
-
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
@@ -295,17 +293,21 @@ public class MetalFileChooserUI
             {
               if (file.isDirectory() && filechooser.isTraversable(file))
                 {
+                  directoryLabel = look;
+                  dirLabel.setText(directoryLabel);
                   filechooser.setApproveButtonText(openButtonText);
                   filechooser.setApproveButtonToolTipText(openButtonToolTipText);
                 }
               else if (file.isFile())
                 {
+                  directoryLabel = save;
+                  dirLabel.setText(directoryLabel);
                   filechooser.setApproveButtonText(saveButtonText);
                   filechooser.setApproveButtonToolTipText(saveButtonToolTipText);
                 }
             }
             
-          if (file == null || !file.isFile())
+          if (file == null)
             setFileName(null);
           else
             setFileName(file.getName());
@@ -431,6 +433,8 @@ public class MetalFileChooserUI
           // Set text on button back to original.
           if (filechooser.getDialogType() == JFileChooser.SAVE_DIALOG)
             {
+              directoryLabel = save;
+              dirLabel.setText(directoryLabel);
               filechooser.setApproveButtonText(saveButtonText);
               filechooser.setApproveButtonToolTipText(saveButtonToolTipText);
             }
@@ -924,7 +928,11 @@ public class MetalFileChooserUI
           
           Icon icon = getFileView(fc).getIcon(editFile);
           if (icon != null)
-            bounds.x += icon.getIconWidth() + 4;
+            {
+              int padding = icon.getIconWidth() + 4;
+              bounds.x += padding;
+              bounds.width -= padding;
+            }
           editField.setBounds(bounds);
           
           list.add(editField);
@@ -1254,6 +1262,15 @@ public class MetalFileChooserUI
   /** The scrollpane used for the table and list. */
   JScrollPane scrollPane;
   
+  /** The text for the label when saving. */
+  String save;
+  
+  /** The text for the label when opening a directory. */
+  String look;
+  
+  /** The label for the file combo box. */
+  JLabel dirLabel;
+  
   /** Listeners. */
   ListSelectionListener listSelList;
   MouseListener doubleClickList;
@@ -1305,20 +1322,25 @@ public class MetalFileChooserUI
   {
     fc.setLayout(new BorderLayout());
     topPanel = new JPanel(new BorderLayout());
-    topPanel.add(new JLabel(directoryLabel), BorderLayout.WEST);
+    dirLabel = new JLabel(directoryLabel);
+    topPanel.add(dirLabel, BorderLayout.WEST);
     this.controls = new JPanel();
     addControlButtons();
     
     JPanel dirPanel = new JPanel(new VerticalMidLayout());
-    dirPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
     directoryModel = createDirectoryComboBoxModel(fc);
     directoryComboBox = new JComboBox(directoryModel);
     directoryComboBox.setRenderer(createDirectoryComboBoxRenderer(fc));
     dirPanel.add(directoryComboBox);
     topPanel.add(dirPanel);
     topPanel.add(controls, BorderLayout.EAST);
+    topPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 0, 8));
     fc.add(topPanel, BorderLayout.NORTH);
-    fc.add(createList(fc), BorderLayout.CENTER);
+    
+    JPanel list = createList(fc);
+    list.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+    fc.add(list, BorderLayout.CENTER);
+    
     JPanel bottomPanel = getBottomPanel();
     filterModel = createFilterComboBoxModel();
     JComboBox fileFilterCombo = new JComboBox(filterModel);
@@ -1326,34 +1348,37 @@ public class MetalFileChooserUI
     
     fileTextField = new JTextField();
     JPanel fileNamePanel = new JPanel(new VerticalMidLayout());
+    fileNamePanel.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 5));
     fileNamePanel.add(fileTextField);
     JPanel row1 = new JPanel(new BorderLayout());
     row1.add(new JLabel(this.fileLabel), BorderLayout.WEST);
     row1.add(fileNamePanel);
     bottomPanel.add(row1);
     
-    JPanel filterPanel = new JPanel(new VerticalMidLayout());
-    filterPanel.add(fileFilterCombo);    
     JPanel row2 = new JPanel(new BorderLayout());
     row2.add(new JLabel(this.filterLabel), BorderLayout.WEST);
-    row2.add(filterPanel);
+    row2.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
+    row2.add(fileFilterCombo);
     bottomPanel.add(row2);
     JPanel buttonPanel = new JPanel(new ButtonLayout());
-    buttonPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 0));
     
     approveButton = new JButton(getApproveSelectionAction());
     approveButton.setText(getApproveButtonText(fc));
     approveButton.setToolTipText(getApproveButtonToolTipText(fc));
     approveButton.setMnemonic(getApproveButtonMnemonic(fc));
     buttonPanel.add(approveButton);
+    buttonPanel.setBorder(BorderFactory.createEmptyBorder(8, 0, 0, 0));
     
     JButton cancelButton = new JButton(getCancelSelectionAction());
     cancelButton.setText(cancelButtonText);
     cancelButton.setToolTipText(cancelButtonToolTipText);
     cancelButton.setMnemonic(cancelButtonMnemonic);
     buttonPanel.add(cancelButton);
-    bottomPanel.add(buttonPanel);
+    bottomPanel.add(buttonPanel, BorderLayout.SOUTH);
+    bottomPanel.setBorder(BorderFactory.createEmptyBorder(0, 8, 8, 8));
     fc.add(bottomPanel, BorderLayout.SOUTH);
+    
+    fc.add(getAccessoryPanel(), BorderLayout.EAST);
   }
   
   /**
@@ -1411,7 +1436,13 @@ public class MetalFileChooserUI
   protected void installStrings(JFileChooser fc)
   { 
      super.installStrings(fc);
-     directoryLabel = "Look In: ";
+     look = "Look In: ";
+     save = "Save In: ";
+     if (fc.getDialogType() == JFileChooser.SAVE_DIALOG)
+       directoryLabel = save;
+     else
+       directoryLabel = look;
+     
      fileLabel = "File Name: ";
      filterLabel = "Files of Type: ";
      
@@ -1506,14 +1537,13 @@ public class MetalFileChooserUI
         fileListPanel = new JPanel(new BorderLayout());
         fileList = new JList(getModel());
         scrollPane = new JScrollPane(fileList);
-        // FIXME: fileList.setLayoutOrientation(JList.VERTICAL_WRAP);
+        fileList.setLayoutOrientation(JList.VERTICAL_WRAP);
         fileList.setCellRenderer(new FileRenderer());
       }
     else
       {
         fileList.setModel(getModel());
         fileListPanel.removeAll();
-        scrollPane.setViewport(new JViewport());
         scrollPane.getViewport().setView(fileList);
       }
     fileListPanel.add(scrollPane);
@@ -1583,7 +1613,6 @@ public class MetalFileChooserUI
     while (rc > size)
       mod.removeRow(--rc);
 
-    scrollPane.setViewport(new JViewport());
     scrollPane.getViewport().setView(fileTable);
     scrollPane.setColumnHeaderView(fileTable.getTableHeader());
     scrollPane.getViewport().setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
@@ -1657,14 +1686,10 @@ public class MetalFileChooserUI
   {
     Dimension tp = topPanel.getPreferredSize();
     Dimension bp = bottomPanel.getPreferredSize();
-    Dimension bup = buttonPanel.getPreferredSize();
-    Dimension fl = fileList.getPreferredSize();
-    return new Dimension((tp.width +
-        bp.width + bup.width + fl.width), 
-        (tp.height + bp.height +
-         bup.height + fl.height));
+    Dimension fl = fileListPanel.getPreferredSize();
+    return new Dimension(fl.width, tp.height + bp.height + fl.height);
   }
-  
+
   /**
    * Returns the minimum size for the file chooser component.
    * 
@@ -1674,12 +1699,8 @@ public class MetalFileChooserUI
   {
     Dimension tp = topPanel.getMinimumSize();
     Dimension bp = bottomPanel.getMinimumSize();
-    Dimension bup = buttonPanel.getMinimumSize();
-    Dimension fl = fileList.getMinimumSize();
-    return new Dimension((tp.width +
-        bp.width + bup.width + fl.width), 
-        (tp.height + bp.height +
-         bup.height + fl.height));   
+    Dimension fl = fileListPanel.getMinimumSize();
+    return new Dimension(fl.width, tp.height + bp.height + fl.height);
   }
   
   /**

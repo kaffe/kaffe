@@ -489,6 +489,85 @@ public class DefaultStyledDocument extends AbstractDocument
     }
 
     /**
+     * Updates the element structure of the document in response to removal of
+     * content. It removes the affected {@link Element}s from the document
+     * structure.
+     *
+     * This method sets some internal parameters and delegates the work
+     * to {@link #removeUpdate}.
+     *
+     * @param offs the offset from which content is remove
+     * @param len the length of the removed content
+     * @param ev the document event that records the changes
+     */
+    public void remove(int offs, int len, DefaultDocumentEvent ev)
+    {
+      offset = offs;
+      length = len;
+      documentEvent = ev;
+      removeUpdate();
+    }
+
+    /**
+     * Updates the element structure of the document in response to removal of
+     * content. It removes the affected {@link Element}s from the document
+     * structure.
+     */
+    protected void removeUpdate()
+    {
+      int startParagraph = root.getElementIndex(offset);
+      int endParagraph = root.getElementIndex(offset + length);
+      Element[] empty = new Element[0];
+      int removeStart = -1;
+      int removeEnd = -1;
+      for (int i = startParagraph;  i < endParagraph; i++)
+        {
+          Element paragraph = root.getElement(i);
+          int contentStart = paragraph.getElementIndex(offset);
+          int contentEnd = paragraph.getElementIndex(offset + length);
+          if (contentStart == paragraph.getStartOffset()
+              && contentEnd == paragraph.getEndOffset())
+            {
+              // In this case we only need to remove the whole paragraph. We
+              // do this in one go after this loop and only record the indices
+              // here.
+              if (removeStart == -1)
+                {
+                  removeStart = i;
+                  removeEnd = i;
+                }
+              else
+                removeEnd = i;
+            }
+          else
+            {
+              // In this case we remove a couple of child elements from this
+              // paragraph.
+              int removeLen = contentEnd - contentStart;
+              Element[] removed = new Element[removeLen];
+              for (int j = contentStart; j < contentEnd; j++)
+                removed[j] = paragraph.getElement(j);
+              ((BranchElement) paragraph).replace(contentStart, removeLen,
+                                                  empty);
+              documentEvent.addEdit(new ElementEdit(paragraph, contentStart,
+                                                    removed, empty));
+            }
+        }
+      // Now we remove paragraphs from the root that have been tagged for
+      // removal.
+      if (removeStart != -1)
+        {
+          int removeLen = removeEnd - removeStart;
+          Element[] removed = new Element[removeLen];
+          for (int i = removeStart; i < removeEnd; i++)
+            removed[i] = root.getElement(i);
+          ((BranchElement) root).replace(removeStart, removeLen, empty);
+          documentEvent.addEdit(new ElementEdit(root, removeStart, removed,
+                                                empty));
+        }
+    }
+
+    /**
      * Modifies the element structure so that the specified interval starts
      * and ends at an element boundary. Content and paragraph elements
      * are split and created as necessary.
@@ -1546,6 +1625,20 @@ public class DefaultStyledDocument extends AbstractDocument
       (ElementSpec[]) specs.toArray(new ElementSpec[specs.size()]);
 
     buffer.insert(offset, length, elSpecs, ev);
+  }
+
+  /**
+   * Updates the document structure in response to text removal. This is
+   * forwarded to the {@link ElementBuffer} of this document. Any changes to
+   * the document structure are added to the specified document event and
+   * sent to registered listeners.
+   *
+   * @param ev the document event that records the changes to the document
+   */
+  protected void removeUpdate(DefaultDocumentEvent ev)
+  {
+    super.removeUpdate(ev);
+    buffer.remove(ev.getOffset(), ev.getLength(), ev);
   }
 
   /**

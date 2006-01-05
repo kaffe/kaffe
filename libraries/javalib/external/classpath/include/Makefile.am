@@ -1,6 +1,6 @@
 include_HEADERS = jni.h jni_md.h jawt.h jawt_md.h
 
-DISTCLEANFILES = jni_md.h
+DISTCLEANFILES = jni_md.h config-int.h
 
 ARG_JNI_JAVAH = -jni
 ARG_CLASSPATH_JAVAH = -bootclasspath

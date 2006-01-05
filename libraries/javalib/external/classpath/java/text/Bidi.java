@@ -44,24 +44,32 @@ package java.text;
  * TODO/FIXME Only one method <code>requiresBidi</code> is implemented
  * for now by using <code>Character</code>. The full algorithm is <a
  * href="http://www.unicode.org/unicode/reports/tr9/">Unicode Standard
- * Annex #9: The Bidirectional Algorithm</a>. A ful implementation is
+ * Annex #9: The Bidirectional Algorithm</a>. A full implementation is
  * <a href="http://fribidi.org/">GNU FriBidi</a>.
  */
 public class Bidi
 {
   /**
    * Returns false if all characters in the text between start and end
-   * are all left-to-right text.  WARNING, this implementation is
-   * slow, it calls <code>Character.getDirectionality(char)</code> on
-   * all characters.
+   * are all left-to-right text. This implementation is just calls
+   * <code>Character.getDirectionality(char)</code> on all characters
+   * and makes sure all characters are either explicitly left-to-right
+   * or neutral in directionality (character types L, EN, ES, ET, AN,
+   * CS, S and WS).
    */
   public static boolean requiresBidi(char[] text, int start, int end)
   {
-    final int LEFT_TO_RIGHT = Character.DIRECTIONALITY_LEFT_TO_RIGHT;
     for (int i = start; i < end; i++)
       {
-	char c = text[i];
-	if (Character.getDirectionality(c) != LEFT_TO_RIGHT)
+	byte dir = Character.getDirectionality(text[i]);
+	if (dir != Character.DIRECTIONALITY_LEFT_TO_RIGHT
+	    && dir != Character.DIRECTIONALITY_EUROPEAN_NUMBER
+	    && dir != Character.DIRECTIONALITY_EUROPEAN_NUMBER_SEPARATOR
+	    && dir != Character.DIRECTIONALITY_EUROPEAN_NUMBER_TERMINATOR
+	    && dir != Character.DIRECTIONALITY_ARABIC_NUMBER
+	    && dir != Character.DIRECTIONALITY_COMMON_NUMBER_SEPARATOR
+	    && dir != Character.DIRECTIONALITY_SEGMENT_SEPARATOR
+	    && dir != Character.DIRECTIONALITY_WHITESPACE)
 	  return true;
       }
 

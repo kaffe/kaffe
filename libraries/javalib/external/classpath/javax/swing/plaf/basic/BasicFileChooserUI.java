@@ -669,7 +669,7 @@ public class BasicFileChooserUI extends FileChooserUI
   JButton accept;
 
   /** An optional accessory panel. */
-  JPanel accessoryPanel;
+  JPanel accessoryPanel = new JPanel();
 
   /** A property change listener. */
   PropertyChangeListener propertyChangeListener;
@@ -949,28 +949,28 @@ public class BasicFileChooserUI extends FileChooserUI
     acceptAllFileFilterText = defaults.getString("FileChooser.acceptAllFileFilterText");
     cancelButtonText = "Cancel";
     cancelButtonToolTipText = "Abort file chooser dialog";
-    cancelButtonMnemonic = defaults.getInt("FileChooser.cancelButtonMnemonic");
+    cancelButtonMnemonic = new Integer((String) UIManager.get("FileChooser.cancelButtonMnemonic")).intValue();
 
     directoryOpenButtonText = "Open";
     directoryOpenButtonToolTipText = "Open selected directory";
     directoryOpenButtonMnemonic 
-        = defaults.getInt("FileChooser.directoryOpenButtonMnemonic");
+        = new Integer((String) UIManager.get("FileChooser.directoryOpenButtonMnemonic")).intValue();
     
     helpButtonText = "Help";
     helpButtonToolTipText = "FileChooser help";
-    helpButtonMnemonic = defaults.getInt("FileChooser.helpButtonMnemonic");
+    helpButtonMnemonic = new Integer((String) UIManager.get("FileChooser.helpButtonMnemonic")).intValue();
 
     openButtonText = "Open";
     openButtonToolTipText = "Open selected file";
-    openButtonMnemonic = defaults.getInt("FileChooser.openButtonMnemonic");
+    openButtonMnemonic = new Integer((String) UIManager.get("FileChooser.openButtonMnemonic")).intValue();
 
     saveButtonText = "Save";
     saveButtonToolTipText = "Save selected file";
-    saveButtonMnemonic = UIManager.getInt("FileChooser.saveButtonMnemonic");
+    saveButtonMnemonic = new Integer((String) UIManager.get("FileChooser.saveButtonMnemonic")).intValue();
   
     updateButtonText = "Update";
     updateButtonToolTipText = "Update directory listing";
-    updateButtonMnemonic = defaults.getInt("FileChooser.updateButtonMnemonic");
+    updateButtonMnemonic = new Integer((String) UIManager.get("FileChooser.updateButtonMnemonic")).intValue();
   }
 
   /**

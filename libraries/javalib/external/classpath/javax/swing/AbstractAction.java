@@ -79,7 +79,7 @@ public abstract class AbstractAction
    */
   public AbstractAction()
   {
-    this(""); // TODO: default name
+    this(null);
   }
 
   /**
@@ -90,7 +90,7 @@ public abstract class AbstractAction
    */
   public AbstractAction(String name)
   {
-    this(name, null); // TODO: default icon??
+    this(name, null);
   }
 
   /**

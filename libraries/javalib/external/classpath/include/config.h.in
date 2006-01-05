@@ -256,6 +256,21 @@
    otherwise */
 #undef PORTABLE_NATIVE_SYNC
 
+/* The size of a `char', as computed by sizeof. */
+#undef SIZEOF_CHAR
+
+/* The size of a `int', as computed by sizeof. */
+#undef SIZEOF_INT
+
+/* The size of a `long', as computed by sizeof. */
+#undef SIZEOF_LONG
+
+/* The size of a `short', as computed by sizeof. */
+#undef SIZEOF_SHORT
+
+/* The size of a `void*', as computed by sizeof. */
+#undef SIZEOF_VOIDP
+
 /* The number of bytes in type void * */
 #undef SIZEOF_VOID_P
 

@@ -354,6 +354,14 @@ public final class Security
    */
   public static Provider getProvider(String name)
   {
+    if (name == null)
+      return null;
+    else
+      {
+        name = name.trim();
+        if (name.length() == 0)
+          return null;
+      }
     Provider p;
     int max = providers.size ();
     for (int i = 0; i < max; i++)

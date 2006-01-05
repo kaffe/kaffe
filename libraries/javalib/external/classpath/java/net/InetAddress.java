@@ -649,8 +649,11 @@ public class InetAddress implements Serializable
 
     InetAddress[] addresses;
 
+    if (hostname != null)
+      hostname = hostname.trim();
+
     // Default to current host if necessary
-    if (hostname == null)
+    if (hostname == null || hostname.equals(""))
       {
 	addresses = new InetAddress[1];
 	addresses[0] = LOCALHOST;
