@@ -384,7 +384,7 @@ Java_gnu_java_nio_channels_FileChannelImpl_implTruncate (JNIEnv * env,
 {
   int native_fd;
   jlong file_size;
-  int bytes_written;
+  ssize_t bytes_written;
   jlong save_offset, new_offset;
   char data;
   int result;
