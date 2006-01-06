@@ -1517,7 +1517,7 @@ die(void)
 	assert(!"Rescheduling dead thread");
 }
 
-static void
+static void NONRETURNING
 start_this_sucker_on_a_new_frame(void)
 {
 	/* all threads start with interrupts turned off */
