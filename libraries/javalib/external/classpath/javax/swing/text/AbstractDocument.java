@@ -541,6 +541,9 @@ public abstract class AbstractDocument implements Document, Serializable
     
     writeLock();
     UndoableEdit undo = content.insertString(offset, text);
+    if (undo != null)
+      event.addEdit(undo);
+
     insertUpdate(event, attributes);
     writeUnlock();
 
@@ -1910,6 +1913,15 @@ public abstract class AbstractDocument implements Document, Serializable
     {
       // XXX - Fully qualify ElementChange to work around gcj bug #2499.
       return (DocumentEvent.ElementChange) changes.get(elem);
+    }
+    
+    /**
+     * Returns a String description of the change event.  This returns the
+     * toString method of the Vector of edits.
+     */
+    public String toString()
+    {
+      return edits.toString();
     }
   }
   

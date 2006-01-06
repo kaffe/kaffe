@@ -534,7 +534,14 @@ public class RepaintManager
     }
     for (Iterator i = workInvalidComponents.iterator(); i.hasNext(); )
       {
-        JComponent comp = (JComponent) i.next();
+        Component comp = (Component) i.next();
+        // Find validate root.
+        while (!(comp instanceof JComponent)
+               || !((JComponent) comp).isValidateRoot()
+               && comp.getParent() != null)
+          comp = comp.getParent();
+
+        // Validate the validate root.
         if (! (comp.isVisible() && comp.isShowing()))
           continue;
         comp.validate();

@@ -447,9 +447,11 @@ public abstract class View implements SwingConstants
   protected void updateLayout(DocumentEvent.ElementChange ec,
                               DocumentEvent ev, Shape shape)
   {
-    Rectangle b = shape.getBounds();
-    if (ec != null)
-      preferenceChanged(this, true, true);
+    if (ec != null && shape != null)
+      preferenceChanged(null, true, true);
+    Container c = getContainer();
+    if (c != null)
+      c.repaint();
   }
 
   /**

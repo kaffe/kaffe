@@ -789,9 +789,11 @@ public class DefaultStyledDocument extends AbstractDocument
             {
             case ElementSpec.StartTagType:
               numStartTags++;
+              documentEvent.modified = true;
               break;
             case ElementSpec.EndTagType:
               numEndTags++;
+              documentEvent.modified = true;
               break;
             default:
               insertContentTag(data[i]);
@@ -929,7 +931,11 @@ public class DefaultStyledDocument extends AbstractDocument
           // Add this action to the document event.
           addEdit(paragraph, currentIndex, remove, add);
         }
-      else
+      else if (dir == ElementSpec.JoinFractureDirection)
+        {
+          // TODO: What should be done here?
+        }
+      else if (dir == ElementSpec.OriginateDirection)
         {
           BranchElement paragraph = (BranchElement) elementStack.peek();
           int index = paragraph.getElementIndex(offset);
@@ -1564,7 +1570,7 @@ public class DefaultStyledDocument extends AbstractDocument
     int length = ev.getLength();
     int endOffset = offset + length;
     AttributeSet paragraphAttributes = 
-      getParagraphElement(endOffset).getAttributes();
+      getParagraphElement(endOffset).getAttributes();    
     Segment txt = new Segment();
     try
       {
@@ -1579,46 +1585,75 @@ public class DefaultStyledDocument extends AbstractDocument
 
     int len = 0;
     Vector specs = new Vector();
-
+    ElementSpec finalStartTag = null;
+    short finalStartDirection = ElementSpec.OriginateDirection;
+    boolean prevCharWasNewline = false;
     Element prev = getCharacterElement(offset);
-    Element next = getCharacterElement(endOffset);
+    Element next = getCharacterElement(endOffset);    
+    Element prevParagraph = getParagraphElement(offset);
+    Element paragraph = getParagraphElement(endOffset);
     
     int segmentEnd = txt.offset + txt.count;
+    
+    // Check to see if we're inserting immediately after a newline.
+    checkForInsertAfterNewline(offset, endOffset, prevParagraph, paragraph,
+                               paragraphAttributes, prevCharWasNewline,
+                               finalStartTag, finalStartDirection, specs);
+        
     for (int i = txt.offset; i < segmentEnd; ++i)
       {
         len++;
         if (txt.array[i] == '\n')
           {
-            ElementSpec spec = new ElementSpec(attr, ElementSpec.ContentType,
-                                               len);          
-            specs.add(spec);
+            // Add the ElementSpec for the content.
+            specs.add(new ElementSpec(attr, ElementSpec.ContentType, len));            
 
             // Add ElementSpecs for the newline.
-            ElementSpec endTag = new ElementSpec(null, ElementSpec.EndTagType);
-            specs.add(endTag);
-            ElementSpec startTag = new ElementSpec(paragraphAttributes,
+            specs.add(new ElementSpec(null, ElementSpec.EndTagType));
+            finalStartTag = new ElementSpec(paragraphAttributes,
                                                    ElementSpec.StartTagType);
-            startTag.setDirection(ElementSpec.JoinFractureDirection);
-            specs.add(startTag);
-
+            specs.add(finalStartTag);
             len = 0;
           }
       }
 
     // Create last element if last character hasn't been a newline.
     if (len > 0)                      
-      specs.add(new ElementSpec(attr, ElementSpec.ContentType, len));      
+      specs.add(new ElementSpec(attr, ElementSpec.ContentType, len));
 
+    // Set the direction of the last spec of type StartTagType.  
+    // If we are inserting after a newline then this value comes from 
+    // handleInsertAfterNewline.
+    if (finalStartTag != null)
+      {
+        if (prevCharWasNewline)
+          finalStartTag.setDirection(finalStartDirection);
+        else if (prevParagraph.getEndOffset() != endOffset)
+          finalStartTag.setDirection(ElementSpec.JoinFractureDirection);
+        else
+          {
+            // If there is an element AFTER this one, then set the 
+            // direction to JoinNextDirection.
+            Element parent = prevParagraph.getParentElement();
+            int index = parent.getElementIndex(offset);
+            if (index + 1 < parent.getElementCount()
+                && !parent.getElement(index + 1).isLeaf())
+              finalStartTag.setDirection(ElementSpec.JoinNextDirection);
+          }
+      }
+    
     // If we are at the last index, then check if we could probably be
     // joined with the next element.
-    ElementSpec last = (ElementSpec) specs.lastElement();
-    if (next.getAttributes().isEqual(attr))
+    ElementSpec last = (ElementSpec) specs.lastElement();        
+    if (next.getAttributes().isEqual(attr)
+        && last.getType() == ElementSpec.ContentType)
       last.setDirection(ElementSpec.JoinNextDirection);    
     
     // If we are at the first new element, then check if it could be
     // joined with the previous element.
     ElementSpec first = (ElementSpec) specs.firstElement();
-    if (prev.getAttributes().isEqual(attr))
+    if (prev.getAttributes().isEqual(attr)
+        && first.getType() == ElementSpec.ContentType)
       first.setDirection(ElementSpec.JoinPreviousDirection);
     
     ElementSpec[] elSpecs =
@@ -1627,6 +1662,73 @@ public class DefaultStyledDocument extends AbstractDocument
     buffer.insert(offset, length, elSpecs, ev);
   }
 
+  /**
+   * A helper method that checks to see if insertUpdate was called when text
+   * was inserted immediately after a newline, and calls 
+   * handleInsertAfterNewline if that is the case.
+   */
+  void checkForInsertAfterNewline(int offset, int endOffset,
+                                  Element prevParagraph, Element paragraph,
+                                  AttributeSet paragraphAttributes,
+                                  boolean prevCharWasNewline,
+                                  ElementSpec finalStartTag,
+                                  short finalStartDirection, Vector specs)
+  {
+    if (offset > 0)
+      {
+        try
+        {
+          String s = getText(offset - 1, 1);
+          if (s.equals("\n"))
+            {
+              finalStartDirection = 
+                handleInsertAfterNewline(specs, offset, endOffset,
+                                         prevParagraph,
+                                         paragraph,
+                                         paragraphAttributes);
+              
+              prevCharWasNewline = true;
+              // Find the final start tag from the ones just created.
+              for (int i = 0; i < specs.size(); i++)
+                if (((ElementSpec) specs.get(i)).getType() 
+                    == ElementSpec.StartTagType)
+                  finalStartTag = (ElementSpec)specs.get(i);
+            }
+        }
+        catch (BadLocationException ble)
+        {          
+          // This shouldn't happen.
+          AssertionError ae = new AssertionError();
+          ae.initCause(ble);
+          throw ae;
+        }        
+      }
+  }
+  
+  /**
+   * A helper method to set up the ElementSpec buffer for the special
+   * case of an insertion occurring immediately after a newline.
+   * @param specs the ElementSpec buffer to initialize.
+   */
+  short handleInsertAfterNewline(Vector specs, int offset, int endOffset,
+                                Element prevParagraph, Element paragraph,
+                                AttributeSet a)
+  {
+    if (prevParagraph.getParentElement() == paragraph.getParentElement())
+      {
+        specs.add(new ElementSpec(a, ElementSpec.EndTagType));
+        specs.add(new ElementSpec(a, ElementSpec.StartTagType));
+        if (prevParagraph.getEndOffset() != endOffset)
+          return ElementSpec.JoinFractureDirection;
+        
+      }
+    else
+      {
+        // TODO: What to do here?
+      }
+    return ElementSpec.OriginateDirection;
+  }
+  
   /**
    * Updates the document structure in response to text removal. This is
    * forwarded to the {@link ElementBuffer} of this document. Any changes to
@@ -1671,7 +1773,22 @@ public class DefaultStyledDocument extends AbstractDocument
     else if (start instanceof AbstractDocument.BranchElement)
       System.out.println ("BranchElement ("+start.getStartOffset()+", "+start.getEndOffset()+")");
     else
-      System.out.println ("LeafElement ("+start.getStartOffset()+", "+start.getEndOffset()+")");
+      {
+        {
+          try
+            {
+              System.out.println ("LeafElement ("+start.getStartOffset()+", "
+                                  + start.getEndOffset()+"): "+ 
+                                  start.getDocument().
+                                  getText(start.getStartOffset(), 
+                                          start.getEndOffset() - 
+                                          start.getStartOffset()));
+            }
+          catch (BadLocationException ble)
+            {
+            }
+        }
+      }
     for (int i = 0; i < start.getElementCount(); i ++)
       printElements (start.getElement(i), pad+3);
   }

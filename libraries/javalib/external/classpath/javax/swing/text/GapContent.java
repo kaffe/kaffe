@@ -64,6 +64,7 @@ import javax.swing.undo.UndoableEdit;
 public class GapContent
     implements AbstractDocument.Content, Serializable
 {
+  
   /**
    * A {@link Position} implementation for <code>GapContent</code>.
    */
@@ -122,7 +123,6 @@ public class GapContent
       assert mark <= gapStart || mark >= gapEnd : "mark: " + mark
                                                + ", gapStart: " + gapStart
                                                + ", gapEnd: " + gapEnd;
-
       if (mark <= gapStart)
         return mark;
       else
@@ -449,7 +449,7 @@ public class GapContent
     // We store the actual array index in the GapContentPosition. The real
     // offset is then calculated in the GapContentPosition.
     int mark = offset;
-    if (offset > gapStart)
+    if (offset >= gapStart)
       mark += gapEnd - gapStart;
     GapContentPosition pos = new GapContentPosition(mark);
 
@@ -584,8 +584,9 @@ public class GapContent
   {
     if (gapStart != position)
       shiftGap(position);
+      
     // Remove content
-    if (rmSize > 0)
+    if (rmSize > 0) 
       shiftGapEndUp(gapEnd + rmSize);
 
     // If gap is too small, enlarge the gap.

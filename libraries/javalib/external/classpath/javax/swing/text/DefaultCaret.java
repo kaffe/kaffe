@@ -829,9 +829,12 @@ public class DefaultCaret extends Rectangle
   public void setDot(int dot)
   {
     if (dot >= 0)
-      {
+      {        
+        Document doc = textComponent.getDocument();
+        if (doc != null)
+          this.dot = Math.min(dot, doc.getLength());
+        this.dot = Math.max(this.dot, 0);
         this.mark = dot;
-        this.dot = dot;
         handleHighlight();
         adjustVisibility(this);
         appear();

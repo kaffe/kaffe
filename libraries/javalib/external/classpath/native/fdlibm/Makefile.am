@@ -15,7 +15,6 @@ libfdlibm_la_SOURCES =  \
 			e_sqrt.c \
 			fdlibm.h \
 			ieeefp.h \
-			java-assert.h \
 			k_cos.c \
 			k_rem_pio2.c \
 			k_sin.c \

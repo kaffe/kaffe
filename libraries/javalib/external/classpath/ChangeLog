@@ -1,3 +1,109 @@
+2006-01-06  Dalibor Topic  <robilad@kaffe.org>
+
+	* native/fdlibm/Makefile.am (libfdlibm_la_SOURCES): Removed java-assert.h.
+
+	* native/fdlibm/java-assert.h: Removed file.
+
+	* native/fdlibm/mprec.c: Include assert.h. Don't include java-assert.h.
+	Replaced use of JvAssert by assert.
+
+2006-01-05  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* javax/swing/text/DefaultCaret.java:
+	(setDot): Fixed paramater to Math.max to be this.dot and not the 
+	parameter dot.
+
+2006-01-05  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/basic/BasicListUI.java
+	(getCellHeight): New helper method.
+	(getCellBounds): Use new helper method for determining the cell
+	height.
+	(paint): Don't call list.indexToLocation() but instead call
+	directly into the same UI method.
+	(locationToIndex): Fixed calculation of # visible rows and handling
+	of cell heights.
+	(indexToLocation): Fixed calculation of # visible rows and handling
+	of cell heights.
+
+2006-01-05  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/metal/MetalFileChooserUI.java
+	(createList): Set VERTICAL_SCROLLBAR_NEVER mode on the JScrollPane
+	in the file chooser.
+
+2006-01-05  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* javax/swing/JTextPane.java:
+	(replaceSelection): If the document is an AbstractDocument, use replace
+	rather than remove and insert.
+	* javax/swing/event/EventListenerList.java:
+	(getListeners): Reversed the order of the listeners to match the 
+	reference implementation.
+	* javax/swing/text/AbstractDocument.java:
+	(insertString): Add the UndoableEdit from the content.insertString call
+	to the DocumentEvent.
+	(DefaultDocumentEvent.toString): Implemented.
+	* javax/swing/text/DefaultCaret.java:
+	(setDot): Make sure dot is > 0 and less than the length of the 
+	document.
+	* javax/swing/text/DefaultStyledDocument.java:
+	(ElementBuffer.insertUpdate): Set the modified tag of the document 
+	event when we get start and end tags.  This ensures that we create the
+	proper BranchElements in endEdit().
+	(ElementBuffer.insertUpdate): Added FIXME to handle 
+	JoinFractureDirection case.
+	(insertUpdate): Added code to check if we're inserting immediately 
+	after a newline and to handle this case (create start and end tags). 
+	Only change the direction of the first and last tags if they are of 
+	type ContentType.
+	(checkForInsertAfterNewline): New helper method.
+	(handleInsertAfterNewline): Likewise.
+	* javax/swing/text/View.java:
+	(updateLayout): Avoid NPE by checking if shape is null.  Repaint 
+	container.
+
+2006-01-05  Mark Wielaard  <mark@klomp.org>
+
+	* newsitems.txt: Add fosdem meeting.
+	* events/events.wml: Likewise.
+	* events/fosdem06.wml: New file.
+	
+2006-01-05  Lillian Angel  <langel@redhat.com>
+	
+	* javax/swing/text/GapContent.java
+	(createPosition): No positions should be created inside the
+	gap. Fixed check to ensure this does not happen.
+
+2006-01-05  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/RepaintManager.java
+	(validateInvalidComponents): Search for the validate root
+	and start validating there.
+
+2006-01-05  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/basic/BasicListUI.java
+	(ComponentHandler): Removed unneeded class.
+	(ListDataHandler.contentsChanged): Revalidate instead of calling
+	damageLayout().
+	(ListDataHandler.intervalAdded): Revalidate instead of calling
+	damageLayout().
+	(ListDataHandler.intervalRemoved): Revalidate instead of calling
+	damageLayout().
+	(PropertyChangeHandler.propertyChange): Or flags together instead
+	of adding them. Don't call damageLayout().
+	(componentListener): Removed unnecessary field.
+	(damageLayout): Removed unnecessary method.
+	(installListeners): Don't install unnecessary listeners.
+	(uninstallListeners): Dito.
+	(getPreferredSize): Don't ask for the real list height and
+	calculate with the previously calculated list height.
+	(locationToIndex): Renamed list parameter to l so that it doesn't
+	shadow the field with the same name.
+	(indexToLocation): Renamed list parameter to l so that it doesn't
+	shadow the field with the same name.
+
 2006-01-04  Tom Tromey  <tromey@redhat.com>
 
 	* include/.cvsignore: Ignore config-int.h.
