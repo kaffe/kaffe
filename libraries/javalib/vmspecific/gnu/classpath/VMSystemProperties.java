@@ -198,7 +198,7 @@ class VMSystemProperties
       // Set base URL if not already set.
       if (properties.get("gnu.classpath.home.url") == null)
 	properties.put("gnu.classpath.home.url",
-		       "file://" + properties.get("gnu.classpath.home") + "/jre/lib");
+		       "file://" + properties.get("gnu.classpath.home") + "/lib");
     }
 
     /**
