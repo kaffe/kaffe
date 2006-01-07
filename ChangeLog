@@ -1,3 +1,9 @@
+2006-01-07  Guilhem Lavaux  <guilhem@kaffe.org>,
+	Dalibor Topic <robilad@kaffe.org>
+
+	* libraries/javalib/vmspecific/java/security/VMAccessController.java:
+	Merged with new version in classpath.
+
 2006-01-07  Wolfgang Baer <WBaer@gmx.de>
 
 	* libraries/javalib/Makefile.am.in (install-data-local, uninstall-local):

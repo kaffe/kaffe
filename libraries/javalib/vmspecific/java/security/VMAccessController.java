@@ -76,7 +76,7 @@ final class VMAccessController
     DEFAULT_CONTEXT = new AccessControlContext(domain);
   }
 
-  private static final boolean DEBUG = false;
+  private static final boolean DEBUG = gnu.classpath.Configuration.DEBUG;
   private static void debug(String msg)
   {
     System.err.print(">>> VMAccessController: ");
@@ -135,8 +135,11 @@ final class VMAccessController
         stack.removeFirst();
         if (stack.isEmpty())
           contexts.set(null);
-      } else if (DEBUG)
+      }
+    else if (DEBUG)
+      {
         debug("no stack during pop?????");
+      }
   }
 
   /**
@@ -169,7 +172,7 @@ final class VMAccessController
     String[] methods = (String[]) stack[1];
 
     if (DEBUG)
-      debug(">>> got trace of length " + classes.length);
+      debug("got trace of length " + classes.length);
 
     HashSet domains = new HashSet();
     HashSet seenDomains = new HashSet();
@@ -188,9 +191,9 @@ final class VMAccessController
 
         if (DEBUG)
           {
-            debug(">>> checking " + clazz + "." + method);
-	    // subject to getClassLoader RuntimePermission
-            debug(">>> loader = " + clazz.getClassLoader());
+            debug("checking " + clazz + "." + method);
+            // subject to getClassLoader RuntimePermission
+            debug("loader = " + clazz.getClassLoader());
           }
 
         // If the previous frame was a call to doPrivileged, then this is
@@ -231,16 +234,25 @@ final class VMAccessController
     ProtectionDomain[] result = (ProtectionDomain[])
       domains.toArray(new ProtectionDomain[domains.size()]);
 
-    // Intersect the derived protection domain with the context supplied
-    // to doPrivileged. We use the DomainCombiner fron the popped contest
-    // to avoid that SubjectDomainCombiners with Subject information
-    // get lost here.
     if (context != null)
-      context = new AccessControlContext(result, context,
-                                         context.getDomainCombiner());
+      {
+        DomainCombiner dc = context.getDomainCombiner ();
+        // If the supplied context had no explicit DomainCombiner, use
+        // our private version, which computes the intersection of the
+        // context's domains with the derived set.
+        if (dc == null)
+          context = new AccessControlContext
+            (IntersectingDomainCombiner.SINGLETON.combine
+             (result, context.getProtectionDomains ()));
+        // Use the supplied DomainCombiner. This should be secure,
+        // because only trusted code may create an
+        // AccessControlContext with a custom DomainCombiner.
+        else
+          context = new AccessControlContext (result, context, dc);
+      }
     // No context was supplied. Return the derived one.
     else
-      context = new AccessControlContext(result);
+      context = new AccessControlContext (result);
 
     inGetContext.set(Boolean.FALSE);
     return context;
@@ -254,11 +266,12 @@ final class VMAccessController
    * <i>i</i>. The arrays are clean; it will only contain Java methods,
    * and no element of the list should be null.
    *
-   * <p>XXX note: this interface (VMAccessController) would possibly be
-   * cleaner if we had a method similar to this, but returned an array
-   * of java.lang.reflect.Method objects. Then, instead of having this
-   * much logic in this class, we put everything in AccessController,
-   * and simply have this single getStack method for a VM to implement.
+   * <p>The default implementation returns an empty stack, which will be
+   * interpreted as having no permissions whatsoever.
+   *
+   * @return A pair of arrays describing the current call stack. The first
+   *    element is an array of Class objects, and the second is an array
+   *    of Strings comprising the method names.
    */
   private static native Object[][] getStack();
 }
