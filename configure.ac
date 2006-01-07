@@ -2171,22 +2171,6 @@ fi
 AC_SUBST(KVMLIBFLAGS)
 
 dnl -----------------------------------------------------------
-dnl Enable execution of all static initializer loadLibrary() 
-dnl calls at compile time.  By default most people will not
-dnl want to disable this, but some VMs (gcj) don't need or want 
-dnl them.
-dnl -----------------------------------------------------------
-AC_ARG_ENABLE([classpath-load-library],
-              [AS_HELP_STRING(--enable-classpath-load-library,enable to use JNI native methods [default=yes])],
-              [case "${enableval}" in 
-                yes) INIT_LOAD_LIBRARY="true" ;;
-                no) INIT_LOAD_LIBRARY="false" ;;
-                *) AC_MSG_ERROR(bad value ${enableval} for --enable-classpath-load-library) ;;
-              esac],
-              [INIT_LOAD_LIBRARY="true"])
-AC_SUBST(INIT_LOAD_LIBRARY)
-
-dnl -----------------------------------------------------------
 dnl Enable direct threading 
 dnl -----------------------------------------------------------
 AC_ARG_ENABLE([direct-threading],
