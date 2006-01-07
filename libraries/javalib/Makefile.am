@@ -46,14 +46,14 @@ jrelib_DATA= \
 export JAVA_COMPILER
 
 install-data-local: installdirs
-	if test -f ${jrelibdir}/glibj.zip ; then \
-		if ! test -f ${jrelibdir}/rt.jar ; then \
-			$(LN_S) ${jrelibdir}/glibj.zip ${jrelibdir}/rt.jar ; \
+	if test -f $(DESTDIR)${jrelibdir}/glibj.zip ; then \
+		if ! test -f $(DESTDIR)${jrelibdir}/rt.jar ; then \
+			$(LN_S) $(DESTDIR)${jrelibdir}/glibj.zip $(DESTDIR)${jrelibdir}/rt.jar ; \
 		fi ; \
 	fi
 
 uninstall-local: 
-	$(RM) ${jrelibdir}/rt.jar
+	$(RM) $(DESTDIR)${jrelibdir}/rt.jar
 
 EXTRA_DIST= \
 	    Makefile.am.in \

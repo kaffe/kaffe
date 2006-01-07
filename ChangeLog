@@ -1,3 +1,8 @@
+2006-01-07  Wolfgang Baer <WBaer@gmx.de>
+
+	* libraries/javalib/Makefile.am.in (install-data-local, uninstall-local):
+	Use DESTDIR when linking rt.jat to glibj.zip.
+
 2006-01-06  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* libraries/clib/security/Kaffe.security: Load all GNU security
