@@ -3,11 +3,11 @@ How do I compile the class library?
 -----------------------------------
 
 Cd to your build directory (the same as the source directory if you
-did ./configure), then cd to libraries/javalib.
+did ./configure), then cd to libraries/javalib/external/classpath/lib.
 
 Type "make".
 
-This will build the java libraries, put them in a rt.jar file
+This will build the java libraries, put them in a glibj.zip file
 and overwrite the version in your source tree.  Type "make install"
 to install the jar file in your target prefix.
 
@@ -17,6 +17,11 @@ to update Makefile.am, Makefile.in and Makefile. Do this as follows:
     $ cd ../..
     $ sh developers/autogen.sh
     $ ./configure
+
+Also note that some files are Kaffe specific, due to some classes not
+yet being merged with GNU Classpath, and being part of the GNU Classpath 
+VM interface. Those classes exist in libraries/javalib/vmspecific 
+directory.
 
 Please use the version of automake as described in FAQ.automake.
 This version will minimize your diffs with the CVS tree as it is 
@@ -28,35 +33,12 @@ Kaffe extensions, type "make CLASSDIRS=all Klasses".
 How do I set the compiler?
 --------------------------
 
-The ./configure script has the --with-jikes option. If you don't set
-it at all, the build system will use the compiler specified by the
-JAVAC environment variable. If no compiler is specified in JAVAC, the
-build system will use the included kjc Java compiler.
+The ./configure script has several options to chose a compiler. If you 
+don't set it at all, the build system will try to use the jikes compiler
 
 Setting --with-jikes=yes will use the jikes compiler if one can
 be found. You can also specify the absolute path to a jikes executable
 using --with-jikes=/absolute-path-to/jikes.
-
-You can also use the absolute path to specify other Java
-compilers. For example, in order to use gcj to compile the class
-library, you would run ./configure --with-jikes=/path-to/gcj. The same
-method can be applied to configure kaffe to compile the class library
-using Sun's javac compiler, or any other Java compiler.
-
-If you manage to compile kaffe's class library using a Java compiler
-other than javac, kjc, jikes or gcj, please send a message to
-kaffe@kaffe.org.
-
-How do I pass flags to the compiler?
---------------------------------------
-
-Use the JAVAC_FLAGS environment variable.
-
-make JAVAC_FLAGS="-verbose"
-
-will compile the class library with verbose messages about the
-compilation process. Which flags you can set depends on the Java
-compiler you use.
 
 What compilers are known to work?
 ---------------------------------
@@ -114,45 +96,16 @@ exec path_to_a_working_Java_VM \
 	"$@"
  
 By the way, there is a "distribution" of ecj itself in the debian
-repository (ecj-bootstrap).
+repository (ecj-bootstrap). You can get that code from 
+http://packages.qa.debian.org/e/ecj-bootstrap.html
 
-In order to compile kaffe's class library, you need to set JAVAC_FLAGS
-to "-source 1.4 -bootclasspath /full/path/to/builddir/libraries/javalib/lib/",
-with "/full/path/to/builddir" replaced by the full path to the directory
-where you are building the Kaffe source code.
-
-Now ./configure accepts an option to use ecj:
+The ./configure script accepts an option to use ecj:
 
   --with-ecj=ECJ          Define to use ECJ as the java compiler instead of
                           jikes
 
-and you do not have to care about JAVAC_FLAGS.
-
 It works with ecj 0.548, pre-3.1.0 milestone-6, and should work with later 
 versions as well.  The wrapping shell script of ecj shown above also works. 
-
-* kjc
-
-kjc works as well. kjc is part of the Kopi project:
-
-  http://www.dms.at/kopi/kjc.html
-
-Kaffe used to ship a patched version of kjc 2.1B. That version is still
-available in source code form from the kjc module in kaffe's CVS. See
-
-   http://www.kaffe.org/anoncvs.shtml 
-
-for details on how to check it out.
-
-* javac 
-
-Sun's javac compiler from JDK 1.3 - JDK 1.5 works as well. You have
-to add "-bootclasspath /full/path/to/builddir/libraries/javalib/lib/" 
-to your JAVAC_FLAGS to avoid build problems due to Sun's javac 
-confusing Sun's class libraries with kaffe's.
-
-No known older version of Sun's javac compiler (up through JDK 1.2)
-will compile Kaffe's classes, due to bugs that Sun has yet to fix.
 
 What compilers are known not to work?
 -------------------------------------
@@ -167,8 +120,30 @@ moment.
 If you have managed to compile the class library using any version of
 gcj, please write to kaffe@kaffe.org.
 
-How do I adapt the class library to my needs?
----------------------------------------------
+* javac 
+
+Sun's javac compiler from JDK 1.3 - JDK 1.5 doesn't work, since the GNU
+Classpath build system does not support it.
+
+No known older version of Sun's javac compiler (up through JDK 1.2)
+will compile Kaffe's classes, due to bugs in Sun's compiler.
+
+* kjc
+
+kjc may work as well, but it has not been tried for a while with GNU 
+Classpath sources. kjc is part of the Kopi project:
+
+  http://www.dms.at/kopi/kjc.html
+
+Kaffe used to ship a patched version of kjc 2.1B. That version is still
+available in source code form from the kjc module in kaffe's CVS. See
+
+   http://www.kaffe.org/anoncvs.shtml 
+
+for details on how to check it out.
+
+How do I adapt / use a precompiled class library?
+-------------------------------------------------
 
 If you are using kaffe on an embedded system, you may want to use only
 a part of the functionality provided by the class library. For
@@ -176,75 +151,12 @@ example, you may not need JAXP or AWT on your system. So you shouldn't
 have to waste space on the device by including classes you are not
 going to use.
 
-Kaffe supports user defined class library profiles. A profile file 
-tells the build process where to find a list of files to be compiled 
-into the class library.
-
-The default profile in libraries/javalib/all.files lists all files 
-that are included into the class library. It is a simple list of 
-java source files that should be compiled together in a compiler run. 
-They are passed to the compiler using the 
-@file-containing-a-list-of-sources option, so that it works on systems 
-with a small maximal command line length.
-
-For example, in order to remove the AWT classes from your class 
-library, you can simply remove the lines with files from java.awt package 
-from the profile. You can also remove single classes in the same fashion.
-
-If you work with your own profiles, it is recommended to use Jikes. Jikes
-takes care about compiling the dependencies of files included in your 
-profile automatically.
-
-How do I add classes to a class library profile?
-------------------------------------------------
-
-If you want to add a class to specific compiler run, just add the path
-to its source to the file listing the classes to be compiled in that
-run.
-
-How do I use own class library profile?
-------------------------------------------
-
-The configure script has the option --with-class-library-profile,
-which allows you to specify a profile to use for the class library.
-You must specify the absolute path to the profile file.
-
-Which profiles are available?
------------------------------
-
-Currently, there is only the default profile available.
-
-* default:
-
-  Builds the whole class library at once. 
-
-If you write your own profiles, send them to the kaffe mailing list
-kaffe@kaffe.org.
-
-How do I use a precompiled class library?
------------------------------------------
-
-The configure script allows you to specify a precompiled rt.jar file
-using the --with-rt-jar option. The specified jar file will be
-installed as kaffe's class library.
+Kaffe supports using a user-defined class library instead of the 
+included one. The configure script option to use is 
+--with-glibj-zip=/absolute/path/to/your/class/library .
 
 That allows you to precompile kaffe's class library on a faster
 platform than the one you're building on, for example.
 
-You can not use the class library from another JVM.
-
-Crashes during compilation of class library
--------------------------------------------
-
-When kaffe crashes during compilation of class library, you should try
-to compile the class library with jikes, or another Java compiler. Or
-you can use a precompiled rt.jar.
-
-You should first rebuild kaffe with --enable-debug, install it, set
-KAFFE_DEBUG to the debugger of your choice, and try to rebuild kaffe
-with kjc from the freshly installed, broken kaffe.
-
-So if you're having problems with the JIT, you could configure kaffe
-for rebuild using --with-jikes="/path/to/broken/kaffe -vmdebug
-JIT,MOREJIT at.dms.kjc.Main". The extra output from the jit engine
-should give you an idea where to start debugging.
+You can not use the class library from another JVM, since the native
+method signatures are likely going to differ.

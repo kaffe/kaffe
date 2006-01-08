@@ -1,5 +1,14 @@
 2006-01-07  Dalibor Topic  <robilad@kaffe.org>
 
+	* FAQ/FAQ.classlibrary-compile: Updated.
+	* configure.ac: (--with-class-library-profile): Removed option,
+	as it is no longer necessary.
+	* WHATSNEW: Recommend using --with-glibj-zip over --with-class-library-profile.
+
+	* libraries/javalib/profiles/default/jaxp.files: Removed.
+
+2006-01-07  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/vmspecific/java/security/VMAccessController.java:
 	(DEBUG) Set to false.
 

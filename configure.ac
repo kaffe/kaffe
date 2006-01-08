@@ -2079,21 +2079,6 @@ dnl -----------------------------------------------------------------------
 
 AM_WITH_DMALLOC
 
-dnl -----------------------------------------------------------------------
-dnl                    Support for different class library profiles
-dnl -----------------------------------------------------------------------
-AC_ARG_WITH([class_library_profile],
-	    AS_HELP_STRING([--with-class-library-profile=ABS.PATH],
-			   [specify class library profile]))
-
-if test x"$with_class_library_profile" = x"" ; then
-	PROFILE=default
-else
-	PROFILE=$with_class_library_profile
-fi
-
-AC_SUBST(PROFILE)
-
 dnl =========================================================================
 dnl Building of gjdoc
 dnl -------------------------------------------------------------------------
