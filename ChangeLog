@@ -1,5 +1,10 @@
 2006-01-07  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac (--enable-portable-native-sync, --enable-xmlj, --disable-alsa
+	--disable-dssi, --disable-gtk-peer): Added configure options from GNU Classpath.
+
+2006-01-07  Dalibor Topic  <robilad@kaffe.org>
+
 	* FAQ/FAQ.classlibrary-compile: Updated.
 	* configure.ac: (--with-class-library-profile): Removed option,
 	as it is no longer necessary.

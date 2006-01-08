@@ -721,6 +721,80 @@ AC_ARG_WITH([gc],
 	    [ GC_NAME="$withval" ]
 )
 
+dnl -----------------------------------------------------------
+dnl This sets the build-time default, which can now be overridden
+dnl by setting the system property gnu.classpath.awt.gtk.portable.native.sync
+dnl to "true" or "false".
+dnl -----------------------------------------------------------
+AC_ARG_ENABLE([portable-native-sync],
+              [AS_HELP_STRING(--enable-portable-native-sync,synchronize VM threads portably)],
+              [case "${enableval}" in
+                yes)
+                     AC_DEFINE(PORTABLE_NATIVE_SYNC, 1, [Define if you want to synchronize VM threads portably by 
+default; undef otherwise])
+                     ;;
+                no)  ;;
+                *)
+                     AC_MSG_ERROR(bad value ${enableval} for --enable-portable-native-sync)
+                     ;;
+              esac],
+              [])
+
+dnl -----------------------------------------------------------
+dnl Native libxml/xslt library (disabled by default)
+dnl -----------------------------------------------------------
+AC_ARG_ENABLE([xmlj],
+              [AS_HELP_STRING(--enable-xmlj,compile native libxml/xslt library [default=no])],
+              [case "${enableval}" in
+                yes) COMPILE_XMLJ=yes ;;
+                no) COMPILE_XMLJ=no ;;
+                *) COMPILE_XMLJ=no ;;
+              esac],
+              [COMPILE_XMLJ=no])
+AM_CONDITIONAL(CREATE_XMLJ_LIBRARY, test "x${COMPILE_XMLJ}" = xyes)
+
+dnl -----------------------------------------------------------
+dnl ALSA code (enabled by default)
+dnl -----------------------------------------------------------
+AC_ARG_ENABLE([alsa],
+              [AS_HELP_STRING(--disable-alsa,compile ALSA providers (enable by --enable-alsa) [default=yes])],
+              [case "${enableval}" in
+                yes) COMPILE_ALSA=yes ;;
+                no) COMPILE_ALSA=no ;;
+                *) COMPILE_ALSA=yes ;;
+              esac],
+              [AC_CHECK_HEADERS([alsa/asoundlib.h],
+                                [AC_CHECK_LIB([asound], [snd_seq_open], COMPILE_ALSA=yes,COMPILE_ALSA=no)],
+                                COMPILE_ALSA=no)])
+AM_CONDITIONAL(CREATE_ALSA_LIBRARIES, test "x${COMPILE_ALSA}" = xyes)
+
+dnl -----------------------------------------------------------
+dnl DSSI code (enabled by default)
+dnl -----------------------------------------------------------
+AC_ARG_ENABLE([dssi],
+              [AS_HELP_STRING(--disable-dssi,compile DSSI providers (enable by --enable-dssi) [default=yes])],
+              [case "${enableval}" in
+                yes) COMPILE_DSSI=yes ;;
+                no) COMPILE_DSSI=no ;;
+                *) COMPILE_DSSI=yes ;;
+              esac],
+              [AC_CHECK_HEADERS([dssi.h],COMPILE_DSSI=yes,COMPILE_DSSI=no)])
+AM_CONDITIONAL(CREATE_DSSI_LIBRARIES, test "x${COMPILE_DSSI}" = xyes)
+
+dnl -----------------------------------------------------------
+dnl GTK native peer (enabled by default)
+dnl -----------------------------------------------------------
+AC_ARG_ENABLE([gtk-peer],
+              [AS_HELP_STRING(--disable-gtk-peer,compile GTK native peers (disabled by --disable-jni) 
+[default=yes])],
+              [case "${enableval}" in
+                yes) COMPILE_GTK_PEER=yes ;;
+                no) COMPILE_GTK_PEER=no ;;
+                *) COMPILE_GTK_PEER=yes ;;
+              esac],
+              [COMPILE_GTK_PEER=yes])
+AM_CONDITIONAL(CREATE_GTK_PEER_LIBRARIES, test "x${COMPILE_GTK_PEER}" = xyes)
+
 dnl -----------------------------------------------------------------------
 dnl                    Support for using a precompiled class library
 dnl -----------------------------------------------------------------------
