@@ -72,6 +72,21 @@ import org.xml.sax.ext.Locator2;
 
 /**
  * JAXP SAX parser using an underlying StAX parser.
+ * This parser supports the following additional SAX features and
+ * properties:
+ * <table>
+ * <tr><th colspan='4'>Features</th></tr>
+ * <tr><td>http://gnu.org/sax/features/xml-base</td>
+ * <td colspan='2'>read/write</td>
+ * <td>Indicates or sets whether XML Base processing is enabled</td></tr>
+ * <tr><th colspan='4'>Properties</th></tr>
+ * <tr><td>http://gnu.org/sax/properties/base-uri</td>
+ * <td>read-only</td><td>String</td>
+ * <td>Returns the base URI of the current event</td></tr>
+ * <tr><td>http://gnu.org/sax/properties/document-xml-encoding</td>
+ * <td>read-only</td><td>String</td>
+ * <td>Returns the encoding specified in the XML declaration</td></tr>
+ * </table>
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
@@ -104,6 +119,7 @@ public class SAXParser
   String xmlVersion;
   boolean xmlStandalone;
   String xmlEncoding;
+  String baseURI;
 
   public SAXParser()
   {
@@ -147,6 +163,7 @@ public class SAXParser
       throw new IllegalStateException("parsing in progress");
     final String FEATURES = "http://xml.org/sax/features/";
     final String PROPERTIES = "http://xml.org/sax/properties/";
+    final String GNU_FEATURES = "http://gnu.org/sax/features/";
     if ((FEATURES + "namespaces").equals(name))
       namespaceAware = Boolean.TRUE.equals(value);
     else if ((FEATURES + "namespace-prefixes").equals(name))
@@ -169,6 +186,8 @@ public class SAXParser
       declHandler = (DeclHandler) value;
     else if ((PROPERTIES + "lexical-handler").equals(name))
       lexicalHandler = (LexicalHandler) value;
+    else if ((GNU_FEATURES + "xml-base").equals(name))
+      baseAware = Boolean.TRUE.equals(value);
     else
       throw new SAXNotSupportedException(name);
   }
@@ -178,7 +197,10 @@ public class SAXParser
   {
     final String FEATURES = "http://xml.org/sax/features/";
     final String PROPERTIES = "http://xml.org/sax/properties/";
+    final String GNU_FEATURES = "http://gnu.org/sax/features/";
     final String GNU_PROPERTIES = "http://gnu.org/sax/properties/";
+    if ((GNU_FEATURES + "base-uri").equals(name))
+      return baseURI;
     if ((FEATURES + "is-standalone").equals(name))
       return xmlStandalone ? Boolean.TRUE : Boolean.FALSE;
     if ((FEATURES + "namespaces").equals(name))
@@ -207,6 +229,8 @@ public class SAXParser
       return xmlVersion;
     if ((PROPERTIES + "lexical-handler").equals(name))
       return lexicalHandler;
+    if ((GNU_FEATURES + "xml-base").equals(name))
+      return baseAware ? Boolean.TRUE : Boolean.FALSE;
     if ((GNU_PROPERTIES + "document-xml-encoding").equals(name))
       return xmlEncoding;
     throw new SAXNotSupportedException(name);
@@ -337,6 +361,7 @@ public class SAXParser
                                this);
       }
     reader = parser;
+    baseURI = systemId;
     
     if (xIncludeAware)
       reader = new XIncludeFilter(parser, systemId, namespaceAware,
@@ -349,7 +374,10 @@ public class SAXParser
       {
         while (parser.hasNext())
           {
-            switch (parser.next())
+            int event = parser.next();
+            if (baseAware)
+              baseURI = parser.getXMLBase();
+            switch (event)
               {
               case XMLStreamConstants.CHARACTERS:
                 if (contentHandler != null)
@@ -642,6 +670,9 @@ public class SAXParser
       }
   }
 
+  /**
+   * Indicates whether the specified characters are ignorable whitespace.
+   */
   private boolean isIgnorableWhitespace(XMLParser reader, char[] b,
                                         boolean testCharacters)
   {

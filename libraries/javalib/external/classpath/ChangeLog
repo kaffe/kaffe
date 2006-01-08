@@ -1,3 +1,102 @@
+2006-01-07  Paul Jenner  <psj@harker.dyndns.org>
+
+	Fixes bug #25711
+	* examples/Makefile.am: Corrected DESTDIR install paths.
+
+2006-01-07  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* org/omg/CORBA/INVALID_ACTIVITY.java: Removed non - 
+	ASCII character (line 46).
+
+2006-01-07  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/TableView.java: New file.
+
+2006-01-07  Chris Burdess  <dog@gnu.org>
+
+	* gnu/xml/stream/BufferedReader.java: Removed commented out code.
+	* gnu/xml/stream/XIncludeFilter.java: Correct XML Base behaviour.
+	* gnu/xml/stream/XMLParser.java: Make additional StAX properties
+	  available; correct handling of unparsed entity references;
+	  absolutize all base URIs; remove commented out code.
+
+2006-01-07  Chris Burdess  <dog@gnu.org>
+
+	* gnu/xml/stream/SAXParser.java,
+	  gnu/xml/stream/XMLParser.java: Add SAX property to return base
+	  URI of the current event.
+
+2006-01-07  Chris Burdess  <dog@gnu.org>
+
+	* gnu/xml/stream/SAXParser.java: Add SAX feature to set XML Base
+	  aware processing.
+
+2006-01-07  Chris Burdess  <dog@gnu.org>
+
+	* gnu/xml/stream/SAXParser.java,
+	  gnu/xml/stream/XIncludeFilter.java,
+	  gnu/xml/stream/XMLParser.java: Updated documentation.
+
+2006-01-07  Chris Burdess  <dog@gnu.org>
+
+	* AUTHORS: add self.
+
+2006-01-06  Casey Marshall  <csm@gnu.org>
+
+	* AUTHORS: add myself.
+
+2006-01-06  Casey Marshall  <csm@gnu.org>
+
+	PR classpath/25699
+	* javax/crypto/CipherInputStream.java (logger): new constant.
+	(cipher): make final.
+	(outLength, inBuffer, inLength): removed.
+	(isStream): make final.
+	(VIRGIN, LIVING, DYING, DEAD, state): removed.
+	(eof): new field.
+	(<init>): call `super,' not `this;' remove `inBuffer' and
+	`outBuffer' initialization; init `eof;' add debug logging.
+	(<init>): call `this' with a new null cipher.
+	(available): fix javadoc to reflect the real semantics; if we
+	don't have a buffer, call `nextBlock.'
+	(close): synchronize.
+	(read): synchronize; fix testing for buffered data.
+	(read): synchronize; add `skip' semantics if first argument is
+	`null;' decrypt stream cipher data only if there is any; fix tests
+	for buffered data.
+	(skip): stop using `available' to see how many data are buffered.
+	(nextBlock): simplify to use cipher-allocated output buffers
+	instead of internally allocated ones.
+
+2006-01-06  Tom Tromey  <tromey@redhat.com>
+
+	* java/lang/String.java (codePointCount): Fixed javadoc.
+
+2006-01-06  Tom Tromey  <tromey@redhat.com>
+
+	* java/lang/String.java (contains): Added @since.
+
+2006-01-06  Ito Kazumitsu  <kaz@maczuka.gcd.org>  
+
+	Fixes bug #25616
+	* gnu/regexp/RE.java(initialize): Allow repeat.empty.token.
+	* gnu/regexp/RETokenRepeated.java(match): Break the loop
+	when an empty string matched an empty token.
+
+2006-01-06  Jeroen Frijters  <jeroen@frijters.net>
+
+	PR classpath/24858
+	* gnu/java/util/WeakIdentityHashMap.java: New file.
+	* java/lang/InheritableThreadLocal.java
+	(newChildThread): Modified to remove key indirection.
+	* java/lang/Thread.java
+	(locals): Changed type to WeakIdentityHashMap.
+	(getThreadLocals): Instantiate WeakIdentityHashMap instead of
+	WeakHashMap.
+	* java/lang/ThreadLocal.java
+	(key, Key): Removed.
+	(get, set): Changed to use "this" instead of "key".
+
 2006-01-06  Dalibor Topic  <robilad@kaffe.org>
 
 	* native/fdlibm/Makefile.am (libfdlibm_la_SOURCES): Removed java-assert.h.

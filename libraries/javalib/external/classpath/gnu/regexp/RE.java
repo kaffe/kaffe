@@ -374,6 +374,9 @@ public class RE extends REToken {
       //
       // OPEN QUESTION: 
       //  what is proper interpretation of '{' at start of string?
+      //
+      // This method used to check "repeat.empty.token" to avoid such regexp
+      // as "(a*){2.}", but now "repeat.empty.token" is allowed.
 
       else if ((unit.ch == '{') && syntax.get(RESyntax.RE_INTERVALS) && (syntax.get(RESyntax.RE_NO_BK_BRACES) ^ (unit.bk || quot))) {
 	int newIndex = getMinMax(pattern,index,minMax,syntax);
@@ -386,8 +389,6 @@ public class RE extends REToken {
             throw new REException(getLocalizedMessage("repeat.chained"),REException.REG_BADRPT,newIndex);
           if (currentToken instanceof RETokenWordBoundary || currentToken instanceof RETokenWordBoundary)
             throw new REException(getLocalizedMessage("repeat.assertion"),REException.REG_BADRPT,newIndex);
-          if ((currentToken.getMinimumLength() == 0) && (minMax.second == Integer.MAX_VALUE))
-            throw new REException(getLocalizedMessage("repeat.empty.token"),REException.REG_BADRPT,newIndex);
           index = newIndex;
           currentToken = setRepeated(currentToken,minMax.first,minMax.second,index); 
         }
@@ -616,6 +617,9 @@ public class RE extends REToken {
 
       // ZERO-OR-MORE REPEAT OPERATOR
       //  *
+      //
+      // This method used to check "repeat.empty.token" to avoid such regexp
+      // as "(a*)*", but now "repeat.empty.token" is allowed.
 
       else if ((unit.ch == '*') && !(unit.bk || quot)) {
 	if (currentToken == null)
@@ -624,14 +628,15 @@ public class RE extends REToken {
           throw new REException(getLocalizedMessage("repeat.chained"),REException.REG_BADRPT,index);
 	if (currentToken instanceof RETokenWordBoundary || currentToken instanceof RETokenWordBoundary)
 	  throw new REException(getLocalizedMessage("repeat.assertion"),REException.REG_BADRPT,index);
-	if (currentToken.getMinimumLength() == 0)
-	  throw new REException(getLocalizedMessage("repeat.empty.token"),REException.REG_BADRPT,index);
 	currentToken = setRepeated(currentToken,0,Integer.MAX_VALUE,index);
       }
 
       // ONE-OR-MORE REPEAT OPERATOR / POSSESSIVE MATCHING OPERATOR
       //  + | \+ depending on RE_BK_PLUS_QM
       //  not available if RE_LIMITED_OPS is set
+      //
+      // This method used to check "repeat.empty.token" to avoid such regexp
+      // as "(a*)+", but now "repeat.empty.token" is allowed.
 
       else if ((unit.ch == '+') && !syntax.get(RESyntax.RE_LIMITED_OPS) && (!syntax.get(RESyntax.RE_BK_PLUS_QM) ^ (unit.bk || quot))) {
 	if (currentToken == null)
@@ -648,8 +653,6 @@ public class RE extends REToken {
 	}
 	else if (currentToken instanceof RETokenWordBoundary || currentToken instanceof RETokenWordBoundary)
 	  throw new REException(getLocalizedMessage("repeat.assertion"),REException.REG_BADRPT,index);
-	else if (currentToken.getMinimumLength() == 0)
-	  throw new REException(getLocalizedMessage("repeat.empty.token"),REException.REG_BADRPT,index);
 	else
 	  currentToken = setRepeated(currentToken,1,Integer.MAX_VALUE,index);
       }

@@ -75,6 +75,10 @@ import org.xml.sax.SAXException;
 /**
  * StAX filter for performing XInclude processing.
  *
+ * @see http://www.w3.org/TR/xinclude/
+ * @see http://www.w3.org/TR/xptr-framework/
+ * @see http://www.w3.org/TR/xptr-element/
+ *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 class XIncludeFilter
@@ -668,6 +672,12 @@ class XIncludeFilter
       }
     return space;
   }
+
+  String getBaseURI()
+  {
+    String base = (String) getParent().getProperty("gnu.xml.stream.baseURI");
+    return (base == null) ? systemId : base;
+  }
   
   boolean includeResource(String href, String parse, String xpointer,
                           String encoding, String accept,
@@ -678,10 +688,11 @@ class XIncludeFilter
       {
         if (xpointer != null)
           throw new XMLStreamException("xpointer attribute not yet supported");
+        String base = getBaseURI();
         if (href == null || "".equals(href))
-          href = systemId;
+          href = base;
         else
-          href = XMLParser.absolutize(systemId, href);
+          href = XMLParser.absolutize(base, href);
         if (parse == null || "xml".equals(parse))
           {
             seen.clear();

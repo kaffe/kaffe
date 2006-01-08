@@ -1,3 +1,7 @@
+2006-01-08  Dalibor Topic  <robilad@kaffe.org>
+
+        * libraries/javalib/external/classpath: Resynched GNU Classpath.
+
 2006-01-07  Dalibor Topic  <robilad@kaffe.org>
 
 	* configure.ac (--enable-portable-native-sync, --enable-xmlj, --disable-alsa

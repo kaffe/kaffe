@@ -84,7 +84,6 @@ class BufferedReader
   {
     marklimit = readlimit;
     markpos = pos;
-    //System.out.println("--mark@"+Integer.toHexString(pos)+":"+marklimit);
   }
 
   public boolean markSupported()
@@ -97,7 +96,6 @@ class BufferedReader
   {
     if (pos >= count && !refill())
       return -1;
-    //System.out.println("--read1@"+Integer.toHexString(pos)+":"+new String(buf, pos, 1));
     return (int) buf[pos++];
   }
 
@@ -121,7 +119,6 @@ class BufferedReader
                 
     int ret = Math.min(count - pos, len);
     System.arraycopy(buf, pos, b, off, ret);
-    //System.out.println("--read2@"+Integer.toHexString(pos)+":"+new String(b, off, ret)+" ("+ret+")");
     pos += ret;
     off += ret;
     len -= ret;
@@ -130,7 +127,6 @@ class BufferedReader
       {
         int remain = Math.min(count - pos, len);
         System.arraycopy(buf, pos, b, off, remain);
-        //System.out.println("--read3@"+Integer.toHexString(pos)+":"+new String(b, off, remain));
         pos += remain;
         off += remain;
         len -= remain;
@@ -146,7 +142,6 @@ class BufferedReader
     if (markpos == -1)
       throw new IOException(buf == null ? "Stream closed." : "Invalid mark.");
     pos = markpos;
-    //System.out.println("--reset@"+Integer.toHexString(pos));
   }
 
   public long skip(long n)
@@ -154,7 +149,6 @@ class BufferedReader
   {
     if (buf == null)
       throw new IOException("Stream closed.");
-    //System.out.println("--skip:"+n);
     final long origN = n;
     while (n > 0L)
       {
@@ -173,13 +167,11 @@ class BufferedReader
     if (buf == null)
       throw new IOException("Stream closed.");
 
-    //System.out.println("--refill:pos="+Integer.toHexString(pos)+" count="+Integer.toHexString(count));
     int markcount = count - markpos;
     if (markpos == -1 || markcount >= marklimit)
       {
         markpos = -1;
         pos = count = 0;
-        //System.out.println("--refill1@"+Integer.toHexString(pos));
       }
     else
       {
@@ -193,14 +185,12 @@ class BufferedReader
         count = markcount;
         pos -= markpos;
         markpos = 0;
-        //System.out.println("--refill2@"+Integer.toHexString(pos)+":"+Integer.toHexString(count));
       }
 
     int numread = in.read(buf, count, bufferSize);
     if (numread <= 0)
       return false;
 
-    //System.out.println("--refill3("+Integer.toHexString(numread)+"):"+new String(buf, count, numread));
     count += numread;
     return true;
   }

@@ -89,19 +89,39 @@ import gnu.java.net.CRLFInputStream;
 
 /**
  * An XML parser.
+ * This parser supports the following additional StAX properties:
+ * <table>
+ * <tr><td>gnu.xml.stream.stringInterning</td>
+ * <td>Boolean</td>
+ * <td>Indicates whether markup strings will be interned</td></tr>
+ * <tr><td>gnu.xml.stream.xmlBase</td>
+ * <td>Boolean</td>
+ * <td>Indicates whether XML Base processing will be performed</td></tr>
+ * <tr><td>gnu.xml.stream.baseURI</td>
+ * <td>String</td>
+ * <td>Returns the base URI of the current event</td></tr>
+ * </table>
  *
+ * @see http://www.w3.org/TR/REC-xml/
+ * @see http://www.w3.org/TR/xml11/
+ * @see http://www.w3.org/TR/REC-xml-names
+ * @see http://www.w3.org/TR/xml-names11
+ * @see http://www.w3.org/TR/xmlbase/
+ * 
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
 public class XMLParser
   implements XMLStreamReader, NamespaceContext
 {
 
-  private static final int INIT = 0;
-  private static final int PROLOG = 1;
-  private static final int CONTENT = 2;
-  private static final int EMPTY_ELEMENT = 3;
-  private static final int MISC = 4;
+  // -- parser state machine states --
+  private static final int INIT = 0; // start state
+  private static final int PROLOG = 1; // in prolog
+  private static final int CONTENT = 2; // in content
+  private static final int EMPTY_ELEMENT = 3; // empty element state
+  private static final int MISC = 4; // in Misc (after root element)
 
+  // -- parameters for parsing literals --
   private final static int LIT_ENTITY_REF = 2;
   private final static int LIT_NORMALIZE = 4;
   private final static int LIT_ATTRIBUTE = 8;
@@ -110,54 +130,204 @@ public class XMLParser
   private final static int LIT_DISABLE_EREF = 64;
   private final static int LIT_PUBID = 256;
 
+  // -- types of attribute values --
   final static int ATTRIBUTE_DEFAULT_UNDECLARED = 30;
   final static int ATTRIBUTE_DEFAULT_SPECIFIED = 31;
   final static int ATTRIBUTE_DEFAULT_IMPLIED = 32;
   final static int ATTRIBUTE_DEFAULT_REQUIRED = 33;
   final static int ATTRIBUTE_DEFAULT_FIXED = 34;
 
+  /**
+   * The current input.
+   */
   private Input input;
+
+  /**
+   * Stack of inputs representing XML general entities.
+   * The input representing the XML input stream or reader is always the
+   * first element in this stack.
+   */
   private LinkedList inputStack = new LinkedList();
+
+  /**
+   * Stack of start-entity events to be reported.
+   */
   private LinkedList startEntityStack = new LinkedList();
+
+  /**
+   * Stack of end-entity events to be reported.
+   */
   private LinkedList endEntityStack = new LinkedList();
   
+  /**
+   * Current parser state within the main state machine.
+   */
   private int state = INIT;
+
+  /**
+   * The (type of the) current event.
+   */
   private int event;
+
+  /**
+   * Whether we are looking ahead. Used by hasNext.
+   */
   private boolean lookahead;
+
+  /**
+   * The element name stack. The first element in this stack will be the
+   * root element.
+   */
   private LinkedList stack = new LinkedList();
+
+  /**
+   * Stack of namespace contexts. These are maps specifying prefix-to-URI
+   * mappings. The first element in this stack is the most recent namespace
+   * context (i.e. the other way around from the element name stack).
+   */
   private LinkedList namespaces = new LinkedList();
+
+  /**
+   * The base-URI stack. This holds the base URI context for each element.
+   * The first element in this stack is the most recent context (i.e. the
+   * other way around from the element name stack).
+   */
   private LinkedList bases = new LinkedList();
+
+  /**
+   * The list of attributes for the current element, in the order defined in
+   * the XML stream.
+   */
   private ArrayList attrs = new ArrayList();
+
+  /**
+   * Buffer for text and character data.
+   */
   private StringBuffer buf = new StringBuffer();
+
+  /**
+   * Buffer for NMTOKEN strings (markup).
+   */
   private StringBuffer nmtokenBuf = new StringBuffer();
+
+  /**
+   * Buffer for string literals. (e.g. attribute values)
+   */
   private StringBuffer literalBuf = new StringBuffer();
+
+  /**
+   * Temporary Unicode character buffer used during character data reads.
+   */
   private int[] tmpBuf = new int[1024];
   
+  /**
+   * The element content model for the current element.
+   */
   private ContentModel currentContentModel;
+
+  /**
+   * The validation stack. This holds lists of the elements seen for each
+   * element, in order to determine whether the names and order of these
+   * elements match the content model for the element. The last entry in
+   * this stack represents the current element.
+   */
   private LinkedList validationStack;
+
+  /**
+   * These sets contain the IDs and the IDREFs seen in the document, to
+   * ensure that IDs are unique and that each IDREF refers to an ID in the
+   * document.
+   */
   private HashSet ids, idrefs;
 
+  /**
+   * The target and data associated with the current processing instruction
+   * event.
+   */
   private String piTarget, piData;
 
+  /**
+   * The XML version declared in the XML declaration.
+   */
   private String xmlVersion;
+
+  /**
+   * The encoding declared in the XML declaration.
+   */
   private String xmlEncoding;
+
+  /**
+   * The standalone value declared in the XML declaration.
+   */
   private Boolean xmlStandalone;
 
+  /**
+   * The document type definition.
+   */
   Doctype doctype;
+
+  /**
+   * State variables for determining parameter-entity expansion.
+   */
   private boolean expandPE, peIsError;
 
+  /**
+   * Whether this is a validating parser.
+   */
   private final boolean validating;
+
+  /**
+   * Whether strings representing markup will be interned.
+   */
   private final boolean stringInterning;
+
+  /**
+   * If true, adjacent text will always be reported as one event.
+   * Otherwise multiple text events (chunks) may be reported.
+   */
   private final boolean coalescing;
+
+  /**
+   * Whether to replace general entity references with their replacement
+   * text automatically during parsing.
+   * Otherwise entity-reference events will be issued.
+   */
   private final boolean replaceERefs;
+
+  /**
+   * Whether to support external entities.
+   */
   private final boolean externalEntities;
+
+  /**
+   * Whether to support DTDs.
+   */
   private final boolean supportDTD;
+
+  /**
+   * Whether to support XML namespaces. If true, namespace information will
+   * be available. Otherwise namespaces will simply be reported as ordinary
+   * attributes.
+   */
   private final boolean namespaceAware;
+
+  /**
+   * Whether to support XML Base. If true, URIs specified in xml:base
+   * attributes will be honoured when resolving external entities.
+   */
   private final boolean baseAware;
 
+  /**
+   * The reporter to receive parsing warnings.
+   */
   final XMLReporter reporter;
+
+  /**
+   * Callback interface for resolving external entities.
+   */
   final XMLResolver resolver;
 
+  // -- Constants for testing the next kind of markup event --
   private static final String TEST_START_ELEMENT = "<";
   private static final String TEST_END_ELEMENT = "</";
   private static final String TEST_COMMENT = "<!--";
@@ -174,6 +344,9 @@ public class XMLParser
   private static final String TEST_END_PI = "?>";
   private static final String TEST_END_CDATA = "]]>";
 
+  /**
+   * The general entities predefined by the XML specification.
+   */
   private static final LinkedHashMap PREDEFINED_ENTITIES = new LinkedHashMap();
   static
   {
@@ -184,6 +357,29 @@ public class XMLParser
     PREDEFINED_ENTITIES.put("quot", "\"");
   }
 
+  /**
+   * Creates a new XML parser for the given input stream.
+   * This constructor should be used where possible, as it allows the
+   * encoding of the XML data to be correctly determined from the stream.
+   * @param in the input stream
+   * @param systemId the URL from which the input stream was retrieved
+   * (necessary if there are external entities to be resolved)
+   * @param validating if the parser is to be a validating parser
+   * @param namespaceAware if the parser should support XML Namespaces
+   * @param coalescing if text should be reported as a single event instead
+   * of a series of events
+   * @param replaceERefs if entity references should be automatically
+   * replaced by their replacement text (otherwise they will be reported as
+   * entity-reference events)
+   * @param externalEntities if external entities should be loaded
+   * @param supportDTD if support for the XML DTD should be enabled
+   * @param baseAware if the parser should support XML Base to resolve
+   * external entities
+   * @param stringInterning whether strings will be interned during parsing
+   * @param reporter the reporter to receive warnings during processing
+   * @param resolver the callback interface used to resolve external
+   * entities
+   */
   public XMLParser(InputStream in, String systemId,
                    boolean validating,
                    boolean namespaceAware,
@@ -215,6 +411,32 @@ public class XMLParser
     pushInput(new Input(in, null, null, systemId, null, null, false));
   }
 
+  /**
+   * Creates a new XML parser for the given character stream.
+   * This constructor is only available for compatibility with the JAXP
+   * APIs, which permit XML to be parsed from a character stream. Because
+   * the encoding specified by the character stream may conflict with that
+   * specified in the XML declaration, this method should be avoided where
+   * possible.
+   * @param in the input stream
+   * @param systemId the URL from which the input stream was retrieved
+   * (necessary if there are external entities to be resolved)
+   * @param validating if the parser is to be a validating parser
+   * @param namespaceAware if the parser should support XML Namespaces
+   * @param coalescing if text should be reported as a single event instead
+   * of a series of events
+   * @param replaceERefs if entity references should be automatically
+   * replaced by their replacement text (otherwise they will be reported as
+   * entity-reference events)
+   * @param externalEntities if external entities should be loaded
+   * @param supportDTD if support for the XML DTD should be enabled
+   * @param baseAware if the parser should support XML Base to resolve
+   * external entities
+   * @param stringInterning whether strings will be interned during parsing
+   * @param reporter the reporter to receive warnings during processing
+   * @param resolver the callback interface used to resolve external
+   * entities
+   */
   public XMLParser(Reader reader, String systemId,
                    boolean validating,
                    boolean namespaceAware,
@@ -593,7 +815,12 @@ public class XMLParser
       return resolver;
     if (XMLInputFactory.SUPPORT_DTD.equals(name))
       return supportDTD ? Boolean.TRUE : Boolean.FALSE;
-    // TODO stringInterning
+    if ("gnu.xml.stream.stringInterning".equals(name))
+      return stringInterning ? Boolean.TRUE : Boolean.FALSE;
+    if ("gnu.xml.stream.xmlBase".equals(name))
+      return baseAware ? Boolean.TRUE : Boolean.FALSE;
+    if ("gnu.xml.stream.baseURI".equals(name))
+      return getXMLBase();
     return null;
   }
 
@@ -843,7 +1070,7 @@ public class XMLParser
                           {
                             event = readCharData(text);
                           }
-                        else if (replaceERefs)
+                        else if (replaceERefs && !isUnparsedEntity(ref))
                           {
                             expandEntity(ref, false); //report start-entity
                             event = next();
@@ -945,6 +1172,9 @@ public class XMLParser
 
   // package private
 
+  /**
+   * Returns the current element name.
+   */
   String getCurrentElement()
   {
     return (String) stack.getLast();
@@ -993,6 +1223,12 @@ public class XMLParser
     return c;
   }
 
+  /**
+   * Reads the next character, ensuring it is the character specified.
+   * @param delim the character to match
+   * @exception XMLStreamException if the next character is not the
+   * specified one
+   */
   private void require(char delim)
     throws IOException, XMLStreamException
   {
@@ -1006,6 +1242,12 @@ public class XMLParser
       }
   }
 
+  /**
+   * Reads the next few characters, ensuring they match the string specified.
+   * @param delim the string to match
+   * @exception XMLStreamException if the next characters do not match the
+   * specified string
+   */
   private void require(String delim)
     throws IOException, XMLStreamException
   {
@@ -1035,7 +1277,9 @@ public class XMLParser
   }
 
   /**
-   * Try to read a single character.
+   * Try to read a single character. On failure, reset the stream.
+   * @param delim the character to test
+   * @return true if the character matched delim, false otherwise.
    */
   private boolean tryRead(char delim)
     throws IOException, XMLStreamException
@@ -1054,6 +1298,8 @@ public class XMLParser
    * Tries to read the specified characters.
    * If successful, the stream is positioned after the last character,
    * otherwise it is reset.
+   * @param test the string to test
+   * @return true if the characters matched the test string, false otherwise.
    */
   private boolean tryRead(String test)
     throws IOException
@@ -1091,6 +1337,10 @@ public class XMLParser
     return true;
   }
 
+  /**
+   * Reads characters until the specified test string is encountered.
+   * @param delim the string delimiting the end of the characters
+   */
   private void readUntil(String delim)
     throws IOException, XMLStreamException
   {
@@ -1130,6 +1380,10 @@ public class XMLParser
       }
   }
 
+  /**
+   * Reads any whitespace characters.
+   * @return true if whitespace characters were read, false otherwise
+   */
   private boolean tryWhitespace()
     throws IOException, XMLStreamException
   {
@@ -1175,6 +1429,10 @@ public class XMLParser
     reset();
   }
 
+  /**
+   * Try to read as many whitespace characters as are available.
+   * @exception XMLStreamException if no whitespace characters were seen
+   */
   private void requireWhitespace()
     throws IOException, XMLStreamException
   {
@@ -1185,7 +1443,7 @@ public class XMLParser
   /**
    * Returns the current base URI for resolving external entities.
    */
-  private String getXMLBase()
+  String getXMLBase()
   {
     if (baseAware)
       {
@@ -1230,17 +1488,7 @@ public class XMLParser
     if (!externalEntities)
       return;
     InputStream in = null;
-    String base = getXMLBase();
-    String url = absolutize(base, ids.systemId);
-    // Unparsed entity?
-    boolean unparsedEntity = false;
-    if (ids.notationName != null)
-      {
-        ExternalIds notation = doctype.getNotation(ids.notationName);
-        if (notation == null)
-          error("reference to undeclared notation", ids.notationName);
-        unparsedEntity = true;
-      }
+    String url = absolutize(input.systemId, ids.systemId);
     // Check for recursion
     for (Iterator i = inputStack.iterator(); i.hasNext(); )
       {
@@ -1264,20 +1512,16 @@ public class XMLParser
     if (in == null)
       error("unable to resolve external entity",
             (ids.systemId != null) ? ids.systemId : ids.publicId);
-    if (unparsedEntity)
-      {
-        // TODO read unparsed entity into buf
-      }
-    else
-      {
-        pushInput(new Input(in, null, ids.publicId, url, name, null, report));
-        input.init();
-        if (tryRead(TEST_XML_DECL))
-          readTextDecl();
-        input.finalizeEncoding();
-      }
+    pushInput(new Input(in, null, ids.publicId, url, name, null, report));
+    input.init();
+    if (tryRead(TEST_XML_DECL))
+      readTextDecl();
+    input.finalizeEncoding();
   }
 
+  /**
+   * Push the specified input source (general entity) onto the input stack.
+   */
   private void pushInput(Input input)
   {
     if (input.report)
@@ -1288,6 +1532,11 @@ public class XMLParser
     this.input = input;
   }
 
+  /**
+   * "Absolutize" a URL. This resolves a relative URL into an absolute one.
+   * @param base the current base URL
+   * @param href the (absolute or relative) URL to resolve
+   */
   static String absolutize(String base, String href)
   {
     if (href == null)
@@ -1357,6 +1606,9 @@ public class XMLParser
     return true;
   }
 
+  /**
+   * Returns an input stream for the given URL.
+   */
   private InputStream resolve(String url)
     throws IOException
   {
@@ -1370,6 +1622,9 @@ public class XMLParser
       }
   }
 
+  /**
+   * Pops the current input source (general entity) off the stack.
+   */
   private void popInput()
   {
     Input old = (Input) inputStack.removeLast();
@@ -1531,6 +1786,9 @@ public class XMLParser
     buf.append(rootName);
   }
 
+  /**
+   * Parse the markupdecl production.
+   */
   private void readMarkupdecl(boolean inExternalSubset)
     throws IOException, XMLStreamException
   {
@@ -1618,6 +1876,9 @@ public class XMLParser
       error("expected markup declaration");
   }
 
+  /**
+   * Parse the elementdecl production.
+   */
   private void readElementDecl()
     throws IOException, XMLStreamException
   {
@@ -1629,6 +1890,9 @@ public class XMLParser
     require('>');
   }
 
+  /**
+   * Parse the contentspec production.
+   */
   private void readContentspec(String elementName)
     throws IOException, XMLStreamException
   {
@@ -1683,6 +1947,9 @@ public class XMLParser
       }
   }
 
+  /**
+   * Parses an element content model.
+   */
   private ElementContentModel readElements(StringBuffer acc)
     throws IOException, XMLStreamException
   {
@@ -1781,6 +2048,9 @@ public class XMLParser
     return model;
   }
 
+  /**
+   * Parse a cp production.
+   */
   private ContentParticle readContentParticle(StringBuffer acc)
     throws IOException, XMLStreamException
   {
@@ -2068,6 +2338,9 @@ public class XMLParser
     doctype.addAttributeDecl(elementName, name, attribute);
   }
 
+  /**
+   * Parse the EntityDecl production.
+   */
   private void readEntityDecl(boolean inExternalSubset)
     throws IOException, XMLStreamException
   {
@@ -2169,6 +2442,9 @@ public class XMLParser
     require('>');
   }
 
+  /**
+   * Parse the NotationDecl production.
+   */
   private void readNotationDecl(boolean inExternalSubset)
     throws IOException, XMLStreamException
   {
@@ -2259,7 +2535,6 @@ public class XMLParser
   private int readStartElement()
     throws IOException, XMLStreamException
   {
-    //System.err.println("readStartElement");
     // Read element name
     String elementName = readNmtoken(true);
     attrs.clear();
@@ -2351,8 +2626,9 @@ public class XMLParser
       }
     if (baseAware)
       {
-        String base = getAttributeValue(XMLConstants.XML_NS_URI, "base");
-        bases.addFirst(base);
+        String uri = getAttributeValue(XMLConstants.XML_NS_URI, "base");
+        String base = getXMLBase();
+        bases.addFirst(absolutize(base, uri));
       }
     if (namespaceAware)
       {
@@ -2396,6 +2672,10 @@ public class XMLParser
     return -1; // to satisfy compiler
   }
 
+  /**
+   * Indicates whether the specified attribute name was specified for the
+   * current element.
+   */
   private boolean attributeSpecified(String attName)
   {
     for (Iterator j = attrs.iterator(); j.hasNext(); )
@@ -2413,7 +2693,6 @@ public class XMLParser
   private void readAttribute(String elementName)
     throws IOException, XMLStreamException
   {
-    //System.err.println("readAttribute");
     // Read attribute name
     String attributeName = readNmtoken(true);
     String type = getAttributeType(elementName, attributeName);
@@ -2524,6 +2803,11 @@ public class XMLParser
       attrs.add(attr);
   }
 
+  /**
+   * Determines whether the specified attribute is a namespace declaration,
+   * and adds it to the current namespace context if so. Returns false if
+   * the attribute is an ordinary attribute.
+   */
   private boolean addNamespace(Attribute attr)
     throws XMLStreamException
   {
@@ -2568,7 +2852,6 @@ public class XMLParser
   private void readEndElement()
     throws IOException, XMLStreamException
   {
-    //System.err.println("readEndElement");
     // pop element off stack
     String expected = (String) stack.removeLast();
     require(expected);
@@ -2581,6 +2864,10 @@ public class XMLParser
       endElementValidationHook();
   }
 
+  /**
+   * Validate the end of an element.
+   * Called on an end-element or empty element if validating.
+   */
   private void endElementValidationHook()
     throws XMLStreamException
   {
@@ -2745,10 +3032,6 @@ public class XMLParser
                       buf.append(text);
                     else
                       {
-                        //if (replaceERefs)
-                        //  expandEntity(entityName, false); //report start-entity
-                        //else
-                        //  reset(); // report reference
                         pushInput("", "&" + entityName + ";", false);
                         done = true;
                         break;
@@ -2849,6 +3132,20 @@ public class XMLParser
   }
 
   /**
+   * Indicates whether the specified entity is unparsed.
+   */
+  private boolean isUnparsedEntity(String name)
+  {
+    if (doctype != null)
+      {
+        Object value = doctype.getEntity(name);
+        if (value != null && value instanceof ExternalIds)
+          return ((ExternalIds) value).notationName != null;
+      }
+    return false;
+  }
+
+  /**
    * Read an equals sign.
    */
   private void readEq()
@@ -2859,6 +3156,10 @@ public class XMLParser
     skipWhitespace();
   }
 
+  /**
+   * Character read for reading literals.
+   * @param recognizePEs whether to recognize parameter-entity references
+   */
   private int literalReadCh(boolean recognizePEs)
     throws IOException, XMLStreamException
   {
@@ -2878,6 +3179,9 @@ public class XMLParser
     return c;
   }
 
+  /**
+   * Read a string literal.
+   */
   private String readLiteral(int flags, boolean recognizePEs)
     throws IOException, XMLStreamException
   {
@@ -2948,8 +3252,6 @@ public class XMLParser
                 else
                   {
                     reset();
-                    //if (replaceERefs || (flags & LIT_NORMALIZE) > 0)
-                    //  {
                     String entityName = readNmtoken(true);
                     require(';');
                     String text =
@@ -2961,7 +3263,6 @@ public class XMLParser
                                    (flags & LIT_ATTRIBUTE) != 0);
                     entities = true;
                     continue;
-                    //  }
                   }
               }
             break;
@@ -3079,6 +3380,10 @@ public class XMLParser
       error("reference to parameter entity without doctype", name);
   }
 
+  /**
+   * Parse the digits in a character reference.
+   * @param base the base of the digits (10 or 16)
+   */
   private char[] readCharacterRef(int base)
     throws IOException, XMLStreamException
   {
@@ -3112,12 +3417,21 @@ public class XMLParser
       }
   }
 
+  /**
+   * Parses an NMTOKEN or Name production.
+   * @param isName if a Name, otherwise an NMTOKEN
+   */
   private String readNmtoken(boolean isName)
     throws IOException, XMLStreamException
   {
     return readNmtoken(isName, nmtokenBuf);
   }
   
+  /**
+   * Parses an NMTOKEN or Name production using the specified buffer.
+   * @param isName if a Name, otherwise an NMTOKEN
+   * @param buf the character buffer to use
+   */
   private String readNmtoken(boolean isName, StringBuffer buf)
     throws IOException, XMLStreamException
   {
@@ -3176,6 +3490,9 @@ public class XMLParser
     while (true);
   }
 
+  /**
+   * Indicates whether the specified Unicode character is an XML 1.1 Char.
+   */
   private boolean isXML11Char(int c)
   {
     return ((c >= 0x0001 && c <= 0xD7FF) ||
@@ -3183,6 +3500,10 @@ public class XMLParser
             (c >= 0x10000 && c <= 0x10FFFF));
   }
 
+  /**
+   * Indicates whether the specified Unicode character is an XML 1.1
+   * RestrictedChar.
+   */
   private boolean isXML11RestrictedChar(int c)
   {
     return ((c >= 0x0001 && c <= 0x0008) ||
@@ -3219,6 +3540,10 @@ public class XMLParser
     return true;
   }
 
+  /**
+   * Indicates whether the specified Unicode character is a Name start
+   * character.
+   */
   private boolean isNameStartCharacter(int c)
   {
     if (input.xml11)
@@ -3242,6 +3567,10 @@ public class XMLParser
       return (c == 0x5f || c == 0x3a || isLetter(c));
   }
 
+  /**
+   * Indicates whether the specified Unicode character is a Name non-initial
+   * character.
+   */
   private boolean isNameCharacter(int c)
   {
     if (input.xml11)
@@ -3272,6 +3601,10 @@ public class XMLParser
               isCombiningChar(c) || isExtender(c));
   }
 
+  /**
+   * Indicates whether the specified Unicode character matches the Letter
+   * production.
+   */
   public static boolean isLetter(int c)
   {
     if ((c >= 0x0041 && c <= 0x005A) ||
@@ -3484,6 +3817,10 @@ public class XMLParser
     return false;
   }
 
+  /**
+   * Indicates whether the specified Unicode character matches the Digit
+   * production.
+   */
   public static boolean isDigit(int c)
   {
     return ((c >= 0x0030 && c <= 0x0039) ||
@@ -3503,6 +3840,10 @@ public class XMLParser
             (c >= 0x0F20 && c <= 0x0F29));
   }
 
+  /**
+   * Indicates whether the specified Unicode character matches the
+   * CombiningChar production.
+   */
   public static boolean isCombiningChar(int c)
   {
     return ((c >= 0x0300 && c <= 0x0345) ||
@@ -3602,6 +3943,10 @@ public class XMLParser
             c == 0x309A);
   }
 
+  /**
+   * Indicates whether the specified Unicode character matches the Extender
+   * production.
+   */
   public static boolean isExtender(int c)
   {
     return (c == 0x00B7 ||
@@ -3617,17 +3962,27 @@ public class XMLParser
             (c >= 0x30FC && c <= 0x30FE));
   }
   
+  /**
+   * Interns the specified text or not, depending on the value of
+   * stringInterning.
+   */
   private String intern(String text)
   {
     return stringInterning ? text.intern() : text;
   }
 
+  /**
+   * Report a parsing error.
+   */
   private void error(String message)
     throws XMLStreamException
   {
     error(message, null);
   }
   
+  /**
+   * Report a parsing error.
+   */
   private void error(String message, Object info)
     throws XMLStreamException
   {
@@ -3641,6 +3996,9 @@ public class XMLParser
     throw new XMLStreamException(message);
   }
 
+  /**
+   * Perform validation of a start-element event.
+   */
   private void validateStartElement(String elementName)
     throws XMLStreamException
   {
@@ -3670,6 +4028,9 @@ public class XMLParser
       }
   }
 
+  /**
+   * Perform validation of an end-element event.
+   */
   private void validateEndElement()
     throws XMLStreamException
   {
@@ -3692,6 +4053,9 @@ public class XMLParser
       }
   }
 
+  /**
+   * Perform validation of character data.
+   */
   private void validatePCData(String text)
     throws XMLStreamException
   {
@@ -3723,6 +4087,10 @@ public class XMLParser
       }
   }
 
+  /**
+   * Validates the specified validation context (list of child elements)
+   * against the element content model for the current element.
+   */
   private void validateElementContent(ElementContentModel model,
                                       LinkedList children)
     throws XMLStreamException
@@ -3740,6 +4108,10 @@ public class XMLParser
       error("element content "+model.text+" does not match expression "+regex, c);
   }
 
+  /**
+   * Creates the regular expression used to validate an element content
+   * model.
+   */
   private String createRegularExpression(ElementContentModel model)
   {
     if (model.regex == null)
@@ -3788,6 +4160,9 @@ public class XMLParser
     return model.regex;
   }
 
+  /**
+   * Performs validation of a document type declaration event.
+   */
   void validateDoctype()
     throws XMLStreamException
   {
@@ -3810,6 +4185,11 @@ public class XMLParser
       }
   }
 
+  /**
+   * Simple test harness for reading an XML file.
+   * args[0] is the filename of the XML file
+   * If args[1] is "-x", enable XInclude processing
+   */
   public static void main(String[] args)
     throws Exception
   {
@@ -3824,7 +4204,7 @@ public class XMLParser
                                 true, // replaceERefs
                                 true, // externalEntities
                                 true, // supportDTD
-                                false, // baseAware
+                                true, // baseAware
                                 true, // stringInterning
                                 null,
                                 null);
@@ -3904,14 +4284,40 @@ public class XMLParser
       }
   }
 
+  /**
+   * An attribute instance.
+   */
   class Attribute
   {
 
+    /**
+     * Attribute name.
+     */
     final String name;
+
+    /**
+     * Attribute type as declared in the DTD, or CDATA otherwise.
+     */
     final String type;
+
+    /**
+     * Whether the attribute was specified or defaulted.
+     */
     final boolean specified;
+
+    /**
+     * The attribute value.
+     */
     final String value;
+
+    /**
+     * The namespace prefix.
+     */
     final String prefix;
+
+    /**
+     * The namespace local-name.
+     */
     final String localName;
 
     Attribute(String name, String type, boolean specified, String value)
@@ -3944,23 +4350,81 @@ public class XMLParser
     
   }
 
+  /**
+   * Representation of a DTD.
+   */
   class Doctype
   {
 
+    /**
+     * Name of the root element.
+     */
     final String rootName;
+
+    /**
+     * Public ID, if any, of external subset.
+     */
     final String publicId;
+
+    /**
+     * System ID (URL), if any, of external subset.
+     */
     final String systemId;
+
+    /**
+     * Map of element names to content models.
+     */
     private final LinkedHashMap elements = new LinkedHashMap();
+
+    /**
+     * Map of element names to maps of attribute declarations.
+     */
     private final LinkedHashMap attlists = new LinkedHashMap();
+
+    /**
+     * Map of entity names to entities (String or ExternalIds).
+     */
     private final LinkedHashMap entities = new LinkedHashMap();
+
+    /**
+     * Map of notation names to ExternalIds.
+     */
     private final LinkedHashMap notations = new LinkedHashMap();
+
+    /**
+     * Map of anonymous keys to comments.
+     */    
     private final LinkedHashMap comments = new LinkedHashMap();
+
+    /**
+     * Map of anonymous keys to processing instructions (String[2]
+     * containing {target, data}).
+     */
     private final LinkedHashMap pis = new LinkedHashMap();
+
+    /**
+     * List of keys to all markup entries in the DTD.
+     */
     private final LinkedList entries = new LinkedList();
+
+    /**
+     * Set of the entities defined in the external subset.
+     */
     private final HashSet externalEntities = new HashSet();
+
+    /**
+     * Set of the notations defined in the external subset.
+     */
     private final HashSet externalNotations = new HashSet();
+
+    /**
+     * Counter for making anonymous keys.
+     */
     private int anon = 1;
 
+    /**
+     * Constructor.
+     */
     Doctype(String rootName, String publicId, String systemId)
     {
       this.rootName = rootName;
@@ -3968,6 +4432,12 @@ public class XMLParser
       this.systemId = systemId;
     }
 
+    /**
+     * Adds an element declaration.
+     * @param name the element name
+     * @param text the content model text
+     * @param model the parsed content model
+     */
     void addElementDecl(String name, String text, ContentModel model)
     {
       if (elements.containsKey(name))
@@ -3978,6 +4448,12 @@ public class XMLParser
       entries.add("E" + name);
     }
 
+    /**
+     * Adds an attribute declaration.
+     * @param ename the element name
+     * @param aname the attribute name
+     * @param decl the attribute declaration details
+     */
     void addAttributeDecl(String ename, String aname, AttributeDecl decl)
     {
       LinkedHashMap attlist = (LinkedHashMap) attlists.get(ename);
@@ -3994,6 +4470,12 @@ public class XMLParser
         entries.add(key);
     }
 
+    /**
+     * Adds an entity declaration.
+     * @param name the entity name
+     * @param text the entity replacement text
+     * @param inExternalSubset if we are in the exernal subset
+     */
     void addEntityDecl(String name, String text, boolean inExternalSubset)
     {
       if (entities.containsKey(name))
@@ -4004,6 +4486,12 @@ public class XMLParser
         externalEntities.add(name);
     }
     
+    /**
+     * Adds an entity declaration.
+     * @param name the entity name
+     * @param ids the external IDs
+     * @param inExternalSubset if we are in the exernal subset
+     */
     void addEntityDecl(String name, ExternalIds ids, boolean inExternalSubset)
     {
       if (entities.containsKey(name))
@@ -4014,6 +4502,12 @@ public class XMLParser
         externalEntities.add(name);
     }
 
+    /**
+     * Adds a notation declaration.
+     * @param name the notation name
+     * @param ids the external IDs
+     * @param inExternalSubset if we are in the exernal subset
+     */
     void addNotationDecl(String name, ExternalIds ids, boolean inExternalSubset)
     {
       if (notations.containsKey(name))
@@ -4024,6 +4518,9 @@ public class XMLParser
         externalNotations.add(name);
     }
 
+    /**
+     * Adds a comment.
+     */
     void addComment(String text)
     {
       String key = Integer.toString(anon++);
@@ -4031,6 +4528,9 @@ public class XMLParser
       entries.add("c" + key);
     }
 
+    /**
+     * Adds a processing instruction.
+     */
     void addPI(String target, String data)
     {
       String key = Integer.toString(anon++);
@@ -4038,23 +4538,42 @@ public class XMLParser
       entries.add("p" + key);
     }
 
+    /**
+     * Returns the content model for the specified element.
+     * @param name the element name
+     */
     ContentModel getElementModel(String name)
     {
       return (ContentModel) elements.get(name);
     }
 
+    /**
+     * Returns the attribute definition for the given attribute
+     * @param ename the element name
+     * @param aname the attribute name
+     */
     AttributeDecl getAttributeDecl(String ename, String aname)
     {
       LinkedHashMap attlist = (LinkedHashMap) attlists.get(ename);
       return (attlist == null) ? null : (AttributeDecl) attlist.get(aname);
     }
 
+    /**
+     * Indicates whether the specified attribute was declared in the DTD.
+     * @param ename the element name
+     * @param aname the attribute name
+     */
     boolean isAttributeDeclared(String ename, String aname)
     {
       LinkedHashMap attlist = (LinkedHashMap) attlists.get(ename);
       return (attlist == null) ? false : attlist.containsKey(aname);
     }
 
+    /**
+     * Returns an iterator over the entries in the attribute list for the
+     * given element.
+     * @param ename the element name
+     */
     Iterator attlistIterator(String ename)
     {
       LinkedHashMap attlist = (LinkedHashMap) attlists.get(ename);
@@ -4062,41 +4581,69 @@ public class XMLParser
         attlist.entrySet().iterator();
     }
 
+    /**
+     * Returns the entity (String or ExternalIds) for the given entity name.
+     */
     Object getEntity(String name)
     {
       return entities.get(name);
     }
 
+    /**
+     * Indicates whether the specified entity was declared in the external
+     * subset.
+     */
     boolean isEntityExternal(String name)
     {
       return externalEntities.contains(name);
     }
 
+    /**
+     * Returns an iterator over the entity map entries.
+     */
     Iterator entityIterator()
     {
       return entities.entrySet().iterator();
     }
 
+    /**
+     * Returns the notation IDs for the given notation name.
+     */
     ExternalIds getNotation(String name)
     {
       return (ExternalIds) notations.get(name);
     }
 
+    /**
+     * Indicates whether the specified notation was declared in the external
+     * subset.
+     */
     boolean isNotationExternal(String name)
     {
       return externalNotations.contains(name);
     }
 
+    /**
+     * Returns the comment associated with the specified (anonymous) key.
+     */
     String getComment(String key)
     {
       return (String) comments.get(key);
     }
 
+    /**
+     * Returns the processing instruction associated with the specified
+     * (anonymous) key.
+     */
     String[] getPI(String key)
     {
       return (String[]) pis.get(key);
     }
 
+    /**
+     * Returns an iterator over the keys of the markup entries in this DTD,
+     * in the order declared.
+     */
     Iterator entryIterator()
     {
       return entries.iterator();
@@ -4104,13 +4651,31 @@ public class XMLParser
     
   }
 
+  /**
+   * Combination of an ExternalID and an optional NDataDecl.
+   */
   class ExternalIds
   {
+
+    /**
+     * The public ID.
+     */
     String publicId;
+
+    /**
+     * The system ID.
+     */
     String systemId;
+
+    /**
+     * The notation name declared with the NDATA keyword.
+     */
     String notationName;
   }
 
+  /**
+   * A content model.
+   */
   abstract class ContentModel
   {
     static final int EMPTY = 0;
@@ -4133,6 +4698,9 @@ public class XMLParser
     
   }
 
+  /**
+   * The EMPTY content model.
+   */
   class EmptyContentModel
     extends ContentModel
   {
@@ -4146,6 +4714,9 @@ public class XMLParser
     
   }
 
+  /**
+   * The ANY content model.
+   */
   class AnyContentModel
     extends ContentModel
   {
@@ -4159,6 +4730,9 @@ public class XMLParser
     
   }
 
+  /**
+   * An element content model.
+   */
   class ElementContentModel
     extends ContentModel
   {
@@ -4189,6 +4763,9 @@ public class XMLParser
     
   }
 
+  /**
+   * A mixed content model.
+   */
   class MixedContentModel
     extends ContentModel
   {
@@ -4213,14 +4790,40 @@ public class XMLParser
     
   }
 
+  /**
+   * An attribute definition.
+   */
   class AttributeDecl
   {
     
+    /**
+     * The attribute type (CDATA, ID, etc).
+     */
     final String type;
+
+    /**
+     * The default value.
+     */
     final String value;
+
+    /**
+     * The value type (#FIXED, #IMPLIED, etc).
+     */
     final int valueType;
+
+    /**
+     * The enumeration text.
+     */
     final String enumeration;
+
+    /**
+     * The enumeration tokens.
+     */
     final HashSet values;
+
+    /**
+     * Whether this attribute declaration occurred in the external subset.
+     */
     final boolean external;
 
     AttributeDecl(String type, String value,
@@ -4237,6 +4840,10 @@ public class XMLParser
     
   }
 
+  /**
+   * Compatibility interface that can be used to resolve based on a public
+   * ID, not just an URL.
+   */
   interface XMLResolver2
     extends XMLResolver
   {
@@ -4246,6 +4853,9 @@ public class XMLParser
 
   }
 
+  /**
+   * An XML input source.
+   */
   static class Input
     implements Location
   {
@@ -4343,8 +4953,6 @@ public class XMLParser
     {
       offset++;
       int ret = (unicodeReader != null) ? unicodeReader.read() : in.read();
-      //if (ret != -1)
-      //  System.out.println("  read1:"+((char) ret));
       if (ret == 0x0d || (xml11 && (ret == 0x85 || ret == 0x2028)))
         {
           // Normalize CR etc to LF
@@ -4385,7 +4993,6 @@ public class XMLParser
       if (ret != -1)
         {
           // Locator handling
-          //System.out.println("  read:"+new String(b, off, ret));
           for (int i = 0; i < ret; i++)
             {
               int c = b[off + i];
@@ -4410,7 +5017,6 @@ public class XMLParser
     void reset()
       throws IOException
     {
-      //System.out.println("  reset");
       if (unicodeReader != null)
         unicodeReader.reset();
       else
