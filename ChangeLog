@@ -1,5 +1,10 @@
 2006-01-07  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/vmspecific/java/security/VMAccessController.java:
+	(DEBUG) Set to false.
+
+2006-01-07  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac (--enable-classpath-load-library):
 	Removed unnecessary option.
 

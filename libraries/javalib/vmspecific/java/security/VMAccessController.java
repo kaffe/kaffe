@@ -76,7 +76,7 @@ final class VMAccessController
     DEFAULT_CONTEXT = new AccessControlContext(domain);
   }
 
-  private static final boolean DEBUG = gnu.classpath.Configuration.DEBUG;
+  private static final boolean DEBUG = false;
   private static void debug(String msg)
   {
     System.err.print(">>> VMAccessController: ");
