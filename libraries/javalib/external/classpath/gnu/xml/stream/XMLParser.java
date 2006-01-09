@@ -408,7 +408,7 @@ public class XMLParser
         ids = new HashSet();
         idrefs = new HashSet();
       }
-    pushInput(new Input(in, null, null, systemId, null, null, false));
+    pushInput(new Input(in, null, null, systemId, null, null, false, true));
   }
 
   /**
@@ -465,7 +465,7 @@ public class XMLParser
         ids = new HashSet();
         idrefs = new HashSet();
       }
-    pushInput(new Input(null, reader, null, systemId, null, null, false));
+    pushInput(new Input(null, reader, null, systemId, null, null, false, true));
   }
 
   // -- NamespaceContext --
@@ -963,16 +963,11 @@ public class XMLParser
   public boolean hasNext()
     throws XMLStreamException
   {
+    if (event == XMLStreamConstants.END_DOCUMENT)
+      return false;
     if (!lookahead)
       {
-        try
-          {
-            next();
-          }
-        catch (NoSuchElementException e)
-          {
-            event = -1;
-          }
+        next();
         lookahead = true;
       }
     return event != -1;
@@ -1072,7 +1067,15 @@ public class XMLParser
                           }
                         else if (replaceERefs && !isUnparsedEntity(ref))
                           {
-                            expandEntity(ref, false); //report start-entity
+                            // this will report a start-entity event
+                            boolean external = false;
+                            if (doctype != null)
+                              {
+                                Object entity = doctype.getEntity(ref);
+                                if (entity instanceof ExternalIds)
+                                  external = true;
+                              }
+                            expandEntity(ref, false, external);
                             event = next();
                           }
                         else
@@ -1358,18 +1361,9 @@ public class XMLParser
                   error("illegal XML 1.1 character",
                         "U+" + Integer.toHexString(c));
               }
-            else
-              {
-                if (c < 0x20 && c != 0x09 && c != 0x0a && c != 0x0d)
-                  error("illegal XML character", 
-                        "U+" + Integer.toHexString(c));
-                else if (c > '\ud7ff' && c < '\ue000')
-                  error("illegal XML character",
-                        "U+" + Integer.toHexString(c));
-                else if (c > '\ufffd')
-                  error("illegal XML character",
-                        "U+" + Integer.toHexString(c));
-              }
+            else if (!isChar(c))
+              error("illegal XML character", 
+                    "U+" + Integer.toHexString(c));
             buf.append(Character.toChars(c));
           }
       }
@@ -1460,7 +1454,8 @@ public class XMLParser
   /**
    * Push the specified text input source.
    */
-  private void pushInput(String name, String text, boolean report)
+  private void pushInput(String name, String text, boolean report,
+                         boolean normalize)
     throws IOException, XMLStreamException
   {
     // Check for recursion
@@ -1476,13 +1471,15 @@ public class XMLParser
     else
       report = false;
     pushInput(new Input(null, new StringReader(text), input.publicId,
-                        input.systemId, name, input.inputEncoding, report));
+                        input.systemId, name, input.inputEncoding, report,
+                        normalize));
   }
 
   /**
    * Push the specified external input source.
    */
-  private void pushInput(String name, ExternalIds ids, boolean report)
+  private void pushInput(String name, ExternalIds ids, boolean report,
+                         boolean normalize)
     throws IOException, XMLStreamException
   {
     if (!externalEntities)
@@ -1512,7 +1509,8 @@ public class XMLParser
     if (in == null)
       error("unable to resolve external entity",
             (ids.systemId != null) ? ids.systemId : ids.publicId);
-    pushInput(new Input(in, null, ids.publicId, url, name, null, report));
+    pushInput(new Input(in, null, ids.publicId, url, name, null, report,
+                        normalize));
     input.init();
     if (tryRead(TEST_XML_DECL))
       readTextDecl();
@@ -1752,8 +1750,8 @@ public class XMLParser
     // Parse external subset
     if (ids.systemId != null && externalEntities)
       {
-        pushInput("", ">", false);
-        pushInput("[dtd]", ids, true);
+        pushInput("", ">", false, false);
+        pushInput("[dtd]", ids, true, true);
         // loop until we get back to ">"
         while (true)
           {
@@ -1778,12 +1776,22 @@ public class XMLParser
           error("external subset has unmatched '>'");
         popInput();
       }
+    checkDoctype();
     if (validating)
       validateDoctype();
 
     // Make rootName available for reading
     buf.setLength(0);
     buf.append(rootName);
+  }
+
+  /**
+   * Checks the well-formedness of the DTD.
+   */
+  private void checkDoctype()
+    throws XMLStreamException
+  {
+    // TODO check entity recursion
   }
 
   /**
@@ -2488,16 +2496,18 @@ public class XMLParser
             c = readCh();
             reset();
             if (c == 0x22 || c == 0x27) // " | '
-              ids.systemId = absolutize(input.systemId,
-                                        readLiteral(flags, false));
+              {
+                String href = readLiteral(flags, false);
+                ids.systemId = absolutize(input.systemId, href);
+              }
           }
         else
           {
             requireWhitespace();
-            ids.systemId = absolutize(input.systemId,
-                                      readLiteral(flags, false));
+            String href = readLiteral(flags, false);
+            ids.systemId = absolutize(input.systemId, href);
           }
-
+        // Check valid URI characters
         for (int i = 0; i < ids.publicId.length(); i++)
           {
             char d = ids.publicId.charAt(i);
@@ -2514,13 +2524,14 @@ public class XMLParser
     else if (tryRead("SYSTEM"))
       {
         requireWhitespace();
-        ids.systemId = absolutize(input.systemId, readLiteral(flags, false));
+        String href = readLiteral(flags, false);
+        ids.systemId = absolutize(input.systemId, href);
       }
     else if (!isSubset)
       {
         error("missing SYSTEM or PUBLIC keyword");
       }
-    if (ids.systemId != null)
+    if (ids.systemId != null && !inNotation)
       {
         if (ids.systemId.indexOf('#') != -1)
           error("SYSTEM id has a URI fragment", ids.systemId);
@@ -2637,15 +2648,24 @@ public class XMLParser
         if (ci != -1)
           {
             String prefix = elementName.substring(0, ci);
-            if (getNamespaceURI(prefix) == null)
+            String uri = getNamespaceURI(prefix);
+            if (uri == null)
               error("unbound element prefix", prefix);
+            else if (input.xml11 && "".equals(uri))
+              error("XML 1.1 unbound element prefix", prefix);
           }
         for (Iterator i = attrs.iterator(); i.hasNext(); )
           {
             Attribute attr = (Attribute) i.next();
-            if (attr.prefix != null && getNamespaceURI(attr.prefix) == null &&
+            if (attr.prefix != null &&
                 !XMLConstants.XMLNS_ATTRIBUTE.equals(attr.prefix))
-              error("unbound attribute prefix", attr.prefix);
+              {
+                String uri = getNamespaceURI(attr.prefix);
+                if (uri == null)
+                  error("unbound attribute prefix", attr.prefix);
+                else if (input.xml11 && "".equals(uri))
+                  error("XML 1.1 unbound attribute prefix", attr.prefix);
+              }
           }
       }
     if (validating && doctype != null)
@@ -2818,6 +2838,8 @@ public class XMLParser
           error("Duplicate default namespace declaration");
         if (XMLConstants.XML_NS_URI.equals(attr.value))
           error("can't bind XML namespace");
+        if ("".equals(attr.value) && !input.xml11)
+          error("illegal use of 1.1-style prefix unbinding in 1.0 document");
         ctx.put(XMLConstants.DEFAULT_NS_PREFIX, attr.value);
         return true;
       }
@@ -2840,6 +2862,8 @@ public class XMLParser
           error("can't redeclare xmlns prefix");
         if (XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(attr.value))
           error("can't bind non-xmlns prefix to XML Namespace namespace");
+        if ("".equals(attr.value) && !input.xml11)
+          error("illegal use of 1.1-style prefix unbinding in 1.0 document");
         ctx.put(attr.localName, attr.value);
         return true;
       }
@@ -3032,7 +3056,7 @@ public class XMLParser
                       buf.append(text);
                     else
                       {
-                        pushInput("", "&" + entityName + ";", false);
+                        pushInput("", "&" + entityName + ";", false, false);
                         done = true;
                         break;
                       }
@@ -3067,14 +3091,15 @@ public class XMLParser
                 done = true;
                 break; // end of text sequence
               default:
-                if ((c < 0x0020 || c > 0xfffd) ||
-                    (c >= 0xd800 && c < 0xdc00) ||
-                    (input.xml11 && (c >= 0x007f) &&
-                     (c <= 0x009f) && (c != 0x0085)))
+                if (input.xml11)
                   {
-                    error("illegal XML character",
-                          "U+" + Integer.toHexString(c));
+                    if (!isXML11Char(c))
+                      error("illegal XML 1.1 character",
+                            "U+" + Integer.toHexString(c));
                   }
+                else if (!isChar(c))
+                  error("illegal XML character",
+                        "U+" + Integer.toHexString(c));
                 white = false;
                 buf.append(Character.toChars(c));
               }
@@ -3092,7 +3117,7 @@ public class XMLParser
   /**
    * Expands the specified entity.
    */
-  private void expandEntity(String name, boolean inAttr)
+  private void expandEntity(String name, boolean inAttr, boolean normalize)
     throws IOException, XMLStreamException
   {
     if (doctype != null)
@@ -3119,12 +3144,12 @@ public class XMLParser
                 String text = (String) value;
                 if (inAttr && text.indexOf('<') != -1)
                   error("< in attribute value");
-                pushInput(name, text, !inAttr);
+                pushInput(name, text, !inAttr, normalize);
               }
             else if (inAttr)
               error("reference to external entity in attribute value", name);
             else
-              pushInput(name, (ExternalIds) value, !inAttr);
+              pushInput(name, (ExternalIds) value, !inAttr, normalize);
             return;
           }
       }
@@ -3260,7 +3285,8 @@ public class XMLParser
                       literalBuf.append(text);
                     else
                       expandEntity(entityName,
-                                   (flags & LIT_ATTRIBUTE) != 0);
+                                   (flags & LIT_ATTRIBUTE) != 0,
+                                   true);
                     entities = true;
                     continue;
                   }
@@ -3363,13 +3389,13 @@ public class XMLParser
               }
             if (entity instanceof String)
               {
-                pushInput(name, (String) entity, false);
+                pushInput(name, (String) entity, false, input.normalize);
                 //pushInput(name, " " + (String) entity + " ");
               }
             else
               {
                 //pushInput("", " ");
-                pushInput(name, (ExternalIds) entity, false);
+                pushInput(name, (ExternalIds) entity, false, input.normalize);
                 //pushInput("", " ");
               }
           }
@@ -3496,7 +3522,7 @@ public class XMLParser
   private boolean isXML11Char(int c)
   {
     return ((c >= 0x0001 && c <= 0xD7FF) ||
-            (c >= 0xE000 && c <= 0xFFFD) ||
+            (c >= 0xE000 && c < 0xFFFD) || // NB exclude 0xfffd
             (c >= 0x10000 && c <= 0x10FFFF));
   }
 
@@ -3519,25 +3545,32 @@ public class XMLParser
    */
   private boolean isNmtoken(String text, boolean isName)
   {
-    int[] cp = UnicodeReader.toCodePointArray(text);
-    if (cp.length == 0)
-      return false;
-    if (isName)
+    try
       {
-        if (!isNameStartCharacter(cp[0]))
+        int[] cp = UnicodeReader.toCodePointArray(text);
+        if (cp.length == 0)
           return false;
+        if (isName)
+          {
+            if (!isNameStartCharacter(cp[0]))
+              return false;
+          }
+        else
+          {
+            if (!isNameCharacter(cp[0]))
+              return false;
+          }
+        for (int i = 1; i < cp.length; i++)
+          {
+            if (!isNameCharacter(cp[i]))
+              return false;
+          }
+        return true;
       }
-    else
+    catch (IOException e)
       {
-        if (!isNameCharacter(cp[0]))
-          return false;
+        return false;
       }
-    for (int i = 1; i < cp.length; i++)
-      {
-        if (!isNameCharacter(cp[i]))
-          return false;
-      }
-    return true;
   }
 
   /**
@@ -3961,6 +3994,18 @@ public class XMLParser
             (c >= 0x309D && c <= 0x309E) ||
             (c >= 0x30FC && c <= 0x30FE));
   }
+
+  /**
+   * Indicates whether the specified Unicode character matches the Char
+   * production.
+   */
+  public static boolean isChar(int c)
+  {
+    return (c >= 0x20 && c < 0xd800) ||
+      (c >= 0xe00 && c < 0xfffd) || // NB exclude 0xfffd
+      (c >= 0x10000 && c < 0x110000) ||
+      c == 0xa || c == 0x9 || c == 0xd;
+  }
   
   /**
    * Interns the specified text or not, depending on the value of
@@ -4218,6 +4263,8 @@ public class XMLParser
         while (reader.hasNext())
           {
             event = reader.next();
+            Location loc = reader.getLocation();
+            System.out.print(loc.getLineNumber()+":"+loc.getColumnNumber()+" ");
             switch (event)
               {
               case XMLStreamConstants.START_DOCUMENT:
@@ -4242,13 +4289,13 @@ public class XMLParser
                 System.out.println("END_ELEMENT "+reader.getName());
                 break;
               case XMLStreamConstants.CHARACTERS:
-                System.out.println("CHARACTERS '"+reader.getText()+"'");
+                System.out.println("CHARACTERS '"+encodeText(reader.getText())+"'");
                 break;
               case XMLStreamConstants.CDATA:
-                System.out.println("CDATA '"+reader.getText()+"'");
+                System.out.println("CDATA '"+encodeText(reader.getText())+"'");
                 break;
               case XMLStreamConstants.SPACE:
-                System.out.println("SPACE '"+reader.getText()+"'");
+                System.out.println("SPACE '"+encodeText(reader.getText())+"'");
                 break;
               case XMLStreamConstants.DTD:
                 System.out.println("DTD "+reader.getText());
@@ -4257,7 +4304,7 @@ public class XMLParser
                 System.out.println("ENTITY_REFERENCE "+reader.getText());
                 break;
               case XMLStreamConstants.COMMENT:
-                System.out.println("COMMENT '"+reader.getText()+"'");
+                System.out.println("COMMENT '"+encodeText(reader.getText())+"'");
                 break;
               case XMLStreamConstants.PROCESSING_INSTRUCTION:
                 System.out.println("PROCESSING_INSTRUCTION "+reader.getPITarget()+
@@ -4282,6 +4329,34 @@ public class XMLParser
                            " of "+l.getLocationURI());
         throw e;
       }
+  }
+
+  /**
+   * Escapes control characters in the specified text. For debugging.
+   */
+  private static String encodeText(String text)
+  {
+    StringBuffer b = new StringBuffer();
+    int len = text.length();
+    for (int i = 0; i < len; i++)
+      {
+        char c = text.charAt(i);
+        switch (c)
+          {
+          case '\t':
+            b.append("\\t");
+            break;
+          case '\n':
+            b.append("\\n");
+            break;
+          case '\r':
+            b.append("\\r");
+            break;
+          default:
+            b.append(c);
+          }
+      }
+    return b.toString();
   }
 
   /**
@@ -4343,7 +4418,26 @@ public class XMLParser
     {
       if (other instanceof Attribute)
         {
-          return ((Attribute) other).name.equals(name);
+          Attribute a = (Attribute) other;
+          if (namespaceAware)
+            {
+              if (!a.localName.equals(localName))
+                return false;
+              String auri = getNamespaceURI(a.prefix);
+              String uri = getNamespaceURI(prefix);
+              if (uri == null && (auri == null ||
+                                  (input.xml11 && "".equals(auri))))
+               return true; 
+              if (uri != null)
+                {
+                  if ("".equals(uri) && input.xml11 && "".equals(auri))
+                    return true;
+                  return uri.equals(auri);
+                }
+              return false;
+            }
+          else
+            return a.name.equals(name);
         }
       return false;
     }
@@ -4865,6 +4959,7 @@ public class XMLParser
     int offset, markOffset;
     final String publicId, systemId, name;
     final boolean report; // report start- and end-entity
+    final boolean normalize; // normalize CR, etc to LF
     
     InputStream in;
     Reader reader;
@@ -4874,7 +4969,8 @@ public class XMLParser
     boolean xml11;
 
     Input(InputStream in, Reader reader, String publicId, String systemId,
-          String name, String inputEncoding, boolean report)
+          String name, String inputEncoding, boolean report,
+          boolean normalize)
     {
       if (inputEncoding == null)
         inputEncoding = "UTF-8";
@@ -4883,18 +4979,20 @@ public class XMLParser
       this.systemId = systemId;
       this.name = name;
       this.report = report;
+      this.normalize = normalize;
       if (in != null)
         {
           if (reader != null)
             throw new IllegalStateException("both byte and char streams "+
                                             "specified");
-          in = new CRLFInputStream(in);
+          if (normalize)
+            in = new CRLFInputStream(in);
           in = new BufferedInputStream(in);
           this.in = in;
         }
       else
         {
-          this.reader = new CRLFReader(reader);
+          this.reader = normalize ? new CRLFReader(reader) : reader;
           unicodeReader = new UnicodeReader(this.reader);
         }
       initialized = false;
@@ -4953,7 +5051,8 @@ public class XMLParser
     {
       offset++;
       int ret = (unicodeReader != null) ? unicodeReader.read() : in.read();
-      if (ret == 0x0d || (xml11 && (ret == 0x85 || ret == 0x2028)))
+      if (normalize &&
+          (ret == 0x0d || (xml11 && (ret == 0x85 || ret == 0x2028))))
         {
           // Normalize CR etc to LF
           ret = 0x0a;
@@ -4996,7 +5095,8 @@ public class XMLParser
           for (int i = 0; i < ret; i++)
             {
               int c = b[off + i];
-              if (c == 0x0d || (xml11 && (c == 0x85 || c == 0x2028)))
+              if (normalize &&
+                  (c == 0x0d || (xml11 && (c == 0x85 || c == 0x2028))))
                 {
                   // Normalize CR etc to LF
                   c = 0x0a;

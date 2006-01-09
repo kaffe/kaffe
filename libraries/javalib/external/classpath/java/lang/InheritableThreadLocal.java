@@ -38,8 +38,8 @@ exception statement from your version. */
 package java.lang;
 
 import gnu.java.util.WeakIdentityHashMap;
+
 import java.util.Iterator;
-import java.util.WeakHashMap;
 
 /**
  * A ThreadLocal whose value is inherited by child Threads. The value of the

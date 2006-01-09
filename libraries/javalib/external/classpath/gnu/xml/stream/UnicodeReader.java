@@ -49,8 +49,6 @@ class UnicodeReader
 {
 
   final Reader in;
-  int carry, markCarry;
-  boolean isCarry, isMarkCarry;
 
   UnicodeReader(Reader in)
   {
@@ -60,27 +58,18 @@ class UnicodeReader
   public void mark(int limit)
     throws IOException
   {
-    in.mark(limit);
-    markCarry = carry;
-    isMarkCarry = isCarry;
+    in.mark(limit * 2);
   }
 
   public void reset()
     throws IOException
   {
     in.reset();
-    carry = markCarry;
-    isCarry = isMarkCarry;
   }
 
   public int read()
     throws IOException
   {
-    if (isCarry)
-      {
-        isCarry = false;
-        return carry;
-      }
     int ret = in.read();
     if (ret == -1)
       return ret;
@@ -91,11 +80,12 @@ class UnicodeReader
         if (low >= 0xdc00 && low < 0xe000)
           ret = Character.toCodePoint((char) ret, (char) low);
         else
-          {
-            carry = low;
-            isCarry = true;
-          }
+          throw new IOException("unpaired surrogate: U+" +
+                                Integer.toHexString(ret));
       }
+    else if (ret >= 0xdc00 && ret < 0xe000)
+      throw new IOException("unpaired surrogate: U+" +
+                            Integer.toHexString(ret));
     return ret;
   }
 
@@ -104,19 +94,13 @@ class UnicodeReader
   {
     if (len == 0)
       return 0;
-    if (isCarry)
-      {
-        isCarry = false;
-        buf[off] = carry;
-        return 1;
-      }
     char[] b2 = new char[len];
     int ret = in.read(b2, 0, len);
     if (ret <= 0)
       return ret;
     int l = ret - 1;
-    int j = off;
-    for (int i = 0; i < l; i++)
+    int i = 0, j = off;
+    for (; i < l; i++)
       {
         char c = b2[i];
         if (c >= 0xd800 && c < 0xdc00)
@@ -129,26 +113,36 @@ class UnicodeReader
                 i++;
                 continue;
               }
+            else
+              throw new IOException("unpaired surrogate: U+" +
+                                    Integer.toHexString(c));
           }
+        else if (c >= 0xdc00 && c < 0xe000)
+          throw new IOException("unpaired surrogate: U+" +
+                                Integer.toHexString(c));
         buf[j++] = (int) c;
       }
-    // last char
-    char c = b2[l];
-    if (c >= 0xd800 && c < 0xdc00)
+    if (i == l)
       {
-        int low = in.read();
-        if (low >= 0xdc00 && low < 0xe000)
+        // last char
+        char c = b2[l];
+        if (c >= 0xd800 && c < 0xdc00)
           {
-            buf[j++] = Character.toCodePoint(c, (char) low);
-            return j;
+            int low = in.read();
+            if (low >= 0xdc00 && low < 0xe000)
+              {
+                buf[j++] = Character.toCodePoint(c, (char) low);
+                return j;
+              }
+            else
+              throw new IOException("unpaired surrogate: U+" +
+                                    Integer.toHexString(c));
           }
-        else
-          {
-            carry = low;
-            isCarry = true;
-          }
+        else if (c >= 0xdc00 && c < 0xe000)
+          throw new IOException("unpaired surrogate: U+" +
+                                Integer.toHexString(c));
+        buf[j++] = (int) c;
       }
-    buf[j++] = (int) c;
     return j;
   }
 
@@ -159,14 +153,15 @@ class UnicodeReader
   }
 
   public static int[] toCodePointArray(String text)
+    throws IOException
   {
     char[] b2 = text.toCharArray();
     int[] buf = new int[b2.length];
     if (b2.length > 0)
       {
         int l = b2.length - 1;
-        int j = 0;
-        for (int i = 0; i < l; i++)
+        int i = 0, j = 0;
+        for (; i < l; i++)
           {
             char c = b2[i];
             if (c >= 0xd800 && c < 0xdc00)
@@ -179,16 +174,25 @@ class UnicodeReader
                     i++;
                     continue;
                   }
+                else
+                  throw new IOException("unpaired surrogate: U+" +
+                                        Integer.toHexString(c));
               }
+            else if (c >= 0xdc00 && c < 0xe000)
+              throw new IOException("unpaired surrogate: U+" +
+                                    Integer.toHexString(c));
             buf[j++] = (int) c;
           }
-        // last char
-        buf[j++] = (int) b2[l];
-        if (j < buf.length)
+        if (i == l)
           {
-            int[] buf2 = new int[j];
-            System.arraycopy(buf, 0, buf2, 0, j);
-            buf = buf2;
+            // last char
+            buf[j++] = (int) b2[l];
+            if (j < buf.length)
+              {
+                int[] buf2 = new int[j];
+                System.arraycopy(buf, 0, buf2, 0, j);
+                buf = buf2;
+              }
           }
       }
     return buf;

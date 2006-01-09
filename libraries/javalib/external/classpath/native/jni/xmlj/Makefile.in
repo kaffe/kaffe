@@ -60,7 +60,7 @@ am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
 am__installdirs = "$(DESTDIR)$(nativelibdir)"
 nativelibLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(nativelib_LTLIBRARIES)
-libxmlj_la_LIBADD =
+libxmlj_la_DEPENDENCIES = $(top_builddir)/native/jni/classpath/jcl.lo
 am_libxmlj_la_OBJECTS = xmlj_dom.lo xmlj_error.lo xmlj_io.lo \
 	xmlj_node.lo xmlj_sax.lo xmlj_transform.lo xmlj_util.lo \
 	xmlj_xpath.lo
@@ -296,6 +296,7 @@ xmlj_util.c \
 xmlj_util.h \
 xmlj_xpath.c
 
+libxmlj_la_LIBADD = $(top_builddir)/native/jni/classpath/jcl.lo
 AM_LDFLAGS = @CLASSPATH_MODULE@ @XML_LIBS@ @XSLT_LIBS@
 AM_CPPFLAGS = @CLASSPATH_INCLUDES@
 

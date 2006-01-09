@@ -675,6 +675,7 @@ public class SAXParser
    */
   private boolean isIgnorableWhitespace(XMLParser reader, char[] b,
                                         boolean testCharacters)
+    throws XMLStreamException
   {
     XMLParser.Doctype doctype = reader.doctype;
     if (doctype == null)
@@ -694,6 +695,8 @@ public class SAXParser
       }
     XMLParser.ContentModel model = doctype.getElementModel(currentElement);
     if (model == null || model.type != XMLParser.ContentModel.ELEMENT)
+      return false;
+    if (model.external && xmlStandalone)
       return false;
     boolean white = true;
     if (testCharacters)

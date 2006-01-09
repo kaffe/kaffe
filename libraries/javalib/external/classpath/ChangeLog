@@ -1,3 +1,77 @@
+2006-01-08  Tom Tromey  <tromey@redhat.com>
+
+	* java/lang/InheritableThreadLocal.java: Organized imports.
+
+2006-01-08  Ito Kazumitsu  <kaz@maczuka.gcd.org>  
+
+	Fixes bug #25679
+	* gnu/regexp/RETokenRepeated.java(match): Optimized the case
+	when an empty string matched an empty token.
+
+2006-01-08  Chris Burdess  <dog@gnu.org>
+
+	* gnu/xml/stream/SAXParser.java: Check standalone status for mixed
+	  content models from external entities.
+	* gnu/xml/stream/UnicodeReader.java: Report error instead of
+	  attempting to continue with unpaired surrogates.
+	* gnu/xml/stream/XMLParser.java: Don't normalize LF equivalents when
+	  resolving entities with character entity references; better
+	  checking of valid character ranges; don't report an error for URI
+	  fragments in notation declarations; check unbound namespace
+	  prefixes for elements and attributes, including XML 1.1 unbinding
+	  syntax; namespace-aware checking of attribute duplicates.
+
+2006-01-08  Robert Schuster  <robertschuster@fsfe.org>
+
+	* java/beans/Statement.java: Doc fixes.
+	(doExecute): Workaround for Class.forName call.
+	(toString): Made output look more like on the JDK.
+	* java/beans/Expression.java: Doc fixes.
+	(toString): Made output look more like on the JDK.
+	* java/beans/PersistenceDelegate.java,
+	java/beans/DefaultPersistenceDelegate.java,
+	java/beans/Encoder.java,
+	java/beans/XMLEncoder.java: New file.
+	* gnu/java/beans/encoder/ArrayPersistenceDelegate.java,
+	gnu/java/beans/encoder/ClassPersistenceDelegate.java,
+	gnu/java/beans/encoder/CollectionPersistenceDelegate.java,
+	gnu/java/beans/encoder/Context.java,
+	gnu/java/beans/encoder/GenericScannerState.java,
+	gnu/java/beans/encoder/IgnoringScannerState.java,
+	gnu/java/beans/encoder/MapPersistenceDelegate.java,
+	gnu/java/beans/encoder/ObjectId.java,
+	gnu/java/beans/encoder/PrimitivePersistenceDelegate.java,
+	gnu/java/beans/encoder/ReportingScannerState.java,
+	gnu/java/beans/encoder/Root.java,
+	gnu/java/beans/encoder/ScanEngine.java,
+	gnu/java/beans/encoder/ScannerState.java,
+	gnu/java/beans/encoder/StAXWriter.java,
+	gnu/java/beans/encoder/Writer.java: New file.
+	* gnu/java/beans/encoder/elements/Array_Get.java,
+	gnu/java/beans/encoder/elements/Element.java,
+	gnu/java/beans/encoder/elements/List_Set.java,
+	gnu/java/beans/encoder/elements/Array_Set.java,
+	gnu/java/beans/encoder/elements/NullObject.java,
+	gnu/java/beans/encoder/elements/StaticMethodInvocation.java,
+	gnu/java/beans/encoder/elements/StaticFieldAccess.java,
+	gnu/java/beans/encoder/elements/StringReference.java,
+	gnu/java/beans/encoder/elements/ClassResolution.java,
+	gnu/java/beans/encoder/elements/ArrayInstantiation.java,
+	gnu/java/beans/encoder/elements/PrimitiveInstantiation.java,
+	gnu/java/beans/encoder/elements/ObjectReference.java,
+	gnu/java/beans/encoder/elements/ObjectInstantiation.java,
+	gnu/java/beans/encoder/elements/List_Get.java,
+	gnu/java/beans/encoder/elements/MethodInvocation.java: New file.
+
+2006-01-08  Chris Burdess  <dog@gnu.org>
+
+	* java/lang/Character.java (toChars,toCodePoint): Correct these
+	  methods to use algorithms from Unicode specification.
+ 
+2006-01-08  Mark Wielaard  <mark@klomp.org>
+
+	* native/jni/xmlj/Makefile.am (libxmlj_la_LIBADD): Add jcl.o.
+
 2006-01-07  Paul Jenner  <psj@harker.dyndns.org>
 
 	Fixes bug #25711
@@ -11489,6 +11563,11 @@
 	(paintBorder): Correctly set the Y offset for the border title.
 	(getMeasurements): Determine the correct Y offset for the border
 	title.
+
+2005-09-19  Robert Schuster  <robertschuster@fsfe.org>
+
+	* java/util/ResourceBundle.java: Changed type of bundleCache
+	to WeakHashMap.
 
 2005-09-19  Robert Schuster  <robertschuster@fsfe.org>
 

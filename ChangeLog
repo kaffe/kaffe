@@ -1,3 +1,7 @@
+2006-01-09  Dalibor Topic  <robilad@kaffe.org>
+
+        * libraries/javalib/external/classpath: Resynched GNU Classpath.
+
 2006-01-08  Dalibor Topic  <robilad@kaffe.org>
 
 	* external/gcc/fastjar/scripts: New directory for autotools scripts 
