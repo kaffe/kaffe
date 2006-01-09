@@ -1,5 +1,16 @@
 2006-01-08  Dalibor Topic  <robilad@kaffe.org>
 
+	* external/gcc/fastjar/scripts: New directory for autotools scripts 
+	for fastjar.
+
+	* external/gcc/fastjar/configure.ac,
+	external/gcc/fastjar/scripts/Makefile.am: Use scripts directory for
+	autotools scripts to fix build on darwin6.
+
+	Reported by:  Riccardo Mottola <zuse@libero.it>
+
+2006-01-08  Dalibor Topic  <robilad@kaffe.org>
+
         * libraries/javalib/external/classpath: Resynched GNU Classpath.
 
 2006-01-07  Dalibor Topic  <robilad@kaffe.org>

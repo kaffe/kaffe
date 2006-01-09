@@ -70,5 +70,13 @@ EXTRA_DIST = \
 	install-defs.sh.in \
 	fastjar.info \
 	m4/accross.m4 \
-	m4/gcc_AC_FUNC_MKDIR_TAKES_ONE_ARG.m4
+	m4/gcc_AC_FUNC_MKDIR_TAKES_ONE_ARG.m4 \
+	scripts/compile \
+	scripts/config.guess \
+	scripts/config.sub \
+	scripts/depcomp \
+	scripts/install-sh \
+	scripts/ltmain.sh \
+	scripts/missing
+
 
