@@ -321,6 +321,13 @@ AM_LC_MESSAGES
 AM_CONDITIONAL(MAY_RUN_PO, test x"$MSGFMT" != x":" || test -f $ac_top_srcdir/po/fr.gmo)
 
 dnl =========================================================================
+dnl Check whether we need getopt replacement
+dnl -------------------------------------------------------------------------
+
+gl_GETOPT
+AM_CONDITIONAL(REPLACE_GETOPT, test  x"$GETOPT_H" != x"")
+
+dnl =========================================================================
 dnl Do we need underscore?
 dnl -------------------------------------------------------------------------
 

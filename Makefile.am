@@ -15,6 +15,7 @@ ACLOCAL_AMFLAGS=-I m4
 AUTOMAKE_OPTIONS = foreign 1.3e
 
 SUBDIRS = \
+	replace \
 	. \
 	external \
 	libraries/javalib \
@@ -22,7 +23,6 @@ SUBDIRS = \
 	libltdl \
 	kaffe/kaffeh \
 	include  \
-	replace \
 	kaffe/kaffevm \
 	libraries/clib \
 	kaffe \
