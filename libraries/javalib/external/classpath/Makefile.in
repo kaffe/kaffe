@@ -281,7 +281,7 @@ SUBDIRS = lib doc external include native resource scripts $(EXAMPLESDIR)
 DIST_SUBDIRS = lib doc external include native resource scripts examples
 ACLOCAL_AMFLAGS = -I m4
 EXTRA_DIST = HACKING BUGS THANKYOU mauve-classpath LICENSE \
-             ChangeLog-2003 ChangeLog-2004 \
+             ChangeLog-2003 ChangeLog-2004 ChangeLog-2005 \
              ChangeLog.gnujaxp.1 ChangeLog.gnujaxp.2 ChangeLog.libxmlj \
 	     autogen.sh
 

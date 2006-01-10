@@ -449,9 +449,6 @@ public class Container extends Component
                                                    ContainerEvent.COMPONENT_REMOVED,
                                                    r);
             getToolkit().getSystemEventQueue().postEvent(ce);
-
-            // Repaint this container.
-            repaint();
           }
       }
   }

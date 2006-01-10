@@ -1498,6 +1498,8 @@ public abstract class BasicLookAndFeel extends LookAndFeel
    * <code>AuditoryCues.playList</code>.
    *
    * @param audioAction the audio action to play
+   *
+   * @since 1.4
    */
   protected void playSound(Action audioAction)
   {

@@ -1596,9 +1596,36 @@ public class DefaultStyledDocument extends AbstractDocument
     int segmentEnd = txt.offset + txt.count;
     
     // Check to see if we're inserting immediately after a newline.
-    checkForInsertAfterNewline(offset, endOffset, prevParagraph, paragraph,
-                               paragraphAttributes, prevCharWasNewline,
-                               finalStartTag, finalStartDirection, specs);
+    if (offset > 0)
+      {
+        try
+        {
+          String s = getText(offset - 1, 1);
+          if (s.equals("\n"))
+            {
+              finalStartDirection = 
+                handleInsertAfterNewline(specs, offset, endOffset,
+                                         prevParagraph,
+                                         paragraph,
+                                         paragraphAttributes);
+              
+              prevCharWasNewline = true;
+              // Find the final start tag from the ones just created.
+              for (int i = 0; i < specs.size(); i++)
+                if (((ElementSpec) specs.get(i)).getType() 
+                    == ElementSpec.StartTagType)
+                  finalStartTag = (ElementSpec)specs.get(i);
+            }
+        }
+        catch (BadLocationException ble)
+        {          
+          // This shouldn't happen.
+          AssertionError ae = new AssertionError();
+          ae.initCause(ble);
+          throw ae;
+        }        
+      }
+
         
     for (int i = txt.offset; i < segmentEnd; ++i)
       {
@@ -1663,49 +1690,6 @@ public class DefaultStyledDocument extends AbstractDocument
   }
 
   /**
-   * A helper method that checks to see if insertUpdate was called when text
-   * was inserted immediately after a newline, and calls 
-   * handleInsertAfterNewline if that is the case.
-   */
-  void checkForInsertAfterNewline(int offset, int endOffset,
-                                  Element prevParagraph, Element paragraph,
-                                  AttributeSet paragraphAttributes,
-                                  boolean prevCharWasNewline,
-                                  ElementSpec finalStartTag,
-                                  short finalStartDirection, Vector specs)
-  {
-    if (offset > 0)
-      {
-        try
-        {
-          String s = getText(offset - 1, 1);
-          if (s.equals("\n"))
-            {
-              finalStartDirection = 
-                handleInsertAfterNewline(specs, offset, endOffset,
-                                         prevParagraph,
-                                         paragraph,
-                                         paragraphAttributes);
-              
-              prevCharWasNewline = true;
-              // Find the final start tag from the ones just created.
-              for (int i = 0; i < specs.size(); i++)
-                if (((ElementSpec) specs.get(i)).getType() 
-                    == ElementSpec.StartTagType)
-                  finalStartTag = (ElementSpec)specs.get(i);
-            }
-        }
-        catch (BadLocationException ble)
-        {          
-          // This shouldn't happen.
-          AssertionError ae = new AssertionError();
-          ae.initCause(ble);
-          throw ae;
-        }        
-      }
-  }
-  
-  /**
    * A helper method to set up the ElementSpec buffer for the special
    * case of an insertion occurring immediately after a newline.
    * @param specs the ElementSpec buffer to initialize.
@@ -1720,7 +1704,10 @@ public class DefaultStyledDocument extends AbstractDocument
         specs.add(new ElementSpec(a, ElementSpec.StartTagType));
         if (prevParagraph.getEndOffset() != endOffset)
           return ElementSpec.JoinFractureDirection;
-        
+        // If there is an Element after this one, use JoinNextDirection.
+        Element parent = paragraph.getParentElement();
+        if (parent.getElementCount() > parent.getElementIndex(offset) + 1)
+          return ElementSpec.JoinNextDirection;
       }
     else
       {

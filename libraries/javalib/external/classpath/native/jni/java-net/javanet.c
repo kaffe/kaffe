@@ -133,7 +133,7 @@ _javanet_get_int_field (JNIEnv * env, jobject obj, const char *field)
  * need to include it.
  */
 static void
-_javanet_create_localfd (JNIEnv * env, jobject this)
+_javanet_create_localfd (JNIEnv * env, jobject this, jboolean stream)
 {
   jclass this_cls, fd_cls;
   jfieldID fid;
@@ -146,7 +146,10 @@ _javanet_create_localfd (JNIEnv * env, jobject this)
   DBG ("_javanet_create_localfd(): Entered _javanet_create_localfd\n");
 
   /* Look up the fd field */
-  this_cls = (*env)->FindClass (env, "java/net/SocketImpl");
+  if (stream)
+    this_cls = (*env)->FindClass(env, "java/net/SocketImpl");
+  else
+    this_cls = (*env)->FindClass(env, "java/net/DatagramSocketImpl");
   if (this_cls == NULL)
     return;
 
@@ -552,7 +555,8 @@ _javanet_close (JNIEnv * env, jobject this, int stream)
  * Connects to the specified destination.
  */
 void
-_javanet_connect (JNIEnv * env, jobject this, jobject addr, jint port)
+_javanet_connect (JNIEnv * env, jobject this, jobject addr, jint port,
+		  jboolean stream)
 {
 #ifndef WITHOUT_NETWORK
   int netaddr, fd;
@@ -613,7 +617,7 @@ _javanet_connect (JNIEnv * env, jobject this, jobject addr, jint port)
       return;
     }
 
-  _javanet_create_localfd (env, this);
+  _javanet_create_localfd (env, this, stream);
   if ((*env)->ExceptionOccurred (env))
     {
       /* We don't care whether this succeeds. close() will cleanup later. */
@@ -622,8 +626,13 @@ _javanet_connect (JNIEnv * env, jobject this, jobject addr, jint port)
     }
   DBG ("_javanet_connect(): Created fd\n");
 
-  _javanet_set_int_field (env, this, "java/net/SocketImpl", "localport",
-			  local_port);
+  if (stream)
+    _javanet_set_int_field (env, this, "java/net/SocketImpl", "localport",
+			    local_port);
+  else
+    _javanet_set_int_field (env, this, "java/net/DatagramSocketImpl",
+			    "localPort", local_port);
+
   if ((*env)->ExceptionOccurred (env))
     {
       /* We don't care whether this succeeds. close() will cleanup later. */
@@ -643,31 +652,36 @@ _javanet_connect (JNIEnv * env, jobject this, jobject addr, jint port)
       return;
     }
 
-  if (remote_address == netaddr)
+  if (stream)
     {
-      _javanet_set_remhost_addr (env, this, addr);
-    }
-  else
-    {
-      _javanet_set_remhost (env, this, remote_address);
-    }
-  if ((*env)->ExceptionOccurred (env))
-    {
-      /* We don't care whether this succeeds. close() will cleanup later. */
-      TARGET_NATIVE_NETWORK_SOCKET_CLOSE (fd, result);
-      return;
-    }
-  DBG ("_javanet_connect(): Set the remote host\n");
+      if (remote_address == netaddr)
+	{
+	  _javanet_set_remhost_addr (env, this, addr);
+	}
+      else
+	{
+	  _javanet_set_remhost (env, this, remote_address);
+	}
+      if ((*env)->ExceptionOccurred (env))
+	{
+	  /* We don't care whether this succeeds. close() will cleanup later.
+	   */
+	  TARGET_NATIVE_NETWORK_SOCKET_CLOSE (fd, result);
+	  return;
+	}
+      DBG ("_javanet_connect(): Set the remote host\n");
 
-  _javanet_set_int_field (env, this, "java/net/SocketImpl", "port",
-			  remote_port);
-  if ((*env)->ExceptionOccurred (env))
-    {
-      /* We don't care whether this succeeds. close() will cleanup later. */
-      TARGET_NATIVE_NETWORK_SOCKET_CLOSE (fd, result);
-      return;
+      _javanet_set_int_field (env, this, "java/net/SocketImpl", "port",
+			      remote_port);
+      if ((*env)->ExceptionOccurred (env))
+	{
+	  /* We don't care whether this succeeds. close() will cleanup later.
+	   */
+	  TARGET_NATIVE_NETWORK_SOCKET_CLOSE (fd, result);
+	  return;
+	}
+      DBG ("_javanet_connect(): Set the remote port\n");
     }
-  DBG ("_javanet_connect(): Set the remote port\n");
 #else /* not WITHOUT_NETWORK */
 #endif /* not WITHOUT_NETWORK */
 }
@@ -897,7 +911,7 @@ _javanet_accept (JNIEnv * env, jobject this, jobject impl)
       return;
     }
 
-  _javanet_create_localfd (env, impl);
+  _javanet_create_localfd (env, impl, 1);
   if ((*env)->ExceptionOccurred (env))
     {
       /* We don't care whether this succeeds. close() will cleanup later. */
@@ -1546,7 +1560,8 @@ _javanet_shutdownInput (JNIEnv * env, jobject this)
   /* Shutdown input stream of socket. */
   if (shutdown (fd, SHUT_RD) == -1)
     {
-      JCL_ThrowException (env, SOCKET_EXCEPTION, strerror (errno));
+      JCL_ThrowException (env, SOCKET_EXCEPTION,
+			  TARGET_NATIVE_LAST_ERROR_STRING());
       return;
     }
 }
@@ -1571,7 +1586,8 @@ _javanet_shutdownOutput (JNIEnv * env, jobject this)
   /* Shutdown output stream of socket. */
   if (shutdown (fd, SHUT_WR) == -1)
     {
-      JCL_ThrowException (env, SOCKET_EXCEPTION, strerror (errno));
+      JCL_ThrowException (env, SOCKET_EXCEPTION,
+			  TARGET_NATIVE_LAST_ERROR_STRING());
       return;
     }
 }

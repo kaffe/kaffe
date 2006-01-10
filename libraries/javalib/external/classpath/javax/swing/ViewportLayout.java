@@ -145,9 +145,9 @@ public class ViewportLayout implements LayoutManager, Serializable
                                      portBounds.y + portBounds.height);
 
     // vertical implementation of the above rules
-    if ((! (view instanceof Scrollable)
-         || ((Scrollable) view).getScrollableTracksViewportHeight())
-        && viewPref.height < portBounds.height)
+    if ((! (view instanceof Scrollable) && viewPref.height < portBounds.height
+         || (view instanceof Scrollable
+            && ((Scrollable) view).getScrollableTracksViewportHeight())))
       viewPref.height = portBounds.height;
 
     if (portBounds.height >= viewMinimum.height)
@@ -160,9 +160,9 @@ public class ViewportLayout implements LayoutManager, Serializable
       }
 
     // horizontal implementation of the above rules
-    if ((! (view instanceof Scrollable)
-         || ((Scrollable) view).getScrollableTracksViewportWidth())
-        && viewPref.width < portBounds.width)
+    if ((! (view instanceof Scrollable) && viewPref.width < portBounds.width
+         || (view instanceof Scrollable
+         && ((Scrollable) view).getScrollableTracksViewportWidth())))
       viewPref.width = portBounds.width;
 
     if (portBounds.width >= viewMinimum.width)

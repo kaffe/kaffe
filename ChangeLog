@@ -1,5 +1,9 @@
 2006-01-10  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* libraries/javalib/external/classpath: Resynched with GNU Classpath.
+
+2006-01-10  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* configure.ac: Check whether getopt_long works.
 
 	* external/gcc/fastjar/Makefile.am: fastjar should use libreplace.

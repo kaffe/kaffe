@@ -115,7 +115,7 @@ Java_gnu_java_net_VMPlainDatagramSocketImpl_connect(JNIEnv *env,
   assert(env!=NULL);
   assert((*env)!=NULL);
 
-  _javanet_connect(env, obj, addr, port);
+  _javanet_connect(env, obj, addr, port, 0);
 #else /* not WITHOUT_NETWORK */
 #endif /* not WITHOUT_NETWORK */
 }

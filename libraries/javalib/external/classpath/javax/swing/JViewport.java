@@ -259,7 +259,6 @@ public class JViewport extends JComponent implements Accessible
     String scrollModeProp =
       SystemProperties.getProperty("gnu.javax.swing.JViewport.scrollMode",
                          "BLIT");
-    int myScrollMode;
     if (scrollModeProp.equalsIgnoreCase("simple"))
       defaultScrollMode = SIMPLE_SCROLL_MODE;
     else if (scrollModeProp.equalsIgnoreCase("backingstore"))

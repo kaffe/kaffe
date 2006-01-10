@@ -536,8 +536,8 @@ public class RepaintManager
       {
         Component comp = (Component) i.next();
         // Find validate root.
-        while (!(comp instanceof JComponent)
-               || !((JComponent) comp).isValidateRoot()
+        while ((!(comp instanceof JComponent)
+               || !((JComponent) comp).isValidateRoot())
                && comp.getParent() != null)
           comp = comp.getParent();
 

@@ -760,6 +760,7 @@ public class InetAddress implements Serializable
       {
 	byte[] tmp = VMInetAddress.lookupInaddrAny();
 	inaddr_any = new Inet4Address(tmp, null);
+	inaddr_any.hostName = inaddr_any.getHostName();
       }
 
     return inaddr_any;
