@@ -7256,3 +7256,4 @@ AC_SUBST([am__untar])
 
 m4_include([m4/accross.m4])
 m4_include([m4/gcc_AC_FUNC_MKDIR_TAKES_ONE_ARG.m4])
+m4_include([m4/getopt.m4])

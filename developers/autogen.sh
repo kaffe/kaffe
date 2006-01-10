@@ -147,6 +147,12 @@ autoconf # -Wall
   autoreconf -i # -Wall
 )
 
+(
+  cd external/gcc/fastjar
+
+  autoreconf -f
+)
+
 # drops specific patches
 (
   cd scripts

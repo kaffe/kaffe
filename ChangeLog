@@ -1,5 +1,21 @@
 2006-01-10  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* developers/autogen.sh: Regenerate fastjar too.
+
+	* external/gcc/fastjar/m4/getopt.m4: Copied from kaffe's m4.
+	
+	* external/gcc/fastjar/Makefile.am: Use right top_builddir.
+	
+	* external/gcc/fastjar/configure.ac: Invoke gl_GETOPT to get the
+	definition of GETOPT_PREFIX.
+
+	* external/gcc/fastjar/Makefile.in,
+	external/gcc/fastjar/aclocal.m4,
+	external/gcc/fastjar/config.h.in,
+	external/gcc/fastjar/configure: Regenerated.
+
+2006-01-10  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* libraries/javalib/external/classpath: Resynched with GNU Classpath.
 
 2006-01-10  Guilhem Lavaux  <guilhem@kaffe.org>

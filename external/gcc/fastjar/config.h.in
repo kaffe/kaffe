@@ -16,6 +16,12 @@
 /* Define to 1 if you have the `ftruncate' function. */
 #undef HAVE_FTRUNCATE
 
+/* Define to 1 if you have the <getopt.h> header file. */
+#undef HAVE_GETOPT_H
+
+/* Define to 1 if you have the `getopt_long_only' function. */
+#undef HAVE_GETOPT_LONG_ONLY
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
@@ -120,6 +126,10 @@
 
 /* whether byteorder is bigendian */
 #undef WORDS_BIGENDIAN
+
+/* Define to rpl_ if the getopt replacement functions and variables should be
+   used. */
+#undef __GETOPT_PREFIX
 
 /* Define to `long' if <sys/types.h> does not define. */
 #undef off_t
