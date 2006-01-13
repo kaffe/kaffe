@@ -1,5 +1,5 @@
 /* DefaultCaret.java --
-   Copyright (C) 2002, 2004, 2005 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2005, 2006 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -668,8 +668,10 @@ public class DefaultCaret extends Rectangle
       }
     catch (BadLocationException e)
       {
-        assert false : "Unexpected bad caret location: " + dot;
-        return;
+        AssertionError ae;
+	ae = new AssertionError("Unexpected bad caret location: " + dot);
+	ae.initCause(e);
+        throw ae;
       }
 
     if (rect == null)
@@ -863,13 +865,17 @@ public class DefaultCaret extends Rectangle
         visible = true;
 
         Rectangle area = null;
+	int dot = getDot();
         try
           {
-            area = getComponent().modelToView(getDot());
+            area = getComponent().modelToView(dot);
           }
-        catch (BadLocationException ex)
+        catch (BadLocationException e)
           {
-            assert false : "Unexpected bad caret location: " + getDot();
+	    AssertionError ae;
+	    ae = new AssertionError("Unexpected bad caret location: " + dot);
+	    ae.initCause(e);
+	    throw ae;
           }
         if (area != null)
           damage(area);
@@ -902,13 +908,17 @@ public class DefaultCaret extends Rectangle
         visible = v;
         updateTimerStatus();
         Rectangle area = null;
+	int dot = getDot();
         try
           {            
-            area = getComponent().modelToView(getDot());
+            area = getComponent().modelToView(dot);
           }
-        catch (BadLocationException ex)
+        catch (BadLocationException e)
           {
-            assert false: "Unexpected bad caret location: " + getDot();
+	    AssertionError ae;
+	    ae = new AssertionError("Unexpected bad caret location: " + dot);
+	    ae.initCause(e);
+	    throw ae;
           }
         if (area != null)
           damage(area);

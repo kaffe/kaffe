@@ -647,8 +647,16 @@ public class MetalFileChooserUI
     {
       FileView v = getFileView(getFileChooser());
       File f = (File) value;
-      setText(v.getName(f));
-      setIcon(v.getIcon(f));
+      if (f != null)
+	{
+	  setText(v.getName(f));
+	  setIcon(v.getIcon(f));
+	}
+      else
+	{
+	  setText("");
+	  setIcon(null);
+	}
       setOpaque(true);
       if (isSelected)
         {

@@ -1,5 +1,5 @@
 /* VMPlainSocketImpl.java -- VM interface for default socket implementation
-   Copyright (C) 2005 Free Software Foundation, Inc.
+   Copyright (C) 2005, 2006 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -44,6 +44,7 @@ import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.SocketImpl;
 import java.net.SocketOptions;
+import java.net.UnknownHostException;
 
 import gnu.classpath.Configuration;
 
@@ -199,15 +200,17 @@ public final class VMPlainSocketImpl
    *
    * @param socket the socket object
    *
-   * @return read byte
+   * @return read byte or -1 if end of stream.
    *
    * @throws IOException if an error occurs
    */
   static int read(PlainSocketImpl socket) throws IOException
   {
     byte[] buf = new byte[1];
-    read(socket, buf, 0, 1);
-    return buf[0];
+    if (read(socket, buf, 0, 1) > 0)
+      return buf[0] & 0xFF;
+    else
+      return -1;
   }
 
   /**
@@ -277,7 +280,7 @@ public final class VMPlainSocketImpl
     InetAddress addr = sockAddr.getAddress();
 
     if (addr == null)
-      throw new IllegalArgumentException("address is unresolved: " + sockAddr);
+      throw new UnknownHostException(sockAddr.getHostName());
 
     int port = sockAddr.getPort();
 

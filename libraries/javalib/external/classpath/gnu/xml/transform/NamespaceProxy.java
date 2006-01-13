@@ -1,5 +1,5 @@
-/* NamespaceUriFunction.java -- 
-   Copyright (C) 2004,2006 Free Software Foundation, Inc.
+/* NamespaceProxy.java -- 
+   Copyright (C) 2006 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -35,61 +35,43 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
-package gnu.xml.xpath;
+package gnu.xml.transform;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
-import javax.xml.namespace.QName;
+import java.util.Iterator;
+import javax.xml.namespace.NamespaceContext;
 import org.w3c.dom.Node;
 
 /**
- * The <code>namespace-uri</code> function returns the namespace URI of the
- * expanded-name of the node in the argument node-set that is first in
- * document order. If the argument node-set is empty, the first node has no
- * expanded-name, or the namespace URI of the expanded-name is null, an
- * empty string is returned. If the argument is omitted, it defaults to a
- * node-set with the context node as its only member.
+ * A namespace context using a DOM node to resolve the namespace.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-final class NamespaceUriFunction
-  extends Expr
+class NamespaceProxy
+  implements NamespaceContext
 {
 
-  final Expr arg;
+  private final Node node;
 
-  NamespaceUriFunction(List args)
+  NamespaceProxy(Node node)
   {
-    this(args.size() > 0 ? (Expr) args.get(0) : null);
+    this.node = node;
   }
   
-  NamespaceUriFunction(Expr arg)
+  public String getNamespaceURI(String prefix)
   {
-    this.arg = arg;
+    return (node == null) ? null : node.lookupNamespaceURI(prefix);
   }
 
-  public Object evaluate(Node context, int pos, int len)
+  public String getPrefix(String namespaceURI)
   {
-    Object val = (arg == null) ? Collections.singleton(context) :
-        arg.evaluate(context, pos, len);
-    return _namespace_uri(context, (Collection) val);
+    return (node == null) ? null : node.lookupPrefix(namespaceURI);
   }
 
-  public Expr clone(Object context)
+  public Iterator getPrefixes(String namespaceURI)
   {
-    return new NamespaceUriFunction((arg == null) ? null :
-                                    arg.clone(context));
+    // TODO
+    return Collections.singleton(getPrefix(namespaceURI)).iterator();
   }
 
-  public boolean references(QName var)
-  {
-    return (arg == null) ? false : arg.references(var);
-  }
-  
-  public String toString()
-  {
-    return (arg == null) ? "namespace-uri()" : "namespace-uri(" + arg + ")";
-  }
-  
 }

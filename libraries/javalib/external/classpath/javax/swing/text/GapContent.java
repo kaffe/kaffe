@@ -130,11 +130,11 @@ public class GapContent
     }
   }
 
-  class UndoInsertString extends AbstractUndoableEdit
+  class InsertUndo extends AbstractUndoableEdit
   {
     public int where, length;
     String text;
-    public UndoInsertString(int start, int len)
+    public InsertUndo(int start, int len)
     {
       where = start;
       length = len;
@@ -316,7 +316,7 @@ public class GapContent
 
     replace(where, 0, str.toCharArray(), strLen);
 
-    return new UndoInsertString(where, strLen);
+    return new InsertUndo(where, strLen);
   }
 
   /**

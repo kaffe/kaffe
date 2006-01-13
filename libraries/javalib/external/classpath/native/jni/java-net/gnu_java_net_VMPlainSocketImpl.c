@@ -1,5 +1,5 @@
 /* VMPlainSocketImpl.c - Native methods for PlainSocketImpl class
-   Copyright (C) 2005 Free Software Foundation, Inc.
+   Copyright (C) 2005, 2006 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -41,7 +41,6 @@ exception statement from your version. */
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <assert.h>
  
 #include <jni.h>
 #include <jcl.h>
@@ -73,9 +72,6 @@ Java_gnu_java_net_VMPlainSocketImpl_create(JNIEnv *env,
 					   jobject obj)
 {
 #ifndef WITHOUT_NETWORK
-  assert(env!=NULL);
-  assert((*env)!=NULL);
-
   _javanet_create(env, obj, JNI_TRUE);
 #else /* not WITHOUT_NETWORK */
 #endif /* not WITHOUT_NETWORK */
@@ -93,9 +89,6 @@ Java_gnu_java_net_VMPlainSocketImpl_close(JNIEnv *env,
 					  jobject obj)
 {
 #ifndef WITHOUT_NETWORK
-  assert(env!=NULL);
-  assert((*env)!=NULL);
-
   _javanet_close(env, obj, 1);
 #else /* not WITHOUT_NETWORK */
 #endif /* not WITHOUT_NETWORK */
@@ -113,9 +106,6 @@ Java_gnu_java_net_VMPlainSocketImpl_connect(JNIEnv *env,
 					    jobject addr, jint port)
 {
 #ifndef WITHOUT_NETWORK
-  assert(env!=NULL);
-  assert((*env)!=NULL);
-
   _javanet_connect(env, obj, addr, port, 1);
 #else /* not WITHOUT_NETWORK */
 #endif /* not WITHOUT_NETWORK */
@@ -135,9 +125,6 @@ Java_gnu_java_net_VMPlainSocketImpl_bind(JNIEnv *env,
 					 jint port)
 {
 #ifndef WITHOUT_NETWORK
-  assert(env!=NULL);
-  assert((*env)!=NULL);
-
   _javanet_bind(env, obj, addr, port, 1);
 #else /* not WITHOUT_NETWORK */
 #endif /* not WITHOUT_NETWORK */
@@ -155,9 +142,6 @@ Java_gnu_java_net_VMPlainSocketImpl_listen(JNIEnv *env,
 					   jobject obj, jint queuelen)
 {
 #ifndef WITHOUT_NETWORK
-  assert(env!=NULL);
-  assert((*env)!=NULL);
-
   _javanet_listen(env, obj, queuelen);
 #else /* not WITHOUT_NETWORK */
 #endif /* not WITHOUT_NETWORK */
@@ -175,9 +159,6 @@ Java_gnu_java_net_VMPlainSocketImpl_accept(JNIEnv *env,
 					   jobject obj, jobject impl)
 {
 #ifndef WITHOUT_NETWORK
-  assert(env!=NULL);
-  assert((*env)!=NULL);
-
   _javanet_accept(env, obj, impl);
 #else /* not WITHOUT_NETWORK */
 #endif /* not WITHOUT_NETWORK */
@@ -197,9 +178,6 @@ Java_gnu_java_net_VMPlainSocketImpl_available(JNIEnv *env,
   int      bytesAvailable;
   int      result;
   
-  assert(env!=NULL);
-  assert((*env)!=NULL);
-
   cls = (*env)->GetObjectClass(env, obj);
   if (cls == 0)
     {
@@ -241,9 +219,6 @@ Java_gnu_java_net_VMPlainSocketImpl_setOption(JNIEnv *env,
 					      jint option_id, jobject val)
 {
 #ifndef WITHOUT_NETWORK
-  assert(env!=NULL);
-  assert((*env)!=NULL);
-
   _javanet_set_option(env, obj, option_id, val);
 #else /* not WITHOUT_NETWORK */
 #endif /* not WITHOUT_NETWORK */
@@ -261,9 +236,6 @@ Java_gnu_java_net_VMPlainSocketImpl_getOption(JNIEnv *env,
 					      jint option_id)
 {
 #ifndef WITHOUT_NETWORK
-  assert(env!=NULL);
-  assert((*env)!=NULL);
-
   return(_javanet_get_option(env, obj, option_id));
 #else /* not WITHOUT_NETWORK */
   return NULL;
@@ -282,9 +254,6 @@ Java_gnu_java_net_VMPlainSocketImpl_read(JNIEnv *env,
 					 jint offset, jint len)
 {
 #ifndef WITHOUT_NETWORK
-  assert(env!=NULL);
-  assert((*env)!=NULL);
-
   return(_javanet_recvfrom(env, obj, buf, offset, len, 0, 0));
 #else /* not WITHOUT_NETWORK */
   return 0;
@@ -303,9 +272,6 @@ Java_gnu_java_net_VMPlainSocketImpl_write(JNIEnv *env,
 					  jint offset, jint len)
 {
 #ifndef WITHOUT_NETWORK
-  assert(env!=NULL);
-  assert((*env)!=NULL);
-
   _javanet_sendto(env, obj, buf, offset, len, 0, 0);
 #else /* not WITHOUT_NETWORK */
 #endif /* not WITHOUT_NETWORK */
@@ -317,9 +283,6 @@ Java_gnu_java_net_VMPlainSocketImpl_shutdownInput (JNIEnv * env,
 						   jobject this)
 {
 #ifndef WITHOUT_NETWORK
-  assert (env != NULL);
-  assert ((*env) != NULL);
-
   _javanet_shutdownInput (env, this);
 #else /* not WITHOUT_NETWORK */
 #endif /* not WITHOUT_NETWORK */
@@ -331,9 +294,6 @@ Java_gnu_java_net_VMPlainSocketImpl_shutdownOutput (JNIEnv * env,
 						    jobject this)
 {
 #ifndef WITHOUT_NETWORK
-  assert (env != NULL);
-  assert ((*env) != NULL);
-
   _javanet_shutdownOutput (env, this);
 #else /* not WITHOUT_NETWORK */
 #endif /* not WITHOUT_NETWORK */

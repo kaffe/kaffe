@@ -1,5 +1,5 @@
 /* Provider.java -- 
-   Copyright (C) 2002, 2005 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2005, 2006 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -49,6 +49,11 @@ import java.util.Iterator;
  * Charset provider for the required charsets.  Used by
  * {@link Charset#charsetForName} and * {@link Charset#availableCharsets}.
  *
+ * Note: This class is a privileged class, because it can be instantiated without
+ * requiring the RuntimePermission("charsetProvider"). There is a check in
+ * java.nio.charset.spi.CharsetProvider to skip the security check if the provider
+ * is an instance of this class.
+ *
  * @author Jesse Rosenstock
  * @author Robert Schuster (thebohemian@gmx.net)
  * @see Charset
@@ -56,14 +61,6 @@ import java.util.Iterator;
 public final class Provider extends CharsetProvider
 {
   private static Provider singleton;
-
-  static
-  {
-    synchronized (Provider.class)
-      {
-        singleton = null;
-      }
-  }
 
   /**
    * Map from charset name to charset canonical name. The strings

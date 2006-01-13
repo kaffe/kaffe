@@ -54,6 +54,7 @@ public class TransferHandler implements Serializable
 
     public TransferAction(String command)
     {
+      super(command);
       this.command = command;
     }
     

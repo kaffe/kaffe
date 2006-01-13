@@ -1,3 +1,8 @@
+2006-01-13  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* libraries/javalib/external/classpath: Resynched classpath (GNU
+	Classpath 0.20).
+
 2006-01-10  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* developers/autogen.sh: Regenerate fastjar too.

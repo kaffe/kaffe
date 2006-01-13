@@ -282,8 +282,8 @@ public class XMLParser
   private final boolean stringInterning;
 
   /**
-   * If true, adjacent text will always be reported as one event.
-   * Otherwise multiple text events (chunks) may be reported.
+   * If true, CDATA sections will be merged with adjacent text nodes into a
+   * single event.
    */
   private final boolean coalescing;
 
@@ -366,8 +366,8 @@ public class XMLParser
    * (necessary if there are external entities to be resolved)
    * @param validating if the parser is to be a validating parser
    * @param namespaceAware if the parser should support XML Namespaces
-   * @param coalescing if text should be reported as a single event instead
-   * of a series of events
+   * @param coalescing if CDATA sections should be merged into adjacent text
+   * nodes
    * @param replaceERefs if entity references should be automatically
    * replaced by their replacement text (otherwise they will be reported as
    * entity-reference events)
@@ -423,8 +423,8 @@ public class XMLParser
    * (necessary if there are external entities to be resolved)
    * @param validating if the parser is to be a validating parser
    * @param namespaceAware if the parser should support XML Namespaces
-   * @param coalescing if text should be reported as a single event instead
-   * of a series of events
+   * @param coalescing if CDATA sections should be merged into adjacent text
+   * nodes
    * @param replaceERefs if entity references should be automatically
    * replaced by their replacement text (otherwise they will be reported as
    * entity-reference events)
@@ -1357,7 +1357,7 @@ public class XMLParser
               throw new EOFException();
             else if (input.xml11)
               {
-                if (!isXML11Char(c))
+                if (!isXML11Char(c) || isXML11RestrictedChar(c))
                   error("illegal XML 1.1 character",
                         "U+" + Integer.toHexString(c));
               }
@@ -3088,12 +3088,16 @@ public class XMLParser
               case 0x3c: // '<'
                 reset();
                 read(tmpBuf, 0, i);
-                done = true;
-                break; // end of text sequence
+                i = len;
+                if (coalescing && tryRead(TEST_CDATA))
+                  readUntil(TEST_END_CDATA); // read CDATA section into buf
+                else
+                  done = true; // end of text sequence
+                break;
               default:
                 if (input.xml11)
                   {
-                    if (!isXML11Char(c))
+                    if (!isXML11Char(c) || isXML11RestrictedChar(c))
                       error("illegal XML 1.1 character",
                             "U+" + Integer.toHexString(c));
                   }
@@ -3106,7 +3110,7 @@ public class XMLParser
           }
         // if text buffer >= 2MB, return it as a chunk
         // to avoid excessive memory use
-        if (!coalescing && buf.length() >= 2097152)
+        if (buf.length() >= 2097152)
           done = true;
       }
     if (entities)

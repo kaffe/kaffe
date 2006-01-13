@@ -1,3 +1,335 @@
+2006-01-13  Mark Wielaard  <mark@klomp.org>
+
+	* doc/www.gnu.org/announce/20060113.wml: New file.
+	* doc/www.gnu.org/newsitems.txt: Add 0.20 release announcement.
+	* doc/www.gnu.org/downloads/downloads.wml: Add 0.20.
+
+2006-01-13  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/DefaultStyledDocument.java:
+	Removed unused fields.
+	(insert): Removed unused fields.
+	(endEdit): Removed, not needed.
+	(insertUpdate): Removed call to endEdit.
+	(prepareContentInsertion): Removed, not needed.
+	(insertContentTag): Removed call to prepareContentInsertion.
+	(printElements): Removed, not needed.
+	(attributeSetsAreSame): Removed, not needed.
+
+2006-01-13  Mark Wielaard  <mark@klomp.org>
+
+	* configure.ac: Set version to 0.20.
+	* NEWS: Add entries for all the new work done.
+
+2006-01-13  Mark Wielaard  <mark@klomp.org>
+
+	* javax/swing/text/DefaultCaret.java: Chain all AssertionErrors.
+
+2006-01-13  Mark Wielaard  <mark@klomp.org>
+
+	* java/util/regex/Pattern.java (Pattern): Chain REException.
+
+2006-01-13  Chris Burdess  <dog@gnu.org>
+
+	* gnu/xml/xpath/NameTest.java: Removed debugging output.
+
+2006-01-13  Jeroen Frijters  <jeroen@frijters.net>
+
+	* java/security/Security.java
+	(getProperty): Added hack to skip security check when trusted
+	code is direct caller.
+
+2006-01-13  Jeroen Frijters  <jeroen@frijters.net>
+
+	* java/io/PrintStream.java
+	(line_separator, PrintStream(OutputStream,boolean)): Use
+	SystemProperties.
+
+2006-01-13  Jeroen Frijters  <jeroen@frijters.net>
+
+	* gnu/java/nio/charset/Provider.java: Added comment about its
+	special relation with CharsetProvider.
+	(static): Removed.
+	* gnu/java/nio/charset/iconv/IconvProvider.java: Added comment about
+	its special relation with CharsetProvider.
+	(static): Removed.
+	* java/nio/charset/spi/CharsetProvider.java
+	(CharsetProvider): Add special case to skip security check for
+	built in providers.
+
+2006-01-13  Mark Wielaard  <mark@klomp.org>
+
+	* javax/swing/JMenuItem.java (JMenuItem(Action)): Check whether
+	name, accel, mnemonic and command are defined before setting.
+
+2006-01-12  Mark Wielaard  <mark@klomp.org>
+
+	* javax/swing/plaf/metal/MetalFileChooserUI.java
+	(FileRenderer.getListCellRendererComponent): Set empty name and null
+	icon when File is null.
+
+2006-01-13  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* gnu/java/rmi/server/UnicastRef.java (newCall):
+	Throw ConnectException after catching IOException.
+
+2006-01-12  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/DefaultStyledDocument.java
+	(insertUpdate): Removed unneeded check.
+
+2006-01-12  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* javax/swing/text/DefaultStyledDocument.java:
+	(ElementBuffer.insertContentTag): If the direction is JoinNextDirection
+	and we haven't come immediately after a fracture, adjust the Element
+	offsets.  Added comment explaining the situation.
+	(insert): Return early if no ElementSpecs passed in.  Removed redundant
+	call to insertUpdate.  Fired the UndoableEditUpdate.
+
+2006-01-12  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	Fixes bug #22802
+	* gnu/regexp/RE.java(initialize): Fixed the parsing of
+	character classes within a subexpression.
+
+2006-12-12  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/DefaultStyledDocument.java
+	(insertUpdate): Added check to check if attribute set is 
+	empty.
+	(insertUpdate): Added check to determine if last character
+	is a newline. If it is, we should not be fracturing.
+	(insert): Added check to determine if attribute set is empty.
+	If it is, insertUpdate should not be called.
+
+2006-12-12  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* configure.ac: Check for isnan.
+
+	* native/fdlibm/fdlibm.h: If we have a isnan function then do not
+	define the macro.
+
+2006-01-12  Chris Burdess  <dog@gnu.org>
+
+	* gnu/xml/stream/XMLParser.java: Corrected the handling of some XML
+	  1.1 character ranges.
+
+2006-01-12  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* javax/swing/TransferHandler.java:
+	(TransferAction<init>): Call super constructor.  Fixes Mauve regression
+	gnu/testlet/javax/swing/JTextField/CopyPaste.
+
+2006-01-12  Christian Thalinger  <twisti@complang.tuwien.ac.at>
+
+	* resource/Makefile.am: Install 
+	logging.properties into $(prefix)/lib.
+	* resource/Makefile.am (securitydir): Changed to 
+	$(prefix)/lib/security.
+
+2006-01-12  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JTextField.java
+	(createDefaultModel): Moved installation of the filterNewlines
+	property to setDocument().
+	(setDocument): New method. Installs the filterNewlines property
+	on the document.
+
+2006-01-12  Chris Burdess  <dog@gnu.org>
+
+	* gnu/xml/dom/DomNode.java,
+	  gnu/xml/transform/ElementAvailableFunction.java: Removed debugging
+	  output.
+	* gnu/xml/xpath/NameTest.java,
+	  gnu/xml/xpath/NamespaceTest.java,
+	  gnu/xml/xpath/Selector.java: Fix regression for namespace axis
+	  navigation.
+	* gnu/xml/transform/MessageNode.java: Use standard logging system
+	  for outputting messages.
+
+2006-01-12  Tom Tromey  <tromey@redhat.com>
+
+	* java/net/InetAddress.java (DEFAULT_CACHE_SIZE): Removed.
+	(DEFAULT_CACHE_PERIOD, DEFAULT_CACHE_PURGE_PCT): Likewise.
+	(cache_size, cache_period, cache_purge_pct, cache): Likewise.
+	(static initializer): Removed cache code.
+	(checkCacheFor, addToCache): Removed.
+	(getAllByName): Removed cache code.
+	(lookup_time): Removed.
+	(InetAddress): Updated.
+
+2006-01-12  Chris Burdess  <dog@gnu.org>
+
+	* gnu/xml/dom/DomDocument.java,
+	  gnu/xml/dom/DomElement.java,
+	  gnu/xml/dom/DomNode.java,
+	  gnu/xml/stream/XMLParser.java,
+	  gnu/xml/transform/Bindings.java,
+	  gnu/xml/transform/ElementAvailableFunction.java,
+	  gnu/xml/transform/ElementNode.java,
+	  gnu/xml/transform/FunctionAvailableFunction.java,
+	  gnu/xml/transform/NamespaceProxy.java,
+	  gnu/xml/transform/StreamSerializer.java,
+	  gnu/xml/transform/Stylesheet.java,
+	  gnu/xml/transform/TransformerImpl.java,
+	  gnu/xml/xpath/Selector.java: Implement isEqualNode correctly for
+	  document and element nodes; correct coalescing semantics when parsing;
+	  attribute-sets can only refer to top-level variables and parameters;
+	  fix namespace retrieval during element-available and
+	  function-available functions; implement xsl:fallback for extension
+	  elements; tokenize whitespace correctly during whitespace stripping;
+	  correct following and previous node axes selectors.
+
+2006-01-12  Roman Kennke  <kennke@aicas.com>
+
+	* java/util/Hashtable.java
+	(KeyEnumerator.nextElement): Added null check to avoid NPE.
+	(ValueEnumerator.nextElement): Added null check to avoid NPE.
+
+2006-01-12  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/GapContent.java
+	(UndoInsertString): Changed name of class to InsertUndo to match the JDK.
+
+2006-01-12  Mark Wielaard  <mark@klomp.org>
+
+	* vm/reference/gnu/java/net/VMPlainSocketImpl.java (connect):
+	Throw UnknowHostException when name could not be resolved.
+
+2006-01-12  Jeroen Frijters  <jeroen@frijters.net>
+
+	* java/net/URL.java
+	(static, getURLStreamHandler): Use SystemProperties.
+
+2006-01-12  Mark Wielaard  <mark@klomp.org>
+
+	* vm/reference/gnu/java/net/VMPlainDatagramSocketImpl.java (receive):
+	Use packet.getLength().
+	* native/jni/java-net/gnu_java_net_VMPlainDatagramSocketImpl.c
+	(nativeReceive): Check whether the receiver wants zero bytes.
+
+2006-01-12  Mark Wielaard  <mark@klomp.org>
+
+	* native/jni/java-net/javanet.c (_javanet_recvfrom): Return -1 when
+	other side orderly closed connection.
+	* vm/reference/gnu/java/net/VMPlainSocketImpl.java
+	(read(PlainSocketImpl)): Mask byte to return unsigned int. Return -1
+	when end of stream reached.
+
+2006-01-12  Mark Wielaard  <mark@klomp.org>
+
+	* native/jni/java-net/gnu_java_net_VMPlainDatagramSocketImpl.c:
+	Remove asserts.
+	* native/jni/java-net/gnu_java_net_VMPlainSocketImpl.c: Likewise.
+	* native/jni/java-net/java_net_VMInetAddress.c: Likewise.
+	* native/jni/java-net/java_net_VMNetworkInterface.c: Likewise.
+	* native/jni/java-net/javanet.c: Likewise.
+
+2006-01-12  Mark Wielaard  <mark@klomp.org>
+
+	* native/fdlibm/mprec.c (Balloc): Disable assert to workaround
+	PR classpath/23863.
+
+2006-01-11  Chris Burdess  <dog@gnu.org>
+
+	* gnu/xml/transform/AttributeNode.java,
+	  gnu/xml/transform/ElementNode.java,
+	  gnu/xml/transform/LiteralNode.java,
+	  gnu/xml/transform/StreamSerializer.java,
+	  gnu/xml/transform/StrippingInstruction.java,
+	  gnu/xml/transform/Stylesheet.java,
+	  gnu/xml/transform/TransformerImpl.java,
+	  gnu/xml/transform/ValueOfNode.java,
+	  gnu/xml/xpath/Expr.java,
+	  gnu/xml/xpath/LocalNameFunction.java,
+	  gnu/xml/xpath/NameFunction.java,
+	  gnu/xml/xpath/NameTest.java,
+	  gnu/xml/xpath/NamespaceUriFunction.java,
+	  gnu/xml/xpath/NodeTypeTest.java,
+	  gnu/xml/xpath/SubstringFunction.java,
+	  javax/xml/namespace/QName.java: don't determine element namespace
+	  from namespace aliases when specified; better namespace handling
+	  when serializing elements; don't create HTML meta element unless
+	  head element exists; correct encoding of CDATA sections containing
+	  ']]>'; encode HTML character entity references; use ISO-Latin-1 as
+	  default encoding for HTML output; rewrite of XSLT
+	  strip-space/preserve-space handling; correct doctype-public and
+	  doctype-system output attributes; insert generated doctype before
+	  document element; fixed result tree whitespace stripping
+	  algorithm; fixed semantics of XPath name, local-name, and
+	  namespace-uri functions; name tests handle XML/XMLNS namespaces
+	  correctly; fixed semantics of processing-instruction node test.
+	* gnu/xml/transform/TransformerFactoryImpl.java: Add main method to
+	  aid debugging.
+
+2006-01-11  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/DefaultStyledDocument.java
+	(insertFracture): Added calls to addEdit for each time a structure 
+	is changed. addEdit is called on the newBranch, previous, and parent
+	structures.
+
+2006-01-11  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* javax/swing/text/DefaultStyledDocument.java:
+	(ElementBuffer.insertContentTag): Don't adjust the structure here.  
+	This will have been taken care of in insertFracture.  Added a comment
+	explaining that we need to add edits to the DocumentEvent and that
+	this may be the place to do it.
+
+2006-01-11  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* javax/swing/text/DefaultStyledDocument.java:
+	(ElementBuffer.insertUpdate): Properly recreate Elements if the first
+	tag is an end tag. Avoid NPE by pushing the proper Element on to the 
+	elementStack when there is a start tag with JoinNextDirection.
+
+2006-01-11  Roman Kennke  <kennke@aicas.com>
+
+	Reported by: Fridjof Siebert <siebert@aicas.com>
+	* java/util/Hashtable.java
+	(KEYS): Removed unneeded field.
+	(VALUES): Removed unneeded field.
+	(ENTRIES): Removed unneeded field.
+	(keys): Return a KeyEnumerator instance.
+	(elements): Returns a ValueEnumerator instance.
+	(toString): Use an EntryIterator instance.
+	(keySet): Return a KeyIterator instance.
+	(values): Return a ValueIterator instance.
+	(entrySet): Return an EntryIterator instance.
+	(hashCode): Use EntryIterator instance.
+	(rehash): Changed this loop to avoid redundant reads and make
+	it obvious that null checking is not needed.
+	(writeObject): Use EntryIterator instance.
+	(HashIterator): Removed class.
+	(Enumerator): Removed class.
+	(EntryIterator): New class.
+	(KeyIterator): New class.
+	(ValueIterator): New class.
+	(EntryEnumerator): New class.
+	(KeyEnumerator): New class.
+	(ValueEnumerator): New class.
+
+2006-01-11  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/DefaultStyledDocument.java
+	(toString): Shouldn't append the '>' character here.
+	(createDefaultRoot): Should not set the resolve parent. This
+	causes problems when comparing attribute sets.
+
+2006-01-10  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* javax/swing/text/DefaultStyledDocument.java:
+	(ElementBuffer.insertUpdate): Rewritten to properly handle start and
+	end tags.
+	(ElementBuffer.insertFracture): New method.
+	(ElementBuffer.insertContentTag): Removed unnecessary case for 
+	JoinFractureDirection - this only applies to start tags, not content
+	tags.
+	(insertUpdate): Corrected conditions for setting direction to 
+	JoinNextDirection.
+
 2006-01-10  Roman Kennke  <kennke@aicas.com>
 
 	* Makefile.am (EXTRA_DIST): Added ChangeLog-2004.

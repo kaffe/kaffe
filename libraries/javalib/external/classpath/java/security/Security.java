@@ -1,5 +1,6 @@
 /* Security.java --- Java base security class implementation
-   Copyright (C) 1999, 2001, 2002, 2003, 2004, 2005  Free Software Foundation, Inc.
+   Copyright (C) 1999, 2001, 2002, 2003, 2004, 2005, 2006
+   Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -41,6 +42,7 @@ package java.security;
 import gnu.classpath.SystemProperties;
 
 import gnu.classpath.Configuration;
+import gnu.classpath.VMStackWalker;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -391,8 +393,11 @@ public final class Security
    */
   public static String getProperty(String key)
   {
+    // XXX To prevent infinite recursion when the SecurityManager calls us,
+    // don't do a security check if the caller is trusted (by virtue of having
+    // been loaded by the bootstrap class loader).
     SecurityManager sm = System.getSecurityManager();
-    if (sm != null)
+    if (sm != null && VMStackWalker.getCallingClassLoader() != null)
       sm.checkSecurityAccess("getProperty." + key);
 
     return secprops.getProperty(key);

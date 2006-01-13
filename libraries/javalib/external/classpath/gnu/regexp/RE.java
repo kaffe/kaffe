@@ -376,7 +376,7 @@ public class RE extends REToken {
       //  what is proper interpretation of '{' at start of string?
       //
       // This method used to check "repeat.empty.token" to avoid such regexp
-      // as "(a*){2.}", but now "repeat.empty.token" is allowed.
+      // as "(a*){2,}", but now "repeat.empty.token" is allowed.
 
       else if ((unit.ch == '{') && syntax.get(RESyntax.RE_INTERVALS) && (syntax.get(RESyntax.RE_NO_BK_BRACES) ^ (unit.bk || quot))) {
 	int newIndex = getMinMax(pattern,index,minMax,syntax);
@@ -551,13 +551,50 @@ public class RE extends REToken {
 	int nested = 0;
 
 	while ( ((nextIndex = getCharUnit(pattern,endIndex,unit,false)) > 0)
-		&& !(nested == 0 && (unit.ch == ')') && (syntax.get(RESyntax.RE_NO_BK_PARENS) ^ (unit.bk || quot))) )
+		&& !(nested == 0 && (unit.ch == ')') && (syntax.get(RESyntax.RE_NO_BK_PARENS) ^ (unit.bk || quot))) ) {
 	  if ((endIndex = nextIndex) >= pLength)
 	    throw new REException(getLocalizedMessage("subexpr.no.end"),REException.REG_ESUBREG,nextIndex);
+	  else if ((unit.ch == '[') && !(unit.bk || quot)) {
+	    // I hate to do something similar to the LIST OPERATOR matters
+	    // above, but ...
+	    int listIndex = nextIndex;
+	    if (listIndex < pLength && pattern[listIndex] == '^') listIndex++;
+	    if (listIndex < pLength && pattern[listIndex] == ']') listIndex++;
+	    int listEndIndex = -1;
+	    int listNest = 0;
+	    while (listIndex < pLength && listEndIndex < 0) {
+	      switch(pattern[listIndex++]) {
+		case '\\':
+		  listIndex++;
+		  break;
+		case '[':
+		  // Sun's API document says that regexp like "[a-d[m-p]]"
+		  // is legal. Even something like "[[[^]]]]" is accepted.
+		  listNest++;
+		  if (listIndex < pLength && pattern[listIndex] == '^') listIndex++;
+		  if (listIndex < pLength && pattern[listIndex] == ']') listIndex++;
+		  break;
+		case ']':
+		  if (listNest == 0)
+		    listEndIndex = listIndex;
+		  listNest--;
+		  break;
+	      }
+	    }
+	    if (listEndIndex >= 0) {
+	      nextIndex = listEndIndex;
+	      if ((endIndex = nextIndex) >= pLength)
+	        throw new REException(getLocalizedMessage("subexpr.no.end"),REException.REG_ESUBREG,nextIndex);
+	      else
+	        continue;
+	    }
+	    throw new REException(getLocalizedMessage("subexpr.no.end"),REException.REG_ESUBREG,nextIndex);
+	  }
 	  else if (unit.ch == '(' && (syntax.get(RESyntax.RE_NO_BK_PARENS) ^ (unit.bk || quot)))
 	    nested++;
 	  else if (unit.ch == ')' && (syntax.get(RESyntax.RE_NO_BK_PARENS) ^ (unit.bk || quot)))
 	    nested--;
+	}
 
 	// endIndex is now position at a ')','\)' 
 	// nextIndex is end of string or position after ')' or '\)'

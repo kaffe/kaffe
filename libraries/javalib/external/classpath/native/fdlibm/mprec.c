@@ -97,7 +97,9 @@ _DEFUN (Balloc, (ptr, k), struct _Jv_reent *ptr _AND int k)
   int i = 0;
   int j = 1;
 
-  assert ((1 << k) < MAX_BIGNUM_WDS);
+  /* FIXME - assert disabled because of PR classpath/23863
+   * assert ((1 << k) < MAX_BIGNUM_WDS);
+   */
 
   while ((ptr->_allocation_map & j) && i < MAX_BIGNUMS)
     i++, j <<= 1;

@@ -155,7 +155,7 @@ public final class VMPlainDatagramSocketImpl
     int[] receivedLength = new int[1];
 
     nativeReceive(socket, packet.getData(), packet.getOffset(),
-                  packet.getData().length - packet.getOffset(),
+                  packet.getLength(),
                   receiveFromAddress, receiveFromPort, receivedLength);
 
     packet.setAddress(InetAddress.getByAddress(receiveFromAddress));

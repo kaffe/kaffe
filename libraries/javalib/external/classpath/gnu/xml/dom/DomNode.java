@@ -1749,7 +1749,10 @@ public abstract class DomNode
         switch (ctx.nodeType)
           {
           case TEXT_NODE:
-            while (ctx.next != null && ctx.next.nodeType == TEXT_NODE)
+          case CDATA_SECTION_NODE:
+            while (ctx.next != null &&
+                   (ctx.next.nodeType == TEXT_NODE ||
+                    ctx.next.nodeType == CDATA_SECTION_NODE))
               {
                 Text text = (Text) ctx;
                 text.appendData(ctx.next.getNodeValue());
@@ -1989,39 +1992,56 @@ public abstract class DomNode
   public boolean isEqualNode(Node arg)
   {
     if (this == arg)
-      {
-        return true;
-      }
+      return true;
     if (arg == null)
+      return false;
+    if (nodeType != arg.getNodeType())
+      return false;
+    switch (nodeType)
       {
-        return false;
-      }
-    if (nodeType != arg.getNodeType() ||
-        !equal(getNodeName(), arg.getNodeName()) ||
-        !equal(getLocalName(), arg.getLocalName()) ||
-        !equal(getNamespaceURI(), arg.getNamespaceURI()) ||
-        !equal(getPrefix(), arg.getPrefix()) ||
-        !equal(getNodeValue(), arg.getNodeValue()))
-      {
-        return false;
+      case ELEMENT_NODE:
+      case ATTRIBUTE_NODE:
+        if (!equal(getLocalName(), arg.getLocalName()) ||
+            !equal(getNamespaceURI(), arg.getNamespaceURI()))
+          return false;
+        break;
+      case PROCESSING_INSTRUCTION_NODE:
+        if (!equal(getNodeName(), arg.getNodeName()) ||
+            !equal(getNodeValue(), arg.getNodeValue()))
+          return false;
+        break;
+      case COMMENT_NODE:
+      case TEXT_NODE:
+      case CDATA_SECTION_NODE:
+        if (!equal(getNodeValue(), arg.getNodeValue()))
+          return false;
+        break;
       }
     // Children
     Node argCtx = arg.getFirstChild();
     getFirstChild(); // because of DomAttr lazy children
-    for (DomNode ctx = first; ctx != null; ctx = ctx.next)
+    DomNode ctx = first;
+    for (; ctx != null && argCtx != null; ctx = ctx.next)
       {
-        if (!ctx.isEqualNode(argCtx))
+        if (nodeType == DOCUMENT_NODE)
           {
-            return false;
+            // Ignore whitespace outside document element
+            while (ctx != null && ctx.nodeType == TEXT_NODE)
+              ctx = ctx.next;
+            while (argCtx != null && ctx.getNodeType() == TEXT_NODE)
+              argCtx = argCtx.getNextSibling();
+            if (ctx == null && argCtx != null)
+              return false;
+            else if (argCtx == null && ctx != null)
+              return false;
           }
+        if (!ctx.isEqualNode(argCtx))
+          return false;
         argCtx = argCtx.getNextSibling();
       }
-    if (argCtx != null)
-      {
-        return false;
-      }
+    if (ctx != null || argCtx != null)
+      return false;
     
-    // TODO Attr NamedNodeMap
     // TODO DocumentType
     return true;
   }
@@ -2155,6 +2175,15 @@ public abstract class DomNode
       default:
         return "UNKNOWN";
       }
+  }
+
+  public void list(java.io.PrintStream out, int indent)
+  {
+    for (int i = 0; i < indent; i++)
+      out.print(" ");
+    out.println(toString());
+    for (DomNode ctx = first; ctx != null; ctx = ctx.next)
+      ctx.list(out, indent + 1);
   }
 
 }

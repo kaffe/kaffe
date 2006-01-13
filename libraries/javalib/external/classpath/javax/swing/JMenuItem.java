@@ -1,5 +1,5 @@
 /* JMenuItem.java --
-   Copyright (C) 2002, 2004, 2005  Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2005,2006  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -119,10 +119,21 @@ public class JMenuItem extends AbstractButton implements Accessible,
     init(null, null);
     if (action != null)
       {
-        setName((String) action.getValue(Action.NAME));
-        setAccelerator((KeyStroke) action.getValue(Action.ACCELERATOR_KEY));
-        setMnemonic(((Integer) action.getValue(Action.MNEMONIC_KEY)).intValue());
-        setActionCommand((String) action.getValue(Action.ACTION_COMMAND_KEY));
+	String name = (String) action.getValue(Action.NAME);
+	if (name != null)
+          setName(name);
+
+	KeyStroke accel = (KeyStroke) action.getValue(Action.ACCELERATOR_KEY);
+	if (accel != null)
+          setAccelerator(accel);
+
+	Integer mnemonic = (Integer) action.getValue(Action.MNEMONIC_KEY);
+	if (mnemonic != null)
+          setMnemonic(mnemonic.intValue());
+
+	String command = (String) action.getValue(Action.ACTION_COMMAND_KEY);
+	if (command != null)
+          setActionCommand(command);
       }
   }
 

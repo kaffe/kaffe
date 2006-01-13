@@ -1,5 +1,5 @@
 /* VMPlainDatagramSocketImpl.c - Native methods for PlainDatagramSocketImpl
-   Copyright (C) 2005 Free Software Foundation, Inc.
+   Copyright (C) 2005, 2006 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -41,7 +41,6 @@ exception statement from your version. */
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <assert.h>
 
 #include <jni.h>
 #include <jcl.h>
@@ -72,8 +71,6 @@ Java_gnu_java_net_VMPlainDatagramSocketImpl_create(JNIEnv *env,
 						   jclass klass __attribute__ ((__unused__))
 						   , jobject obj)
 {
-  assert(env!=NULL);
-  assert((*env)!=NULL);
 
 #ifndef WITHOUT_NETWORK
   _javanet_create(env, obj, 0);
@@ -91,8 +88,6 @@ Java_gnu_java_net_VMPlainDatagramSocketImpl_close(JNIEnv *env,
 						  jclass klass __attribute__ ((__unused__)),
 						  jobject obj)
 {
-  assert(env!=NULL);
-  assert((*env)!=NULL);
 
 #ifndef WITHOUT_NETWORK
   _javanet_close(env, obj, 0);
@@ -112,8 +107,6 @@ Java_gnu_java_net_VMPlainDatagramSocketImpl_connect(JNIEnv *env,
 						    jobject addr, jint port)
 {
 #ifndef WITHOUT_NETWORK
-  assert(env!=NULL);
-  assert((*env)!=NULL);
 
   _javanet_connect(env, obj, addr, port, 0);
 #else /* not WITHOUT_NETWORK */
@@ -133,8 +126,6 @@ Java_gnu_java_net_VMPlainDatagramSocketImpl_bind(JNIEnv *env,
 						 jobject obj,
 						 jint port, jobject addr)
 {
-  assert(env!=NULL);
-  assert((*env)!=NULL);
 
 #ifndef WITHOUT_NETWORK
   _javanet_bind(env, obj, addr, port, 0);
@@ -154,8 +145,6 @@ Java_gnu_java_net_VMPlainDatagramSocketImpl_setOption(JNIEnv *env,
 						      jint option_id,
 						      jobject val)
 {
-  assert(env!=NULL);
-  assert((*env)!=NULL);
 
 #ifndef WITHOUT_NETWORK
   _javanet_set_option(env, obj, option_id, val);
@@ -174,8 +163,6 @@ Java_gnu_java_net_VMPlainDatagramSocketImpl_getOption(JNIEnv *env,
 						      jobject obj, 
 						      jint option_id)
 {
-  assert(env!=NULL);
-  assert((*env)!=NULL);
 
 #ifndef WITHOUT_NETWORK
   return(_javanet_get_option(env, obj, option_id));
@@ -204,12 +191,6 @@ Java_gnu_java_net_VMPlainDatagramSocketImpl_nativeReceive(JNIEnv     *env,
   int           addr, *port, *bytes_read;
   char          *addressBytes;
 
-  assert(env!=NULL);
-  assert((*env)!=NULL);
-  assert((*env)->GetArrayLength(env, receivedFromAddress) > 4);
-  assert((*env)->GetArrayLength(env, receivedFromPort   ) > 1);
-  assert((*env)->GetArrayLength(env, receivedLength     ) > 1);
-
   addr = 0;
     
   port = (int*)(*env)->GetIntArrayElements(env, receivedFromPort, NULL);
@@ -230,6 +211,12 @@ Java_gnu_java_net_VMPlainDatagramSocketImpl_nativeReceive(JNIEnv     *env,
   /* Receive the packet */
   /* should we try some sort of validation on the length? */
   (*bytes_read) = _javanet_recvfrom(env, obj, arr, offset, length, &addr, port);
+
+  /* Special case the strange situation where the receiver didn't want any
+     bytes. */
+  if (length == 0 && (*bytes_read) == -1)
+    *bytes_read = 0;
+
   if ((*bytes_read) == -1)
     {
       (*env)->ReleaseIntArrayElements(env, receivedFromPort, (jint*)port, 0);
@@ -281,9 +268,6 @@ Java_gnu_java_net_VMPlainDatagramSocketImpl_nativeSendTo(JNIEnv  *env,
 #ifndef WITHOUT_NETWORK
   jint netAddress;
 
-  assert(env!=NULL);
-  assert((*env)!=NULL);
-
   /* check if address given, tr 7.3.2005 */
   if (addr != NULL)
     {
@@ -326,9 +310,6 @@ Java_gnu_java_net_VMPlainDatagramSocketImpl_join(JNIEnv *env,
   jint netAddress;
   int  fd;
   int  result;
-
-  assert(env!=NULL);
-  assert((*env)!=NULL);
 
   /* check if address given, tr 7.3.2005 */
   if (addr != NULL)
@@ -382,9 +363,6 @@ Java_gnu_java_net_VMPlainDatagramSocketImpl_leave(JNIEnv *env,
   jint netAddress;
   int  fd;
   int  result;
-
-  assert(env!=NULL);
-  assert((*env)!=NULL);
 
   /* check if address given, tr 7.3.2005 */
   if (addr != NULL)
