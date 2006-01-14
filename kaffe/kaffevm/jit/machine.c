@@ -259,6 +259,8 @@ DBG(MOREJIT,
 	/* Scan the code and determine the basic blocks */
 	success = analyzeMethod(meth, &codeInfo, einfo); 
 	if (success == false) {
+		if (METHOD_TRANSLATED(meth))
+			success = true;
 		goto done3;
 	}
 

@@ -208,7 +208,9 @@ TEST_CLASS_LOADING = \
 	FieldErrors.java \
 	MethodErrors.java \
 	ProhibitedClass.java \
-	KaffeInternal.java
+	KaffeInternal.java \
+	SecurityMan.java \
+	SecurityMan2.java
 
 ## Test catching our own death
 ## Test various ways of stopping threads

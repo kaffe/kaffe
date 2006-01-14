@@ -1,3 +1,28 @@
+2006-01-14  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/code-analyse.c
+	(analyzeBasicBlock): Ensure that the method has not been
+	translated by this thread while loading a subclass.
+
+	* kaffe/kaffevm/gcFuncs.c
+	(initCollector): stringDestroy must be called at string
+	finalization because uninterning needs the inner pointer fields to
+	be still valid.
+
+	* kaffe/kaffevm/jit/machine.c,
+	kaffe/kaffevm/jit3/machine.c
+	(translate): If the method has already been translated during a
+	analyzeMethod then skip translation.
+	
+	* test/regression/Makefile.am: Added SecurityMan.java and
+	SecurityMan2.java.
+	
+	* test/regression/SecurityMan.java,
+	test/regression/SecurityMan2.java: Two new tests to check the
+	robustness of the SecurityManager vs the VM.
+
+	* test/regression/Makefile.in: Regenerated.
+	
 2006-01-13  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* libraries/javalib/external/classpath: Resynched classpath (GNU

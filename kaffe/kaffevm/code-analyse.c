@@ -394,7 +394,6 @@ analyzeBasicBlock(codeinfo* codeInfo, Method* meth, int32 pc, errorInfo *einfo)
 	wide = false;
 	failed = false;
 	do {
-
 		if (sp < meth->localsz || sp > meth->localsz + meth->stacksz) {
 			failed = true;
 			postExceptionMessage(einfo, JAVA_LANG(VerifyError),
@@ -1380,6 +1379,13 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 					goto done_fail;
 				}
 			}
+			/* We must check whether the method
+			 * could have been translated in the 
+			 * getField invokation. It may happen
+			 * principally in SecurityManagers.
+			 */
+			if (METHOD_TRANSLATED(meth))
+				goto done_fail;
 			switch (finfo.signature->data[0]){
 			case 'I':
 			case 'Z':
@@ -1421,6 +1427,8 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 					goto done_fail;
 				}
 			}
+			if (METHOD_TRANSLATED(meth))
+				goto done_fail;
 			switch (finfo.signature->data[0]){
 			case 'I':
 			case 'Z':
@@ -1460,6 +1468,8 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 			if (getField(WORD(pc+1), meth->class, false, &finfo, einfo) == 0) {
 				goto done_fail;
 			}
+			if (METHOD_TRANSLATED(meth))
+				goto done_fail;
 			STACKIN(0, TOBJ);
 			if (!FIELD_ISPRIM(finfo.field)) {
 				STACKOUT(0, TOBJ);
@@ -1496,6 +1506,8 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 			if (getField(WORD(pc+1), meth->class, false, &finfo, einfo) == 0) {
 				goto done_fail;
 			}
+			if (METHOD_TRANSLATED(meth))
+				goto done_fail;
 			if (!FIELD_ISPRIM(finfo.field)) {
 				STACKIN(0, TOBJ);
 				STACKIN(1, TOBJ);
@@ -1542,6 +1554,8 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 					goto done_fail;
 				}
 			}
+			if (METHOD_TRANSLATED(meth))
+				goto done_fail;
 
 			sig = call.signature->data;
 			assert(sig[0] == '(');
@@ -1644,6 +1658,8 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 					goto done_fail;
 				}
 			}
+			if (METHOD_TRANSLATED(meth))
+				goto done_fail;
 
 			sig = call.signature->data;
 			assert(sig[0] == '(');
@@ -1745,6 +1761,8 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 					goto done_fail;
 				}
 			}
+			if (METHOD_TRANSLATED(meth))
+				goto done_fail;
 
 			sig = call.signature->data;
 			assert(sig[0] == '(');
@@ -1844,6 +1862,8 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 					goto done_fail;
 				}
 			}
+			if (METHOD_TRANSLATED(meth))
+				goto done_fail;
 			STKPUSH(1);
 			STACKOUT(0, TOBJ);
 			INCPC(3);
@@ -1861,6 +1881,8 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 					goto done_fail;
 				}
 			}
+			if (METHOD_TRANSLATED(meth))
+				goto done_fail;
 			STACKIN(0, TINT);
 			STACKOUT(0, TOBJ);
 			INCPC(3);
@@ -1872,6 +1894,8 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 					goto done_fail;
 				}
 			}
+			if (METHOD_TRANSLATED(meth))
+				goto done_fail;
 			for (idx = INSN(pc+3) - 1; idx >= 0; idx--) {
 				STACKIN(idx, TINT);
 			}
@@ -1898,6 +1922,8 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 					goto done_fail;
 				}
 			}
+			if (METHOD_TRANSLATED(meth))
+				goto done_fail;
 			STACKIN(0, TOBJ);
 			STACKOUT(0, TOBJ);
 			INCPC(3);
@@ -1908,6 +1934,8 @@ IDBG(		dprintf("%d: %d\n", pc, INSN(pc));		)
 				if (!checkNoClassDefFoundError(einfo)) {
 				}
 			}
+			if (METHOD_TRANSLATED(meth))
+				goto done_fail;
 			STACKIN(0, TOBJ);
 			STACKOUT(0, TINT);
 			INCPC(3);

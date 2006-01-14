@@ -544,7 +544,9 @@ TEST_CLASS_LOADING = \
 	FieldErrors.java \
 	MethodErrors.java \
 	ProhibitedClass.java \
-	KaffeInternal.java
+	KaffeInternal.java \
+	SecurityMan.java \
+	SecurityMan2.java
 
 TEST_STOPPING_THREADS = \
 	CatchDeath.java \

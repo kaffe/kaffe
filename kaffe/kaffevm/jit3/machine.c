@@ -221,6 +221,11 @@ translate(Method* xmeth, errorInfo* einfo)
 	/* Scan the code and determine the basic blocks */
 	success = analyzeMethod(xmeth, &mycodeInfo, einfo);
 	if (success == false) {
+		/* It may happen that we already have translated it
+		 * by implicit recursion in the verifier.
+		 */
+		if (METHOD_TRANSLATED(xmeth))
+		  success = true;
 		goto done3;
 	}
 

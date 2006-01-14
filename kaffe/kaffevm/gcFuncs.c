@@ -688,7 +688,7 @@ initCollector(void)
 	DBG(INIT, dprintf("initCollector()\n"); );
 
 	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_JAVASTRING,
-	    stringWalk, finalizeObject, stringDestroy, "j.l.String");
+	    stringWalk, stringDestroy, NULL, "j.l.String");
 	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_NOWALK,
 	    NULL, KGC_OBJECT_NORMAL, NULL, "other-nowalk");
 	KGC_registerGcTypeByIndex(gc, KGC_ALLOC_NORMALOBJECT,
