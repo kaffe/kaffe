@@ -1,5 +1,12 @@
 2006-01-14  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* external/gcc/fastjar/Makefile.am: Include the right
+	subdirectory for zlib.
+
+	* external/gcc/fastjar/Makefile.in: Regenerated.
+
+2006-01-14  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* kaffe/kaffevm/code-analyse.c
 	(analyzeBasicBlock): Ensure that the method has not been
 	translated by this thread while loading a subclass.

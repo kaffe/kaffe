@@ -5,8 +5,8 @@ ACLOCAL_AMFLAGS = -I m4
 if COND_SYSTEM_ZLIB
 LINKED_ZIP_LIBS=$(ZIP_LIBS)
 else
-LINKED_ZIP_LIBS=../zlib/libz.la
-MAYBE_INTERNAL_ZIP_INCLUDES=-I../zlib/
+LINKED_ZIP_LIBS=$(top_builddir)/../zlib/libz.la
+MAYBE_INTERNAL_ZIP_INCLUDES=-I$(srcdir)/../zlib/
 endif
 
 
