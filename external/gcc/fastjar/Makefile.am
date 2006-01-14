@@ -10,7 +10,11 @@ MAYBE_INTERNAL_ZIP_INCLUDES=-I$(srcdir)/../zlib/
 endif
 
 
-AM_CPPFLAGS = -I. -I$(top_srcdir) $(MAYBE_INTERNAL_ZIP_INCLUDES) -I$(top_srcdir)/../include
+AM_CPPFLAGS = \
+	-I. \
+	-I$(top_srcdir) \
+	$(MAYBE_INTERNAL_ZIP_INCLUDES) \
+	-I$(top_srcdir)/../include
 
 bin_PROGRAMS = fastjar 
 fastjar_SOURCES = jartool.c dostime.c compress.c pushback.c shift.c jartool.h \
@@ -18,7 +22,9 @@ zipfile.h dostime.h compress.h pushback.h shift.h
 fastjar_LDADD = $(LINKED_ZIP_LIBS) $(top_builddir)/../../../replace/libreplace.la
 fastjar_CPPFLAGS = $(AM_CPPFLAGS) -DWITH_SHIFT_DOWN
 
-AM_CFLAGS = @fastjar_warn_cflags@ -I$(top_srcdir)/../../../replace -I$(top_builddir)/../../../replace
+AM_CFLAGS = \
+	-I$(top_srcdir)/../../../replace \
+	-I$(top_builddir)/../../../replace
 AM_MAKEINFOFLAGS = -I $(srcdir)/../gcc/doc/include
 
 TEXINFO_TEX = texinfo.tex

@@ -22,11 +22,13 @@ AC_SUBST(CCLD)
 
 AM_MAINTAINER_MODE
 
-dnl Add warning flags if we are using gcc.
-if test "$GCC" = yes; then
-  fastjar_warn_cflags='-W -Wall -pedantic -Wstrict-prototypes -Wmissing-prototypes -Wwrite-strings'
-fi
-AC_SUBST(fastjar_warn_cflags)
+AX_CFLAGS_WARN_ALL
+
+AX_CFLAGS_GCC_OPTION([-W])
+AX_CFLAGS_GCC_OPTION([-pedantic])
+AX_CFLAGS_GCC_OPTION([-Wstrict-prototypes])
+AX_CFLAGS_GCC_OPTION([-Wmissing-prototypes])
+AX_CFLAGS_GCC_OPTION([-Wwrite-strings])
 
 dnl Checks for header files.
 AC_HEADER_DIRENT

@@ -1,3 +1,14 @@
+2006-01-14  Dalibor Topic  <robilad@kaffe.org>
+
+	* external/gcc/fastjar/Makefile.am:
+	(AM_CPPFLAGS) Cleaned up.
+	(AM_CFLAGS) Removed fastjar specific warnings flags.
+	Replaced by portable checks in configure.
+
+	* configure.ac: Use AX_CFLAGS_WARN_ALL 
+	and AX_CFLAGS_GCC_OPTION instead of manually
+	setting the CFLAGS.
+
 2006-01-14  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* external/gcc/fastjar/Makefile.am: Include the right

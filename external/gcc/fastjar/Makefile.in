@@ -50,6 +50,8 @@ DIST_COMMON = README $(am__configure_deps) $(fastjar_TEXINFOS) \
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/accross.m4 \
+	$(top_srcdir)/m4/ax_cflags_gcc_option.m4 \
+	$(top_srcdir)/m4/ax_cflags_warn_all.m4 \
 	$(top_srcdir)/m4/gcc_AC_FUNC_MKDIR_TAKES_ONE_ARG.m4 \
 	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -199,7 +201,6 @@ build_os = @build_os@
 build_vendor = @build_vendor@
 datadir = @datadir@
 exec_prefix = @exec_prefix@
-fastjar_warn_cflags = @fastjar_warn_cflags@
 host = @host@
 host_alias = @host_alias@
 host_cpu = @host_cpu@
@@ -224,13 +225,21 @@ ACLOCAL_AMFLAGS = -I m4
 @COND_SYSTEM_ZLIB_FALSE@LINKED_ZIP_LIBS = $(top_builddir)/../zlib/libz.la
 @COND_SYSTEM_ZLIB_TRUE@LINKED_ZIP_LIBS = $(ZIP_LIBS)
 @COND_SYSTEM_ZLIB_FALSE@MAYBE_INTERNAL_ZIP_INCLUDES = -I$(srcdir)/../zlib/
-AM_CPPFLAGS = -I. -I$(top_srcdir) $(MAYBE_INTERNAL_ZIP_INCLUDES) -I$(top_srcdir)/../include
+AM_CPPFLAGS = \
+	-I. \
+	-I$(top_srcdir) \
+	$(MAYBE_INTERNAL_ZIP_INCLUDES) \
+	-I$(top_srcdir)/../include
+
 fastjar_SOURCES = jartool.c dostime.c compress.c pushback.c shift.c jartool.h \
 zipfile.h dostime.h compress.h pushback.h shift.h 
 
 fastjar_LDADD = $(LINKED_ZIP_LIBS) $(top_builddir)/../../../replace/libreplace.la
 fastjar_CPPFLAGS = $(AM_CPPFLAGS) -DWITH_SHIFT_DOWN
-AM_CFLAGS = @fastjar_warn_cflags@ -I$(top_srcdir)/../../../replace -I$(top_builddir)/../../../replace
+AM_CFLAGS = \
+	-I$(top_srcdir)/../../../replace \
+	-I$(top_builddir)/../../../replace
+
 AM_MAKEINFOFLAGS = -I $(srcdir)/../gcc/doc/include
 TEXINFO_TEX = texinfo.tex
 info_TEXINFOS = fastjar.texi
