@@ -136,8 +136,12 @@ check_constants()
 	assert(SND_SEQ_PRIORITY_HIGH == org_tritonus_lowlevel_alsa_AlsaSeq_SND_SEQ_PRIORITY_HIGH);
 	assert(SND_SEQ_PRIORITY_MASK == org_tritonus_lowlevel_alsa_AlsaSeq_SND_SEQ_PRIORITY_MASK);
 	assert(SND_SEQ_CLIENT_SYSTEM == org_tritonus_lowlevel_alsa_AlsaSeq_SND_SEQ_CLIENT_SYSTEM);
+#ifdef SND_SEQ_CLIENT_DUMMY
 	assert(SND_SEQ_CLIENT_DUMMY == org_tritonus_lowlevel_alsa_AlsaSeq_SND_SEQ_CLIENT_DUMMY);
+#endif
+#ifdef SND_SEQ_CLIENT_OSS
 	assert(SND_SEQ_CLIENT_OSS == org_tritonus_lowlevel_alsa_AlsaSeq_SND_SEQ_CLIENT_OSS);
+#endif
 /* 	assert(SND_SEQ_FILTER_BROADCAST == org_tritonus_lowlevel_alsa_AlsaSeq_SND_SEQ_FILTER_BROADCAST); */
 /* 	assert(SND_SEQ_FILTER_MULTICAST == org_tritonus_lowlevel_alsa_AlsaSeq_SND_SEQ_FILTER_MULTICAST); */
 /* 	assert(SND_SEQ_FILTER_BOUNCE == org_tritonus_lowlevel_alsa_AlsaSeq_SND_SEQ_FILTER_BOUNCE); */
