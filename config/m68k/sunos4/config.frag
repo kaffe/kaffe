@@ -13,4 +13,5 @@ if [ "$cross_compiling" = yes ]; then
   ac_cv_sizeof_long_long=${ac_cv_sizeof_long_long='8'}
   ac_cv_sizeof_short=${ac_cv_sizeof_short='2'}
   ac_cv_sizeof_voidp=${ac_cv_sizeof_voidp='4'}
+  ac_cv_file__proc_self_maps=${ac_cv_file__proc_self_maps='yes'}
 fi
