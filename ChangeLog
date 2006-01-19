@@ -1,5 +1,10 @@
 2006-01-19  Kiyo Inaba <inaba@src.ricoh.co.jp>
 
+	* FAQ/FAQ.cross-compiling: Delete some description related
+	to kjc, and modify kaffe runtime file name.
+
+2006-01-19  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
 	* config/*/*/config.frag: put 'ac_cv_file__proc_self_maps'
 	parameter to be yes for cross compilation.
 

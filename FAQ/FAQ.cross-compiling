@@ -29,7 +29,7 @@ Based on the discussion above, simplest configure script to use cross
 tools like 'm68k-linux-gcc' to generate kaffe for m68k/linux becomes
 
   CC=m68k-linux-gcc NM=m68k-linux-nm AR=m68k-linux-ar \
-	../kaffe-1.1.0/configure --host=m68k-linux --build=i686-linux
+	../kaffe-1.1.7/configure --host=m68k-linux --build=i686-linux
 
 The other way to do the same thing is to add cross-tools bin dir into
 the PATH environment and simple configure without specifying CC etc.
@@ -44,39 +44,37 @@ And anyway, configuring and making your kaffe binary in different
 directory from source directory is a good practice. This is really
 needed for cross compiling.
 
-It does not work!
-=================
+'kaffeh' is needed for cross compilation
+========================================
 The way how to supply options to configure is roughly ok, but it is
 not enough. Because, include files needed to compile some library
-files are generated automatically while build, and 'jar' file is
-also generated while build. These files need runnable (on build computer)
-'kaffeh' and 'kaffe' to generate.
+files are generated automatically while build. This process is done
+by invoking a command 'kaffeh' while build, but the 'kaffeh' made
+in the cross compilation process is the program which can be executed
+on the 'host' computer rather than 'build' computer. The 'kaffeh' for
+the 'build' computer shall be made in advance.
 
-To do that, you first have to make and install 'native' kaffe, and
+To do that, you first have to make and install 'native' kaffeh, and
 totally you may have three directories. In this document I use
-'kaffe-1.1.0' where you store the source code, 'kaffe-native' where
+'kaffe-1.1.7' where you store the source code, 'kaffe-native' where
 you make native kaffe, and 'kaffe-m68k-linux' where you make cross
 compiled kaffe.
 
 Then, you have
-  . --- kaffe-1.1.0
+  . --- kaffe-1.1.7
      +- kaffe-native
      +- kaffe-m68k-linux
-and, you first visit 'kaffe-native' and do '../kaffe-1.1.0/configure' and
-'make; make install' first. Then you copy generated 'rt.jar' in somewhere
-by
-  cp libraries/javalib/rt.jar /tmp/rt.jar
+and, you first visit 'kaffe-native' and do '../kaffe-1.1.7/configure' and
+'make; make install' first.
 
 And then, you can
-
   CC=m68k-linux-gcc NM=m68k-linux-nm AR=m68k-linux-ar \
-	../kaffe-1.1.0/configure --host=m68k-linux --build=i686-linux \
-	--with-rt-jar=/tmp/rt.jar
+	../kaffe-1.1.7/configure --host=m68k-linux --build=i686-linux
 
 How to test cross-built kaffe?
 ==============================
 When you test cross-built kaffe, simply copying the 'kaffe-bin' to the
-target machine is not enough. At least you have to copy 'rt.jar' file
+target machine is not enough. At least you have to copy 'glibj.zip' file
 and native library files.
 
 To simplify this, I usually mount build directory from target machine,
@@ -88,24 +86,6 @@ tests suite in kaffe (by 'make check'), you have to check the location
 of shell is same for both build machine and target machine, or modify
 it by your hand.
 
-Library mismatch
-================
-Sometimes, you want to use different version of libraries (libc etc.)
-installed on cross-build environment and target environment. This means
-you also have to copy these files to the target machine.
-
-But, I usually specify static link option for building kaffe, and in
-this case the configuration line becomes
-  CC=m68k-linux-gcc NM=m68k-linux-nm AR=m68k-linux-ar \
-	../kaffe-1.1.0/configure --host=m68k-linux --build=i686-linux \
-	--with-staticbin --with-staticlib --with-staticvm \
-	--with-threads=unix-jthreads --without-x \
-	--with-rt-jar=/tmp/rt.jar
-
-The 'with-threads' option and 'without-x' option is not related to
-library issue, but I usually specify these too to reduce the time needed
-for build.
-
 So where's cross tools?
 =======================
 One of the hardest thing for cross-compiling kaffe should be this. If
@@ -115,3 +95,5 @@ other OS, you may need to make cross-tools from GNU's source code.
 
 I'd like to put more information for this issue in the future release
 of this document.
+
+Kiyo Inaba
