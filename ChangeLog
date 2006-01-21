@@ -1,8 +1,14 @@
 2006-01-21  Kiyo Inaba <inaba@src.ricoh.co.jp>
 
+	* test/regression/ThreadState.java: Change timeout value for
+	this test from 60 * 1000 to 60 * 10000. This allows some
+	older machines to execute in enough time.
+
+2006-01-21  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
 	* test/regression/RefTest.java: Change timeout value for
 	this test from 10000 to 100000. This allows some older
-	machine to execute enough time.
+	machine to execute in enough time.
 
 2006-01-19  Kiyo Inaba <inaba@src.ricoh.co.jp>
 

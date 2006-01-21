@@ -25,7 +25,7 @@ public class ThreadState extends Thread {
 	new Thread() {
 	    public void run() {
 		try {
-		    Thread.sleep(60 * 1000);
+		    Thread.sleep(60 * 10000);
 		} catch (Exception _) { }
 		System.out.println("Time out.  Failure.");
 		System.exit(-1);
