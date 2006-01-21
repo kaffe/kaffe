@@ -9,6 +9,7 @@
 
 CLASSFILE = tools.jar
 SRCDIRS = gnu
+FASTJAR = $(top_builddir)/external/gcc/fastjar/fastjar
 
 toolslib_DATA = $(CLASSFILE)
 
@@ -29,7 +30,7 @@ tools_jar_SRCS = \
 EXTRA_DIST = \
 	$(tools_jar_SRCS)
 
-JAR_CMD = (cd $(LIBDIR) && $(ZIP) -q -r $(CURDIR)/$@.new $(SRCDIRS))
+JAR_CMD = ($(FASTJAR) cf $(CURDIR)/$@.new -C $(LIBDIR) $(SRCDIRS))
 
 LIBDIR = lib
 

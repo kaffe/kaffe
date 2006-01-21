@@ -297,7 +297,6 @@ X_CFLAGS = @X_CFLAGS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_LIBS = @X_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
-ZIP = @ZIP@
 ZIP_LIBS = @ZIP_LIBS@
 abssrcdir = @abssrcdir@
 ac_ct_AR = @ac_ct_AR@
@@ -360,6 +359,7 @@ toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 CLASSFILE = tools.jar
 SRCDIRS = gnu
+FASTJAR = $(top_builddir)/external/gcc/fastjar/fastjar
 toolslib_DATA = $(CLASSFILE)
 tools_jar_SRCS = \
 	gnu/classpath/tools/Util.java \
@@ -375,7 +375,7 @@ tools_jar_SRCS = \
 EXTRA_DIST = \
 	$(tools_jar_SRCS)
 
-JAR_CMD = (cd $(LIBDIR) && $(ZIP) -q -r $(CURDIR)/$@.new $(SRCDIRS))
+JAR_CMD = ($(FASTJAR) cf $(CURDIR)/$@.new -C $(LIBDIR) $(SRCDIRS))
 LIBDIR = lib
 rebuildLib = $(top_builddir)/libraries/javalib/rebuildLib
 real_builddir = $(shell cd $(top_builddir) && pwd )

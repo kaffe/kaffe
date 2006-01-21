@@ -466,7 +466,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os LIBVERSION CLASSPATH_MODULE INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar CREATE_JNI_LIBRARIES_TRUE CREATE_JNI_LIBRARIES_FALSE CREATE_CORE_JNI_LIBRARIES_TRUE CREATE_CORE_JNI_LIBRARIES_FALSE default_toolkit CREATE_XMLJ_LIBRARY_TRUE CREATE_XMLJ_LIBRARY_FALSE CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CPP EGREP CREATE_ALSA_LIBRARIES_TRUE CREATE_ALSA_LIBRARIES_FALSE CREATE_DSSI_LIBRARIES_TRUE CREATE_DSSI_LIBRARIES_FALSE CREATE_GTK_PEER_LIBRARIES_TRUE CREATE_GTK_PEER_LIBRARIES_FALSE GTK_CAIRO_ENABLED GTK_CAIRO_TRUE GTK_CAIRO_FALSE CREATE_QT_PEER_LIBRARIES_TRUE CREATE_QT_PEER_LIBRARIES_FALSE nativelibdir glibjdir CREATE_JNI_HEADERS_TRUE CREATE_JNI_HEADERS_FALSE LN_S CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL LIBICONV LTLIBICONV WARNING_CFLAGS STRICT_WARNING_CFLAGS ERROR_CFLAGS PKG_CONFIG XML_CFLAGS XML_LIBS XSLT_CFLAGS XSLT_LIBS X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS GTK_CFLAGS GTK_LIBS CAIRO_CFLAGS CAIRO_LIBS PANGOFT2_CFLAGS PANGOFT2_LIBS QT_CFLAGS QT_LIBS MOC USER_JAVAH USER_SPECIFIED_JAVAH_TRUE USER_SPECIFIED_JAVAH_FALSE CLASSPATH_INCLUDES GCJ JIKES JIKESENCODING JIKESWARNINGS KJC GCJX ECJ FOUND_GCJ_TRUE FOUND_GCJ_FALSE FOUND_JIKES_TRUE FOUND_JIKES_FALSE FOUND_ECJ_TRUE FOUND_ECJ_FALSE FOUND_KJC_TRUE FOUND_KJC_FALSE FOUND_GCJX_TRUE FOUND_GCJX_FALSE USER_CLASSLIB USER_SPECIFIED_CLASSLIB_TRUE USER_SPECIFIED_CLASSLIB_FALSE vm_classes MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT LIBDEBUG INIT_LOAD_LIBRARY JAVA_LANG_SYSTEM_EXPLICIT_INITIALIZATION REMOVE MKDIR CP DATE FIND ZIP INSTALL_GLIBJ_ZIP_TRUE INSTALL_GLIBJ_ZIP_FALSE INSTALL_CLASS_FILES_TRUE INSTALL_CLASS_FILES_FALSE BUILD_CLASS_FILES_TRUE BUILD_CLASS_FILES_FALSE EXAMPLESDIR GJDOC CREATE_API_DOCS_TRUE CREATE_API_DOCS_FALSE JAY JAY_SKELETON REGEN_PARSERS_TRUE REGEN_PARSERS_FALSE LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os LIBVERSION CLASSPATH_MODULE INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar CREATE_JNI_LIBRARIES_TRUE CREATE_JNI_LIBRARIES_FALSE CREATE_CORE_JNI_LIBRARIES_TRUE CREATE_CORE_JNI_LIBRARIES_FALSE default_toolkit CREATE_XMLJ_LIBRARY_TRUE CREATE_XMLJ_LIBRARY_FALSE CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CPP EGREP CREATE_ALSA_LIBRARIES_TRUE CREATE_ALSA_LIBRARIES_FALSE CREATE_DSSI_LIBRARIES_TRUE CREATE_DSSI_LIBRARIES_FALSE CREATE_GTK_PEER_LIBRARIES_TRUE CREATE_GTK_PEER_LIBRARIES_FALSE GTK_CAIRO_ENABLED GTK_CAIRO_TRUE GTK_CAIRO_FALSE CREATE_QT_PEER_LIBRARIES_TRUE CREATE_QT_PEER_LIBRARIES_FALSE nativelibdir glibjdir CREATE_JNI_HEADERS_TRUE CREATE_JNI_HEADERS_FALSE LN_S CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL LIBICONV LTLIBICONV WARNING_CFLAGS STRICT_WARNING_CFLAGS ERROR_CFLAGS PKG_CONFIG XML_CFLAGS XML_LIBS XSLT_CFLAGS XSLT_LIBS X_CFLAGS X_PRE_LIBS X_LIBS X_EXTRA_LIBS GTK_CFLAGS GTK_LIBS CAIRO_CFLAGS CAIRO_LIBS PANGOFT2_CFLAGS PANGOFT2_LIBS QT_CFLAGS QT_LIBS MOC USER_JAVAH USER_SPECIFIED_JAVAH_TRUE USER_SPECIFIED_JAVAH_FALSE CLASSPATH_INCLUDES GCJ JIKES JIKESENCODING JIKESWARNINGS KJC GCJX ECJ FOUND_GCJ_TRUE FOUND_GCJ_FALSE FOUND_JIKES_TRUE FOUND_JIKES_FALSE FOUND_ECJ_TRUE FOUND_ECJ_FALSE FOUND_KJC_TRUE FOUND_KJC_FALSE FOUND_GCJX_TRUE FOUND_GCJX_FALSE USER_CLASSLIB USER_SPECIFIED_CLASSLIB_TRUE USER_SPECIFIED_CLASSLIB_FALSE vm_classes MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT LIBDEBUG INIT_LOAD_LIBRARY JAVA_LANG_SYSTEM_EXPLICIT_INITIALIZATION REMOVE MKDIR CP DATE FIND ZIP FASTJAR INSTALL_GLIBJ_ZIP_TRUE INSTALL_GLIBJ_ZIP_FALSE INSTALL_CLASS_FILES_TRUE INSTALL_CLASS_FILES_FALSE BUILD_CLASS_FILES_TRUE BUILD_CLASS_FILES_FALSE EXAMPLESDIR GJDOC CREATE_API_DOCS_TRUE CREATE_API_DOCS_FALSE JAY JAY_SKELETON REGEN_PARSERS_TRUE REGEN_PARSERS_FALSE LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -1100,6 +1100,7 @@ Optional Packages:
   --with-ecj              bytecode compilation with ecj
   --with-classpath        specify path to a classes.zip like file
   --with-vm-classes       specify path to VM override source files
+  --with-fastjar=PATH     define to use a fastjar style tool
   --with-glibj            define what to install (zip|flat|both|none|build)
                           [default=zip]
   --with-gjdoc            generate documentation using gjdoc (default is NO)
@@ -5520,7 +5521,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 5523 "configure"' > conftest.$ac_ext
+  echo '#line 5524 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -6182,7 +6183,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:6185:" \
+echo "$as_me:6186:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -7245,11 +7246,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7248: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7249: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7252: \$? = $ac_status" >&5
+   echo "$as_me:7253: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -7513,11 +7514,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7516: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7517: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:7520: \$? = $ac_status" >&5
+   echo "$as_me:7521: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -7617,11 +7618,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:7620: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:7621: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:7624: \$? = $ac_status" >&5
+   echo "$as_me:7625: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -9962,7 +9963,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 9965 "configure"
+#line 9966 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -10062,7 +10063,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 10065 "configure"
+#line 10066 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12402,11 +12403,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:12405: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:12406: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:12409: \$? = $ac_status" >&5
+   echo "$as_me:12410: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -12506,11 +12507,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:12509: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:12510: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:12513: \$? = $ac_status" >&5
+   echo "$as_me:12514: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -14076,11 +14077,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14079: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14080: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:14083: \$? = $ac_status" >&5
+   echo "$as_me:14084: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -14180,11 +14181,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14183: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14184: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:14187: \$? = $ac_status" >&5
+   echo "$as_me:14188: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -16383,11 +16384,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16386: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16387: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:16390: \$? = $ac_status" >&5
+   echo "$as_me:16391: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -16651,11 +16652,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16654: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16655: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:16658: \$? = $ac_status" >&5
+   echo "$as_me:16659: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -16755,11 +16756,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16758: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16759: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:16762: \$? = $ac_status" >&5
+   echo "$as_me:16763: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -27069,9 +27070,9 @@ else
 fi
 
 
-  if test "x${GCJ}" = x && test "x${JIKES}" = x && test "x${user_specified_javac}" != xkjc && test "x${user_specified_javac}" != xgcjx; then
+  if test "x${GCJ}" = x && test "x${JIKES}" = x && test "x${user_specified_javac}" != xkjc && test "x${user_specified_javac}" != xgcjx && test "x${user_specified_javac}" != xecj; then
       # FIXME: use autoconf error function
-      echo "configure: cannot find javac, try --with-gcj, --with-jikes, --with-kjc, or --with-gcjx" 1>&2
+      echo "configure: cannot find javac, try --with-gcj, --with-jikes, --with-kjc, --with-ecj, or --with-gcjx" 1>&2
       exit 1
   fi
 
@@ -27406,6 +27407,62 @@ else
   echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6
 fi
+
+
+# Check whether --with-fastjar or --without-fastjar was given.
+if test "${with_fastjar+set}" = set; then
+  withval="$with_fastjar"
+
+		echo "$as_me:$LINENO: checking for user supplied fastjar" >&5
+echo $ECHO_N "checking for user supplied fastjar... $ECHO_C" >&6
+		FASTJAR=${withval}
+		echo "$as_me:$LINENO: result: ${FASTJAR}" >&5
+echo "${ECHO_T}${FASTJAR}" >&6
+
+else
+  # Extract the first word of "fastjar", so it can be a program name with args.
+set dummy fastjar; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_path_FASTJAR+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  case $FASTJAR in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_FASTJAR="$FASTJAR" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_FASTJAR="$as_dir/$ac_word$ac_exec_ext"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+  ;;
+esac
+fi
+FASTJAR=$ac_cv_path_FASTJAR
+
+if test -n "$FASTJAR"; then
+  echo "$as_me:$LINENO: result: $FASTJAR" >&5
+echo "${ECHO_T}$FASTJAR" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+fi;
+  if test x"${FASTJAR}" != x; then
+    ZIP=""
+  fi
 
 
 # Check whether --with-glibj or --without-glibj was given.
@@ -31623,6 +31680,7 @@ s,@CP@,$CP,;t t
 s,@DATE@,$DATE,;t t
 s,@FIND@,$FIND,;t t
 s,@ZIP@,$ZIP,;t t
+s,@FASTJAR@,$FASTJAR,;t t
 s,@INSTALL_GLIBJ_ZIP_TRUE@,$INSTALL_GLIBJ_ZIP_TRUE,;t t
 s,@INSTALL_GLIBJ_ZIP_FALSE@,$INSTALL_GLIBJ_ZIP_FALSE,;t t
 s,@INSTALL_CLASS_FILES_TRUE@,$INSTALL_CLASS_FILES_TRUE,;t t

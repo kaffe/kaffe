@@ -8,6 +8,7 @@
 # of this file.
 
 CLASSFILE = gmpjavamath.jar
+FASTJAR = $(top_builddir)/external/gcc/fastjar/fastjar
 SRCDIRS = java
 
 jrelib_DATA = $(CLASSFILE)
@@ -23,7 +24,7 @@ java_math_SRCS = \
 EXTRA_DIST = \
 	$(gmpjavamath_jar_SRCS)
 
-JAR_CMD1 = (dstdir=`pwd`; cd $(LIBDIR) && $(ZIP) -r $$dstdir/$(CLASSFILE) $(SRCDIRS))
+JAR_CMD1 = ($(FASTJAR) cf $(CLASSFILE) -C $(LIBDIR) $(SRCDIRS))
 
 LIBDIR = lib
 

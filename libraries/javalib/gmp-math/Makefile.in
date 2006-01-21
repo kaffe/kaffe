@@ -297,7 +297,6 @@ X_CFLAGS = @X_CFLAGS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_LIBS = @X_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
-ZIP = @ZIP@
 ZIP_LIBS = @ZIP_LIBS@
 abssrcdir = @abssrcdir@
 ac_ct_AR = @ac_ct_AR@
@@ -359,6 +358,7 @@ target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 CLASSFILE = gmpjavamath.jar
+FASTJAR = $(top_builddir)/external/gcc/fastjar/fastjar
 SRCDIRS = java
 jrelib_DATA = $(CLASSFILE)
 gmpjavamath_jar_SRCS = \
@@ -371,7 +371,7 @@ java_math_SRCS = \
 EXTRA_DIST = \
 	$(gmpjavamath_jar_SRCS)
 
-JAR_CMD1 = (dstdir=`pwd`; cd $(LIBDIR) && $(ZIP) -r $$dstdir/$(CLASSFILE) $(SRCDIRS))
+JAR_CMD1 = ($(FASTJAR) cf $(CLASSFILE) -C $(LIBDIR) $(SRCDIRS))
 LIBDIR = lib
 rebuildLib = $(top_builddir)/libraries/javalib/rebuildLib
 Klasses_jar = $(srcdir):$(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip

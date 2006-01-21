@@ -963,10 +963,6 @@ dnl -------------------------------------------------------------------------
 
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
-AC_CHECK_PROG(ZIP, zip, zip)
-if test  x"$ZIP" = x"" ; then
-   AC_MSG_ERROR([zip not found. You need the zip utility for the class library.])
-fi
 AC_CHECK_PROG(MKTEMP, mktemp, mktemp)
 if test  x"$MKTEMP" = x"" ; then
    AC_MSG_WARN([mktemp not found. You need mktemp to be able to debug kaffe.])
@@ -2432,6 +2428,7 @@ ac_configure_args="$ac_configure_args --disable-core-jni"
 ac_configure_args="$ac_configure_args --disable-examples"
 ac_configure_args="$ac_configure_args --with-glibj-dir=${jrelibdir}"
 ac_configure_args="$ac_configure_args --with-native-libdir=${nativedir}"
+ac_configure_args="$ac_configure_args --with-fastjar=${ac_abs_top_builddir}/external/gcc/fastjar/fastjar"
 real_srcdir=`cd $srcdir; pwd`
 vmdir=${real_srcdir}/libraries/javalib/vmspecific
 ac_configure_args="$ac_configure_args --with-vm-classes=${vmdir}"
