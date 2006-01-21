@@ -50549,11 +50549,12 @@ if test x"$use_ecj" = x"yes"; then
   ac_configure_args="$ac_configure_args --with-ecj=${JAVA_COMPILER}"
 fi
 
+kaffe_builddir=`pwd`
 ac_configure_args="$ac_configure_args --disable-core-jni"
 ac_configure_args="$ac_configure_args --disable-examples"
 ac_configure_args="$ac_configure_args --with-glibj-dir=${jrelibdir}"
 ac_configure_args="$ac_configure_args --with-native-libdir=${nativedir}"
-ac_configure_args="$ac_configure_args --with-fastjar=${ac_abs_top_builddir}/external/gcc/fastjar/fastjar"
+ac_configure_args="$ac_configure_args --with-fastjar=${kaffe_builddir}/external/gcc/fastjar/fastjar"
 real_srcdir=`cd $srcdir; pwd`
 vmdir=${real_srcdir}/libraries/javalib/vmspecific
 ac_configure_args="$ac_configure_args --with-vm-classes=${vmdir}"
