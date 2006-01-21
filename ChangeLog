@@ -1,3 +1,7 @@
+2006-01-21  Dalibor Topic  <robilad@kaffe.org>
+
+	* FAQ/FAQ.win32: Note for which versions of jikes the patches are.
+
 2006-01-21  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* configure.ac,

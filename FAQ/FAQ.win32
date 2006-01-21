@@ -24,7 +24,8 @@ fix some Cygwin specific bugs in it. See
 http://sourceforge.net/tracker/index.php?func=detail&aid=1202863&group_id=128803&atid=712760
 http://sourceforge.net/tracker/index.php?func=detail&aid=1202185&group_id=128803&atid=712760
 
-for details.
+for details. The first patch is for jikes 1.22, the second one is 
+for jikes CVS head.
 
 There is a Kaffe port to mingw32, and it would be great if someone 
 volunteered to merge it into the main tree. For more information, see
