@@ -1,3 +1,9 @@
+2006-01-21  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
+	* test/regression/RefTest.java: Change timeout value for
+	this test from 10000 to 100000. This allows some older
+	machine to execute enough time.
+
 2006-01-19  Kiyo Inaba <inaba@src.ricoh.co.jp>
 
 	* FAQ/FAQ.cross-compiling: Delete some description related
