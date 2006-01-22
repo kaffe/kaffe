@@ -8,7 +8,7 @@
 # of this file.
 
 CLASSFILE = kaffeawt.jar
-SRCDIRS = kaffe java org
+SRCDIRS = java org
 
 jrelib_DATA = $(CLASSFILE)
 
@@ -412,7 +412,8 @@ org_kaffe_util_log_SRCS = \
 EXTRA_DIST = \
 	$(kaffeawt_jar_SRCS)
 
-JAR_CMD1 = (dstdir=`pwd`; cd $(LIBDIR) && $(ZIP) -r $$dstdir/$(CLASSFILE) $(SRCDIRS))
+FASTJAR=$(kaffe_builddir)/external/gcc/fastjar/fastjar
+JAR_CMD1 = (dstdir=`pwd`; cd $(LIBDIR) && $(FASTJAR) -cf $$dstdir/$(CLASSFILE) $(SRCDIRS))
 
 LIBDIR = lib
 

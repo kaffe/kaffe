@@ -1,5 +1,13 @@
 2006-01-22  Dalibor Topic  <robilad@kaffe.org>
 
+	Fixed bug #4.
+
+	* libraries/javalib/awt-implementations/kaffe/Makefile.am:
+	(FASTJAR) New variable.
+	(JAR_CMD1) Use fastjar.
+
+2006-01-22  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac: Substitute kaffe_builddir for absolute paths to builddir.
 	Used to find fastjar in subbuilds.
 

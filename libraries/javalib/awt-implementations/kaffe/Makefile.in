@@ -359,7 +359,7 @@ target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 CLASSFILE = kaffeawt.jar
-SRCDIRS = kaffe java org
+SRCDIRS = java org
 jrelib_DATA = $(CLASSFILE)
 kaffeawt_jar_SRCS = \
 	$(java_applet_SRCS) \
@@ -776,7 +776,8 @@ org_kaffe_util_log_SRCS = \
 EXTRA_DIST = \
 	$(kaffeawt_jar_SRCS)
 
-JAR_CMD1 = (dstdir=`pwd`; cd $(LIBDIR) && $(ZIP) -r $$dstdir/$(CLASSFILE) $(SRCDIRS))
+FASTJAR = $(kaffe_builddir)/external/gcc/fastjar/fastjar
+JAR_CMD1 = (dstdir=`pwd`; cd $(LIBDIR) && $(FASTJAR) -cf $$dstdir/$(CLASSFILE) $(SRCDIRS))
 LIBDIR = lib
 rebuildLib = $(top_builddir)/libraries/javalib/rebuildLib
 Klasses_jar = $(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
