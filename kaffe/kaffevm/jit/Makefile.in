@@ -351,6 +351,7 @@ jrebindir = @jrebindir@
 jredir = @jredir@
 jrelibdir = @jrelibdir@
 kaffe_TRANSF = @kaffe_TRANSF@
+kaffe_builddir = @kaffe_builddir@
 kaffebin_TRANSF = @kaffebin_TRANSF@
 kaffeh_TRANSF = @kaffeh_TRANSF@
 libdir = @libdir@

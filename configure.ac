@@ -2425,6 +2425,7 @@ if test x"$use_ecj" = x"yes"; then
 fi
 
 kaffe_builddir=`pwd`
+AC_SUBST([kaffe_builddir])
 ac_configure_args="$ac_configure_args --disable-core-jni"
 ac_configure_args="$ac_configure_args --disable-examples"
 ac_configure_args="$ac_configure_args --with-glibj-dir=${jrelibdir}"

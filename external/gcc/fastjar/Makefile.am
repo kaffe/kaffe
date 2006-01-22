@@ -54,7 +54,7 @@ stamp-geninsrc: fastjar.1 fastjar.info
 	-cp -p $(top_builddir)/fastjar.info $(srcdir)/fastjar.info
 	touch $@
 
-CLEANFILES = stamp-geninsrc fastjar.info
+CLEANFILES = stamp-geninsrc
 MAINTAINERCLEANFILES = $(srcdir)/fastjar.1 \
                        $(srcdir)/fastjar.info
 

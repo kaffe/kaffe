@@ -339,6 +339,7 @@ jrebindir = @jrebindir@
 jredir = @jredir@
 jrelibdir = @jrelibdir@
 kaffe_TRANSF = @kaffe_TRANSF@
+kaffe_builddir = @kaffe_builddir@
 kaffebin_TRANSF = @kaffebin_TRANSF@
 kaffeh_TRANSF = @kaffeh_TRANSF@
 libdir = @libdir@
@@ -668,9 +669,10 @@ EXTRA_DIST = \
 	gnu/classpath/tools/doclets/xmldoclet/doctranslet/package.html \
 	gnu/classpath/tools/gjdoc/expr/java-expression.g
 
-JAR_CMD1 = (cd $(LIBDIR) && $(ZIP) -q -r $(CURDIR)/$@.new $(SRCDIRS))
-JAR_CMD2 = (cd $(srcdir) && $(ZIP) -q -DX -r $(CURDIR)/$@.new $(gjdoc_ressources))
-JAR_CMD3 = ($(ZIP) -q -DX -r $(CURDIR)/$@.new version.properties)
+FASTJAR = $(kaffe_builddir)/external/gcc/fastjar/fastjar
+JAR_CMD1 = (cd $(LIBDIR) && $(FASTJAR) -cf $(CURDIR)/$@.new $(SRCDIRS))
+JAR_CMD2 = (cd $(srcdir) && $(FASTJAR) -uf $(CURDIR)/$@.new $(gjdoc_ressources))
+JAR_CMD3 = ($(FASTJAR) -uf $(CURDIR)/$@.new version.properties)
 LIBDIR = lib
 rebuildLib = $(top_builddir)/libraries/javalib/rebuildLib
 real_builddir = $(shell cd $(top_builddir) && pwd)

@@ -1,3 +1,16 @@
+2006-01-22  Dalibor Topic  <robilad@kaffe.org>
+
+	* configure.ac: Substitute kaffe_builddir for absolute paths to builddir.
+	Used to find fastjar in subbuilds.
+
+	* tools/gjdoc/javalib/Makefile.am: (FASTJAR) New variable.
+	(JARCMD1, JARCMD2, JARCMD3): Use fastjar.
+
+2006-01-22  Jari Korva  <jpkorva@iki.fi>
+
+	* external/gcc/fastjar/Makefile.am: (CLEANFILES) Removed fastjar.info
+	to fix make clean on systems without texinfo.
+
 2006-01-21  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* configure.ac: Fixed the way to retrieve top_builddir.

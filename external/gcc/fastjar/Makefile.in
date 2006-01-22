@@ -85,7 +85,7 @@ LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(fastjar_SOURCES)
 DIST_SOURCES = $(fastjar_SOURCES)
-INFO_DEPS = fastjar.info
+INFO_DEPS = $(srcdir)/fastjar.info
 am__TEXINFO_TEX_DIR = $(srcdir)/.
 DVIS = fastjar.dvi
 PDFS = fastjar.pdf
@@ -250,7 +250,7 @@ fastjar_TEXINFOS = \
 man_MANS = fastjar.1
 TEXI2POD = perl $(srcdir)/../contrib/texi2pod.pl
 POD2MAN = pod2man --center="GNU" --release="gcc-@gcc_version@"
-CLEANFILES = stamp-geninsrc fastjar.info
+CLEANFILES = stamp-geninsrc
 MAINTAINERCLEANFILES = $(srcdir)/fastjar.1 \
                        $(srcdir)/fastjar.info
 
@@ -285,7 +285,7 @@ all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
 .SUFFIXES:
-.SUFFIXES: .1 .c .dvi .lo .o .obj .pod .ps
+.SUFFIXES: .1 .c .dvi .html .info .lo .o .obj .pdf .pod .ps .texi
 am--refresh:
 	@:
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
@@ -482,38 +482,42 @@ clean-libtool:
 distclean-libtool:
 	-rm -f libtool
 
-fastjar.info: fastjar.texi $(fastjar_TEXINFOS)
+.texi.info:
 	restore=: && backupdir="$(am__leading_dot)am$$$$" && \
+	am__cwd=`pwd` && cd $(srcdir) && \
 	rm -rf $$backupdir && mkdir $$backupdir && \
 	if ($(MAKEINFO) --version) >/dev/null 2>&1; then \
 	  for f in $@ $@-[0-9] $@-[0-9][0-9] $(@:.info=).i[0-9] $(@:.info=).i[0-9][0-9]; do \
 	    if test -f $$f; then mv $$f $$backupdir; restore=mv; else :; fi; \
 	  done; \
 	else :; fi && \
+	cd "$$am__cwd"; \
 	if $(MAKEINFO) $(AM_MAKEINFOFLAGS) $(MAKEINFOFLAGS) -I $(srcdir) \
-	 -o $@ `test -f 'fastjar.texi' || echo '$(srcdir)/'`fastjar.texi; \
+	 -o $@ $<; \
 	then \
 	  rc=0; \
+	  cd $(srcdir); \
 	else \
 	  rc=$$?; \
+	  cd $(srcdir) && \
 	  $$restore $$backupdir/* `echo "./$@" | sed 's|[^/]*$$||'`; \
 	fi; \
 	rm -rf $$backupdir; exit $$rc
 
-fastjar.dvi: fastjar.texi $(fastjar_TEXINFOS) 
+.texi.dvi:
 	TEXINPUTS="$(am__TEXINFO_TEX_DIR)$(PATH_SEPARATOR)$$TEXINPUTS" \
 	MAKEINFO='$(MAKEINFO) $(AM_MAKEINFOFLAGS) $(MAKEINFOFLAGS) -I $(srcdir)' \
-	$(TEXI2DVI) -o $@ `test -f 'fastjar.texi' || echo '$(srcdir)/'`fastjar.texi
+	$(TEXI2DVI) $<
 
-fastjar.pdf: fastjar.texi $(fastjar_TEXINFOS) 
+.texi.pdf:
 	TEXINPUTS="$(am__TEXINFO_TEX_DIR)$(PATH_SEPARATOR)$$TEXINPUTS" \
 	MAKEINFO='$(MAKEINFO) $(AM_MAKEINFOFLAGS) $(MAKEINFOFLAGS) -I $(srcdir)' \
-	$(TEXI2PDF) -o $@ `test -f 'fastjar.texi' || echo '$(srcdir)/'`fastjar.texi
+	$(TEXI2PDF) $<
 
-fastjar.html: fastjar.texi $(fastjar_TEXINFOS) 
+.texi.html:
 	rm -rf $(@:.html=.htp)
 	if $(MAKEINFOHTML) $(AM_MAKEINFOHTMLFLAGS) $(MAKEINFOFLAGS) -I $(srcdir) \
-	 -o $(@:.html=.htp) `test -f 'fastjar.texi' || echo '$(srcdir)/'`fastjar.texi; \
+	 -o $(@:.html=.htp) $<; \
 	then \
 	  rm -rf $@; \
 	  if test ! -d $(@:.html=.htp) && test -d $(@:.html=); then \
@@ -523,6 +527,10 @@ fastjar.html: fastjar.texi $(fastjar_TEXINFOS)
 	    rm -rf $(@:.html=); else rm -Rf $(@:.html=.htp) $@; fi; \
 	  exit 1; \
 	fi
+$(srcdir)/fastjar.info: fastjar.texi $(fastjar_TEXINFOS)
+fastjar.dvi: fastjar.texi $(fastjar_TEXINFOS)
+fastjar.pdf: fastjar.texi $(fastjar_TEXINFOS)
+fastjar.html: fastjar.texi $(fastjar_TEXINFOS)
 .dvi.ps:
 	TEXINPUTS="$(am__TEXINFO_TEX_DIR)$(PATH_SEPARATOR)$$TEXINPUTS" \
 	$(DVIPS) -o $@ $<
