@@ -113,7 +113,7 @@ public class JViewport extends JComponent implements Accessible
     /**
      * Creates a new instance of <code>AccessibleJViewport</code>.
      */
-    public AccessibleJViewport()
+    protected AccessibleJViewport()
     {
       // Nothing to do here.
     }
@@ -710,9 +710,11 @@ public class JViewport extends JComponent implements Accessible
   protected boolean computeBlit(int dx, int dy, Point blitFrom, Point blitTo,
                                 Dimension blitSize, Rectangle blitPaint)
   {
-    if ((dx != 0 && dy != 0) || damaged)
+    if ((dx != 0 && dy != 0) || (dy == 0 && dy == 0) || damaged)
       // We cannot blit if the viewport is scrolled in both directions at
-      // once.
+      // once. Also, we do not want to blit if the viewport is not scrolled at
+      // all, because that probably means the view component repaints itself
+      // and the buffer needs updating.
       return false;
 
     Rectangle portBounds = SwingUtilities.calculateInnerArea(this, getBounds());

@@ -2879,7 +2879,7 @@ public abstract class JComponent extends Container implements Serializable
    *
    * @since 1.4
    */
-  public boolean requestFocusInWindow(boolean temporary)
+  protected boolean requestFocusInWindow(boolean temporary)
   {
     return super.requestFocusInWindow(temporary);
   }
@@ -3098,7 +3098,7 @@ public abstract class JComponent extends Container implements Serializable
    *
    * @since 1.3
    */
-  public void printComponent(Graphics g)
+  protected void printComponent(Graphics g)
   {
     paintComponent(g);
   }
@@ -3112,7 +3112,7 @@ public abstract class JComponent extends Container implements Serializable
    *
    * @since 1.3
    */
-  public void printChildren(Graphics g)
+  protected void printChildren(Graphics g)
   {
     paintChildren(g);
   }
@@ -3126,7 +3126,7 @@ public abstract class JComponent extends Container implements Serializable
    *
    * @since 1.3
    */
-  public void printBorder(Graphics g)
+  protected void printBorder(Graphics g)
   {
     paintBorder(g);
   }
@@ -3245,62 +3245,25 @@ public abstract class JComponent extends Container implements Serializable
     while (parent != null && !(parent instanceof Window))
       {
         Container newParent = parent.getParent();
-        if (newParent == null)
+        if (newParent == null || newParent instanceof Window)
           break;
         // If the parent is optimizedDrawingEnabled, then its children are
         // tiled and cannot have an overlapping child. Go directly to next
         // parent.
-        if (newParent instanceof JComponent
-            && ((JComponent) newParent).isOptimizedDrawingEnabled())
+        if ((newParent instanceof JComponent
+            && ((JComponent) newParent).isOptimizedDrawingEnabled()))
+          
           {
             parent = newParent;
             continue;
           }
-
-        // First we must check if the new parent itself somehow clips the
-        // target rectangle. This can happen in JViewports.
-        Rectangle parRect = new Rectangle(0, 0, newParent.getWidth(),
-                                          newParent.getHeight());
+        // If the parent is not optimizedDrawingEnabled, we must paint the
+        // parent.
         Rectangle target = SwingUtilities.convertRectangle(found,
                                                            currentClip,
                                                            newParent);
-        if (! target.intersection(parRect).equals(target))
-          {
-            found = newParent;
-            currentClip = target;
-            parent = newParent;
-            continue;
-          }
-
-        // Otherwise we must check if one of the children of this parent
-        // overlaps with the current component.
-        Component[] children = newParent.getComponents();
-        // This flag is used to skip components that are 'below' the component
-        // in question.
-        boolean skip = true;
-        for (int i = children.length - 1; i >= 0; i--)
-          {
-            boolean nextSkip = skip;
-            if (children[i] == parent)
-              nextSkip = false;
-            if (skip)
-              continue;
-            skip = nextSkip;
-            Component c = children[i];
-            Rectangle compBounds = c.getBounds();
-            // If the component completely overlaps the clip in question, we
-            // don't need to repaint. Return null.
-            if (compBounds.contains(target))
-              return null;
-            if (compBounds.intersects(target))
-              {
-                // We found a parent whose children overlap with our current
-                // component. Make this the current component.
-                found = newParent;
-                currentClip = target;
-                break;
-              }
-          }
+        found = newParent;
+        currentClip = target;
         parent = newParent;
       }
     return found;

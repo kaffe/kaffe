@@ -688,13 +688,14 @@ having returned true, and is thus deprecated as a result.
 @subsection @code{java.lang.VMInstrumentationImpl}
 
 The @code{java.lang.VMInstrumentationImpl} and
-@code{java.lang.InstrumentationImpl} provides an implementation of the
+@code{java.lang.InstrumentationImpl} classes provide an implementation of the
 @code{java.lang.instrument.Instrument} interface. This interface is for java
 1.5 and is only in the generics branch.
-A @code{InstrumentationImpl} object should be given to any agent
-given in the command line (see the @code{java.lang.instrument} package
-documentation). A VM has to implement the static native methods of the
-@code{VMInstrumentationImpl} class.
+A @code{InstrumentationImpl} object should be created by the VM when agents
+are given in the command line (see the @code{java.lang.instrument} package
+documentation). The VM has to set the static field
+@code{VMClassLoader.instrumenter} to this object. The VM should implement the
+static native methods of the @code{VMInstrumentationImpl} class.
 
 @itemize @bullet
 @item @code{isRedefineClassesSupported()} -- Returns true if the JVM supports
@@ -707,21 +708,24 @@ by a specific class loader.
 @item @code{getObjectSize()} -- Gives the size of an object.
 @end itemize
 
-When agents are defined, the VM has to call transformers of the
-@code{InstrumentImpl} object each time a class is loaded, eg a call to
-@code{VMClassLoader.defineClass}. The @code{InstrumentationImpl} class defines
-a method that has to be called before reading a class file in the VM.
+Instrumentation allows to modify the bytecode of a class before it gets read
+by the VM. In Gnu Classpath, the @code{ClassLoader.defineClass} method calls
+the @code{VMClassLoader.defineClassWithTransformers} method which first checks
+if @code{VMClassLoader.instrumenter} is @code{null}. If it's the case, it
+directly calls @code{VMClassLoader.defineClass}. If it's not the case, the
+method calls at first the @code{InstrumentationImpl.callTransformers} method,
+which calls each transformer registered to the @code{InstrumentationImpl}
+object and returns a new bytecode array. Then, it calls the
+@code{VMClassLoader.defineClass} method with this new bytecode array.
 
-@itemize @bullet
-@item @code{callTransformers} -- Calls each transformer registered to
-the @code{InstrumentationImpl} object and returns a new bytecode file.
-@end itemize
 
-No default implementation is provided in gnu classpath for the
-@code{VMInstrumentationImpl} methods. A default implementation will perhaps
-be written, but it might break the @code{ClassLoader/VMClassLoader} interface
-for calling the @code{InstrumentationImpl.callTransformers} when a class byte
-code is defined with @code{ClassLoader.defineClass}.
+The second use of instrumentation is to redefine a class after it has been
+loaded by the VM. This is done in the Java application by calling the
+@code{Instrumentation.redefineClasses} method of the standard interface on
+a @code{Instrumentation} object. The @code{InstrumentationImpl.redefineClasses}
+method calls the @code{VMInstrumentationImpl.redefineClasses} native method
+which must be implemented by the VM. The implementation should call the
+@code{InstrumentationImpl.callTransformers} method.
 
 @node gnu.classpath, java.util, java.lang, Classpath Hooks
 @section @code{gnu.classpath}

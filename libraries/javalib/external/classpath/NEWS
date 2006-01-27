@@ -1,3 +1,12 @@
+New in release 0.21 (to be released)
+
+* GNU Crypto and Jessie have been merged into Classpath; this will
+  provide Classpath with a wide array of cryptographic algorithms
+  (ciphers, message digests, etc.) and implementations of SSL version
+  3 and TLS version 1. These roughly complement the public
+  `java.security.' `javax.crypto,' and `javax.net.ssl' packages, and
+  are service providers implementing the underlying algorithms.
+
 New in release 0.20 (Jan 13, 2006)
 
 * New StAX pull parser and SAX-over-StAX driver. Lots of DOM, SAX/StAX,

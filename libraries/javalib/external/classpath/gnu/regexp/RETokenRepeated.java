@@ -45,12 +45,14 @@ final class RETokenRepeated extends REToken {
     private int min,max;
     private boolean stingy;
     private boolean possessive;
+    private boolean alwaysEmpty; // Special case of {0}
     
     RETokenRepeated(int subIndex, REToken token, int min, int max) {
 	super(subIndex);
 	this.token = token;
 	this.min = min;
 	this.max = max;
+	alwaysEmpty = (min == 0 && max == 0);
     }
 
     /** Sets the minimal matching mode to true. */
@@ -91,6 +93,7 @@ final class RETokenRepeated extends REToken {
     // the subexpression back-reference operator allow that?
 
     boolean match(CharIndexed input, REMatch mymatch) {
+	int origin = mymatch.index;
 	// number of times we've matched so far
 	int numRepeats = 0; 
 	
@@ -112,11 +115,16 @@ final class RETokenRepeated extends REToken {
 
 	do {
 	    // Check for stingy match for each possibility.
-	    if (stingy && (numRepeats >= min)) {
+	    if ((stingy && (numRepeats >= min)) || alwaysEmpty) {
 		REMatch result = matchRest(input, newMatch);
 		if (result != null) {
 		    mymatch.assignFrom(result);
+		    mymatch.empty = (mymatch.index == origin);
 		    return true;
+		}
+		else {
+	    	// Special case of {0}. It must always match an empty string.
+		    if (alwaysEmpty) return false;
 		}
 	    }
 
@@ -153,12 +161,43 @@ final class RETokenRepeated extends REToken {
 	    
 	    positions.addElement(newMatch);
 
-	    // doables.index == lastIndex means an empty string
-	    // was the longest that matched this token.
-	    // We break here, otherwise we will fall into an endless loop.
+	    // doables.index == lastIndex occurs either
+	    //   (1) when an empty string was the longest
+	    //       that matched this token.
+	    //       And this case occurs either
+	    //         (1-1) when this token is always empty,
+	    //               for example "()" or "(())".
+	    //         (1-2) when this token is not always empty
+	    //               but can match an empty string, for example,
+	    //               "a*", "(a|)".
+	    // or
+	    //   (2) when the same string matches this token many times.
+	    //       For example, "acbab" itself matches "a.*b" and
+	    //       its substrings "acb" and "ab" also match.
 	    if (doables.index == lastIndex) {
-		if (numRepeats < min) numRepeats = min;
-		break;
+	        if (doables.empty) {
+	    	    // Case (1): We break here, otherwise we will fall
+	    	    //          into an endless loop.
+		    if (numRepeats < min) numRepeats = min;
+		    break;
+		}
+	        else {
+		    // Case (2): We cannot break here because, for example,
+		    // "acbacb" matches "a.*b" up to 2 times but
+		    // not 3 times.  So we have to check numRepeats >= min.
+		    // But we do not have to go further until numRepeats == max
+		    // because the more numRepeats grows, the shorter the
+		    // substring matching this token becomes. 
+		    if (numRepeats > min) {
+			// This means the previous match was successful,
+			// and that must be the best match.  This match
+			// resulted in shortening the matched substring.
+			numRepeats--;
+	    		positions.remove(positions.size() - 1);
+			break;
+		    }
+		    if (numRepeats == min) break;
+		}
 	    }		
 	    lastIndex = doables.index;
 	} while (numRepeats < max);
@@ -207,6 +246,7 @@ final class RETokenRepeated extends REToken {
 	}
 	if (allResults != null) {
 	    mymatch.assignFrom(allResults); // does this get all?
+	    mymatch.empty = (mymatch.index == origin);
 	    return true;
 	}
 	// If we fall out, no matches.

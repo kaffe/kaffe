@@ -370,7 +370,7 @@ public class StyleContext
     {
       StringBuffer sb = new StringBuffer();
       sb.append("[StyleContext.SmallattributeSet:");
-      for (int i = 0; i < attrs.length; ++i)
+      for (int i = 0; i < attrs.length - 1; ++i)
         {
           sb.append(" (");
           sb.append(attrs[i].toString());

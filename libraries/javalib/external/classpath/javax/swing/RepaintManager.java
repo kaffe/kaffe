@@ -84,7 +84,7 @@ public class RepaintManager
    * swing paint thread, which revalidates all invalid components and
    * repaints any damage in the swing scene.</p>
    */
-  protected class RepaintWorker
+  private class RepaintWorker
     implements Runnable
   {
 

@@ -81,7 +81,7 @@ public interface DocumentEvent
   /**
    * EventType
    */
-  class EventType
+  final class EventType
   {
     /**
      * INSERT

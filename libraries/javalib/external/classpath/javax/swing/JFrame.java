@@ -76,7 +76,7 @@ public class JFrame extends Frame
     /**
      * Creates a new instance of <code>AccessibleJFrame</code>.
      */
-    public AccessibleJFrame()
+    protected AccessibleJFrame()
     {
       super();
       // Nothing to do here.

@@ -650,7 +650,7 @@ public class SAXParser
               }
           }
       }
-    catch (XMLStreamException e)
+    catch (Exception e)
       {
         if (!startDocumentDone && contentHandler != null)
           contentHandler.startDocument();
@@ -660,13 +660,16 @@ public class SAXParser
           errorHandler.fatalError(e2);
         if (contentHandler != null)
           contentHandler.endDocument();
-        throw e2;
+        if (e instanceof IOException)
+          throw (IOException) e;
+        else
+          throw e2;
       }
     finally
       {
+        reset();
         if (opened)
           in.close();
-        reset();
       }
   }
 

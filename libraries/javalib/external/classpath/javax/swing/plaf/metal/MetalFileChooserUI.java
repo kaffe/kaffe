@@ -1545,8 +1545,6 @@ public class MetalFileChooserUI
         fileListPanel = new JPanel(new BorderLayout());
         fileList = new JList(getModel());
         scrollPane = new JScrollPane(fileList);
-        scrollPane.setVerticalScrollBarPolicy
-                                        (JScrollPane.VERTICAL_SCROLLBAR_NEVER);
         fileList.setLayoutOrientation(JList.VERTICAL_WRAP);
         fileList.setCellRenderer(new FileRenderer());
       }

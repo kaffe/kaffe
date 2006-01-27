@@ -1,5 +1,5 @@
 /* HTTPURLConnection.java --
-   Copyright (C) 2004, 2005 Free Software Foundation, Inc.
+   Copyright (C) 2004, 2005, 2006 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -254,8 +254,24 @@ public class HTTPURLConnection
               }
           }
         
-        if (response.getCodeClass() == 3 && getInstanceFollowRedirects())
+        if (isRedirect(response) && getInstanceFollowRedirects())
           {
+	    // Read the response body, if there is one.  If the
+	    // redirect points us back at the same server, we will use
+	    // the cached connection, so we must make sure there is no
+	    // pending data in it.
+            InputStream body = response.getBody();
+	    if (body != null)
+	      {
+		byte[] ignore = new byte[1024];
+		while (true)
+		  {
+		    int n = body.read(ignore, 0, ignore.length);
+		    if (n == -1)
+		      break;
+		  }
+	      }
+
             // Follow redirect
             String location = response.getHeader("Location");
 	    if (location != null)
@@ -342,6 +358,12 @@ public class HTTPURLConnection
       }
     while (retry);
     connected = true;
+  }
+
+  private static boolean isRedirect(Response response)
+  {
+    int sc = response.getCode();
+    return (sc != 304 && (sc / 100) == 3);
   }
 
   /**

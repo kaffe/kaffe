@@ -765,12 +765,14 @@ File: vmintegration.info,  Node: java.lang.VMInstrumentationImpl,  Prev: java.la
 ----------------------------------------
 
 The `java.lang.VMInstrumentationImpl' and
-`java.lang.InstrumentationImpl' provides an implementation of the
+`java.lang.InstrumentationImpl' classes provide an implementation of the
 `java.lang.instrument.Instrument' interface. This interface is for java
 1.5 and is only in the generics branch.  A `InstrumentationImpl' object
-should be given to any agent given in the command line (see the
-`java.lang.instrument' package documentation). A VM has to implement
-the static native methods of the `VMInstrumentationImpl' class.
+should be created by the VM when agents are given in the command line
+(see the `java.lang.instrument' package documentation). The VM has to
+set the static field `VMClassLoader.instrumenter' to this object. The
+VM should implement the static native methods of the
+`VMInstrumentationImpl' class.
 
    * `isRedefineClassesSupported()' - Returns true if the JVM supports
      class redefinition.
@@ -785,19 +787,25 @@ the static native methods of the `VMInstrumentationImpl' class.
 
    * `getObjectSize()' - Gives the size of an object.
 
-   When agents are defined, the VM has to call transformers of the
-`InstrumentImpl' object each time a class is loaded, eg a call to
-`VMClassLoader.defineClass'. The `InstrumentationImpl' class defines a
-method that has to be called before reading a class file in the VM.
+   Instrumentation allows to modify the bytecode of a class before it
+gets read by the VM. In Gnu Classpath, the `ClassLoader.defineClass'
+method calls the `VMClassLoader.defineClassWithTransformers' method
+which first checks if `VMClassLoader.instrumenter' is `null'. If it's
+the case, it directly calls `VMClassLoader.defineClass'. If it's not
+the case, the method calls at first the
+`InstrumentationImpl.callTransformers' method, which calls each
+transformer registered to the `InstrumentationImpl' object and returns
+a new bytecode array. Then, it calls the `VMClassLoader.defineClass'
+method with this new bytecode array.
 
-   * `callTransformers' - Calls each transformer registered to the
-     `InstrumentationImpl' object and returns a new bytecode file.
-
-   No default implementation is provided in gnu classpath for the
-`VMInstrumentationImpl' methods. A default implementation will perhaps
-be written, but it might break the `ClassLoader/VMClassLoader' interface
-for calling the `InstrumentationImpl.callTransformers' when a class byte
-code is defined with `ClassLoader.defineClass'.
+   The second use of instrumentation is to redefine a class after it
+has been loaded by the VM. This is done in the Java application by
+calling the `Instrumentation.redefineClasses' method of the standard
+interface on a `Instrumentation' object. The
+`InstrumentationImpl.redefineClasses' method calls the
+`VMInstrumentationImpl.redefineClasses' native method which must be
+implemented by the VM. The implementation should call the
+`InstrumentationImpl.callTransformers' method.
 
 
 File: vmintegration.info,  Node: gnu.classpath,  Next: java.util,  Prev: java.lang,  Up: Classpath Hooks
@@ -1510,34 +1518,34 @@ Node: java.lang.VMRuntime24840
 Node: java.lang.VMString27403
 Node: java.lang.VMThread28223
 Node: java.lang.VMInstrumentationImpl31710
-Node: gnu.classpath33557
-Node: gnu.classpath.VMStackWalker33997
-Node: gnu.classpath.VMSystemProperties35063
-Node: java.util36396
-Node: java.util.VMTimeZone36859
-Node: java.io37775
-Node: java.io.VMFile38504
-Node: java.io.VMObjectInputStream41375
-Node: java.io.VMObjectStreamClass42056
-Node: java.security42886
-Node: java.security.VMAccessController43227
-Node: java.net44391
-Node: java.net.VMInetAddress44832
-Node: java.net.VMNetworkInterface45625
-Node: java.nio46057
-Node: java.nio.VMDirectByteBuffer46560
-Node: java.nio.channels48008
-Node: java.nio.channels.VMChannels48425
-Node: gnu.java.nio49193
-Node: gnu.java.nio.VMPipe49609
-Node: gnu.java.nio.VMSelector50126
-Node: Classpath Callbacks50672
-Node: VM Hooks51152
-Node: JNI Implementation55351
-Node: Miscellaneous VM Requirements57222
-Node: JNI Version57531
-Node: VM Threading Model58091
-Ref: VM Threading Model-Footnote-159707
-Node: Boot Library Path Property59819
+Node: gnu.classpath34028
+Node: gnu.classpath.VMStackWalker34468
+Node: gnu.classpath.VMSystemProperties35534
+Node: java.util36867
+Node: java.util.VMTimeZone37330
+Node: java.io38246
+Node: java.io.VMFile38975
+Node: java.io.VMObjectInputStream41846
+Node: java.io.VMObjectStreamClass42527
+Node: java.security43357
+Node: java.security.VMAccessController43698
+Node: java.net44862
+Node: java.net.VMInetAddress45303
+Node: java.net.VMNetworkInterface46096
+Node: java.nio46528
+Node: java.nio.VMDirectByteBuffer47031
+Node: java.nio.channels48479
+Node: java.nio.channels.VMChannels48896
+Node: gnu.java.nio49664
+Node: gnu.java.nio.VMPipe50080
+Node: gnu.java.nio.VMSelector50597
+Node: Classpath Callbacks51143
+Node: VM Hooks51623
+Node: JNI Implementation55822
+Node: Miscellaneous VM Requirements57693
+Node: JNI Version58002
+Node: VM Threading Model58562
+Ref: VM Threading Model-Footnote-160178
+Node: Boot Library Path Property60290
 
 End Tag Table

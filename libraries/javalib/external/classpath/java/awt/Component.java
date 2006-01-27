@@ -2308,6 +2308,10 @@ public abstract class Component
    */
   public final void dispatchEvent(AWTEvent e)
   {
+    Event oldEvent = translateEvent(e);
+    if (oldEvent != null)
+      postEvent (oldEvent);
+
     // Some subclasses in the AWT package need to override this behavior,
     // hence the use of dispatchEventImpl().
     dispatchEventImpl(e);
@@ -4597,7 +4601,7 @@ p   * <li>the set of backward traversal keys
    */
   static Event translateEvent (AWTEvent e)
   {
-    Component target = (Component) e.getSource ();
+    Object target = e.getSource ();
     Event translated = null;
 
     if (e instanceof InputEvent)
@@ -4790,16 +4794,12 @@ p   * <li>the set of backward traversal keys
 
   void dispatchEventImpl(AWTEvent e)
   {
-    Event oldEvent = translateEvent (e);
     // This boolean tells us not to process focus events when the focus
     // opposite component is the same as the focus component.
     boolean ignoreFocus = 
       (e instanceof FocusEvent && 
        ((FocusEvent)e).getComponent() == ((FocusEvent)e).getOppositeComponent());
     
-    if (oldEvent != null)
-      postEvent (oldEvent);
-
     if (eventTypeEnabled (e.id))
       {
         // the trick we use to communicate between dispatch and redispatch
@@ -4925,16 +4925,6 @@ p   * <li>the set of backward traversal keys
     Rectangle r1 = queuedEvent.getUpdateRect();
     Rectangle r2 = newEvent.getUpdateRect();
     Rectangle union = r1.union(r2);
-
-    int r1a = r1.width * r1.height;
-    int r2a = r2.width * r2.height;
-    int ua  = union.width * union.height;
-
-    if (ua > (r1a+r2a)*2)
-      return null;
-    /* The 2 factor should maybe be reconsidered. Perhaps 3/2
-       would be better? */
-
     newEvent.setUpdateRect(union);
     return newEvent;
   }

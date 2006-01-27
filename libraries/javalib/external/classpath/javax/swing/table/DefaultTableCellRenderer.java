@@ -127,7 +127,8 @@ public class DefaultTableCellRenderer extends JLabel
    * Get the string value of the object and pass it to setText().
    *
    * @param table the JTable
-   * @param value the value of the object
+   * @param value the value of the object. For the text content,
+   *        null is rendered as an empty cell.
    * @param isSelected is the cell selected?
    * @param hasFocus has the cell the focus?
    * @param row the row to render
@@ -146,6 +147,9 @@ public class DefaultTableCellRenderer extends JLabel
           return new JTextField(((JTextField)value).getText());
         super.setText(value.toString());
       }
+    else
+      // null is rendered as an empty cell.
+      super.setText("");
 
     setOpaque(true);
 

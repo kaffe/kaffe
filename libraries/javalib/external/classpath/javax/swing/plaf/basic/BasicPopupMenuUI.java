@@ -271,11 +271,10 @@ public class BasicPopupMenuUI extends PopupMenuUI
       // by the top - level window that this popup belongs to.
       Component invoker = popupMenu.getInvoker();
 
-      RootPaneContainer rootContainer = (RootPaneContainer) SwingUtilities
-                                        .getRoot(invoker);
+      Component rootContainer = SwingUtilities.getRoot(invoker);
       if (rootContainer != null)
         {
-          ((Container) rootContainer).removeComponentListener(topWindowListener);
+          rootContainer.removeComponentListener(topWindowListener);
 
           // If this popup menu is the last popup menu visible on the screen,
           // then
@@ -284,11 +283,13 @@ public class BasicPopupMenuUI extends PopupMenuUI
           boolean topLevelMenu = (popupMenu.getInvoker() instanceof JMenu)
                                  && ((JMenu) popupMenu.getInvoker()).isTopLevelMenu();
 
-          if (topLevelMenu || !(popupMenu.getInvoker() instanceof MenuElement))
+          if ((topLevelMenu || !(popupMenu.getInvoker() instanceof MenuElement))
+              && rootContainer instanceof RootPaneContainer)
             {
+              RootPaneContainer rpContainer = (RootPaneContainer) rootContainer;
               // set glass pane not to interrupt mouse events and remove
               // mouseInputListener
-              Container glassPane = (Container) rootContainer.getGlassPane();
+              Container glassPane = (Container) rpContainer.getGlassPane();
               glassPane.setVisible(false);
               glassPane.removeMouseListener(mouseInputListener);
               mouseInputListener = null;
@@ -307,17 +308,18 @@ public class BasicPopupMenuUI extends PopupMenuUI
       // ComponentEvents fired by it. We need to cancel this popup menu
       // if topWindow to which this popup belongs was resized or moved.
       Component invoker = popupMenu.getInvoker();
-      RootPaneContainer rootContainer = (RootPaneContainer) SwingUtilities
-                                        .getRoot(invoker);
-      ((Container) rootContainer).addComponentListener(topWindowListener);
+      Component rootContainer = SwingUtilities.getRoot(invoker);
+      rootContainer.addComponentListener(topWindowListener);
 
       // Set the glass pane to interrupt all mouse events originating in root 
       // container
-      if (mouseInputListener == null)
+      if (mouseInputListener == null
+          && rootContainer instanceof RootPaneContainer)
         {
-	  Container glassPane = (Container) rootContainer.getGlassPane();
+          RootPaneContainer rpContainer = (RootPaneContainer) rootContainer;
+	  Container glassPane = (Container) rpContainer.getGlassPane();
 	  glassPane.setVisible(true);
-	  mouseInputListener = new MouseInputHandler(rootContainer);
+	  mouseInputListener = new MouseInputHandler(rpContainer);
 	  glassPane.addMouseListener(mouseInputListener);
 	  glassPane.addMouseMotionListener(mouseInputListener);
         }

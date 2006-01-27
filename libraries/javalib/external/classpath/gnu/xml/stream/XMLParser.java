@@ -2419,11 +2419,11 @@ public class XMLParser
               }
             else
               {
-                if (!isNameStartCharacter(cp[0]))
+                if (!isNameStartCharacter(cp[0], input.xml11))
                   error("malformed reference in entity value", value);
                 for (int i = 1; i < cp.length; i++)
                   {
-                    if (!isNameCharacter(cp[i]))
+                    if (!isNameCharacter(cp[i], input.xml11))
                       error("malformed reference in entity value", value);
                   }
               }
@@ -3469,13 +3469,13 @@ public class XMLParser
     int c = readCh();
     if (isName)
       {
-        if (!isNameStartCharacter(c))
+        if (!isNameStartCharacter(c, input.xml11))
           error("not a name start character",
                 "U+" + Integer.toHexString(c));
       }
     else
       {
-        if (!isNameCharacter(c))
+        if (!isNameCharacter(c, input.xml11))
           error("not a name character",
                 "U+" + Integer.toHexString(c));
       }
@@ -3510,7 +3510,7 @@ public class XMLParser
             reset();
             return intern(buf.toString());
           default:
-            if (!isNameCharacter(c))
+            if (!isNameCharacter(c, input.xml11))
               error("not a name character",
                     "U+" + Integer.toHexString(c));
             else
@@ -3523,7 +3523,7 @@ public class XMLParser
   /**
    * Indicates whether the specified Unicode character is an XML 1.1 Char.
    */
-  private boolean isXML11Char(int c)
+  public static boolean isXML11Char(int c)
   {
     return ((c >= 0x0001 && c <= 0xD7FF) ||
             (c >= 0xE000 && c < 0xFFFD) || // NB exclude 0xfffd
@@ -3534,7 +3534,7 @@ public class XMLParser
    * Indicates whether the specified Unicode character is an XML 1.1
    * RestrictedChar.
    */
-  private boolean isXML11RestrictedChar(int c)
+  public static boolean isXML11RestrictedChar(int c)
   {
     return ((c >= 0x0001 && c <= 0x0008) ||
             (c >= 0x000B && c <= 0x000C) ||
@@ -3556,17 +3556,17 @@ public class XMLParser
           return false;
         if (isName)
           {
-            if (!isNameStartCharacter(cp[0]))
+            if (!isNameStartCharacter(cp[0], input.xml11))
               return false;
           }
         else
           {
-            if (!isNameCharacter(cp[0]))
+            if (!isNameCharacter(cp[0], input.xml11))
               return false;
           }
         for (int i = 1; i < cp.length; i++)
           {
-            if (!isNameCharacter(cp[i]))
+            if (!isNameCharacter(cp[i], input.xml11))
               return false;
           }
         return true;
@@ -3581,9 +3581,9 @@ public class XMLParser
    * Indicates whether the specified Unicode character is a Name start
    * character.
    */
-  private boolean isNameStartCharacter(int c)
+  public static boolean isNameStartCharacter(int c, boolean xml11)
   {
-    if (input.xml11)
+    if (xml11)
       return ((c >= 0x0041 && c <= 0x005a) ||
               (c >= 0x0061 && c <= 0x007a) ||
               c == 0x3a |
@@ -3608,9 +3608,9 @@ public class XMLParser
    * Indicates whether the specified Unicode character is a Name non-initial
    * character.
    */
-  private boolean isNameCharacter(int c)
+  public static boolean isNameCharacter(int c, boolean xml11)
   {
-    if (input.xml11)
+    if (xml11)
       return ((c >= 0x0041 && c <= 0x005a) ||
               (c >= 0x0061 && c <= 0x007a) ||
               (c >= 0x0030 && c <= 0x0039) ||

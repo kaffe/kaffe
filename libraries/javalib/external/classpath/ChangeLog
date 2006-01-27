@@ -1,3 +1,2080 @@
+2006-01-27  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JLayeredPane.java
+	(inserIndexForLayer): Fixed direction of search.
+
+2006-01-27  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* javax/swing/JTree.java (constructor): Put EXPANDED for the root 
+	node into nodeStates.
+
+2006-01-27  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JLayeredPane.java
+	(FRAME_CONTENT_LAYER): Made field final.
+	(componentToLayer): Made field private.
+	(rectCache): Removed field.
+	(layers): Removed field.
+	(JLayeredPane()): Removed initialization of removed fields.
+	(getLayer): Rewritten to make use of client properties in
+	JComponents and to be more straighforward.
+	(static getLayer): Rewritten to make use of client properties in
+	JComponents.
+	(layerToRange): Removed method.
+	(incrLayer): Removed method.
+	(decrLayer): Removed method.
+	(highestLayer): Rewritten to be more straightforward.
+	(lowestLayer): Rewritten to be more straightforward.
+	(getPosition): Rewritten to be more straightforward.
+	(getComponentsInLayer): Rewritten to be more straightforward.
+	(getComponentCountInLayer): Rewritten to be more straightforward.
+	(getIndexOf): Rewritten to be more straightforward.
+	(inserIndexForLayer): Rewritten to be more straightforward.
+	(remove): Rewritten to be more straightforward.
+	(setLayer): Rewritten to be more straightforward.
+	(addImpl): Rewritten to be more straightforward.
+	(putLayer): Rewritten to be more straightforward.
+
+2006-01-27  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* java/lang/Character.java:
+	(offsetByCodePoints(CharSequence, int, int)): New API method.
+	(offsetByCodePoints(char[], int, int, int, int)): Likewise.
+	(toChars): Throw the Exception that the docs say we throw.
+	(codePointAt): Fixed an off-by-one error in the bounds of the if 
+	statement.
+	* java/lang/String.java:
+	(String(int[], int, int)): New API constructor.
+
+2006-01-27  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/DefaultStyledDocument.java
+	(insert): Moved this loop to insertUpdate.
+	(insertUpdate): Likewise. Fixed variable
+	names. Incremented pos if new paragraph
+	is inserted.
+	(split): Changed edits to use replace instead. Prevents
+	assertion errors.
+	(insertFirstContentTag): Removed else.
+	(insertContentTag): Implemented else for JoinNextDirection.
+	(createFracture): Fixed up code, still not fully complete.
+	(insertFracture): Fixed to use return value from 
+	recreateAfterFracture.
+	(recreateAfterFracture): Changed to return an array of the
+	elements to be added. This prevents an assertion error.
+	(contains): New function checks if an element is already in 
+	the Vector. Vector's contain function was not enough to use.
+	(addAddedElement): Changed to use new contains function.
+	(addAddedElements): Likewise.
+	(addRemovedElement): Likewise.
+	(addRemovedElements): Likewise.        
+	
+2006-01-27  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	PR 25520
+	* vm/reference/java/io/VMObjectInputStream.java (loaderAction.run):
+	If no user class loaders found on the stack, return the thread 
+	context class loader. (currentClassLoader): Explained.
+
+2006-01-27  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/Container.java
+	(swapComponents): Removed unspecified method.
+	* javax/swing/JLayeredPane.java
+	(setPosition): Reimplemented correctly.
+	(swapComponents): New helper method.
+
+2006-01-27  Mark Wielaard  <mark@klomp.org>
+
+	* configure.ac: Set version to 0.21-pre.
+
+2006-01-27  Roman Kennke  <kennke@aicas.com>
+
+	PR classpath/25968
+	* javax/swing/JComponent.java
+	(findOverlapFreeParent): Improved the algorithm to make better use
+	of the optimizedDrawingEnabled flag.
+	* javax/swing/JLayeredPane.java
+	(isOptimizedDrawingEnabled): Reimplemented to match the specs.
+	* javax/swing/JViewport.java
+	(computeBlit): Fixed check to decide if blitting is possible or not,
+	so that it doesn't blit if nothing was scrolled (in order to
+	update the buffer when the view updates itself).
+
+2006-01-27  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/metal/MetalFileChooserUI.java
+	(createList): Don't set scrollbar policy.
+
+2006-01-27  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/basic/BasicPopupMenuUI.java
+	(PopupMenuHandler.popupMenuWillBecomeInvisible):
+	Fixed to also handle non-Swing toplevel containers.
+	(PopupMenuHandler.popupMenuWillBecomeVisible):
+	Fixed to also handle non-Swing toplevel containers.
+	* javax/swing/Popup.java
+	(JWindowPopup.JWindowPopup()): Correctly set parent window on
+	popup.
+
+2006-01-27  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/basic/BasicInternalFrameUI.java
+	(InternalFramePropertyChangeListener): Don't implement
+	VetoableChangeListener.
+	(InternalFramePropertyChangeListener.vetoableChange): Removed.
+	(internalFrameVetoableChangeListener): Removed unneeded field.
+	(installListeners): Don't install vetoableChangeListener.
+	* javax/swing/event/DocumentEvent.java
+	(EventType): Made class final.
+
+2006-01-27  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/SwingUtilities.java
+	(calculateInsetArea): Removed unneeded method. The method
+	calculateInnerArea has the same purpose and is actually specified.
+	(calculateInnerArea): Rewritten to not use calculateInsetArea.
+	* javax/swing/plaf/basic/BasicMenuItemUI.java
+	(paintMenuItem): Use SwingUtilities.calculateInnerArea() instead
+	of SwingUtilities.calculateInsetArea().
+
+2006-01-27  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/basic/BasicTreeUI.java
+	(installDefaults): Removed requestFocusInWindow() call.
+	* javax/swing/JComponent.java
+	(requestFocusInWindow(boolean)): Made method protected.
+	(printComponent): Made method protected.
+	(printChildren): Made method protected.
+	(printComponent): Made method protected.
+	(printBorder): Made method protected.
+
+2006-01-27  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/AbstractButton.java
+	(ButtonChangeListener.ButtonChangeListener()): Made constructor
+	package private.
+	* javax/swing/ImageIcon.java
+	(component): Made field final.
+	(tracker): Made field final.
+	* javax/swing/JApplet.java
+	(AccessibleJApplet.AccessibleJApplet): Made constructor protected.
+	* javax/swing/JCheckBox.java
+	(AccessibleJCheckBox.AccessibleJCheckBox): Made constructor
+	protected.
+	* javax/swing/JDialog.java
+	(AccessibleJDialog.AccessibleJDialog): Made constructor protected.
+	* javax/swing/JFrame.java
+	(AccessibleJFrame.AccessibleJFrame): Made constructor protected.
+	* javax/swing/JLayeredPane.java
+	(AccessibleJLayered.AccessibleJLayeredPane): Made constructor
+	protected.
+	(DEFAULT_LAYER): Made field final.
+	(PALETTE_LAYER): Made field final.
+	(MODAL_LAYER): Made field final.
+	(POPUP_LAYER): Made field final.
+	(DRAG_LAYER): Made field final.
+	* javax/swing/JMenu.java
+	(ActionChangeListener): Made class private.
+	* javax/swing/JOptionPane.java
+	(UNITITIALIZED_VALUE): Made field final.
+	* javax/swing/JPanel.java
+	(AccessibleJPanel.AccessibleJPanel): Made constructor protected.
+	* javax/swing/JPopupMenu.java
+	(ActionChangeListener): Made class private.
+	* javax/swing/JTree.java
+	(paramString): Made method protected.
+	* javax/swing/JViewport.java
+	(AccessibleJViewport.AccessibleJViewport): Made constructor protected.
+	* javax/swing/JWindow.java
+	(AccessibleJWindow.AccessibleJWindow): Made constructor protected.
+	* javax/swing/RepaintManager.java
+	(RepaintWorker): Made class private.
+
+2006-01-27  Roman Kennke  <kennke@aicas.com>
+
+	* gnu/java/awt/peer/swing/SwingComponentPeer.java
+	(handleEvent): Removed debug statement.
+
+2006-01-27  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/Component.java
+	(coalescePaintEvents): Don't try to optimize coalescing. This hurts
+	more than it helps.
+
+2006-01-26  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/DefaultStyledDocument.java
+	(createFracture): Commented out a known problem,
+	added FIXME tag.
+
+2006-01-26  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/DefaultStyledDocument.java
+	(ElementBuffer): Added fields.
+	(remove): Initialized pos.
+	(change): Likewise.
+	(insert): Likewise.
+	(insertUpdate): Incremented pos. Fixed check, createFracture should
+	be called on first tag if it is not ContentType.
+	(insertFirstContentTag): Reworked to use proper offsets and
+	set offset accordingly. This might need more work in the future.
+	(insertContentTag): Likewise. Fixed to use pos, instead of 
+	offset.
+	(createFracture): Fixed to recreate other leaves. Still needs
+	more work.
+	(insertFracture): Reimplemented.
+	(recreateAfterFracture): New method.
+	(getParagraphElement): Reimplemented, more efficent.
+
+2006-01-26  Christian Thalinger  <twisti@complang.tuwien.ac.at>
+
+	* native/jni/java-lang/java_lang_VMDouble.c (doubleToLongBits)
+	(doubleToRawLongBits, longBitsToDouble): Swap the byte
+	ordering for little-endian arms without VFP.
+
+2006-01-26  Raif S. Naffah  <raif@swiftdsl.com.au>
+
+	PR classpath/25981
+	* gnu/javax/crypto/jce/GnuCrypto.java (run): Added KeyGenerator entries.
+
+2006-01-26  Mark Wielaard  <mark@klomp.org>
+
+	Fixes bug #25970 reported by Michael Kay <mike@saxonica.com>
+	* java/math/BigDecimal.java (compareTo): Don't strip trailing zeros.
+	Add trailing zeros to the fraction of the decimal with the smallest
+	scale.
+
+2006-01-26  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/html/ObjectView.java: New file.
+
+2006-01-26  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* javax/swing/plaf/basic/BasicTreeUI.java (MouseHandler.mousePressed): 
+	Call startEditing when appropriate.
+	(WAIT_TILL_EDITING, EDIT, startEditTimer): New fields.
+	(startEditing): Always edit if directly ordered from 
+	MouseHandler.mousePressed.
+	* javax/swing/tree/DefaultTreeCellEditor.java (CLICK_COUNT_TO_START): 
+	New field. (createTreeCellEditor): Set click count to start.
+	(getTreeCellEditorComponent): Assing realEditor directly.
+
+2006-01-25  Casey Marshall  <csm@gnu.org>
+
+	Merging GNU Crypto and Jessie.
+
+	* NEWS: mention the merge in the 0.21 notes.
+	* gnu/classpath/debug/Component.java (SSL_APPLICATION): removed.
+	(SSL_RECORD_LAYER): new constants.
+	* gnu/java/security/provider/Gnu.java (<init>): add new algorithms
+	to provider.
+	* resource/java/security/classpath.security: add new providers.
+	* gnu/javax/crypto/assembly/Assembly.java,
+        gnu/javax/crypto/assembly/Cascade.java,
+        gnu/javax/crypto/assembly/CascadeStage.java,
+        gnu/javax/crypto/assembly/CascadeTransformer.java,
+        gnu/javax/crypto/assembly/DeflateTransformer.java,
+        gnu/javax/crypto/assembly/Direction.java,
+        gnu/javax/crypto/assembly/LoopbackTransformer.java,
+        gnu/javax/crypto/assembly/ModeStage.java,
+        gnu/javax/crypto/assembly/Operation.java,
+        gnu/javax/crypto/assembly/PaddingTransformer.java,
+        gnu/javax/crypto/assembly/Stage.java,
+        gnu/javax/crypto/assembly/Transformer.java,
+        gnu/javax/crypto/assembly/TransformerException.java,
+        gnu/javax/crypto/cipher/Anubis.java,
+        gnu/javax/crypto/cipher/BaseCipher.java,
+        gnu/javax/crypto/cipher/Blowfish.java,
+        gnu/javax/crypto/cipher/Cast5.java,
+        gnu/javax/crypto/cipher/CipherFactory.java,
+        gnu/javax/crypto/cipher/DES.java,
+        gnu/javax/crypto/cipher/IBlockCipher.java,
+        gnu/javax/crypto/cipher/IBlockCipherSpi.java,
+        gnu/javax/crypto/cipher/Khazad.java,
+        gnu/javax/crypto/cipher/NullCipher.java,
+        gnu/javax/crypto/cipher/Rijndael.java,
+        gnu/javax/crypto/cipher/Serpent.java,
+        gnu/javax/crypto/cipher/Square.java,
+        gnu/javax/crypto/cipher/TripleDES.java,
+        gnu/javax/crypto/cipher/Twofish.java,
+        gnu/javax/crypto/cipher/WeakKeyException.java,
+        gnu/javax/crypto/jce/GnuCrypto.java,
+        gnu/javax/crypto/jce/GnuSasl.java,
+        gnu/javax/crypto/jce/PBKDF2SecretKeyFactory.java,
+        gnu/javax/crypto/jce/cipher/AESSpi.java,
+        gnu/javax/crypto/jce/cipher/ARCFourSpi.java,
+        gnu/javax/crypto/jce/cipher/AnubisSpi.java,
+        gnu/javax/crypto/jce/cipher/BlowfishSpi.java,
+        gnu/javax/crypto/jce/cipher/Cast5Spi.java,
+        gnu/javax/crypto/jce/cipher/CipherAdapter.java,
+        gnu/javax/crypto/jce/cipher/DESSpi.java,
+        gnu/javax/crypto/jce/cipher/KhazadSpi.java,
+        gnu/javax/crypto/jce/cipher/NullCipherSpi.java,
+        gnu/javax/crypto/jce/cipher/PBES2.java,
+        gnu/javax/crypto/jce/cipher/RijndaelSpi.java,
+        gnu/javax/crypto/jce/cipher/SerpentSpi.java,
+        gnu/javax/crypto/jce/cipher/SquareSpi.java,
+        gnu/javax/crypto/jce/cipher/TripleDESSpi.java,
+        gnu/javax/crypto/jce/cipher/TwofishSpi.java,
+        gnu/javax/crypto/jce/key/AnubisKeyGeneratorImpl.java,
+        gnu/javax/crypto/jce/key/AnubisSecretKeyFactoryImpl.java,
+        gnu/javax/crypto/jce/key/BlowfishKeyGeneratorImpl.java,
+        gnu/javax/crypto/jce/key/BlowfishSecretKeyFactoryImpl.java,
+        gnu/javax/crypto/jce/key/Cast5KeyGeneratorImpl.java,
+        gnu/javax/crypto/jce/key/Cast5SecretKeyFactoryImpl.java,
+        gnu/javax/crypto/jce/key/DESKeyGeneratorImpl.java,
+        gnu/javax/crypto/jce/key/DESSecretKeyFactoryImpl.java,
+        gnu/javax/crypto/jce/key/DESedeSecretKeyFactoryImpl.java,
+        gnu/javax/crypto/jce/key/KhazadKeyGeneratorImpl.java,
+        gnu/javax/crypto/jce/key/KhazadSecretKeyFactoryImpl.java,
+        gnu/javax/crypto/jce/key/RijndaelKeyGeneratorImpl.java,
+        gnu/javax/crypto/jce/key/RijndaelSecretKeyFactoryImpl.java,
+        gnu/javax/crypto/jce/key/SecretKeyFactoryImpl.java,
+        gnu/javax/crypto/jce/key/SecretKeyGeneratorImpl.java,
+        gnu/javax/crypto/jce/key/SerpentKeyGeneratorImpl.java,
+        gnu/javax/crypto/jce/key/SerpentSecretKeyFactoryImpl.java,
+        gnu/javax/crypto/jce/key/SquareKeyGeneratorImpl.java,
+        gnu/javax/crypto/jce/key/SquareSecretKeyFactoryImpl.java,
+        gnu/javax/crypto/jce/key/TripleDESKeyGeneratorImpl.java,
+        gnu/javax/crypto/jce/key/TwofishKeyGeneratorImpl.java,
+        gnu/javax/crypto/jce/key/TwofishSecretKeyFactoryImpl.java,
+        gnu/javax/crypto/jce/keyring/GnuKeyring.java,
+        gnu/javax/crypto/jce/mac/HMacHavalSpi.java,
+        gnu/javax/crypto/jce/mac/HMacMD2Spi.java,
+        gnu/javax/crypto/jce/mac/HMacMD4Spi.java,
+        gnu/javax/crypto/jce/mac/HMacMD5Spi.java,
+        gnu/javax/crypto/jce/mac/HMacRipeMD128Spi.java,
+        gnu/javax/crypto/jce/mac/HMacRipeMD160Spi.java,
+        gnu/javax/crypto/jce/mac/HMacSHA160Spi.java,
+        gnu/javax/crypto/jce/mac/HMacSHA256Spi.java,
+        gnu/javax/crypto/jce/mac/HMacSHA384Spi.java,
+        gnu/javax/crypto/jce/mac/HMacSHA512Spi.java,
+        gnu/javax/crypto/jce/mac/HMacTigerSpi.java,
+        gnu/javax/crypto/jce/mac/HMacWhirlpoolSpi.java,
+        gnu/javax/crypto/jce/mac/MacAdapter.java,
+        gnu/javax/crypto/jce/mac/OMacAnubisImpl.java,
+        gnu/javax/crypto/jce/mac/OMacBlowfishImpl.java,
+        gnu/javax/crypto/jce/mac/OMacCast5Impl.java,
+        gnu/javax/crypto/jce/mac/OMacDESImpl.java,
+        gnu/javax/crypto/jce/mac/OMacImpl.java,
+        gnu/javax/crypto/jce/mac/OMacKhazadImpl.java,
+        gnu/javax/crypto/jce/mac/OMacRijndaelImpl.java,
+        gnu/javax/crypto/jce/mac/OMacSerpentImpl.java,
+        gnu/javax/crypto/jce/mac/OMacSquareImpl.java,
+        gnu/javax/crypto/jce/mac/OMacTripleDESImpl.java,
+        gnu/javax/crypto/jce/mac/OMacTwofishImpl.java,
+        gnu/javax/crypto/jce/mac/TMMH16Spi.java,
+        gnu/javax/crypto/jce/mac/UHash32Spi.java,
+        gnu/javax/crypto/jce/mac/UMac32Spi.java,
+        gnu/javax/crypto/jce/params/BlockCipherParameters.java,
+        gnu/javax/crypto/jce/params/DEREncodingException.java,
+        gnu/javax/crypto/jce/params/DERReader.java,
+        gnu/javax/crypto/jce/params/DERWriter.java,
+        gnu/javax/crypto/jce/prng/ARCFourRandomSpi.java,
+        gnu/javax/crypto/jce/prng/CSPRNGSpi.java,
+        gnu/javax/crypto/jce/prng/FortunaImpl.java,
+        gnu/javax/crypto/jce/prng/ICMRandomSpi.java,
+        gnu/javax/crypto/jce/prng/UMacRandomSpi.java,
+        gnu/javax/crypto/jce/spec/BlockCipherParameterSpec.java,
+        gnu/javax/crypto/jce/spec/TMMHParameterSpec.java,
+        gnu/javax/crypto/jce/spec/UMac32ParameterSpec.java,
+        gnu/javax/crypto/key/BaseKeyAgreementParty.java,
+        gnu/javax/crypto/key/GnuSecretKey.java,
+        gnu/javax/crypto/key/IKeyAgreementParty.java,
+        gnu/javax/crypto/key/IncomingMessage.java,
+        gnu/javax/crypto/key/KeyAgreementException.java,
+        gnu/javax/crypto/key/KeyAgreementFactory.java,
+        gnu/javax/crypto/key/OutgoingMessage.java,
+        gnu/javax/crypto/key/dh/DHKeyPairRawCodec.java,
+        gnu/javax/crypto/key/dh/DiffieHellmanKeyAgreement.java,
+        gnu/javax/crypto/key/dh/DiffieHellmanReceiver.java,
+        gnu/javax/crypto/key/dh/DiffieHellmanSender.java,
+        gnu/javax/crypto/key/dh/ElGamalKeyAgreement.java,
+        gnu/javax/crypto/key/dh/ElGamalReceiver.java,
+        gnu/javax/crypto/key/dh/ElGamalSender.java,
+        gnu/javax/crypto/key/dh/GnuDHKey.java,
+        gnu/javax/crypto/key/dh/GnuDHKeyPairGenerator.java,
+        gnu/javax/crypto/key/dh/GnuDHPrivateKey.java,
+        gnu/javax/crypto/key/dh/GnuDHPublicKey.java,
+        gnu/javax/crypto/key/dh/RFC2631.java,
+        gnu/javax/crypto/key/srp6/SRP6Host.java,
+        gnu/javax/crypto/key/srp6/SRP6KeyAgreement.java,
+        gnu/javax/crypto/key/srp6/SRP6SaslClient.java,
+        gnu/javax/crypto/key/srp6/SRP6SaslServer.java,
+        gnu/javax/crypto/key/srp6/SRP6TLSClient.java,
+        gnu/javax/crypto/key/srp6/SRP6TLSServer.java,
+        gnu/javax/crypto/key/srp6/SRP6User.java,
+        gnu/javax/crypto/key/srp6/SRPAlgorithm.java,
+        gnu/javax/crypto/key/srp6/SRPKey.java,
+        gnu/javax/crypto/key/srp6/SRPKeyPairGenerator.java,
+        gnu/javax/crypto/key/srp6/SRPKeyPairRawCodec.java,
+        gnu/javax/crypto/key/srp6/SRPPrivateKey.java,
+        gnu/javax/crypto/key/srp6/SRPPublicKey.java,
+        gnu/javax/crypto/keyring/AuthenticatedEntry.java,
+        gnu/javax/crypto/keyring/BaseKeyring.java,
+        gnu/javax/crypto/keyring/BinaryDataEntry.java,
+        gnu/javax/crypto/keyring/CertPathEntry.java,
+        gnu/javax/crypto/keyring/CertificateEntry.java,
+        gnu/javax/crypto/keyring/CompressedEntry.java,
+        gnu/javax/crypto/keyring/EncryptedEntry.java,
+        gnu/javax/crypto/keyring/Entry.java,
+        gnu/javax/crypto/keyring/EnvelopeEntry.java,
+        gnu/javax/crypto/keyring/GnuPrivateKeyring.java,
+        gnu/javax/crypto/keyring/GnuPublicKeyring.java,
+        gnu/javax/crypto/keyring/IKeyring.java,
+        gnu/javax/crypto/keyring/IPrivateKeyring.java,
+        gnu/javax/crypto/keyring/IPublicKeyring.java,
+        gnu/javax/crypto/keyring/MalformedKeyringException.java,
+        gnu/javax/crypto/keyring/MaskableEnvelopeEntry.java,
+        gnu/javax/crypto/keyring/MeteredInputStream.java,
+        gnu/javax/crypto/keyring/PasswordAuthenticatedEntry.java,
+        gnu/javax/crypto/keyring/PasswordEncryptedEntry.java,
+        gnu/javax/crypto/keyring/PasswordProtectedEntry.java,
+        gnu/javax/crypto/keyring/PrimitiveEntry.java,
+        gnu/javax/crypto/keyring/PrivateKeyEntry.java,
+        gnu/javax/crypto/keyring/Properties.java,
+        gnu/javax/crypto/keyring/PublicKeyEntry.java,
+        gnu/javax/crypto/mac/BaseMac.java,
+        gnu/javax/crypto/mac/HMac.java,
+        gnu/javax/crypto/mac/HMacFactory.java,
+        gnu/javax/crypto/mac/IMac.java,
+        gnu/javax/crypto/mac/MacFactory.java,
+        gnu/javax/crypto/mac/MacInputStream.java,
+        gnu/javax/crypto/mac/MacOutputStream.java,
+        gnu/javax/crypto/mac/OMAC.java,
+        gnu/javax/crypto/mac/TMMH16.java,
+        gnu/javax/crypto/mac/UHash32.java,
+        gnu/javax/crypto/mac/UMac32.java,
+        gnu/javax/crypto/mode/BaseMode.java,
+        gnu/javax/crypto/mode/CBC.java,
+        gnu/javax/crypto/mode/CFB.java,
+        gnu/javax/crypto/mode/CTR.java,
+        gnu/javax/crypto/mode/EAX.java,
+        gnu/javax/crypto/mode/ECB.java,
+        gnu/javax/crypto/mode/IAuthenticatedMode.java,
+        gnu/javax/crypto/mode/ICM.java,
+        gnu/javax/crypto/mode/IMode.java,
+        gnu/javax/crypto/mode/ModeFactory.java,
+        gnu/javax/crypto/mode/OFB.java,
+        gnu/javax/crypto/pad/BasePad.java,
+        gnu/javax/crypto/pad/IPad.java,
+        gnu/javax/crypto/pad/PKCS1_V1_5.java,
+        gnu/javax/crypto/pad/PKCS7.java,
+        gnu/javax/crypto/pad/PadFactory.java,
+        gnu/javax/crypto/pad/SSL3.java,
+        gnu/javax/crypto/pad/TBC.java,
+        gnu/javax/crypto/pad/TLS1.java,
+        gnu/javax/crypto/pad/WrongPaddingException.java,
+        gnu/javax/crypto/prng/ARCFour.java,
+        gnu/javax/crypto/prng/CSPRNG.java,
+        gnu/javax/crypto/prng/Fortuna.java,
+        gnu/javax/crypto/prng/ICMGenerator.java,
+        gnu/javax/crypto/prng/IPBE.java,
+        gnu/javax/crypto/prng/PBKDF2.java,
+        gnu/javax/crypto/prng/PRNGFactory.java,
+        gnu/javax/crypto/prng/UMacGenerator.java,
+        gnu/javax/crypto/sasl/AuthInfo.java,
+        gnu/javax/crypto/sasl/AuthInfoProviderFactory.java,
+        gnu/javax/crypto/sasl/ClientFactory.java,
+        gnu/javax/crypto/sasl/ClientMechanism.java,
+        gnu/javax/crypto/sasl/ConfidentialityException.java,
+        gnu/javax/crypto/sasl/IAuthInfoProvider.java,
+        gnu/javax/crypto/sasl/IAuthInfoProviderFactory.java,
+        gnu/javax/crypto/sasl/IllegalMechanismStateException.java,
+        gnu/javax/crypto/sasl/InputBuffer.java,
+        gnu/javax/crypto/sasl/IntegrityException.java,
+        gnu/javax/crypto/sasl/NoSuchMechanismException.java,
+        gnu/javax/crypto/sasl/NoSuchUserException.java,
+        gnu/javax/crypto/sasl/OutputBuffer.java,
+        gnu/javax/crypto/sasl/SaslEncodingException.java,
+        gnu/javax/crypto/sasl/SaslInputStream.java,
+        gnu/javax/crypto/sasl/SaslOutputStream.java,
+        gnu/javax/crypto/sasl/SaslUtil.java,
+        gnu/javax/crypto/sasl/ServerFactory.java,
+        gnu/javax/crypto/sasl/ServerMechanism.java,
+        gnu/javax/crypto/sasl/UserAlreadyExistsException.java,
+        gnu/javax/crypto/sasl/anonymous/AnonymousClient.java,
+        gnu/javax/crypto/sasl/anonymous/AnonymousServer.java,
+        gnu/javax/crypto/sasl/anonymous/AnonymousUtil.java,
+        gnu/javax/crypto/sasl/crammd5/CramMD5AuthInfoProvider.java,
+        gnu/javax/crypto/sasl/crammd5/CramMD5Client.java,
+        gnu/javax/crypto/sasl/crammd5/CramMD5Registry.java,
+        gnu/javax/crypto/sasl/crammd5/CramMD5Server.java,
+        gnu/javax/crypto/sasl/crammd5/CramMD5Util.java,
+        gnu/javax/crypto/sasl/crammd5/PasswordFile.java,
+        gnu/javax/crypto/sasl/plain/PasswordFile.java,
+        gnu/javax/crypto/sasl/plain/PlainAuthInfoProvider.java,
+        gnu/javax/crypto/sasl/plain/PlainClient.java,
+        gnu/javax/crypto/sasl/plain/PlainRegistry.java,
+        gnu/javax/crypto/sasl/plain/PlainServer.java,
+        gnu/javax/crypto/sasl/srp/CALG.java,
+        gnu/javax/crypto/sasl/srp/ClientStore.java,
+        gnu/javax/crypto/sasl/srp/IALG.java,
+        gnu/javax/crypto/sasl/srp/KDF.java,
+        gnu/javax/crypto/sasl/srp/PasswordFile.java,
+        gnu/javax/crypto/sasl/srp/SRP.java,
+        gnu/javax/crypto/sasl/srp/SRPAuthInfoProvider.java,
+        gnu/javax/crypto/sasl/srp/SRPClient.java,
+        gnu/javax/crypto/sasl/srp/SRPRegistry.java,
+        gnu/javax/crypto/sasl/srp/SRPServer.java,
+        gnu/javax/crypto/sasl/srp/SecurityContext.java,
+        gnu/javax/crypto/sasl/srp/ServerStore.java,
+        gnu/javax/crypto/sasl/srp/StoreEntry.java,
+        gnu/javax/net/ssl/Base64.java,
+        gnu/javax/net/ssl/EntropySource.java,
+        gnu/javax/net/ssl/NullManagerParameters.java,
+        gnu/javax/net/ssl/PrivateCredentials.java,
+        gnu/javax/net/ssl/SRPManagerParameters.java,
+        gnu/javax/net/ssl/SRPTrustManager.java,
+        gnu/javax/net/ssl/StaticTrustAnchors.java,
+        gnu/javax/net/ssl/provider/Alert.java,
+        gnu/javax/net/ssl/provider/AlertException.java,
+        gnu/javax/net/ssl/provider/Certificate.java,
+        gnu/javax/net/ssl/provider/CertificateRequest.java,
+        gnu/javax/net/ssl/provider/CertificateType.java,
+        gnu/javax/net/ssl/provider/CertificateVerify.java,
+        gnu/javax/net/ssl/provider/CipherSuite.java,
+        gnu/javax/net/ssl/provider/ClientHello.java,
+        gnu/javax/net/ssl/provider/ClientKeyExchange.java,
+        gnu/javax/net/ssl/provider/CompressionMethod.java,
+        gnu/javax/net/ssl/provider/Constructed.java,
+        gnu/javax/net/ssl/provider/ContentType.java,
+        gnu/javax/net/ssl/provider/Context.java,
+        gnu/javax/net/ssl/provider/DiffieHellman.java,
+        gnu/javax/net/ssl/provider/DigestInputStream.java,
+        gnu/javax/net/ssl/provider/DigestOutputStream.java,
+        gnu/javax/net/ssl/provider/Enumerated.java,
+        gnu/javax/net/ssl/provider/Extension.java,
+        gnu/javax/net/ssl/provider/Extensions.java,
+        gnu/javax/net/ssl/provider/Finished.java,
+        gnu/javax/net/ssl/provider/GNUSecurityParameters.java,
+        gnu/javax/net/ssl/provider/Handshake.java,
+        gnu/javax/net/ssl/provider/JCESecurityParameters.java,
+        gnu/javax/net/ssl/provider/JDBCSessionContext.java,
+        gnu/javax/net/ssl/provider/Jessie.java,
+        gnu/javax/net/ssl/provider/JessieDHPrivateKey.java,
+        gnu/javax/net/ssl/provider/JessieDHPublicKey.java,
+        gnu/javax/net/ssl/provider/JessieRSAPrivateKey.java,
+        gnu/javax/net/ssl/provider/JessieRSAPublicKey.java,
+        gnu/javax/net/ssl/provider/KeyPool.java,
+        gnu/javax/net/ssl/provider/MacException.java,
+        gnu/javax/net/ssl/provider/OverflowException.java,
+        gnu/javax/net/ssl/provider/PRNG.java,
+        gnu/javax/net/ssl/provider/ProtocolVersion.java,
+        gnu/javax/net/ssl/provider/Random.java,
+        gnu/javax/net/ssl/provider/RecordInput.java,
+        gnu/javax/net/ssl/provider/RecordInputStream.java,
+        gnu/javax/net/ssl/provider/RecordOutputStream.java,
+        gnu/javax/net/ssl/provider/RecordingInputStream.java,
+        gnu/javax/net/ssl/provider/SRPTrustManagerFactory.java,
+        gnu/javax/net/ssl/provider/SSLHMac.java,
+        gnu/javax/net/ssl/provider/SSLRSASignature.java,
+        gnu/javax/net/ssl/provider/SSLRandom.java,
+        gnu/javax/net/ssl/provider/SSLServerSocket.java,
+        gnu/javax/net/ssl/provider/SSLServerSocketFactory.java,
+        gnu/javax/net/ssl/provider/SSLSocket.java,
+        gnu/javax/net/ssl/provider/SSLSocketFactory.java,
+        gnu/javax/net/ssl/provider/SSLSocketInputStream.java,
+        gnu/javax/net/ssl/provider/SSLSocketOutputStream.java,
+        gnu/javax/net/ssl/provider/SecurityParameters.java,
+        gnu/javax/net/ssl/provider/ServerHello.java,
+        gnu/javax/net/ssl/provider/ServerKeyExchange.java,
+        gnu/javax/net/ssl/provider/Session.java,
+        gnu/javax/net/ssl/provider/SessionContext.java,
+        gnu/javax/net/ssl/provider/Signature.java,
+        gnu/javax/net/ssl/provider/SynchronizedRandom.java,
+        gnu/javax/net/ssl/provider/TLSHMac.java,
+        gnu/javax/net/ssl/provider/TLSRandom.java,
+        gnu/javax/net/ssl/provider/Util.java,
+        gnu/javax/net/ssl/provider/X509KeyManagerFactory.java,
+        gnu/javax/net/ssl/provider/X509TrustManagerFactory.java,
+        gnu/javax/net/ssl/provider/XMLSessionContext.java,
+        gnu/javax/security/auth/Password.java,
+        gnu/javax/security/auth/callback/AWTCallbackHandler.java,
+        gnu/javax/security/auth/callback/AbstractCallbackHandler.java,
+        gnu/javax/security/auth/callback/ConsoleCallbackHandler.java,
+        gnu/javax/security/auth/callback/DefaultCallbackHandler.java,
+        gnu/javax/security/auth/callback/GnuCallbacks.java,
+        gnu/javax/security/auth/callback/SwingCallbackHandler.java,
+        gnu/java/security/Registry.java,
+        gnu/java/security/Properties.java,
+        gnu/java/security/hash/BaseHash.java,
+        gnu/java/security/hash/HashFactory.java,
+        gnu/java/security/hash/Haval.java,
+        gnu/java/security/hash/IMessageDigest.java,
+        gnu/java/security/hash/MD2.java,
+        gnu/java/security/hash/MD4.java,
+        gnu/java/security/hash/MD5.java,
+        gnu/java/security/hash/RipeMD128.java,
+        gnu/java/security/hash/RipeMD160.java,
+        gnu/java/security/hash/Sha160.java,
+        gnu/java/security/hash/Sha256.java,
+        gnu/java/security/hash/Sha384.java,
+        gnu/java/security/hash/Sha512.java,
+        gnu/java/security/hash/Tiger.java,
+        gnu/java/security/hash/Whirlpool.java,
+        gnu/java/security/jce/hash/HavalSpi.java,
+        gnu/java/security/jce/hash/MD2Spi.java,
+        gnu/java/security/jce/hash/MD4Spi.java,
+        gnu/java/security/jce/hash/MD5Spi.java,
+        gnu/java/security/jce/hash/MessageDigestAdapter.java,
+        gnu/java/security/jce/hash/RipeMD128Spi.java,
+        gnu/java/security/jce/hash/RipeMD160Spi.java,
+        gnu/java/security/jce/hash/Sha160Spi.java,
+        gnu/java/security/jce/hash/Sha256Spi.java,
+        gnu/java/security/jce/hash/Sha384Spi.java,
+        gnu/java/security/jce/hash/Sha512Spi.java,
+        gnu/java/security/jce/hash/TigerSpi.java,
+        gnu/java/security/jce/hash/WhirlpoolSpi.java,
+        gnu/java/security/jce/prng/HavalRandomSpi.java,
+        gnu/java/security/jce/prng/MD2RandomSpi.java,
+        gnu/java/security/jce/prng/MD4RandomSpi.java,
+        gnu/java/security/jce/prng/MD5RandomSpi.java,
+        gnu/java/security/jce/prng/RipeMD128RandomSpi.java,
+        gnu/java/security/jce/prng/RipeMD160RandomSpi.java,
+        gnu/java/security/jce/prng/SecureRandomAdapter.java,
+        gnu/java/security/jce/prng/Sha160RandomSpi.java,
+        gnu/java/security/jce/prng/Sha256RandomSpi.java,
+        gnu/java/security/jce/prng/Sha384RandomSpi.java,
+        gnu/java/security/jce/prng/Sha512RandomSpi.java,
+        gnu/java/security/jce/prng/TigerRandomSpi.java,
+        gnu/java/security/jce/prng/WhirlpoolRandomSpi.java,
+        gnu/java/security/jce/sig/DSSKeyPairGeneratorSpi.java,
+        gnu/java/security/jce/sig/DSSRawSignatureSpi.java,
+        gnu/java/security/jce/sig/KeyPairGeneratorAdapter.java,
+        gnu/java/security/jce/sig/RSAKeyPairGeneratorSpi.java,
+        gnu/java/security/jce/sig/RSAPSSRawSignatureSpi.java,
+        gnu/java/security/jce/sig/SignatureAdapter.java,
+        gnu/java/security/key/IKeyPairCodec.java,
+        gnu/java/security/key/IKeyPairGenerator.java,
+        gnu/java/security/key/KeyPairCodecFactory.java,
+        gnu/java/security/key/KeyPairGeneratorFactory.java,
+        gnu/java/security/key/dss/DSSKey.java,
+        gnu/java/security/key/dss/DSSKeyPairGenerator.java,
+        gnu/java/security/key/dss/DSSKeyPairRawCodec.java,
+        gnu/java/security/key/dss/DSSPrivateKey.java,
+        gnu/java/security/key/dss/DSSPublicKey.java,
+        gnu/java/security/key/dss/FIPS186.java,
+        gnu/java/security/key/rsa/GnuRSAKey.java,
+        gnu/java/security/key/rsa/GnuRSAPrivateKey.java,
+        gnu/java/security/key/rsa/GnuRSAPublicKey.java,
+        gnu/java/security/key/rsa/RSAKeyPairGenerator.java,
+        gnu/java/security/key/rsa/RSAKeyPairRawCodec.java,
+        gnu/java/security/prng/BasePRNG.java,
+        gnu/java/security/prng/EntropySource.java,
+        gnu/java/security/prng/IRandom.java,
+        gnu/java/security/prng/LimitReachedException.java,
+        gnu/java/security/prng/MDGenerator.java,
+        gnu/java/security/prng/PRNGFactory.java,
+        gnu/java/security/prng/RandomEvent.java,
+        gnu/java/security/prng/RandomEventListener.java,
+        gnu/java/security/sig/BaseSignature.java,
+        gnu/java/security/sig/ISignature.java,
+        gnu/java/security/sig/ISignatureCodec.java,
+        gnu/java/security/sig/SignatureFactory.java,
+        gnu/java/security/sig/dss/DSSSignature.java,
+        gnu/java/security/sig/dss/DSSSignatureRawCodec.java,
+        gnu/java/security/sig/rsa/EME_PKCS1_V1_5.java,
+        gnu/java/security/sig/rsa/EMSA_PKCS1_V1_5.java,
+        gnu/java/security/sig/rsa/EMSA_PSS.java,
+        gnu/java/security/sig/rsa/RSA.java,
+        gnu/java/security/sig/rsa/RSAPKCS1V1_5Signature.java,
+        gnu/java/security/sig/rsa/RSAPSSSignature.java,
+        gnu/java/security/sig/rsa/RSAPSSSignatureRawCodec.java,
+        gnu/java/security/util/Base64.java,
+        gnu/java/security/util/ExpirableObject.java,
+        gnu/java/security/util/Prime2.java,
+        gnu/java/security/util/Sequence.java,
+        gnu/java/security/util/SimpleList.java,
+        gnu/java/security/util/Util.java,
+	resource/gnu/javax/security/auth/callback/MessagesBundle.properties:
+	new files imported from GNU Crypto and Jessie.
+
+2006-01-25  Tom Tromey  <tromey@redhat.com>
+
+	* gnu/java/net/protocol/http/ChunkedInputStream.java (read):
+	Fixed calculation of number of bytes to read.
+	(size, count, meta, eof): Document.
+
+2006-01-25  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* java/lang/Character.java:
+	(codePointCount(char[], int, int)): New API method.
+	(codePointCount(CharSequence, int, int)): Likewise.
+
+2006-01-25  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	PR 25205
+	* javax/swing/DefaultCellEditor.java (getTreeCellEditorComponent): 
+	Rewritten.
+	* javax/swing/JTree.java (stopEditing, cancelEditing): Return without 
+	action if not editing.
+	* javax/swing/plaf/basic/BasicTreeUI.java 
+	(CellEditorHandler.editingCancelled): Delegate to cancelEditing.
+	(CellEditorHandler.editingStopped): Delegate to stopEditing.
+	(EditorUpdateTimer): Removed.
+	(TreeAction.actionPerformed): Stop and not cancel the current editing 
+	when starting editing another node.
+	(editorTimer, newVal): Removed.
+	(cancelEditing): Do not send the cancel message.
+	(completeEditing): Obtain the edited value from the editor.
+	(finish): New method.
+	(paintRow): Do not paint the editing component here.
+	(startEditing, stopEditing): Rewritten.
+	* javax/swing/tree/DefaultTreeCellEditor.java
+	(DefaultTextField): Added SVUID.
+	(EditorContainer): Rewritten.
+	(RealEditorListener): New inner class.
+	(ICON_TEXT_GAP, TREE_ICON_GAP: New constants).
+	(constructor): Add cell editor listener. Do not instantiate timer.
+	(actionPerformed): Return without action.
+	(cancelCellEditing): Rewritten.
+	(createTreeCellEditor): Add cell editor listener to the editor.
+	(getCellEditorValue): Request the value from the realEditor.
+	(isCellEditable): Removed timer management.
+	(prepareForEditing): Remove all components befor adding the 
+	editingComponent.
+	(startEditingTimer): Start only if it is not null.
+	(stopCellEditing): Rewritten.
+	(stopEditingTimer): New method.
+	(valueChanged): Do not configure editing component here.
+
+2006-01-25  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/html/FormView.java: New file.
+
+2006-01-25  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JSplitPane.java
+	(addImpl): Call resetToPreferredSizes() when no dividerLocation
+	has been set in order to set an initial layout.
+	* javax/swing/plaf/basic/BasicSplitPaneUI.java
+	(BasicHorizontalLayoutManager.layoutContainer): Fixed error for
+	layout of the right component.
+	(BasicHorizontalLayoutManager.resetToPreferredSizes): Set the
+	dividerLocation to the size of the left component.
+	(createDefaultNonContinuousLayoutDivider): Fetch the color from
+	the UIManager.
+	(setDividerLocation): Don't validate the location here. Sometimes
+	the divider needs to be set to an invalid location.
+	(startDragging): Don't revalidate and repaint here.
+	(finishDraggingTo): Don't repaint here. Also, don't call
+	dragDividerTo() here.
+	* javax/swing/plaf/basic/BasicLookAndFeel.java
+	(initComponentDefaults): Added SplitPaneDivider.draggingColor
+	default value.
+
+2006-01-25  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JSplitPane.java
+	(addImpl): Removed invalidate() and layout() call.
+	* javax/swing/plaf/basic/BasicSplitPaneUI.java
+	(PropertyHandler.propertyChange): Remove layoutContainer() and
+	repaint() call.
+
+2006-01-25  Roman Kennke  <kennke@aicas.com>
+
+	* configure.ac
+	* native/Makefile.am
+	* native/jni/classpath/Makefile.am
+	* native/jni/classpath/jcl.c
+	* native/jni/classpath/jcl.h
+	* native/jni/classpath/native_state.c
+	* native/jni/gtk-peer/Makefile.am
+	* native/jni/java-io/Makefile.am
+	* native/jni/java-io/java_io_VMFile.c
+	* native/jni/java-io/java_io_VMObjectStreamClass.c
+	* native/jni/java-lang/Makefile.am
+	* native/jni/java-net/Makefile.am
+	* native/jni/java-net/java_net_VMInetAddress.c
+	* native/jni/java-net/javanet.c
+	* native/jni/java-net/javanet.h
+	* native/jni/java-nio/Makefile.am
+	* native/jni/java-nio/gnu_java_nio_VMPipe.c
+	* native/jni/java-nio/gnu_java_nio_VMSelector.c
+	* native/jni/java-nio/gnu_java_nio_channels_FileChannelImpl.c
+	* native/jni/java-nio/java_nio_MappedByteBufferImpl.c
+	* native/jni/java-nio/java_nio_VMDirectByteBuffer.c
+	* native/jni/java-util/Makefile.am
+	* native/jni/java-util/java_util_VMTimeZone.c
+	* native/jni/midi-dssi/Makefile.am
+	* native/jni/xmlj/Makefile.am
+	* native/target/Makefile.am
+	* native/target/Linux/target_native_math.h
+	* native/target/Linux/target_native_memory.h
+	* native/target/Linux/Makefile.am
+	* native/target/Linux/target_native_io.h
+	* native/target/Linux/target_native_math_float.h
+	* native/target/Linux/target_native_math_int.h
+	* native/target/generic/target_generic.c
+	* native/target/generic/target_generic_io.c
+	* native/target/generic/target_generic_math.h
+	* native/target/generic/target_generic_memory.h
+	* native/target/generic/target_generic_misc.c
+	* native/target/generic/target_generic_network.c
+	* native/target/generic/Makefile.am
+	* native/target/generic/target_generic.h
+	* native/target/generic/target_generic_file.h
+	* native/target/generic/target_generic_io.h
+	* native/target/generic/target_generic_math_float.h
+	* native/target/generic/target_generic_math_int.h
+	* native/target/generic/target_generic_misc.h
+	* native/target/generic/target_generic_network.h:
+	Reverted target native related changes back to the state of the
+	0.20 release.
+	* native/target/MinGW/.cvsignore
+	* native/target/MinGW/Makefile.am
+	* native/target/MinGW/target_native.h
+	* native/target/MinGW/target_native_file.h
+	* native/target/MinGW/target_native_io.h
+	* native/target/MinGW/target_native_math.h
+	* native/target/MinGW/target_native_memory.h
+	* native/target/MinGW/target_native_misc.h
+	* native/target/MinGW/target_native_network.h
+	* native/target/RTEMS/.cvsignore
+	* native/target/RTEMS/Makefile.am
+	* native/target/RTEMS/target_native.h
+	* native/target/RTEMS/target_native_file.h
+	* native/target/RTEMS/target_native_io.h
+	* native/target/RTEMS/target_native_math.h
+	* native/target/RTEMS/target_native_memory.h
+	* native/target/RTEMS/target_native_misc.h
+	* native/target/RTEMS/target_native_network.h
+	* native/target/SunOS/.cvsignore
+	* native/target/SunOS/Makefile.am
+	* native/target/SunOS/target_native.h
+	* native/target/SunOS/target_native_file.h
+	* native/target/SunOS/target_native_io.h
+	* native/target/SunOS/target_native_math.h
+	* native/target/SunOS/target_native_memory.h
+	* native/target/SunOS/target_native_misc.h
+	* native/target/SunOS/target_native_network.h
+	* native/target/embOS/.cvsignore
+	* native/target/embOS/Makefile.am
+	* native/target/embOS/target_native.h
+	* native/target/embOS/target_native_file.h
+	* native/target/embOS/target_native_io.c
+	* native/target/embOS/target_native_io.h
+	* native/target/embOS/target_native_math.h
+	* native/target/embOS/target_native_memory.h
+	* native/target/embOS/target_native_misc.h
+	* native/target/embOS/target_native_network.h
+	* native/target/posix/.cvsignore
+	* native/target/posix/Makefile.am
+	* native/target/posix/target_posix.c
+	* native/target/posix/target_posix.h
+	* native/target/posix/target_posix_file.c
+	* native/target/posix/target_posix_file.h
+	* native/target/posix/target_posix_io.c
+	* native/target/posix/target_posix_io.h
+	* native/target/posix/target_posix_math.c
+	* native/target/posix/target_posix_math.h
+	* native/target/posix/target_posix_memory.c
+	* native/target/posix/target_posix_memory.h
+	* native/target/posix/target_posix_misc.c
+	* native/target/posix/target_posix_misc.h
+	* native/target/posix/target_posix_network.c
+	* native/target/posix/target_posix_network.h:
+	Removed.
+
+2006-01-24  Wolfgang Baer  <WBaer@gmx.de>
+
+	* javax/print/PrintService.java,
+	* javax/print/DocPrintJob.java,
+	* javax/print/CancelablePrintJob.java:
+	Added and enhanced api documentation for class and methods.		
+
+2006-01-24  Wolfgang Baer  <WBaer@gmx.de>
+
+	* javax/print/SimpleDoc.java: Make class final.
+	* javax/print/attribute/standard/PrinterIsAcceptingJobs.java: Likewise.
+	* javax/print/attribute/DateTimeSyntax.java: 
+	(toString): New overridden method.
+	* javax/print/attribute/standard/JobStateReasons.java:
+	(add): Use the super.add method to avoid recursion.
+	* javax/print/attribute/standard/PrinterStateReasons.java: 
+	(put): Use the super.put method to avoid recursion.
+
+2006-01-24  Robert Schuster  <robertschuster@fsfe.org>
+
+	* java/beans/XMLEncoder.java:
+	(writeExpression): Added early return (fixes PR #25941).
+	* java/beans/Encoder: Removed unused imports.
+	(setupDefaultPersistenceDelegates): Removed unneccessary
+	PersistenceDelegates for subclasses.
+	* java/beans/PersistenceDelegate:
+	(initialize): Use local variable as first argument as it was
+	intended once.
+	* java/beans/DefaultPersistenceDelegate:
+	(initialize): Added call to superclass' implementation, added
+	early return.
+
+2006-01-24  Tom Tromey  <tromey@redhat.com>
+
+	* java/util/regex/PatternSyntaxException.java: Added @since.
+	* java/util/regex/Matcher.java (Matcher): Implements MatchResult.
+	* java/util/regex/MatchResult.java: New file.
+
+2006-01-24  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/text/StringContent.java: Added API docs all over, plus 
+	minor reformatting.
+
+2006-01-24  Gary Benson  <gbenson@redhat.com>
+
+	* java/net/SocketPermission.java: Implemented serialization.
+
+2006-01-24  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/text/StringContent.java
+	(remove): Modified argument check to prevent removal of last character,
+	(getChars): Removed null argument check to allow NullPointerException,
+	added API docs,
+	(checkLocation): Added API docs and white space.
+
+2006-01-23  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/DefaultStyledDocument.java
+	(insertUpdate): Should only call createFracture with 
+	StartTagType. Added check.
+	(insertContentTag): Should use the tags length for splitting.
+	Also, added a check to determine if current's start and end offset are
+	equal to the offset and endOffset. If so, only one leaf element
+	should be added. 
+	(createFracture): Removed FIXME. This function is complete.
+	(split): Added calls to replace. Changed so the child is 
+	added immediately to the paragraph. Prevents NPEs.
+
+2006-01-23  Mark Wielaard  <mark@klomp.org>
+
+	* examples/Makefile.am (EXAMPLE_ZIP): Group cd and commands.
+
+2006-01-23  Tom Tromey  <tromey@redhat.com>
+
+	* gnu/java/security/x509/X509Certificate.java (parse):
+	Unconditionally read value; for version==1 case when reading
+	algorithm ID.
+
+2006-01-23  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/synth/ColorType.java,
+	* javax/swing/plaf/synth/Region.java,
+	* javax/swing/plaf/synth/SynthConstants.java,
+	* javax/swing/plaf/synth/SynthContext.java
+	* javax/swing/plaf/synth/SynthGraphicsUtils.java,
+	* javax/swing/plaf/synth/SynthLookAndFeel.java,
+	* javax/swing/plaf/synth/SynthPainter.java,
+	* javax/swing/plaf/synth/SynthStyle.java,
+	* javax/swing/plaf/synth/SynthStyleFactory.java,
+	* javax/swing/plaf/synth/package.html:
+	New files. Added the public API and framework classes for the
+	Synth look and feel.
+
+2006-01-23  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/text/Segment.java: API docs all over.
+
+2006-01-23  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/DefaultStyledDocument.java
+	(split): Should not use createLeafElement and createBranchElement here.
+	We should just instaniate the LeafElements and BranchElements instead 
+	to avoid the case where create*Element is overridden.
+
+2006-01-23  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/DefaultStyledDocument.java
+	(insertFirstContentTag): Moved check outside of if-statement.
+	This should be checked before creating the new leaf element.
+	(insertFracture): Fixed check to prevent an NPE. The previous
+	leaf should only be recreated if it has been created by
+	insertFirstContentTag. Also, fixed up code: if the endOffset is
+	greater than the offset, then we need to create a temp leaf
+	as a place holder. Otherwise, the leaf elements should be
+	created normally.
+
+2006-01-23  Gary Benson  <gbenson@redhat.com>
+
+	* java/net/SocketPermission.java: Almost completely rewritten.
+
+2006-01-23  Lillian Angel  <langel@redhat.com>
+	
+	* javax/swing/text/DefaultStyledDocument.java
+	(insertFracture): Set temp leaf's attributes to prevent an NPE.
+
+2006-01-23  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/DefaultStyledDocument.java:
+	Formatted ElementBuffer and added new fields.
+	(remove): Added check to determine if length is 0.
+	(insertFirstContentTag): Initialized firstCreated to the element that is created 
+	by the first tag encountered. Removed check in JoinPreviousDirection case, no
+	longer needed. In OriginateDirection case, added a loop to remove all old leafs
+	that have been recreated.
+	(insertContentTag): Cleaned up code. Removed checks that did not do anything.
+	(insertFracture): Fixed up code, removed unneeded objects and checks. Added
+	FIXME tags to the lines that need to be rewritten.	
+
+2006-01-23  Mark Wielaard  <mark@klomp.org>
+
+	* examples/Makefile.am: Add support for fastjar.
+
+2006-01-23  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* gnu/regexp/REToken.java(empty): Made Cloneable.
+	* gnu/regexp/RETokenOneOf.java(match): RE.java(match):
+	Use separate methods matchN and matchP depending on the
+	boolean negative.
+	(matchN): New method used when negative. Done as before.
+	(matchP): New method used when not negative. Each token is
+	tried not by itself but by a clone of it.
+
+2006-01-23  Chris Burdess  <dog@gnu.org>
+
+	Fixes bug #25906
+	* gnu/xml/dom/DomCharacterData.java: Use a separate empty node list
+	  class to avoid getLength method contention.
+	* gnu/xml/stream/SAXParser.java: Rethrow correct exception.
+
+2006-01-23  Chris Burdess  <dog@gnu.org>
+
+	* native/jni/java-util/Makefile.am: Include library required
+	  explicitly by BSD systems.
+	* native/target/generic/target_generic_misc.h: Remove old commented
+	  out code.
+	* native/target/generic/target_generic_network.h: Fallbacks (to
+	  SO_NOSIGPIPE and then 0) for non-portable glibc MSG_NOSIGNAL.
+
+2006-01-22  Tom Tromey  <tromey@redhat.com>
+
+	* native/target/posix/.cvsignore: Added .deps.
+
+2006-01-22  Mark Wielaard  <mark@klomp.org>
+
+	Fixes bug #25832,
+	reported by James Damour <James.Damour@corp.request.com>
+	* java/awt/Container.java (addImpl): Use empty string as name when
+	null constraints for LayoutManager.addLayoutComponent().
+
+2006-01-22  Chris Burdess  <dog@gnu.org>
+
+	Fixes bug #25903
+	* gnu/xml/dom/DomDocumentBuilder.java: Default to using file URL
+	  representing current directory as base for relative URLs.
+
+2006-01-22  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	Fixes bug #25837
+	* gnu/regexp/REMatch.java(empty): New boolean indicating
+	an empty string matched.
+	* gnu/regexp/RE.java(match): Sets empty flag when an empty
+	string matched.
+	(initialize): Support back reference \10, \11, and so on.
+	(parseInt): renamed from getEscapedChar and returns int.
+	* gnu/regexp/RETokenRepeated.java(match): Sets empty flag
+	when an empty string matched. Fixed a bug of the case where
+	an empty string matched. Added special handling of {0}.
+	* gnu/regexp/RETokenBackRef.java(match): Sets empty flag
+	when an empty string matched. Fixed the case insensitive matching.
+
+2006-01-21  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/metal/MetalSplitPaneDivider.java
+	(paint): Added painting of border if one is installed.
+
+2006-01-21  Roman Kennke  <kennke@aicas.com>
+
+	PR classpath/25843:
+	* javax/swing/plaf/basic/BasicBorders.java
+	(getSplitPaneDividerBorder): Use new border constructor
+	without arguments.
+	(SplitPaneDividerBorder.highlight): Removed unneeded field.
+	(SplitPaneDividerBorder.shadow): Removed unneeded field.
+	(SplitPaneDividerBorder()): Changed constructor to do nothing. The
+	colors are fetched dynamically in the paintBorder method.
+	(SplitPaneDividerBorder.paintBorder): Fetch colors dynamically from
+	the look and feel.
+	(SplitPaneDividerBorder.isBorderOpaque): Returns true
+	unconditionally.
+	* javax/swing/plaf/basic/BasicLookAndFeel.java
+	(initComponentDefaults): Added default for SplitPaneDivider.border.
+	* javax/swing/plaf/basic/BasicSplitPaneDivider.java
+	(tmpBorder): Removed unneeded inner class.
+	(BasicSplitPaneDivider): Removed setting of border.
+	(setSplitPaneUI): Don't add the mouse handler to the splitpane
+	itself.
+	* javax/swing/plaf/basic/BasicSplitPaneUI.java
+	(BasicHorizontalLayoutManager.layoutContainer): Mostly rewritten
+	to get behaviour right.
+	(BasicHorizontalLayoutManager.distributeExtraSpace): Removed
+	implementation. This must be rewritten since the layout now works
+	slightly different (basically, it shouldn't modify the sizes[]
+	here but instead the dividerLocation.
+	(dividerLocation): New field.
+	(installDefaults): Initialize border on divider.
+	(uninstallDefaults): Only remove background color and border from
+	splitPane if they are instances of UIDefaults (== not set by
+	application).
+	(setDividerLocation): Set the dividerLocation field instead of
+	doing stunt acts here.
+	(getDividerLocation): Return dividerLocation field.
+	(getMinimumDividerLocation): Fixed calculation of minimum location.
+	
+2006-01-21  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* m4/acinclude.m4
+	(CLASSPATH_WITH_GLIBJ): Add support for fastjar.
+
+	* lib/Makefile.am: Likewise. 
+
+2006-01-21  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/PopupFactory.java
+	(getPopup): If there is no Swing root found in any way, use a
+	heavyweight popup. This is useful for mixed Swing/AWT GUIs, or
+	for the Swing AWT peers.
+
+2006-01-20  Tom Tromey  <tromey@redhat.com>
+
+	* gnu/java/net/protocol/http/HTTPURLConnection.java (connect):
+	Read response body for redirect.
+
+2006-01-20  Chris Burdess  <dog@gnu.org>
+
+	* gnu/java/net/protocol/http/HTTPURLConnection.java: Don't follow
+	  redirects on 304.
+
+2006-01-20  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/DefaultStyledDocument.java
+	(pad): Removed, not needed.
+	(printElements): Likewise.
+	(printEdit): Likewise.
+
+2006-01-20  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/DefaultFormatter.java
+	(DefaultFormatter): Don't set a value class.
+
+2006-01-19  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* javax/swing/DefaultCellEditor.java: Commented.
+
+2006-01-19  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JOptionPane.java
+	Added cast to Frame for JDialog constructor.
+
+2006-01-19  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JWindow.java
+	(JWindow(Window)): Fixed to accept null owner argument.
+	(JWindow(Window,GraphicsConfiguration)): Fixed to accept null
+	owner argument.
+	* javax/swing/SwingUtilities.java
+	(getOwnerFrame): Owner parameter and return value are fixed to
+	be of type Window for compatibity with the above JWindow
+	constructor.
+	* javax/swing/JDialog.java
+	(JDialog): Added cast to Frame to make sure the correct constructor
+	is called.
+	* javax/swing/JFileChooser.java
+	(createDialog): Added cast to Frame for JDialog constructor.
+
+2006-01-19  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* javax/swing/JTable.java (rowAtPoint): Rewritten.
+
+2006-01-19  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JWindow.java: Added API docs to the constructors.
+
+2006-01-19  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* javax/swing/JTable.java: Commenting method headers.
+	(EditorUpdateTimer): Removed.
+
+2006-01-19  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JDialog.java
+	(JDialog()): Call SwingUtilities.getOwnerFrame() with null.
+	(JDialog(Frame,String,boolean,GraphicsConfiguration)): Call
+	SwingUtilities.getOwnerFrame() with the owner argument.
+	* javax/swing/JFileChooser.java
+	(showOpenDialog(Component)): Call pack() on the dialog instead of
+	setting	a fixed height.
+	(showSaveDialog()): Likewise.
+	(showDialog()): Likewise.
+	(createDialog): Call SwingUtilities.getOwnerFrame() with null.
+	* javax/swing/JOptionPane.java: Call SwingUtilities.getOwnerFrame()
+	with null.
+	* javax/swing/JWindow.java
+	(JWindow()): Call SwingUtilities.getOwnerFrame() with null.
+	(JWindow(Frame)): Call SwingUtilities.getOwnerFrame() with owner
+	argument.
+	* javax/swing/SwingUtilities.java
+	(getOwnerFrame): Changed to take a owner parameter that is returned
+	as owner frame when not null.
+
+2006-01-19  Roman Kennke  <kennke@aicas.com>
+
+	* gnu/java/awt/peer/swing/SwingFramePeer.java
+	(handleMouseEvent): Fixed handling of mouse events.
+	(handleMouseMotionEvent): Fixed handling of mouse events.
+
+2006-01-19  Roman Kennke  <kennke@aicas.com>
+
+	* native/target/generic/target_generic_misc.c:
+	(targetGenericMisc_formatString): Added missing method.
+
+2006-01-19  Wolfgang Baer  <WBaer@gmx.de>
+
+	* m4/acinclude.m4: Test also for ecj found before exiting configure
+	with no javac found error message. 
+
+2006-01-19  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	Fixes bug #23212
+	* gnu/regexp/RE.java(initialize): Support escaped characters such as
+	\0123, \x1B, \u1234.
+	(getEscapedChar): New method.
+	(CharExpression): New inner class.
+	(getCharExpression): New Method.
+	* gnu/regexp/RESyntax.java(RE_OCTAL_CHAR, RE_HEX_CHAR,
+	RE_UNICODE_CHAR): New syntax bits.
+
+2006-01-19  Roman Kennke  <kennke@aicas.com>
+
+	* native/target/Makefile.am: Fixed so that posix stuff is really
+	only built when requested.
+
+2006-01-19  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* javax/swing/JTable.java (editingStopped, editingCancelled):
+	Repaint the edited cell.
+	(setValueAt): Do not add the value object to this container.
+	(editorTimer, rowBeingEdited, columnBeingEdited, oldCellValue): Removed.
+	(editingStopped): Use editingRow, editingColumn and not
+	rowBeingEdited, columnBeingEdited. (editValueAt): rewritten.
+	(doLayout): Move the editor component, if present, into the new
+	location and call repaint(). (moveToCellBeingEdited): new method.
+	(TableTextField): new inner class.
+	(getDefaultEditor): Instantiante TableTextField, not JTextField.
+	(setValueAt): Repaint the changed segment.
+	(createDefaultEditors): Implemented.
+	(BooleanCellRenderer): Center the checkbox and use the default foreground
+	and background colors.   
+	* javax/swing/plaf/basic/BasicTableUI.java
+	(paintCell): Do not paint the caret here. Do not accept unused parameters.
+	(paint): No need to allocate rectangle for each cell.   
+	* javax/swing/DefaultCellEditor.java: Rewritten.         
+	* examples/gnu/classpath/examples/swing/Demo.java (mkTable):
+	Use TableDemo.java table example.
+	* examples/gnu/classpath/examples/swing/TableDemo.java: New file.
+
+2006-01-19  Roman Kennke  <kennke@aicas.com>
+
+	* configure.ac: Added/fixed --enable-posix-layer option to enable
+	build of posix layer.
+	* native/target/Makefile.am: Added build for posix layer.
+
+2006-01-19  Christian Thalinger  <twisti@complang.tuwien.ac.at>
+
+	* configure.ac: Set TARGET to Linux per default.
+	* native/target/Makefile.am (libtarget_la_LIBADD): Removed
+	libtargetos.la.
+	* native/target/Linux/Makefile.am: Don't build a libtargetos.la.
+	* native/target/generic/Makefile.am (INCLUDES): Renamed to
+	AM_CPPFLAGS.
+	
+2006-01-19  Raif S. Naffah  <raif@swiftdsl.com.au>
+
+	* java/security/interfaces/RSAMultiPrimePrivateCrtKey.java: Replaced
+	  what looked like proprietary documentation with original or new one.
+	* java/security/spec/PSSParameterSpec.java: Likewise.
+	* java/security/spec/RSAMultiPrimePrivateCrtKeySpec.java: Likewise.
+	* java/security/spec/RSAOtherPrimeInfo.java: Likewise.
+	* java/security/AlgorithmParameterGenerator.java: Likewise.
+	* java/security/AlgorithmParameters.java: Likewise.
+	* java/security/Identity.java: Likewise.
+	* java/security/IdentityScope.java: Likewise.
+	* java/security/KeyFactory.java: Likewise.
+	* java/security/KeyPairGenerator.java: Likewise.
+	* java/security/MessageDigest.java: Likewise.
+	* java/security/Policy.java: Likewise.
+	* java/security/ProtectionDomain.java: Likewise.
+	* java/security/Security.java: Likewise.
+	* java/security/Signature.java: Likewise.
+	* java/security/SignatureSpi.java: Likewise.
+	* java/security/SignedObject.java: Likewise.
+	* java/security/Signer.java: Likewise.
+
+2006-01-18  Roman Kennke  <kennke@aicas.com>
+
+	* configure.ac: Added --enable-posix-layer option to enable
+	build of the posix target layer.
+
+2006-01-18  Roman Kennke  <kennke@aicas.com>
+
+	* native/jni/java-net/java_net_VMInetAddress.c
+	(Java_java_net_VMInetAddress_lookupInaddrAny): Use target native macro
+	for INADDR_ANY.
+
+2006-01-18  Roman Kennke  <kennke@aicas.com>
+
+	* native/jni/java-util/java_util_VMTimeZone.c:
+	(Java_java_util_VMTimeZone_getSystemTimeZoneId): Rewritten
+	to use target native layer.
+	(jint_to_charbuf): Removed unneeded helper function.
+
+2006-01-18  Roman Kennke  <kennke@aicas.com>
+
+	* native/jni/java-nio/gnu_java_nio_VMPipe.c:
+	Removed unnecessary include.
+	* native/jni/java-nio/gnu_java_nio_VMSelector.c:
+	Reorganized includes to only include sys/* headers when available.
+	* native/jni/java-nio/java_nio_MappedByteBufferImpl.c:
+	(get_pagesize): Return 0 when nothing else works.
+	(Java_java_nio_MappedByteBufferImpl_unmapImpl):
+	Replaced munmap() and strerror() with corresponding target macros.
+	(Java_java_nio_MappedByteBufferImpl_isLoadedImpl):
+	Replaced strerror() with corresponding target macro.
+	(Java_java_nio_MappedByteBufferImpl_forceImpl):
+	Replaced strerror() with corresponding target macro.
+	* native/jni/java-nio/java_nio_VMDirectByteBuffer.c:
+	(Java_java_nio_VMDirectByteBuffer_allocate):
+	Replaced malloc() with the corresponding target macro.
+	(Java_java_nio_VMDirectByteBuffer_free):
+	Replaced free() with the corresponding target macro.
+	(Java_java_nio_VMDirectByteBuffer_put__Lgnu_classpath_Pointer_2IB):
+	Add index to pointer when assigning the value.
+	(Java_java_nio_VMDirectByteBuffer_get__Lgnu_classpath_Pointer_2I_3BII):
+	Replaced memcpy with corresponding target macro. Add index when
+	doing the memcpy, not when fetching the pointer.
+	(Java_java_nio_VMDirectByteBuffer_put__Lgnu_classpath_Pointer_2I_3BII):
+	Replaced memcpy with corresponding target macro.
+	(Java_java_nio_VMDirectByteBuffer_shiftDown):
+	Replaced memmove with the corresponding target macro.
+
+2006-01-17  Tom Tromey  <tromey@redhat.com>
+
+	PR classpath/20198:
+	* java/net/URLClassLoader.java (FileURLLoader): Added argument.
+	(JarURLLoader): Likewise.
+	(addURLImpl): Canonicalize file URLs.
+
+2006-01-17  Christian Thalinger  <twisti@complang.tuwien.ac.at>
+
+	* configure.ac: Set TARGET.
+	* native/Makefile.am, native/jni/classpath/Makefile.am,
+	native/jni/gtk-peer/Makefile.am, native/jni/java-io/Makefile.am,
+	native/jni/java-lang/Makefile.am, native/jni/java-net/Makefile.am,
+	native/jni/java-nio/Makefile.am, native/jni/midi-dssi/Makefile.am,
+	native/jni/xmlj/Makefile.am, native/target/Makefile.am,
+	native/target/Linux/Makefile.am,
+	native/target/generic/Makefile.am,
+	native/target/posix/Makefile.am: Build libclasspath.so with jcl
+	and target stuff linked in and link it against lib*.so libraries.
+
+2006-01-17  Roman Kennke  <kennke@aicas.com>
+
+	* native/jni/java-net/javanet.c:
+	(_javanet_connect): Changed type of some local variables to jint.
+	Fixed error handling to throw a SocketTimeoutException if the
+	connection attempt times out.
+	(_javanet_bind): Changed type of some local variables to jint.
+	(_javanet_accept): Likewise.
+	(_javanet_recvfrom): Likewise.
+	(_javanet_sendto): Fixed error handling to throw a
+	PortUnreachableException when connection is refused.
+	(_javanet_get_option): Changed type of some local variables to jint.
+	Implemented SOCKOPT_SO_BROADCAST.
+	(_javanet_shutdownInput): Replaced shutdown call with corresponding
+	target native macro.
+	(_javanet_shutdownOutput): Replaced shutdown call with corresponding
+	target native macro.
+	* native/jni/java-net/javanet.h:
+	Defined SOCKET_TIMEOUT_EXCEPTION, PORT_UNREACHABLE_EXCEPTION and
+	SOCKOPT_SO_BROADCAST.
+
+2006-01-17  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/DefaultStyledDocument.java
+	(insert): Cleaned up loop. No need to make so many calls
+	to getAddedElements and getRemovedElements.
+	(insertFracture): Removed unneeded array.
+
+2006-01-17  Lillian Angel  <langel@redhat.com>
+	
+	* javax/swing/text/JTextComponent.java
+	(AccessibleJTextComponent): Implemented.
+	(getCaretPosition): Implemented.
+	(getSelectedText): Implemented.
+	(getSelectionStart): Implemented.
+	(getSelectionEnd): Implemented.
+	(getSelectionEnd): Implemented.
+	(getCharCount): Implemented.
+	(insertTextAtIndex): Implemented.
+	(getTextRange): Implemented.
+	(delete): Implemented.
+	(cut): Implemented.
+	(paste): Implemented.
+	(replaceText): Implemented.
+	(selectText): Implemented.
+
+2006-01-17  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* javax/swing/text/DefaultStyledDocument.java:
+	(pad): New debugging method.
+	(printElements): Likewise.
+	(printPendingEdits): Likewise.
+	(printElement): Likewise.
+	(Edit): Improved docs, moved this class to be an inner class of
+	ElementBuffer since it only applies within that scope.  Changed added 
+	and removed to be Vectors instead of arrays because we need to be able 
+	to add to them after construction.
+	(ElementBuffer): Updated docs with link to article that helped in this
+	classes implementation.
+	(ElementBuffer.Edit.getRemovedElements): New method.
+	(ElementBuffer.Edit.getAddedElements): Likewise.
+	(ElementBuffer.Edit.addRemovedElement): Likewise.
+	(ElementBuffer.Edit.addRemovedElements): Likewise.
+	(ElementBuffer.Edit.addAddedElement): Likewise.
+	(ElementBuffer.Edit.addAddedElements): Likewise.
+	(ElementBuffer.Edit<init>): Improved docs, call addRemovedElements and 
+	addAddedElements.
+	(ElementBuffer.getEditForParagraphAndIndex): New method.
+	(ElementBuffer.removeUpdate): Changed type of paragraph to 
+	BranchElement.  Corrected style of adding the edit to use the new Edit
+	facilities.
+	(ElementBuffer.changeUpdate): Changed style of adding the edit to use
+	the new Edit facilities.
+	(ElementBuffer.split): Likewise.
+	(ElementBuffer.insertParagraph): Likewise.
+	(ElementBuffer.insertContentTag): Likewise.
+	(ElementBuffer.insert): Push all BranchElements until the deepest one, 
+	not just the root and the first one. Apply the structural changes to 
+	the tree at the same time as updating the DocumentEvent.
+	(ElementBuffer.insertUpdate): Fixed docs.  Removed the special case 
+	handling of EndTags as the first ElementSpec.  Instead have to handle
+	ContentTags as a special case if they are the first ElementSpec and if
+	not have to fracture the tree.
+	(ElementBuffer.createFracture): New method.  May not be complete yet.
+	Added FIXME indicating what may remain to be done.
+	(ElementBuffer.insertFirstContentTag): New method.
+	(ElementBuffer.insertFracture): Added FIXME explaining what remains to
+	be done.  Changed the adding of edits to use the new Edit facilities.
+	Removed the adding of edits for Elements that weren't in the tree prior
+	to the insertion.
+	(insertUpdate): Removed incorrect condition for setting a StartTag's
+	direction to JoinNextDirection.
+	* javax/swing/text/StyleContent.java: 
+	(SmallAttributeSet.toString): Fixed an off-by-one error in the loop 
+	that was causing an ArrayOutOfBoundsException.
+
+2006-01-17  Roman Kennke  <kennke@aicas.com>
+
+	* native/jni/java-nio/gnu_java_nio_channels_FileChannelImpl.c:
+	(Java_gnu_java_nio_channels_FileChannelImpl_init): Improved
+	exception messages a little.
+	(Java_gnu_java_nio_channels_FileChannelImpl_open): Provided
+	alternative implementation for systems without filesystems.
+	Replaced snprintf with the corresponding target native macro.
+	(Java_gnu_java_nio_channels_FileChannelImpl_implCloseChannel):
+	Only do something when we have a filesystem.
+	(Java_gnu_java_nio_channels_FileChannelImpl_available): Provided
+	alternative implementation for systems without filesystems.
+	(Java_gnu_java_nio_channels_FileChannelImpl_size): Provided
+	alternative implementation for systems without filesystems.
+	(Java_gnu_java_nio_channels_FileChannelImpl_implPosition): Provided
+	alternative implementation for systems without filesystems.
+	(Java_gnu_java_nio_channels_FileChannelImpl_seek):
+	Only do something when we have a filesystem.
+	(Java_gnu_java_nio_channels_FileChannelImpl_implTruncate):
+	Only do something when we have a filesystem.
+	(Java_gnu_java_nio_channels_FileChannelImpl_mapImpl): Provided
+	alternative implementation for systems without filesystems.
+	(Java_gnu_java_nio_channels_FileChannelImpl_read__):
+	Replaced ssize_t variables with jint. Provided
+	alternative implementation for systems without filesystems.
+	(Java_gnu_java_nio_channels_FileChannelImpl_read___3BII):
+	Replaced ssize_t variables with jint. Provided
+	alternative implementation for systems without filesystems.
+	(Java_gnu_java_nio_channels_FileChannelImpl_write__I):
+	Replaced ssize_t variables with jint. Provided
+	alternative implementation for systems without filesystems.
+	(Java_gnu_java_nio_channels_FileChannelImpl_force):
+	Only do something when we have a filesystem.
+	(Java_gnu_java_nio_channels_FileChannelImpl_write___3BII):
+	Replaced ssize_t variables with jint. Provided
+	alternative implementation for systems without filesystems.
+	(Java_gnu_java_nio_channels_FileChannelImpl_lock): Reimplemented
+	to use the corresponding target native macro.
+	(Java_gnu_java_nio_channels_FileChannelImpl_unlock): Reimplemented
+	to use the corresponding target native macro.
+
+2006-01-17  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/DefaultTextUI.java:
+	Added deprecated tag.
+	* javax/swing/text/JTextComponent.java
+	(AccessibleJTextComponent): Fixed API doc and
+	partially implemented.
+	(getCaretPosition): Fixed API doc and implemented.
+	(getSelectedText): Fixed API doc.
+	(getSelectionStart): Likewise.
+	(getSelectionEnd): Likewise.
+	(caretUpdate): Fixed API doc and
+	partially implemented.
+	(getAccessibleStateSet): Likewise.
+	(getAccessibleRole): Fixed API doc and implemented.
+	(getAccessibleEditableText): Implemented.
+	(getAccessibleText): Fixed API doc and implemented.
+	(insertUpdate): Fixed API doc.
+	(changedUpdate): Likewise.
+	(getIndexAtPoint): Likewise.
+	(getRootEditorRect): Removed.
+	(getCharacterBounds): Fixed API doc.
+	(getCharCount): Likewise.
+	(getCharacterAttribute): Likewise.
+	(getAtIndex): Likewise.
+	(getAfterIndex): Likewise.
+	(getBeforeIndex): Likewise.
+	(getAccessibleActionCount): Added function stub.
+	(getAccessibleActionDescription): Added function,
+	partially implemented.
+	(doAccessibleAction): Added function stub.
+	(setTextContents): Likewise.
+	(insertTextAtIndex): Likewise.
+	(delete): Likewise.
+	(cut): Likewise.
+	(paste): Likewise.
+	(replaceText): Likewise.
+	(selectText): Likewise.
+	(setAttributes): Likewise.
+	(getAccessibleContext): Implemented.
+
+2006-01-17  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	Fixes bug #25817
+	* gnu/regexp/RETokenRange.java(constructor):
+	Keep lo and hi as they are.
+	(match): Changed the case insensitive comparison.
+
+2006-01-17  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* gnu/regexp/RETokenChar.java(chain):
+	Do not concatenate tokens whose insens flags are diffent.
+
+2006-01-17  Roman Kennke  <kennke@aicas.com>
+
+	* native/target/generic/target_generic_network.c:
+	(targetGenericNetwork_receive): Fixed signature to match the
+	corresponding .h file.
+	(targetGenericNetwork_receiveWithAddressPort): Fixed signature
+	to match the corresponding .h file.
+
+2006-01-17  Roman Kennke  <kennke@aicas.com>
+
+	* native/jni/classpath/jcl.c:
+	(JCL_malloc): Replaced calls to malloc with the corresponding
+	target layer macro.
+	(JCL_free): Replaced calls to free with the corresponding
+	target layer macro.
+	* native/jni/classpath/native_state.c:
+	(cp_gtk_init_state_table_with_size): Replaced calls to malloc and
+	calloc with the corresponding target layer macro.
+	(remove_node): Replaced calls to free with the corresponding
+	target layer macro.
+	(add_node): Replaced calls to malloc with the corresponding
+	target layer macro.
+
+2006-01-17  Roman Kennke  <kennke@aicas.com>
+
+	* native/jni/java-io/java_io_VMObjectStreamClass.c:
+	(getFieldReference): Use MALLOC/FREE macros for portability instead
+	of direct call to malloc() and free().
+
+2006-01-17  Roman Kennke  <kennke@aicas.com>
+
+	* native/jni/classpath/jcl.c: Added missing imports.
+	(JCL_realloc): Fixed signature to include oldsize. This is needed
+	for some targets. Make this function use the MEMORY_REALLOC macro
+	for portability.
+	* native/jni/classpath/jcl.h
+	(JCL_realloc): Adjusted signature.
+	* native/jni/java-io/java_io_VMFile.c:
+	(Java_java_io_VMFile_create): Use target layer macro for handling
+	errno, for portability.
+	(Java_java_io_VMFile_length): Release filename string in error cases
+	before returning.
+	(Java_java_io_VMFile_list): Initialize filename variable. Use new
+	version of JCL_realloc.
+	* native/jni/java-net/java_net_VMInetAddress.c:
+	(Java_java_net_VMInetAddress_getHostByName): Use renamed macro
+	TARGET_NATIVE_NETWORK_GET_HOSTADDRESS_BY_NAME.
+	* native/jni/java-net/javanet.c:
+	(_javanet_bind): Make errorstr variable const to avoid compiler
+	warning.
+	(_javanet_set_option): Fixed typo.
+	(_javanet_get_option): Fixed typo.
+	* native/jni/java-nio/gnu_java_nio_channels_FileChannelImpl.c:
+	(Java_gnu_java_nio_channels_FileChannelImpl_open): Made
+	error_string variable const to avoid compiler warning.
+	* native/target/generic/target_generic_file.h:
+	Replaced // comments with /* */ comments to avoid compiler warnings.
+	Added some spaces to make code better readable.
+	* native/target/generic/target_generic_memory.h:
+	Replaced // comments with /* */ comments to avoid compiler warnings.
+	* native/target/generic/target_generic_misc.c:
+	Removed unused TARGET_NATIVE_MISC_FORMAT_STRING macro. This caused
+	compiler warnings due to use of varargs.
+	* native/target/generic/target_generic_misc.h:
+	Removed unused TARGET_NATIVE_MISC_FORMAT_STRING macro. This caused
+	compiler warnings due to use of varargs.
+	* native/target/generic/target_generic_network.h:
+	Replaced // comments with /* */ comments to avoid compiler warnings.
+	(targetGenericNetwork_receive): Fixed signature to use signed chars
+	for buffer parameter to avoid warning when passing a jbyte to the
+	function.
+
+2006-01-17  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/text/StyleConstants.java
+	(getAlignment): Removed isDefined() check, so that resolving parent is 
+	used for lookup,
+	(getBackground): Likewise, plus changed default value to Color.BLACK,
+	(getBidiLevel): Removed isDefined() check,
+	(getComponent): Likewise,
+	(getFirstLineIndent): Likewise,
+	(getFontFamily): Likewise,
+	(getFontSize): Likewise,
+	(getForeground): Likewise,
+	(getIcon): Likewise,
+	(getLeftIndent): Likewise,
+	(getLineSpacing): Likewise,
+	(getRightIndent): Likewise,
+	(getSpaceAbove): Likewise,
+	(getSpaceBelow): Likewise,
+	(getTabSet): Likewise,
+	(isBold): Likewise,
+	(isItalic): Likewise,
+	(isStrikeThrough): Likewise,
+	(isSubscript): Likewise,
+	(isSuperscript): Likewise,
+	(isUnderline): Likewise.
+
+2006-01-17  Gary Benson  <gbenson@redhat.com>
+
+	* java/lang/System.java (setSecurityManager): Catch
+	ClassNotFoundException not Throwable.
+
+2006-01-16  Anthony Green  <green@redhat.com>
+
+	PR classpath/25803
+	* gnu/java/net/protocol/http/Request.java
+	  (createResponseBodyStream): Remove Content-Encoding for
+	  compressed streams.
+
+2006-01-16  Chris Burdess  <dog@gnu.org>
+
+	* gnu/xml/stream/XMLParser.java,
+	  gnu/xml/stream/XMLStreamWriterImpl.java: Thoroughly check
+	  XMLStreamWriter arguments for conformance to the XML specifications.
+	* gnu/xml/transform/Stylesheet.java,
+	  gnu/xml/transform/Template.java,
+	  gnu/xml/transform/TransformerImpl.java,
+	  gnu/xml/xpath/LangFunction.java,
+	  gnu/xml/xpath/Selector.java: better handling of template priorities;
+	  fix indents when pretty-printing; recursive tests for xml:lang.
+	* gnu/xml/util/XHTMLWriter.java,
+	  gnu/xml/util/XMLWriter.java: Deprecate old serializer classes.
+
+2006-01-16  Roman Kennke  <kennke@aicas.com>
+
+	* native/target/MinGW/.cvsignore: New file.
+	* native/target/RTEMS/.cvsignore: New file.
+	* native/target/SunOS/.cvsignore: New file.
+	* native/target/embOS/.cvsignore: New file.
+	* native/target/posix/.cvsignore: New file.
+
+2006-01-16  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/text/StyleConstants.java: Updated API docs all over.
+
+2006-01-16  Roman Kennke  <kennke@aicas.com>
+
+	* configure.ac: Include new target native directories in build.
+
+2006-01-16  Roman Kennke  <kennke@aicas.com>
+
+	* native/target/generic/target_generic_file.h: Added missing
+	include.
+	* native/target/generic/target_generic_network.c: Fixed several
+	typos and includes.
+	* native/target/generic/target_generic_network.h: Likewise.
+
+2006-01-16  Roman Kennke  <kennke@aicas.com>
+
+	* native/target/Makefile.am: Adjusted SUBDIRS and DIST_SUBDIRS
+	to include the new targets.
+	* native/target/posix/Makefile.am: Fixed filenames.
+
+2006-01-16  Roman Kennke  <kennke@aicas.com>
+
+	* native/target/Makefile.am: Include new targets.
+	* native/target/Linux/Makefile.am: Include new memory layer.
+	* native/target/MinGW/Makefile.am: New file. Includes MinGW in dist.
+	* native/target/RTEMS/Makefile.am: New file. Includes RTEMS in dist.
+	* native/target/SunOS/Makefile.am: New file. Includes SunOS in dist.
+	* native/target/embOS/Makefile.am: New file. Includes embOS in dist.
+	* native/target/generic/Makefile.am: Include new memory and math
+	layer.
+	* native/target/posix/Makefile.am: New file. Includes posix in dist.
+
+2006-01-16  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	Fixes bug #22884
+	* gnu/regexp/RE.java(initialize): Parse embedded flags.
+	* gnu/regexp/RESyntax.java(RE_EMBEDDED_FLAGS): New syntax bit.
+
+2006-01-16  Roman Kennke  <kennke@aicas.com>
+
+	* native/target/generic/target_generic_network.c: Fixed typo.
+	* native/target/generic/target_generic_network.h: Fixed typo.
+
+2006-01-16  Nicolas Geoffray  <nicolas.geoffray@menlina.com>
+
+	* doc/vmintegration.texinfo: Updated subsection of the
+	java.lang.InstrumentationImpl documentation.
+
+2006-01-16  Roman Kennke  <kennke@aicas.com>
+
+	* native/target/RTEMS/target_native.h,
+	* native/target/RTEMS/target_native_file.h,
+	* native/target/RTEMS/target_native_io.h,
+	* native/target/RTEMS/target_native_math.h,
+	* native/target/RTEMS/target_native_memory.h,
+	* native/target/RTEMS/target_native_misc.h,
+	* native/target/RTEMS/target_native_network.h:
+	New files. Implement the target native layer for the RTEMS platform.
+
+2006-01-16  Roman Kennke  <kennke@aicas.com>
+
+	* native/target/SunOS/target_native.h,
+	* native/target/SunOS/target_native_file.h,
+	* native/target/SunOS/target_native_io.h,
+	* native/target/SunOS/target_native_math.h,
+	* native/target/SunOS/target_native_memory.h,
+	* native/target/SunOS/target_native_misc.h,
+	* native/target/SunOS/target_native_network.h:
+	New files. Implement the target native layer for the SunOS platform.
+
+2006-01-16  Roman Kennke  <kennke@aicas.com>
+
+	* native/target/MinGW/target_native.h,
+	* native/target/MinGW/target_native_file.h,
+	* native/target/MinGW/target_native_io.h,
+	* native/target/MinGW/target_native_math.h,
+	* native/target/MinGW/target_native_memory.h,
+	* native/target/MinGW/target_native_misc.h,
+	* native/target/MinGW/target_native_network.h:
+	New files. Implement the target native layer for the MinGW
+	platform.
+
+2006-01-16  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	PR 25770
+	* javax/swing/DefaultCellEditor.java
+	(delegate): Assign new instance immediately.
+	(DefaultCellEditor(JTextField textfield)): Require 2 clicks.
+	(getTableCellEditorComponent): Rewritten.
+	(prepareAsJTextField):New method (add listener only once).
+	* javax/swing/JTable.java
+	(editingCanceled): Rewritten.
+	(editingStopped ): Rewritten.
+	(rowAtPoint): Mind row margin.
+	(getCellRect): Mind row margin.
+	(getDefaultEditor): Removing JTextComponent border.
+	(editCellAt): Rewritten.
+	* javax/swing/plaf/basic/BasicTableUI.java (MouseInputHandler):
+	Activate editing mode by the mouse clicks.
+	(getMaximumSize): Mind row margin.
+	(getPreferredSize): Mind row margin.
+	(TableAction): Added 'stop editing' command. 
+
+2006-01-16  Roman Kennke  <kennke@aicas.com>
+
+	* jni/java-io/java_io_VMFile.c
+	(Java_java_io_VMFile_list): Use new 4 argument version of
+	TARGET_NATIVE_FILE_READ_DIR macro.
+	* target/Linux/target_native_io.h: Fixed comment at #endif.
+	* target/Linux/target_native_memory.h: New file. Contains
+	portability macros for memory operations.
+	* target/generic/target_generic.c: New file. Contains some functions
+	for portability.
+	* target/generic/target_generic.h: Use posix target and shorter macro
+	names if CP_NEW is set. 
+	* target/generic/target_generic_file.h: Use posix target and shorter
+	macro names if CP_NEW is set.
+	(TARGET_NATIVE_FILE_READ_DIR): New parameter for maxNameLength.
+	* target/generic/target_generic_io.c: New file. Contains some
+	functions for IO portability.
+	* target/generic/target_generic_io.h: Use posix target and shorter
+	macro names if CP_NEW is set.
+	* target/generic/target_generic_misc.c: New file. Contains some
+	functions for miscallaneaous portability issues.
+	* target/generic/target_generic_misc.h: Use posix target and shorter
+	macro names if CP_NEW is set.
+	* target/generic/target_generic_network.c: New file. Contains some
+	functions for networking portability.
+	* target/generic/target_generic_network.h: Use posix target and
+	shorter	macro names if CP_NEW is set.
+	* target/posix/Makefile.am,
+	* target/posix/target_posix.c,
+	* target/posix/target_posix.h,
+	* target/posix/target_posix_file.c,
+	* target/posix/target_posix_file.h,
+	* target/posix/target_posix_io.c,
+	* target/posix/target_posix_io.h,
+	* target/posix/target_posix_math.c,
+	* target/posix/target_posix_math.h,
+	* target/posix/target_posix_memory.c,
+	* target/posix/target_posix_memory.h,
+	* target/posix/target_posix_misc.c,
+	* target/posix/target_posix_misc.h,
+	* target/posix/target_posix_network.c,
+	* target/posix/target_posix_network.h:
+	New files. This implements the target native layer macros for
+	Posix-like systems.
+
+2006-01-16  Gary Benson  <gbenson@redhat.com>
+
+	* java/net/SocketPermission.java (implies): Fix action checks.
+
+2006-01-16  Roman Kennke  <kennke@aicas.com>
+
+	* native/target/generic/target_generic_math_float.h: Removed. This
+	file has been replaced by target_generic_math.h.
+	* native/target/generic/target_generic_math_int.h: Removed. This
+	file has been replaced by target_generic_math.h.
+	* native/target/generic/target_generic_math.h: New file. Replaces
+	the old _int and _float versions.
+	* native/target/Linux/target_native_math_float.h: Removed. This
+	file has been replaced by target_native_math.h.
+	* native/target/Linux/target_native_math_int.h: Removed. This
+	file has been replaced by target_native_math.h.
+	* native/target/Linux/target_native_math.h: New file. Replaces
+	the old _int and _float versions.
+	* native/target/Linux/Makefile.am: Adjusted for the changed
+	filenames.
+	* native/jni/java-io/java_io_VMFile.c: Include target_native_math.h
+	instead of target_native_math_int.h.
+	* native/jni/java-nio/gnu_java_nio_channels_FileChannelImpl.c:
+	Likewise.
+	* native/target/generic/target_generic_file.h: Likewise.
+
+2006-01-16  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/text/MutableAttributeSet.java: Updated API docs all over.
+
+2006-01-16  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/text/SimpleAttributeSet.java
+	(SimpleAttributeSet()): Initialise storage directly,
+	(SimpleAttributeSet(AttributeSet)): Removed null check and documented
+	NullPointerException,
+	(containsAttribute): If key is found locally, don't check resolving
+	parent if the value doesn't match,
+	(getAttribute): Removed redundant instanceof and cast.
+
+2006-01-16  Gary Benson  <gbenson@redhat.com>
+
+	* java/lang/System.java (setSecurityManager): Ensure policy
+	files are loaded before a security manager is put in place.
+
+2006-01-16  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/text/SimpleAttributeSet.java: Updated API docs all over.
+
+2006-01-16  Wolfgang Baer  <WBaer@gmx.de>
+
+	* javax/print/attribute/standard/MediaSize.java: 
+	(static_initializer): Added comment.
+	(MediaSize): Added javadoc to mention cache registration.
+	(MediaSize): Likewise.
+	(MediaSize): Likewise.
+	(MediaSize): Likewise.
+
+2006-01-16  Raif S. Naffah  <raif@swiftdsl.com.au>
+
+	PR classpath/25202
+	* gnu/javax/security/auth/login/ConfigFileTokenizer.java: New class.
+	* gnu/javax/security/auth/login/ConfigFileParser.java: New class.
+	* gnu/javax/security/auth/login/GnuConfiguration.java: New class.
+	* javax/security/auth/login/AppConfigurationEntry.java: Updated
+	  copyright year.
+	  (toString): Added method implementation.
+	  (LoginModuleControlFlag.toString): Removed class name from result.
+	* javax/security/auth/login/Configuration.java: Updated copyright year.
+	  (getConfig(): replaced calls to NullConfiguration with
+	  GnuConfiguration.
+
+2006-01-15  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* javax/swing/table/DefaultTableCellRenderer.java 
+	(getTableCellRendererComponent): Render null as the empty cell.
+
+2006-01-14  Anthony Green  <green@redhat.com>
+
+        * java/net/ServerSocket.java (accept): Remove bogus
+        security check.
+	(implAccept): Add FIXME comment.
+
+2006-01-14  Wolfgang Baer  <WBaer@gmx.de>
+
+	Fixes bug #25387
+	* javax/print/Doc.java: Added and enhanced documentation.
+	* javax/print/SimpleDoc.java: New file.	
+
+2006-01-14  Wolfgang Baer  <WBaer@gmx.de>
+
+	* javax/print/attribute/standard/MediaSize.java: 
+	(Other.TABLOID): New MediaSize added in 1.5
+
+2006-01-14  Chris Burdess  <dog@gnu.org>
+
+	* gnu/xml/stream/SAXParser.java: Ensure that parser is reset
+	  correctly when I/O and runtime exceptions occur during parsing.
+
+2006-01-13  Roman Kennke  <kennke@aicas.com>
+
+	* gnu/java/awt/peer/swing/SwingButtonPeer.java,
+	* gnu/java/awt/peer/swing/SwingCanvasPeer.java,
+	* gnu/java/awt/peer/swing/SwingComponent.java,
+	* gnu/java/awt/peer/swing/SwingComponentPeer.java,
+	* gnu/java/awt/peer/swing/SwingContainerPeer.java,
+	* gnu/java/awt/peer/swing/SwingFramePeer.java,
+	* gnu/java/awt/peer/swing/SwingLabelPeer.java,
+	* gnu/java/awt/peer/swing/SwingMenuBarPeer.java,
+	* gnu/java/awt/peer/swing/SwingMenuItemPeer.java,
+	* gnu/java/awt/peer/swing/SwingMenuPeer.java,
+	* gnu/java/awt/peer/swing/SwingPanelPeer.java,
+	* gnu/java/awt/peer/swing/SwingTextFieldPeer.java,
+	* gnu/java/awt/peer/swing/SwingToolkit.java,
+	* gnu/java/awt/peer/swing/SwingWindowPeer.java,
+	* gnu/java/awt/peer/swing/package.html:
+	New files. Implemented some basic AWT peers based on Swing.
+
+2006-01-13  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/peer/ComponentPeer.java: Added API docs all over.
+
+2006-01-13  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/MenuComponent.java: Reformatted to better match our
+	coding style.
+
+2006-01-13  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/Frame.java: Reformatted to better match our
+	coding style.
+
+2006-01-13  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/MenuBar.java
+	(accessibleContext): Removed unnecessary field. This is already
+	defined in MenuComponent.
+	(setHelpMenu): Renamed the peer variable to myPeer because it was
+	hiding a field of MenuComponent.
+	(addNotify): Removed unnecessary cast.
+
+2006-01-13  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/MenuBar.java: Reformatted to better match our
+	coding style.
+
+2006-01-13  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/MenuBar.java
+	(frame): New field.
+	(removeNotify): Clear frame field when beeing removed from the
+	frame.
+	* java/awt/Frame.java
+	(setMenuBar): Store a reference of the frame in the MenuBar.
+	* java/awt/MenuComponent.java
+	(postEvent): Implemented to forward the call to the parent until
+	a parent can handle the event.
+	(dispatchEvent): Moved handling of old style events from
+	dispatchEventImpl() to here.
+	(dispatchEventImpl): Moved handling of old style events to
+	dispatchEvent().
+
+2006-01-13  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/Component.java
+	(dispatchEvent): Moved handling of old style events from
+	dispatchEventImpl() to this method.
+	(translateEvent): Removed unnecessary cast.
+	(dispatchEventImpl): Moved handling of old style events to
+	dispatchEvent().
+	
+2006-01-13  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/DefaultStyledDocument.java
+	(createDefaultRoot): Removed FIXME.
+	(setLogicalStyle): Added fireUndoableEditUpdate call and 
+	removed FIXME.
+
+2006-01-13  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/DefaultStyledDocument.java
+	(Edit): New inner class.
+	(changeUpdate): Changed addEdit call to add a new
+	instance of Edit to the edits Vector, so addEdits can
+	be done later.
+	(split): Likewise.
+	(insertParagraph): Likewise.
+	(insertFracture): Likewise.
+	(insertContentTag): Likewise.
+	(insert): Added loop to go through edits Vector and perform
+	addEdit on each object.
+
+2006-01-13  Chris Burdess  <dog@gnu.org>
+
+	* gnu/xml/transform/AbstractNumberNode.java,
+	  gnu/xml/transform/ApplyImportsNode.java,
+	  gnu/xml/transform/ApplyTemplatesNode.java,
+	  gnu/xml/transform/AttributeNode.java,
+	  gnu/xml/transform/CallTemplateNode.java,
+	  gnu/xml/transform/ChooseNode.java,
+	  gnu/xml/transform/CommentNode.java,
+	  gnu/xml/transform/CopyNode.java,
+	  gnu/xml/transform/CopyOfNode.java,
+	  gnu/xml/transform/DocumentFunction.java,
+	  gnu/xml/transform/ElementNode.java,
+	  gnu/xml/transform/ForEachNode.java,
+	  gnu/xml/transform/IfNode.java,
+	  gnu/xml/transform/LiteralNode.java,
+	  gnu/xml/transform/MessageNode.java,
+	  gnu/xml/transform/OtherwiseNode.java,
+	  gnu/xml/transform/ParameterNode.java,
+	  gnu/xml/transform/ProcessingInstructionNode.java,
+	  gnu/xml/transform/Stylesheet.java,
+	  gnu/xml/transform/Template.java,
+	  gnu/xml/transform/TemplateNode.java,
+	  gnu/xml/transform/TextNode.java,
+	  gnu/xml/transform/TransformerImpl.java,
+	  gnu/xml/transform/ValueOfNode.java,
+	  gnu/xml/transform/WhenNode.java,
+	  gnu/xml/xpath/NodeTypeTest.java,
+	  gnu/xml/xpath/Selector.java: simplified debugging output; ignore
+	  with-param parameters when template does not define parameters; apply
+	  conflict resolution for templates; strip whitespace on documents
+	  retrieved via document() function; allow node() to match document
+	  nodes.
+
 2006-01-13  Mark Wielaard  <mark@klomp.org>
 
 	* doc/www.gnu.org/announce/20060113.wml: New file.

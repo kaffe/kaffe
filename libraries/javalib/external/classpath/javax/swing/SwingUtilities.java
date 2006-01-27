@@ -83,31 +83,6 @@ public class SwingUtilities
   {
     // Do nothing.
   }
-  
-  /**
-   * Calculates the portion of the base rectangle which is inside the
-   * insets.
-   *
-   * @param base The rectangle to apply the insets to
-   * @param insets The insets to apply to the base rectangle
-   * @param ret A rectangle to use for storing the return value, or
-   * <code>null</code>
-   *
-   * @return The calculated area inside the base rectangle and its insets,
-   * either stored in ret or a new Rectangle if ret is <code>null</code>
-   *
-   * @see #calculateInnerArea
-   */
-  public static Rectangle calculateInsetArea(Rectangle base, Insets insets,
-                                             Rectangle ret)
-  {
-    if (ret == null)
-      ret = new Rectangle();
-    ret.setBounds(base.x + insets.left, base.y + insets.top,
-                  base.width - (insets.left + insets.right),
-                  base.height - (insets.top + insets.bottom));
-    return ret;
-  }
 
   /**
    * Calculates the portion of the component's bounds which is inside the
@@ -122,13 +97,18 @@ public class SwingUtilities
    *
    * @return The calculated area inside the component and its border
    * insets
-   *
-   * @see #calculateInsetArea
    */
   public static Rectangle calculateInnerArea(JComponent c, Rectangle r)
   {
     Rectangle b = getLocalBounds(c);
-    return calculateInsetArea(b, c.getInsets(), r);
+    if (r == null)
+      r = new Rectangle();
+    Insets i = c.getInsets();
+    r.x = b.x + i.left;
+    r.width = b.width - i.left - i.right;
+    r.y = b.y + i.top;
+    r.height = b.height - i.top - i.bottom;
+    return r;
   }
 
   /**
@@ -1021,11 +1001,16 @@ public class SwingUtilities
    *
    * @return The common Frame 
    */
-  static Frame getOwnerFrame()
+  static Window getOwnerFrame(Window owner)
   {
-    if (ownerFrame == null)
-      ownerFrame = new OwnerFrame();
-    return ownerFrame;
+    Window result = owner;
+    if (result == null)
+      {
+        if (ownerFrame == null)
+          ownerFrame = new OwnerFrame();
+        result = ownerFrame;
+      }
+    return result;
   }
 
   /**

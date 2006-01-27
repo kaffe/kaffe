@@ -891,37 +891,9 @@ public class BasicInternalFrameUI extends InternalFrameUI
    * This helper class listens for PropertyChangeEvents from the
    * JInternalFrame.
    */
-  public class InternalFramePropertyChangeListener implements
-      PropertyChangeListener, VetoableChangeListener
+  public class InternalFramePropertyChangeListener
+    implements PropertyChangeListener
   {
-
-    /**
-     * This method is called when one of the JInternalFrame's properties change.
-     * This method is to allow JInternalFrame to veto an attempt to close the
-     * internal frame. This allows JInternalFrame to honour its
-     * defaultCloseOperation if that is DO_NOTHING_ON_CLOSE.
-     */
-    public void vetoableChange(PropertyChangeEvent e)
-        throws PropertyVetoException
-    {
-      if (e.getPropertyName().equals(JInternalFrame.IS_CLOSED_PROPERTY))
-        {
-          if (frame.getDefaultCloseOperation() == JInternalFrame.HIDE_ON_CLOSE)
-            {
-              frame.setVisible(false);
-              frame.getDesktopPane().repaint();
-              throw new PropertyVetoException(
-                                              "close operation is HIDE_ON_CLOSE\n",
-                                              e);
-            }
-          else if (frame.getDefaultCloseOperation() == JInternalFrame.DISPOSE_ON_CLOSE)
-            closeFrame(frame);
-          else
-            throw new PropertyVetoException(
-                                            "close operation is DO_NOTHING_ON_CLOSE\n",
-                                            e);
-        }
-    }
 
     /**
      * This method is called when one of the JInternalFrame's properties change.
@@ -1091,13 +1063,6 @@ public class BasicInternalFrameUI extends InternalFrameUI
    */
   protected PropertyChangeListener propertyChangeListener;
 
-  /**
-   * The VetoableChangeListener.  Listens to PropertyChangeEvents
-   * from the JInternalFrame and allows the JInternalFrame to 
-   * veto attempts to close it.
-   */
-  private VetoableChangeListener internalFrameVetoableChangeListener;
-
   /** The InternalFrameListener that listens to the JInternalFrame. */
   private transient BasicInternalFrameListener internalFrameListener;
 
@@ -1238,13 +1203,11 @@ public class BasicInternalFrameUI extends InternalFrameUI
     borderListener = createBorderListener(frame);
     componentListener = createComponentListener();
     propertyChangeListener = createPropertyChangeListener();
-    internalFrameVetoableChangeListener = new InternalFramePropertyChangeListener();
 
     frame.addMouseListener(borderListener);
     frame.addMouseMotionListener(borderListener);
     frame.addInternalFrameListener(internalFrameListener);
     frame.addPropertyChangeListener(propertyChangeListener);
-    frame.addVetoableChangeListener(internalFrameVetoableChangeListener);
     frame.getRootPane().getGlassPane().addMouseListener(glassPaneDispatcher);
     frame.getRootPane().getGlassPane().addMouseMotionListener(glassPaneDispatcher);
   }

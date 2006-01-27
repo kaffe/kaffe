@@ -38,11 +38,20 @@ exception statement from your version. */
 package gnu.regexp;
 import java.io.Serializable;
 
-abstract class REToken implements Serializable {
+abstract class REToken implements Serializable, Cloneable {
 
   protected REToken next = null;
   protected REToken uncle = null;
   protected int subIndex;
+
+  public Object clone() {
+    try {
+      REToken copy = (REToken) super.clone();
+      return copy;
+    } catch (CloneNotSupportedException e) {
+      throw new Error(); // doesn't happen
+    }
+  }
 
   protected REToken(int subIndex) {
       this.subIndex = subIndex;

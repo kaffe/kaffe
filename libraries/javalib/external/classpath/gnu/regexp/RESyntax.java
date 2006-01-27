@@ -202,7 +202,27 @@ public final class RESyntax implements Serializable {
    */
   public static final int RE_POSSESSIVE_OPS            = 25;
 
-  private static final int BIT_TOTAL                   = 26;
+  /**
+   * Syntax bit.  Allow embedded flags, (?is-x), as in Perl5.
+   */
+  public static final int RE_EMBEDDED_FLAGS            = 26;
+
+  /**
+   * Syntax bit.  Allow octal char (\0377), as in Perl5.
+   */
+  public static final int RE_OCTAL_CHAR                = 27;
+
+  /**
+   * Syntax bit.  Allow hex char (\x1b), as in Perl5.
+   */
+  public static final int RE_HEX_CHAR                  = 28;
+
+  /**
+   * Syntax bit.  Allow Unicode char (\u1234), as in Java 1.4.
+   */
+  public static final int RE_UNICODE_CHAR              = 29;
+
+  private static final int BIT_TOTAL                   = 30;
 
   /**
    * Predefined syntax.
@@ -422,6 +442,9 @@ public final class RESyntax implements Serializable {
 	  .set(RE_STRING_ANCHORS)         // \A,\Z
 	  .set(RE_CHAR_CLASS_ESC_IN_LISTS)// \d,\D,\w,\W,\s,\S within []
 	  .set(RE_COMMENTS)              // (?#)
+	  .set(RE_EMBEDDED_FLAGS)         // (?imsx-imsx)
+	  .set(RE_OCTAL_CHAR)             // \0377
+	  .set(RE_HEX_CHAR)               // \x1b
 	  .makeFinal();
       
       RE_SYNTAX_PERL5_S = new RESyntax(RE_SYNTAX_PERL5)
@@ -431,6 +454,7 @@ public final class RESyntax implements Serializable {
       RE_SYNTAX_JAVA_1_4 = new RESyntax(RE_SYNTAX_PERL5)
 	  // XXX
 	  .set(RE_POSSESSIVE_OPS)         // *+,?+,++,{}+
+	  .set(RE_UNICODE_CHAR)           // \u1234
 	  .makeFinal();
   }
 

@@ -987,27 +987,14 @@ public class Demo
     
     return tree;
   }
-
-  private static JTable mkTable()
+  
+  /**
+   * Make a sample table component.
+   */
+  private static JPanel mkTable()
   {
-    Object[][] tableData = new Object[][] {
-      {
-        "Field 1", "Field 2" , "Field 3"
-      },
-      {
-        "Field 4", "Field 5" , "Field 6"
-      },
-      {
-        "Field 7", "Field 8" , "Field 9"
-      },
-      {
-        "Field 10", "Field 11" , "Field 12"
-      }
-    };
-    Object[] columnNames = new Object[] {"Column 1", "Column 2", "Column 3"};
-
-    JTable table = new JTable(tableData, columnNames);
-    return table;
+    return new TableDemo("Table demo, double click to edit")
+                      .createContent();
   }
   
   private JPanel mkButtonBar()

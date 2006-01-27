@@ -219,7 +219,6 @@ public class DefaultFormatter extends JFormattedTextField.AbstractFormatter
     commitsOnValidEdit = true;
     overwriteMode = true;
     allowsInvalid = true;
-    valueClass = Object.class;
   }
 
   /**
