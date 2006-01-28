@@ -451,7 +451,7 @@ libjavalang_la_LDFLAGS = \
 	-no-undefined \
 	-module \
 	-release $(PACKAGE_VERSION) \
-	-export-symbols-regex "^([Jj]ava|kaffe|gnu)_"
+	-export-symbols-regex "^([Jj]ava|kaffe|gnu|TestNative)_"
 
 libjavalang_la_DEPENDENCIES = \
 	../../../kaffe/kaffevm/libkaffevm.la \

@@ -1,3 +1,9 @@
+2006-01-28  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* libraries/clib/native/Makefile.am: Also export TestNative.
+
+	* libraries/clib/native/Makefile.in: Regenerated.
+
 2006-01-27  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* libraries/javalib/external/classpath: Resynchronized.
