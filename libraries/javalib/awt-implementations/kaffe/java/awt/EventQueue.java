@@ -1,17 +1,26 @@
-package java.awt;
-
-import java.awt.event.FocusEvent;
-import java.awt.event.PaintEvent;
-
 /**
  *
  * Copyright (c) 1998
  *   Transvirtual Technologies Inc.  All rights reserved.
  *
+ * Copyright (c) 2006
+ *      Kaffe.org developers. See ChangeLog for details.
+ *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
- * @author P.C.Mehlitz
+ *
+ * original code P.C.Mehlitz
+ * some code taken or adapted from Classpath
  */
+
+package java.awt;
+
+import java.awt.event.FocusEvent;
+import java.awt.event.PaintEvent;
+import java.awt.event.InvocationEvent;
+import java.lang.reflect.InvocationTargetException;
+
+
 public class EventQueue
 {
 	AWTEvent localQueue;
@@ -203,13 +212,40 @@ public static boolean isDispatchThread() {
 	return Thread.currentThread() == Toolkit.eventThread;
 }
 
-// TODO this is only a stub
-public static void invokeLater(Runnable runnable) {
+// adapted from classpath
+public static void invokeAndWait(Runnable runnable)
+	throws InterruptedException, InvocationTargetException {
 
+	Exception  exception;
+	Thread     currentThr;
+	EventQueue eq;
+
+	if (isDispatchThread ())
+    		throw new Error("Can't call invokeAndWait from event dispatch thread");
+
+    	currentThr = Thread.currentThread();
+	eq = Toolkit.getDefaultToolkit().getSystemEventQueue();
+
+	InvocationEvent ie = new InvocationEvent(eq,  runnable, currentThr, true);
+
+	synchronized (currentThr)
+	{
+    		eq.postEvent(ie);
+        	currentThr.wait();
+	}
+
+	exception = ie.getException();
+	if (exception != null)
+    		throw new InvocationTargetException(exception);
 }
 
-// TODO this is only a stub
-public static void invokeAndWait(Runnable runnable) {
+// adapted from classpath
+public static void invokeLater(Runnable runnable) {
+	EventQueue eq = Toolkit.getDefaultToolkit().getSystemEventQueue(); 
+
+	InvocationEvent ie = new InvocationEvent(eq, runnable, null, false);
+
+	eq.postEvent(ie);
 }
 
 

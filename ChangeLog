@@ -1,3 +1,20 @@
+2006-01-29  Riccardo Mottola <riccardo@kaffe.org>
+	* libraries/javalib/awt-implementations/kaffe/java/awt/EventQueue.java
+	Implemented some stuff, adapting from classpath.
+
+2006-01-29  Riccardo Mottola <riccardo@kaffe.org>
+	* libraries/javalib/awt-implementations/kaffe/org/kaffe/applet/AppletTagjava
+	removed warnings
+
+2006-01-29  Riccardo Mottola <riccardo@kaffe.org>
+	* libraries/javalib/awt-implementations/kaffe/java/awt/Component.java
+	libraries/javalib/awt-implementations/kaffe/java/awt/Dialog.java
+	libraries/javalib/awt-implementations/kaffe/java/awt/EventQueue.java
+	libraries/javalib/awt-implementations/kaffe/java/awt/Graphics.java
+	libraries/javalib/awt-implementations/kaffe/java/awt/Window.java
+	libraries/javalib/awt-implementations/kaffe/java/awt/event/InputEvent.java:
+	Added stubs for several missing functions or made trivial implementations of them.
+	
 2006-01-28  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* libraries/clib/native/Makefile.am: Also export TestNative.
