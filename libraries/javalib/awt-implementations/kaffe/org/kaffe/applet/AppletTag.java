@@ -4,10 +4,12 @@ package org.kaffe.applet;
  * Copyright (c) 1998
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2006
+ *      Kaffe.org developers. See ChangeLog for details.
+ *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  *
- * @author J.Mehlitz, G.Back
  */
 
 import java.awt.Dimension;
@@ -151,7 +153,7 @@ void parseParam( StreamTokenizer st) throws IOException {
 			st.nextToken();
 			st.lowerCaseMode( false);
 			st.nextToken();
-			if ( st.ttype == st.TT_NUMBER) {
+			if ( st.ttype == StreamTokenizer.TT_NUMBER) {
 				int r = (int)st.nval;
 				if (Math.abs(r - st.nval) < 1e-7) {	// hmmm
 					val = Integer.toString(r);
@@ -221,7 +223,7 @@ public AppletTag( StreamTokenizer st ) throws IOException {
 			else if ( st.sval.equals( "height") ) {
 				st.nextToken();
 				st.nextToken();
-				if (st.ttype == st.TT_NUMBER) {
+				if (st.ttype == StreamTokenizer.TT_NUMBER) {
 					appletSize.height = (int)st.nval;
 				}
 				else {
@@ -231,7 +233,7 @@ public AppletTag( StreamTokenizer st ) throws IOException {
 			else if ( st.sval.equals( "width") ) {
 				st.nextToken();
 				st.nextToken();
-				if (st.ttype == st.TT_NUMBER) {
+				if (st.ttype == StreamTokenizer.TT_NUMBER) {
 					appletSize.width = (int)st.nval;
 				}
 				else {
@@ -263,10 +265,10 @@ public static AppletTag[] parseForApplets(InputStream is) throws IOException
     st.wordChars('/', '/');
     st.wordChars(':', ':');
 
-    while ( (ttype = st.nextToken()) != st.TT_EOF ) {
+    while ( (ttype = st.nextToken()) != StreamTokenizer.TT_EOF ) {
         if ( ttype == '<' ) {
             ttype = st.nextToken();
-            if ( ttype == st.TT_WORD ) {
+            if ( ttype == StreamTokenizer.TT_WORD ) {
                 if ( st.sval.equals("applet") ) {
                     currentTag = new AppletTag( st);
                     st.ordinaryChar('/');
@@ -279,7 +281,7 @@ public static AppletTag[] parseForApplets(InputStream is) throws IOException
             } else
             if (ttype == '/') {
                 ttype = st.nextToken();
-                if (ttype == st.TT_WORD && st.sval.equals("applet")) {
+                if (ttype == StreamTokenizer.TT_WORD && st.sval.equals("applet")) {
                     tags.addElement(currentTag);
                     currentTag = null;
                     st.wordChars('/', '/');
