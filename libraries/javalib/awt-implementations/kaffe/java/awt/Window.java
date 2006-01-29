@@ -395,4 +395,9 @@ public void toBack () {
 public void toFront () {
 	if ( nativeData != null ) Toolkit.wndToFront( nativeData);
 }
+
+// TODO this is only a stub
+public void setLocationRelativeTo(Component c) {
+}
+
 }

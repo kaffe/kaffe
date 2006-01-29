@@ -107,6 +107,11 @@ public int getModifiers() {
 	return modifiers;
 }
 
+// TODO this is only a stub
+public int getModifiersEx() {
+	return 0;
+}
+
 public long getWhen() {
 	return when;
 }

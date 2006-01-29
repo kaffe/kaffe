@@ -275,5 +275,10 @@ public String toString() {
 	return (getClass().getName() + " [" + getFont() + "," + getColor() + ']');
 }
 
+// TODO this is only a stub!
+public boolean hitClip(int x, int y, int width, int height) {
+	return true;
+}
+
 abstract public void translate ( int x, int y );
 }

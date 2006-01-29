@@ -48,6 +48,12 @@ public Dialog ( Frame owner, String title, boolean isModal) {
 		flags |= IS_MODAL;
 }
 
+// TODO this is just a stub
+// this method was added in 1.4
+public Dialog(Frame owner, String title, boolean modal, GraphicsConfiguration gc) {
+	this (owner, title, modal);
+}
+
 public Dialog ( Frame owner, boolean isModal ) {
 	this( owner, null, isModal);
 }

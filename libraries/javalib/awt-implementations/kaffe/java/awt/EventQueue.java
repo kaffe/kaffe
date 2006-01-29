@@ -203,6 +203,16 @@ public static boolean isDispatchThread() {
 	return Thread.currentThread() == Toolkit.eventThread;
 }
 
+// TODO this is only a stub
+public static void invokeLater(Runnable runnable) {
+
+}
+
+// TODO this is only a stub
+public static void invokeAndWait(Runnable runnable) {
+}
+
+
 public synchronized AWTEvent peekEvent () {
 	if ( localQueue != null ){
 		return localQueue;

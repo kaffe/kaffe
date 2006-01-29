@@ -25,6 +25,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.Locale;
+import java.awt.dnd.DropTarget;
 
 import org.kaffe.awt.DoNothingPeer;
 
@@ -417,18 +418,40 @@ public Color getBackground () {
 */
 }
 
-/**
- * @deprecated, use getBounds()
- */
 public Rectangle getBounds () {
 	return bounds();
 }
+
+// TODO this is a tentative implementation
+public Rectangle getBounds (Rectangle rv) {
+	if (rv == null)
+		return bounds();	
+	rv.x = x;
+	rv.y = y;
+	rv.width= width;
+	rv.height = height;
+	return rv;
+}
+
 
 ClassProperties getClassProperties () {
 	// direct Component / Container derived classes can't use old events
 	// (they had no protected ctor in 1.0.2)
 	return ClassAnalyzer.analyzeProcessEvent( getClass(), false);
 }
+
+// TODO this is only a stub
+protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
+}
+
+// TODO this is only a stub
+protected void firePropertyChange(String propertyName, boolean oldValue, boolean newValue) {
+}
+
+// TODO this is only a stub
+protected void firePropertyChange(String propertyName, int oldValue, int newValue) {
+}
+
 
 public ColorModel getColorModel() {
   	return Toolkit.getDefaultToolkit().getColorModel();
@@ -502,6 +525,11 @@ public Dimension getMaximumSize() {
 	return Toolkit.singleton.getScreenSize();
 }
 
+// Subclasses that guarantee to always completely paint their contents should override this method and return true. All of the "heavyweight" AWT components are opaque.
+public boolean isOpaque() {
+	return false;
+}
+
 public Dimension getMinimumSize() {
 	return minimumSize();
 }
@@ -538,6 +566,21 @@ public Dimension getPreferredSize() {
  */
 public Dimension getSize () {
 	return size();
+}
+
+/**
+ * this is a stub only for now
+ */
+public void setDropTarget(DropTarget dt) {
+// TODO this is only a stub	
+}
+
+/**
+ * this is a stub only for now
+ */
+public DropTarget getDropTarget() {
+// TODO this is only a stub
+	return null;
 }
 
 public Toolkit getToolkit () {
@@ -720,6 +763,29 @@ public boolean isFocusTraversable() {
 	return (((flags & (IS_SHOWING|IS_NATIVE_LIKE)) == (IS_SHOWING|IS_NATIVE_LIKE)) && 
 	        ((eventMask & AWTEvent.DISABLED_MASK) == 0));
 }
+
+// TODO this is was copied from isFocusTraversable, may be wrong.
+public boolean isFocusable() {
+	return (((flags & (IS_SHOWING|IS_NATIVE_LIKE)) == (IS_SHOWING|IS_NATIVE_LIKE)) && 
+	        ((eventMask & AWTEvent.DISABLED_MASK) == 0));
+}
+
+// TODO this is a stub only
+public void setFocusable(boolean focusable) {
+}
+
+// TODO this is a stub only
+public boolean isFocusOwner() {
+	return true;
+}
+
+/**
+ * @deprecated
+ */
+public boolean hasFocus() {
+	return isFocusOwner();
+}
+
 
 public boolean isShowing () {
 	// compare the costs of this with the standard upward iteration
@@ -1813,6 +1879,15 @@ synchronized void unlinkGraphics ( NativeGraphics g ) {
 public void update ( Graphics g ) {
 	g.clearRect( 0, 0, width, height);
 	paint( g);
+}
+
+// TODO this is only a stub
+public ComponentOrientation getComponentOrientation() {
+	return ComponentOrientation.LEFT_TO_RIGHT;
+}
+
+// TODO this is only a stub
+public void applyComponentOrientation(ComponentOrientation orientation) {
 }
 
 synchronized void updateLinkedGraphics () {
