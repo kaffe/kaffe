@@ -49928,6 +49928,11 @@ fi
 done
 
 if test x"$ac_cv_header_pthread_h" = x"yes"; then
+    if test x"$cross_compiling" = x"yes"; then
+     ac_cv_file__proc_self_maps=no;
+     { echo "$as_me:$LINENO: WARNING: If you want binreloc support on the platform you are cross-compiling to, and the platform supports it, please run configure with --enable-binreloc explicitely." >&5
+echo "$as_me: WARNING: If you want binreloc support on the platform you are cross-compiling to, and the platform supports it, please run configure with --enable-binreloc explicitely." >&2;}
+  fi
 
 	# Check whether --enable-binreloc or --disable-binreloc was given.
 if test "${enable_binreloc+set}" = set; then

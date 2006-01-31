@@ -1,5 +1,7 @@
-This is ../../classpath/doc/vmintegration.info, produced by makeinfo
-version 4.8 from ../../classpath/doc/vmintegration.texinfo.
+This is
+../../../../../../kaffe/libraries/javalib/external/classpath/doc/vmintegration.info,
+produced by makeinfo version 4.7 from
+../../../../../../kaffe/libraries/javalib/external/classpath/doc/vmintegration.texinfo.
 
    This file contains important information you will need to know if you
 are going to write an interface between GNU Classpath and a Virtual
@@ -1500,52 +1502,52 @@ if it exists on your platform.
 
 
 Tag Table:
-Node: Top496
-Node: Introduction1227
-Node: Initialization5801
-Node: Classpath Hooks6214
-Node: java.lang7434
-Node: java.lang.VMClass8136
-Node: java.lang.VMObject12406
-Node: java.lang.VMClassLoader14019
-Node: java.lang.VMSystem16871
-Node: java.lang.VMThrowable19498
-Node: java.lang.VMCompiler20518
-Node: java.lang.VMDouble21497
-Node: java.lang.VMFloat22762
-Node: java.lang.VMProcess23458
-Node: java.lang.VMRuntime24840
-Node: java.lang.VMString27403
-Node: java.lang.VMThread28223
-Node: java.lang.VMInstrumentationImpl31710
-Node: gnu.classpath34028
-Node: gnu.classpath.VMStackWalker34468
-Node: gnu.classpath.VMSystemProperties35534
-Node: java.util36867
-Node: java.util.VMTimeZone37330
-Node: java.io38246
-Node: java.io.VMFile38975
-Node: java.io.VMObjectInputStream41846
-Node: java.io.VMObjectStreamClass42527
-Node: java.security43357
-Node: java.security.VMAccessController43698
-Node: java.net44862
-Node: java.net.VMInetAddress45303
-Node: java.net.VMNetworkInterface46096
-Node: java.nio46528
-Node: java.nio.VMDirectByteBuffer47031
-Node: java.nio.channels48479
-Node: java.nio.channels.VMChannels48896
-Node: gnu.java.nio49664
-Node: gnu.java.nio.VMPipe50080
-Node: gnu.java.nio.VMSelector50597
-Node: Classpath Callbacks51143
-Node: VM Hooks51623
-Node: JNI Implementation55822
-Node: Miscellaneous VM Requirements57693
-Node: JNI Version58002
-Node: VM Threading Model58562
-Ref: VM Threading Model-Footnote-160178
-Node: Boot Library Path Property60290
+Node: Top586
+Node: Introduction1317
+Node: Initialization5891
+Node: Classpath Hooks6304
+Node: java.lang7524
+Node: java.lang.VMClass8226
+Node: java.lang.VMObject12496
+Node: java.lang.VMClassLoader14109
+Node: java.lang.VMSystem16961
+Node: java.lang.VMThrowable19588
+Node: java.lang.VMCompiler20608
+Node: java.lang.VMDouble21587
+Node: java.lang.VMFloat22852
+Node: java.lang.VMProcess23548
+Node: java.lang.VMRuntime24930
+Node: java.lang.VMString27493
+Node: java.lang.VMThread28313
+Node: java.lang.VMInstrumentationImpl31800
+Node: gnu.classpath34118
+Node: gnu.classpath.VMStackWalker34558
+Node: gnu.classpath.VMSystemProperties35624
+Node: java.util36957
+Node: java.util.VMTimeZone37420
+Node: java.io38336
+Node: java.io.VMFile39065
+Node: java.io.VMObjectInputStream41936
+Node: java.io.VMObjectStreamClass42617
+Node: java.security43447
+Node: java.security.VMAccessController43788
+Node: java.net44952
+Node: java.net.VMInetAddress45393
+Node: java.net.VMNetworkInterface46186
+Node: java.nio46618
+Node: java.nio.VMDirectByteBuffer47121
+Node: java.nio.channels48569
+Node: java.nio.channels.VMChannels48986
+Node: gnu.java.nio49754
+Node: gnu.java.nio.VMPipe50170
+Node: gnu.java.nio.VMSelector50687
+Node: Classpath Callbacks51233
+Node: VM Hooks51713
+Node: JNI Implementation55912
+Node: Miscellaneous VM Requirements57783
+Node: JNI Version58092
+Node: VM Threading Model58652
+Ref: VM Threading Model-Footnote-160268
+Node: Boot Library Path Property60380
 
 End Tag Table

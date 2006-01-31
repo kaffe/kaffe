@@ -2269,6 +2269,10 @@ dnl -------------------------------------------------------------------------
 AC_CHECK_HEADERS([pthread.h])
 if test x"$ac_cv_header_pthread_h" = x"yes"; then
   dnl We can now check whether we want binreloc
+  if test x"$cross_compiling" = x"yes"; then
+     ac_cv_file__proc_self_maps=no;
+     AC_MSG_WARN([If you want binreloc support on the platform you are cross-compiling to, and the platform supports it, please run configure with --enable-binreloc explicitely.])
+  fi
   AM_BINRELOC
 fi
 
