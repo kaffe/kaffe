@@ -29,24 +29,36 @@ compare_and_swap (volatile long int *p, long int oldval, long int newval)
 {
   long int result, tmp;
   __asm__ ("\n"
-           "0:\tldr\t%1,[%2]\n\t"
-           "mov\t%0,#0\n\t"
-           "cmp\t%1,%4\n\t"
-           "bne\t1f\n\t"
-           "swp\t%0,%3,[%2]\n\t"
-           "cmp\t%1,%0\n\t"
-           "swpne\t%1,%0,[%2]\n\t"
-           "bne\t0b\n\t"
-           "mov\t%0,%4\n"
-	   "jmp\t2f\n\t"
-           "1:"
-	   "mov\t%0,%1\n\t"
+ 	   "0:\tldr\t%1,[%2]\n\t"
+   	   "mov\t%0,#0\n\t"
+   	   "cmp\t%1,%4\n\t"
+   	   "bne\t1f\n\t"
+   	   "swp\t%0,%3,[%2]\n\t"
+   	   "cmp\t%1,%0\n\t"
+   	   "swpne\t%1,%0,[%2]\n\t"
+  	   "bne\t0b\n\t"
+	   "mov\t%0,%4\n\t"
+	   "b\t2f\n\t"
+   	   "1:"
+ 	   "mov\t%0,%1\n"
 	   "2:"
-           : "=&r" (result), "=&r" (tmp)
-           : "r" (p), "r" (newval), "r" (oldval)
-           : "cc", "memory");
+	: "=&r" (result), "=&r" (tmp)
+	: "r" (p), "r" (newval), "r" (oldval)
+	: "cc", "memory");
   return result;
 }
+
+#define atomic_compare_and_exchange_val_acq(mem, newval, oldval)  \
+    ({ __typeof (*mem) result;                                    \
+           if (sizeof(*mem) == 4)                                 \
+	     result = compare_and_swap((long int*)(mem), (long int)(oldval), (long int)(newval));      \
+	   else                                                   \
+	     {                                                    \
+	       result = (__typeof(*mem))0;                        \
+	       abort();                                           \
+	     }                                                    \
+	   result;                                                \
+    })
 
 #endif /* atomicity.h */
 

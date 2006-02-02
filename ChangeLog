@@ -1,3 +1,13 @@
+2006-02-02  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	Partial fix for bug #5.
+
+	* config/arm/atomicity.h
+	(compare_and_swap): Fixed assembly.
+	(atomic_compare_and_exchange_val_acq): Defined macro.
+
+	* config/arm/common.h: Use atomicity.h now.
+	
 2006-01-30  Dalibor Topic  <robilad@kaffe.org>
 
 	Fixed bug #2.

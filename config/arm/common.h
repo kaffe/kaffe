@@ -24,7 +24,8 @@
 
 #include "gccbuiltin.h"
 #include "katomic.h"
-#include "generic/genatomic.h"
+#include "atomicity.h"
+#include "katomic.h"
 #include "generic/comparexch.h"
 
 #endif
