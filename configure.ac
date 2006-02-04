@@ -969,7 +969,6 @@ if test  x"$MKTEMP" = x"" ; then
 fi
 AC_CHECK_PROG(JASMIN, jasmin, jasmin)
 
-AM_CONDITIONAL(HAVE_ZIP, test x"$ZIP" != x"")
 AM_CONDITIONAL(HAVE_JAVAC, test x"$JAVA_COMPILER" != x"")
 AM_CONDITIONAL(HAVE_MKTEMP, test x"$MKTEMP" != x"")
 AM_CONDITIONAL(HAVE_JASMIN, test x"$JASMIN" != x"")

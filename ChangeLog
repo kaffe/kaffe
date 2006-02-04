@@ -1,3 +1,7 @@
+2006-02-04  Dalibor Topic  <robilad@kaffe.org>
+
+	* configure.ac: (HAVE_ZIP) Removed unused conditinal.
+
 2006-02-02  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	Partial fix for bug #5.
