@@ -1,5 +1,5 @@
 /* SwingPropertyChangeSupport.java --
-   Copyright (C) 2002, 2004, 2005 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2005, 2006 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -43,7 +43,7 @@ import java.beans.PropertyChangeListenerProxy;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.EventListener;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +72,7 @@ public final class SwingPropertyChangeSupport
    * {@link EventListenerList} instances (which record the listener(s) for the 
    * given property).
    */
-  private Hashtable propertyListeners;
+  private HashMap propertyListeners;
 
   /**
    * The object that is used as the default source for the 
@@ -92,7 +92,7 @@ public final class SwingPropertyChangeSupport
     super(source);
     this.source = source;
     this.listeners = new EventListenerList();
-    this.propertyListeners = new Hashtable();
+    this.propertyListeners = new HashMap();
   }
 
   /**

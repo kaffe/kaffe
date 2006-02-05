@@ -94,11 +94,10 @@ final class RETokenOneOf extends REToken {
   }
 
     private boolean matchP(CharIndexed input, REMatch mymatch) {
-    REMatch newMatch = null;
-    REMatch last = null;
+    REMatch.REMatchList newMatch = new REMatch.REMatchList();
     REToken tk;
     for (int i=0; i < options.size(); i++) {
-	// In ordaer that the backtracking can work,
+	// In order that the backtracking can work,
 	// each option must be chained to the next token.
 	// But the chain method has some side effect, so
 	// we use clones.
@@ -108,21 +107,15 @@ final class RETokenOneOf extends REToken {
 	tk.subIndex = this.subIndex;
 	REMatch tryMatch = (REMatch) mymatch.clone();
 	if (tk.match(input, tryMatch)) { // match was successful
-	    if (last == null) {
-		newMatch = tryMatch;
-		last = tryMatch;
-	    } else {
-		last.next = tryMatch;
-		last = tryMatch;
-	    }
+	    newMatch.addTail(tryMatch);
 	} // is a match
     } // try next option
 
-    if (newMatch != null) {
+    if (newMatch.head != null) {
 	// set contents of mymatch equal to newMatch
 
 	// try each one that matched
-	mymatch.assignFrom(newMatch);
+	mymatch.assignFrom(newMatch.head);
 	return true;
     } else {
 	return false;

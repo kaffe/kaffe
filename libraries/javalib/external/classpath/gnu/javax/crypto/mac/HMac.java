@@ -130,6 +130,21 @@ public class HMac extends BaseMac implements Cloneable
   // Instance methods
   // -------------------------------------------------------------------------
 
+  // java.lang.Cloneable interface implementation ----------------------------
+
+  public Object clone() throws CloneNotSupportedException
+  {
+    HMac result = (HMac) super.clone();
+    if (this.ipadHash != null)
+      result.ipadHash = (IMessageDigest) this.ipadHash.clone();
+    if (this.opadHash != null)
+      result.opadHash = (IMessageDigest) this.opadHash.clone();
+    if (this.ipad != null)
+      result.ipad = (byte[]) this.ipad.clone();
+
+    return result;
+  }
+
   // implementation of abstract methods in BaseMac ---------------------------
 
   public void init(Map attributes) throws InvalidKeyException,

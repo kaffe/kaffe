@@ -42,6 +42,7 @@ import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.HashSet;
@@ -121,7 +122,17 @@ class XIncludeFilter
                  boolean expandERefs)
   {
     super(reader);
-    this.systemId = XMLParser.absolutize(null, systemId);
+    try
+      {
+        this.systemId = XMLParser.absolutize(null, systemId);
+      }
+    catch (MalformedURLException e)
+      {
+        RuntimeException e2 = new RuntimeException("unsupported URL: " +
+                                                   systemId);
+        e2.initCause(e);
+        throw e2;
+      }
     this.namespaceAware = namespaceAware;
     this.validating = validating;
     this.expandERefs = expandERefs;

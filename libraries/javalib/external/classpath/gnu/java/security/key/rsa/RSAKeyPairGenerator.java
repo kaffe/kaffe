@@ -40,6 +40,7 @@ package gnu.java.security.key.rsa;
 
 import gnu.java.security.Registry;
 import gnu.java.security.key.IKeyPairGenerator;
+import gnu.java.security.util.PRNG;
 import gnu.java.security.util.Prime2;
 
 import java.math.BigInteger;
@@ -108,6 +109,9 @@ public class RSAKeyPairGenerator implements IKeyPairGenerator
 
   /** The optional {@link SecureRandom} instance to use. */
   private SecureRandom rnd = null;
+
+  /** Our default source of randomness. */
+  private PRNG prng = null;
 
   // Constructor(s)
   // -------------------------------------------------------------------------
@@ -229,8 +233,14 @@ public class RSAKeyPairGenerator implements IKeyPairGenerator
         rnd.nextBytes(buffer);
       }
     else
-      {
-        new SecureRandom ().nextBytes(buffer);
-      }
+      getDefaultPRNG().nextBytes(buffer);
+  }
+
+  private PRNG getDefaultPRNG()
+  {
+    if (prng == null)
+      prng = PRNG.getInstance();
+
+    return prng;
   }
 }

@@ -39,6 +39,7 @@ exception statement from your version.  */
 package gnu.javax.crypto.sasl.srp;
 
 import gnu.java.security.Registry;
+import gnu.java.security.util.PRNG;
 import gnu.java.security.util.Util;
 
 import gnu.javax.crypto.assembly.Direction;
@@ -61,7 +62,6 @@ import java.io.PrintWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
-import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.StringTokenizer;
@@ -73,7 +73,7 @@ import javax.security.sasl.SaslServer;
 /**
  * <p>The SASL-SRP server-side mechanism.</p>
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class SRPServer extends ServerMechanism implements SaslServer
 {
@@ -147,6 +147,9 @@ public class SRPServer extends ServerMechanism implements SaslServer
   private CALG inCipher, outCipher; // if !null, use for confidentiality
 
   private IKeyAgreementParty serverHandler = KeyAgreementFactory.getPartyBInstance(Registry.SRP_SASL_KA);
+
+  /** Our default source of randomness. */
+  private PRNG prng = null;
 
   // Constructor(s)
   // -------------------------------------------------------------------------
@@ -593,7 +596,7 @@ public class SRPServer extends ServerMechanism implements SaslServer
           {
             sn = new byte[16];
           }
-        new SecureRandom ().nextBytes(sn);
+        getDefaultPRNG().nextBytes(sn);
 
         setupSecurityServices(false);
 
@@ -1072,9 +1075,7 @@ public class SRPServer extends ServerMechanism implements SaslServer
 
     sIV = new byte[blockSize];
     if (blockSize > 0)
-      {
-        new SecureRandom ().nextBytes(sIV);
-      }
+      getDefaultPRNG().nextBytes(sIV);
   }
 
   private void setupSecurityServices(final boolean newSession)
@@ -1143,5 +1144,13 @@ public class SRPServer extends ServerMechanism implements SaslServer
                                                                 inCipher,
                                                                 outCipher));
       }
+  }
+
+  private PRNG getDefaultPRNG()
+  {
+    if (prng == null)
+      prng = PRNG.getInstance();
+
+    return prng;
   }
 }

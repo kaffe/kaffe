@@ -75,8 +75,7 @@ public class BasicRootPaneUI extends RootPaneUI
    */
   protected void installDefaults(JRootPane rp)
   {
-    // Is this ok?
-    rp.setBackground(UIManager.getColor("control"));
+    // TODO: What to do here, if anything? (might be a hook method)
   }
 
   /**

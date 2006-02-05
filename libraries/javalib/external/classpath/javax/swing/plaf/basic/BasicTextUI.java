@@ -621,6 +621,11 @@ public abstract class BasicTextUI extends TextUI
    */
   protected Keymap createKeymap()
   {
+    // FIXME: It seems to me that this method implementation is wrong. It seems
+    // to fetch the focusInputMap and transform it to the KeyBinding/Keymap
+    // implemenation. I would think that it should be done the other way,
+    // fetching the keybindings (from prefix + ".bindings") and transform
+    // it to the newer InputMap/ActionMap implementation.
     JTextComponent.KeyBinding[] bindings = null;
     String prefix = getPropertyPrefix();
     InputMapUIResource m = (InputMapUIResource) UIManager.get(prefix + ".focusInputMap");
@@ -637,10 +642,7 @@ public abstract class BasicTextUI extends TextUI
           }
       }
     if (bindings == null)
-      {
-        bindings = new JTextComponent.KeyBinding[0];
-        UIManager.put(prefix + ".focusInputMap", bindings);
-      }
+      bindings = new JTextComponent.KeyBinding[0];
 
     Keymap km = JTextComponent.addKeymap(getKeymapName(), 
                                          JTextComponent.getKeymap(JTextComponent.DEFAULT_KEYMAP));    
@@ -786,7 +788,9 @@ public abstract class BasicTextUI extends TextUI
     float w = v.getPreferredSpan(View.X_AXIS);
     float h = v.getPreferredSpan(View.Y_AXIS);
 
-    return new Dimension((int) w, (int) h);
+    Insets i = c.getInsets();
+    return new Dimension((int) w + i.left + i.right,
+                         (int) h + i.top + i.bottom);
   }
 
   /**

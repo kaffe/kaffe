@@ -137,22 +137,31 @@ public class PlainView extends View implements TabExpander
     return rect;
   }
   
+  /**
+   * Draws a line of text. The X and Y coordinates specify the start of
+   * the <em>baseline</em> of the line.
+   *
+   * @param lineIndex the index of the line
+   * @param g the graphics to use for drawing the text
+   * @param x the X coordinate of the baseline
+   * @param y the Y coordinate of the baseline
+   */
   protected void drawLine(int lineIndex, Graphics g, int x, int y)
   {
     try
       {
-	metrics = g.getFontMetrics();
-	// FIXME: Selected text are not drawn yet.
-	Element line = getElement().getElement(lineIndex);
-	drawUnselectedText(g, x, y, line.getStartOffset(), line.getEndOffset());
-	//drawSelectedText(g, , , , );
+        metrics = g.getFontMetrics();
+        // FIXME: Selected text are not drawn yet.
+        Element line = getElement().getElement(lineIndex);
+        drawUnselectedText(g, x, y, line.getStartOffset(), line.getEndOffset());
+        //drawSelectedText(g, , , , );
       }
     catch (BadLocationException e)
-      {
-	AssertionError ae = new AssertionError("Unexpected bad location");
-	ae.initCause(e);
-	throw ae;
-      }
+    {
+      AssertionError ae = new AssertionError("Unexpected bad location");
+      ae.initCause(e);
+      throw ae;
+    }
   }
 
   protected int drawSelectedText(Graphics g, int x, int y, int p0, int p1)
@@ -164,6 +173,20 @@ public class PlainView extends View implements TabExpander
     return Utilities.drawTabbedText(segment, x, y, g, this, 0);
   }
 
+  /**
+   * Draws a chunk of unselected text.
+   *
+   * @param g the graphics to use for drawing the text
+   * @param x the X coordinate of the baseline
+   * @param y the Y coordinate of the baseline
+   * @param p0 the start position in the text model
+   * @param p1 the end position in the text model
+   *
+   * @return the X location of the end of the range
+   *
+   * @throws BadLocationException if <code>p0</code> or <code>p1</code> are
+   *         invalid
+   */
   protected int drawUnselectedText(Graphics g, int x, int y, int p0, int p1)
     throws BadLocationException
   {
@@ -194,12 +217,12 @@ public class PlainView extends View implements TabExpander
     // FIXME: Text may be scrolled.
     Document document = textComponent.getDocument();
     Element root = document.getDefaultRootElement();
-    int y = rect.y;
+    int y = rect.y + metrics.getAscent();
     
     for (int i = 0; i < root.getElementCount(); i++)
       {
-	drawLine(i, g, rect.x, y);
-	y += metrics.getHeight();
+        drawLine(i, g, rect.x, y);
+        y += metrics.getHeight();
       }
   }
 

@@ -41,10 +41,10 @@ package gnu.java.security.sig;
 import gnu.java.security.hash.IMessageDigest;
 import gnu.java.security.prng.IRandom;
 import gnu.java.security.prng.LimitReachedException;
+import gnu.java.security.util.PRNG;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.SecureRandom;
 import java.util.Map;
 import java.util.Random;
 
@@ -75,6 +75,9 @@ public abstract class BaseSignature implements ISignature
 
   /** The optional {@link IRandom} instance to use. */
   private IRandom irnd;
+
+  /** Our default source of randomness. */
+  private PRNG prng = null;
 
   // Constructor(s)
   // -------------------------------------------------------------------------
@@ -224,9 +227,7 @@ public abstract class BaseSignature implements ISignature
           }
       }
     else
-      {
-        new SecureRandom ().nextBytes(buffer);
-      }
+      getDefaultPRNG().nextBytes(buffer);
   }
 
   private void setup(Map attributes)
@@ -243,5 +244,13 @@ public abstract class BaseSignature implements ISignature
       {
         irnd = (IRandom) obj;
       }
+  }
+
+  private PRNG getDefaultPRNG()
+  {
+    if (prng == null)
+      prng = PRNG.getInstance();
+
+    return prng;
   }
 }

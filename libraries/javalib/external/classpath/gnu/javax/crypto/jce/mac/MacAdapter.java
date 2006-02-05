@@ -58,7 +58,7 @@ import javax.crypto.MacSpi;
  * message authentication code algorithm, such as the <i>Hashed Message
  * Authentication Code</i> (<b>HMAC</b>) algorithms.</p>
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 class MacAdapter extends MacSpi implements Cloneable
 {
@@ -86,6 +86,20 @@ class MacAdapter extends MacSpi implements Cloneable
     attributes = new HashMap();
   }
 
+  /**
+   * Private constructor for cloning purposes.
+   * 
+   * @param mac a clone of the internal {@link IMac} instance.
+   * @param attributes a clone of the current {@link Map} of attributes. 
+   */
+  private MacAdapter(IMac mac, Map attributes)
+  {
+    super();
+
+    this.mac = mac;
+    this.attributes = attributes;
+  }
+
   // Class methods
   // -----------------------------------------------------------------------
 
@@ -96,7 +110,7 @@ class MacAdapter extends MacSpi implements Cloneable
 
   public Object clone() throws CloneNotSupportedException
   {
-    return super.clone();
+    return new MacAdapter((IMac) mac.clone(), new HashMap(attributes));
   }
 
   // Instance methods implementing javax.crypto.MacSpi ---------------------

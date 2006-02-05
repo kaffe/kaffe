@@ -40,6 +40,7 @@ package gnu.javax.crypto.key.srp6;
 
 import gnu.java.security.Registry;
 import gnu.java.security.key.IKeyPairGenerator;
+import gnu.java.security.util.PRNG;
 import gnu.java.security.util.Prime2;
 
 import java.io.PrintWriter;
@@ -125,6 +126,9 @@ public class SRPKeyPairGenerator implements IKeyPairGenerator
 
   /** The user's verifier MPI. */
   private BigInteger v;
+
+  /** Our default source of randomness. */
+  private PRNG prng = null;
 
   // Constructor(s)
   // -------------------------------------------------------------------------
@@ -334,8 +338,14 @@ public class SRPKeyPairGenerator implements IKeyPairGenerator
         rnd.nextBytes(buffer);
       }
     else
-      {
-        new SecureRandom ().nextBytes(buffer);
-      }
+      getDefaultPRNG().nextBytes(buffer);
+  }
+
+  private PRNG getDefaultPRNG()
+  {
+    if (prng == null)
+      prng = PRNG.getInstance();
+
+    return prng;
   }
 }

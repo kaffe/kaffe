@@ -40,10 +40,10 @@ package gnu.javax.crypto.pad;
 
 import gnu.java.security.Registry;
 import gnu.java.security.sig.rsa.EME_PKCS1_V1_5;
+import gnu.java.security.util.PRNG;
 import gnu.java.security.util.Util;
 
 import java.io.PrintWriter;
-import java.util.Random;
 
 /**
  * <p>A padding algorithm implementation of the EME-PKCS1-V1.5 encoding/decoding
@@ -143,7 +143,7 @@ public class PKCS1_V1_5 extends BasePad
   {
     final int[] mLen = new int[] { 16, 20, 32, 48, 64 };
     final byte[] M = new byte[mLen[mLen.length - 1]];
-    new Random ().nextBytes(M);
+    PRNG.getInstance().nextBytes(M);
     final byte[] EM = new byte[1024];
     byte[] p;
     int bs, i, j;

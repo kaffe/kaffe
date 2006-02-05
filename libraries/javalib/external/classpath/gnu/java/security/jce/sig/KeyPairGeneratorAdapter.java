@@ -43,7 +43,7 @@ import gnu.java.security.key.KeyPairGeneratorFactory;
 
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyPair;
-import java.security.KeyPairGeneratorSpi;
+import java.security.KeyPairGenerator;
 import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
 
@@ -64,9 +64,9 @@ import java.security.spec.AlgorithmParameterSpec;
  * Crypto provider uses a default <i>modulus</i> size (keysize) of 1024 bits for
  * the DSS (Digital Signature Standard) a.k.a <i>DSA</i>.<p>
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
-abstract class KeyPairGeneratorAdapter extends KeyPairGeneratorSpi
+abstract class KeyPairGeneratorAdapter extends KeyPairGenerator
 {
 
   // Constants and variables
@@ -85,7 +85,7 @@ abstract class KeyPairGeneratorAdapter extends KeyPairGeneratorSpi
    */
   protected KeyPairGeneratorAdapter(String kpgName)
   {
-    super();
+    super(kpgName);
 
     this.adaptee = KeyPairGeneratorFactory.getInstance(kpgName);
   }

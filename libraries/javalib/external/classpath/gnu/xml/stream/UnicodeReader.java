@@ -45,7 +45,7 @@ import java.io.Reader;
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
  */
-class UnicodeReader
+public class UnicodeReader
 {
 
   final Reader in;

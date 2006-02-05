@@ -41,6 +41,7 @@ package gnu.java.security.key.dss;
 import gnu.java.security.Registry;
 import gnu.java.security.hash.Sha160;
 import gnu.java.security.key.IKeyPairGenerator;
+import gnu.java.security.util.PRNG;
 
 import java.io.PrintWriter;
 import java.math.BigInteger;
@@ -88,8 +89,53 @@ public class DSSKeyPairGenerator implements IKeyPairGenerator
   /** Property name of the length (Integer) of the modulus (p) of a DSS key. */
   public static final String MODULUS_LENGTH = "gnu.crypto.dss.L";
 
-  /** Property name of the Boolean indicating wether or not to use defaults. */
+  /**
+   * Property name of the Boolean indicating wether or not to use default pre-
+   * computed values of <code>p</code>, <code>q</code> and <code>g</code> for
+   * a given modulus length. The ultimate behaviour of this generator with
+   * regard to using pre-computed parameter sets will depend on the value of
+   * this property and of the following one {@link #STRICT_DEFAULTS}:
+   * 
+   * <ol>
+   *   <li>If this property is {@link Boolean#FALSE} then this generator
+   *   will accept being setup for generating parameters for any modulus length
+   *   provided the modulus length is between <code>512</code> and
+   *   <code>1024</code>, and is of the form <code>512 + 64 * n</code>. In
+   *   addition, a new paramter set will always be generated; i.e. no pre-
+   *   computed values are used.</li>
+   *   
+   *   <li>If this property is {@link Boolean#TRUE} and the value of
+   *   {@link #STRICT_DEFAULTS} is also {@link Boolean#TRUE} then this generator
+   *   will only accept being setup for generating parameters for modulus
+   *   lengths of <code>512</code>, <code>768</code> and <code>1024</code>. Any
+   *   other value, of the modulus length, even if between <code>512</code> and
+   *   <code>1024</code>, and of the form <code>512 + 64 * n</code>, will cause
+   *   an {@link IllegalArgumentException} to be thrown. When those modulus
+   *   length (<code>512</code>, <code>768</code>, and <code>1024</code>) are
+   *   specified, the paramter set is always the same.</li>
+   *   
+   *   <li>Finally, if this property is {@link Boolean#TRUE} and the value of
+   *   {@link #STRICT_DEFAULTS} is {@link Boolean#FALSE} then this generator
+   *   will behave as in point 1 above, except that it will use pre-computed
+   *   values when possible; i.e. the modulus length is one of <code>512</code>,
+   *   <code>768</code>, or <code>1024</code>.</li>
+   * </ol>
+   * 
+   * The default value of this property is {@link Boolean#TRUE}.
+   */
   public static final String USE_DEFAULTS = "gnu.crypto.dss.use.defaults";
+
+  /**
+   * Property name of the Boolean indicating wether or not to generate new
+   * parameters, even if the modulus length <i>L</i> is not one of the pre-
+   * computed defaults (value {@link Boolean#FALSE}), or throw an exception
+   * (value {@link Boolean#TRUE}) -- the exception in this case is an
+   * {@link IllegalArgumentException}. The default value for this property is
+   * {@link Boolean#FALSE}. The ultimate behaviour of this generator will
+   * depend on the values of this and {@link #USE_DEFAULTS} properties -- see
+   * {@link #USE_DEFAULTS} for more information.
+   */
+  public static final String STRICT_DEFAULTS = "gnu.crypto.dss.strict.defaults";
 
   /**
    * Property name of an optional {@link SecureRandom} instance to use. The
@@ -181,6 +227,9 @@ public class DSSKeyPairGenerator implements IKeyPairGenerator
 
   private BigInteger XKEY;
 
+  /** Our default source of randomness. */
+  private PRNG prng = null;
+
   // Constructor(s)
   // -------------------------------------------------------------------------
 
@@ -222,6 +271,10 @@ public class DSSKeyPairGenerator implements IKeyPairGenerator
         useDefaults = Boolean.TRUE;
       }
 
+    Boolean strictDefaults = (Boolean) attributes.get(STRICT_DEFAULTS);
+    if (strictDefaults == null)
+      strictDefaults = Boolean.FALSE;
+
     // are we given a set of DSA params or we shall use/generate our own?
     DSAParameterSpec params = (DSAParameterSpec) attributes.get(DSS_PARAMETERS);
     if (params != null)
@@ -250,9 +303,16 @@ public class DSSKeyPairGenerator implements IKeyPairGenerator
             g = KEY_PARAMS_1024.getG();
             break;
           default:
-            p = null;
-            q = null;
-            g = null;
+            if (strictDefaults.equals(Boolean.TRUE))
+              throw new IllegalArgumentException(
+                  "Does not provide default parameters for " + L
+                  + "-bit modulus length");
+            else
+              {
+                p = null;
+                q = null;
+                g = null;
+              }
           }
       }
     else
@@ -353,8 +413,14 @@ public class DSSKeyPairGenerator implements IKeyPairGenerator
         rnd.nextBytes(buffer);
       }
     else
-      {
-        new SecureRandom ().nextBytes(buffer);
-      }
+      getDefaultPRNG().nextBytes(buffer);
+  }
+
+  private PRNG getDefaultPRNG()
+  {
+    if (prng == null)
+      prng = PRNG.getInstance();
+
+    return prng;
   }
 }

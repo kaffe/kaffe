@@ -222,7 +222,12 @@ public final class RESyntax implements Serializable {
    */
   public static final int RE_UNICODE_CHAR              = 29;
 
-  private static final int BIT_TOTAL                   = 30;
+  /**
+   * Syntax bit.  Allow named property (\p{P}, \P{p}), as in Perl5.
+   */
+  public static final int RE_NAMED_PROPERTY            = 30;
+
+  private static final int BIT_TOTAL                   = 31;
 
   /**
    * Predefined syntax.
@@ -445,6 +450,7 @@ public final class RESyntax implements Serializable {
 	  .set(RE_EMBEDDED_FLAGS)         // (?imsx-imsx)
 	  .set(RE_OCTAL_CHAR)             // \0377
 	  .set(RE_HEX_CHAR)               // \x1b
+	  .set(RE_NAMED_PROPERTY)         // \p{prop}, \P{prop}
 	  .makeFinal();
       
       RE_SYNTAX_PERL5_S = new RESyntax(RE_SYNTAX_PERL5)

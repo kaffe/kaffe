@@ -41,6 +41,7 @@ package javax.swing;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -352,7 +353,10 @@ public class JTextField extends JTextComponent
     Dimension size = super.getPreferredSize();
 
     if (columns != 0)
-      size.width = columns * getColumnWidth();
+      {
+        Insets i = getInsets();
+        size.width = columns * getColumnWidth() + i.left + i.right;
+      }
 
     return size;
   }

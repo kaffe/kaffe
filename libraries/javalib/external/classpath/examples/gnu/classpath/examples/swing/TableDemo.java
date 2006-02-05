@@ -130,7 +130,9 @@ public class TableDemo extends JFrame
         return super.getColumnClass(column);
     }    
   }
-  
+
+  private JPanel content;
+
   /**
    * The table being displayed.
    */
@@ -165,29 +167,33 @@ public class TableDemo extends JFrame
    */
   JPanel createContent()
   {
-    JPanel p = new JPanel();
-    p.setLayout(new BorderLayout());
-    table.setModel(model);
-    values = new Object[rows][];
-    for (int i = 0; i < values.length; i++)
+    if (content == null)
       {
-        values[i] = new Object[cols];
-        for (int j = 1; j < cols; j++)
+        JPanel p = new JPanel();
+        p.setLayout(new BorderLayout());
+        table.setModel(model);
+        values = new Object[rows][];
+        for (int i = 0; i < values.length; i++)
           {
-            values[i][j] = "" + ((char) ('a' + j)) + i;
+            values[i] = new Object[cols];
+            for (int j = 1; j < cols; j++)
+              {
+                values[i][j] = "" + ((char) ('a' + j)) + i;
+              }
+            values [i][0] = i % 2 == 0? Boolean.TRUE : Boolean.FALSE;
           }
-        values [i][0] = i % 2 == 0? Boolean.TRUE : Boolean.FALSE;
+        
+        // Create the table, place it into scroll pane and place
+        // the pane into this frame.
+        JScrollPane scroll = new JScrollPane();
+        
+        // The horizontal scroll bar is never needed.
+        scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scroll.getViewport().add(table);
+        p.add(scroll, BorderLayout.CENTER);
+        content = p;
       }
-
-    // Create the table, place it into scroll pane and place
-    // the pane into this frame.
-    JScrollPane scroll = new JScrollPane();
-    
-    // The horizontal scroll bar is never needed.
-    scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-    scroll.getViewport().add(table);
-    p.add(scroll, BorderLayout.CENTER);
-    return p;
+    return content;
   }
   
   /**

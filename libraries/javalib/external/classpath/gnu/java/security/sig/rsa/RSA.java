@@ -39,12 +39,11 @@ exception statement from your version.  */
 package gnu.java.security.sig.rsa;
 
 import gnu.java.security.Properties;
-import gnu.java.security.key.rsa.GnuRSAKey;
+import gnu.java.security.util.PRNG;
 
 import java.math.BigInteger;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.SecureRandom;
 import java.security.interfaces.RSAPrivateCrtKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
@@ -78,6 +77,9 @@ public class RSA
   private static final BigInteger ZERO = BigInteger.ZERO;
 
   private static final BigInteger ONE = BigInteger.ONE;
+
+  /** Our default source of randomness. */
+  private static final PRNG prng = PRNG.getInstance();
 
   // Constructor(s)
   // -------------------------------------------------------------------------
@@ -340,16 +342,15 @@ public class RSA
     final int upper = (N.bitLength() + 7) / 8;
     final int lower = upper / 2;
     final byte[] bl = new byte[1];
-    SecureRandom rnd = new SecureRandom ();
     int b;
     do
       {
-        rnd.nextBytes(bl);
+        prng.nextBytes(bl);
         b = bl[0] & 0xFF;
       }
     while (b < lower || b > upper);
     final byte[] buffer = new byte[b]; // 256-bit MPI
-    rnd.nextBytes(buffer);
+    prng.nextBytes(buffer);
     return new BigInteger(1, buffer);
   }
 }

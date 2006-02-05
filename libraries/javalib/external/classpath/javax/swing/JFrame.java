@@ -150,6 +150,15 @@ public class JFrame extends Frame
     super.setLayout(new BorderLayout(1, 1));
     enableEvents(AWTEvent.WINDOW_EVENT_MASK);
     getRootPane(); // will do set/create
+
+    // Setup the defaultLookAndFeelDecoration if requested.
+    if (isDefaultLookAndFeelDecorated()
+        && UIManager.getLookAndFeel().getSupportsWindowDecorations())
+      {
+        setUndecorated(true);
+        getRootPane().setWindowDecorationStyle(JRootPane.FRAME);
+      }
+
     // We're now done the init stage.
     setRootPaneCheckingEnabled(true);
   }

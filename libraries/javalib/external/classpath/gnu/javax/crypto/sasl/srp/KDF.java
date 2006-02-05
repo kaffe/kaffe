@@ -40,11 +40,11 @@ package gnu.javax.crypto.sasl.srp;
 
 import gnu.java.security.Registry;
 import gnu.java.security.prng.LimitReachedException;
+import gnu.java.security.util.PRNG;
 import gnu.javax.crypto.cipher.IBlockCipher;
 import gnu.javax.crypto.prng.UMacGenerator;
 
 import java.util.HashMap;
-import java.util.Random;
 
 /**
  * <p>The SASL-SRP KDF implementation, which is also used, depending on how it
@@ -59,6 +59,11 @@ public class KDF
   private static final int AES_BLOCK_SIZE = 16; // default block size for the AES
 
   private static final int AES_KEY_SIZE = 16; // default key size for the AES
+
+  private static final byte[] buffer = new byte[1];
+
+  /** Our default source of randomness. */
+  private static final PRNG prng = PRNG.getInstance();
 
   /** The shared secret K to use. */
   //   private byte[] keyMaterial;
@@ -117,9 +122,16 @@ public class KDF
     else
       {
         keyMaterial = new byte[AES_BLOCK_SIZE];
-        ndx = new Random ().nextInt (256); // XXX does this need to be secure?
+        while (ndx < 1 || ndx > 255)
+          ndx = (byte) nextByte();
       }
     return new KDF(keyMaterial, ndx);
+  }
+
+  private static synchronized final int nextByte()
+  {
+    prng.nextBytes(buffer);
+    return (buffer[0] & 0xFF);
   }
 
   // Instance methods

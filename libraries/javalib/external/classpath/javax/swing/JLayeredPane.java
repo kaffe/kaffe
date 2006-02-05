@@ -353,16 +353,9 @@ public class JLayeredPane extends JComponent implements Accessible
    */
   public void setPosition(Component c, int position)
   {
-    int currentPos = getPosition(c);
-    if (currentPos == position)
-      return;
-
     int layer = getLayer(c);
-    int i1 = position;
-    int i2 = getPosition(c);
-    int incr = (i1 - i2) / Math.abs(i1 - i2);
-    for (int p = i2; p != i1; p += incr)
-      swapComponents(p, p + incr, layer);
+    int index = insertIndexForLayer(layer, position);
+    setComponentZOrder(c, index);
   }
     
   /**
@@ -432,17 +425,7 @@ public class JLayeredPane extends JComponent implements Accessible
    */
   public int getIndexOf(Component c) 
   {
-    int index = -1;
-    Component[] components = getComponents();
-    for (int i = 0; i < components.length; ++i)
-      {
-        if (components[i] == c)
-          {
-            index = i;
-            break;
-          }
-      }
-    return index;
+    return getComponentZOrder(c);
   }
 
   /**
@@ -495,22 +478,26 @@ public class JLayeredPane extends JComponent implements Accessible
    */
   protected int insertIndexForLayer(int layer, int position)
   {
+    // position < 0 means insert at greatest position within layer.
+    if (position < 0)
+      position = Integer.MAX_VALUE;
+
     Component[] components = getComponents();
-    int index = components.length;
+    int index = 0;
 
     // Try to find the start index of the specified layer.
     int p = -1;
     for (int i = 0; i < components.length; i++)
       {
         int l = getLayer(components[i]);
-        if (l < layer)
-          index = i;
+        if (l > layer)
+          index++;
         // If we are in the layer we look for, try to find the position.
         else if (l == layer)
           {
             p++;
-            if (p >= position)
-              index = i;
+            if (p < position)
+              index++;
             else
               break;
           }
@@ -580,9 +567,15 @@ public class JLayeredPane extends JComponent implements Accessible
    * Integer}, specifying the layer to which the component will be added
    * (at the bottom position).
    *
-   * @param comp the component to add.
-   * @param layerConstraint an integer specifying the layer to add the component to.
-   * @param index an ignored parameter, for compatibility.
+   * The argument <code>index</code> specifies the position within the layer
+   * at which the component should be added, where <code>0</code> is the top
+   * position greater values specify positions below that and <code>-1</code>
+   * specifies the bottom position.
+   *
+   * @param comp the component to add
+   * @param layerConstraint an integer specifying the layer to add the
+   *        component to
+   * @param index the position within the layer
    */
   protected void addImpl(Component comp, Object layerConstraint, int index) 
   {
@@ -594,7 +587,7 @@ public class JLayeredPane extends JComponent implements Accessible
 
     int newIdx = insertIndexForLayer(layer, index);
     setLayer(comp, layer);
-    super.addImpl(comp, null, newIdx);
+    super.addImpl(comp, layerConstraint, newIdx);
   }
 
   /**
@@ -678,29 +671,5 @@ public class JLayeredPane extends JComponent implements Accessible
         result = false;
     }
     return result;
-  }
-
-  /**
-   * Swaps the components at position i and j, in the specified layer.
-   *
-   * @param i the position of the 1st component in its layer
-   * @param j the position of the 2nd component in its layer
-   * @param layer the layer in which the components reside
-   */
-  private void swapComponents (int i, int j, int layer)
-  {
-    int p1 = Math.min(i, j);
-    int p2 = Math.max(i, j);
-    Component[] layerComps = getComponentsInLayer(layer);
-    int layerOffs = getIndexOf(layerComps[0]);
-    Component c1 = layerComps[p1];
-    Component c2 = layerComps[p2];
-    // remove() wants the real index.
-    remove(p2 + layerOffs);
-    remove(p1 + layerOffs);
-    // add() wants the position within the layer.
-    Integer l = getObjectForLayer(layer);
-    add(c2, l, p1);
-    add(c1, l, p2);
   }
 }

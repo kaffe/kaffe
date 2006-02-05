@@ -1565,6 +1565,93 @@ public class Container extends Component
     changeSupport.addPropertyChangeListener (name, listener);
   }
 
+
+  /**
+   * Sets the Z ordering for the component <code>comp</code> to
+   * <code>index</code>. Components with lower Z order paint above components
+   * with higher Z order.
+   *
+   * @param comp the component for which to change the Z ordering
+   * @param index the index to set
+   *
+   * @throws NullPointerException if <code>comp == null</code>
+   * @throws IllegalArgumentException if comp is an ancestor of this container
+   * @throws IllegalArgumentException if <code>index</code> is not in
+   *         <code>[0, getComponentCount()]</code> for moving between
+   *         containers or <code>[0, getComponentCount() - 1]</code> for moving
+   *         inside this container
+   * @throws IllegalArgumentException if <code>comp == this</code>
+   * @throws IllegalArgumentException if <code>comp</code> is a
+   *         <code>Window</code>
+   *
+   * @see #getComponentZOrder(Component)
+   *
+   * @since 1.5
+   */
+  public final void setComponentZOrder(Component comp, int index)
+  {
+    if (comp == null)
+      throw new NullPointerException("comp must not be null");
+    if (comp instanceof Container && ((Container) comp).isAncestorOf(this))
+      throw new IllegalArgumentException("comp must not be an ancestor of "
+                                         + "this");
+    if (comp instanceof Window)
+      throw new IllegalArgumentException("comp must not be a Window");
+
+    if (comp == this)
+      throw new IllegalArgumentException("cannot add component to itself");
+
+    // FIXME: Implement reparenting.
+    if ( comp.getParent() != this)
+      throw new AssertionError("Reparenting is not implemented yet");
+    else
+      {
+        // Find current component index.
+        int currentIndex = getComponentZOrder(comp);
+        if (currentIndex < index)
+          {
+            System.arraycopy(component, currentIndex + 1, component,
+                             currentIndex, index - currentIndex);
+          }
+        else
+          {
+            System.arraycopy(component, index, component, index + 1,
+                             currentIndex - index);
+          }
+        component[index] = comp;
+      }
+  }
+
+  /**
+   * Returns the Z ordering index of <code>comp</code>. If <code>comp</code>
+   * is not a child component of this Container, this returns <code>-1</code>.
+   *
+   * @param comp the component for which to query the Z ordering
+   *
+   * @return the Z ordering index of <code>comp</code> or <code>-1</code> if
+   *         <code>comp</code> is not a child of this Container
+   *
+   * @see #setComponentZOrder(Component, int)
+   *
+   * @since 1.5
+   */
+  public final int getComponentZOrder(Component comp)
+  {
+    int index = -1;
+    if (component != null)
+      {
+        for (int i = 0; i < component.length; i++)
+          {
+            if (component[i] == comp)
+              {
+                index = i;
+                break;
+              }
+          }
+      }
+    return index;
+  }
+
   // Hidden helper methods.
 
   /**

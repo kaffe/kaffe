@@ -270,6 +270,7 @@ public final class SocketPermission extends Permission implements Serializable
     while (t.hasMoreTokens())
       {
 	String action = t.nextToken();
+	action = action.trim().toLowerCase();
 	setAction(action);
 
 	if (action.equals("resolve"))

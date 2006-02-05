@@ -49,11 +49,9 @@ public interface Registry
   // -------------------------------------------------------------------------
 
   /** The name of our Providers. */
+  String GNU_SECURITY = "GNU";
   String GNU_CRYPTO = "GNU-CRYPTO";
-
   String GNU_SASL = "GNU-SASL";
-
-  String GNU_SECURITY = "GNU-SECURITY";
 
   /** Our version number. */
   String VERSION_STRING = "2.1.0";

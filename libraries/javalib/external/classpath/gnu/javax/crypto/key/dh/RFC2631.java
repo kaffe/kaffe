@@ -39,6 +39,7 @@ exception statement from your version.  */
 package gnu.javax.crypto.key.dh;
 
 import gnu.java.security.hash.Sha160;
+import gnu.java.security.util.PRNG;
 import gnu.java.security.util.Prime2;
 
 import java.math.BigInteger;
@@ -86,6 +87,9 @@ public class RFC2631
 
   /** The optional {@link SecureRandom} instance to use. */
   private SecureRandom rnd = null;
+
+  /** Our default source of randomness. */
+  private PRNG prng = null;
 
   // Constructor(s)
   // -------------------------------------------------------------------------
@@ -238,8 +242,14 @@ public class RFC2631
         rnd.nextBytes(buffer);
       }
     else
-      {
-        new SecureRandom ().nextBytes(buffer);
-      }
+      getDefaultPRNG().nextBytes(buffer);
+  }
+
+  private PRNG getDefaultPRNG()
+  {
+    if (prng == null)
+      prng = PRNG.getInstance();
+
+    return prng;
   }
 }

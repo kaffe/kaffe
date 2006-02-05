@@ -40,6 +40,7 @@ package gnu.javax.crypto.sasl.srp;
 
 import gnu.java.security.Registry;
 import gnu.java.security.hash.MD5;
+import gnu.java.security.util.PRNG;
 import gnu.java.security.util.Util;
 
 import gnu.javax.crypto.key.IKeyAgreementParty;
@@ -65,7 +66,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.StringTokenizer;
@@ -159,6 +159,9 @@ public class SRPClient extends ClientMechanism implements SaslClient
   private CALG inCipher, outCipher; // if !null, use for confidentiality
 
   private IKeyAgreementParty clientHandler = KeyAgreementFactory.getPartyAInstance(Registry.SRP_SASL_KA);
+
+  /** Our default source of randomness. */
+  private PRNG prng = null;
 
   // Constructor(s)
   // -------------------------------------------------------------------------
@@ -563,7 +566,8 @@ public class SRPClient extends ClientMechanism implements SaslClient
     // if session re-use generate new 16-byte nonce
     if (sid.length != 0)
       {
-        cn = new SecureRandom ().generateSeed (16);
+        cn = new byte[16];
+        getDefaultPRNG().nextBytes(cn);
       }
     else
       {
@@ -1091,7 +1095,7 @@ public class SRPClient extends ClientMechanism implements SaslClient
         final int blockSize = cipher.defaultBlockSize();
         // 3. generate random iv
         cIV = new byte[blockSize];
-        new SecureRandom ().nextBytes(cIV);
+        getDefaultPRNG().nextBytes(cIV);
       }
 
     srp = SRP.instance(mdName);
@@ -1195,5 +1199,13 @@ public class SRPClient extends ClientMechanism implements SaslClient
                                                                 inCipher,
                                                                 outCipher));
       }
+  }
+
+  private PRNG getDefaultPRNG()
+  {
+    if (prng == null)
+      prng = PRNG.getInstance();
+
+    return prng;
   }
 }

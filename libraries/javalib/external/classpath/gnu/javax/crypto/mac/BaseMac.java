@@ -130,7 +130,11 @@ public abstract class BaseMac implements IMac
 
   public Object clone() throws CloneNotSupportedException
   {
-    return super.clone();
+    BaseMac result = (BaseMac) super.clone();
+    if (this.underlyingHash != null)
+      result.underlyingHash = (IMessageDigest) this.underlyingHash.clone();
+
+    return result;
   }
 
   // methods to be implemented by concrete subclasses ------------------------

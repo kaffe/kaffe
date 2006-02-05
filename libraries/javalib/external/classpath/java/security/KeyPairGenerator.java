@@ -173,15 +173,14 @@ public abstract class KeyPairGenerator extends KeyPairGeneratorSpi
       }
 
     KeyPairGenerator result = null;
-    if (o instanceof KeyPairGeneratorSpi)
-      {
-	result = new DummyKeyPairGenerator((KeyPairGeneratorSpi) o, algorithm);
-      }
-    else if (o instanceof KeyPairGenerator)
+    if (o instanceof KeyPairGenerator)
       {
         result = (KeyPairGenerator) o;
         result.algorithm = algorithm;
       }
+    else if (o instanceof KeyPairGeneratorSpi)
+      result = new DummyKeyPairGenerator((KeyPairGeneratorSpi) o, algorithm);
+
     result.provider = provider;
     return result;
   }

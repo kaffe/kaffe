@@ -47,7 +47,7 @@ echo "Building file/directories listing for kaffe's classpath"
         -print | sort > ${WORKDIR}/old_directories;
 
     find . '(' -name "CVS" -o -name "autom4te*" ')' -prune \
-	-o '(' -type f -a ! -name "*~" -a ! -name "config.sub" -a ! -name "config.guess" ')'  -print | \
+	-o '(' -type f -a ! -name "*~" ')'  -print | \
 	sort > ${WORKDIR}/old_file_list;
 
 

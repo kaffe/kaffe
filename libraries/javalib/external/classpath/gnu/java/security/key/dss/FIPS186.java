@@ -39,6 +39,7 @@ exception statement from your version.  */
 package gnu.java.security.key.dss;
 
 import gnu.java.security.hash.Sha160;
+import gnu.java.security.util.PRNG;
 import gnu.java.security.util.Prime2;
 
 import java.math.BigInteger;
@@ -53,7 +54,7 @@ import java.security.SecureRandom;
  * Standard (DSS)</a>, Federal Information Processing Standards Publication 186.
  * National Institute of Standards and Technology.
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class FIPS186
 {
@@ -86,6 +87,9 @@ public class FIPS186
 
   /** The optional {@link SecureRandom} instance to use. */
   private SecureRandom rnd = null;
+
+  /** Our default source of randomness. */
+  private PRNG prng = null;
 
   // Constructor(s)
   // -------------------------------------------------------------------------
@@ -126,7 +130,7 @@ public class FIPS186
    *
    * The algorithm used to find these primes is as described in FIPS-186,
    * section 2.2: GENERATION OF PRIMES. This prime generation scheme starts by
-   * using the {@link gnu.crypto.hash.Sha160} and a user supplied <i>SEED</i>
+   * using the {@link Sha160} and a user supplied <i>SEED</i>
    * to construct a prime, <code>q</code>, in the range 2<sup>159</sup> &lt; q
    * &lt; 2<sup>160</sup>. Once this is accomplished, the same <i>SEED</i>
    * value is used to construct an <code>X</code> in the range <code>2<sup>L-1
@@ -279,8 +283,14 @@ public class FIPS186
         rnd.nextBytes(buffer);
       }
     else
-      {
-        new SecureRandom ().nextBytes(buffer);
-      }
+      getDefaultPRNG().nextBytes(buffer);
+  }
+
+  private PRNG getDefaultPRNG()
+  {
+    if (prng == null)
+      prng = PRNG.getInstance();
+
+    return prng;
   }
 }

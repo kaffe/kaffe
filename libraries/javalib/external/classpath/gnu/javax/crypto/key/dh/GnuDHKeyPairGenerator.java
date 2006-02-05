@@ -41,6 +41,7 @@ package gnu.javax.crypto.key.dh;
 import gnu.java.security.Registry;
 import gnu.java.security.hash.Sha160;
 import gnu.java.security.key.IKeyPairGenerator;
+import gnu.java.security.util.PRNG;
 
 import java.io.PrintWriter;
 import java.math.BigInteger;
@@ -132,6 +133,9 @@ public class GnuDHKeyPairGenerator implements IKeyPairGenerator
   private BigInteger j;
 
   private BigInteger g;
+
+  /** Our default source of randomness. */
+  private PRNG prng = null;
 
   // Constructor(s)
   // -------------------------------------------------------------------------
@@ -247,8 +251,14 @@ public class GnuDHKeyPairGenerator implements IKeyPairGenerator
         rnd.nextBytes(buffer);
       }
     else
-      {
-        new SecureRandom ().nextBytes(buffer);
-      }
+      getDefaultPRNG().nextBytes(buffer);
+  }
+
+  private PRNG getDefaultPRNG()
+  {
+    if (prng == null)
+      prng = PRNG.getInstance();
+
+    return prng;
   }
 }

@@ -904,7 +904,16 @@ public class SAXParser
             InputSource input =
               entityResolver.resolveEntity(publicId, systemId);
             if (input != null)
-              return input.getByteStream();
+              {
+                InputStream in = input.getByteStream();
+                if (in == null)
+                  {
+                    String newSystemId = input.getSystemId();
+                    if (newSystemId != null && !newSystemId.equals(systemId))
+                      in = XMLParser.resolve(newSystemId);
+                  }
+                return in;
+              }
           }
         catch (SAXException e)
           {

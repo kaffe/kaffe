@@ -83,14 +83,16 @@ public class ViewportLayout implements LayoutManager, Serializable
       return new Dimension();
   }
 
+  /**
+   * Return the minimumSize for the <code>JViewport</code> that is laid out
+   * by this layout manager.
+   *
+   * @param parent the viewport
+   */
   public Dimension minimumLayoutSize(Container parent) 
   {
-    JViewport vp = (JViewport)parent;
-    Component view = vp.getView();
-    if (view != null)
-      return view.getMinimumSize();
-    else
-      return new Dimension();
+    // These values have been determined by the Mauve test for this method.
+    return new Dimension(4, 4);
   }
 
   /**

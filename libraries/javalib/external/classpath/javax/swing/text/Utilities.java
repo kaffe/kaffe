@@ -73,6 +73,10 @@ public class Utilities
    * are taken into account. Tabs are expanded using the
    * specified {@link TabExpander}.
    *
+   *
+   * The X and Y coordinates denote the start of the <em>baseline</em> where
+   * the text should be drawn.
+   *
    * @param s the text fragment to be drawn.
    * @param x the x position for drawing.
    * @param y the y position for drawing.
@@ -88,14 +92,13 @@ public class Utilities
     // This buffers the chars to be drawn.
     char[] buffer = s.array;
 
-
-    // The current x and y pixel coordinates.
-    int pixelX = x;
-    int pixelY = y;
-
     // The font metrics of the current selected font.
     FontMetrics metrics = g.getFontMetrics();
     int ascent = metrics.getAscent();
+
+    // The current x and y pixel coordinates.
+    int pixelX = x;
+    int pixelY = y - ascent;
 
     int pixelWidth = 0;
     int pos = s.offset;

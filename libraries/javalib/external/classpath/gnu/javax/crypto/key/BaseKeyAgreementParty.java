@@ -40,6 +40,7 @@ package gnu.javax.crypto.key;
 
 import gnu.java.security.prng.IRandom;
 import gnu.java.security.prng.LimitReachedException;
+import gnu.java.security.util.PRNG;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
@@ -74,6 +75,9 @@ public abstract class BaseKeyAgreementParty implements IKeyAgreementParty
 
   /** The optional {@link IRandom} instance to use. */
   protected IRandom irnd = null;
+
+  /** Our default source of randomness. */
+  private PRNG prng = null;
 
   // Constructor(s)
   // -------------------------------------------------------------------------
@@ -187,12 +191,18 @@ public abstract class BaseKeyAgreementParty implements IKeyAgreementParty
         catch (LimitReachedException lre)
           {
             irnd = null;
-            new SecureRandom ().nextBytes(buffer);
+            getDefaultPRNG().nextBytes(buffer);
           }
       }
     else
-      {
-        new SecureRandom ().nextBytes(buffer);
-      }
+      getDefaultPRNG().nextBytes(buffer);
+  }
+
+  private PRNG getDefaultPRNG()
+  {
+    if (prng == null)
+      prng = PRNG.getInstance();
+
+    return prng;
   }
 }

@@ -141,16 +141,7 @@ public class DefaultTableCellRenderer extends JLabel
                                                  boolean hasFocus,
                                                  int row, int column)
   {
-    if (value != null)
-      {
-        if (value instanceof JTextField)
-          return new JTextField(((JTextField)value).getText());
-        super.setText(value.toString());
-      }
-    else
-      // null is rendered as an empty cell.
-      super.setText("");
-
+    setValue(value);
     setOpaque(true);
 
     if (table == null)
@@ -278,6 +269,10 @@ public class DefaultTableCellRenderer extends JLabel
    */
   protected void setValue(Object value)
   {
-    super.setText((value!=null) ? value.toString() : "");
+    if (value != null)
+      setText(value.toString());
+    else
+      // null is rendered as an empty cell.
+      setText("");
   }
 }

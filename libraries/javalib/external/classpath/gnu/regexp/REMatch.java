@@ -67,7 +67,8 @@ public final class REMatch implements Serializable, Cloneable {
     int[] start; // start positions (relative to offset) for each (sub)exp.
     int[] end;   // end positions for the same
     REMatch next; // other possibility (to avoid having to use arrays)
-    boolean empty; // empty string matched
+    boolean empty; // empty string matched. This flag is used only within
+		   // RETokenRepeated.
 
     public Object clone() {
 	try {
@@ -89,7 +90,6 @@ public final class REMatch implements Serializable, Cloneable {
 	index = other.index;
 	// need to deep clone?
 	next = other.next;
-	empty = other.empty;
     }
 
     REMatch(int subs, int anchor, int eflags) {
@@ -126,7 +126,6 @@ public final class REMatch implements Serializable, Cloneable {
 	    start[i] = end[i] = -1;
 	}
 	next = null; // cut off alternates
-	empty = false;
     }
     
     /**
@@ -180,7 +179,9 @@ public final class REMatch implements Serializable, Cloneable {
      * @param sub Index of the subexpression.
      */
     public String toString(int sub) {
-	if ((sub >= start.length) || (start[sub] == -1)) return "";
+	if ((sub >= start.length) || sub < 0)
+	    throw new IndexOutOfBoundsException("No group " + sub);
+	if (start[sub] == -1) return null;
 	return (matchedText.substring(start[sub],end[sub]));
     }
     
@@ -263,4 +264,42 @@ public final class REMatch implements Serializable, Cloneable {
 	if (pos < input.length()) output.append(input.charAt(pos));
 	return output.toString();
     }
+
+    static class REMatchList {
+        REMatch head;
+	REMatch tail;
+        REMatchList() {
+	    head = tail = null;
+	}
+	/* Not used now. But we may need this some day?
+	void addHead(REMatch newone) {
+            if (head == null) {
+                head = newone;
+                tail = newone;
+                while (tail.next != null) {
+                    tail = tail.next;
+                }
+            }
+	    else {
+                REMatch tmp = newone;
+                while (tmp.next != null) tmp = tmp.next;
+                tmp.next = head;
+	        head = newone;
+	    }
+	}
+	*/
+	void addTail(REMatch newone) {
+            if (head == null) {
+                head = newone;
+                tail = newone;
+            }
+            else {
+                tail.next = newone;
+            }
+            while (tail.next != null) {
+                tail = tail.next;
+            }
+	}
+    }
+
 }

@@ -1,3 +1,615 @@
+2006-02-04  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* gnu/regexp/RETokenNamedProperty.java(getHandler): Check for
+	a Unicode block if the name starts with "In".
+	(UnicodeBlockHandler): New inner class.
+
+2006-02-04  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/Container.java
+	(getComponentZOrder): New method.
+	(setComponentZOrder): New method.
+	* javax/swing/JLayeredPane.java
+	(setPosition): Reimplemented to use setComponentZOrder().
+	(getIndexOf): Reimplemented to use getComponentZOrder().
+	(addImpl): Pass layerContraint to super call. Important for possibly
+	installed layout managers.
+	(swapComponents): Remove unneeded method.
+
+2006-02-04  Raif S. Naffah  <raif@swiftdsl.com.au>
+
+	* gnu/java/security/jce/sig/DSSKeyPairGeneratorSpi.java: Implement
+	DSAKeyPairGenerator.
+	(initialize(int,SecureRandom)): Call initialize(keysize, false, random).
+	(initialize(AlgorithmParameterSpec,SecureRandom)): More explicit error
+	message.
+	Surround call to adaptee in a try/catch.
+	(initialize((DSAParams,SecureRandom)): New method.
+	(initialize(int,boolean,SecureRandom)): New method.
+	* gnu/java/security/jce/sig/KeyPairGeneratorAdapter.java: Extends
+	KeyPairGenerator rather than KeyPairGeneratorSpi.
+	(KeyPairGeneratorAdapter): Call super with algorithm name.
+
+2006-02-04  Raif S. Naffah  <raif@swiftdsl.com.au>
+
+	* gnu/javax/crypto/sasl/srp/SRPServer.java (prng): New field.
+	(getDefaultPRNG): New method.
+	(parseO): Use method above.
+	* gnu/javax/crypto/sasl/srp/SRPClient.java (prng): New field.
+	(getDefaultPRNG): New method.
+	(createO): Use method above.
+	* gnu/javax/crypto/sasl/srp/KDF.java (prng): New class field.
+	(nextByte): Use above field.
+	* gnu/javax/crypto/pad/PKCS1_V1_5.java (selfTest): Use PRNG instance.
+	* gnu/java/security/sig/rsa/RSA.java: New class field.
+	(newR): Use above field
+	* gnu/java/security/sig/rsa/EME_PKCS1_V1_5.java (prng): New field.
+	(encode): Use field.above.
+	* gnu/java/security/key/dss/FIPS186.java (prng): New field.
+	(getDefaultPRNG): new method.
+	(nextRandomBytes): Use above method.
+	* gnu/java/security/key/rsa/RSAKeyPairGenerator.java: Likewise.
+	* gnu/java/security/sig/BaseSignature.java: Likewise.
+	* gnu/javax/crypto/key/dh/GnuDHKeyPairGenerator.java: Likewise.
+	* gnu/javax/crypto/key/dh/RFC2631.java: Likewise.
+	* gnu/javax/crypto/key/srp6/SRPKeyPairGenerator.java: Likewise.
+	* gnu/javax/crypto/key/BaseKeyAgreementParty.java: Likewise.
+	* gnu/java/security/key/dss/DSSKeyPairGenerator.java (prng): New field.
+	(getDefaultPRNG): new method.
+	(nextRandomBytes): Use above method.
+	(STRICT_DEFAULTS): new class field.
+	(USE_DEFAULTS): more documentation to clarify behavior.
+	(setup): amended to handle new attribute.
+	* gnu/java/security/util/PRNG.java: New file.
+
+2006-02-03  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/plaf/basic/BasicColorChooserUI.java:
+	chooser field should be protected, not package-private.	
+
+2006-02-03  Lillian Angel  <langel@redhat.com>
+	
+	* javax/swing/text/DefaultStyledDocument.java
+	(changeUpdate): Cleaned up code.
+	(split): Likewise.
+	(insertUpdate): Set offset to be equal to pos after
+	insertContentTag call.
+	(insertContentTag): If paragraph has no children, should use
+	replace instead of Edit.
+	(insertFracture): Moved around code to prevent any exception. Also,
+	left side of tree should not be recreated if it has already been 
+	edited. In that case, we should only be creating a new right branch
+	when fracturing.
+	(getEditForParagraphAndIndex): No need to check index. We should
+	use the same edit for each paragraph.
+
+2006-02-03  Mark Wielaard  <mark@klomp.org>
+
+	* javax/swing/event/SwingPropertyChangeSupport.java
+	(propertyListeners): Change type to HashMap.
+	(SwingPropertyChangeSupport): Allocate HashMap.
+
+2006-02-03  Raif S. Naffah  <raif@swiftdsl.com.au>
+
+	* java/security/KeyPairGenerator.java (getInstance): Test for
+	instanceof KeyPairGenerator before KeyPairGeneratorSpi.
+
+2006-02-02  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/RepaintManager.java
+	Made fields private.
+	(RepaintWorker.run): Enclosed work stuff in try finally block in
+	order to clean up correctly if invalidation or painting fails,
+	otherwise we would get no more RepaintWorkers onto the EventQueue.
+	Also, now the RepaintWorker is marked 'dead' only after it has
+	finished its work, avoid more than one RepaintWorker on the queue.
+	(ComponentComparator.compareTo): Compare dirty rectangle sizes
+	instead of hierarchy depths.
+	(workDirtyComponents): Removed unused field.
+	(repaintOrder): Removed unused field.
+	(workRepaintOrder): Removed unused field.
+	(workInvalidComponents): Removed unused field.
+	(RepaintManager()): Removed initialization of removed fields.
+	(addInvalidComponent): Fine tuned synchronization.
+	(removeInvalidComponent): Fine tune synchronization.
+	(addDirtyRegion): Short circuit invalid dirty regions. Fine tuned
+	synchronization. Don't manager repaintOrder here.
+	(insertRepaintOrder): Removed method.
+	(markCompletelyClean): Fine tuned synchronization.
+	(validateInvalidComponents): Dont use a working copy of the
+	invalidComponents list, instead fine tuned synchronization on this
+	list. Also, don't search validateRoot, this is already done in
+	addInvalidComponent().
+	(paintDirtyRegions): Compute repaint order here, based on size of
+	damaged regions. Fine tuned synchronization. Avoid use of working
+	copies of dirtyComponent.
+
+2006-02-02  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/DefaultStyledDocument.java
+	(insertUpdate): JoinNextDirection should push the 
+	'next' paragraph on the stack.
+
+2006-02-02  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/DefaultStyledDocument.java
+	(insertUpdate): Rewrote code for Originate. This prevents
+	leaves being created multiple times. If it is on the last 
+	ElementSpec, the leaves need to be created right then; 
+	otherwise, only a branch is created.
+	(insertContentTag): Rewrote to add new leaf directly if
+	this is a branch with no children. Otherwise, it
+	recreates the remainder of the tree as before.
+
+2006-02-02  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* gnu/regexp/REMatch.java(REMatchList): New inner utility class
+	for making a list of REMatch instances.
+	* gnu/regexp/RETokenOneOf.java(match): Rewritten using REMatchList.
+	* gnu/regexp/RETokenRepeated.java(findDoables): New method.
+	(match): Rewritten using REMatchList.
+	(matchRest): Rewritten using REMatchList.
+
+2006-02-02  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* examples/gnu/classpath/examples/CORBA/swing/x5/PlayingDesk.java 
+	(friendsMove):	Call repaint() only after endOfGame is assigned.
+
+2006-02-02  Mark Wielaard  <mark@klomp.org>
+
+	Fixes bug #25769 reported by Artemus Harper <subanark@gmail.com>
+	* java/util/AbstractCollection.java (toString): Only use Iterator,
+	check whether collection contains itself.
+
+2006-02-01  Casey Marshall  <csm@gnu.org>
+
+	Partial fix for PR classpath/25143.
+	* javax/crypto/EncryptedPrivateKeyInfo.java (algName): new field.
+	(<init>): fill in `algName,' derive `algOid' from `algName.'
+	(getOid): new method.
+	(encode): embed NULL value for parameters if `params' is `null.'
+
+2006-02-01  Casey Marshall  <csm@gnu.org>
+
+	Tag check and OTHER_NAME fixes suggested by Rafael Teixeira
+	<monoman@gmail.com>.	
+	* gnu/java/security/x509/ext/GeneralNames.java (<init>): fix tag
+	check; fix OTHER_NAME parsing; fix DIRECTORY_NAME parsing.
+
+2006-02-01  Casey Marshall  <csm@gnu.org>
+
+	toString fix suggested by Rafael Teixeira <monoman@gmail.com>.
+	* gnu/java/security/der/DERValue.java
+	(getLength, getEncoded, getEncodedLength): throw an exception,
+	don't initialize `encoded' to a bogus value.
+	(toString): return a more helpful string.
+
+	Partial fix for PR classpath/25144.
+	* gnu/java/security/der/DERWriter.java (write): if the value is
+	the pseudo-value used for CONSTRUCTED, write the encoded value
+	directly.
+	
+2006-02-01  Tom Tromey  <tromey@redhat.com>
+
+	* java/security/Security.java (loadProviders): Use system class
+	loader.
+
+2006-02-01  Mark Wielaard  <mark@klomp.org>
+
+	* gnu/regexp/RE.java (getRETokenNamedProperty): Chain exception.
+	* gnu/regexp/RETokenNamedProperty.java (LETTER, MARK, SEPARATOR,
+	SYMBOL, NUMBER, PUNCTUATION, OTHER): New final byte[] fields.
+	(getHandler): Check for grouped properties L, M, Z, S, N, P or C.
+	(UnicodeCategoriesHandler): New private static class.
+	
+2006-02-01  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/DefaultStyledDocument.java:
+	Removed unneeded fields.
+	(insertUpdate): Removed field initialization.
+	(insertContentTag): Rewrote part of function. Still
+	not complete.
+
+2006-02-01  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/DefaultStyledDocument.java
+	(insertParagraph): Cleaned up code.
+	(insertFirstContentTag): Fixed call to recreateLeaves.
+	(insertContentTag): Added check to code to determine where
+	content should be inserted with respect to next element.
+	(createFracture): Removed check, recreateLeaves is called in 
+	other places when needed.
+	(recreateLeaves): Added new parameter for paragraph instead
+	of checking the stack. Removed editing for newBranch, replaced
+	with a replace call.
+
+2006-02-01  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* doc/unicode/Blocks-4.0.0.txt: New file.
+	* java/lang/Character.java: Regenerated inner class UnicodeBlock from 
+	scripts/unicode-blocks.pl and doc/unicode/Blocks-4.0.0.txt.
+	* scripts/unicode-blocks.pl: Copied this over from the generics branch
+	but replaced some 1.5-only features (such as enum).
+
+2006-01-31  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/PasswordView.java
+	(drawSelectedText): Use drawEchoCharacter() method to draw echo
+	character.
+	(drawUnselectedText): Use drawEchoCharacter() method to draw echo
+	character.
+
+2006-01-31  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JTextField.java
+	(getPreferredSize): Also include textfield's insets in width
+	calculation.
+
+2006-01-31  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/basic/BasicTextUI.java
+	(getPreferredSize): Include the textcomponent's insets in
+	preferredSize.
+
+2006-01-31  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/table/DefaultTableCellRenderer.java
+	(getTableCellRendererComponent): Moved setting of the value into
+	setValue(). Removed (bogus) special handling of JTextField values.
+	(setValue): Made ?: statement more clear by rewriting it
+	with if .. else.
+
+2006-01-31  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JLayeredPane.java
+	(insertIndexForLayer): Fixed algorithm to correctly determine
+	inser index for positions >= 0.
+	(addImpl): Fixed API docs for the index parameter.
+
+2006-01-31  Mark Wielaard  <mark@klomp.org>
+
+	* java/net/URI.java (getURIGroup): Check for null to see whether
+	group actually exists.
+
+2006-01-31  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/DefaultStyledDocument.java
+	(changeUpdate): Fixed calls to split to incorporate 
+	new parameter.
+	(insertParagraph): Likewise. Uses 0 as editIndex
+	because inserting into a new paragraph.
+	(insertContentTag): Fixed check to use 
+	recreateLeaves. Added a FIXME comment.
+	(split): Added a new parameter for edits.
+
+2006-01-31  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/basic/BasicRootPaneUI.java
+	(installDefaults): Don't install a background color here.
+
+2006-01-31  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/DefaultStyledDocument.java
+	(insert): Removed comment.
+	(insertUpdate): Added comment.
+	(recreateLeaves): Removed call to push newBranch onto the
+	stack. This does not need to be done here.
+
+2006-01-31  Chris Burdess  <dog@gnu.org>
+
+	* gnu/xml/stream/SAXParser.java,
+	  gnu/xml/stream/UnicodeReader.java,
+	  gnu/xml/stream/XIncludeFilter.java,
+	  gnu/xml/stream/XMLParser.java: Fix case where resolved InputSource
+	  only resolved the system ID not the stream. Make some utility methods
+	  public and static for use by other private XML APIs.
+	* java/lang/ClassNotFoundException.java: Ensure that initCause can be
+	  called without throwing IllegalStateException.
+	* java/util/logging/SimpleFormatter.java: Write thrown exception if
+	  provided.
+
+2006-01-31  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	Fixes bug #22873
+	* gnu/regexp/REMatch(toString(int)): Throw IndexOutOfBoundsException
+	for an invalid index and return null for a skipped group.
+
+2006-01-31  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	Fixes bug #26002
+	* gnu/regexp/gnu/regexp/RE.java(initialize): Parse /\p{prop}/.
+	(NamedProperty): New inner class.
+	(getNamedProperty): New method.
+	(getRETokenNamedProperty): New Method.
+	* gnu/regexp/RESyntax.java(RE_NAMED_PROPERTY): New syntax falg.
+	* gnu/regexp/RETokenNamedProperty.java: New file.
+
+2006-01-31  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/PlainView.java
+	(paint): Call drawLine with baseline coordinates.
+	(drawLine): Documented and indented this method.
+	(drawUnselecetedText): Documented and indented this method.
+	* javax/swing/plaf/text/Utilites.java
+	(drawTabbedText): The coordinates denote the baseline of the text
+	not the upper left corner.
+
+2006-01-31  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/basic/BasicTextUI.java
+	(createKeymap): Don't store KeyBindings[] as focusInputMap in
+	UIManager. Added FIXME regarding the implementation of this method.
+
+2006-01-30  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* examples/gnu/classpath/examples/swing/ButtonDemo.java
+	(ButtonDemo): Move content initialisation to new method,
+	(initFrameContent): New method,
+	(main): Call initFrameContent(),
+	* examples/gnu/classpath/examples/swing/ComboBoxDemo.java: Likewise,
+	* examples/gnu/classpath/examples/swing/FileChooserDemo.java: Likewise,
+	* examples/gnu/classpath/examples/swing/ScrollBarDemo.java: Likewise,
+	* examples/gnu/classpath/examples/swing/SliderDemo.java: Likewise,
+	* examples/gnu/classpath/examples/swing/TextFieldDemo.java: Likewise.
+
+2006-01-30  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* examples/gnu/classpath/examples/swing/Demo.java
+	(Demo): Set frame size,
+	(mkButtonBar): Removed stacked sub-panels.
+
+2006-01-30  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/DefaultStyledDocument.java:
+	Added new fields.
+	(insert): Initialized fields. Removed call to addEdit, 
+	and created ElementEdit instead.
+	(insertUpdate): Added check for fracturing. If the
+	fracturing was not successful, we should push the
+	last element back on the stack.
+	(insertParagraph): Fixed call to getEditForParagraphAndIndex.
+	Also, changed replace calls to use Edit.
+	(insertFirstContentTag): Removed unneeded check and fixed call
+	to recreateLeaves.
+	(insertContent): Fixed check to use new fields. Added code in
+	to check if leaves overlap.
+	(createFracture): Fixed call to recreateLeaves.
+	(recreateLeaves): Fixed code and cleaned it up a bit.
+	(insertFracture): Set fracNotCreated field.
+	(addEdit): Removed, this method is not needed.
+
+2006-01-30  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JRootPane.java
+	(RootLayout.prefSize): Removed caching for preferredSize.
+	(RootLayout.invalidateLayout): Likewise.
+	(RootLayout.preferredLayoutSize): Likewise.	
+
+2006-01-30  Roman Kennke  <kennke@aicas.com>
+
+	PR classpath/26035
+	* javax/swing/JFrame.java
+	(frameInit): Handle the defaultLookAndFeelDecorated flag.
+	* javax/swing/plaf/metal/MetalRootPaneUI.java
+	(MetalFrameBorder): New inner class, provides the border for
+	top level containers with L&F decorations.
+	(MetalTitlePane): New inner class, provides the title pane for
+	top level containers with L&F decorations.
+	(MetalRootLayout): New inner class. Used to layout the root pane
+	when L&F window decorations are enabled.
+	(installUI): New method. Handles window decorations.
+	(uninstallUI): New method. Handles window decorations.
+	(propertyChange): Handles window decorations.
+	(installWindowDecorations): New method. Handles window
+	decorations.
+	(uninstallWindowDecorations): New method. Handles window
+	decorations.
+	* javax/swing/plaf/metal/MetalLookAndFeel.java
+	(getSupportsWindowDecorations): Overridden to return true.
+
+2006-01-30  Mark Wielaard  <mark@klomp.org>
+
+	* javax/swing/JProgressBar.java (JProgressBar(int)): Document
+	IllegalArgumentException when orientation is illegal.
+	(JProgressBar(int, int, int)): Likewise and throw exception.
+	(setOrientation): Likewise.
+
+2006-01-30  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/ViewportLayout.java
+	(minimumLayoutSize): Rewritten to unconditionally return (4,4).
+
+2006-01-30  Mark Wielaard  <mark@klomp.org>
+
+	* javax/swing/JProgressBar.java (orientation): Always set by
+	constructor.
+	(JProgressBar(int)): Document default on 'illegal' value.
+	(JProgressBar(int, int, int)): Likewise and set orientation to
+	HORIZONTAL when 'illegal'.
+	(setOrientation): Likewise.
+
+2006-01-30  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/basic/BasicListUI.java
+	(ListDataHandler.contentsChanged): Update the
+	updateLayoutStateNeeded flag.
+	(ListDataHandler.intervalAdded): Update the
+	updateLayoutStateNeeded flag.
+	(ListDataHandler.intervalRemoved): Update the
+	updateLayoutStateNeeded flag.
+	(PropertyChangeHandler.propertyChange): Correctly update the
+	listeners on new list model.
+	(maybeUpdateLayoutState): Don't consider the validation state
+	of the list.
+
+2006-01-30  Mark Wielaard  <mark@klomp.org>
+
+	* gnu/xml/transform/ApplyTemplatesNode.java (clone): Check whether
+	sortKeys is null.
+
+2006-01-30  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JLayeredPane.java
+	(insertIndexForLayer): Fixed algorithm to correctly insert
+	components within different layers and -1 position.
+
+2006-01-30  Mark Wielaard  <mark@klomp.org>
+
+	* doc/api/Makefile.am (create_html): Add -validhtml.
+
+2006-01-30  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JLayeredPane.java
+	(insertIndexForLayer): Fixed algorithm to correctly insert
+	components within same layer and -1 position.
+
+2006-01-30  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	Fixes bug #24876
+	* gnu/regexp/gnu/regexp/RE.java(REG_TRY_ENTIRE_MATCH):
+	New execution flag.
+	(getMatchImpl): if REG_TRY_ENTIRE_MATCH is set, add an
+	implicit RETokenEnd at the end of the regexp chain.
+	Do not select the longest match, but select the first match.
+	(match): Do not take care of REMatch.empty.
+	* gnu/regexp/REMatch.java(empty): To be used only in RETokenRepeated.
+	* gnu/regexp/RETokenOneOf.java: Corrected a typo in a comment.
+	* gnu/regexp/RETokenBackRef.java: Do not take care of REMatch.empty.
+	* gnu/regexp/RETokenRepeated.java (match): Rewrote stingy matching.
+	Do not take care of REMatch.empty. Set and check REMatch.empty
+	when trying to match the single token.
+
+2006-01-30  Mark Wielaard  <mark@klomp.org>
+
+	* java/awt/Cursor.java (toString): Include name and type.
+
+2006-01-30  Raif S. Naffah  <raif@swiftdsl.com.au>
+
+	* gnu/javax/crypto/mac/HMac.java (clone): Clone ipadHash, opadHash, and
+	the ipad buffer.
+	* gnu/javax/crypto/mac/BaseMac.java (clone): Clone underlyingHash.
+
+2006-01-30  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+        
+        PR 26027
+	* javax/swing/plaf/basic/BasicListUI.java  (maybeUpdateLayoutState):
+	Consider the validation state of the list. 
+
+2006-01-29  Robert Schuster  <robertschuster@fsfe.org>
+
+	* gnu/java/beans/decoder/DefaultExceptionListener.java: Moved to
+	parent package.
+	* gnu/java/beans/DefaultExceptionListener.java: Constant public field
+	INSTANCE added.
+	* java/beans/XMLDecoder.java:
+	(setExceptionListener): Use shared DefaultExceptionListener
+	instance.
+	* java/beans/Encoder.java:
+	(setExceptionListener): Use shared DefaultExceptionListener
+	instance.
+
+2006-01-29  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/ScrollPaneLayout.java
+	(minimumLayoutSize): Rewritten to match JDKs behaviour.
+
+2006-01-29  Mark Wielaard  <mark@klomp.org>
+
+	* java/net/SocketPermission.java (setActions): Trim and lower case
+	action.
+
+2006-01-29  Raif S. Naffah  <raif@swiftdsl.com.au>
+
+	* gnu/java/security/util/Prime2.java (passEulerCriterion): Was
+	incorrectly failing primality test for some known primes. Fixed.
+	(passFermatLittleTheorem): Removed.
+	(passMillerRabin): Removed.
+	(isProbablePrime): Cache primes that pass the primality tests.
+	Use BigInteger.isProbablePrime(int) for primality tests.
+	(debugBI): New static debugging method.
+
+2006-01-28  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/basic/BasicListUI.java
+	(updateLayoutState): Removed unneeded special case for VERTICAL.
+
+2006-01-28  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/basic/BasicListUI.java
+	(getCellBounds): Determine correct list width when having a
+	layoutOrientation of VERTICAL.
+	(maybeUpdateLayoutState): Don't consider the validation state of
+	the list.
+
+2006-01-28  Mark Wielaard  <mark@klomp.org>
+
+	Reported by Dimitri Fontaine <dimitri@dalibo.com>
+	* java/awt/print/NoPrinterJob.java: New (fake) class.
+	* java/awt/print/PrinterJob.java (getPrinterJob): Return NoPrinterJob.
+
+2006-01-28  Mark Wielaard  <mark@klomp.org>
+
+	* gnu/javax/crypto/mac/HMac.java (clone): Cast cloned ipad to byte[].
+
+2006-01-28  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* gnu/classpath/examples/swing/Demo.java (mkTree): Make a larger tree.
+	(addChildren): New method.
+
+2006-01-28  Raif S. Naffah  <raif@swiftdsl.com.au>
+
+	* gnu/javax/crypto/jce/mac/MacAdapter.java (MacAdapter(IMac, Map)): New
+	constructor for cloning purposes.
+	(clone): New implementation that ensures cloning.
+	* gnu/javax/crypto/mac/HMac.java (clone): Implement Cloneable.
+	* gnu/java/security/Registry.java: Changed value of GNU_SECURITY to
+	  "GNU".
+
+2006-01-27  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* javax/swing/plaf/basic/BasicTreeUI.java (updateCachedPreferredSize):
+	Call updateCurrentVisiblePath.
+
+2006-01-27  Roman Kennke  <kennke@aicas.com>
+
+	* examples/gnu/classpath/examples/swing/MiniDemo.java: New file.
+
+2006-01-27  Roman Kennke  <kennke@aicas.com>
+
+	* examples/gnu/classpath/examples/swing/ButtonDemo.java
+	(createContent): Only create new content if we don't have one
+	already.
+	* examples/gnu/classpath/examples/swing/ComboBoxDemo.java
+	(createContent): Only create new content if we don't have one
+	already.
+	* examples/gnu/classpath/examples/swing/FileChooserDemo.java
+	(createContent): Only create new content if we don't have one
+	already.
+	* examples/gnu/classpath/examples/swing/ScrollBarDemo.java
+	(createContent): Only create new content if we don't have one
+	already.
+	* examples/gnu/classpath/examples/swing/SliderDemo.java
+	(createContent): Only create new content if we don't have one
+	already.
+	* examples/gnu/classpath/examples/swing/TableDemo.java
+	(createContent): Only create new content if we don't have one
+	already.
+	* examples/gnu/classpath/examples/swing/TextFieldDemo.java
+	(createContent): Only create new content if we don't have one
+	already.
+
+2006-01-27  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/text/DefaultStyledDocument.java
+	(insertFirstContentTag): Removed check, not needed. This
+	still needs to be fixed for some cases. Added call to
+	recreateLeaves.
+	(createFracture): Added call to recreateLeaves.
+	(recreateLeaves): New method used to recreate all the
+	leaves after the initial insertion. This still needs 
+	more work.
+	(handleInsertAfterNewline): Removed else, not needed.
+
 2006-01-27  Roman Kennke  <kennke@aicas.com>
 
 	* javax/swing/JLayeredPane.java
@@ -900,6 +1512,8 @@
 
 	* java/beans/XMLEncoder.java:
 	(writeExpression): Added early return (fixes PR #25941).
+	(setExceptionListener, anonymous Class): Removed printStackTrace
+	call.
 	* java/beans/Encoder: Removed unused imports.
 	(setupDefaultPersistenceDelegates): Removed unneccessary
 	PersistenceDelegates for subclasses.

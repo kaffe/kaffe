@@ -1,5 +1,5 @@
-/* gnu/regexp/RETokenBackRef.java
-   Copyright (C) 1998-2001, 2004 Free Software Foundation, Inc.
+/* NoPrinterJob.java -- Fake PrinterJob that just signals no print service.
+   Copyright (C) 2006  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -36,49 +36,89 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package gnu.regexp;
+package java.awt.print;
 
-final class RETokenBackRef extends REToken {
-  private int num;
-  private boolean insens;
-  
-  RETokenBackRef(int subIndex, int num, boolean insens) {
-    super(subIndex);
-    this.num = num;
-    this.insens = insens;
+/**
+ * Fake PrinterJob that just signals no print service.  This is only
+ * here so applications can call
+ * <code>PrintJob.getPrinterJob().getPrinterJob()</code> and check
+ * that it returns <code>null</code> which indicates no actual
+ * printing support is available.
+ */
+class NoPrinterJob extends PrinterJob
+{
+  public int getCopies()
+  {
+    return 0;
   }
 
-  // should implement getMinimumLength() -- any ideas?
+  public void setCopies(int copies)
+  {
+    // Do nothing.
+  }
 
-    boolean match(CharIndexed input, REMatch mymatch) {
-	if (num >= mymatch.start.length) return false;
-	if (num >= mymatch.end.length) return false;
-	int b,e;
-	b = mymatch.start[num];
-	e = mymatch.end[num];
-	if ((b==-1)||(e==-1)) return false; // this shouldn't happen, but...
-	for (int i=b; i<e; i++) {
-	    char c1 = input.charAt(mymatch.index+i-b);
-	    char c2 = input.charAt(i);
-	    if (c1 != c2) {
-		if (insens) {
-		    if (c1 != Character.toLowerCase(c2) &&
-			c1 != Character.toUpperCase(c2)) {
-			return false;
-		    }
-		}
-		else {
-		    return false;
-		}
-	    }
-	}
-	mymatch.index += e-b;
-	return next(input, mymatch);
-    }
-    
-    void dump(StringBuffer os) {
-	os.append('\\').append(num);
-    }
+  public String getJobName()
+  {
+    return "NoPrinterJob";
+  }
+
+  public void setJobName(String job_name)
+  {
+    // Do nothing.
+  }
+
+  public String getUserName()
+  {
+    return "NoUser";
+  }
+
+  public void cancel()
+  {
+    // Do nothing.
+  }
+
+  public boolean isCancelled()
+  {
+    return true;
+  }
+
+  public PageFormat defaultPage(PageFormat page_format)
+  {
+    return page_format;
+  }
+
+  public PageFormat pageDialog(PageFormat page_format)
+  {
+    return page_format;
+  }
+
+  public void print() throws PrinterException
+  {
+    throw new PrinterException("No printer");
+  }
+
+  public boolean printDialog()
+  {
+    return false;
+  }
+
+  public void setPageable(Pageable pageable)
+  {
+    // Do nothing.
+  }
+
+  public void setPrintable(Printable printable)
+  {
+    // Do nothing.
+  }
+
+  public void setPrintable(Printable printable, PageFormat page_format)
+  {
+    // Do nothing.
+  }
+
+  public PageFormat validatePage(PageFormat page_format)
+  {
+    return page_format;
+  }
 }
-
-

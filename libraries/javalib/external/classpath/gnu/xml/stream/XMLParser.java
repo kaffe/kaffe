@@ -1484,7 +1484,6 @@ public class XMLParser
   {
     if (!externalEntities)
       return;
-    InputStream in = null;
     String url = absolutize(input.systemId, ids.systemId);
     // Check for recursion
     for (Iterator i = inputStack.iterator(); i.hasNext(); )
@@ -1497,7 +1496,8 @@ public class XMLParser
       }
     if (name == null || "".equals(name))
       report = false;
-    if (in == null && url != null && resolver != null)
+    InputStream in = null;
+    if (resolver != null)
       {
         if (resolver instanceof XMLResolver2)
           in = ((XMLResolver2) resolver).resolve(ids.publicId, url);
@@ -1535,12 +1535,13 @@ public class XMLParser
    * @param base the current base URL
    * @param href the (absolute or relative) URL to resolve
    */
-  static String absolutize(String base, String href)
+  public static String absolutize(String base, String href)
+    throws MalformedURLException
   {
     if (href == null)
       return null;
     int ci = href.indexOf(':');
-    if (ci > 1 && isLowercaseAscii(href.substring(0, ci)))
+    if (ci > 1 && isURLScheme(href.substring(0, ci)))
       {
         // href is absolute already
         return href;
@@ -1565,40 +1566,23 @@ public class XMLParser
         if (!base.endsWith("/"))
           base += "/";
       }
-    if (href.startsWith("/"))
-      {
-        if (base.startsWith("file:"))
-          return "file://" + href;
-        int i = base.indexOf("://");
-        if (i != -1)
-          {
-            i = base.indexOf('/', i + 3);
-            if (i != -1)
-              base = base.substring(0, i);
-          }
-      }
-    else
-      {
-        while (href.startsWith(".."))
-          {
-            int i = base.lastIndexOf('/', base.length() - 2);
-            if (i != -1)
-              base = base.substring(0, i + 1);
-            href = href.substring(2);
-            if (href.startsWith("/"))
-              href = href.substring(1);
-          }
-      }
-    return base + href;
+    return new URL(new URL(base), href).toString();
   }
 
-  private static boolean isLowercaseAscii(String text)
+  /**
+   * Indicates whether the specified characters match the scheme portion of
+   * a URL.
+   * @see RFC 1738 section 2.1
+   */
+  private static boolean isURLScheme(String text)
   {
     int len = text.length();
     for (int i = 0; i < len; i++)
       {
         char c = text.charAt(i);
-        if (c < 97 || c > 122)
+        if (c == '+' || c == '.' || c == '-')
+          continue;
+        if (c < 65 || (c > 90 && c < 97) || c > 122)
           return false;
       }
     return true;
@@ -1607,7 +1591,7 @@ public class XMLParser
   /**
    * Returns an input stream for the given URL.
    */
-  private InputStream resolve(String url)
+  static InputStream resolve(String url)
     throws IOException
   {
     try
@@ -1617,6 +1601,12 @@ public class XMLParser
     catch (MalformedURLException e)
       {
         return null;
+      }
+    catch (IOException e)
+      {
+        IOException e2 = new IOException("error resolving " + url);
+        e2.initCause(e);
+        throw e2;
       }
   }
 

@@ -1,5 +1,5 @@
 /* Encoder.java
- Copyright (C) 2005 Free Software Foundation, Inc.
+ Copyright (C) 2005, 2006 Free Software Foundation, Inc.
 
  This file is part of GNU Classpath.
 
@@ -38,6 +38,7 @@
 
 package java.beans;
 
+import gnu.java.beans.DefaultExceptionListener;
 import gnu.java.beans.encoder.ArrayPersistenceDelegate;
 import gnu.java.beans.encoder.ClassPersistenceDelegate;
 import gnu.java.beans.encoder.CollectionPersistenceDelegate;
@@ -168,13 +169,8 @@ public class Encoder
    */
   public void setExceptionListener(ExceptionListener listener)
   {
-    exceptionListener = (listener != null) ? listener : new ExceptionListener()
-    {
-      public void exceptionThrown(Exception e)
-      {
-        System.err.println("exception thrown: " + e);
-      }
-    };
+    exceptionListener = (listener != null) 
+	? listener : DefaultExceptionListener.INSTANCE;
   }
 
   /**

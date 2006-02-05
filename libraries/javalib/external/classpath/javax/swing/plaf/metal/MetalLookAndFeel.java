@@ -1342,4 +1342,16 @@ public class MetalLookAndFeel extends BasicLookAndFeel
   {
     return theme;
   }
+
+  /**
+   * Returns <code>true</code> because the Metal look
+   * and feel supports window decorations for toplevel
+   * containers.
+   *
+   * @return <code>true</code>
+   */
+  public boolean getSupportsWindowDecorations()
+  {
+    return true;
+  }
 }

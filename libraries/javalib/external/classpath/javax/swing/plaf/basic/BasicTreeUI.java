@@ -1237,6 +1237,7 @@ public class BasicTreeUI extends TreeUI
   protected void updateCachedPreferredSize()
   {
     int maxWidth = 0;
+    updateCurrentVisiblePath();    
     boolean isLeaf = false;
     if (currentVisiblePath != null)
       {

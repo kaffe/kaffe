@@ -40,9 +40,9 @@ package gnu.java.security.sig.rsa;
 
 import gnu.java.security.prng.IRandom;
 import gnu.java.security.prng.LimitReachedException;
+import gnu.java.security.util.PRNG;
 
 import java.io.ByteArrayOutputStream;
-import java.security.SecureRandom;
 import java.security.interfaces.RSAKey;
 import java.util.Random;
 
@@ -69,6 +69,9 @@ public class EME_PKCS1_V1_5
   private int k;
 
   private ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+  /** Our default source of randomness. */
+  private PRNG prng = PRNG.getInstance();
 
   // Constructor(s)
   // -------------------------------------------------------------------------
@@ -128,8 +131,7 @@ public class EME_PKCS1_V1_5
     final byte[] PS = new byte[k - M.length - 3];
 
     // FIXME. This should be configurable, somehow.
-    SecureRandom rnd = new SecureRandom ();
-    rnd.nextBytes(PS);
+    prng.nextBytes(PS);
     int i = 0;
     for (; i < PS.length; i++)
       {
@@ -300,6 +302,5 @@ public class EME_PKCS1_V1_5
     baos.reset();
 
     return result;
-
   }
 }

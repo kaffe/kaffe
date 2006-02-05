@@ -84,6 +84,12 @@ public class DERWriter implements DER
   public static int write(OutputStream out, DERValue object)
     throws IOException
   {
+    if (DER.CONSTRUCTED_VALUE.equals (object.getValue ()))
+      {
+        out.write (object.getEncoded ());
+        return object.getLength ();
+      }
+
     out.write(object.getExternalTag());
     Object value = object.getValue();
     if (value == null)
