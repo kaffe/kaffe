@@ -15,8 +15,6 @@
 #include <native.h>
 #include "java_util_zip_Deflater.h"
 
-#if defined(HAVE_LIBZ) && defined(HAVE_ZLIB_H)
-
 #include <zlib.h>
 
 #define	WSIZE		0x8000
@@ -189,66 +187,3 @@ java_util_zip_Deflater_init(struct Hjava_util_zip_Deflater* this, jboolean val)
 
 	setStream(this, dstream);
 }
-
-#else
-
-static void 
-supportDisabled (void)
-{
-	SignalError ("org.kaffe.util.SupportDisabled",
-		     "libz was not found by Kaffe configure script");
-}
-    
-void
-java_util_zip_Deflater_setDictionary(struct Hjava_util_zip_Deflater* this, HArrayOfByte* buf, jint from, jint len)
-{
-	supportDisabled();
-}
-
-jint
-java_util_zip_Deflater_deflate(struct Hjava_util_zip_Deflater* this, HArrayOfByte* buf, jint off, jint len)
-{
-	supportDisabled();
-	return 0;
-}
-
-jint
-java_util_zip_Deflater_getAdler(struct Hjava_util_zip_Deflater* this)
-{
-	supportDisabled();
-	return 0;
-}
-
-jint
-java_util_zip_Deflater_getTotalIn(struct Hjava_util_zip_Deflater* this)
-{
-	supportDisabled();
-	return 0;
-}
-
-jint
-java_util_zip_Deflater_getTotalOut(struct Hjava_util_zip_Deflater* this)
-{
-	supportDisabled();
-	return 0;
-}
-
-void
-java_util_zip_Deflater_reset(struct Hjava_util_zip_Deflater* this)
-{
-	supportDisabled();
-}
-
-void
-java_util_zip_Deflater_end(struct Hjava_util_zip_Deflater* this)
-{
-	supportDisabled();
-}
-
-void
-java_util_zip_Deflater_init(struct Hjava_util_zip_Deflater* this, jboolean val)
-{
-	supportDisabled();
-}
-
-#endif

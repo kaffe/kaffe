@@ -2250,6 +2250,16 @@ AC_ARG_WITH([system-zlib],
 	[with_system_zlib=no]
 )
 
+if test x"$with_system_zlib" != x"no" ; then
+   if test x"$ac_cv_header_zlib_h" != x"yes" ; then
+      AC_MSG_ERROR([Can't find or can't use system zlib.h])
+   fi
+   if test x"$ac_cv_lib_z_deflate" != x"yes" ; then
+      AC_MSG_ERROR([Can't find system zlib or can't find function deflate in it])
+   fi
+fi
+
+
 AM_CONDITIONAL(COND_SYSTEM_ZLIB, test x"$with_system_zlib" != x"no")
 
 AC_ARG_ENABLE([fastjar],

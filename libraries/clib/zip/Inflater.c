@@ -14,8 +14,6 @@
 #include <native.h>
 #include "java_util_zip_Inflater.h"
 
-#if defined(HAVE_LIBZ) && defined(HAVE_ZLIB_H)
-
 #include <zlib.h>
 
 #define WSIZE   	0x8000
@@ -188,66 +186,3 @@ java_util_zip_Inflater_init(struct Hjava_util_zip_Inflater* this, jboolean val)
 	}
 	setStream(this, dstream);
 }
-
-#else
-
-static void 
-supportDisabled (void)
-{
-	SignalError ("org.kaffe.util.SupportDisabled",
-		     "libz was not found by Kaffe configure script");
-}
-
-void
-java_util_zip_Inflater_setDictionary(struct Hjava_util_zip_Inflater* this, HArrayOfByte* buf, jint from, jint len)
-{
-	supportDisabled();
-}
-
-jint
-java_util_zip_Inflater_inflate(struct Hjava_util_zip_Inflater* this, HArrayOfByte* buf, jint off, jint len)
-{
-	supportDisabled();
-	return 0;
-}
-
-jint
-java_util_zip_Inflater_getAdler(struct Hjava_util_zip_Inflater* this)
-{
-	supportDisabled();
-	return 0;
-}
-
-jint
-java_util_zip_Inflater_getTotalIn(struct Hjava_util_zip_Inflater* this)
-{
-	supportDisabled();
-	return 0;
-}
-
-jint
-java_util_zip_Inflater_getTotalOut(struct Hjava_util_zip_Inflater* this)
-{
-	supportDisabled();
-	return 0;
-}
-
-void
-java_util_zip_Inflater_reset(struct Hjava_util_zip_Inflater* this)
-{
-	supportDisabled();
-}
-
-void
-java_util_zip_Inflater_end(struct Hjava_util_zip_Inflater* this)
-{
-	supportDisabled();
-}
-
-void
-java_util_zip_Inflater_init(struct Hjava_util_zip_Inflater* this, jboolean val)
-{
-	supportDisabled();
-}
-
-#endif

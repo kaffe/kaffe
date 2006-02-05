@@ -49735,6 +49735,20 @@ else
 
 fi;
 
+if test x"$with_system_zlib" != x"no" ; then
+   if test x"$ac_cv_header_zlib_h" != x"yes" ; then
+      { { echo "$as_me:$LINENO: error: Can't find or can't use system zlib.h" >&5
+echo "$as_me: error: Can't find or can't use system zlib.h" >&2;}
+   { (exit 1); exit 1; }; }
+   fi
+   if test x"$ac_cv_lib_z_deflate" != x"yes" ; then
+      { { echo "$as_me:$LINENO: error: Can't find system zlib or can't find function deflate in it" >&5
+echo "$as_me: error: Can't find system zlib or can't find function deflate in it" >&2;}
+   { (exit 1); exit 1; }; }
+   fi
+fi
+
+
 
 
 if test x"$with_system_zlib" != x"no"; then
