@@ -78,6 +78,7 @@ static int gc_init = 0;
 static volatile int gcDisabled = 0;
 static volatile int gcRunning = -1;
 static volatile bool finalRunning = false;
+static volatile bool finaliserStarted = false;
 #if defined(KAFFE_STATS)
 static timespent gc_time;
 static timespent sweep_time;
@@ -953,8 +954,8 @@ finaliserMan(void* arg)
   Collector *gcif = (Collector*)arg;
 
   lockStaticMutex(&finman);
+  finaliserStarted = true;
   for (;;) {
-    finalRunning = false;
     while (finalRunning == false) {
       waitStaticCond(&finman, (jlong)0);
     }
@@ -964,6 +965,7 @@ finaliserMan(void* arg)
     
     /* Wake up anyone waiting for the finalizer to finish */
     lockStaticMutex(&finmanend);
+    finalRunning = false;
     broadcastStaticCond(&finmanend);
     unlockStaticMutex(&finmanend);
   }
@@ -1026,22 +1028,24 @@ static
 void
 gcInvokeFinalizer(Collector* gcif)
 {
-
-	/* First invoke the GC */
-	KGC_invoke(gcif, 1);
-
-	/* Run the finalizer (if might already be running as a result of
-	 * the GC)
-	 */
-	lockStaticMutex(&finman);
-	if (finalRunning == false) {
-		finalRunning = true;
-		signalStaticCond(&finman); 
-	}
-	lockStaticMutex(&finmanend);
-	unlockStaticMutex(&finman);
-	waitStaticCond(&finmanend, (jlong)0);
-	unlockStaticMutex(&finmanend);
+  while (!finaliserStarted)
+    KTHREAD(yield)();
+  
+  /* First invoke the GC */
+  KGC_invoke(gcif, 1);
+  
+  /* Run the finalizer (if might already be running as a result of
+   * the GC)
+   */
+  lockStaticMutex(&finman);
+  if (finalRunning == false) {
+    finalRunning = true;
+    signalStaticCond(&finman); 
+  }
+  lockStaticMutex(&finmanend);
+  unlockStaticMutex(&finman);
+  waitStaticCond(&finmanend, (jlong)0);
+  unlockStaticMutex(&finmanend);
 }
 
 /*

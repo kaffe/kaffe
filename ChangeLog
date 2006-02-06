@@ -1,5 +1,13 @@
 2006-02-06  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* kaffe/kaffevm/kaffe-gc/gc-incremental.c
+	(finaliserStarted): New global variable to acknowledge the finaliser
+	has started.
+	(gcInvokeFinaliser): Check whether the finaliser has started.
+	(finaliserMan): Reordered a bit to ensure thread safety.
+
+2006-02-06  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* libraries/javalib/vmspecific/org/metastatic/jessie/Base64.java,
 	libraries/javalib/vmspecific/org/metastatic/jessie/CertificateHandler.java,
 	libraries/javalib/vmspecific/org/metastatic/jessie/ConsoleCertificateHandler.java,
