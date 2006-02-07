@@ -1,3 +1,8 @@
+2006-02-07  Riccardo Mottola <riccardo@kaffe.org>
+	* libraries/javalib/awt-implementations/kaffe/java/awt/Component.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/Container.java:
+	Added new stubs.
+
 2006-02-06  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/kaffe-gc/gc-incremental.c

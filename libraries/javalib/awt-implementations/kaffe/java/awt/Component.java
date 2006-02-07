@@ -13,6 +13,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseWheelListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.PaintEvent;
 import java.awt.event.TextEvent;
@@ -1888,6 +1889,10 @@ public ComponentOrientation getComponentOrientation() {
 
 // TODO this is only a stub
 public void applyComponentOrientation(ComponentOrientation orientation) {
+}
+
+// TODO this is only a stub
+public void addMouseWheelListener(MouseWheelListener l) {
 }
 
 synchronized void updateLinkedGraphics () {

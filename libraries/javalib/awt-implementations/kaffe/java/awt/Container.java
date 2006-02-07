@@ -760,4 +760,13 @@ protected void validateTree () {
 	for ( int i=0; i<nChildren; i++ )
 		children[i].validate();
 }
+
+/* TODO this is only a stub */
+public final void setComponentZOrder(Component comp, int index) {
+}
+
+/* TODO this is only a stub */
+public final int getComponentZOrder(Component comp) {
+	return 0;
+}
 }
