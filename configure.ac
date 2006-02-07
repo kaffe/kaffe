@@ -2311,6 +2311,26 @@ fi
 dnl KAFFEH is AC_SUBSTed by AC_PATH_PROG
 AC_SUBST(MAKE_KAFFEH)
 
+# set absolute builddir path
+
+kaffe_builddir=`pwd`
+AC_SUBST([kaffe_builddir])
+
+# detect fastjar and set FASTJAR to its path
+# if we are not cross-compiling, and no jar/fastjar tool can be found,
+# use the freshly compiled one.
+
+AC_PATH_PROGS([FASTJAR], [fastjar jar])
+
+if test -z "${FASTJAR}"; then
+  if test x"$cross_compiling" = x"yes"; then
+    AC_MSG_ERROR([please set FASTJAR to the full pathname of a locally executable fastjar])
+  else
+    FASTJAR="${kaffe_builddir}/external/gcc/fastjar/fastjar"
+    AC_SUBST([FASTJAR])
+  fi
+fi
+
 dnl =========================================================================
 dnl Define directory to put native library support
 dnl -------------------------------------------------------------------------
@@ -2437,13 +2457,11 @@ if test x"$use_ecj" = x"yes"; then
   ac_configure_args="$ac_configure_args --with-ecj=${JAVA_COMPILER}"
 fi
 
-kaffe_builddir=`pwd`
-AC_SUBST([kaffe_builddir])
 ac_configure_args="$ac_configure_args --disable-core-jni"
 ac_configure_args="$ac_configure_args --disable-examples"
 ac_configure_args="$ac_configure_args --with-glibj-dir=${jrelibdir}"
 ac_configure_args="$ac_configure_args --with-native-libdir=${nativedir}"
-ac_configure_args="$ac_configure_args --with-fastjar=${kaffe_builddir}/external/gcc/fastjar/fastjar"
+ac_configure_args="$ac_configure_args --with-fastjar=${FASTJAR}"
 real_srcdir=`cd $srcdir; pwd`
 vmdir=${real_srcdir}/libraries/javalib/vmspecific
 ac_configure_args="$ac_configure_args --with-vm-classes=${vmdir}"

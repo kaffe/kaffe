@@ -176,6 +176,7 @@ ESD_CONFIG = @ESD_CONFIG@
 ESD_LIBS = @ESD_LIBS@
 EXEEXT = @EXEEXT@
 F77 = @F77@
+FASTJAR = @FASTJAR@
 FFLAGS = @FFLAGS@
 GC_NAME = @GC_NAME@
 GETOPT_H = @GETOPT_H@
@@ -358,7 +359,6 @@ toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 CLASSFILE = tools.jar
 SRCDIRS = gnu
-FASTJAR = $(top_builddir)/external/gcc/fastjar/fastjar
 toolslib_DATA = $(CLASSFILE)
 tools_jar_SRCS = \
 	gnu/classpath/tools/Util.java \

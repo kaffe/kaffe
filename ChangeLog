@@ -1,4 +1,19 @@
+2006-02-07  Dalibor Topic  <robilad@kaffe.org>
+
+	Fix for #7.
+
+	* configure.ac: check for fastjar and jar. substitute FASTJAR.
+	Only use our own built fastjar, if we are not cross-compiling
+	and no jar tool can be found.
+
+	* tools/javatools/javalib/Makefile.am,
+	tools/gjdoc/javalib/Makefile.am,
+	libraries/javalib/gmp-math/Makefile.am,
+	libraries/javalib/awt-implementations/kaffe/Makefile.am:
+	Use FASTJAR.
+
 2006-02-07  Riccardo Mottola <riccardo@kaffe.org>
+
 	* libraries/javalib/awt-implementations/kaffe/java/awt/Component.java,
 	libraries/javalib/awt-implementations/kaffe/java/awt/Container.java:
 	Added new stubs.

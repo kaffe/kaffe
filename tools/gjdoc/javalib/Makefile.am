@@ -321,7 +321,6 @@ EXTRA_DIST = \
 	gnu/classpath/tools/doclets/xmldoclet/doctranslet/package.html \
 	gnu/classpath/tools/gjdoc/expr/java-expression.g
 
-FASTJAR=$(kaffe_builddir)/external/gcc/fastjar/fastjar
 JAR_CMD1 = (cd $(LIBDIR) && $(FASTJAR) -cf $(CURDIR)/$@.new $(SRCDIRS))
 JAR_CMD2 = (cd $(srcdir) && $(FASTJAR) -uf $(CURDIR)/$@.new $(gjdoc_ressources))
 JAR_CMD3 = ($(FASTJAR) -uf $(CURDIR)/$@.new version.properties)

@@ -176,6 +176,7 @@ ESD_CONFIG = @ESD_CONFIG@
 ESD_LIBS = @ESD_LIBS@
 EXEEXT = @EXEEXT@
 F77 = @F77@
+FASTJAR = @FASTJAR@
 FFLAGS = @FFLAGS@
 GC_NAME = @GC_NAME@
 GETOPT_H = @GETOPT_H@
@@ -774,7 +775,6 @@ org_kaffe_util_log_SRCS = \
 EXTRA_DIST = \
 	$(kaffeawt_jar_SRCS)
 
-FASTJAR = $(kaffe_builddir)/external/gcc/fastjar/fastjar
 JAR_CMD1 = (dstdir=`pwd`; cd $(LIBDIR) && $(FASTJAR) -cf $$dstdir/$(CLASSFILE) $(SRCDIRS))
 LIBDIR = lib
 rebuildLib = $(top_builddir)/libraries/javalib/rebuildLib

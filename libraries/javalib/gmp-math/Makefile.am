@@ -8,7 +8,6 @@
 # of this file.
 
 CLASSFILE = gmpjavamath.jar
-FASTJAR = $(top_builddir)/external/gcc/fastjar/fastjar
 SRCDIRS = java
 
 jrelib_DATA = $(CLASSFILE)

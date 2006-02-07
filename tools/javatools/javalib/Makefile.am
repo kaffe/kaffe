@@ -9,7 +9,6 @@
 
 CLASSFILE = tools.jar
 SRCDIRS = gnu
-FASTJAR = $(top_builddir)/external/gcc/fastjar/fastjar
 
 toolslib_DATA = $(CLASSFILE)
 

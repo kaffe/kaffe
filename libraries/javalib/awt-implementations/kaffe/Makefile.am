@@ -412,7 +412,6 @@ org_kaffe_util_log_SRCS = \
 EXTRA_DIST = \
 	$(kaffeawt_jar_SRCS)
 
-FASTJAR=$(kaffe_builddir)/external/gcc/fastjar/fastjar
 JAR_CMD1 = (dstdir=`pwd`; cd $(LIBDIR) && $(FASTJAR) -cf $$dstdir/$(CLASSFILE) $(SRCDIRS))
 
 LIBDIR = lib
