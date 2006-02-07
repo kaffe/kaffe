@@ -1,3 +1,9 @@
+2006-02-07  Holger Schurig  <hs4233@mail.mn-solutions.de>
+
+	Fix for #8.
+
+	* kaffe/m4/gwqt.m4: Fixed Qt directory layout assumptions.
+
 2006-02-07  Dalibor Topic  <robilad@kaffe.org>
 
 	Fix for #7.

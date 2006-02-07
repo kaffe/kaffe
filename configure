@@ -1170,6 +1170,7 @@ Optional Packages:
                           engine (not built by default)
   --with-qt-libraries=DIR Qt library installation directory (default = $QTDIR/lib)
   --with-qt-binaries=DIR  Qt binary installation directory (default = $QTDIR/bin)
+  --with-qt-headers=DIR  Qt include directory (default = $QTDIR/include)
   --with-qtdir=DIR        Qt installation directory (default=$QTDIR)
   --with-kaffe-nanox-awt  enable build of Kaffe's Nano-X AWT engine (not built
                           by default)
@@ -5990,7 +5991,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 5993 "configure"' > conftest.$ac_ext
+  echo '#line 5994 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -7367,7 +7368,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:7370:" \
+echo "$as_me:7371:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -8434,11 +8435,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8437: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8438: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:8441: \$? = $ac_status" >&5
+   echo "$as_me:8442: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -8702,11 +8703,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8705: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8706: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:8709: \$? = $ac_status" >&5
+   echo "$as_me:8710: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -8806,11 +8807,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8809: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8810: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:8813: \$? = $ac_status" >&5
+   echo "$as_me:8814: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -11151,7 +11152,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 11154 "configure"
+#line 11155 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -11251,7 +11252,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 11254 "configure"
+#line 11255 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -13595,11 +13596,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13598: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13599: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:13602: \$? = $ac_status" >&5
+   echo "$as_me:13603: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -13699,11 +13700,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13702: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13703: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:13706: \$? = $ac_status" >&5
+   echo "$as_me:13707: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -15269,11 +15270,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15272: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15273: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:15276: \$? = $ac_status" >&5
+   echo "$as_me:15277: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -15373,11 +15374,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15376: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15377: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:15380: \$? = $ac_status" >&5
+   echo "$as_me:15381: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -17580,11 +17581,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:17583: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:17584: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:17587: \$? = $ac_status" >&5
+   echo "$as_me:17588: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -17848,11 +17849,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:17851: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:17852: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:17855: \$? = $ac_status" >&5
+   echo "$as_me:17856: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -17952,11 +17953,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:17955: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:17956: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:17959: \$? = $ac_status" >&5
+   echo "$as_me:17960: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -48246,17 +48247,24 @@ fi
 
 
 
+echo "$as_me:$LINENO: checking QTLIBDIR" >&5
+echo $ECHO_N "checking QTLIBDIR... $ECHO_C" >&6
+
 # Check whether --with-qt-libraries or --without-qt-libraries was given.
 if test "${with_qt_libraries+set}" = set; then
   withval="$with_qt_libraries"
   QTLIBDIR=$withval
 
 fi;
-
 if test x"$QTLIBDIR" = x"" ; then
   QTLIBDIR=$QTDIR/lib
 fi
+echo "$as_me:$LINENO: result: $QTLIBDIR" >&5
+echo "${ECHO_T}$QTLIBDIR" >&6
 
+
+echo "$as_me:$LINENO: checking QTBINDIR" >&5
+echo $ECHO_N "checking QTBINDIR... $ECHO_C" >&6
 
 # Check whether --with-qt-binaries or --without-qt-binaries was given.
 if test "${with_qt_binaries+set}" = set; then
@@ -48264,10 +48272,27 @@ if test "${with_qt_binaries+set}" = set; then
   QTBINDIR=$withval
 
 fi;
-
 if test x"$QTBINDIR" = x"" ; then
   QTBINDIR=$QTDIR/bin
 fi
+echo "$as_me:$LINENO: result: $QTBINDIR" >&5
+echo "${ECHO_T}$QTBINDIR" >&6
+
+
+echo "$as_me:$LINENO: checking QTINCDIR" >&5
+echo $ECHO_N "checking QTINCDIR... $ECHO_C" >&6
+
+# Check whether --with-qt-headers or --without-qt-headers was given.
+if test "${with_qt_headers+set}" = set; then
+  withval="$with_qt_headers"
+  QTINCDIR=$withval
+
+fi;
+if test x"$QTINCDIR" = x"" ; then
+  QTINCDIR=$QTDIR/include
+fi
+echo "$as_me:$LINENO: result: $QTINCDIR" >&5
+echo "${ECHO_T}$QTINCDIR" >&6
 
 
 echo "$as_me:$LINENO: checking QTDIR" >&5
@@ -48302,7 +48327,7 @@ QTDIR=`echo $QTDIR | perl -p -e 's/\\\\/\\//g'`
 # Figure out which version of Qt we are using
 echo "$as_me:$LINENO: checking Qt version" >&5
 echo $ECHO_N "checking Qt version... $ECHO_C" >&6
-QT_VER=`grep 'define.*QT_VERSION_STR\W' $QTDIR/include/qglobal.h | perl -p -e 's/\D//g'`
+QT_VER=`grep 'define.*QT_VERSION_STR\W' $QTINCDIR/qglobal.h | perl -p -e 's/\D//g'`
 case "${QT_VER}" in
     2*)
         QT_MAJOR="2"
@@ -48452,7 +48477,7 @@ fi
 
 
 # Calculate Qt include path
-QT_CXXFLAGS="-I$QTDIR/include"
+QT_CXXFLAGS="-I$QTINCDIR"
 
 QT_IS_EMBEDDED="no"
 # On unix, figure out if we're doing a static or dynamic link
@@ -48483,7 +48508,7 @@ _ACEOF
         ;;
 
     *)
-        QT_IS_STATIC=`ls $QTLIBDIR/*.a 2> /dev/null`
+        QT_IS_STATIC=`ls $QTLIBDIR/libqt*.a 2>/dev/null`
         if test "x$QT_IS_STATIC" = x; then
             QT_IS_STATIC="no"
         else

@@ -4,23 +4,38 @@ AC_DEFUN([gw_CHECK_QT],
 AC_REQUIRE([AC_PROG_CXX])
 AC_REQUIRE([AC_PATH_X])
 
+
+AC_MSG_CHECKING([QTLIBDIR])
 AC_ARG_WITH([qt-libraries],
   [  --with-qt-libraries=DIR Qt library installation directory (default = $QTDIR/lib)],
   [QTLIBDIR=$withval]
 )
-
 if test x"$QTLIBDIR" = x"" ; then
   QTLIBDIR=$QTDIR/lib
 fi
+AC_MSG_RESULT([$QTLIBDIR])
 
+
+AC_MSG_CHECKING([QTBINDIR])
 AC_ARG_WITH([qt-binaries],
   [  --with-qt-binaries=DIR  Qt binary installation directory (default = $QTDIR/bin)],
   [QTBINDIR=$withval]
 )
-
 if test x"$QTBINDIR" = x"" ; then
   QTBINDIR=$QTDIR/bin
 fi
+AC_MSG_RESULT([$QTBINDIR])
+
+
+AC_MSG_CHECKING([QTINCDIR])
+AC_ARG_WITH([qt-headers],
+  [  --with-qt-headers=DIR  Qt include directory (default = $QTDIR/include)],
+  [QTINCDIR=$withval]
+)
+if test x"$QTINCDIR" = x"" ; then
+  QTINCDIR=$QTDIR/include
+fi
+AC_MSG_RESULT([$QTINCDIR])
 
 
 AC_MSG_CHECKING([QTDIR])
@@ -45,7 +60,7 @@ QTDIR=`echo $QTDIR | perl -p -e 's/\\\\/\\//g'`
 
 # Figure out which version of Qt we are using
 AC_MSG_CHECKING([Qt version])
-QT_VER=`grep 'define.*QT_VERSION_STR\W' $QTDIR/include/qglobal.h | perl -p -e 's/\D//g'`
+QT_VER=`grep 'define.*QT_VERSION_STR\W' $QTINCDIR/qglobal.h | perl -p -e 's/\D//g'`
 case "${QT_VER}" in
     2*)
         QT_MAJOR="2"
@@ -78,7 +93,7 @@ AC_CHECK_PROG(QEMBED, qembed, qembed)
 
 
 # Calculate Qt include path
-QT_CXXFLAGS="-I$QTDIR/include"
+QT_CXXFLAGS="-I$QTINCDIR"
 
 QT_IS_EMBEDDED="no"
 # On unix, figure out if we're doing a static or dynamic link
@@ -105,7 +120,7 @@ case "${host}" in
         ;;
 
     *)
-        QT_IS_STATIC=`ls $QTLIBDIR/*.a 2> /dev/null`
+        QT_IS_STATIC=`ls $QTLIBDIR/libqt*.a 2>/dev/null`
         if test "x$QT_IS_STATIC" = x; then
             QT_IS_STATIC="no"
         else
