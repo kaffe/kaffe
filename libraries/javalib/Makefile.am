@@ -63,19 +63,6 @@ EXTRA_DIST= \
 	vmspecific/META-INF/services/javax.sound.sampled.spi.AudioFileWriter \
 	vmspecific/META-INF/services/javax.sound.sampled.spi.FormatConversionProvider \
 	vmspecific/META-INF/services/javax.sound.sampled.spi.MixerProvider \
-	vmspecific/com/jcraft/jzlib/Adler32.java \
-	vmspecific/com/jcraft/jzlib/Deflate.java \
-	vmspecific/com/jcraft/jzlib/InfBlocks.java \
-	vmspecific/com/jcraft/jzlib/InfCodes.java \
-	vmspecific/com/jcraft/jzlib/InfTree.java \
-	vmspecific/com/jcraft/jzlib/Inflate.java \
-	vmspecific/com/jcraft/jzlib/JZlib.java \
-	vmspecific/com/jcraft/jzlib/StaticTree.java \
-	vmspecific/com/jcraft/jzlib/Tree.java \
-	vmspecific/com/jcraft/jzlib/ZInputStream.java \
-	vmspecific/com/jcraft/jzlib/ZOutputStream.java \
-	vmspecific/com/jcraft/jzlib/ZStream.java \
-	vmspecific/com/jcraft/jzlib/ZStreamException.java \
 	vmspecific/gnu/bytecodecvssnap/Access.java \
 	vmspecific/gnu/bytecodecvssnap/ArrayClassLoader.java \
 	vmspecific/gnu/bytecodecvssnap/ArrayType.java \

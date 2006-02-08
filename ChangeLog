@@ -1,3 +1,23 @@
+2006-02-08  Dalibor Topic  <robilad@kaffe.org>
+
+	* THIRPARTY: Removed jzlib and jessie. No longer needed since 
+	jessie was merged into GNU Classpath.
+
+	libraries/javalib/vmspecific/com/jcraft/jzlib/Adler32.java,
+	libraries/javalib/vmspecific/com/jcraft/jzlib/Deflate.java,
+	libraries/javalib/vmspecific/com/jcraft/jzlib/InfBlocks.java,
+	libraries/javalib/vmspecific/com/jcraft/jzlib/InfCodes.java,
+	libraries/javalib/vmspecific/com/jcraft/jzlib/InfTree.java,
+	libraries/javalib/vmspecific/com/jcraft/jzlib/Inflate.java,
+	libraries/javalib/vmspecific/com/jcraft/jzlib/JZlib.java,
+	libraries/javalib/vmspecific/com/jcraft/jzlib/StaticTree.java,
+	libraries/javalib/vmspecific/com/jcraft/jzlib/Tree.java,
+	libraries/javalib/vmspecific/com/jcraft/jzlib/ZInputStream.java,
+	libraries/javalib/vmspecific/com/jcraft/jzlib/ZOutputStream.java,
+	libraries/javalib/vmspecific/com/jcraft/jzlib/ZStream.java,
+	libraries/javalib/vmspecific/com/jcraft/jzlib/ZStreamException.java:
+	Removed.
+
 2006-02-07  Holger Schurig  <hs4233@mail.mn-solutions.de>
 
 	Fix for #8.
