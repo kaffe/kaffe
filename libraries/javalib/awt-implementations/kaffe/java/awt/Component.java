@@ -1,3 +1,19 @@
+/**
+ * Component - abstract root of all widgets
+ *
+ * Copyright (c) 1998
+ *      Transvirtual Technologies, Inc.  All rights reserved.
+ * Copyright (c) 2006
+ *      Kaffe.org developers. See ChangeLog for details.
+ *
+ * See the file "license.terms" for information on usage and redistribution 
+ * of this file. 
+ *
+ * original code P.C.Mehlitz
+ * some code taken or adapted from Classpath
+ */
+ 
+ 
 package java.awt;
 
 import gnu.classpath.Pointer;
@@ -30,17 +46,9 @@ import java.awt.dnd.DropTarget;
 
 import org.kaffe.awt.DoNothingPeer;
 
-/**
- * Component - abstract root of all widgets
- *
- * Copyright (c) 1998
- *    Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution 
- * of this file. 
- *
- * @author P.C.Mehlitz
- */
+
+ 
+ 
 abstract public class Component
   extends Object
   implements ImageObserver, MenuContainer, Serializable
