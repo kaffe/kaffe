@@ -1,5 +1,5 @@
-import gnu.crypto.cipher.CipherFactory;
-import gnu.crypto.cipher.IBlockCipher;
+import gnu.javax.crypto.cipher.CipherFactory;
+import gnu.javax.crypto.cipher.IBlockCipher;
 
 import java.util.Iterator;
 
