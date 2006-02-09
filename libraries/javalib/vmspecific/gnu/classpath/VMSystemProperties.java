@@ -181,6 +181,10 @@ class VMSystemProperties
 	    {
 	      properties.setProperty("user.region", LOCALE.substring(3, 5));
 	    }
+	  if (LOCALE.charAt(5) == '.')
+	    {
+	      properties.setProperty("file.encoding", LOCALE.substring(6));
+	    }
 	}
       else 
 	{

@@ -1,5 +1,13 @@
 2006-02-09  Dalibor Topic  <robilad@kaffe.org>
 
+	Fix for #15.
+
+	* libraries/javalib/vmspecific/gnu/classpath/VMSystemProperties.java:
+	Check if there is a file encoding specified in the locale, and set
+	file.encoding property to it if it is.
+ 
+2006-02-09  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/vmspecific/gnu/crypto/Properties.java,
 	libraries/javalib/vmspecific/gnu/crypto/Registry.java,
 	libraries/javalib/vmspecific/gnu/crypto/assembly/Assembly.java,
