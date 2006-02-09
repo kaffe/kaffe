@@ -1,5 +1,12 @@
 2006-02-09  Dalibor Topic  <robilad@kaffe.org>
 
+	Fix for #12.
+
+	* kaffe/kaffeh/main.c: (options) Handle -force.
+	(usage) Document -force.
+
+2006-02-09  Dalibor Topic  <robilad@kaffe.org>
+
 	Fix for #15.
 
 	* libraries/javalib/vmspecific/gnu/classpath/VMSystemProperties.java:

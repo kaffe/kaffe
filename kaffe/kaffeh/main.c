@@ -344,6 +344,11 @@ options(int argc, char** argv)
 			i++;
 			directoryName = argv[i];
 		}
+		else if (strcmp(argv[i], "-force") == 0) {
+		  /* ignore the flag, since kaffeh overwrites
+		   * the output file in any case.
+		   */
+		}
 		else {
 			dprintf("Unknown flag: %s\n", argv[i]);
 		}
@@ -400,4 +405,6 @@ usage(void)
 #endif /*KAFFE_VMDEBUG*/
 	dprintf("	-o <file>		Generate all output to the given file\n");
 	dprintf("	-d <directory>		Directory for the output\n");
+	dprintf("Compatibility options:\n");
+	dprintf("	-force			Always (over)write output file\n");
 }
