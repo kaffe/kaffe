@@ -143,13 +143,13 @@ public class Connection extends URLConnection
   {
     if (str == null)
       return null;
-    byte[] buf = new byte[str.length()];
+
+    final int MAX_BYTES_PER_UTF_8_CHAR = 3;
+    byte[] buf = new byte[str.length()*MAX_BYTES_PER_UTF_8_CHAR];
     int pos = 0;
     for (int i = 0; i < str.length(); i++)
       {
 	char c = str.charAt(i);
-	if (c > 127)
-	  throw new MalformedURLException(str + " : Invalid character");
 	if (c == '%')
 	  {
 	    if (i + 2 >= str.length())
@@ -160,6 +160,17 @@ public class Connection extends URLConnection
 	      throw new MalformedURLException(str + " : Invalid quoted character");
 	    buf[pos++] = (byte) (hi * 16 + lo);
 	  }
+ 	else if (c > 127) {
+	    try {
+		byte [] c_as_bytes = Character.toString(c).getBytes("utf-8");
+		for (int j = 0; j < c_as_bytes.length ; j++) {
+		    buf[pos++] = c_as_bytes[j];
+		}
+	    }
+	    catch (java.io.UnsupportedEncodingException x2) {
+		throw (Error) new InternalError().initCause(x2);
+	    }
+	}    
 	else
 	  buf[pos++] = (byte) c;
       }

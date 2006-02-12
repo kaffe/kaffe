@@ -65,10 +65,24 @@ stringJava2CBuf(const Hjava_lang_String* js, char* cs, int len)
 	if (len > STRING_SIZE(js)) {
 		len = STRING_SIZE(js);
 	}
-	cs[len] = 0;
+
 	while (--len >= 0) {
-		*cs++ = (char)*chrs++;
+	  if (*chrs >= 0x0001 && *chrs <= 0x007F) {
+	    *cs++ = *chrs++ & 0x7F;
+	  }
+	  else if (*chrs >= 0x0080 && *chrs <= 0x07FF) {
+	    *cs++ = 0xC0 | ((*chrs >> 6) & 0x1F);
+	    *cs++ = 0x80 | (*chrs++ & 0x3F);
+	  }
+	  else {
+	    *cs++ = 0xE0 | ((*chrs >> 12) & 0x0F);
+	    *cs++ = 0x80 | ((*chrs >> 6) & 0x3F);
+	    *cs++ = 0x80 | (*chrs++ & 0x3F);
+	  }
 	}
+	
+	*cs = 0;
+
 	return (cs);
 }
 

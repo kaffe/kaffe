@@ -3,8 +3,10 @@
  *
  * Copyright (c) 1996, 1997, 1998, 1999
  *	Transvirtual Technologies, Inc.  All rights reserved.
- * Copyright (c) 2003
+ * Copyright (c) 2003, 2006
  *      Kaffe's team.
+ * Copyright (c) 2006
+ *      Free Software Foundation, Inc.
  *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
@@ -25,6 +27,7 @@
 #include "defs.h"
 #include "files.h"
 #include "../../../include/system.h"
+#include "jni.h"
 #include "java_io_VMFile.h"
 #include "support.h"
 #include "stringSupport.h"
@@ -32,15 +35,24 @@
 /*
  * Is named item a file?
  */
-jboolean java_io_VMFile_isFile(struct Hjava_lang_String* fileName)
+JNIEXPORT jboolean JNICALL
+Java_java_io_VMFile_isFile (JNIEnv * env,
+			    jobject obj __attribute__ ((__unused__)),
+			    jstring name)
 {
-  struct stat buf;
-  char str[MAXPATHLEN];
+  const char *filename;
   int r;
+  struct stat buf;
   
-  stringJava2CBuf(fileName, str, sizeof(str));
-  
-  r = KSTAT(str, &buf);
+  filename = (*env)->GetStringUTFChars (env, name, 0);
+  if (filename == NULL)
+    {
+      return (0);
+    }
+
+  r = KSTAT(filename, &buf);
+  (*env)->ReleaseStringUTFChars (env, name, filename);
+
   if (r == 0 && S_ISREG(buf.st_mode)) {
     return (1);
   }
@@ -52,15 +64,24 @@ jboolean java_io_VMFile_isFile(struct Hjava_lang_String* fileName)
 /*
  * Is named item a directory?
  */
-jboolean java_io_VMFile_isDirectory(struct Hjava_lang_String* fileName)
+JNIEXPORT jboolean JNICALL
+Java_java_io_VMFile_isDirectory (JNIEnv * env,
+				 jobject obj __attribute__ ((__unused__)),
+				 jstring name)
 {
-  struct stat buf;
-  char str[MAXPATHLEN];
+  const char * filename;
   int r;
+  struct stat buf;
 
-  stringJava2CBuf(fileName, str, sizeof(str));
+  filename = (*env)->GetStringUTFChars (env, name, 0);
+  if (filename == NULL)
+    {
+      return (0);
+    }
   
-  r = KSTAT(str, &buf);
+  r = KSTAT(filename, &buf);
+  (*env)->ReleaseStringUTFChars (env, name, filename);
+
   if (r == 0 && S_ISDIR(buf.st_mode)) {
     return (1);
   }
@@ -72,29 +93,51 @@ jboolean java_io_VMFile_isDirectory(struct Hjava_lang_String* fileName)
 /*
  * Does named file exist?
  */
-jboolean java_io_VMFile_exists(struct Hjava_lang_String* fileName)
+JNIEXPORT jboolean JNICALL
+Java_java_io_VMFile_exists (JNIEnv * env,
+			    jobject obj __attribute__ ((__unused__)),
+			    jstring name)
 {
+  const char *filename;
+  int result;
   struct stat buf;
-  char str[MAXPATHLEN];
   
-  stringJava2CBuf(fileName, str, sizeof(str));
+  filename = (*env)->GetStringUTFChars (env, name, 0);
+  if (filename == NULL)
+    {
+      return (0);
+    }
   
   /* A file exists if I can stat it */
-  return (KSTAT(str, &buf) == 0);
+  result = KSTAT(filename, &buf);
+  (*env)->ReleaseStringUTFChars (env, name, filename);
+
+  return result == 0;
 }
 
 /*
  * Last modified time on file.
  */
-jlong java_io_VMFile_lastModified(struct Hjava_lang_String* fileName)
+JNIEXPORT jlong JNICALL
+Java_java_io_VMFile_lastModified (JNIEnv * env,
+				  jobject obj __attribute__ ((__unused__)),
+				  jstring name)
 {
+  const char *filename;
   struct stat buf;
-  char str[MAXPATHLEN];
   int r;
   
-  stringJava2CBuf(fileName, str, sizeof(str));
+  filename = (*env)->GetStringUTFChars (env, name, 0);
+  if (filename == NULL)
+    {
+      return (0);
+    }
+
   
-  r = KSTAT(str, &buf);
+  r = KSTAT(filename, &buf);
+
+  (*env)->ReleaseStringUTFChars (env, name, filename);
+
   if (r != 0) {
     return ((jlong)0);
   }
@@ -104,44 +147,75 @@ jlong java_io_VMFile_lastModified(struct Hjava_lang_String* fileName)
 /*
  * Can I write to this file?
  */
-jboolean
-java_io_VMFile_canWrite(struct Hjava_lang_String* fileName)
+JNIEXPORT jboolean JNICALL
+Java_java_io_VMFile_canWrite (JNIEnv * env,
+			      jobject obj __attribute__ ((__unused__)),
+			      jstring name)
 {
-	char str[MAXPATHLEN];
-	int r;
+  const char *filename;
+  int r;
 
-	stringJava2CBuf(fileName, str, sizeof(str));
-	/* XXX make part of jsyscall interface !? */
-	r = access(str, W_OK);
-	return (r < 0 ? 0 : 1);
+  filename = (*env)->GetStringUTFChars (env, name, 0);
+  if (filename == NULL)
+    {
+      return (0);
+    }
+
+  /* XXX make part of jsyscall interface !? */
+  r = access(filename, W_OK);
+
+  (*env)->ReleaseStringUTFChars (env, name, filename);
+
+  return (r < 0 ? 0 : 1);
 }
 
 /*
  * Can I read from this file.
  */
-jboolean java_io_VMFile_canRead(struct Hjava_lang_String* fileName)
+JNIEXPORT jboolean JNICALL
+Java_java_io_VMFile_canRead (JNIEnv * env,
+			     jobject obj __attribute__ ((__unused__)),
+			     jstring name)
 {
-  char str[MAXPATHLEN];
+  const char *filename;
   int r;
   
-  stringJava2CBuf(fileName, str, sizeof(str));
+  filename = (*env)->GetStringUTFChars (env, name, 0);
+  if (filename == NULL)
+    {
+      return (0);
+    }
+
   /* XXX make part of jsyscall interface !? */
-  r = access(str, R_OK);
+  r = access(filename, R_OK);
+
+  (*env)->ReleaseStringUTFChars (env, name, filename);
+
   return (r < 0 ? 0 : 1);
 }
 
 /*
  * Return length of file.
  */
-jlong java_io_VMFile_length(struct Hjava_lang_String* fileName)
+JNIEXPORT jlong JNICALL
+Java_java_io_VMFile_length (JNIEnv * env,
+			    jobject obj __attribute__ ((__unused__)),
+			    jstring name)
 {
+  const char *filename;
   struct stat buf;
-  char str[MAXPATHLEN];
   int r;
   
-  stringJava2CBuf(fileName, str, sizeof(str));
+  filename = (*env)->GetStringUTFChars (env, name, 0);
+  if (filename == NULL)
+    {
+      return (0);
+    }
   
-  r = KSTAT(str, &buf);
+  r = KSTAT(filename, &buf);
+
+  (*env)->ReleaseStringUTFChars (env, name, filename);
+
   if (r != 0) {
     return ((jlong)0);
   }
@@ -151,54 +225,92 @@ jlong java_io_VMFile_length(struct Hjava_lang_String* fileName)
 /*
  * Create a directory.
  */
-jboolean java_io_VMFile_mkdir(struct Hjava_lang_String* fileName)
+JNIEXPORT jboolean JNICALL
+Java_java_io_VMFile_mkdir (JNIEnv * env,
+			   jobject obj __attribute__ ((__unused__)),
+			   jstring name)
 {
-  char str[MAXPATHLEN];
+  const char *filename;
   int r;
   
-  stringJava2CBuf(fileName, str, sizeof(str));
-  r = KMKDIR(str, 0777);
+  filename = (*env)->GetStringUTFChars (env, name, 0);
+  if (filename == NULL)
+    {
+      return (0);
+    }
+ 
+  r = KMKDIR(filename, 0777);
+
+  (*env)->ReleaseStringUTFChars (env, name, filename);
+
   return (r != 0 ? 0 : 1);
 }
 
 /*
  * Rename a file.
  */
-jboolean java_io_VMFile_renameTo(struct Hjava_lang_String* fromName,
-				 struct Hjava_lang_String* toName)
+JNIEXPORT jboolean JNICALL
+Java_java_io_VMFile_renameTo (JNIEnv * env,
+			      jobject obj __attribute__ ((__unused__)),
+			      jstring t, jstring d)
 {
-  char str[MAXPATHLEN];
-  char str2[MAXPATHLEN];
+  const char *old_filename, *new_filename;
   int r;
-  
-  stringJava2CBuf(fromName, str, sizeof(str));
-  stringJava2CBuf(toName, str2, sizeof(str2));
-  
-  r = KRENAME(str, str2);
+
+  old_filename = (*env)->GetStringUTFChars (env, t, 0);
+  if (old_filename == NULL)
+    {
+      return (0);
+    }
+
+  new_filename = (*env)->GetStringUTFChars (env, d, 0);
+  if (new_filename == NULL)
+    {
+      (*env)->ReleaseStringUTFChars (env, t, old_filename);
+      return (0);
+    }
+
+  r = KRENAME(old_filename, new_filename);
+
+  (*env)->ReleaseStringUTFChars (env, t, old_filename);
+  (*env)->ReleaseStringUTFChars (env, t, new_filename);
+
   return (r != 0 ? 0 : 1);
 }
 
 /*
  * Delete a file.
  */
-jboolean java_io_VMFile_delete(struct Hjava_lang_String* fileName)
+JNIEXPORT jboolean JNICALL
+Java_java_io_VMFile_delete (JNIEnv * env,
+			    jobject obj __attribute__ ((__unused__)),
+			    jstring name)
 {
-	char str[MAXPATHLEN];
-	int r;
+  const char *filename;
+  int r;
 	
-	stringJava2CBuf(fileName, str, sizeof(str));
+  filename = (*env)->GetStringUTFChars (env, name, 0);
+  if (filename == NULL)
+    {
+      return (0);
+    }
 
-	r = KREMOVE(str);
-	return(r != 0 ? 0 : 1);
+  r = KREMOVE(filename);
+
+  (*env)->ReleaseStringUTFChars (env, name, filename);
+
+  return(r != 0 ? 0 : 1);
 }
 
 /*
  * Get a directory listing.
  */
-HArrayOfObject* java_io_VMFile_list(struct Hjava_lang_String* dirName)
+JNIEXPORT jobjectArray JNICALL
+Java_java_io_VMFile_list (JNIEnv * env, jobject obj
+			  __attribute__ ((__unused__)), jstring name)
 {
 #if defined(HAVE_DIRENT_H)
-  char path[MAXPATHLEN];
+  const char *dirname;
   DIR* dir;
   struct dirent* entry;
   struct dentry {
@@ -212,11 +324,18 @@ HArrayOfObject* java_io_VMFile_list(struct Hjava_lang_String* dirName)
   int count;
   int i;
   int oom = 0;
-  
-  stringJava2CBuf(dirName, path, sizeof(path));
+
+  dirname = (*env)->GetStringUTFChars (env, name, 0);
+  if (dirname == NULL)
+    {
+      return (0);
+    }
   
   /* XXX make part of jsyscall interface !? */
-  dir = opendir(path);
+  dir = opendir(dirname);
+
+  (*env)->ReleaseStringUTFChars (env, name, dirname);
+
   if (dir == 0) {
     return (NULL);
   }
@@ -284,15 +403,25 @@ HArrayOfObject* java_io_VMFile_list(struct Hjava_lang_String* dirName)
 #endif
 }
 
-jboolean java_io_VMFile_create(struct Hjava_lang_String* fileName)
+JNIEXPORT jboolean JNICALL
+Java_java_io_VMFile_create (JNIEnv * env,
+			    jclass clazz __attribute__ ((__unused__)),
+			    jstring name)
 {
-  char str[MAXPATHLEN];
+  const char *filename;
   int fd;
   int rc;
   
-  stringJava2CBuf(fileName, str, sizeof(str));
+  filename = (*env)->GetStringUTFChars (env, name, 0);
+  if (filename == NULL)
+    {
+      return (0);
+    }
+ 
+  rc = KOPEN(filename, O_EXCL|O_WRONLY|O_BINARY|O_CREAT, 0600, &fd);
 
-  rc = KOPEN(str, O_EXCL|O_WRONLY|O_BINARY|O_CREAT, 0600, &fd);
+  (*env)->ReleaseStringUTFChars (env, name, filename);
+
   switch (rc) {
   case 0:
     break;
@@ -307,39 +436,62 @@ jboolean java_io_VMFile_create(struct Hjava_lang_String* fileName)
   return 1;
 }
 
-jboolean java_io_VMFile_setLastModified(struct Hjava_lang_String* fileName,
-					jlong thetime)
+JNIEXPORT jboolean JNICALL
+Java_java_io_VMFile_setLastModified (JNIEnv * env,
+				     jobject obj __attribute__ ((__unused__)),
+				     jstring name, jlong newtime)
 {
 #ifdef HAVE_UTIME_H
-  char path[MAXPATHLEN];
+  const char *filename;
+  int result;
   struct utimbuf ub;
 #endif
   
-  if (thetime < 0)
+  if (newtime < 0)
     SignalError("java.lang.IllegalArgumentException", "time < 0");
 #ifdef HAVE_UTIME_H
-  stringJava2CBuf(fileName, path, sizeof(path));
-  ub.actime = (time_t)(thetime / 1000);
+
+  ub.actime = (time_t)(newtime / 1000);
   ub.modtime = ub.actime;
-  return (utime(path, &ub) >= 0);
+
+  filename = (*env)->GetStringUTFChars (env, name, 0);
+  if (filename == NULL)
+    {
+      return (0);
+    }
+
+  result = utime(filename, &ub);
+
+  (*env)->ReleaseStringUTFChars (env, name, filename);
+
+  return result >= 0;
 #else
   return 0;
 #endif
 }
 
-jboolean java_io_VMFile_setReadOnly(struct Hjava_lang_String* fileName)
+JNIEXPORT jboolean JNICALL
+Java_java_io_VMFile_setReadOnly (JNIEnv * env,
+				 jobject obj __attribute__ ((__unused__)),
+				 jstring name)
 {
+  const char *filename;
   struct stat buf;
-  char str[MAXPATHLEN];
   int r;
   
-  stringJava2CBuf(fileName, str, sizeof(str));
+  filename = (*env)->GetStringUTFChars (env, name, 0);
+  if (filename == NULL)
+    {
+      return (0);
+    }
   
-  r = KSTAT(str, &buf);
-  if (r != 0)
-    return 0;
-  
-  r = chmod(str, buf.st_mode & ~(S_IWOTH|S_IWGRP|S_IWUSR));
+  r = KSTAT(filename, &buf);
+
+  if (r == 0)
+    r = chmod(filename, buf.st_mode & ~(S_IWOTH|S_IWGRP|S_IWUSR));
+
+  (*env)->ReleaseStringUTFChars (env, name, filename);
+
   return (r == 0);
 }
 

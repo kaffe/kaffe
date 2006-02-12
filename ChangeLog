@@ -1,3 +1,25 @@
+2006-02-12  Dalibor Topic  <robilad@kaffe.org>
+
+	Fix for #16.
+
+	* kaffe/kaffevm/string.c: (stringJava2C)
+	Fixed conversion to C chars for Java unicode
+	characters >= 127.
+
+	* libraries/clib/io/File.c: Switched all functions
+	to use JNI style declarations. Use GetStringUTFChars
+	and ReleaseStringUTFChars to convert Java Strings
+	to C chars. Code taken from GNU Classpath. Added
+	FSF to copyright header.
+
+	* libraries/javalib/external/classpath/gnu/java/net/protocol/file/Connection.java
+	(unquote) Convert Java characters above 127 to UTF-8 rather than throwing an
+	exception.
+
+	* libraries/javalib/external/classpath/java/net/URLClassLoader.java
+	(addURLImpl) Check if a file URL points to a directory before
+	using a JarURLClassLoader.
+
 2006-02-09  Dalibor Topic  <robilad@kaffe.org>
 
 	Fix for #12.
