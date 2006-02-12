@@ -1,5 +1,7 @@
 2006-02-12  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	Fix for #19
+
 	* kaffe/kaffevm/file.h
 	(CP_NULLCLASS): New type to propagate the 0 length class error.
 
