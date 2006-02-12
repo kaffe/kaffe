@@ -1,3 +1,19 @@
+/**
+ * Window -
+ *
+ * Copyright (c) 1998
+ *      Transvirtual Technologies, Inc.  All rights reserved.
+ * Copyright (c) 2006
+ *      Kaffe.org developers. See ChangeLog for details.
+ *
+ * See the file "license.terms" for information on usage and redistribution 
+ * of this file. 
+ *
+ * original code P.C.Mehlitz
+ * some code taken or adapted from Classpath
+ */
+
+
 package java.awt;
 
 import java.awt.event.FocusEvent;
@@ -7,17 +23,7 @@ import java.awt.peer.ComponentPeer;
 
 import gnu.classpath.Pointer;
 
-/**
- * Window -
- *
- * Copyright (c) 1998
- *      Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
- *
- * @author P.C.Mehlitz
- */
+
 public class Window
   extends Container
 {
@@ -398,6 +404,79 @@ public void toFront () {
 
 // TODO this is only a stub
 public void setLocationRelativeTo(Component c) {
+    int x = 0;
+    int y = 0;
+    
+    if (c == null || !c.isShowing())
+      {
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        Point center = ge.getCenterPoint();
+        x = center.x - (width / 2);
+        y = center.y - (height / 2);
+      }
+    else
+      {
+        int cWidth = c.getWidth();
+        int cHeight = c.getHeight();
+        Dimension screenSize = getToolkit().getScreenSize();
+
+        x = c.getLocationOnScreen().x;
+        y = c.getLocationOnScreen().y;
+        
+        // If bottom of component is cut off, window placed
+        // on the left or the right side of component
+        if ((y + cHeight) > screenSize.height)
+          {
+            // If the right side of the component is closer to the center
+            if ((screenSize.width / 2 - x) <= 0)
+              {
+                if ((x - width) >= 0)
+                  x -= width;
+                else
+                  x = 0;
+              }
+            else
+              {
+                if ((x + cWidth + width) <= screenSize.width)
+                  x += cWidth;
+                else
+                  x = screenSize.width - width;
+              }
+
+            y = screenSize.height - height;
+          }
+        else if (cWidth > width || cHeight > height)
+          {
+            // If right side of component is cut off
+            if ((x + width) > screenSize.width)
+              x = screenSize.width - width;
+            // If left side of component is cut off
+            else if (x < 0)
+              x = 0;
+            else
+              x += (cWidth - width) / 2;
+            
+            y += (cHeight - height) / 2;
+          }
+        else
+          {
+            // If right side of component is cut off
+            if ((x + width) > screenSize.width)
+              x = screenSize.width - width;
+            // If left side of component is cut off
+            else if (x < 0 || (x - (width - cWidth) / 2) < 0)
+              x = 0;
+            else
+              x -= (width - cWidth) / 2;
+
+            if ((y - (height - cHeight) / 2) > 0)
+              y -= (height - cHeight) / 2;
+            else
+              y = 0;
+          }
+      }
+
+    setLocation(x, y);
 }
 
 }
