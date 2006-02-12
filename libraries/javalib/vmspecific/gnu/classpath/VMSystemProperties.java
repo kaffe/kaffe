@@ -173,24 +173,42 @@ class VMSystemProperties
       final String SUN_BOOT_CLASS_PATH = getSunBootClassPath();
       properties.setProperty("sun.boot.class.path", SUN_BOOT_CLASS_PATH);
 
+
+      // use en_US locale by default unless something is set.
+      properties.setProperty("user.language", "en");
+      properties.setProperty("user.region", "US");
+
       final String LOCALE = getLocale();
-      if (LOCALE != null && LOCALE.length() > 2)
+      if (LOCALE != null)
 	{
-	  properties.setProperty("user.language", LOCALE.substring(0, 2));
-	  if (LOCALE.charAt(2) == '_')
-	    {
-	      properties.setProperty("user.region", LOCALE.substring(3, 5));
-	    }
-	  if (LOCALE.charAt(5) == '.')
-	    {
-	      properties.setProperty("file.encoding", LOCALE.substring(6));
-	    }
-	}
-      else 
-	{
-	  // if no locale set, use en_US
-	  properties.setProperty("user.language", "en");
-	  properties.setProperty("user.region", "US");
+	    final char LANGUAGE_DELIMITER = '_';
+	    final int END_OF_LANGUAGE_NAME = LOCALE.indexOf(LANGUAGE_DELIMITER);
+
+	    if (-1 == END_OF_LANGUAGE_NAME)
+		properties.setProperty("user.language", LOCALE);
+	    else
+		{
+		    final String LANGUAGE = LOCALE.substring(0, END_OF_LANGUAGE_NAME);
+		    properties.setProperty("user.language", LANGUAGE);
+
+		    final char REGION_DELIMITER = '.';
+		    final int END_OF_REGION_NAME = LOCALE.indexOf(REGION_DELIMITER);		    
+		    if (-1 == END_OF_REGION_NAME)
+			{
+			    final String REGION = LOCALE.substring(END_OF_LANGUAGE_NAME + 1);
+			    properties.setProperty("user.region", REGION);
+			}
+		    else
+			{
+			    final String REGION = LOCALE.substring(END_OF_LANGUAGE_NAME + 1,
+								   END_OF_REGION_NAME);
+			    properties.setProperty("user.region", REGION);
+
+			    final String ENCODING = LOCALE.substring(END_OF_REGION_NAME + 1);
+			    properties.setProperty("file.encoding", 
+						   LOCALE.substring(END_OF_REGION_NAME + 1));
+			}
+		}
 	}
 
       // Add GNU Classpath specific properties
