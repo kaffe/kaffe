@@ -215,6 +215,7 @@ printStackTrace(struct Hjava_lang_Throwable* o,
 		struct Hjava_lang_Object* p, int nullOK)
 {
 	int i;
+	struct Hjava_lang_Throwable *nextCause = o;
 	Hjava_lang_VMThrowable* vmstate;
 	stackTraceInfo* info;
 	Method* meth;
@@ -227,86 +228,131 @@ printStackTrace(struct Hjava_lang_Throwable* o,
 	jchar* cptr;
 	char* class_dot_name;
 	errorInfo einfo;
+	
+	do
+	  {
+	    o = nextCause;	    
 
-	if (unhand(o)->detailMessage != NULL) {
-		char *cstr = checkPtr (stringJava2C(unhand(o)->detailMessage));
-		dprintf ("%s\n", cstr);
-		KFREE(cstr);
-	}
-
-	vmstate = (Hjava_lang_VMThrowable*)unhand(o)->vmState;
-	if (vmstate == NULL) {
-		return;
-	}
-	info = (stackTraceInfo*)unhand(vmstate)->vmdata;
-	if (info == NULL) {
-		return;
-	}
-	for (i = 0; info[i].meth != ENDOFSTACK; i++) {
-		_pc = info[i].pc;
-		meth = info[i].meth; 
-		if (meth != NULL) {
-			linenr = getLineNumber (meth, _pc);
+	    vmstate = (Hjava_lang_VMThrowable*)unhand(o)->vmState;
+	    if (vmstate == NULL) {
+	      return;
+	    }
+	    info = (stackTraceInfo*)unhand(vmstate)->vmdata;
+	    if (info == NULL) {
+	      return;
+	    }
+	    for (i = 0; info[i].meth != ENDOFSTACK; i++) {
+	      _pc = info[i].pc;
+	      meth = info[i].meth; 
+	      if (meth != NULL) {
+		linenr = getLineNumber (meth, _pc);
 			
-			/* Even if we are reporting an out of memory and
-			   checkPtr fails, this is ok.  If we can't allocate
-			   a new one, the vm will die in an orderly manner.
-			*/
-			class_dot_name = checkPtr(
-			    KMALLOC(strlen(CLASS_CNAME(meth->class)) + 1));
-			pathname2classname(CLASS_CNAME(meth->class), class_dot_name);
-			buf = checkPtr(KMALLOC(strlen(class_dot_name)
-			    + strlen(meth->name->data)
-			    + strlen(CLASS_SOURCEFILE(meth->class))
-			    + 64));
+		/* Even if we are reporting an out of memory and
+		   checkPtr fails, this is ok.  If we can't allocate
+		   a new one, the vm will die in an orderly manner.
+		*/
+		class_dot_name = checkPtr(
+					  KMALLOC(strlen(CLASS_CNAME(meth->class)) + 1));
+		pathname2classname(CLASS_CNAME(meth->class), class_dot_name);
+		buf = checkPtr(KMALLOC(strlen(class_dot_name)
+				       + strlen(meth->name->data)
+				       + strlen(CLASS_SOURCEFILE(meth->class))
+				       + 64));
 
-			if (linenr == -1) {
-				if (meth->accflags & ACC_NATIVE) {
-					sprintf(buf, "   at %s.%s (%s:native)",
-						class_dot_name,
-						meth->name->data, 
-						CLASS_SOURCEFILE(meth->class));
-				}
-				else {
-					sprintf(buf, "   at %s.%s (%s:line unknown, pc %p)",
-						class_dot_name,
-						meth->name->data, 
-						CLASS_SOURCEFILE(meth->class),
-						(void*)_pc);
-				}
-			}
-			else {
-				sprintf(buf, "   at %s.%s (%s:%d)",
-					class_dot_name,
-					meth->name->data,
-					CLASS_SOURCEFILE(meth->class),
-					linenr);
-			}
-			KFREE(class_dot_name);
-			len = strlen(buf);
-			str = newArrayChecked(TYPE_CLASS(TYPE_Char), (jsize)len, &einfo);
-			if (!str) {
-				KFREE(buf);
-				if (nullOK) {
-					return;
-				} else {
-					throwError(&einfo);
-				}
-			}
-			cptr = (jchar*)OBJARRAY_DATA(str);
-			for (j = len;  --j >= 0; ) {
-				cptr[j] = (unsigned char)buf[j];
-			}
-			if (p != NULL || !nullOK) {
-				do_execute_java_method(NULL, p, "println",
-					"([C)V", NULL, 0, str);
-			} else {
-				dprintf("%s\n", buf);
-			}
-			KFREE(buf);
+		if (linenr == -1) {
+		  if (meth->accflags & ACC_NATIVE) {
+		    sprintf(buf, "   at %s.%s (%s:native)",
+			    class_dot_name,
+			    meth->name->data, 
+			    CLASS_SOURCEFILE(meth->class));
+		  }
+		  else {
+		    sprintf(buf, "   at %s.%s (%s:line unknown, pc %p)",
+			    class_dot_name,
+			    meth->name->data, 
+			    CLASS_SOURCEFILE(meth->class),
+			    (void*)_pc);
+		  }
 		}
-	}
+		else {
+		  sprintf(buf, "   at %s.%s (%s:%d)",
+			  class_dot_name,
+			  meth->name->data,
+			  CLASS_SOURCEFILE(meth->class),
+			  linenr);
+		}
+		KFREE(class_dot_name);
+		len = strlen(buf);
+		str = newArrayChecked(TYPE_CLASS(TYPE_Char), (jsize)len, &einfo);
+		if (!str) {
+		  KFREE(buf);
+		  if (nullOK) {
+		    return;
+		  } else {
+		    throwError(&einfo);
+		  }
+		}
+		cptr = (jchar*)OBJARRAY_DATA(str);
+		for (j = len;  --j >= 0; ) {
+		  cptr[j] = (unsigned char)buf[j];
+		}
+		if (p != NULL || !nullOK) {
+		  do_execute_java_method(NULL, p, "println",
+					 "([C)V", NULL, 0, str);
+		} else {
+		  dprintf("%s\n", buf);
+		}
+		KFREE(buf);
+	      }
+	    }
+
+	    nextCause = unhand(o)->cause;
+	    if (nextCause != o)
+	      {
+		const char *className = CLASS_CNAME(OBJECT_CLASS((struct Hjava_lang_Object*)nextCause));
+		buf = checkPtr(KMALLOC(strlen(className) + 64));
+
+		if (unhand(nextCause)->detailMessage != NULL)
+		  {
+		    char *cstr = checkPtr (stringJava2C(unhand(o)->detailMessage));
+		    
+		    buf = checkPtr(KMALLOC(strlen(className) + strlen(cstr) + 64));
+		    sprintf(buf, "caused by %s: %s", className, cstr);
+		    KFREE(cstr);
+		  }
+		else
+		  {
+		    sprintf(buf, "caused by %s:", className);
+		  }
+
+		len = strlen(buf);
+		str = newArrayChecked(TYPE_CLASS(TYPE_Char), (jsize)len, &einfo);
+		if (!str) {
+		  KFREE(buf);
+		  if (nullOK) {
+		    return;
+		  } else {
+		    throwError(&einfo);
+		  }
+		}
+		cptr = (jchar*)OBJARRAY_DATA(str);
+		for (j = len;  --j >= 0; ) {
+		  cptr[j] = (unsigned char)buf[j];
+		}
+
+		if (p != NULL || !nullOK)
+		  {
+		    do_execute_java_method(NULL, p, "println", "([C)V", NULL, 0, str);
+		  }
+		else
+		  {
+		    dprintf("%s\n", buf);
+		  }
+
+		KFREE(buf);
+	      }
+	  } while (nextCause != o);
 	if (p != NULL || !nullOK) {
-		do_execute_java_method(NULL, p, "flush", "()V", NULL, 0);
+	  do_execute_java_method(NULL, p, "flush", "()V", NULL, 0);
 	}
 }
