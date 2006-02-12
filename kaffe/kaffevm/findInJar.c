@@ -122,6 +122,13 @@ DBG(CLASSLOOKUP,
 	/* Find class in Jar file */
 	findClassInJar(buf, &hand, einfo);
 	KFREE(buf);
+	if (hand.type == CP_NULLCLASS) {
+		discardErrorInfo(einfo);
+		postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
+				"Class %s has a null length",
+				centry->name->data);
+		return (NULL);
+	}
 	if (hand.type == CP_INVALID) {
 		/* We should only throw a ClassNotFoundException. */
 		discardErrorInfo(einfo);
@@ -226,6 +233,10 @@ DBG(CLASSLOOKUP,	dprintf("Opening JAR file %s for %s\n", ptr->path, cname); );
 			entry = lookupJarFile(ptr->u.jar, cname);
 			if (entry == 0) {
 				break;
+			}
+			if (entry->compressedSize == 0) {
+				hand->type = CP_NULLCLASS;
+				goto done;
 			}
 			data = getDataJarFile(ptr->u.jar, entry);
 			if (data == 0) {

@@ -1,5 +1,14 @@
 2006-02-12  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* kaffe/kaffevm/file.h
+	(CP_NULLCLASS): New type to propagate the 0 length class error.
+
+	* kaffe/kaffevm/findInJar.c
+	(findClassInJar): Return CP_NULLCLASS if the length is 0.
+	(findClass): Throw ClassFormatError is the length is 0.
+
+2006-02-12  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* kaffe/kaffevm/stackTrace.c
 	(printStackTrace): We handle now exceptions which are caused by some
 	other in the backup print stack trace.

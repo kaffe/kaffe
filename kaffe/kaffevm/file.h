@@ -23,6 +23,7 @@
 #include "errors.h"
 
 typedef enum ClassFileType {
+	CP_NULLCLASS = -1,
 	CP_INVALID  = 0,
 	CP_ZIPFILE  = 1,
 	CP_DIR      = 2,
