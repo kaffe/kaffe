@@ -1,3 +1,8 @@
+2006-02-13  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/external/classpath/java/net/URI.java (quote):
+	Pass Unicode characters outside the basic plane through.
+
 2006-02-12  Riccardo Mottola <riccardo@kaffe.org>
 	* libraries/javalib/awt-implementations/kaffe/java/awt/Window.java:
 	implemented a stub with a Classpath merge
