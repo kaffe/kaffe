@@ -1,3 +1,15 @@
+/**
+ * class TextComponent - 
+ *
+ * Copyright (c) 1998
+ *      Transvirtual Technologies, Inc.  All rights reserved.
+ * Copyright (c) 2006
+ *      Kaffe.org developers. See ChangeLog for details.
+ *
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
+ */
+ 
 package java.awt;
 
 import java.awt.datatransfer.Clipboard;
@@ -10,15 +22,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.TextEvent;
 import java.awt.event.TextListener;
 
-/**
- * class TextComponent - 
- *
- * Copyright (c) 1998
- *      Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
- */
+
 abstract public class TextComponent
   extends Container
   implements ActionListener
@@ -87,7 +91,7 @@ boolean isPrintableTyped( KeyEvent e) {
 	int mods = e.getModifiers();
 	int chr  = e.getKeyChar();
 
-	if ( (mods != 0) && (mods != e.SHIFT_MASK) )
+	if ( (mods != 0) && (mods != KeyEvent.SHIFT_MASK) )
 		return false;
 
 	switch( chr ) {

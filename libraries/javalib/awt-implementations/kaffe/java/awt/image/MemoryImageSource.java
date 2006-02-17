@@ -3,11 +3,14 @@
  *
  * Copyright (c) 1998
  *      Transvirtual Technologies, Inc.  All rights reserved.
+ * Copyright (c) 2006
+ *      Kaffe.org developers. See ChangeLog for details.
  *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  *
- * @author J. Mehlitz
+ * original code P.C.Mehlitz
+ * some code taken or adapted from Classpath
  */
 
 package java.awt.image;
@@ -78,7 +81,7 @@ private void initializeConsumer( ImageConsumer ic) {
 	ic.setDimensions( width, height);	
 	ic.setColorModel( model);
 	ic.setProperties( props);
-	ic.setHints( ic.TOPDOWNLEFTRIGHT | ic.SINGLEPASS | ic.SINGLEFRAME | ic.COMPLETESCANLINES);
+	ic.setHints( ImageConsumer.TOPDOWNLEFTRIGHT | ImageConsumer.SINGLEPASS | ImageConsumer.SINGLEFRAME | ImageConsumer.COMPLETESCANLINES);
 }
 
 public boolean isConsumer( ImageConsumer ic) {
@@ -117,7 +120,7 @@ public void newPixels( int x, int y, int w, int h, boolean framenotify) {
 		ImageConsumer ic = (ImageConsumer) consumers.elementAt( i);
 		transferPels( ic, x, y, w, h);
 		if ( framenotify && isConsumer( ic) ) {
-			ic.setHints( ic.SINGLEFRAMEDONE);
+			ic.setHints( ImageConsumer.SINGLEFRAMEDONE);
 		}
 	}
 }
@@ -143,7 +146,7 @@ public void setAnimated( boolean animated) {
 	if ( ! animated ) {
 		for ( int i=0; i<consumers.size(); i++) {
 			ImageConsumer ic = (ImageConsumer) consumers.elementAt( i);
-			ic.imageComplete( ic.STATICIMAGEDONE);
+			ic.imageComplete( ImageConsumer.STATICIMAGEDONE);
 		}
 		consumers.removeAllElements();
 	}
@@ -161,7 +164,7 @@ public void startProduction( ImageConsumer ic) {
 }
 
 private void terminateConsumer(ImageConsumer ic) {
-	ic.imageComplete(ic.STATICIMAGEDONE);
+	ic.imageComplete(ImageConsumer.STATICIMAGEDONE);
 }
 
 private void transferPels( ImageConsumer ic, int x, int y, int w, int h) {

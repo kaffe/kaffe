@@ -1,3 +1,14 @@
+2006-02-17  Riccardo Mottola <riccardo@kaffe.org>
+	* libraries/javalib/awt-implementations/kaffe/java/awt/Choice.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/DefKeyFilter.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/FileDialog.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/GraphicsLink.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/PopupWindow.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/TextComponent.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/TextField.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/image/MemoryImageSource.java:
+	Fixed warnings.
+
 2006-02-13  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/external/classpath/java/net/URI.java (quote):

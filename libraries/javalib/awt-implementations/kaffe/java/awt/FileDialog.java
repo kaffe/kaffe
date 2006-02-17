@@ -1,3 +1,19 @@
+/**
+ * FileDialog - 
+ *
+ * Copyright (c) 1998
+ *      Transvirtual Technologies, Inc.  All rights reserved.
+ * Copyright (c) 2006
+ *      Kaffe.org developers. See ChangeLog for details.
+ *
+ * See the file "license.terms" for information on usage and redistribution 
+ * of this file. 
+ *
+ * original code P.C.Mehlitz
+ * some code taken or adapted from Classpath
+ */
+ 
+
 package java.awt;
 
 import java.awt.event.ActionEvent;
@@ -8,17 +24,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Vector;
 
-/**
- * FileDialog - 
- *
- * Copyright (c) 1998
- *      Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution 
- * of this file. 
- *
- * @author J. Mehlitz
- */
 public class FileDialog
   extends Dialog
   implements ActionListener, ItemListener, FilenameFilter
@@ -203,9 +208,9 @@ void initLayout() {
 	setLayout ( new GridBagLayout() );
 	gc.ipadx = 1;
 	gc.ipady = 1;
-	gc.fill = gc.BOTH;
+	gc.fill = GridBagConstraints.BOTH;
 	gc.weightx = 1;
-	gc.gridwidth = gc.REMAINDER;
+	gc.gridwidth = GridBagConstraints.REMAINDER;
 
 	gc.insets.left = db;
 	gc.insets.right = db;
@@ -217,7 +222,7 @@ void initLayout() {
 	gc.insets.right = 0;
 	add( lDirs, gc);
 	
-	gc.gridwidth = gc.REMAINDER;
+	gc.gridwidth = GridBagConstraints.REMAINDER;
 	gc.insets.left = 0;
 	gc.insets.right = db;
 	add( lFiles, gc);
@@ -230,13 +235,13 @@ void initLayout() {
 	add( tFile, gc);
 	
 	gc.gridwidth = 1;
-	gc.fill = gc.NONE;
+	gc.fill = GridBagConstraints.NONE;
 	gc.insets.left = db;
 	gc.insets.right = db;
 	gc.insets.bottom = 10;
 	add( bOk, gc);
 	
-	gc.gridwidth = gc.REMAINDER;
+	gc.gridwidth = GridBagConstraints.REMAINDER;
 	add( bCan, gc);
 }
 
@@ -248,7 +253,7 @@ boolean isFiltered( File dir, String name) {
 
 public void itemStateChanged( ItemEvent e) {
 
-	if ( e.getStateChange() != e.SELECTED )
+	if ( e.getStateChange() != ItemEvent.SELECTED )
 		return;
 
 	Object s = e.getSource();

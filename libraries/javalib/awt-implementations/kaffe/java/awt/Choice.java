@@ -186,7 +186,7 @@ public synchronized void insert ( String item, int index) {
 }
 
 public void itemStateChanged ( ItemEvent e) {
-	if ( e.getStateChange() == e.SELECTED ){
+	if ( e.getStateChange() == ItemEvent.SELECTED ){
 		if ( prompter.list.selMouse )
 			select( prompter.list.getSelectedItem() );
 	}
@@ -197,11 +197,11 @@ public void keyPressed ( KeyEvent e ) {
 	int cc = e.getKeyCode();
 	
 	if ( (prompter != null) && (src == prompter.list) ){
-		if ( cc == e.VK_ESCAPE )
+		if ( cc == KeyEvent.VK_ESCAPE )
 			closePrompt( true);
 	}
 	else {	
-		if ( cc == e.VK_DOWN )
+		if ( cc == KeyEvent.VK_DOWN )
 			openPrompt();
 	}
 }

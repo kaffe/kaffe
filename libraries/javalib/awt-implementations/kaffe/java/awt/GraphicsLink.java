@@ -56,7 +56,7 @@ boolean updateGraphics ( Component tgt ) {
 	NativeGraphics g = (NativeGraphics)get();
 	
 	if ( g != null ) {
-		boolean isTgtVisible = ((tgt.flags & tgt.IS_SHOWING) == tgt.IS_SHOWING);
+		boolean isTgtVisible = ((tgt.flags & Component.IS_SHOWING) == Component.IS_SHOWING);
 	
 		if ( isTgtVisible != isVisible ){
 			Toolkit.graSetVisible( g.nativeData, isTgtVisible);

@@ -1,3 +1,16 @@
+/**
+ * class PopupWindow -
+ *
+ * Copyright (c) 1998
+ *      Transvirtual Technologies, Inc.  All rights reserved.
+ * Copyright (c) 2006
+ *      Kaffe.org developers. See ChangeLog for details.
+ *
+ * See the file "license.terms" for information on usage and redistribution 
+ * of this file. 
+ *
+ * original code P.C.Mehlitz
+ */
 package java.awt;
 
 import java.awt.event.FocusEvent;
@@ -5,17 +18,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.Vector;
 
-/**
- * class PopupWindow -
- *
- * Copyright (c) 1998
- *      Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
- *
- * @author J.Mehlitz
- */
+
 class PopupWindow
   extends Window
 {
@@ -194,7 +197,7 @@ public Dimension preferredSize() {
 }
 
 void process ( FocusEvent evt ) {
-	if ( evt.id == evt.FOCUS_GAINED ){
+	if ( evt.id == FocusEvent.FOCUS_GAINED ){
 		disposeSubMenus();
 	}
 	else if ( (AWTEvent.keyTgt != sub) && !isMaster(AWTEvent.keyTgt)) {

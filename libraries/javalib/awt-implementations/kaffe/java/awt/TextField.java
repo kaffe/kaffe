@@ -1,3 +1,16 @@
+/**
+ * class TextField - 
+ *
+ * Copyright (c) 1998
+ *      Transvirtual Technologies, Inc.  All rights reserved.
+ * Copyright (c) 2006
+ *      Kaffe.org developers. See ChangeLog for details.
+ *
+ * See the file "license.terms" for information on usage and redistribution 
+ * of this file. 
+ *
+ */
+
 package java.awt;
 
 import java.awt.event.ActionEvent;
@@ -11,15 +24,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
-/**
- * class TextField - 
- *
- * Copyright (c) 1998
- *      Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution
- * of this file.
- */
+
 public class TextField
   extends TextComponent
   implements MouseMotionListener, KeyListener, FocusListener, MouseListener
@@ -209,7 +214,7 @@ public void keyPressed( KeyEvent e) {
 	int code = e.getKeyCode();
 
 	// do not consume unused keys for ShortcutHandler
-	if ( (mods != 0) && (mods != e.SHIFT_MASK) ) {
+	if ( (mods != 0) && (mods != KeyEvent.SHIFT_MASK) ) {
 		return;
 	}
 
