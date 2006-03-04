@@ -1,3 +1,11 @@
+2006-03-04  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/jit3/constpool.c: Added missing machine.h
+	include.
+
+	* replace/ifaddrs.h: Define __THROW away if it is not defined
+	to fix compiler warning.
+
 2006-03-04  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/jit/methodcalls.c: Added missing includes.

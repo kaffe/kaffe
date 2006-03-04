@@ -17,6 +17,7 @@
 #include "thread.h"
 #include "jthread.h"
 #include "debug.h"
+#include "machine.h"
 
 #include <stdarg.h>
 #include <string.h>

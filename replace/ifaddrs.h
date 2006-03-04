@@ -22,7 +22,9 @@
 
 #include <sys/socket.h>
 
+#ifndef __THROW
 #define __THROW
+#endif
 
 #if defined(__cplusplus)
 extern "C" {
