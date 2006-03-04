@@ -318,6 +318,7 @@ Kaffe_ExceptionOccurred(JNIEnv* env UNUSED)
 
 	if (obj != NULL)
 	  ADD_REF(obj);
+
 	END_EXCEPTION_HANDLING();
 	return (obj);
 }

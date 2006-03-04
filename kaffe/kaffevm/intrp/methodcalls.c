@@ -26,6 +26,7 @@
 #include "soft.h"
 #include "external.h"
 #include "jni_i.h"
+#include "exception.h"
 
 void *
 engine_buildTrampoline (Method *meth, void **where, errorInfo *einfo UNUSED)
@@ -84,7 +85,36 @@ engine_callMethod (callMethodInfo *call)
 	Method *meth = (Method *)call->function;
 
 	if ((meth->accflags & ACC_NATIVE) == 0) {
-		virtualMachine(meth, (slots*)(call->args+2), (slots*)call->ret, THREAD_DATA()); 
+	  jint i;
+	  jint numArgs;
+	  errorInfo einfo;
+
+	  /* Calculate number of arguments */
+	  numArgs = sizeofSigMethod(meth, false);
+	  if (numArgs == -1) {
+	    postException(&einfo,  JAVA_LANG(InternalError));
+	    throwError(&einfo);
+	  }
+	  numArgs += (meth->accflags & ACC_STATIC ? 0 : 1);
+
+	  jvalue *newargs = (jvalue *)alloca(sizeof(jvalue) * numArgs);
+	  jvalue *curarg = newargs;
+	  for (i = 2; i < call->nrargs; i++, curarg++)
+	    {
+	      switch (call->calltype[i])
+		{
+		case 'J':
+		case 'D':
+		  *curarg = call->args[i];
+		  curarg++;
+		  break;
+		default:
+		  *curarg = call->args[i];
+		  break;
+		}
+	    }
+	  virtualMachine(meth, (slots*)newargs, (slots*)call->ret, THREAD_DATA()); 
+	    
 	}
 	else {
 		Hjava_lang_Object* syncobj = 0;
@@ -189,3 +219,10 @@ engine_callMethod (callMethodInfo *call)
 
 }
 
+void engine_dispatchException(uintp framePointer,
+			      uintp handler, 
+			      struct Hjava_lang_Throwable *throwable)
+{
+  vmExcept_setPC((VmExceptHandler *)framePointer, handler);
+  vmExcept_jumpToHandler((VmExceptHandler *)framePointer); /* Does not return */
+}

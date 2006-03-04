@@ -250,7 +250,8 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 	/* Calculate number of arguments */
 	idx = sizeofSigMethod(meth, false);
 	if (idx == -1) {
-		throwError(&einfo);
+	  postException(&einfo,  JAVA_LANG(InternalError));
+	  throwError(&einfo);
 	}
 	idx += (methaccflags & ACC_STATIC ? 0 : 1);
 

@@ -1,3 +1,29 @@
+2006-03-04  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/jni/jnirefs.h: Decreased the default size of the 
+	JNI localref table (as per JNI specification).
+
+	* kaffe/kaffevm/intrp/methodcalls.c
+	(engine_callMethod): Adjust arguments to match interpreter's stack
+	representation.
+	(engine_dispatchException): New function.
+
+	* kaffe/kaffevm/jit/methodcalls.h,
+	kaffe/kaffevm/intrp/methodcalls.h,
+	kaffe/kaffevm/jit/methodcalls.c
+	(engine_dispatchException): New function.
+	
+	* kaffe/kaffevm/intrp/machine.c
+	(virtualMachine): Really throw an error when sizeofSigMethod
+	fails.
+
+	* kaffe/kaffevm/exception.h: Exported vmExcept_jumpToHandler.
+
+	* kaffe/kaffevm/exception.c
+	(DISPATCH_EXCEPTION): Removed.
+	(dispatchException): Use engine_dispatchException now.
+	
+	
 2006-02-17  Riccardo Mottola <riccardo@kaffe.org>
 	* libraries/javalib/awt-implementations/kaffe/java/awt/Choice.java,
 	libraries/javalib/awt-implementations/kaffe/java/awt/DefKeyFilter.java,

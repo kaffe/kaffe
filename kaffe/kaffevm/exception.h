@@ -116,6 +116,7 @@ void vmExcept_setJNIFrame(VmExceptHandler* eh, JNIFrameAddress fp);
 void vmExcept_setSyncObj(VmExceptHandler* eh, struct Hjava_lang_Object* syncobj);
 void vmExcept_setPC(volatile VmExceptHandler* eh, u4 pc);
 u4 vmExcept_getPC(const VmExceptHandler* eh);
+void vmExcept_jumpToHandler(VmExceptHandler* frame);
 
 #endif
 

@@ -20,6 +20,10 @@ engine_buildTrampoline (Method *meth, void **where, errorInfo *einfo);
 
 void engine_callMethod (callMethodInfo *call);
 
+void engine_dispatchException(uintp framePointer,
+			      uintp handler, 
+			      struct Hjava_lang_Throwable *throwable);
+
 /*
  * extra args the engine wants to pass when using callMethodA / callMethodV
  */

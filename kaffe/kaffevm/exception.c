@@ -67,10 +67,6 @@ vmExcept_getSyncObj(VmExceptHandler* eh)
 }
 
 #define FRAMEOBJECT(O, F, E)    (O) = vmExcept_getSyncObj((VmExceptHandler*)(F))
-
-
-#define DISPATCH_EXCEPTION(F, H, E) vmExcept_setPC((VmExceptHandler *)(F), (H));  \
-                                    vmExcept_jumpToHandler((VmExceptHandler *)(F)); /* Does not return */
 #else
 
 #define DISPATCH_EXCEPTION(F,H,E) thread_data->exceptObj = NULL;\
@@ -112,7 +108,7 @@ vmExcept_setJNIFrame(VmExceptHandler* eh, JNIFrameAddress fp)
 	eh->frame.jni.fp = fp;
 }
 
-static void
+void
 vmExcept_jumpToHandler(VmExceptHandler* frame)
 {
 	JTHREAD_LONGJMP(frame->jbuf, 1);
@@ -457,7 +453,7 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseFrame)
 		/* If handler found, call it */
 		if (foundHandler) {
 			thread_data->needOnStack = STACK_HIGH;
-			DISPATCH_EXCEPTION(frame->fp, handler, eobj); /* doesn't return */
+			engine_dispatchException(frame->fp, handler, eobj); /* doesn't return */
 		}
 
 #if defined(ENABLE_JVMPI)

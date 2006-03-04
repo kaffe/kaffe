@@ -197,3 +197,14 @@ engine_callMethod (callMethodInfo *call)
 	  call->ret->j = 0;
 	sysdepCallMethod (call);
 }
+
+void
+engine_dispatchException (uintp framePointer, uintp handler, 
+			  struct Hjava_lang_Throwable *throwable)
+{
+  /* I do not like the following line. I think that the interpreter
+   * can be adapted so that we do not need to include that line in the JIT.
+   */
+  THREAD_DATA()->exceptObj = NULL;
+  CALL_KAFFE_EXCEPTION(framePointer, handler, throwable);
+}
