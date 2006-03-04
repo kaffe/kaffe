@@ -113,7 +113,7 @@ stringC2Java(const char* cs)
 	/* Return a string containing those chars */
 	string = stringCharArray2Java(ary, len);
 	if (ary != buf) {
-		KFREE(ary);
+		gc_free(ary);
 	}
 	return(string);
 }
@@ -199,7 +199,7 @@ utf8Const2JavaReplace(const Utf8Const *utf8, jchar from_ch, jchar to_ch)
 	/* Convert to a String object */
 	string = stringCharArray2Java(jc, uniLen);
 	if (jc != buf) {
-		KFREE(jc);
+		gc_free(jc);
 	}
 	return(string);
 }
@@ -236,7 +236,7 @@ stringJava2Utf8ConstReplace(Hjava_lang_String *str, jchar from, jchar to)
 	utf8buf = utf8ConstEncode(chars, slength);
 
 	if (chars != STRING_DATA(str)) {
-		KFREE(chars);
+		gc_free(chars);
 	}
 
 	if (utf8buf == 0) {
@@ -282,7 +282,7 @@ utf8ConstEqualJavaString(const Utf8Const *utf8, const Hjava_lang_String *string)
 
 /*
  * Define functions used by the string hashtable to resize itself.
- * The problem is that we may block in KCALLOC/KFREE and the gc may kick
+ * The problem is that we may block in gc_malloc/gc_free and the gc may kick
  * in.  The collector, however, must be able to call stringUninternString
  * while destroying strings.  If we held the lock while this is happening,
  * we would deadlock.
@@ -304,7 +304,7 @@ stringFree(const void *ptr)
 {
 	/* XXX assumes stringLock isn't acquired recursively (which it isn't) */
         unlockStaticMutex(&stringLock);	
-	KFREE((void *) ptr);
+	gc_free((void *) ptr);
 	lockStaticMutex(&stringLock);
 }
 
@@ -427,12 +427,12 @@ stringCompare(const void *v1, const void *v2)
 Hjava_lang_String*
 stringCharArray2Java(const jchar *data, int len)
 {
-	Hjava_lang_String *string;
+        Hjava_lang_String *string;
 	HArrayOfChar *ary;
 	errorInfo info;
 
 	/* Lock intern table 
-	 * NB: we must not hold stringLock when we call KMALLOC/KFREE!
+	 * NB: we must not hold stringLock when we call gc_malloc/gc_free!
 	 */
 
 	/* Look for it already in the intern hash table */
@@ -465,7 +465,7 @@ stringCharArray2Java(const jchar *data, int len)
 		unlockStaticMutex(&stringLock);
 
 		if (fakeAry != (HArrayOfChar*)buf) {
-			KFREE(fakeAry);
+			gc_free(fakeAry);
 		}
 		if (string != NULL) {
 			return(string);

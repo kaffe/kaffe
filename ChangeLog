@@ -1,5 +1,10 @@
 2006-03-04  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/string.c: Use gc_free instead of KFREE where
+	appropriate.
+
+2006-03-04  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/jit3/constpool.c: Added missing machine.h
 	include.
 
