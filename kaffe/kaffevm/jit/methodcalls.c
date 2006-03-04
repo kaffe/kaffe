@@ -20,6 +20,8 @@
 
 #include "machine.h"
 #include "methodcalls.h"
+#include "thread.h"
+#include "callKaffeException.h"
 
 #define TDBG(s)
 

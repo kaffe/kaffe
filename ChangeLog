@@ -1,5 +1,11 @@
 2006-03-04  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* kaffe/kaffevm/jit/methodcalls.c: Added missing includes.
+
+2006-03-04  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	Fix bug #17
+
 	* kaffe/kaffevm/jni/jnirefs.h: Decreased the default size of the 
 	JNI localref table (as per JNI specification).
 
