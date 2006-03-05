@@ -1,5 +1,27 @@
 2006-03-05  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* libraries/clib/native/java_lang_VMDouble.c: Removed spurious
+	include.
+
+	* libraries/clib/native/java_lang_Math.c: Removed.
+
+	* libraries/clib/native/java_lang_VMMath: Imported from GNU
+	Classpath reference implementation.
+
+	* libraries/clib/native/Makefile.am: Replaced java_lang_Math.c by
+	java_lang_VMMath.c
+
+	* libraries/clib/native/Makefile.in: Regenerated.
+
+	* libraries/javalib/vmspecific/gnu/classpath/jdwp/VMFrame.java:
+	Updated using GNU Classpath's reference implementation.
+
+	* libraries/javalib/vmspecific/java/lang/VMMath.java: Imported
+	from GNU Classpath.
+
+
+2006-03-05  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* Resynchronized GNU Classpath pre-0.90. Reapplied patches from
 	Dalibor to fix bug #16.
 

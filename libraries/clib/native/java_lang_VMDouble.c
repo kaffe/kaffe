@@ -39,7 +39,6 @@ exception statement from your version. */
 
 #include <assert.h>
 #include <config.h>
-#include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

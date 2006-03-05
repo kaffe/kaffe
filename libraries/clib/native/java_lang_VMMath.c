@@ -1,5 +1,5 @@
-/* Math.c - java.lang.Math native functions
-   Copyright (C) 1998, 1999, 2004 Free Software Foundation, Inc.
+/* VMMath.c - java.lang.VMMath native functions
+   Copyright (C) 1998, 1999, 2004, 2006 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -37,11 +37,11 @@ exception statement from your version. */
 
 
 #include <config.h>
-#include <java_lang_Math.h>
+#include <java_lang_VMMath.h>
 #include <fdlibm.h>
 
 JNIEXPORT jdouble JNICALL
-Java_java_lang_Math_sin
+Java_java_lang_VMMath_sin
   (JNIEnv * env __attribute__ ((__unused__)),
    jclass cls __attribute__ ((__unused__)), jdouble x)
 {
@@ -49,7 +49,7 @@ Java_java_lang_Math_sin
 }
 
 JNIEXPORT jdouble JNICALL
-Java_java_lang_Math_cos
+Java_java_lang_VMMath_cos
   (JNIEnv * env __attribute__ ((__unused__)),
    jclass cls __attribute__ ((__unused__)), jdouble x)
 {
@@ -57,7 +57,7 @@ Java_java_lang_Math_cos
 }
 
 JNIEXPORT jdouble JNICALL
-Java_java_lang_Math_tan
+Java_java_lang_VMMath_tan
   (JNIEnv * env __attribute__ ((__unused__)),
    jclass cls __attribute__ ((__unused__)), jdouble x)
 {
@@ -65,7 +65,7 @@ Java_java_lang_Math_tan
 }
 
 JNIEXPORT jdouble JNICALL
-Java_java_lang_Math_asin
+Java_java_lang_VMMath_asin
   (JNIEnv * env __attribute__ ((__unused__)),
    jclass cls __attribute__ ((__unused__)), jdouble x)
 {
@@ -73,7 +73,7 @@ Java_java_lang_Math_asin
 }
 
 JNIEXPORT jdouble JNICALL
-Java_java_lang_Math_acos
+Java_java_lang_VMMath_acos
   (JNIEnv * env __attribute__ ((__unused__)),
    jclass cls __attribute__ ((__unused__)), jdouble x)
 {
@@ -81,7 +81,7 @@ Java_java_lang_Math_acos
 }
 
 JNIEXPORT jdouble JNICALL
-Java_java_lang_Math_atan
+Java_java_lang_VMMath_atan
   (JNIEnv * env __attribute__ ((__unused__)),
    jclass cls __attribute__ ((__unused__)), jdouble x)
 {
@@ -89,7 +89,7 @@ Java_java_lang_Math_atan
 }
 
 JNIEXPORT jdouble JNICALL
-Java_java_lang_Math_atan2
+Java_java_lang_VMMath_atan2
   (JNIEnv * env __attribute__ ((__unused__)),
    jclass cls __attribute__ ((__unused__)), jdouble y, jdouble x)
 {
@@ -97,7 +97,7 @@ Java_java_lang_Math_atan2
 }
 
 JNIEXPORT jdouble JNICALL
-Java_java_lang_Math_exp
+Java_java_lang_VMMath_exp
   (JNIEnv * env __attribute__ ((__unused__)),
    jclass cls __attribute__ ((__unused__)), jdouble x)
 {
@@ -105,7 +105,7 @@ Java_java_lang_Math_exp
 }
 
 JNIEXPORT jdouble JNICALL
-Java_java_lang_Math_log
+Java_java_lang_VMMath_log
   (JNIEnv * env __attribute__ ((__unused__)),
    jclass cls __attribute__ ((__unused__)), jdouble x)
 {
@@ -113,7 +113,7 @@ Java_java_lang_Math_log
 }
 
 JNIEXPORT jdouble JNICALL
-Java_java_lang_Math_sqrt
+Java_java_lang_VMMath_sqrt
   (JNIEnv * env __attribute__ ((__unused__)),
    jclass cls __attribute__ ((__unused__)), jdouble x)
 {
@@ -121,7 +121,7 @@ Java_java_lang_Math_sqrt
 }
 
 JNIEXPORT jdouble JNICALL
-Java_java_lang_Math_pow
+Java_java_lang_VMMath_pow
   (JNIEnv * env __attribute__ ((__unused__)),
    jclass cls __attribute__ ((__unused__)), jdouble x, jdouble y)
 {
@@ -129,7 +129,7 @@ Java_java_lang_Math_pow
 }
 
 JNIEXPORT jdouble JNICALL
-Java_java_lang_Math_IEEEremainder
+Java_java_lang_VMMath_IEEEremainder
   (JNIEnv * env __attribute__ ((__unused__)),
    jclass cls __attribute__ ((__unused__)), jdouble x, jdouble y)
 {
@@ -137,7 +137,7 @@ Java_java_lang_Math_IEEEremainder
 }
 
 JNIEXPORT jdouble JNICALL
-Java_java_lang_Math_ceil
+Java_java_lang_VMMath_ceil
   (JNIEnv * env __attribute__ ((__unused__)),
    jclass cls __attribute__ ((__unused__)), jdouble x)
 {
@@ -145,7 +145,7 @@ Java_java_lang_Math_ceil
 }
 
 JNIEXPORT jdouble JNICALL
-Java_java_lang_Math_floor
+Java_java_lang_VMMath_floor
   (JNIEnv * env __attribute__ ((__unused__)),
    jclass cls __attribute__ ((__unused__)), jdouble x)
 {
@@ -153,9 +153,73 @@ Java_java_lang_Math_floor
 }
 
 JNIEXPORT jdouble JNICALL
-Java_java_lang_Math_rint
+Java_java_lang_VMMath_rint
   (JNIEnv * env __attribute__ ((__unused__)),
    jclass cls __attribute__ ((__unused__)), jdouble x)
 {
   return rint (x);
+}
+
+JNIEXPORT jdouble JNICALL
+Java_java_lang_VMMath_cbrt
+  (JNIEnv * env __attribute__ ((__unused__)),
+   jclass cls __attribute__ ((__unused__)), jdouble x)
+{
+  return cbrt (x);
+}
+
+JNIEXPORT jdouble JNICALL
+Java_java_lang_VMMath_cosh 
+  (JNIEnv * env __attribute__ ((__unused__)),
+   jclass cls __attribute__ ((__unused__)), jdouble x)
+{
+  return cosh (x);
+}
+
+JNIEXPORT jdouble JNICALL
+Java_java_lang_VMMath_expm1 
+  (JNIEnv * env __attribute__ ((__unused__)),
+   jclass cls __attribute__ ((__unused__)), jdouble x)
+{
+  return expm1 (x);
+}
+
+JNIEXPORT jdouble JNICALL
+Java_java_lang_VMMath_hypot 
+  (JNIEnv * env __attribute__ ((__unused__)),
+   jclass cls __attribute__ ((__unused__)), jdouble x, jdouble y)
+{
+  return hypot (x, y);
+}
+
+JNIEXPORT jdouble JNICALL
+Java_java_lang_VMMath_log10
+  (JNIEnv * env __attribute__ ((__unused__)),
+   jclass cls __attribute__ ((__unused__)), jdouble x)
+{
+  return log10 (x);
+}
+
+JNIEXPORT jdouble JNICALL
+Java_java_lang_VMMath_log1p 
+  (JNIEnv * env __attribute__ ((__unused__)),
+   jclass cls __attribute__ ((__unused__)), jdouble x)
+{
+  return log1p (x);
+}
+
+JNIEXPORT jdouble JNICALL
+Java_java_lang_VMMath_sinh 
+  (JNIEnv * env __attribute__ ((__unused__)),
+   jclass cls __attribute__ ((__unused__)), jdouble x)
+{
+  return sinh (x);
+}
+
+JNIEXPORT jdouble JNICALL
+Java_java_lang_VMMath_tanh 
+  (JNIEnv * env __attribute__ ((__unused__)),
+   jclass cls __attribute__ ((__unused__)), jdouble x)
+{
+  return tanh (x);
 }
