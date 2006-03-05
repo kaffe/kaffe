@@ -26,7 +26,7 @@ void*   soft_vmultianewarray(struct Hjava_lang_Class* clazz, jint dims, va_list 
 void	soft_initialise_class(struct Hjava_lang_Class*);
 nativecode* soft_get_method_code (Method*);
 
-void*	soft_lookupinterfacemethod(struct Hjava_lang_Object*, struct Hjava_lang_Class*, int);
+void*	soft_lookupinterfacemethod(const struct Hjava_lang_Object*, const struct Hjava_lang_Class*, int);
 void*	soft_checkcast(struct Hjava_lang_Class*, struct Hjava_lang_Object*);
 jint	soft_instanceof(struct Hjava_lang_Class*, struct Hjava_lang_Object*);
 

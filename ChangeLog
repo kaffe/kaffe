@@ -1,3 +1,17 @@
+2006-03-05  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/kaffe.def: Small cleanup to
+	make debugging Cygwin crash a little easier.
+
+	* kaffe/kaffevm/soft.c: Include "native.h".
+
+	* kaffe/kaffevm/soft.c, kaffe/kaffevm/soft.h:
+	(soft_lookupinterfacemethod) Added const qualifiers
+	to parameters.
+
+        * libraries/javalib/external/classpath/java/net/URI.java (quote):
+	Reapplied patch from 2006-02-13  Dalibor Topic  <robilad@kaffe.org>
+
 2006-03-05  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* libraries/clib/native/java_lang_VMDouble.c: Removed spurious

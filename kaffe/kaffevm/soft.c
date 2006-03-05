@@ -40,6 +40,7 @@
 #include "machine.h"
 #include "fp.h"
 #include "jvmpi_kaffe.h"
+#include "native.h"
 
 void
 soft_null_call(void)
@@ -236,7 +237,7 @@ soft_multianewarray(Hjava_lang_Class* class, jint dims, ...)
  * soft_lookupinterfacemethod.
  */
 void*
-soft_lookupinterfacemethod(Hjava_lang_Object* obj, Hjava_lang_Class* ifclass, int idx)
+soft_lookupinterfacemethod(const Hjava_lang_Object* obj, const struct Hjava_lang_Class* ifclass, int idx)
 {
 	Hjava_lang_Class* cls;
 	void*	ncode;

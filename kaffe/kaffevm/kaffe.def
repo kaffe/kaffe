@@ -3177,7 +3177,8 @@ define_insn(INVOKEINTERFACE)
 					m->idx *
 					DTABLE_METHODSIZE);
 		} else {
-			softcall_lookupinterfacemethod(tmp, method_method(), stack(idx));
+			const Method const * method = method_method();
+			softcall_lookupinterfacemethod(tmp, method, stack(idx));
 		}
 		
 		/* Push arguments & object */
