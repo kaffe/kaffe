@@ -1,5 +1,5 @@
 /* gnu/regexp/RE.java
-   Copyright (C) 1998-2001, 2004, 2005 Free Software Foundation, Inc.
+   Copyright (C) 2006 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -136,12 +136,13 @@ public class RE extends REToken {
 
     /** Minimum length, in characters, of any possible match. */
     private int minimumLength;
+    private int maximumLength;
 
   /**
    * Compilation flag. Do  not  differentiate  case.   Subsequent
    * searches  using  this  RE will be case insensitive.
    */
-  public static final int REG_ICASE = 2;
+  public static final int REG_ICASE = 0x02;
 
   /**
    * Compilation flag. The match-any-character operator (dot)
@@ -149,14 +150,14 @@ public class RE extends REToken {
    * bit RE_DOT_NEWLINE (see RESyntax for details).  This is equivalent to
    * the "/s" operator in Perl.
    */
-  public static final int REG_DOT_NEWLINE = 4;
+  public static final int REG_DOT_NEWLINE = 0x04;
 
   /**
    * Compilation flag. Use multiline mode.  In this mode, the ^ and $
    * anchors will match based on newlines within the input. This is
    * equivalent to the "/m" operator in Perl.
    */
-  public static final int REG_MULTILINE = 8;
+  public static final int REG_MULTILINE = 0x08;
 
   /**
    * Execution flag.
@@ -185,14 +186,14 @@ public class RE extends REToken {
    * //  m4.toString(): "fool"<BR>
    * </CODE>
    */
-  public static final int REG_NOTBOL = 16;
+  public static final int REG_NOTBOL = 0x10;
 
   /**
    * Execution flag.
    * The match-end operator ($) does not match at the end
    * of the input string. Useful for matching on substrings.
    */
-  public static final int REG_NOTEOL = 32;
+  public static final int REG_NOTEOL = 0x20;
 
   /**
    * Execution flag.
@@ -206,7 +207,7 @@ public class RE extends REToken {
    * the example under REG_NOTBOL.  It also affects the use of the \&lt;
    * and \b operators.
    */
-  public static final int REG_ANCHORINDEX = 64;
+  public static final int REG_ANCHORINDEX = 0x40;
 
   /**
    * Execution flag.
@@ -215,14 +216,24 @@ public class RE extends REToken {
    * the corresponding subexpressions.  For example, you may want to
    * replace all matches of "one dollar" with "$1".
    */
-  public static final int REG_NO_INTERPOLATE = 128;
+  public static final int REG_NO_INTERPOLATE = 0x80;
 
   /**
    * Execution flag.
    * Try to match the whole input string. An implicit match-end operator
    * is added to this regexp.
    */
-  public static final int REG_TRY_ENTIRE_MATCH = 256;
+  public static final int REG_TRY_ENTIRE_MATCH = 0x0100;
+
+  /**
+   * Execution flag.
+   * The substitute and substituteAll methods will treat the
+   * character '\' in the replacement as an escape to a literal
+   * character. In this case "\n", "\$", "\\", "\x40" and "\012"
+   * will become "n", "$", "\", "x40" and "012" respectively.
+   * This flag has no effect if REG_NO_INTERPOLATE is set on.
+   */
+  public static final int REG_REPLACE_USE_BACKSLASHESCAPE = 0x0200;
 
   /** Returns a string representing the version of the gnu.regexp package. */
   public static final String version() {
@@ -280,12 +291,13 @@ public class RE extends REToken {
   }
 
   // internal constructor used for alternation
-  private RE(REToken first, REToken last,int subs, int subIndex, int minLength) {
+  private RE(REToken first, REToken last,int subs, int subIndex, int minLength, int maxLength) {
     super(subIndex);
     firstToken = first;
     lastToken = last;
     numSubs = subs;
     minimumLength = minLength;
+    maximumLength = maxLength;
     addToken(new RETokenEndSub(subIndex));
   }
 
@@ -371,8 +383,9 @@ public class RE extends REToken {
 	   && !syntax.get(RESyntax.RE_LIMITED_OPS)) {
 	// make everything up to here be a branch. create vector if nec.
 	addToken(currentToken);
-	RE theBranch = new RE(firstToken, lastToken, numSubs, subIndex, minimumLength);
+	RE theBranch = new RE(firstToken, lastToken, numSubs, subIndex, minimumLength, maximumLength);
 	minimumLength = 0;
+	maximumLength = 0;
 	if (branches == null) {
 	    branches = new Vector();
 	}
@@ -414,116 +427,12 @@ public class RE extends REToken {
       //  [...] | [^...]
 
       else if ((unit.ch == '[') && !(unit.bk || quot)) {
-	Vector options = new Vector();
-	boolean negative = false;
-	// FIXME: lastChar == 0 means lastChar is not set. But what if
-	// \u0000 is used as a meaningful character?
-	char lastChar = 0;
-	if (index == pLength) throw new REException(getLocalizedMessage("unmatched.bracket"),REException.REG_EBRACK,index);
-	
-	// Check for initial caret, negation
-	if ((ch = pattern[index]) == '^') {
-	  negative = true;
-	  if (++index == pLength) throw new REException(getLocalizedMessage("class.no.end"),REException.REG_EBRACK,index);
-	  ch = pattern[index];
-	}
-
-	// Check for leading right bracket literal
-	if (ch == ']') {
-	  lastChar = ch;
-	  if (++index == pLength) throw new REException(getLocalizedMessage("class.no.end"),REException.REG_EBRACK,index);
-	}
-
-	while ((ch = pattern[index++]) != ']') {
-	  if ((ch == '-') && (lastChar != 0)) {
-	    if (index == pLength) throw new REException(getLocalizedMessage("class.no.end"),REException.REG_EBRACK,index);
-	    if ((ch = pattern[index]) == ']') {
-	      options.addElement(new RETokenChar(subIndex,lastChar,insens));
-	      lastChar = '-';
-	    } else {
-	      if ((ch == '\\') && syntax.get(RESyntax.RE_BACKSLASH_ESCAPE_IN_LISTS)) {
-	        CharExpression ce = getCharExpression(pattern, index, pLength, syntax);
-	        if (ce == null)
-		  throw new REException("invalid escape sequence", REException.REG_ESCAPE, index);
-		ch = ce.ch;
-		index = index + ce.len - 1;
-	      }
-	      options.addElement(new RETokenRange(subIndex,lastChar,ch,insens));
-	      lastChar = 0;
-	      index++;
-	    }
-          } else if ((ch == '\\') && syntax.get(RESyntax.RE_BACKSLASH_ESCAPE_IN_LISTS)) {
-            if (index == pLength) throw new REException(getLocalizedMessage("class.no.end"),REException.REG_EBRACK,index);
-	    int posixID = -1;
-	    boolean negate = false;
-	    // FIXME: asciiEsc == 0 means asciiEsc is not set. But what if
-	    // \u0000 is used as a meaningful character?
-            char asciiEsc = 0;
-	    NamedProperty np = null;
-	    if (("dswDSW".indexOf(pattern[index]) != -1) && syntax.get(RESyntax.RE_CHAR_CLASS_ESC_IN_LISTS)) {
-	      switch (pattern[index]) {
-	      case 'D':
-		negate = true;
-	      case 'd':
-		posixID = RETokenPOSIX.DIGIT;
-		break;
-	      case 'S':
-		negate = true;
-	      case 's':
-		posixID = RETokenPOSIX.SPACE;
-		break;
-	      case 'W':
-		negate = true;
-	      case 'w':
-		posixID = RETokenPOSIX.ALNUM;
-		break;
-	      }
-	    }
-	    if (("pP".indexOf(pattern[index]) != -1) && syntax.get(RESyntax.RE_NAMED_PROPERTY)) {
-	      np = getNamedProperty(pattern, index - 1, pLength);
-	      if (np == null)
-		throw new REException("invalid escape sequence", REException.REG_ESCAPE, index);
-	      index = index - 1 + np.len - 1;
-	    }
-	    else {
-	      CharExpression ce = getCharExpression(pattern, index - 1, pLength, syntax);
-	      if (ce == null)
-		throw new REException("invalid escape sequence", REException.REG_ESCAPE, index);
-	      asciiEsc = ce.ch;
-	      index = index - 1 + ce.len - 1;
-	    }
-	    if (lastChar != 0) options.addElement(new RETokenChar(subIndex,lastChar,insens));
-	    
-	    if (posixID != -1) {
-	      options.addElement(new RETokenPOSIX(subIndex,posixID,insens,negate));
-	    } else if (np != null) {
-	      options.addElement(getRETokenNamedProperty(subIndex,np,insens,index));
-	    } else if (asciiEsc != 0) {
-	      lastChar = asciiEsc;
-	    } else {
-	      lastChar = pattern[index];
-	    }
-	    ++index;
-	  } else if ((ch == '[') && (syntax.get(RESyntax.RE_CHAR_CLASSES)) && (index < pLength) && (pattern[index] == ':')) {
-	    StringBuffer posixSet = new StringBuffer();
-	    index = getPosixSet(pattern,index+1,posixSet);
-	    int posixId = RETokenPOSIX.intValue(posixSet.toString());
-	    if (posixId != -1)
-	      options.addElement(new RETokenPOSIX(subIndex,posixId,insens,false));
-	  } else {
-	    if (lastChar != 0) options.addElement(new RETokenChar(subIndex,lastChar,insens));
-	    lastChar = ch;
-	  }
-	  if (index == pLength) throw new REException(getLocalizedMessage("class.no.end"),REException.REG_EBRACK,index);
-	} // while in list
-	// Out of list, index is one past ']'
-	    
-	if (lastChar != 0) options.addElement(new RETokenChar(subIndex,lastChar,insens));
-	    
 	// Create a new RETokenOneOf
+	ParseCharClassResult result = parseCharClass(
+		subIndex, pattern, index, pLength, cflags, syntax, 0);
 	addToken(currentToken);
-	options.trimToSize();
-	currentToken = new RETokenOneOf(subIndex,options,negative);
+	currentToken = result.token;
+	index = result.index;
       }
 
       // SUBEXPRESSIONS
@@ -533,7 +442,10 @@ public class RE extends REToken {
 	boolean pure = false;
 	boolean comment = false;
         boolean lookAhead = false;
+        boolean lookBehind = false;
+        boolean independent = false;
         boolean negativelh = false;
+        boolean negativelb = false;
 	if ((index+1 < pLength) && (pattern[index] == '?')) {
 	  switch (pattern[index+1]) {
           case '!':
@@ -548,6 +460,34 @@ public class RE extends REToken {
             if (syntax.get(RESyntax.RE_LOOKAHEAD)) {
               pure = true;
               lookAhead = true;
+              index += 2;
+            }
+            break;
+	  case '<':
+	    // We assume that if the syntax supports look-ahead,
+	    // it also supports look-behind.
+	    if (syntax.get(RESyntax.RE_LOOKAHEAD)) {
+		index++;
+		switch (pattern[index +1]) {
+		case '!':
+		  pure = true;
+		  negativelb = true;
+		  lookBehind = true;
+		  index += 2;
+		  break;
+		case '=':
+		  pure = true;
+		  lookBehind = true;
+		  index += 2;
+		}
+	    }
+	    break;
+	  case '>':
+	    // We assume that if the syntax supports look-ahead,
+	    // it also supports independent group.
+            if (syntax.get(RESyntax.RE_LOOKAHEAD)) {
+              pure = true;
+              independent = true;
               index += 2;
             }
             break;
@@ -713,12 +653,19 @@ public class RE extends REToken {
 	    numSubs++;
 	  }
 
-	  int useIndex = (pure || lookAhead) ? 0 : nextSub + numSubs;
+	  int useIndex = (pure || lookAhead || lookBehind || independent) ?
+			 0 : nextSub + numSubs;
 	  currentToken = new RE(String.valueOf(pattern,index,endIndex-index).toCharArray(),cflags,syntax,useIndex,nextSub + numSubs);
 	  numSubs += ((RE) currentToken).getNumSubs();
 
           if (lookAhead) {
 	      currentToken = new RETokenLookAhead(currentToken,negativelh);
+	  }
+          else if (lookBehind) {
+	      currentToken = new RETokenLookBehind(currentToken,negativelb);
+	  }
+          else if (independent) {
+	      currentToken = new RETokenIndependent(currentToken);
 	  }
 
 	  index = nextIndex;
@@ -1026,14 +973,208 @@ public class RE extends REToken {
     addToken(currentToken);
       
     if (branches != null) {
-	branches.addElement(new RE(firstToken,lastToken,numSubs,subIndex,minimumLength));
+	branches.addElement(new RE(firstToken,lastToken,numSubs,subIndex,minimumLength, maximumLength));
 	branches.trimToSize(); // compact the Vector
 	minimumLength = 0;
+	maximumLength = 0;
 	firstToken = lastToken = null;
 	addToken(new RETokenOneOf(subIndex,branches,false));
     } 
     else addToken(new RETokenEndSub(subIndex));
 
+  }
+
+  private static class ParseCharClassResult {
+      RETokenOneOf token;
+      int index;
+      boolean returnAtAndOperator = false;
+  }
+
+  /**
+   * Parse [...] or [^...] and make an RETokenOneOf instance.
+   * @param subIndex subIndex to be given to the created RETokenOneOf instance.
+   * @param pattern Input array of characters to be parsed.
+   * @param index Index pointing to the character next to the beginning '['.
+   * @param pLength Limit of the input array.
+   * @param cflags Compilation flags used to parse the pattern.
+   * @param pflags Flags that affect the behavior of this method.
+   * @param syntax Syntax used to parse the pattern.
+   */
+  private static ParseCharClassResult parseCharClass(int subIndex,
+		char[] pattern, int index,
+		int pLength, int cflags, RESyntax syntax, int pflags)
+		throws REException {
+
+	boolean insens = ((cflags & REG_ICASE) > 0);
+	Vector options = new Vector();
+	Vector addition = new Vector();
+	boolean additionAndAppeared = false;
+	final int RETURN_AT_AND = 0x01;
+	boolean returnAtAndOperator = ((pflags & RETURN_AT_AND) != 0);
+	boolean negative = false;
+	char ch;
+
+	char lastChar = 0;
+	boolean lastCharIsSet = false;
+	if (index == pLength) throw new REException(getLocalizedMessage("unmatched.bracket"),REException.REG_EBRACK,index);
+	
+	// Check for initial caret, negation
+	if ((ch = pattern[index]) == '^') {
+	  negative = true;
+	  if (++index == pLength) throw new REException(getLocalizedMessage("class.no.end"),REException.REG_EBRACK,index);
+	  ch = pattern[index];
+	}
+
+	// Check for leading right bracket literal
+	if (ch == ']') {
+	  lastChar = ch; lastCharIsSet = true;
+	  if (++index == pLength) throw new REException(getLocalizedMessage("class.no.end"),REException.REG_EBRACK,index);
+	}
+
+	while ((ch = pattern[index++]) != ']') {
+	  if ((ch == '-') && (lastCharIsSet)) {
+	    if (index == pLength) throw new REException(getLocalizedMessage("class.no.end"),REException.REG_EBRACK,index);
+	    if ((ch = pattern[index]) == ']') {
+	      options.addElement(new RETokenChar(subIndex,lastChar,insens));
+	      lastChar = '-';
+	    } else {
+	      if ((ch == '\\') && syntax.get(RESyntax.RE_BACKSLASH_ESCAPE_IN_LISTS)) {
+	        CharExpression ce = getCharExpression(pattern, index, pLength, syntax);
+	        if (ce == null)
+		  throw new REException("invalid escape sequence", REException.REG_ESCAPE, index);
+		ch = ce.ch;
+		index = index + ce.len - 1;
+	      }
+	      options.addElement(new RETokenRange(subIndex,lastChar,ch,insens));
+	      lastChar = 0; lastCharIsSet = false;
+	      index++;
+	    }
+          } else if ((ch == '\\') && syntax.get(RESyntax.RE_BACKSLASH_ESCAPE_IN_LISTS)) {
+            if (index == pLength) throw new REException(getLocalizedMessage("class.no.end"),REException.REG_EBRACK,index);
+	    int posixID = -1;
+	    boolean negate = false;
+            char asciiEsc = 0;
+	    boolean asciiEscIsSet = false;
+	    NamedProperty np = null;
+	    if (("dswDSW".indexOf(pattern[index]) != -1) && syntax.get(RESyntax.RE_CHAR_CLASS_ESC_IN_LISTS)) {
+	      switch (pattern[index]) {
+	      case 'D':
+		negate = true;
+	      case 'd':
+		posixID = RETokenPOSIX.DIGIT;
+		break;
+	      case 'S':
+		negate = true;
+	      case 's':
+		posixID = RETokenPOSIX.SPACE;
+		break;
+	      case 'W':
+		negate = true;
+	      case 'w':
+		posixID = RETokenPOSIX.ALNUM;
+		break;
+	      }
+	    }
+	    if (("pP".indexOf(pattern[index]) != -1) && syntax.get(RESyntax.RE_NAMED_PROPERTY)) {
+	      np = getNamedProperty(pattern, index - 1, pLength);
+	      if (np == null)
+		throw new REException("invalid escape sequence", REException.REG_ESCAPE, index);
+	      index = index - 1 + np.len - 1;
+	    }
+	    else {
+	      CharExpression ce = getCharExpression(pattern, index - 1, pLength, syntax);
+	      if (ce == null)
+		throw new REException("invalid escape sequence", REException.REG_ESCAPE, index);
+	      asciiEsc = ce.ch; asciiEscIsSet = true;
+	      index = index - 1 + ce.len - 1;
+	    }
+	    if (lastCharIsSet) options.addElement(new RETokenChar(subIndex,lastChar,insens));
+	    
+	    if (posixID != -1) {
+	      options.addElement(new RETokenPOSIX(subIndex,posixID,insens,negate));
+	    } else if (np != null) {
+	      options.addElement(getRETokenNamedProperty(subIndex,np,insens,index));
+	    } else if (asciiEscIsSet) {
+	      lastChar = asciiEsc; lastCharIsSet = true;
+	    } else {
+	      lastChar = pattern[index]; lastCharIsSet = true;
+	    }
+	    ++index;
+	  } else if ((ch == '[') && (syntax.get(RESyntax.RE_CHAR_CLASSES)) && (index < pLength) && (pattern[index] == ':')) {
+	    StringBuffer posixSet = new StringBuffer();
+	    index = getPosixSet(pattern,index+1,posixSet);
+	    int posixId = RETokenPOSIX.intValue(posixSet.toString());
+	    if (posixId != -1)
+	      options.addElement(new RETokenPOSIX(subIndex,posixId,insens,false));
+	  } else if ((ch == '[') && (syntax.get(RESyntax.RE_NESTED_CHARCLASS))) {
+		ParseCharClassResult result = parseCharClass(
+		    subIndex, pattern, index, pLength, cflags, syntax, 0);
+		addition.addElement(result.token);
+		addition.addElement("|");
+		index = result.index;
+	  } else if ((ch == '&') &&
+		     (syntax.get(RESyntax.RE_NESTED_CHARCLASS)) &&
+		     (index < pLength) && (pattern[index] == '&')) {
+		if (returnAtAndOperator) {
+		    ParseCharClassResult result = new ParseCharClassResult(); 
+		    options.trimToSize();
+		    if (additionAndAppeared) addition.addElement("&");
+		    if (addition.size() == 0) addition = null;
+		    result.token = new RETokenOneOf(subIndex,
+			options, addition, negative);
+		    result.index = index - 1;
+		    result.returnAtAndOperator = true;
+		    return result;
+		}
+		// The precedence of the operator "&&" is the lowest.
+		// So we postpone adding "&" until other elements
+		// are added. And we insert Boolean.FALSE at the
+		// beginning of the list of tokens following "&&".
+		// So, "&&[a-b][k-m]" will be stored in the Vecter
+		// addition in this order:
+		//     Boolean.FALSE, [a-b], "|", [k-m], "|", "&"
+		if (additionAndAppeared) addition.addElement("&");
+		addition.addElement(Boolean.FALSE);
+		additionAndAppeared = true;
+
+		// The part on which "&&" operates may be either
+		//   (1) explicitly enclosed by []
+		//   or
+		//   (2) not enclosed by [] and terminated by the
+		//       next "&&" or the end of the character list.
+	        //  Let the preceding else if block do the case (1).
+		//  We must do something in case of (2).
+		if ((index + 1 < pLength) && (pattern[index + 1] != '[')) {
+		    ParseCharClassResult result = parseCharClass(
+			subIndex, pattern, index+1, pLength, cflags, syntax,
+			RETURN_AT_AND);
+		    addition.addElement(result.token);
+		    addition.addElement("|");
+		    // If the method returned at the next "&&", it is OK.
+		    // Otherwise we have eaten the mark of the end of this
+		    // character list "]".  In this case we must give back
+		    // the end mark.
+		    index = (result.returnAtAndOperator ?
+			result.index: result.index - 1);
+		}
+	  } else {
+	    if (lastCharIsSet) options.addElement(new RETokenChar(subIndex,lastChar,insens));
+	    lastChar = ch; lastCharIsSet = true;
+	  }
+	  if (index == pLength) throw new REException(getLocalizedMessage("class.no.end"),REException.REG_EBRACK,index);
+	} // while in list
+	// Out of list, index is one past ']'
+	    
+	if (lastCharIsSet) options.addElement(new RETokenChar(subIndex,lastChar,insens));
+	   
+	ParseCharClassResult result = new ParseCharClassResult(); 
+	// Create a new RETokenOneOf
+	options.trimToSize();
+	if (additionAndAppeared) addition.addElement("&");
+	if (addition.size() == 0) addition = null;
+	result.token = new RETokenOneOf(subIndex,options, addition, negative);
+	result.index = index;
+	return result;
   }
 
   private static int getCharUnit(char[] input, int index, CharUnit unit, boolean quot) throws REException {
@@ -1072,7 +1213,7 @@ public class RE extends REToken {
     public String toString() { return expr; }
   }
 
-  private CharExpression getCharExpression(char[] input, int pos, int lim,
+  private static CharExpression getCharExpression(char[] input, int pos, int lim,
         RESyntax syntax) {
     CharExpression ce = new CharExpression();
     char c = input[pos];
@@ -1164,7 +1305,7 @@ public class RE extends REToken {
     int len;
   }
 
-  private NamedProperty getNamedProperty(char[] input, int pos, int lim) {
+  private static NamedProperty getNamedProperty(char[] input, int pos, int lim) {
     NamedProperty np = new NamedProperty();
     char c = input[pos];
     if (c == '\\') {
@@ -1295,6 +1436,10 @@ public class RE extends REToken {
    */
   public int getMinimumLength() {
       return minimumLength;
+  }
+
+  public int getMaximumLength() {
+      return maximumLength;
   }
 
   /**
@@ -1568,8 +1713,7 @@ public class RE extends REToken {
     StringBuffer buffer = new StringBuffer();
     REMatch m = getMatchImpl(input,index,eflags,buffer);
     if (m==null) return buffer.toString();
-    buffer.append( ((eflags & REG_NO_INTERPOLATE) > 0) ?
-		   replace : m.substituteInto(replace) );
+    buffer.append(getReplacement(replace, m, eflags));
     if (input.move(m.end[0])) {
       do {
 	buffer.append(input.charAt(0));
@@ -1630,8 +1774,7 @@ public class RE extends REToken {
     StringBuffer buffer = new StringBuffer();
     REMatch m;
     while ((m = getMatchImpl(input,index,eflags,buffer)) != null) {
-	buffer.append( ((eflags & REG_NO_INTERPOLATE) > 0) ?
-		       replace : m.substituteInto(replace) );
+      buffer.append(getReplacement(replace, m, eflags));
       index = m.getEndIndex();
       if (m.end[0] == 0) {
 	char ch = input.charAt(0);
@@ -1646,11 +1789,50 @@ public class RE extends REToken {
     }
     return buffer.toString();
   }
+
+  public static String getReplacement(String replace, REMatch m, int eflags) {
+    if ((eflags & REG_NO_INTERPOLATE) > 0)
+      return replace;
+    else {
+      if ((eflags & REG_REPLACE_USE_BACKSLASHESCAPE) > 0) {
+        StringBuffer sb = new StringBuffer();
+        int l = replace.length();
+        for (int i = 0; i < l; i++) {
+	    char c = replace.charAt(i);
+            switch(c) {
+            case '\\':
+              i++;
+              // Let StringIndexOutOfBoundsException be thrown.
+              sb.append(replace.charAt(i));
+              break;
+            case '$':
+	      int i1 = i + 1;
+	      while (i1 < replace.length() &&
+		Character.isDigit(replace.charAt(i1))) i1++;
+              sb.append(m.substituteInto(replace.substring(i, i1)));
+              i = i1 - 1;
+              break;
+            default:
+              sb.append(c);
+            }
+        }
+        return sb.toString();
+      }
+      else
+        return m.substituteInto(replace);
+    }
+  }	
   
   /* Helper function for constructor */
   private void addToken(REToken next) {
     if (next == null) return;
     minimumLength += next.getMinimumLength();
+    int nmax = next.getMaximumLength();
+    if (nmax < Integer.MAX_VALUE && maximumLength < Integer.MAX_VALUE)
+	maximumLength += nmax;
+    else 
+	maximumLength = Integer.MAX_VALUE;
+
     if (firstToken == null) {
 	lastToken = firstToken = next;
     } else {

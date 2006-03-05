@@ -186,7 +186,11 @@ public abstract class BasePRNG implements IRandom
 
   public Object clone() throws CloneNotSupportedException
   {
-    return super.clone();
+    BasePRNG result = (BasePRNG) super.clone();
+    if (this.buffer != null)
+      result.buffer = (byte[]) this.buffer.clone();
+
+    return result;
   }
 
   public abstract void setup(Map attributes);

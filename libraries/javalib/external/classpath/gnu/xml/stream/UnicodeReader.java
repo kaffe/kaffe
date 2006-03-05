@@ -152,6 +152,10 @@ public class UnicodeReader
     in.close();
   }
 
+  /**
+   * Returns the specified UTF-16 char array as an array of Unicode code
+   * points.
+   */
   public static int[] toCodePointArray(String text)
     throws IOException
   {

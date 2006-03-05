@@ -64,6 +64,7 @@ import javax.swing.ListCellRenderer;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.LookAndFeel;
+import javax.swing.SwingUtilities;
 import javax.swing.UIDefaults;
 import javax.swing.UIManager;
 import javax.swing.event.ListDataEvent;
@@ -739,9 +740,8 @@ public class BasicListUI extends ListUI
     for (int i = minIndex + 1; i <= maxIndex; i++)
       {
         Point hiLoc = indexToLocation(list, i);
-        Rectangle hibounds = new Rectangle(hiLoc.x, hiLoc.y, width,
-                                           getCellHeight(i));
-        bounds = bounds.union(hibounds);
+        bounds = SwingUtilities.computeUnion(hiLoc.x, hiLoc.y, width,
+                                             getCellHeight(i), bounds);
       }
 
     return bounds;

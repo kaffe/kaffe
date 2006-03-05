@@ -199,6 +199,7 @@ operable.
 * java.lang.VMString::
 * java.lang.VMThread::
 * java.lang.VMInstrumentationImpl::
+* java.lang.VMMath::
 
 
 File: vmintegration.info,  Node: java.lang.VMClass,  Next: java.lang.VMObject,  Prev: java.lang,  Up: java.lang
@@ -759,7 +760,7 @@ optional or deprecated functionality.
           result.
 
 
-File: vmintegration.info,  Node: java.lang.VMInstrumentationImpl,  Prev: java.lang.VMThread,  Up: java.lang
+File: vmintegration.info,  Node: java.lang.VMInstrumentationImpl,  Next: java.lang.VMMath,  Prev: java.lang.VMThread,  Up: java.lang
 
 3.1.13 `java.lang.VMInstrumentationImpl'
 ----------------------------------------
@@ -788,7 +789,7 @@ VM should implement the static native methods of the
    * `getObjectSize()' - Gives the size of an object.
 
    Instrumentation allows to modify the bytecode of a class before it
-gets read by the VM. In Gnu Classpath, the `ClassLoader.defineClass'
+gets read by the VM. In GNU Classpath, the `ClassLoader.defineClass'
 method calls the `VMClassLoader.defineClassWithTransformers' method
 which first checks if `VMClassLoader.instrumenter' is `null'. If it's
 the case, it directly calls `VMClassLoader.defineClass'. If it's not
@@ -806,6 +807,81 @@ interface on a `Instrumentation' object. The
 `VMInstrumentationImpl.redefineClasses' native method which must be
 implemented by the VM. The implementation should call the
 `InstrumentationImpl.callTransformers' method.
+
+
+File: vmintegration.info,  Node: java.lang.VMMath,  Prev: java.lang.VMInstrumentationImpl,  Up: java.lang
+
+3.1.14 `java.lang.VMMath'
+-------------------------
+
+The `VMMath' class provides a series of native methods for some of the
+mathematical functions present in `java.lang.Math'.  Classpath provides
+a default implementation of these which maps the functions to those
+provided by `fdlibm'.  VM implementors are welcome to replace this with
+more efficent implementations, as long as the accuracy contract of
+these methods, specified in `java.lang.Math', is maintained.
+
+   * 1.0
+        * `sin(double)' - Returns the sine value for the given angle.
+
+        * `cos(double)' - Returns the cosine value for the given angle.
+
+        * `tan(double)' - Returns the tangent value for the given angle.
+
+        * `asin(double)' - Returns the arc sine value for the given
+          angle.
+
+        * `acos(double)' - Returns the arc cosine value for the given
+          angle.
+
+        * `atan(double)' - Returns the arc tangent value for the given
+          angle.
+
+        * `atan2(double,double)' - Returns the arc tangent of the ratio
+          of the two arguments.
+
+        * `exp(double)' - Returns the exponent raised to the given
+          power.
+
+        * `log(double)' - Returns the natural logarithm for the given
+          value.
+
+        * `sqrt(double)' - Returns the square root of the value.
+
+        * `pow(double,double)' - Returns x to the power of y.
+
+        * `IEEEremainder(double,double)' - Returns the IEEE 754
+          remainder for the two values.
+
+        * `ceil(double)' - Returns the nearest integer >= the value.
+
+        * `floor(double)' - Returns the nearest integer <= the value.
+
+        * `rint(double)' - Returns the nearest integer or the even one
+          if the distance between the two is equal.
+
+   * 1.5
+        * `cbrt(double)' - Returns the cube root of the value.
+
+        * `cosh(double)' - Returns the hyperbolic cosine value for the
+          given angle.
+
+        * `expm1(double)' - Returns the exponent of the value minus one.
+
+        * `hypot(double,double)' - Returns the hypotenuse corresponding
+          to x and y.
+
+        * `log10(double)' - Returns the base 10 logarithm of the given
+          value.
+
+        * `log1p(double)' - Returns the natural logarithm of the value
+          plus one.
+
+        * `sinh(double)' - Returns the hyperbolic sine value for the
+          given angle.
+
+        * `tanh(double)' - Returns the hyperbolic tangent value for the
+          given angle.
 
 
 File: vmintegration.info,  Node: gnu.classpath,  Next: java.util,  Prev: java.lang,  Up: Classpath Hooks
@@ -1505,47 +1581,48 @@ Node: Introduction1227
 Node: Initialization5801
 Node: Classpath Hooks6214
 Node: java.lang7434
-Node: java.lang.VMClass8136
-Node: java.lang.VMObject12406
-Node: java.lang.VMClassLoader14019
-Node: java.lang.VMSystem16871
-Node: java.lang.VMThrowable19498
-Node: java.lang.VMCompiler20518
-Node: java.lang.VMDouble21497
-Node: java.lang.VMFloat22762
-Node: java.lang.VMProcess23458
-Node: java.lang.VMRuntime24840
-Node: java.lang.VMString27403
-Node: java.lang.VMThread28223
-Node: java.lang.VMInstrumentationImpl31710
-Node: gnu.classpath34028
-Node: gnu.classpath.VMStackWalker34468
-Node: gnu.classpath.VMSystemProperties35534
-Node: java.util36867
-Node: java.util.VMTimeZone37330
-Node: java.io38246
-Node: java.io.VMFile38975
-Node: java.io.VMObjectInputStream41846
-Node: java.io.VMObjectStreamClass42527
-Node: java.security43357
-Node: java.security.VMAccessController43698
-Node: java.net44862
-Node: java.net.VMInetAddress45303
-Node: java.net.VMNetworkInterface46096
-Node: java.nio46528
-Node: java.nio.VMDirectByteBuffer47031
-Node: java.nio.channels48479
-Node: java.nio.channels.VMChannels48896
-Node: gnu.java.nio49664
-Node: gnu.java.nio.VMPipe50080
-Node: gnu.java.nio.VMSelector50597
-Node: Classpath Callbacks51143
-Node: VM Hooks51623
-Node: JNI Implementation55822
-Node: Miscellaneous VM Requirements57693
-Node: JNI Version58002
-Node: VM Threading Model58562
-Ref: VM Threading Model-Footnote-160178
-Node: Boot Library Path Property60290
+Node: java.lang.VMClass8157
+Node: java.lang.VMObject12427
+Node: java.lang.VMClassLoader14040
+Node: java.lang.VMSystem16892
+Node: java.lang.VMThrowable19519
+Node: java.lang.VMCompiler20539
+Node: java.lang.VMDouble21518
+Node: java.lang.VMFloat22783
+Node: java.lang.VMProcess23479
+Node: java.lang.VMRuntime24861
+Node: java.lang.VMString27424
+Node: java.lang.VMThread28244
+Node: java.lang.VMInstrumentationImpl31731
+Node: java.lang.VMMath34074
+Node: gnu.classpath36622
+Node: gnu.classpath.VMStackWalker37062
+Node: gnu.classpath.VMSystemProperties38128
+Node: java.util39461
+Node: java.util.VMTimeZone39924
+Node: java.io40840
+Node: java.io.VMFile41569
+Node: java.io.VMObjectInputStream44440
+Node: java.io.VMObjectStreamClass45121
+Node: java.security45951
+Node: java.security.VMAccessController46292
+Node: java.net47456
+Node: java.net.VMInetAddress47897
+Node: java.net.VMNetworkInterface48690
+Node: java.nio49122
+Node: java.nio.VMDirectByteBuffer49625
+Node: java.nio.channels51073
+Node: java.nio.channels.VMChannels51490
+Node: gnu.java.nio52258
+Node: gnu.java.nio.VMPipe52674
+Node: gnu.java.nio.VMSelector53191
+Node: Classpath Callbacks53737
+Node: VM Hooks54217
+Node: JNI Implementation58416
+Node: Miscellaneous VM Requirements60287
+Node: JNI Version60596
+Node: VM Threading Model61156
+Ref: VM Threading Model-Footnote-162772
+Node: Boot Library Path Property62884
 
 End Tag Table

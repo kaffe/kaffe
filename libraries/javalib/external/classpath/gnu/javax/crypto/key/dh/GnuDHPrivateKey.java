@@ -42,6 +42,7 @@ import gnu.java.security.Registry;
 import gnu.java.security.key.IKeyPairCodec;
 
 import java.math.BigInteger;
+
 import javax.crypto.interfaces.DHPrivateKey;
 
 /**
@@ -66,9 +67,37 @@ public class GnuDHPrivateKey extends GnuDHKey implements DHPrivateKey
   // Constructor(s)
   // -------------------------------------------------------------------------
 
+  /**
+   * Convenience constructor. Calls the constructor with five arguments passing
+   * {@link Registry#RAW_ENCODING_ID} as the value of its first argument.
+   * 
+   * @param q a prime divisor of p-1.
+   * @param p the public prime.
+   * @param g the generator of the group.
+   * @param x the private value x.
+   */
   public GnuDHPrivateKey(BigInteger q, BigInteger p, BigInteger g, BigInteger x)
   {
-    super(q, p, g);
+    this(Registry.RAW_ENCODING_ID, q, p, g, x);
+  }
+
+  /**
+   * Constructs a new instance of <code>GnuDHPrivateKey</code> given the
+   * designated parameters.
+   * 
+   * @param preferredFormat the identifier of the encoding format to use by
+   *          default when externalizing the key.
+   * @param q a prime divisor of p-1.
+   * @param p the public prime.
+   * @param g the generator of the group.
+   * @param x the private value x.
+   */
+  public GnuDHPrivateKey(int preferredFormat,
+                         BigInteger q, BigInteger p, BigInteger g, BigInteger x)
+  {
+    super(preferredFormat == Registry.ASN1_ENCODING_ID ? Registry.PKCS8_ENCODING_ID
+                                                       : preferredFormat,
+          q, p, g);
 
     this.x = x;
   }
@@ -91,34 +120,22 @@ public class GnuDHPrivateKey extends GnuDHKey implements DHPrivateKey
    */
   public static GnuDHPrivateKey valueOf(byte[] k)
   {
-    // check magic...
-    // we should parse here enough bytes to know which codec to use, and
-    // direct the byte array to the appropriate codec.  since we only have one
-    // codec, we could have immediately tried it; nevertheless since testing
-    // one byte is cheaper than instatiating a codec that will fail we test
-    // the first byte before we carry on.
+    // try RAW codec
     if (k[0] == Registry.MAGIC_RAW_DH_PRIVATE_KEY[0])
-      {
-        // it's likely to be in raw format. get a raw codec and hand it over
-        IKeyPairCodec codec = new DHKeyPairRawCodec();
-        return (GnuDHPrivateKey) codec.decodePrivateKey(k);
-      }
-    else
-      {
-        throw new IllegalArgumentException("magic");
-      }
+      try
+        {
+          return (GnuDHPrivateKey) new DHKeyPairRawCodec().decodePrivateKey(k);
+        }
+      catch (IllegalArgumentException ignored)
+        {
+        }
+
+    // try PKCS#8 codec
+    return (GnuDHPrivateKey) new DHKeyPairPKCS8Codec().decodePrivateKey(k);
   }
 
   // Instance methods
   // -------------------------------------------------------------------------
-
-  // java.security.Key interface implementation ------------------------------
-
-  /** @deprecated see getEncoded(int). */
-  public byte[] getEncoded()
-  {
-    return getEncoded(IKeyPairCodec.RAW_FORMAT);
-  }
 
   // javax.crypto.interfaces.DHPrivateKey interface implementation -----------
 
@@ -147,9 +164,33 @@ public class GnuDHPrivateKey extends GnuDHKey implements DHPrivateKey
       case IKeyPairCodec.RAW_FORMAT:
         result = new DHKeyPairRawCodec().encodePrivateKey(this);
         break;
+      case IKeyPairCodec.PKCS8_FORMAT:
+        result = new DHKeyPairPKCS8Codec().encodePrivateKey(this);
+        break;
       default:
-        throw new IllegalArgumentException("format");
+        throw new IllegalArgumentException("Unsupported encoding format: "
+                                           + format);
       }
     return result;
+  }
+
+  /**
+   * Returns <code>true</code> if the designated object is an instance of
+   * {@link DHPrivateKey} and has the same parameter values as this one.
+   * 
+   * @param obj the other non-null DH key to compare to.
+   * @return <code>true</code> if the designated object is of the same type
+   *         and value as this one.
+   */
+  public boolean equals(Object obj)
+  {
+    if (obj == null)
+      return false;
+
+    if (! (obj instanceof DHPrivateKey))
+      return false;
+
+    DHPrivateKey that = (DHPrivateKey) obj;
+    return super.equals(that) && x.equals(that.getX());
   }
 }

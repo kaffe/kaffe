@@ -57,7 +57,7 @@ import java.security.interfaces.RSAPrivateKey;
  *    Jakob Jonsson and Burt Kaliski.</li>
  * </ol>
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.3 $
  */
 public class GnuRSAPrivateKey extends GnuRSAKey implements PrivateKey,
     RSAPrivateCrtKey
@@ -90,79 +90,118 @@ public class GnuRSAPrivateKey extends GnuRSAKey implements PrivateKey,
   // -------------------------------------------------------------------------
 
   /**
-   * <p>Trivial constructor.</p>
+   * Convenience constructor. Calls the constructor with 5 arguments passing
+   * {@link Registry#RAW_ENCODING_ID} as the identifier of the preferred
+   * encoding format.
    *
    * @param p the modulus first prime divisor.
    * @param q the modulus second prime divisor.
    * @param e the public exponent.
    * @param d the private exponent.
    */
-  public GnuRSAPrivateKey(final BigInteger p, final BigInteger q,
-                          final BigInteger e, final BigInteger d)
+  public GnuRSAPrivateKey(BigInteger p, BigInteger q, BigInteger e,
+                          BigInteger d)
   {
-    //      super(p.multiply(q));
-    super(p.multiply(q), e);
+    this(Registry.RAW_ENCODING_ID, p, q, e, d);
+  }
 
+  /**
+   * Constructs a new instance of a <code>GnuRSAPrivateKey</code> given the
+   * designated arguments.
+   * 
+   * @param preferredFormat the indetifier of the preferred encoding format to
+   *          use when externalizing this key.
+   * @param p the modulus first prime divisor.
+   * @param q the modulus second prime divisor.
+   * @param e the public exponent.
+   * @param d the private exponent.
+   */
+  public GnuRSAPrivateKey(int preferredFormat, BigInteger p, BigInteger q,
+                          BigInteger e, BigInteger d)
+  {
+    this(preferredFormat, p.multiply(q), e, d, p, q, 
+         e.modInverse(p.subtract(BigInteger.ONE)),
+         e.modInverse(q.subtract(BigInteger.ONE)),
+         q.modInverse(p));
+  }
+
+  /**
+   * Constructs a new instance of a <code>GnuRSAPrivateKey</code> given the
+   * designated arguments.
+   * 
+   * @param preferredFormat the indetifier of the preferred encoding format to
+   *          use when externalizing this key.
+   * @param n the public modulus, which is also the product of <code>p</code>
+   * and <code>q</code>.
+   * @param e the public exponent.
+   * @param d the private exponent.
+   * @param p the modulus first prime divisor.
+   * @param q the modulus second prime divisor.
+   * @param dP the first prime's exponen. A positive integer less than
+   * <code>p</code> and <code>q</code>, satisfying <code>e * dP = 1 (mod p-1)
+   * </code>.
+   * @param dQ the second prime's exponent. A positive integer less than
+   * <code>p</code> and <code>q</code>, satisfying <code>e * dQ = 1 (mod p-1)
+   * </code>.
+   * @param qInv the Chinese Remainder Theorem coefiicient. A positive integer
+   * less than <code>p</code>, satisfying <code>q * qInv = 1 (mod p)</code>.
+   */
+  public GnuRSAPrivateKey(int preferredFormat, BigInteger n, BigInteger e,
+                          BigInteger d, BigInteger p, BigInteger q,
+                          BigInteger dP, BigInteger dQ, BigInteger qInv)
+  {
+    super(preferredFormat == Registry.ASN1_ENCODING_ID ? Registry.PKCS8_ENCODING_ID
+                                                       : preferredFormat,
+          n, e);
+
+    this.d = d;
     this.p = p;
     this.q = q;
-    //      this.e = e;
-    this.d = d;
-
     // the exponents dP and dQ are positive integers less than p and q
     // respectively satisfying
     //    e * dP = 1 (mod p-1);
     //    e * dQ = 1 (mod q-1),
-    dP = e.modInverse(p.subtract(BigInteger.ONE));
-    dQ = e.modInverse(q.subtract(BigInteger.ONE));
-    // and the CRT coefficient qInv is a positive integer less than p
-    // satisfying
+    this.dP = dP;
+    this.dQ = dQ;
+    // the CRT coefficient qInv is a positive integer less than p satisfying
     //    q * qInv = 1 (mod p).
-    qInv = q.modInverse(p);
+    this.qInv = qInv;
   }
 
   // Class methods
   // -------------------------------------------------------------------------
 
   /**
-   * <p>A class method that takes the output of the <code>encodePrivateKey()</code>
+   * A class method that takes the output of the <code>encodePrivateKey()</code>
    * method of an RSA keypair codec object (an instance implementing
-   * {@link gnu.crypto.key.IKeyPairCodec} for RSA keys, and re-constructs an
-   * instance of this object.</p>
-   *
+   * {@link IKeyPairCodec} for RSA keys, and re-constructs an instance of this
+   * object.
+   * 
    * @param k the contents of a previously encoded instance of this object.
    * @throws ArrayIndexOutOfBoundsException if there is not enough bytes, in
-   * <code>k</code>, to represent a valid encoding of an instance of this object.
+   *           <code>k</code>, to represent a valid encoding of an instance
+   *           of this object.
    * @throws IllegalArgumentException if the byte sequence does not represent a
-   * valid encoding of an instance of this object.
+   *           valid encoding of an instance of this object.
    */
   public static GnuRSAPrivateKey valueOf(final byte[] k)
   {
-    // check magic...
-    // we should parse here enough bytes to know which codec to use, and
-    // direct the byte array to the appropriate codec.  since we only have one
-    // codec, we could have immediately tried it; nevertheless since testing
-    // one byte is cheaper than instatiating a codec that will fail we test
-    // the first byte before we carry on.
+    // try RAW codec
     if (k[0] == Registry.MAGIC_RAW_RSA_PRIVATE_KEY[0])
-      {
-        // it's likely to be in raw format. get a raw codec and hand it over
-        final IKeyPairCodec codec = new RSAKeyPairRawCodec();
-        return (GnuRSAPrivateKey) codec.decodePrivateKey(k);
-      }
-    else
-      {
-        throw new IllegalArgumentException("magic");
-      }
+      try
+        {
+          return (GnuRSAPrivateKey) new RSAKeyPairRawCodec().decodePrivateKey(k);
+        }
+      catch (IllegalArgumentException ignored)
+        {
+        }
+
+    // try PKCS#8 codec
+    return (GnuRSAPrivateKey) new RSAKeyPairPKCS8Codec().decodePrivateKey(k);
   }
 
   // Instance methods
   // -------------------------------------------------------------------------
-
-  // java.security.interfaces.RSAPrivateCrtKey interface implementation ------
-
-  //   public BigInteger getPublicExponent() {
-  //      return e;
-  //   }
 
   public BigInteger getPrimeP()
   {
@@ -199,16 +238,17 @@ public class GnuRSAPrivateKey extends GnuRSAKey implements PrivateKey,
   // Other instance methods --------------------------------------------------
 
   /**
-   * <p>Returns the encoded form of this private key according to the
-   * designated format.</p>
+   * Returns the encoded form of this private key according to the
+   * designated format.
    *
    * @param format the desired format identifier of the resulting encoding.
    * @return the byte sequence encoding this key according to the designated
    * format.
    * @throws IllegalArgumentException if the format is not supported.
-   * @see gnu.crypto.key.rsa.RSAKeyPairRawCodec
+   * @see RSAKeyPairRawCodec
+   * @see RSAKeyPairPKCS8Codec
    */
-  public byte[] getEncoded(final int format)
+  public byte[] getEncoded(int format)
   {
     final byte[] result;
     switch (format)
@@ -216,8 +256,12 @@ public class GnuRSAPrivateKey extends GnuRSAKey implements PrivateKey,
       case IKeyPairCodec.RAW_FORMAT:
         result = new RSAKeyPairRawCodec().encodePrivateKey(this);
         break;
+      case IKeyPairCodec.PKCS8_FORMAT:
+        result = new RSAKeyPairPKCS8Codec().encodePrivateKey(this);
+        break;
       default:
-        throw new IllegalArgumentException("format");
+        throw new IllegalArgumentException("Unsupported encoding format: "
+                                           + format);
       }
     return result;
   }

@@ -68,7 +68,7 @@ import java.util.Arrays;
  *    Jakob Jonsson and Burt Kaliski.</li>
  * </ol>
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class RSAPKCS1V1_5Signature extends BaseSignature
 {
@@ -98,9 +98,14 @@ public class RSAPKCS1V1_5Signature extends BaseSignature
    */
   public RSAPKCS1V1_5Signature(final String mdName)
   {
-    super(Registry.RSA_PKCS1_V1_5_SIG, HashFactory.getInstance(mdName));
+    this(HashFactory.getInstance(mdName));
+  }
 
-    pkcs1 = EMSA_PKCS1_V1_5.getInstance(mdName);
+  public RSAPKCS1V1_5Signature(IMessageDigest md)
+  {
+    super(Registry.RSA_PKCS1_V1_5_SIG, md);
+
+    pkcs1 = EMSA_PKCS1_V1_5.getInstance(md.name());
   }
 
   /** Private constructor for cloning purposes. */

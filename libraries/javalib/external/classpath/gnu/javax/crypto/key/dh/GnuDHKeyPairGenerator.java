@@ -52,6 +52,7 @@ import java.security.SecureRandom;
 import java.util.Map;
 
 import javax.crypto.spec.DHGenParameterSpec;
+import javax.crypto.spec.DHParameterSpec;
 
 /**
  * <p>An implementation of a Diffie-Hellman keypair generator.</p>
@@ -92,8 +93,8 @@ public class GnuDHKeyPairGenerator implements IKeyPairGenerator
   public static final String SOURCE_OF_RANDOMNESS = "gnu.crypto.dh.prng";
 
   /**
-   * Property name of an optional {@link DHGenParameterSpec} instance to use
-   * for this generator.
+   * Property name of an optional {@link DHGenParameterSpec} or
+   * {@link DHParameterSpec} instance to use for this generator.
    */
   public static final String DH_PARAMETERS = "gnu.crypto.dh.params";
 
@@ -103,12 +104,22 @@ public class GnuDHKeyPairGenerator implements IKeyPairGenerator
   /** Property name of the size in bits (Integer) of the private exponent (x). */
   public static final String EXPONENT_SIZE = "gnu.crypto.dh.m";
 
+  /**
+   * Property name of the preferred encoding format to use when externalizing
+   * generated instance of key-pairs from this generator. The property is taken
+   * to be an {@link Integer} that encapsulates an encoding format identifier.
+   */
+  public static final String PREFERRED_ENCODING_FORMAT = "gnu.crypto.dh.encoding";
+
   /** Default value for the size in bits of the public prime (p). */
   //   private static final int DEFAULT_PRIME_SIZE = 1024;
-  private static final int DEFAULT_PRIME_SIZE = 512;
+  public static final int DEFAULT_PRIME_SIZE = 512;
 
   /** Default value for the size in bits of the private exponent (x). */
-  private static final int DEFAULT_EXPONENT_SIZE = 160;
+  public static final int DEFAULT_EXPONENT_SIZE = 160;
+
+  /** Default encoding format to use when none was specified. */
+  private static final int DEFAULT_ENCODING_FORMAT = Registry.RAW_ENCODING_ID;
 
   /** The SHA instance to use. */
   private Sha160 sha = new Sha160();
@@ -137,6 +148,9 @@ public class GnuDHKeyPairGenerator implements IKeyPairGenerator
   /** Our default source of randomness. */
   private PRNG prng = null;
 
+  /** Preferred encoding format of generated keys. */
+  private int preferredFormat;
+
   // Constructor(s)
   // -------------------------------------------------------------------------
 
@@ -162,13 +176,20 @@ public class GnuDHKeyPairGenerator implements IKeyPairGenerator
 
     // are we given a set of Diffie-Hellman generation parameters or we shall
     // use our own?
-    DHGenParameterSpec params = (DHGenParameterSpec) attributes.get(DH_PARAMETERS);
+    Object params = attributes.get(DH_PARAMETERS);
 
     // find out the desired sizes
-    if (params != null)
+    if (params instanceof DHGenParameterSpec)
       {
-        l = params.getPrimeSize();
-        m = params.getExponentSize();
+        DHGenParameterSpec jceSpec = (DHGenParameterSpec) params;
+        l = jceSpec.getPrimeSize();
+        m = jceSpec.getExponentSize();
+      }
+    else if (params instanceof DHParameterSpec)
+      {
+        DHParameterSpec jceSpec = (DHParameterSpec) params;
+        l = jceSpec.getP().bitLength();
+        m = jceSpec.getL();
       }
     else
       {
@@ -191,6 +212,11 @@ public class GnuDHKeyPairGenerator implements IKeyPairGenerator
       {
         throw new IllegalArgumentException("exponent size > modulus size");
       }
+
+    // what is the preferred encoding format
+    Integer formatID = (Integer) attributes.get(PREFERRED_ENCODING_FORMAT);
+    preferredFormat = formatID == null ? DEFAULT_ENCODING_FORMAT
+                                       : formatID.intValue();
   }
 
   public KeyPair generate()
@@ -231,8 +257,8 @@ public class GnuDHKeyPairGenerator implements IKeyPairGenerator
       }
     BigInteger y = g.modPow(x, p);
 
-    PrivateKey secK = new GnuDHPrivateKey(q, p, g, x);
-    PublicKey pubK = new GnuDHPublicKey(q, p, g, y);
+    PrivateKey secK = new GnuDHPrivateKey(preferredFormat, q, p, g, x);
+    PublicKey pubK = new GnuDHPublicKey(preferredFormat, q, p, g, y);
 
     return new KeyPair(pubK, secK);
   }

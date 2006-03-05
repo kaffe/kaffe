@@ -531,9 +531,9 @@ public final class GnuCrypto extends Provider
         put("Alg.Alias.Mac.HmacWhirlpool", "HMAC-WHIRLPOOL");
 
         // KeyAgreement
-        put("KeyAgreement.DiffieHellman",
-            gnu.javax.crypto.DiffieHellmanImpl.class.getName());
-        put("Alg.Alias.KeyAgreement.DH", "DiffieHellman");
+        put("KeyAgreement.DH",
+            gnu.javax.crypto.jce.DiffieHellmanImpl.class.getName());
+        put("Alg.Alias.KeyAgreement.DiffieHellman", "DH");
 
         // Cipher
         put("Cipher.RSAES-PKCS1-v1_5",
@@ -555,6 +555,32 @@ public final class GnuCrypto extends Provider
         // KeyStore
         put("KeyStore.GKR", gnu.javax.crypto.jce.keyring.GnuKeyring.class.getName());
         put("Alg.Alias.KeyStore.GnuKeyring", "GKR");
+
+        // KeyPairGenerator ---------------------------------------------------
+        put("KeyPairGenerator.DH",
+            gnu.javax.crypto.jce.sig.DHKeyPairGeneratorSpi.class.getName());
+        put("KeyPairGenerator.DH KeySize", "512");
+        put("KeyPairGenerator.DH ImplementedIn", "Software");
+
+        put("Alg.Alias.KeyPairGenerator.DiffieHellman", "DH");
+
+        // KeyFactory ---------------------------------------------------------
+        put("KeyFactory.DH",
+            gnu.javax.crypto.jce.sig.DHKeyFactory.class.getName());
+
+        put("Alg.Alias,KeyFactory.DiffieHellman", "DH");
+
+        // Algorithm Parameters -----------------------------------------------
+        put("AlgorithmParameters.DH",
+            gnu.javax.crypto.jce.sig.DHParameters.class.getName());
+
+        put("Alg.Alias.AlgorithmParameters.DiffieHellman", "DH");
+
+        // Algorithm Parameters Generator -------------------------------------
+        put("AlgorithmParameterGenerator.DH",
+            gnu.javax.crypto.jce.sig.DHParametersGenerator.class.getName());
+
+        put("Alg.Alias.AlgorithmParameterGenerator.DiffieHellman", "DH");
 
         return null;
       }

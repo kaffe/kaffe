@@ -1,4 +1,4 @@
-/* RSAKeyPairGeneratorSpi.java -- 
+/* RSAKeyPairGeneratorSpi.java -- JCE RSA KeyPairGenerator Adapter
    Copyright (C) 2001, 2002, 2006 Free Software Foundation, Inc.
 
 This file is a part of GNU Classpath.
@@ -84,6 +84,8 @@ public class RSAKeyPairGeneratorSpi extends KeyPairGeneratorAdapter
         attributes.put(RSAKeyPairGenerator.SOURCE_OF_RANDOMNESS, random);
       }
 
+    attributes.put(RSAKeyPairGenerator.PREFERRED_ENCODING_FORMAT,
+                   new Integer(Registry.ASN1_ENCODING_ID));
     adaptee.setup(attributes);
   }
 
@@ -106,6 +108,8 @@ public class RSAKeyPairGeneratorSpi extends KeyPairGeneratorAdapter
         attributes.put(RSAKeyPairGenerator.SOURCE_OF_RANDOMNESS, random);
       }
 
+    attributes.put(RSAKeyPairGenerator.PREFERRED_ENCODING_FORMAT,
+                   new Integer(Registry.ASN1_ENCODING_ID));
     adaptee.setup(attributes);
   }
 }

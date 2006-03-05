@@ -71,7 +71,7 @@ import java.security.interfaces.RSAPublicKey;
  *    Jakob Jonsson and Burt Kaliski.</li>
  * </ol>
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class RSAPSSSignature extends BaseSignature
 {
@@ -135,9 +135,14 @@ public class RSAPSSSignature extends BaseSignature
    */
   public RSAPSSSignature(String mdName, int sLen)
   {
-    super(Registry.RSA_PSS_SIG, HashFactory.getInstance(mdName));
+    this(HashFactory.getInstance(mdName), sLen);
+  }
 
-    pss = EMSA_PSS.getInstance(mdName);
+  public RSAPSSSignature(IMessageDigest md, int sLen)
+  {
+    super(Registry.RSA_PSS_SIG, md);
+
+    pss = EMSA_PSS.getInstance(md.name());
     this.sLen = sLen;
   }
 

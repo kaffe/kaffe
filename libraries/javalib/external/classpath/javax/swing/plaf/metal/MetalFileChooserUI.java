@@ -1555,7 +1555,10 @@ public class MetalFileChooserUI
         scrollPane.getViewport().setView(fileList);
       }
     fileListPanel.add(scrollPane);
-
+    // This size was determined using BeanShell and dumping the JFileChooser
+    // component hierarchy. Sun has an internal FilePane class in there, but
+    // that probably doesn't matter atm.
+    fileListPanel.setPreferredSize(new Dimension(405, 135));
     return fileListPanel;
   }
   

@@ -137,6 +137,10 @@ public class XMLParser
   final static int ATTRIBUTE_DEFAULT_REQUIRED = 33;
   final static int ATTRIBUTE_DEFAULT_FIXED = 34;
 
+  // -- additional event types --
+  final static int START_ENTITY = 50;
+  final static int END_ENTITY = 51;
+
   /**
    * The current input.
    */
@@ -318,6 +322,12 @@ public class XMLParser
   private final boolean baseAware;
 
   /**
+   * Whether to report extended event types (START_ENTITY and END_ENTITY)
+   * in addition to the standard event types. Used by the SAX parser.
+   */
+  private final boolean extendedEventTypes;
+
+  /**
    * The reporter to receive parsing warnings.
    */
   final XMLReporter reporter;
@@ -389,6 +399,7 @@ public class XMLParser
                    boolean supportDTD,
                    boolean baseAware,
                    boolean stringInterning,
+                   boolean extendedEventTypes,
                    XMLReporter reporter,
                    XMLResolver resolver)
   {
@@ -400,6 +411,7 @@ public class XMLParser
     this.supportDTD = supportDTD;
     this.baseAware = baseAware;
     this.stringInterning = stringInterning;
+    this.extendedEventTypes = extendedEventTypes;
     this.reporter = reporter;
     this.resolver = resolver;
     if (validating)
@@ -446,6 +458,7 @@ public class XMLParser
                    boolean supportDTD,
                    boolean baseAware,
                    boolean stringInterning,
+                   boolean extendedEventTypes,
                    XMLReporter reporter,
                    XMLResolver resolver)
   {
@@ -457,6 +470,7 @@ public class XMLParser
     this.supportDTD = supportDTD;
     this.baseAware = baseAware;
     this.stringInterning = stringInterning;
+    this.extendedEventTypes = extendedEventTypes;
     this.reporter = reporter;
     this.resolver = resolver;
     if (validating)
@@ -561,7 +575,7 @@ public class XMLParser
     return attrs.size();
   }
 
-  public String getAttributeName(int index)
+  public String getAttributeLocalName(int index)
   {
     Attribute a = (Attribute) attrs.get(index);
     return a.localName;
@@ -579,7 +593,7 @@ public class XMLParser
     return a.prefix;
   }
 
-  public QName getAttributeQName(int index)
+  public QName getAttributeName(int index)
   {
     Attribute a = (Attribute) attrs.get(index);
     String namespaceURI = getNamespaceURI(a.prefix);
@@ -710,7 +724,7 @@ public class XMLParser
 
   public int getNamespaceCount()
   {
-    if (!namespaceAware)
+    if (!namespaceAware || namespaces.isEmpty())
       return 0;
     switch (event)
       {
@@ -984,10 +998,10 @@ public class XMLParser
     if (event == XMLStreamConstants.END_ELEMENT)
       {
         // Pop namespace context
-        if (namespaceAware)
+        if (namespaceAware && !namespaces.isEmpty())
           namespaces.removeFirst();
         // Pop base context
-        if (baseAware)
+        if (baseAware && !bases.isEmpty())
           bases.removeFirst();
       }
     if (!startEntityStack.isEmpty())
@@ -995,16 +1009,16 @@ public class XMLParser
         String entityName = (String) startEntityStack.removeFirst();
         buf.setLength(0);
         buf.append(entityName);
-        event = XMLStreamConstants.START_ENTITY;
-        return event;
+        event = START_ENTITY;
+        return extendedEventTypes ? event : next();
       }
     else if (!endEntityStack.isEmpty())
       {
         String entityName = (String) endEntityStack.removeFirst();
         buf.setLength(0);
         buf.append(entityName);
-        event = XMLStreamConstants.END_ENTITY;
-        return event;
+        event = END_ENTITY;
+        return extendedEventTypes ? event : next();
       }
     try
       {
@@ -1499,10 +1513,10 @@ public class XMLParser
     InputStream in = null;
     if (resolver != null)
       {
-        if (resolver instanceof XMLResolver2)
-          in = ((XMLResolver2) resolver).resolve(ids.publicId, url);
-        else
-          in = resolver.resolve(url);
+        Object obj = resolver.resolveEntity(ids.publicId, url, getXMLBase(),
+                                            null);
+        if (obj instanceof InputStream)
+          in = (InputStream) obj;
       }
     if (in == null)
       in = resolve(url);
@@ -1881,7 +1895,10 @@ public class XMLParser
     throws IOException, XMLStreamException
   {
     requireWhitespace();
+    boolean saved = expandPE;
+    expandPE = (inputStack.size() > 1);
     String name = readNmtoken(true);
+    expandPE = saved;
     requireWhitespace();
     readContentspec(name);
     skipWhitespace();
@@ -2096,7 +2113,10 @@ public class XMLParser
     throws IOException, XMLStreamException
   {
     requireWhitespace();
+    boolean saved = expandPE;
+    expandPE = (inputStack.size() > 1);
     String elementName = readNmtoken(true);
+    expandPE = saved;
     boolean white = tryWhitespace();
     while (!tryRead('>'))
       {
@@ -2828,8 +2848,6 @@ public class XMLParser
           error("Duplicate default namespace declaration");
         if (XMLConstants.XML_NS_URI.equals(attr.value))
           error("can't bind XML namespace");
-        if ("".equals(attr.value) && !input.xml11)
-          error("illegal use of 1.1-style prefix unbinding in 1.0 document");
         ctx.put(XMLConstants.DEFAULT_NS_PREFIX, attr.value);
         return true;
       }
@@ -3077,7 +3095,15 @@ public class XMLParser
                 break;
               case 0x3c: // '<'
                 reset();
-                read(tmpBuf, 0, i);
+                // read i characters
+                int count = 0, remaining = i;
+                do
+                  {
+                    int r = read(tmpBuf, 0, remaining);
+                    count += r;
+                    remaining -= r;
+                  }
+                while (count < i);
                 i = len;
                 if (coalescing && tryRead(TEST_CDATA))
                   readUntil(TEST_END_CDATA); // read CDATA section into buf
@@ -3248,15 +3274,7 @@ public class XMLParser
                       reset();
                     char[] ref = readCharacterRef(hex ? 16 : 10);
                     for (int i = 0; i < ref.length; i++)
-                      {
-                        char x = ref[i];
-                        if ((flags & (LIT_ATTRIBUTE | LIT_PUBID)) != 0 &&
-                            (x == 0x0a || x == 0x0d))
-                          x = 0x20; // normalize
-                        else if ((flags & LIT_ATTRIBUTE) != 0 && x == 0x09)
-                          x = 0x20; // normalize
-                        literalBuf.append(x);
-                      }
+                      literalBuf.append(ref[i]);
                     entities = true;
                     continue;
                   }
@@ -4245,6 +4263,7 @@ public class XMLParser
                                 true, // supportDTD
                                 true, // baseAware
                                 true, // stringInterning
+                                true, // extendedEventTypes
                                 null,
                                 null);
     XMLStreamReader reader = p;
@@ -4276,7 +4295,7 @@ public class XMLParser
                                      "='"+reader.getNamespaceURI(i)+"'");
                 l = reader.getAttributeCount();
                 for (int i = 0; i < l; i++)
-                  System.out.println("\tattribute "+reader.getAttributeQName(i)+
+                  System.out.println("\tattribute "+reader.getAttributeName(i)+
                                      "='"+reader.getAttributeValue(i)+"'");
                 break;
               case XMLStreamConstants.END_ELEMENT:
@@ -4304,10 +4323,10 @@ public class XMLParser
                 System.out.println("PROCESSING_INSTRUCTION "+reader.getPITarget()+
                                    " "+reader.getPIData());
                 break;
-              case XMLStreamConstants.START_ENTITY:
+              case START_ENTITY:
                 System.out.println("START_ENTITY "+reader.getText());
                 break;
-              case XMLStreamConstants.END_ENTITY:
+              case END_ENTITY:
                 System.out.println("END_ENTITY "+reader.getText());
                 break;
               default:
@@ -4320,7 +4339,7 @@ public class XMLParser
         Location l = reader.getLocation();
         System.out.println("At line "+l.getLineNumber()+
                            ", column "+l.getColumnNumber()+
-                           " of "+l.getLocationURI());
+                           " of "+l.getSystemId());
         throw e;
       }
   }
@@ -4929,19 +4948,6 @@ public class XMLParser
   }
 
   /**
-   * Compatibility interface that can be used to resolve based on a public
-   * ID, not just an URL.
-   */
-  interface XMLResolver2
-    extends XMLResolver
-  {
-
-    InputStream resolve(String publicId, String systemId)
-      throws XMLStreamException;
-
-  }
-
-  /**
    * An XML input source.
    */
   static class Input
@@ -5009,7 +5015,12 @@ public class XMLParser
       return line;
     }
 
-    public String getLocationURI()
+    public String getPublicId()
+    {
+      return publicId;
+    }
+
+    public String getSystemId()
     {
       return systemId;
     }

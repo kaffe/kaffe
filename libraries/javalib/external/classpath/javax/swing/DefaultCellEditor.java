@@ -1,5 +1,5 @@
 /* DefaultCellEditor.java --
-   Copyright (C) 2002, 2004 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2006, Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -129,7 +129,7 @@ public class DefaultCellEditor
      * 
      * @param event the event to check
      *
-     * @returns true if the passed event is the mouse event and false otherwise
+     * @return true if the passed event is the mouse event and false otherwise.
      */
     public boolean isCellEditable(EventObject event)
     {
@@ -147,7 +147,7 @@ public class DefaultCellEditor
      * 
      * @param event unused in default method
      *
-     * @returns true always
+     * @return true always
      */
     public boolean shouldSelectCell(EventObject event)
     {
@@ -160,7 +160,7 @@ public class DefaultCellEditor
      * cell editor listeners (including the table) that the editing has been
      * stopped. 
      * 
-     * @returns boolean
+     * @return boolean
      */
     public boolean stopCellEditing()
     {
@@ -185,7 +185,9 @@ public class DefaultCellEditor
      * The default method returns true without action but may be overridden
      * in derived classes for more specific behavior.
      * 
-     * @returns true, always
+     * @param event  the event.
+     * 
+     * @return true, always
      */
     public boolean startCellEditing(EventObject event)
     {
@@ -376,7 +378,7 @@ public class DefaultCellEditor
    * Create the DefaultCellEditor that uses the text field as its editor
    * component (appropriate for the text content)
    * 
-   * @param the text field as will be used as the editor component.
+   * @param textfield the text field as will be used as the editor component
    */
   public DefaultCellEditor(JTextField textfield)
   {
@@ -417,7 +419,7 @@ public class DefaultCellEditor
    * Get the component that performs the editing sessions. It is the same 
    * component that was passed in constructor.
    * 
-   * @returns the component, performing the editing sessions. 
+   * @return the component, performing the editing sessions. 
    */
   public Component getComponent()
   {
@@ -427,7 +429,7 @@ public class DefaultCellEditor
   /**
    * Get the number of mouse clicks, required to start the editing session.
    * 
-   * @returns int the number of mouse clicks, required to start the session
+   * @return int the number of mouse clicks, required to start the session
    */
   public int getClickCountToStart()
   {
@@ -448,7 +450,7 @@ public class DefaultCellEditor
    * Get the value, currently being displayed by the editor component. The 
    * call is forwarded to the {@link #delegate}.
    * 
-   * @returns Object the value (class depends on the editor component)
+   * @return Object the value (class depends on the editor component)
    */
   public Object getCellEditorValue()
   {
@@ -460,7 +462,7 @@ public class DefaultCellEditor
    * 
    * @param event forwarded to the delegate.
    *
-   * @returns boolean returned by delegate
+   * @return boolean returned by delegate
    */
   public boolean isCellEditable(EventObject event)
   {
@@ -472,7 +474,7 @@ public class DefaultCellEditor
    * 
    * @param event forwarded to the delegate.
    *
-   * @returns boolean returned by delegate
+   * @return boolean returned by delegate
    */
   public boolean shouldSelectCell(EventObject event)
   {
@@ -482,7 +484,7 @@ public class DefaultCellEditor
   /**
    * Forwards call to the {@link #delegate}.
    * 
-   * @returns boolean returned by delegate
+   * @return boolean returned by delegate
    */
   public boolean stopCellEditing()
   {
@@ -514,7 +516,7 @@ public class DefaultCellEditor
    * @param leaf - true if the node is a leaf node
    * @param row - the row index of the node being edited
    *
-   * @returns Component the component for editing
+   * @return Component the component for editing
    */
   public Component getTreeCellEditorComponent(JTree tree, Object value,
                                               boolean isSelected,
@@ -537,7 +539,7 @@ public class DefaultCellEditor
    * @param row the row of the cell being edited
    * @param column the column of the cell being edited
    * 
-   * @returns Component the component that will perform the editing session
+   * @return Component the component that will perform the editing session
    */
   public Component getTableCellEditorComponent(JTable table, Object value,
                                                boolean isSelected, int row,

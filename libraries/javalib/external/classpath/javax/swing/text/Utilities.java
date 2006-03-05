@@ -41,11 +41,7 @@ package javax.swing.text;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.text.BreakIterator;
-
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 
 /**
  * A set of utilities to deal with text. This is used by several other classes
@@ -241,9 +237,10 @@ public class Utilities
     int pos;
     int currentX = x0;
 
-    for (pos = p0; pos < s.count; pos++)
+    for (pos = 0; pos < s.count; pos++)
       {
         char nextChar = s.array[s.offset+pos];
+        
         if (nextChar == 0)
           {
             if (! round)
@@ -259,6 +256,7 @@ public class Utilities
             else
               currentX = (int) te.nextTabStop(currentX, pos);
           }
+        
         if (currentX > x)
           {
             if (! round)
@@ -266,7 +264,8 @@ public class Utilities
             break;
           }
       }
-    return pos;
+    
+    return pos + p0;
   }
 
   /**
@@ -513,10 +512,10 @@ public class Utilities
   {
     int mark = Utilities.getTabbedTextOffset(s, metrics, x0, x, e, startOffset);
     BreakIterator breaker = BreakIterator.getWordInstance();
-    breaker.setText(s.toString());
-    
+    breaker.setText(s);
+
     // If mark is equal to the end of the string, just use that position
-    if (mark == s.count)
+    if (mark == s.count + s.offset)
       return mark;
     
     // Try to find a word boundary previous to the mark at which we 
@@ -574,15 +573,29 @@ public class Utilities
   public static final int getPositionAbove(JTextComponent c, int offset, int x)
     throws BadLocationException
   {
-    View rootView = c.getUI().getRootView(c);
-    Rectangle r = c.modelToView(offset);
-    int offs = c.viewToModel(new Point(x, r.y));
-    int pos = rootView.getNextVisualPositionFrom(offs,
-                                    Position.Bias.Forward,
-                                    SwingUtilities.calculateInnerArea(c, null),
-                                    SwingConstants.NORTH,
-                                    new Position.Bias[1]);
-    return pos;
+    int offs = getRowStart(c, offset);
+    
+    if(offs == -1)
+      return -1;
+
+    // Effectively calculates the y value of the previous line.
+    Point pt = c.modelToView(offs-1).getLocation();
+    
+    pt.x = x;
+    
+    // Calculate a simple fitting offset.
+    offs = c.viewToModel(pt);
+    
+    // Find out the real x positions of the calculated character and its
+    // neighbour.
+    int offsX = c.modelToView(offs).getLocation().x;
+    int offsXNext = c.modelToView(offs+1).getLocation().x;
+    
+    // Chose the one which is nearer to us and return its offset.
+    if (Math.abs(offsX-x) <= Math.abs(offsXNext-x))
+      return offs;
+    else
+      return offs+1;
   }
 
   /**
@@ -601,14 +614,31 @@ public class Utilities
   public static final int getPositionBelow(JTextComponent c, int offset, int x)
     throws BadLocationException
   {
-    View rootView = c.getUI().getRootView(c);
-    Rectangle r = c.modelToView(offset);
-    int offs = c.viewToModel(new Point(x, r.y));
-    int pos = rootView.getNextVisualPositionFrom(offs,
-                                    Position.Bias.Forward,
-                                    SwingUtilities.calculateInnerArea(c, null),
-                                    SwingConstants.SOUTH,
-                                    new Position.Bias[1]);
-    return pos;
-  }
+    int offs = getRowEnd(c, offset);
+    
+    if(offs == -1)
+      return -1;
+
+    // Effectively calculates the y value of the previous line.
+    Point pt = c.modelToView(offs+1).getLocation();
+    
+    pt.x = x;
+    
+    // Calculate a simple fitting offset.
+    offs = c.viewToModel(pt);
+    
+    if (offs == c.getDocument().getLength())
+      return offs;
+
+    // Find out the real x positions of the calculated character and its
+    // neighbour.
+    int offsX = c.modelToView(offs).getLocation().x;
+    int offsXNext = c.modelToView(offs+1).getLocation().x;
+    
+    // Chose the one which is nearer to us and return its offset.
+    if (Math.abs(offsX-x) <= Math.abs(offsXNext-x))
+      return offs;
+    else
+      return offs+1;
+    }
 }

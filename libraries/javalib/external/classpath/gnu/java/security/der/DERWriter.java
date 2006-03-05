@@ -222,10 +222,10 @@ public class DERWriter implements DER
     throws IOException
   {
     byte[] buf = bs.getShiftedByteArray();
-    out.write(buf.length + 1);
+    writeLength(out, buf.length + 1);
     out.write(bs.getIgnoredBits());
     out.write(buf);
-    return buf.length;
+    return buf.length + 1;
   }
 
   private static int writeString(OutputStream out, int tag, String str)

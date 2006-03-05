@@ -1,5 +1,5 @@
 /* gnu/regexp/REMatch.java
-   Copyright (C) 1998-2001, 2004 Free Software Foundation, Inc.
+   Copyright (C) 2006 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -69,6 +69,8 @@ public final class REMatch implements Serializable, Cloneable {
     REMatch next; // other possibility (to avoid having to use arrays)
     boolean empty; // empty string matched. This flag is used only within
 		   // RETokenRepeated.
+    int matchFlags; // flags passed to match methods
+    static final int MF_FIND_ALL = 0x01;
 
     public Object clone() {
 	try {
@@ -246,6 +248,8 @@ public final class REMatch implements Serializable, Cloneable {
      * <code>$0</code> through <code>$9</code>.  <code>$0</code> matches
      * the full substring matched; <code>$<i>n</i></code> matches
      * subexpression number <i>n</i>.
+     * <code>$10, $11, ...</code> may match the 10th, 11th, ... subexpressions
+     * if such subexpressions exist.
      *
      * @param input A string consisting of literals and <code>$<i>n</i></code> tokens.
      */
@@ -256,6 +260,16 @@ public final class REMatch implements Serializable, Cloneable {
 	for (pos = 0; pos < input.length()-1; pos++) {
 	    if ((input.charAt(pos) == '$') && (Character.isDigit(input.charAt(pos+1)))) {
 		int val = Character.digit(input.charAt(++pos),10);
+		int pos1 = pos + 1;
+		while (pos1 < input.length() &&
+		       Character.isDigit(input.charAt(pos1))) {
+		    int val1 = val*10 + Character.digit(input.charAt(pos1),10);
+		    if (val1 >= start.length) break;
+		    pos1++;
+		    val = val1;
+		}
+		pos = pos1 - 1;
+
 		if (val < start.length) {
 		    output.append(toString(val));
 		} 

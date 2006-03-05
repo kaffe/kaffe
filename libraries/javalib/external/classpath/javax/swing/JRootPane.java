@@ -245,7 +245,7 @@ public class JRootPane extends JComponent implements Accessible
       layeredPane.setBounds(layeredPaneBounds);
       if (menuBar != null)
         menuBar.setBounds(menuBarBounds);
-      contentPane.setBounds(contentPaneBounds);
+      getContentPane().setBounds(contentPaneBounds);
     }
 
     /**
@@ -284,7 +284,7 @@ public class JRootPane extends JComponent implements Accessible
       Dimension prefSize = new Dimension();
       Insets i = getInsets();
       prefSize = new Dimension(i.left + i.right, i.top + i.bottom);
-      Dimension contentPrefSize = contentPane.getPreferredSize();
+      Dimension contentPrefSize = getContentPane().getPreferredSize();
       prefSize.width += contentPrefSize.width;
       prefSize.height += contentPrefSize.height;
       if (menuBar != null)
@@ -526,6 +526,7 @@ public class JRootPane extends JComponent implements Accessible
     getGlassPane();
     getLayeredPane();
     getContentPane();
+    setOpaque(true);
     updateUI();
   }
 
@@ -658,5 +659,19 @@ public class JRootPane extends JComponent implements Accessible
     int oldStyle = windowDecorationStyle;
     windowDecorationStyle = style;
     firePropertyChange("windowDecorationStyle", oldStyle, style);
+  }
+
+  /**
+   * This returns <code>true</code> if the <code>glassPane</code> is not
+   * visible because then the root pane can guarantee to tile its children
+   * (the only other direct child is a JLayeredPane which must figure its
+   * <code>optimizeDrawingEnabled</code> state on its own).
+   *
+   * @return <code>true</code> if the <code>glassPane</code> is not
+   *         visible
+   */
+  public boolean isOptimizedDrawingEnable()
+  {
+    return ! glassPane.isVisible();
   }
 }

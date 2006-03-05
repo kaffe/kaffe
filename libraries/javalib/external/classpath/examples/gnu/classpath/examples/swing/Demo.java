@@ -163,18 +163,6 @@ public class Demo
     new PopUpAction("Buttons",
 		    (new ButtonDemo("Button Demo")).createContent(),
 		    examples);
-    
-    new PopUpAction("Toggles",
-		    mkToggle("cool and refreshing"),
-		    examples);
-
-    new PopUpAction("Checkbox",
-		    mkCheckbox("ice cold"),
-		    examples);
-
-    new PopUpAction("Radio",
-		    mkRadio("delicious"),
-		    examples);
 
     new PopUpAction("Slider",
 		    (new SliderDemo("Slider Demo")).createContent(),
@@ -214,8 +202,7 @@ public class Demo
 		    examples);
 
     new PopUpAction("Spinner",
-		    mkSpinner(),
-		    examples);
+		    new SpinnerDemo("Spinner Demo").createContent(), examples);
 
     new PopUpAction("TextField",
 		    (new TextFieldDemo("TextField Demo")).createContent(),
@@ -733,26 +720,6 @@ public class Demo
     SwingUtilities.invokeLater(new LaterMain());
   }
 
-  public static JCheckBox mkCheckbox(String label)
-  {
-    JCheckBox c = new JCheckBox(label);
-    c.setFont(new Font("Luxi", Font.PLAIN, 14));
-    return c;
-  }
-
-  public static JPanel mkRadio(String label)
-  {
-    JPanel p = new JPanel();
-    JRadioButton c = new JRadioButton(label);
-    JRadioButton d = new JRadioButton("not " + label);
-    ButtonGroup bg = new ButtonGroup();
-    bg.add(c);
-    bg.add(d);
-    p.add(c);
-    p.add(d);
-    return p;
-  }
-
   public static JList mkList(Object[] elts)
   {
     JList list = new JList(elts);
@@ -776,26 +743,12 @@ public class Demo
     return box;
   }
 
-  public static JSpinner mkSpinner()
-  {
-    JSpinner spinner = new JSpinner();
-    return spinner;
-  }
-
   public static JButton mkBigButton(String title)
   {
     JButton b = new JButton(title);
     b.setMargin(new Insets(5,5,5,5));
     //b.setFont(new Font("Luxi", Font.PLAIN, 14));
     return b;
-  }
-
-  public static JToggleButton mkToggle(String title)
-  {
-    JToggleButton b = new JToggleButton(title);
-    b.setMargin(new Insets(5,5,5,5));
-    b.setFont(new Font("Luxi", Font.PLAIN, 14));
-    return b;    
   }
 
   public static JPanel mkPanel(JComponent[] inners)
@@ -1009,18 +962,6 @@ public class Demo
     new PopUpAction("Buttons",
 		    (new ButtonDemo("Button Demo")).createContent(),
 		    panel);
-    
-    new PopUpAction("Toggles",
-		    mkToggle("cool and refreshing"),
-		    panel);
-
-    new PopUpAction("Checkbox",
-		    mkCheckbox("ice cold"),
-		    panel);
-
-    new PopUpAction("Radio",
-		    mkRadio("delicious"),
-		    panel);
 
     new PopUpAction("Slider",
 		    (new SliderDemo("Slider Demo")).createContent(),
@@ -1060,9 +1001,8 @@ public class Demo
 					 "indifferent"}),
 		    panel);
 
-    new PopUpAction("Spinner",
-		    mkSpinner(),
-		    panel);
+    new PopUpAction("Spinner", 
+		    new SpinnerDemo("Spinner Demo").createContent(), panel);
 
     new PopUpAction("TextField",
 		    (new TextFieldDemo("TextField Demo")).createContent(),

@@ -40,6 +40,7 @@ package gnu.java.security.key.rsa;
 
 import gnu.java.security.Registry;
 import gnu.java.security.key.IKeyPairCodec;
+import gnu.java.security.util.FormatUtil;
 
 import java.math.BigInteger;
 import java.security.Key;
@@ -48,7 +49,7 @@ import java.security.interfaces.RSAKey;
 /**
  * <p>A base asbtract class for both public and private RSA keys.</p>
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.3 $
  */
 public abstract class GnuRSAKey implements Key, RSAKey
 {
@@ -62,20 +63,29 @@ public abstract class GnuRSAKey implements Key, RSAKey
   /** The public exponent of an RSA key pair. */
   private final BigInteger e;
 
+  /**
+   * Identifier of the default encoding format to use when externalizing the
+   * key material.
+   */
+  protected final int defaultFormat;
+
   // Constructor(s)
   // -------------------------------------------------------------------------
 
   /**
-   * <p>Trivial protected constructor.</p>
-   *
+   * Trivial protected constructor.
+   * 
+   * @param defaultFormat the identifier of the encoding format to use by
+   *          default when externalizing the key.
    * @param n the public modulus <code>n</code>.
    * @param e the public exponent <code>e</code>.
    */
-  //   protected GnuRSAKey(BigInteger n) {
-  protected GnuRSAKey(final BigInteger n, final BigInteger e)
+  protected GnuRSAKey(int defaultFormat, BigInteger n, BigInteger e)
   {
     super();
 
+    this.defaultFormat = defaultFormat <= 0 ? Registry.RAW_ENCODING_ID
+                                            : defaultFormat;
     this.n = n;
     this.e = e;
   }
@@ -108,7 +118,7 @@ public abstract class GnuRSAKey implements Key, RSAKey
 
   public String getFormat()
   {
-    return null;
+    return FormatUtil.getEncodingShortName(defaultFormat);
   }
 
   // Other instance methods --------------------------------------------------

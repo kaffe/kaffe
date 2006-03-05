@@ -47,8 +47,8 @@ import java.security.interfaces.DSAPublicKey;
 
 /**
  * <p>An object that embodies a DSS (Digital Signature Standard) public key.</p>
- *
- * @version $Revision: 1.1 $
+ * 
+ * @version $Revision: 1.2 $
  * @see #getEncoded
  */
 public class DSSPublicKey extends DSSKey implements PublicKey, DSAPublicKey
@@ -67,17 +67,39 @@ public class DSSPublicKey extends DSSKey implements PublicKey, DSAPublicKey
   // -------------------------------------------------------------------------
 
   /**
-   * <p>Trivial constructor.</p>
-   *
+   * Conveience constructor. Calls the constructor with 5 arguments passing
+   * {@link Registry#RAW_ENCODING_ID} as the identifier of the preferred
+   * encoding format.
+   * 
    * @param p the public modulus.
    * @param q the public prime divisor of <code>p-1</code>.
    * @param g a generator of the unique cyclic group <code>Z<sup>*</sup>
-   * <sub>p</sub></code>.
+   *          <sub>p</sub></code>.
    * @param y the public key part.
    */
   public DSSPublicKey(BigInteger p, BigInteger q, BigInteger g, BigInteger y)
   {
-    super(p, q, g);
+    this(Registry.RAW_ENCODING_ID, p, q, g, y);
+  }
+
+  /**
+   * Constructs a new instance of <code>DSSPublicKey</code> given the designated
+   * arguments.
+   * 
+   * @param preferredFormat the identifier of the preferred encoding format to
+   *          use when externalizing this key.
+   * @param p the public modulus.
+   * @param q the public prime divisor of <code>p-1</code>.
+   * @param g a generator of the unique cyclic group <code>Z<sup>*</sup>
+   *          <sub>p</sub></code>.
+   * @param y the public key part.
+   */
+  public DSSPublicKey(int preferredFormat, BigInteger p, BigInteger q,
+                      BigInteger g, BigInteger y)
+  {
+    super(preferredFormat == Registry.ASN1_ENCODING_ID ? Registry.X509_ENCODING_ID
+                                                       : preferredFormat,
+          p, q, g);
 
     this.y = y;
   }
@@ -86,36 +108,32 @@ public class DSSPublicKey extends DSSKey implements PublicKey, DSAPublicKey
   // -------------------------------------------------------------------------
 
   /**
-   * <p>A class method that takes the output of the <code>encodePublicKey()</code>
+   * A class method that takes the output of the <code>encodePublicKey()</code>
    * method of a DSS keypair codec object (an instance implementing
-   * {@link gnu.crypto.key.IKeyPairCodec} for DSS keys, and re-constructs an
-   * instance of this object.</p>
-   *
+   * {@link gnu.java.security.key.IKeyPairCodec} for DSS keys, and re-constructs
+   * an instance of this object.
+   * 
    * @param k the contents of a previously encoded instance of this object.
-   * @exception ArrayIndexOutOfBoundsException if there is not enough bytes,
-   * in <code>k</code>, to represent a valid encoding of an instance of
-   * this object.
-   * @exception IllegalArgumentException if the byte sequence does not
-   * represent a valid encoding of an instance of this object.
+   * @exception ArrayIndexOutOfBoundsException if there is not enough bytes, in
+   *              <code>k</code>, to represent a valid encoding of an
+   *              instance of this object.
+   * @exception IllegalArgumentException if the byte sequence does not represent
+   *              a valid encoding of an instance of this object.
    */
   public static DSSPublicKey valueOf(byte[] k)
   {
-    // check magic...
-    // we should parse here enough bytes to know which codec to use, and
-    // direct the byte array to the appropriate codec.  since we only have one
-    // codec, we could have immediately tried it; nevertheless since testing
-    // one byte is cheaper than instatiating a codec that will fail we test
-    // the first byte before we carry on.
+    // try RAW codec
     if (k[0] == Registry.MAGIC_RAW_DSS_PUBLIC_KEY[0])
-      {
-        // it's likely to be in raw format. get a raw codec and hand it over
-        IKeyPairCodec codec = new DSSKeyPairRawCodec();
-        return (DSSPublicKey) codec.decodePublicKey(k);
-      }
-    else
-      {
-        throw new IllegalArgumentException("magic");
-      }
+      try
+        {
+          return (DSSPublicKey) new DSSKeyPairRawCodec().decodePublicKey(k);
+        }
+      catch (IllegalArgumentException ignored)
+        {
+        }
+
+    // try X.509 codec
+    return (DSSPublicKey) new DSSKeyPairX509Codec().decodePublicKey(k);
   }
 
   // Instance methods
@@ -133,7 +151,7 @@ public class DSSPublicKey extends DSSKey implements PublicKey, DSAPublicKey
   /**
    * <p>Returns the encoded form of this public key according to the designated
    * format.</p>
-   *
+   * 
    * @param format the desired format identifier of the resulting encoding.
    * @return the byte sequence encoding this key according to the designated
    * format.
@@ -148,8 +166,12 @@ public class DSSPublicKey extends DSSKey implements PublicKey, DSAPublicKey
       case IKeyPairCodec.RAW_FORMAT:
         result = new DSSKeyPairRawCodec().encodePublicKey(this);
         break;
+      case IKeyPairCodec.X509_FORMAT:
+        result = new DSSKeyPairX509Codec().encodePublicKey(this);
+        break;
       default:
-        throw new IllegalArgumentException("format");
+        throw new IllegalArgumentException("Unsupported encoding format: "
+                                           + format);
       }
     return result;
   }
@@ -158,7 +180,7 @@ public class DSSPublicKey extends DSSKey implements PublicKey, DSAPublicKey
    * <p>Returns <code>true</code> if the designated object is an instance of
    * {@link DSAPublicKey} and has the same DSS (Digital Signature Standard)
    * parameter values as this one.</p>
-   *
+   * 
    * @param obj the other non-null DSS key to compare to.
    * @return <code>true</code> if the designated object is of the same type and
    * value as this one.

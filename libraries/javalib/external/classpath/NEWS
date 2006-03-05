@@ -1,11 +1,47 @@
 New in release 0.21 (to be released)
 
+* Swing improvements: JTable columns are rearrangeable and resizeable with
+  mouse. Painting and scrolling are now much faster. Plain text components
+  now support highlighting and copy+paste to the system clipboard.
+  Support for styled text has been improved, including some very basic HTML
+  support. JFileChooser is now usable. Global event dispatching has been
+  implemented. Memory consumption of Swing components has been reduced.
+  Lots of general bugfixes.
+  Added new system property to turn of Graphics2D use in Swing, even
+  if Graphics2D is available: -Dgnu.javax.swing.noGraphics2D .
+
 * GNU Crypto and Jessie have been merged into Classpath; this will
   provide Classpath with a wide array of cryptographic algorithms
   (ciphers, message digests, etc.) and implementations of SSL version
   3 and TLS version 1. These roughly complement the public
   `java.security.' `javax.crypto,' and `javax.net.ssl' packages, and
   are service providers implementing the underlying algorithms.
+ 
+* Unicode 4.0.0 is supported.
+
+* The new folder tools includes GIOP and RMI stub and tie source code
+  generators, IOR parser and both transient and persistent GIOP naming services. 
+
+* RELAX NG pluggable XML schema datatype library API and an implementation
+  for XML Schema Datatypes (http://www.w3.org/TR/xmlschema-2/).
+  
+* Added experimental support for dynamic creation of the RMI stubs using proxy
+  classes. The rmic compiler is no longer required (unless for research
+  and specific stubs).
+
+* The default back end for java.util.prefs has been changed.  The new default
+  is capable of saving and restoring preferences to and from the file system.
+
+* javax.imageio.plugins.bmp implementation.
+
+* Added --enable-collections configure option which builds
+  "collections.jar", a 1.1 VM compatibility jar.
+
+Runtime interface changes:
+
+* A new class, VMMath, is now available which separates the native
+  mathematical functions from java.lang.Math.  The previous fdlibm
+  implementation now forms the reference material for this class.
 
 New in release 0.20 (Jan 13, 2006)
 

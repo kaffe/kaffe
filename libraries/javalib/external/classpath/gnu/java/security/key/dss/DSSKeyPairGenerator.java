@@ -151,8 +151,18 @@ public class DSSKeyPairGenerator implements IKeyPairGenerator
    */
   public static final String DSS_PARAMETERS = "gnu.crypto.dss.params";
 
+  /**
+   * Property name of the preferred encoding format to use when externalizing
+   * generated instance of key-pairs from this generator. The property is taken
+   * to be an {@link Integer} that encapsulates an encoding format identifier.
+   */
+  public static final String PREFERRED_ENCODING_FORMAT = "gnu.crypto.dss.encoding";
+
   /** Default value for the modulus length. */
-  private static final int DEFAULT_MODULUS_LENGTH = 1024;
+  public static final int DEFAULT_MODULUS_LENGTH = 1024;
+
+  /** Default encoding format to use when none was specified. */
+  private static final int DEFAULT_ENCODING_FORMAT = Registry.RAW_ENCODING_ID;
 
   /** Initial SHS context. */
   private static final int[] T_SHS = new int[] { 0x67452301, 0xEFCDAB89,
@@ -229,6 +239,9 @@ public class DSSKeyPairGenerator implements IKeyPairGenerator
 
   /** Our default source of randomness. */
   private PRNG prng = null;
+
+  /** Preferred encoding format of generated keys. */
+  private int preferredFormat;
 
   // Constructor(s)
   // -------------------------------------------------------------------------
@@ -325,6 +338,12 @@ public class DSSKeyPairGenerator implements IKeyPairGenerator
     // do we have a SecureRandom, or should we use our own?
     rnd = (SecureRandom) attributes.get(SOURCE_OF_RANDOMNESS);
 
+    // what is the preferred encoding format
+    Integer formatID = (Integer) attributes.get(PREFERRED_ENCODING_FORMAT);
+    preferredFormat = formatID == null
+        ? DEFAULT_ENCODING_FORMAT
+        : formatID.intValue();
+
     // set the seed-key
     byte[] kb = new byte[20]; // we need 160 bits of randomness
     nextRandomBytes(kb);
@@ -356,8 +375,8 @@ public class DSSKeyPairGenerator implements IKeyPairGenerator
     BigInteger x = nextX();
     BigInteger y = g.modPow(x, p);
 
-    PublicKey pubK = new DSSPublicKey(p, q, g, y);
-    PrivateKey secK = new DSSPrivateKey(p, q, g, x);
+    PublicKey pubK = new DSSPublicKey(preferredFormat, p, q, g, y);
+    PrivateKey secK = new DSSPrivateKey(preferredFormat, p, q, g, x);
 
     return new KeyPair(pubK, secK);
   }

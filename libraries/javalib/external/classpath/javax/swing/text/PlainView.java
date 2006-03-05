@@ -1,5 +1,5 @@
 /* PlainView.java -- 
-   Copyright (C) 2004, 2005  Free Software Foundation, Inc.
+   Copyright (C) 2004, 2005, 2006  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -46,7 +46,7 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Shape;
 
-import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentEvent.ElementChange;
 
@@ -153,7 +153,8 @@ public class PlainView extends View implements TabExpander
         metrics = g.getFontMetrics();
         // FIXME: Selected text are not drawn yet.
         Element line = getElement().getElement(lineIndex);
-        drawUnselectedText(g, x, y, line.getStartOffset(), line.getEndOffset());
+        drawUnselectedText(g, x, y, line.getStartOffset(),
+                           line.getEndOffset() - 1);
         //drawSelectedText(g, , , , );
       }
     catch (BadLocationException e)
@@ -307,18 +308,20 @@ public class PlainView extends View implements TabExpander
     // make sure we have the metrics
     updateMetrics();
 
-    float span = 0;
     Element el = getElement();
+    float span;
 
     switch (axis)
       {
       case X_AXIS:
         span = determineMaxLineLength();
+        break;
       case Y_AXIS:
       default:
         span = metrics.getHeight() * el.getElementCount();
         break;
       }
+    
     return span;
   }
 
@@ -341,12 +344,19 @@ public class PlainView extends View implements TabExpander
     Element root = doc.getDefaultRootElement();
     
     // PlainView doesn't support line-wrapping so we can find out which
-    // Element was clicked on just by the y-position    
-    int lineClicked = (int) (y - rec.y) / metrics.getHeight();
-    if (lineClicked >= root.getElementCount())
-      return getEndOffset() - 1;
+    // Element was clicked on just by the y-position.    
+    // Since the coordinates may be outside of the coordinate space
+    // of the allocation area (e.g. user dragged mouse outside
+    // the component) we have to limit the values.
+    // This has the nice effect that the user can drag the
+    // mouse above or below the component and it will still
+    // react to the x values (e.g. when selecting).
+    int lineClicked
+      = Math.min(Math.max((int) (y - rec.y) / metrics.getHeight(), 0),
+                          root.getElementCount() - 1);
     
     Element line = root.getElement(lineClicked);
+    
     Segment s = getLineBuffer();
     int start = line.getStartOffset();
     // We don't want the \n at the end of the line.
@@ -376,6 +386,8 @@ public class PlainView extends View implements TabExpander
    */
   protected void updateDamage(DocumentEvent changes, Shape a, ViewFactory f)
   {
+    float oldMaxLineLength = maxLineLength; 
+    Rectangle alloc = a.getBounds();
     Element el = getElement();
     ElementChange ec = changes.getChange(el);
     
@@ -383,7 +395,19 @@ public class PlainView extends View implements TabExpander
     // repaint the changed line
     if (ec == null)
       {
-        int line = getElement().getElementIndex(changes.getOffset());
+        int line = el.getElementIndex(changes.getOffset());
+        
+        // If characters have been removed from the current longest line
+        // we have to find out which one is the longest now otherwise
+        // the preferred x-axis span will not shrink.
+        if (changes.getType() == DocumentEvent.EventType.REMOVE
+            && el.getElement(line) == longestLine)
+          {
+            maxLineLength = -1;
+            if (determineMaxLineLength() != alloc.width)
+              preferenceChanged(this, true, false);
+          }
+        
         damageLineRange(line, line, a, getContainer());
         return;
       }
@@ -396,12 +420,13 @@ public class PlainView extends View implements TabExpander
     if (removed == null && newElements == null)
       {
         int line = getElement().getElementIndex(changes.getOffset());
+        
         damageLineRange(line, line, a, getContainer());
         return;
       }
 
     // Check to see if we removed the longest line, if so we have to
-    // search through all lines and find the longest one again
+    // search through all lines and find the longest one again.
     if (removed != null)
       {
         for (int i = 0; i < removed.length; i++)
@@ -409,8 +434,11 @@ public class PlainView extends View implements TabExpander
             {
               // reset maxLineLength and search through all lines for longest one
               maxLineLength = -1;
-              determineMaxLineLength();
+              if (determineMaxLineLength() != alloc.width)
+                preferenceChanged(this, true, removed.length != newElements.length);
+              
               ((JTextComponent)getContainer()).repaint();
+              
               return;
             }
       }
@@ -420,6 +448,7 @@ public class PlainView extends View implements TabExpander
       {
         // No lines were added, just repaint the container and exit
         ((JTextComponent)getContainer()).repaint();
+        
         return;
       }
 
@@ -468,6 +497,14 @@ public class PlainView extends View implements TabExpander
         maxLineLength = longestNewLength;
         longestLine = longestNewLine;
       }
+    
+    // Report any changes to the preferred sizes of the view
+    // which may cause the underlying component to be revalidated.
+    boolean widthChanged = oldMaxLineLength != maxLineLength;
+    boolean heightChanged = removed.length != newElements.length; 
+    if (widthChanged || heightChanged)
+      preferenceChanged(this, widthChanged, heightChanged);
+    
     // Repaint the container
     ((JTextComponent)getContainer()).repaint();
   }
@@ -534,7 +571,9 @@ public class PlainView extends View implements TabExpander
       host.repaint();
     else
       {
-        Rectangle repaintRec = rec0.union(rec1);
+        Rectangle repaintRec = SwingUtilities.computeUnion(rec0.x, rec0.y,
+                                                           rec0.width,
+                                                           rec0.height, rec1);
         host.repaint(repaintRec.x, repaintRec.y, repaintRec.width,
                      repaintRec.height);
       }    

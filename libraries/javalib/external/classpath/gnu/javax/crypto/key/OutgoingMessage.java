@@ -39,11 +39,15 @@ exception statement from your version.  */
 package gnu.javax.crypto.key;
 
 import gnu.java.security.Registry;
-import gnu.java.security.key.IKeyPairCodec;
-import gnu.java.security.key.KeyPairCodecFactory;
+import gnu.java.security.key.dss.DSSKey;
+import gnu.java.security.key.rsa.GnuRSAKey;
+import gnu.java.security.util.FormatUtil;
+import gnu.javax.crypto.key.dh.GnuDHKey;
+import gnu.javax.crypto.key.srp6.SRPKey;
 
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
+import java.security.Key;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.math.BigInteger;
@@ -114,53 +118,51 @@ public class OutgoingMessage
   }
 
   /**
-   * <p>Encodes a public key into the message.</p>
-   *
+   * Encodes a public key into the message.
+   * <p>
+   * When a public key is encoded into an outgoing message, the byte array of
+   * the encoded key --according to its encoding/decoding format specified when
+   * the key was first instantiated-- are put in the message (a) preceeded by
+   * one byte representing both the type of key (upper 4-bit) and the identifier
+   * of the format used (lower 4-bit), and (b) preceeed by a 4-byte entity
+   * representing the total length, excluding these 4 bytes, of the bytes
+   * representing the encoded key and the one-byte representing the key-type and
+   * format; i.e.
+   * 
+   * <pre>
+   *    key --&gt; 4-byte-length || 1-byte-type-and-format || encoded-key-bytes
+   * </pre>
+   * 
    * @param k the public key to encode.
    * @throws KeyAgreementException if an encoding size constraint is violated.
    */
   public void writePublicKey(PublicKey k) throws KeyAgreementException
   {
-    IKeyPairCodec kpc = KeyPairCodecFactory.getInstance(k);
-    if (kpc == null)
-      {
-        throw new KeyAgreementException("");
-      }
-    byte[] b = kpc.encodePublicKey(k);
-    int length = b.length;
-    if (length > Registry.SASL_FOUR_BYTE_MAX_LIMIT)
-      {
-        throw new KeyAgreementException("encoded public key is too long");
-      }
-    byte[] lengthBytes = { (byte) (length >>> 24), (byte) (length >>> 16),
-                          (byte) (length >>> 8), (byte) length };
-    out.write(lengthBytes, 0, 4);
-    out.write(b, 0, b.length);
+    writeKey(k);
   }
 
   /**
-   * <p>Encodes a private key into the message.</p>
-   *
+   * Encodes a private key into the message.
+   * <p>
+   * When a private key is encoded into an outgoing message, the byte array of
+   * the encoded key --according to its encoding/decoding format specified when
+   * the key was first instantiated-- are put in the message (a) preceeded by
+   * one byte representing both the type of key (upper 4-bit) and the identifier
+   * of the format used (lower 4-bit), and (b) preceeed by a 4-byte entity
+   * representing the total length, excluding these 4 bytes, of the bytes
+   * representing the encoded key and the one-byte representing the key-type and
+   * format; i.e.
+   * 
+   * <pre>
+   *    key --&gt; 4-byte-length || 1-byte-type-and-format || encoded-key-bytes
+   * </pre>
+   * 
    * @param k the private key to encode.
    * @throws KeyAgreementException if an encoding size constraint is violated.
    */
   public void writePrivateKey(PrivateKey k) throws KeyAgreementException
   {
-    IKeyPairCodec kpc = KeyPairCodecFactory.getInstance(k);
-    if (kpc == null)
-      {
-        throw new KeyAgreementException("");
-      }
-    byte[] b = kpc.encodePrivateKey(k);
-    int length = b.length;
-    if (length > Registry.SASL_FOUR_BYTE_MAX_LIMIT)
-      {
-        throw new KeyAgreementException("encoded private key is too long");
-      }
-    byte[] lengthBytes = { (byte) (length >>> 24), (byte) (length >>> 16),
-                          (byte) (length >>> 8), (byte) length };
-    out.write(lengthBytes, 0, 4);
-    out.write(b, 0, b.length);
+    writeKey(k);
   }
 
   /**
@@ -208,5 +210,46 @@ public class OutgoingMessage
     byte[] lengthBytes = { (byte) (length >>> 8), (byte) length };
     out.write(lengthBytes, 0, 2);
     out.write(b, 0, b.length);
+  }
+
+  /**
+   * @param k the key to encode.
+   * @throws KeyAgreementException if an encoding size constraint is violated.
+   */
+  private void writeKey(Key k) throws KeyAgreementException
+  {
+    byte[] b = k.getEncoded();
+    int keyType = getKeyType(k);
+    int formatID = FormatUtil.getFormatID(k.getFormat());
+    int length = b.length + 1;
+    if (length > Registry.SASL_FOUR_BYTE_MAX_LIMIT)
+      throw new KeyAgreementException("Encoded key is too long");
+
+    byte[] lengthBytes = { (byte) (length >>> 24), (byte) (length >>> 16),
+                          (byte) (length >>> 8), (byte) length };
+    out.write(lengthBytes, 0, 4);
+    out.write(((keyType & 0x0F) << 4) | (formatID & 0x0F));
+    out.write(b, 0, b.length);
+  }
+
+  /**
+   * @param k the key to find an identifier for.
+   * @return an integer from <code>0</code> to <code>3</code> identifying
+   *         the type of key.
+   * @throws KeyAgreementException if the designated key is of unknown or
+   *           unsupported type.
+   */
+  private int getKeyType(Key k) throws KeyAgreementException
+  {
+    if (k instanceof DSSKey)
+      return 0;
+    if (k instanceof GnuRSAKey)
+      return 1;
+    if (k instanceof GnuDHKey)
+      return 2;
+    if (k instanceof SRPKey)
+      return 3;
+    throw new KeyAgreementException("Unknown or unsupported key type: "
+                                    + k.getClass().getName());
   }
 }

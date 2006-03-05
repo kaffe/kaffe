@@ -148,7 +148,7 @@ class XIncludeFilter
     return super.getAttributeCount();
   }
 
-  public String getAttributeName(int index)
+  public String getAttributeLocalName(int index)
   {
     if (current != null)
       {
@@ -158,7 +158,7 @@ class XIncludeFilter
         Node attr = attrs.item(index);
         return attr.getLocalName();
       }
-    return super.getAttributeName(index);
+    return super.getAttributeLocalName(index);
   }
 
   public String getAttributeNamespace(int index)
@@ -187,7 +187,7 @@ class XIncludeFilter
     return super.getAttributePrefix(index);
   }
 
-  public QName getAttributeQName(int index)
+  public QName getAttributeName(int index)
   {
     if (current != null)
       {
@@ -200,7 +200,7 @@ class XIncludeFilter
         String prefix = attr.getPrefix();
         return new QName(uri, localName, prefix);
       }
-    return super.getAttributeQName(index);
+    return super.getAttributeName(index);
   }
 
   public String getAttributeType(int index)

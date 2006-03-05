@@ -1335,9 +1335,6 @@ case $os in
 	-kaos*)
 		os=-kaos
 		;;
-	-*drops)
-		os=-drops
-		;;
 	-zvmoe)
 		os=-zvmoe
 		;;

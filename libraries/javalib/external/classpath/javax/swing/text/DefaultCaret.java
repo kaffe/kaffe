@@ -148,14 +148,16 @@ public class DefaultCaret extends Rectangle
      */
     public void removeUpdate(DocumentEvent event)
     {
-      if (policy == ALWAYS_UPDATE || 
-          (SwingUtilities.isEventDispatchThread() && 
-           policy == UPDATE_WHEN_ON_EDT))
+      if (policy == ALWAYS_UPDATE
+          || (SwingUtilities.isEventDispatchThread()
+              && policy == UPDATE_WHEN_ON_EDT))
         {
           int dot = getDot();
           setDot(dot - event.getLength());
         }
-      else if (policy == NEVER_UPDATE)
+      else if (policy == NEVER_UPDATE
+               || (! SwingUtilities.isEventDispatchThread()
+                   && policy == UPDATE_WHEN_ON_EDT))
         {
           int docLength = event.getDocument().getLength();
           if (getDot() > docLength)
@@ -575,7 +577,39 @@ public class DefaultCaret extends Rectangle
   {
     return mark;
   }
-
+  
+  private void clearHighlight()
+  {
+    Highlighter highlighter = textComponent.getHighlighter();
+    
+    if (highlighter == null)
+      return;
+    
+    if (selectionVisible)
+      {
+    try
+      {
+        if (highlightEntry == null)
+          highlightEntry = highlighter.addHighlight(0, 0, getSelectionPainter());
+        else
+          highlighter.changeHighlight(highlightEntry, 0, 0);
+      }
+    catch (BadLocationException e)
+      {
+        // This should never happen.
+        throw new InternalError();
+      }
+      }
+    else
+      {
+    if (highlightEntry != null)
+      {
+        highlighter.removeHighlight(highlightEntry);
+        highlightEntry = null;
+      }
+      }
+  }
+  
   private void handleHighlight()
   {
     Highlighter highlighter = textComponent.getHighlighter();
@@ -586,7 +620,7 @@ public class DefaultCaret extends Rectangle
     int p0 = Math.min(dot, mark);
     int p1 = Math.max(dot, mark);
     
-    if (selectionVisible && p0 != p1)
+    if (selectionVisible)
       {
 	try
 	  {
@@ -659,7 +693,10 @@ public class DefaultCaret extends Rectangle
     if (comp == null)
       return;
 
-    int dot = getDot();
+    // Make sure the dot has a sane position.
+    dot = Math.min(dot, textComponent.getDocument().getLength());
+    dot = Math.max(dot, 0);
+
     Rectangle rect = null;
 
     try
@@ -668,10 +705,10 @@ public class DefaultCaret extends Rectangle
       }
     catch (BadLocationException e)
       {
-        AssertionError ae;
-	ae = new AssertionError("Unexpected bad caret location: " + dot);
-	ae.initCause(e);
-        throw ae;
+    	AssertionError ae;
+    	ae = new AssertionError("Unexpected bad caret location: " + dot);
+    	ae.initCause(e);
+    	throw ae;
       }
 
     if (rect == null)
@@ -812,7 +849,11 @@ public class DefaultCaret extends Rectangle
   {
     if (dot >= 0)
       {
-        this.dot = dot;
+        Document doc = textComponent.getDocument();
+        if (doc != null)
+          this.dot = Math.min(dot, doc.getLength());
+        this.dot = Math.max(this.dot, 0);
+        
         handleHighlight();
         adjustVisibility(this);
         appear();
@@ -836,8 +877,9 @@ public class DefaultCaret extends Rectangle
         if (doc != null)
           this.dot = Math.min(dot, doc.getLength());
         this.dot = Math.max(this.dot, 0);
-        this.mark = dot;
-        handleHighlight();
+        this.mark = this.dot;
+        
+        clearHighlight();
         adjustVisibility(this);
         appear();
       }

@@ -523,6 +523,17 @@ public class JLayeredPane extends JComponent implements Accessible
   }
 
   /**
+   * Removes all components from this container.
+   *
+   * @since 1.5
+   */
+  public void removeAll()
+  {
+	componentToLayer.clear();
+	super.removeAll();
+  }
+
+  /**
    * <p>Set the layer property for a component, within this container. The
    * component will be implicitly mapped to the bottom-most position in the
    * layer, but only if added <em>after</em> calling this method.</p>
@@ -646,30 +657,33 @@ public class JLayeredPane extends JComponent implements Accessible
   public boolean isOptimizedDrawingEnabled()
   {
     int numChildren = getComponentCount();
-    boolean result = false;
-    // We implement a heuristic here in order to return a quick result:
-    // - For 0 or 1 children it is clear that they do not overlap, return true.
-    // - For 2 children we check their bounding rectangles and if they don't
-    //   interect, return true.
-    // - For more than 2 children we return false. Comparing all the bounding
-    //   rectangles costs too much time and in most cases this will return
-    //   false anyway, since JLayeredPane are mostly used in JRootPane and then
-    //   have at least one child (the contentPane) that takes up the whole
-    //   area of the JLayeredPane.
-    switch (numChildren)
-    {
-      case 0:
-      case 1:
-        result = true;
-        break;
-      case 2:
-        Rectangle r1 = getComponent(0).getBounds();
-        Rectangle r2 = getComponent(1).getBounds();
-        result = !r1.intersects(r2);
-        break;
-      default:
-        result = false;
-    }
+    boolean result = true;
+    for (int i = 0; i < numChildren; ++i)
+      {
+    	Component c1 = getComponent(i);
+    	if (! c1.isVisible())
+          continue;
+    	Rectangle r1 = c1.getBounds();
+    	if (r1.isEmpty())
+          continue;
+
+    	for (int j = i + 1; j < numChildren; ++j)
+          {
+            Component c2 = getComponent(j);
+            if (! c2.isVisible())
+              continue;
+            Rectangle r2 = c2.getBounds();
+            if (r2.isEmpty())
+              continue;
+            if (r1.intersects(r2))
+              {
+                result = false;
+                break;
+              }
+            if (result == false)
+              break;
+          }
+      }
     return result;
   }
 }

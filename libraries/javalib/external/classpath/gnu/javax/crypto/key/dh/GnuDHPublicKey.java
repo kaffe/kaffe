@@ -66,9 +66,37 @@ public class GnuDHPublicKey extends GnuDHKey implements DHPublicKey
   // Constructor(s)
   // -------------------------------------------------------------------------
 
+  /**
+   * Convenience constructor. Calls the constructor with five arguments passing
+   * {@link Registry#RAW_ENCODING_ID} as the value of its first argument.
+   * 
+   * @param q a prime divisor of p-1.
+   * @param p the public prime.
+   * @param g the generator of the group.
+   * @param y the public value y.
+   */
   public GnuDHPublicKey(BigInteger q, BigInteger p, BigInteger g, BigInteger y)
   {
-    super(q, p, g);
+    this(Registry.RAW_ENCODING_ID, q, p, g, y);
+  }
+
+  /**
+   * Constructs a new instance of <code>GnuDHPublicKey</code> given the
+   * designated parameters.
+   * 
+   * @param preferredFormat the identifier of the encoding format to use by
+   *          default when externalizing the key.
+   * @param q a prime divisor of p-1.
+   * @param p the public prime.
+   * @param g the generator of the group.
+   * @param y the public value y.
+   */
+  public GnuDHPublicKey(int preferredFormat,
+                        BigInteger q, BigInteger p, BigInteger g, BigInteger y)
+  {
+    super(preferredFormat == Registry.ASN1_ENCODING_ID ? Registry.X509_ENCODING_ID
+                                                       : preferredFormat,
+          q, p, g);
 
     this.y = y;
   }
@@ -91,34 +119,22 @@ public class GnuDHPublicKey extends GnuDHKey implements DHPublicKey
    */
   public static GnuDHPublicKey valueOf(byte[] k)
   {
-    // check magic...
-    // we should parse here enough bytes to know which codec to use, and
-    // direct the byte array to the appropriate codec.  since we only have one
-    // codec, we could have immediately tried it; nevertheless since testing
-    // one byte is cheaper than instatiating a codec that will fail we test
-    // the first byte before we carry on.
+    // try RAW codec
     if (k[0] == Registry.MAGIC_RAW_DH_PUBLIC_KEY[0])
-      {
-        // it's likely to be in raw format. get a raw codec and hand it over
-        IKeyPairCodec codec = new DHKeyPairRawCodec();
-        return (GnuDHPublicKey) codec.decodePublicKey(k);
-      }
-    else
-      {
-        throw new IllegalArgumentException("magic");
-      }
+      try
+        {
+          return (GnuDHPublicKey) new DHKeyPairRawCodec().decodePublicKey(k);
+        }
+      catch (IllegalArgumentException ignored)
+        {
+        }
+
+    // try X.509 codec
+    return (GnuDHPublicKey) new DHKeyPairX509Codec().decodePublicKey(k);
   }
 
   // Instance methods
   // -------------------------------------------------------------------------
-
-  // java.security.Key interface implementation ------------------------------
-
-  /** @deprecated see getEncoded(int). */
-  public byte[] getEncoded()
-  {
-    return getEncoded(IKeyPairCodec.RAW_FORMAT);
-  }
 
   // javax.crypto.interfaces.DHPublicKey interface implementation ------------
 
@@ -137,7 +153,6 @@ public class GnuDHPublicKey extends GnuDHKey implements DHPublicKey
    * @return the byte sequence encoding this key according to the designated
    * format.
    * @exception IllegalArgumentException if the format is not supported.
-   * @see gnu.crypto.key.dh.DHKeyPairRawCodec
    */
   public byte[] getEncoded(int format)
   {
@@ -147,9 +162,33 @@ public class GnuDHPublicKey extends GnuDHKey implements DHPublicKey
       case IKeyPairCodec.RAW_FORMAT:
         result = new DHKeyPairRawCodec().encodePublicKey(this);
         break;
+      case IKeyPairCodec.X509_FORMAT:
+        result = new DHKeyPairX509Codec().encodePublicKey(this);
+        break;
       default:
-        throw new IllegalArgumentException("format");
+        throw new IllegalArgumentException("Unsupported encoding format: "
+                                           + format);
       }
     return result;
+  }
+
+  /**
+   * Returns <code>true</code> if the designated object is an instance of
+   * {@link DHPublicKey} and has the same parameter values as this one.
+   * 
+   * @param obj the other non-null DH key to compare to.
+   * @return <code>true</code> if the designated object is of the same type
+   *         and value as this one.
+   */
+  public boolean equals(Object obj)
+  {
+    if (obj == null)
+      return false;
+
+    if (! (obj instanceof DHPublicKey))
+      return false;
+
+    DHPublicKey that = (DHPublicKey) obj;
+    return super.equals(that) && y.equals(that.getY());
   }
 }

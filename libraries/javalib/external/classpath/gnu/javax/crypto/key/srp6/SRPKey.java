@@ -110,14 +110,14 @@ public abstract class SRPKey implements Key, Serializable
   }
 
   /**
-   * <p>Returns <code>null</code> since this implementation does not encode SRP
-   * keys.</p>
+   * Returns {@link Registry#RAW_ENCODING_SHORT_NAME} which is the sole format
+   * supported for this type of keys.
    *
-   * @return null since this implementation does not encode SRP keys.
+   * @return {@link Registry#RAW_ENCODING_SHORT_NAME} ALWAYS.
    */
   public String getFormat()
   {
-    return null;
+    return Registry.RAW_ENCODING_SHORT_NAME;
   }
 
   // other methods -----------------------------------------------------------

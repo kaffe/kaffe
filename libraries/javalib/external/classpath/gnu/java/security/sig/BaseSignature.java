@@ -83,16 +83,21 @@ public abstract class BaseSignature implements ISignature
   // -------------------------------------------------------------------------
 
   /**
-   * <p>Trivial constructor.</p>
-   *
+   * Trivial constructor.
+   * 
    * @param schemeName the name of this signature scheme.
    * @param md the underlying instance of the message digest algorithm.
+   * @throws IllegalArgumentException if the designated hash instance is
+   *           <code>null</code>.
    */
   protected BaseSignature(String schemeName, IMessageDigest md)
   {
     super();
 
     this.schemeName = schemeName;
+    if (md == null)
+      throw new IllegalArgumentException("Message digest MUST NOT be null");
+
     this.md = md;
   }
 
@@ -106,7 +111,7 @@ public abstract class BaseSignature implements ISignature
 
   public String name()
   {
-    return schemeName;
+    return schemeName + "-" + md.name();
   }
 
   public void setupVerify(Map attributes) throws IllegalArgumentException

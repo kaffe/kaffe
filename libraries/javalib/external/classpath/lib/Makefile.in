@@ -39,7 +39,8 @@ host_triplet = @host@
 target_triplet = @target@
 subdir = lib
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(srcdir)/copy-vmresources.sh.in $(srcdir)/gen-classlist.sh.in
+	$(srcdir)/copy-vmresources.sh.in $(srcdir)/gen-classlist.sh.in \
+	$(srcdir)/mkcollections.pl.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/acattribute.m4 \
 	$(top_srcdir)/m4/accross.m4 $(top_srcdir)/m4/acinclude.m4 \
@@ -51,7 +52,8 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/include/config.h
-CONFIG_CLEAN_FILES = gen-classlist.sh copy-vmresources.sh
+CONFIG_CLEAN_FILES = mkcollections.pl gen-classlist.sh \
+	copy-vmresources.sh
 SOURCES =
 DIST_SOURCES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
@@ -82,6 +84,7 @@ CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
 CLASSPATH_INCLUDES = @CLASSPATH_INCLUDES@
 CLASSPATH_MODULE = @CLASSPATH_MODULE@
+COLLECTIONS_PREFIX = @COLLECTIONS_PREFIX@
 CP = @CP@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
@@ -89,6 +92,8 @@ CREATE_ALSA_LIBRARIES_FALSE = @CREATE_ALSA_LIBRARIES_FALSE@
 CREATE_ALSA_LIBRARIES_TRUE = @CREATE_ALSA_LIBRARIES_TRUE@
 CREATE_API_DOCS_FALSE = @CREATE_API_DOCS_FALSE@
 CREATE_API_DOCS_TRUE = @CREATE_API_DOCS_TRUE@
+CREATE_COLLECTIONS_FALSE = @CREATE_COLLECTIONS_FALSE@
+CREATE_COLLECTIONS_TRUE = @CREATE_COLLECTIONS_TRUE@
 CREATE_CORE_JNI_LIBRARIES_FALSE = @CREATE_CORE_JNI_LIBRARIES_FALSE@
 CREATE_CORE_JNI_LIBRARIES_TRUE = @CREATE_CORE_JNI_LIBRARIES_TRUE@
 CREATE_DSSI_LIBRARIES_FALSE = @CREATE_DSSI_LIBRARIES_FALSE@
@@ -184,6 +189,7 @@ PACKAGE_VERSION = @PACKAGE_VERSION@
 PANGOFT2_CFLAGS = @PANGOFT2_CFLAGS@
 PANGOFT2_LIBS = @PANGOFT2_LIBS@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PERL = @PERL@
 PKG_CONFIG = @PKG_CONFIG@
 QT_CFLAGS = @QT_CFLAGS@
 QT_LIBS = @QT_LIBS@
@@ -268,7 +274,7 @@ propertydirs := $(shell cd $(top_srcdir)/resource && $(FIND) gnu java org META-I
 propertyfiles := $(shell cd $(top_srcdir)/resource && $(FIND) gnu java org -name \*\.properties -print)
 metafiles := $(shell cd $(top_srcdir)/resource && $(FIND) META-INF -name CVS -prune -o -type f -print)
 iconfiles := $(shell cd $(top_srcdir) && $(FIND) gnu/javax/swing/plaf/gtk/icons -name *.png -type f -print)
-compile_classpath = $(vm_classes):$(top_srcdir):$(top_srcdir)/external/w3c_dom:$(top_srcdir)/external/sax:.:$(USER_CLASSLIB)
+compile_classpath = $(vm_classes):$(top_srcdir):$(top_srcdir)/external/w3c_dom:$(top_srcdir)/external/sax:$(top_srcdir)/external/relaxngDatatype:.:$(USER_CLASSLIB)
 @FOUND_ECJ_TRUE@@FOUND_GCJX_FALSE@@FOUND_GCJ_FALSE@@FOUND_JIKES_FALSE@@FOUND_KJC_FALSE@JAVAC = $(ECJ) -source 1.4 -encoding UTF-8 -warn:-deprecation,serial,unused -proceedOnError -bootclasspath '' -classpath $(compile_classpath) -d . @classes
 @FOUND_GCJX_TRUE@@FOUND_GCJ_FALSE@@FOUND_JIKES_FALSE@@FOUND_KJC_FALSE@JAVAC = $(GCJX) -g -encoding UTF-8 -classpath .:$(USER_CLASSLIB) -d . @classes
 @FOUND_GCJ_FALSE@@FOUND_JIKES_FALSE@@FOUND_KJC_TRUE@JAVAC = $(KJC) -classpath .:$(USER_CLASSLIB) -d . @classes
@@ -277,7 +283,8 @@ compile_classpath = $(vm_classes):$(top_srcdir):$(top_srcdir)/external/w3c_dom:$
 # handling source to bytecode compiler programs like gcj, jikes  and kjc
 @FOUND_GCJ_TRUE@JAVAC = exit 1
 JAVAH = $(USER_JAVAH) -jni -classpath .:$(USER_CLASSLIB)
-@INSTALL_GLIBJ_ZIP_TRUE@glibj_DATA = glibj.zip
+@CREATE_COLLECTIONS_TRUE@COLLECTIONS = collections.jar
+@INSTALL_GLIBJ_ZIP_TRUE@glibj_DATA = glibj.zip $(COLLECTIONS)
 @BUILD_CLASS_FILES_TRUE@noinst_DATA = genclasses compile-classes resources
 EXTRA_DIST = standard.omit mkcollections.pl.in Makefile.gcj split-for-gcj.sh
 CLEANFILES = compile-classes resources classes \
@@ -317,6 +324,8 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
+mkcollections.pl: $(top_builddir)/config.status $(srcdir)/mkcollections.pl.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 gen-classlist.sh: $(top_builddir)/config.status $(srcdir)/gen-classlist.sh.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 copy-vmresources.sh: $(top_builddir)/config.status $(srcdir)/copy-vmresources.sh.in
@@ -479,6 +488,16 @@ uninstall-am: uninstall-glibjDATA uninstall-info-am uninstall-local
 
 
 sinclude $(JAVA_DEPEND)
+
+@CREATE_COLLECTIONS_TRUE@collections.jar: mkcollections.pl
+@CREATE_COLLECTIONS_TRUE@	./mkcollections.pl $(top_srcdir)
+@CREATE_COLLECTIONS_TRUE@@FOUND_GCJ_TRUE@	$(GCJ) -C `$(FIND) $(COLLECTIONS_PREFIX) -name '*' -type f -print`
+@CREATE_COLLECTIONS_TRUE@@FOUND_GCJ_FALSE@	$(JAVAC) `$(FIND) $(COLLECTIONS_PREFIX) -name '*' -type f -print`
+@CREATE_COLLECTIONS_TRUE@	if test "$(FASTJAR)" != ""; then \
+@CREATE_COLLECTIONS_TRUE@	  $(FASTJAR) cf $@ $(COLLECTIONS_PREFIX); \
+@CREATE_COLLECTIONS_TRUE@	else \
+@CREATE_COLLECTIONS_TRUE@	  echo "fastjar not found" > collections.jar; \
+@CREATE_COLLECTIONS_TRUE@	fi
 
 @INSTALL_CLASS_FILES_TRUE@install-data-local: genclasses compile-classes
 @INSTALL_CLASS_FILES_TRUE@	-$(top_srcdir)/mkinstalldirs $(DESTDIR)$(pkgdatadir)

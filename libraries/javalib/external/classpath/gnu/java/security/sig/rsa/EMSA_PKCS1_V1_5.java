@@ -58,7 +58,7 @@ import java.io.ByteArrayOutputStream;
  *    Jakob Jonsson and Burt Kaliski.</li>
  * </ol>
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class EMSA_PKCS1_V1_5 implements Cloneable
 {
@@ -215,7 +215,7 @@ public class EMSA_PKCS1_V1_5 implements Cloneable
           || name.equals(Registry.SHA256_HASH)
           || name.equals(Registry.SHA384_HASH) || name.equals(Registry.SHA512_HASH)))
       {
-        throw new UnsupportedOperationException("hash with no ID");
+        throw new UnsupportedOperationException("hash with no OID: " + name);
       }
     return new EMSA_PKCS1_V1_5(hash);
   }

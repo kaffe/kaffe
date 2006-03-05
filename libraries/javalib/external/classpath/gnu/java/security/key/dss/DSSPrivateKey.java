@@ -48,7 +48,7 @@ import java.security.interfaces.DSAPrivateKey;
 /**
  * <p>An object that embodies a DSS (Digital Signature Standard) private key.</p>
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  * @see #getEncoded
  */
 public class DSSPrivateKey extends DSSKey implements PrivateKey, DSAPrivateKey
@@ -67,17 +67,39 @@ public class DSSPrivateKey extends DSSKey implements PrivateKey, DSAPrivateKey
   // -------------------------------------------------------------------------
 
   /**
-   * <p>Trivial constructor.</p>
-   *
+   * Convenience constructor. Calls the constructor with 5 arguments passing
+   * {@link Registry#RAW_ENCODING_ID} as the identifier of the preferred
+   * encoding format.
+   * 
    * @param p the public modulus.
    * @param q the public prime divisor of <code>p-1</code>.
    * @param g a generator of the unique cyclic group <code>Z<sup>*</sup>
-   * <sub>p</sub></code>.
+   *          <sub>p</sub></code>.
    * @param x the private key part.
    */
   public DSSPrivateKey(BigInteger p, BigInteger q, BigInteger g, BigInteger x)
   {
-    super(p, q, g);
+    this(Registry.RAW_ENCODING_ID, p, q, g, x);
+  }
+
+  /**
+   * Constructs a new instance of a <code>DSSPrivateKey</code> given the
+   * designated arguments.
+   * 
+   * @param preferredFormat the indetifier of the preferred encoding format to
+   *          use when externalizing this key.
+   * @param p the public modulus.
+   * @param q the public prime divisor of <code>p-1</code>.
+   * @param g a generator of the unique cyclic group <code>Z<sup>*</sup>
+   *          <sub>p</sub></code>.
+   * @param x the private key part.
+   */
+  public DSSPrivateKey(int preferredFormat, BigInteger p, BigInteger q,
+                       BigInteger g, BigInteger x)
+  {
+    super(preferredFormat == Registry.ASN1_ENCODING_ID ? Registry.PKCS8_ENCODING_ID
+                                                       : preferredFormat,
+          p, q, g);
 
     this.x = x;
   }
@@ -86,36 +108,32 @@ public class DSSPrivateKey extends DSSKey implements PrivateKey, DSAPrivateKey
   // -------------------------------------------------------------------------
 
   /**
-   * <p>A class method that takes the output of the <code>encodePrivateKey()</code>
+   * A class method that takes the output of the <code>encodePrivateKey()</code>
    * method of a DSS keypair codec object (an instance implementing
-   * {@link gnu.crypto.key.IKeyPairCodec} for DSS keys, and re-constructs an
-   * instance of this object.</p>
-   *
+   * {@link gnu.java.security.key.IKeyPairCodec} for DSS keys, and re-constructs
+   * an instance of this object.
+   * 
    * @param k the contents of a previously encoded instance of this object.
-   * @exception ArrayIndexOutOfBoundsException if there is not enough bytes,
-   * in <code>k</code>, to represent a valid encoding of an instance of
-   * this object.
-   * @exception IllegalArgumentException if the byte sequence does not
-   * represent a valid encoding of an instance of this object.
+   * @exception ArrayIndexOutOfBoundsException if there is not enough bytes, in
+   *              <code>k</code>, to represent a valid encoding of an
+   *              instance of this object.
+   * @exception IllegalArgumentException if the byte sequence does not represent
+   *              a valid encoding of an instance of this object.
    */
   public static DSSPrivateKey valueOf(byte[] k)
   {
-    // check magic...
-    // we should parse here enough bytes to know which codec to use, and
-    // direct the byte array to the appropriate codec.  since we only have one
-    // codec, we could have immediately tried it; nevertheless since testing
-    // one byte is cheaper than instatiating a codec that will fail we test
-    // the first byte before we carry on.
+    // try RAW codec
     if (k[0] == Registry.MAGIC_RAW_DSS_PRIVATE_KEY[0])
-      {
-        // it's likely to be in raw format. get a raw codec and hand it over
-        IKeyPairCodec codec = new DSSKeyPairRawCodec();
-        return (DSSPrivateKey) codec.decodePrivateKey(k);
-      }
-    else
-      {
-        throw new IllegalArgumentException("magic");
-      }
+      try
+        {
+          return (DSSPrivateKey) new DSSKeyPairRawCodec().decodePrivateKey(k);
+        }
+      catch (IllegalArgumentException ignored)
+        {
+        }
+
+    // try PKCS#8 codec
+    return (DSSPrivateKey) new DSSKeyPairPKCS8Codec().decodePrivateKey(k);
   }
 
   // Instance methods
@@ -148,8 +166,12 @@ public class DSSPrivateKey extends DSSKey implements PrivateKey, DSAPrivateKey
       case IKeyPairCodec.RAW_FORMAT:
         result = new DSSKeyPairRawCodec().encodePrivateKey(this);
         break;
+      case IKeyPairCodec.PKCS8_FORMAT:
+        result = new DSSKeyPairPKCS8Codec().encodePrivateKey(this);
+        break;
       default:
-        throw new IllegalArgumentException("format");
+        throw new IllegalArgumentException("Unsupported encoding format: "
+                                           + format);
       }
     return result;
   }

@@ -161,9 +161,6 @@ public class Connection extends URLConnection
 	    try {
 		byte [] c_as_bytes = Character.toString(c).getBytes("utf-8");
 		System.arraycopy(c_as_bytes, 0, buf, pos, c_as_bytes.length);
-//		for (int j = 0; j < c_as_bytes.length ; j++) {
-//		    buf[pos++] = c_as_bytes[j];
-//		}
 	    }
 	    catch (java.io.UnsupportedEncodingException x2) {
 		throw (Error) new InternalError().initCause(x2);

@@ -1171,6 +1171,7 @@ public class MetalLookAndFeel extends BasicLookAndFeel
 
       "Spinner.arrowButtonInsets", new InsetsUIResource(0, 0, 0, 0),
       "Spinner.background", getControl(),
+      "Spinner.border", MetalBorders.getTextFieldBorder(),
       "Spinner.font", new FontUIResource("Dialog", Font.BOLD, 12),
       "Spinner.foreground", getControl(),
 

@@ -8,10 +8,14 @@
 #define tan ClasspathMath_tan
 #define cosh ClasspathMath_cosh
 #define sinh ClasspathMath_sinh
+#define tanh ClasspathMath_tanh
 #define exp ClasspathMath_exp
 #define frexp ClasspathMath_frexp
 #define ldexp ClasspathMath_ldexp
+#define expm1 ClasspathMath_expm1
 #define log ClasspathMath_log
+#define log10 ClasspathMath_log10
+#define log1p ClasspathMath_log1p
 #define modf ClasspathMath_modf
 #define pow ClasspathMath_pow
 #define sqrt ClasspathMath_sqrt

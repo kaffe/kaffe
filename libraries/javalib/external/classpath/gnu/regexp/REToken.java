@@ -61,6 +61,10 @@ abstract class REToken implements Serializable, Cloneable {
     return 0;
   }
 
+  int getMaximumLength() {
+    return Integer.MAX_VALUE;
+  }
+
   void setUncle(REToken anUncle) {
     uncle = anUncle;
   }

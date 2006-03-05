@@ -121,4 +121,15 @@ public class MDGenerator extends BasePRNG implements Cloneable
     buffer = mdc.digest();
     md.update(buffer, 0, buffer.length);
   }
+
+  // Cloneable interface implementation ---------------------------------------
+
+  public Object clone() throws CloneNotSupportedException
+  {
+    MDGenerator result = (MDGenerator) super.clone();
+    if (this.md != null)
+      result.md = (IMessageDigest) this.md.clone();
+
+    return result;
+  }
 }

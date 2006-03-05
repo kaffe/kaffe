@@ -1865,7 +1865,7 @@ public final class String implements Serializable, Comparable, CharSequence
    */
   private static int upperCaseExpansion(char ch)
   {
-    return Character.direction[Character.readChar(ch) >> 7] & 3;
+    return Character.direction[0][Character.readCodePoint((int)ch) >> 7] & 3;
   }
 
   /**
@@ -1960,5 +1960,30 @@ public final class String implements Serializable, Comparable, CharSequence
         startPos = result.indexOf(targetString, startPos + replaceLength);
       }
     return result.toString();
+  }
+  
+  /**
+   * Return the index into this String that is offset from the given index by 
+   * <code>codePointOffset</code> code points.
+   * @param index the index at which to start
+   * @param codePointOffset the number of code points to offset
+   * @return the index into this String that is <code>codePointOffset</code>
+   * code points offset from <code>index</code>.
+   * 
+   * @throws IndexOutOfBoundsException if index is negative or larger than the
+   * length of this string.
+   * @throws IndexOutOfBoundsException if codePointOffset is positive and the
+   * substring starting with index has fewer than codePointOffset code points.
+   * @throws IndexOutOfBoundsException if codePointOffset is negative and the
+   * substring ending with index has fewer than (-codePointOffset) code points.
+   * @since 1.5
+   */
+  public int offsetByCodePoints(int index, int codePointOffset)
+  {
+    if (index < 0 || index > count)
+      throw new IndexOutOfBoundsException();
+    
+    return Character.offsetByCodePoints(value, offset, count, offset + index,
+                                        codePointOffset);
   }
 }

@@ -10,7 +10,7 @@ propertyfiles :=  $(shell cd $(top_srcdir)/resource && $(FIND) gnu java org -nam
 metafiles :=  $(shell cd $(top_srcdir)/resource && $(FIND) META-INF -name CVS -prune -o -type f -print)
 iconfiles :=  $(shell cd $(top_srcdir) && $(FIND) gnu/javax/swing/plaf/gtk/icons -name *.png -type f -print)
 
-compile_classpath = $(vm_classes):$(top_srcdir):$(top_srcdir)/external/w3c_dom:$(top_srcdir)/external/sax:.:$(USER_CLASSLIB)
+compile_classpath = $(vm_classes):$(top_srcdir):$(top_srcdir)/external/w3c_dom:$(top_srcdir)/external/sax:$(top_srcdir)/external/relaxngDatatype:.:$(USER_CLASSLIB)
 
 # handling source to bytecode compiler programs like gcj, jikes  and kjc
 if FOUND_GCJ
@@ -38,9 +38,26 @@ endif # FOUND_JIKES
 
 JAVAH = $(USER_JAVAH) -jni -classpath .:$(USER_CLASSLIB)
 
+if CREATE_COLLECTIONS
+COLLECTIONS = collections.jar
+
+collections.jar: mkcollections.pl
+	./mkcollections.pl $(top_srcdir)
+if FOUND_GCJ
+	$(GCJ) -C `$(FIND) $(COLLECTIONS_PREFIX) -name '*' -type f -print`
+else
+	$(JAVAC) `$(FIND) $(COLLECTIONS_PREFIX) -name '*' -type f -print`
+endif
+	if test "$(FASTJAR)" != ""; then \
+	  $(FASTJAR) cf $@ $(COLLECTIONS_PREFIX); \
+	else \
+	  echo "fastjar not found" > collections.jar; \
+	fi
+endif # CREATE_COLLECTIONS
+
 if INSTALL_GLIBJ_ZIP
 
-glibj_DATA = glibj.zip
+glibj_DATA = glibj.zip $(COLLECTIONS)
 
 endif # INSTALL_GLIBJ_ZIP
 

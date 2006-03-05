@@ -6,7 +6,7 @@ dnl -----------------------------------------------------------
 dnl define([AC_CACHE_LOAD], )dnl
 dnl define([AC_CACHE_SAVE], )dnl
 
-AC_INIT([GNU Classpath],[0.21-pre],[classpath@gnu.org],[classpath])
+AC_INIT([GNU Classpath],[0.90-pre],[classpath@gnu.org],[classpath])
 AC_CONFIG_SRCDIR(java/lang/System.java)
 
 AC_CANONICAL_TARGET
@@ -37,6 +37,20 @@ AC_PREREQ(2.59)
 AM_INIT_AUTOMAKE([1.9.0 gnu std-options tar-ustar])
 AC_CONFIG_HEADERS([include/config.h])
 AC_PREFIX_DEFAULT(/usr/local/classpath)
+
+dnl -----------------------------------------------------------
+dnl Enable collections.jar (disabled by default)
+dnl -----------------------------------------------------------
+AC_ARG_ENABLE([collections],
+              [AS_HELP_STRING(--enable-collections,create collections.jar [default=no])],
+              [case x"${enableval}" in
+                xyes) COMPILE_COLLECTIONS=yes; COLLECTIONS_PREFIX="\"gnu/java/util/collections\"" ;;
+                xno) COMPILE_COLLECTIONS=no ;;
+		x) COMPILE_COLLECTIONS=yes; COLLECTIONS_PREFIX="\"gnu/java/util/collections\"" ;;
+                *) COMPILE_COLLECTIONS=yes; COLLECTIONS_PREFIX="\"${enableval}\"" ;;
+              esac],
+              [COMPILE_COLLECTIONS=no])
+AM_CONDITIONAL(CREATE_COLLECTIONS, test "x${COMPILE_COLLECTIONS}" = xyes)
 
 dnl -----------------------------------------------------------
 dnl Enable JNI libraries (enabled by default)
@@ -233,6 +247,14 @@ AC_PROG_LIBTOOL
 dnl AC_PROG_AWK
 AC_PROG_CC
 AC_PROG_CPP
+
+if test "x${COMPILE_COLLECTIONS}" = xyes; then
+  AC_PATH_PROG(PERL, [perl])
+  AC_SUBST(PERL)
+  AC_SUBST(COLLECTIONS_PREFIX)
+  AC_CONFIG_FILES([lib/mkcollections.pl])
+  AC_CONFIG_COMMANDS([mkcollections.pl],[chmod 755 lib/mkcollections.pl])
+fi
 
 if test "x${COMPILE_JNI}" = xyes; then
   AC_HEADER_STDC
@@ -568,6 +590,7 @@ doc/api/Makefile
 external/Makefile
 external/sax/Makefile
 external/w3c_dom/Makefile
+external/relaxngDatatype/Makefile
 gnu/classpath/Configuration.java
 include/Makefile
 native/Makefile
@@ -594,6 +617,7 @@ scripts/classpath.spec
 lib/Makefile
 lib/gen-classlist.sh
 lib/copy-vmresources.sh
+tools/Makefile
 examples/Makefile
 examples/Makefile.jawt])
 AC_CONFIG_COMMANDS([gen-classlist],[chmod 755 lib/gen-classlist.sh])

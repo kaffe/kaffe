@@ -49,16 +49,27 @@ import java.security.PublicKey;
  * public and private keys for storage and on-the-wire transmission, as well as
  * (b) re-creating their internal Java representation from external sources.</p>
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public interface IKeyPairCodec
 {
-
   // Constants
   // -------------------------------------------------------------------------
 
   /** Constant identifying the <i>Raw</i> encoding format. */
   int RAW_FORMAT = Registry.RAW_ENCODING_ID;
+
+  /** Constant identifying the <i>X.509</i> encoding format. */
+  int X509_FORMAT = Registry.X509_ENCODING_ID;
+
+  /** Constant identifying the <i>PKCS#8</i> encoding format. */
+  int PKCS8_FORMAT = Registry.PKCS8_ENCODING_ID;
+
+  /**
+   * Constant identifying the <i>ASN.1</i> encoding format: a combined encoding
+   * of <i>X.509</i> for public keys, and <i>PKCS#8</i> for private ones.
+   */
+  int ASN1_FORMAT = Registry.ASN1_ENCODING_ID;
 
   // Method(s)
   // -------------------------------------------------------------------------

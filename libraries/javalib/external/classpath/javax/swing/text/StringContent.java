@@ -372,6 +372,18 @@ public final class StringContent
     txt.count = len;
   }
 
+
+  /**
+   * @specnote This method is not very well specified and the positions vector
+   *           is implementation specific. The undo positions are managed
+   *           differently in this implementation, this method is only here
+   *           for binary compatibility.
+   */
+  protected void updateUndoPositions(Vector positions)
+  {
+    // We do nothing here.
+  }
+
   /** 
    * A utility method that checks the validity of the specified character
    * range.

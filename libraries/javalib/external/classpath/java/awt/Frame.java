@@ -1,5 +1,6 @@
 /* Frame.java -- AWT toplevel window
-   Copyright (C) 1999, 2000, 2002, 2004, 2005  Free Software Foundation, Inc.
+   Copyright (C) 1999, 2000, 2002, 2004, 2005, 2006
+   Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -320,23 +321,33 @@ public class Frame extends Window implements MenuContainer
   }
 
   /**
-   * Sets this frame's menu bar.
+   * Sets this frame's menu bar. Removes any existing menu bar. If the
+   * given menu bar is part of another frame it will be removed from
+   * that frame.
    *
    * @param menuBar the new menu bar for this frame
    */
   public synchronized void setMenuBar(MenuBar menuBar)
   {
-    if (peer != null)
-      {
-        if (this.menuBar != null)
-          this.menuBar.removeNotify();  
-        if (menuBar != null)
-          menuBar.addNotify();
-        invalidateTree ();
-        ((FramePeer) peer).setMenuBar(menuBar);
-      }
-    menuBar.frame = this;
+    if (this.menuBar != null)
+      remove(this.menuBar);
+
     this.menuBar = menuBar;
+    if (menuBar != null)
+      {
+	MenuContainer parent = menuBar.getParent();
+	if (parent != null)
+	  parent.remove(menuBar);
+	menuBar.setParent(this);
+
+	if (peer != null)
+	  {
+	    if (menuBar != null)
+	      menuBar.addNotify();
+	    invalidateTree();
+	    ((FramePeer) peer).setMenuBar(menuBar);
+	  }
+      }
   }
 
   /**
@@ -391,13 +402,30 @@ public class Frame extends Window implements MenuContainer
   }
 
   /**
-   * Removes the specified component from this frame's menu.
+   * Removes the specified menu component from this frame. If it is
+   * the current MenuBar it is removed from the frame. If it is a
+   * Popup it is removed from this component. If it is any other menu
+   * component it is ignored.
    *
    * @param menu the menu component to remove
    */
   public void remove(MenuComponent menu)
   {
-    menuBar.remove(menu);
+    if (menu == menuBar)
+      {
+	if (menuBar != null)
+	  {
+	    if (peer != null)
+	      {
+		((FramePeer) peer).setMenuBar(null);
+		menuBar.removeNotify();
+	      }
+	    menuBar.setParent(null);
+	  }
+	menuBar = null;
+      }
+    else
+      super.remove(menu);
   }
 
   public void addNotify()

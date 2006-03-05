@@ -39,7 +39,7 @@ exception statement from your version.  */
 package gnu.java.security.key.dss;
 
 import gnu.java.security.Registry;
-import gnu.java.security.key.IKeyPairCodec;
+import gnu.java.security.util.FormatUtil;
 
 import java.math.BigInteger;
 import java.security.Key;
@@ -59,13 +59,12 @@ import java.security.spec.DSAParameterSpec;
  * the relevant <code>getEncoded()</code> methods of each of the private and
  * public keys.</p>
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.4 $
  * @see DSSPrivateKey#getEncoded
  * @see DSSPublicKey#getEncoded
  */
 public abstract class DSSKey implements Key, DSAKey
 {
-
   // Constants and variables
   // -------------------------------------------------------------------------
 
@@ -90,20 +89,30 @@ public abstract class DSSKey implements Key, DSAKey
    */
   protected final BigInteger g;
 
+  /**
+   * Identifier of the default encoding format to use when externalizing the
+   * key material.
+   */
+  protected final int defaultFormat;
+
   // Constructor(s)
   // -------------------------------------------------------------------------
 
   /**
-   * <p>Trivial protected constructor.</p>
-   *
+   * Trivial protected constructor.
+   * 
+   * @param defaultFormat the identifier of the encoding format to use by
+   * default when externalizing the key.
    * @param p the DSS parameter <code>p</code>.
    * @param q the DSS parameter <code>q</code>.
    * @param g the DSS parameter <code>g</code>.
    */
-  protected DSSKey(BigInteger p, BigInteger q, BigInteger g)
+  protected DSSKey(int defaultFormat, BigInteger p, BigInteger q, BigInteger g)
   {
     super();
 
+    this.defaultFormat = defaultFormat <= 0 ? Registry.RAW_ENCODING_ID
+                                            : defaultFormat;
     this.p = p;
     this.q = q;
     this.g = g;
@@ -132,12 +141,12 @@ public abstract class DSSKey implements Key, DSAKey
   /** @deprecated see getEncoded(int). */
   public byte[] getEncoded()
   {
-    return getEncoded(IKeyPairCodec.RAW_FORMAT);
+    return getEncoded(defaultFormat);
   }
 
   public String getFormat()
   {
-    return null;
+    return FormatUtil.getEncodingShortName(defaultFormat);
   }
 
   // Other instance methods --------------------------------------------------

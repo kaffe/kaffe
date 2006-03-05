@@ -1,5 +1,6 @@
 /* MenuComponent.java -- Superclass of all AWT menu components
-   Copyright (C) 1999, 2000, 2002, 2003, 2004, 2005  Free Software Foundation, Inc.
+   Copyright (C) 1999, 2000, 2002, 2003, 2004, 2005, 2006
+   Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -308,16 +309,7 @@ public abstract class MenuComponent implements Serializable
   {
     boolean retVal = false;
     MenuContainer parent = getParent();
-    if (parent == null)
-      {
-        if (this instanceof MenuBar)
-          {
-            MenuBar menuBar = (MenuBar) this;
-            if (menuBar.frame != null)
-              retVal = menuBar.frame.postEvent(event);
-          }
-      }
-    else
+    if (parent != null)
       retVal = parent.postEvent(event);
 
     return retVal;

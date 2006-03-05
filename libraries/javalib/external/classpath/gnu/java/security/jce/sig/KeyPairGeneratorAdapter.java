@@ -64,9 +64,9 @@ import java.security.spec.AlgorithmParameterSpec;
  * Crypto provider uses a default <i>modulus</i> size (keysize) of 1024 bits for
  * the DSS (Digital Signature Standard) a.k.a <i>DSA</i>.<p>
  *
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
-abstract class KeyPairGeneratorAdapter extends KeyPairGenerator
+public abstract class KeyPairGeneratorAdapter extends KeyPairGenerator
 {
 
   // Constants and variables

@@ -52,6 +52,10 @@ final class RETokenChar extends REToken {
     return ch.length;
   }
   
+  int getMaximumLength() {
+    return ch.length;
+  }
+  
     boolean match(CharIndexed input, REMatch mymatch) {
 	int z = ch.length;
 	char c;

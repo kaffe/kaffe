@@ -1247,26 +1247,31 @@ public class SwingUtilities
   }
 
   /**
-   * Calculates the intersection of two rectangles.
+   * Calculates the intersection of two rectangles. The result is stored
+   * in <code>rect</code>. This is basically the same
+   * like {@link Rectangle#intersection(Rectangle)}, only that it does not
+   * create new Rectangle instances. The tradeoff is that you loose any data in
+   * <code>rect</code>.
    *
    * @param x upper-left x coodinate of first rectangle
    * @param y upper-left y coodinate of first rectangle
    * @param w width of first rectangle
    * @param h height of first rectangle
    * @param rect a Rectangle object of the second rectangle
-   * @throws NullPointerException if rect is null.
+   *
+   * @throws NullPointerException if rect is null
    *
    * @return a rectangle corresponding to the intersection of the
-   * two rectangles. A zero rectangle is returned if the rectangles
-   * do not overlap.
+   *         two rectangles. An empty rectangle is returned if the rectangles
+   *         do not overlap
    */
   public static Rectangle computeIntersection(int x, int y, int w, int h,
                                               Rectangle rect)
   {
-    int x2 = (int) rect.getX();
-    int y2 = (int) rect.getY();
-    int w2 = (int) rect.getWidth();
-    int h2 = (int) rect.getHeight();
+    int x2 = (int) rect.x;
+    int y2 = (int) rect.y;
+    int w2 = (int) rect.width;
+    int h2 = (int) rect.height;
 
     int dx = (x > x2) ? x : x2;
     int dy = (y > y2) ? y : y2;
@@ -1274,9 +1279,11 @@ public class SwingUtilities
     int dh = (y + h < y2 + h2) ? (y + h - dy) : (y2 + h2 - dy);
 
     if (dw >= 0 && dh >= 0)
-      return new Rectangle(dx, dy, dw, dh);
+      rect.setBounds(dx, dy, dw, dh);
+    else
+      rect.setBounds(0, 0, 0, 0);
 
-    return new Rectangle(0, 0, 0, 0);
+    return rect;
   }
   
   /**
@@ -1293,26 +1300,31 @@ public class SwingUtilities
   }
 
   /**
-   * Calculates the union of two rectangles.
+   * Calculates the union of two rectangles. The result is stored in
+   * <code>rect</code>. This is basically the same as
+   * {@link Rectangle#union(Rectangle)} except that it avoids creation of new
+   * Rectangle objects. The tradeoff is that you loose any data in
+   * <code>rect</code>.
    *
    * @param x upper-left x coodinate of first rectangle
    * @param y upper-left y coodinate of first rectangle
    * @param w width of first rectangle
    * @param h height of first rectangle
    * @param rect a Rectangle object of the second rectangle
-   * @throws NullPointerException if rect is null.
+   *
+   * @throws NullPointerException if rect is null
    *
    * @return a rectangle corresponding to the union of the
-   * two rectangles. A rectangle encompassing both is returned if the
-   * rectangles do not overlap.
+   *         two rectangles; a rectangle encompassing both is returned if the
+   *         rectangles do not overlap
    */
   public static Rectangle computeUnion(int x, int y, int w, int h,
                                        Rectangle rect)
   {
-    int x2 = (int) rect.getX();
-    int y2 = (int) rect.getY();
-    int w2 = (int) rect.getWidth();
-    int h2 = (int) rect.getHeight();
+    int x2 = (int) rect.x;
+    int y2 = (int) rect.y;
+    int w2 = (int) rect.width;
+    int h2 = (int) rect.height;
 
     int dx = (x < x2) ? x : x2;
     int dy = (y < y2) ? y : y2;
@@ -1320,9 +1332,10 @@ public class SwingUtilities
     int dh = (y + h > y2 + h2) ? (y + h - dy) : (y2 + h2 - dy);
 
     if (dw >= 0 && dh >= 0)
-      return new Rectangle(dx, dy, dw, dh);
-
-    return new Rectangle(0, 0, 0, 0);
+      rect.setBounds(dx, dy, dw, dh);
+    else
+      rect.setBounds(0, 0, 0, 0);
+    return rect;
   }
 
   /**

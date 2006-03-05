@@ -58,7 +58,7 @@ import java.util.HashMap;
  * a call to an <code>initialize()</code> method), the GNU Crypto provider
  * uses a default <i>modulus</i> size (keysize) of 1024 bits.<p>
  *
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class DSSKeyPairGeneratorSpi extends KeyPairGeneratorAdapter implements
     DSAKeyPairGenerator
@@ -105,6 +105,8 @@ public class DSSKeyPairGeneratorSpi extends KeyPairGeneratorAdapter implements
         attributes.put(DSSKeyPairGenerator.SOURCE_OF_RANDOMNESS, random);
       }
 
+    attributes.put(DSSKeyPairGenerator.PREFERRED_ENCODING_FORMAT,
+                   new Integer(Registry.ASN1_ENCODING_ID));
     try
       {
         adaptee.setup(attributes);
@@ -151,6 +153,8 @@ public class DSSKeyPairGeneratorSpi extends KeyPairGeneratorAdapter implements
     attributes.put(DSSKeyPairGenerator.USE_DEFAULTS,
                    Boolean.valueOf(!genParams));
     attributes.put(DSSKeyPairGenerator.STRICT_DEFAULTS, Boolean.TRUE);
+    attributes.put(DSSKeyPairGenerator.PREFERRED_ENCODING_FORMAT,
+                   new Integer(Registry.ASN1_ENCODING_ID));
     try
       {
         adaptee.setup(attributes);

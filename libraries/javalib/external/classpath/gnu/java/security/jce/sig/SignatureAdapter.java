@@ -53,6 +53,7 @@ import java.security.SignatureException;
 import java.security.SignatureSpi;
 import java.security.spec.AlgorithmParameterSpec;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 /**
  * The implementation of a generic {@link java.security.Signature} adapter class
@@ -69,10 +70,11 @@ import java.util.HashMap;
  * All the implementations which subclass this object, and which are serviced by
  * the GNU Crypto provider implement the {@link java.lang.Cloneable} interface.<p>
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 class SignatureAdapter extends SignatureSpi implements Cloneable
 {
+  private static final Logger log = Logger.getLogger(SignatureAdapter.class.getName());
 
   // Constants and variables
   // -------------------------------------------------------------------------
@@ -223,6 +225,8 @@ class SignatureAdapter extends SignatureSpi implements Cloneable
 
   public boolean engineVerify(byte[] sigBytes) throws SignatureException
   {
+    log.entering("SignatureAdapter", "engineVerify");
+
     Object signature = codec.decodeSignature(sigBytes);
     boolean result = false;
     try
@@ -234,6 +238,7 @@ class SignatureAdapter extends SignatureSpi implements Cloneable
         throw new SignatureException(String.valueOf(x));
       }
 
+    log.exiting("SignatureAdapter", "engineVerify", new Boolean(result));
     return result;
   }
 

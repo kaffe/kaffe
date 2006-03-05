@@ -95,8 +95,18 @@ public class RSAKeyPairGenerator implements IKeyPairGenerator
    */
   public static final String RSA_PARAMETERS = "gnu.crypto.rsa.params";
 
+  /**
+   * Property name of the preferred encoding format to use when externalizing
+   * generated instance of key-pairs from this generator. The property is taken
+   * to be an {@link Integer} that encapsulates an encoding format identifier.
+   */
+  public static final String PREFERRED_ENCODING_FORMAT = "gnu.crypto.rsa.encoding";
+
   /** Default value for the modulus length. */
   private static final int DEFAULT_MODULUS_LENGTH = 1024;
+
+  /** Default encoding format to use when none was specified. */
+  private static final int DEFAULT_ENCODING_FORMAT = Registry.RAW_ENCODING_ID;
 
   /** The desired bit length of the modulus. */
   private int L;
@@ -112,6 +122,9 @@ public class RSAKeyPairGenerator implements IKeyPairGenerator
 
   /** Our default source of randomness. */
   private PRNG prng = null;
+
+  /** Preferred encoding format of generated keys. */
+  private int preferredFormat;
 
   // Constructor(s)
   // -------------------------------------------------------------------------
@@ -159,6 +172,11 @@ public class RSAKeyPairGenerator implements IKeyPairGenerator
       {
         throw new IllegalArgumentException(MODULUS_LENGTH);
       }
+
+    // what is the preferred encoding format
+    Integer formatID = (Integer) attributes.get(PREFERRED_ENCODING_FORMAT);
+    preferredFormat = formatID == null ? DEFAULT_ENCODING_FORMAT
+                                       : formatID.intValue();
   }
 
   /**
@@ -213,8 +231,8 @@ public class RSAKeyPairGenerator implements IKeyPairGenerator
     d = e.modInverse(phi);
 
     // 5. Output the public key and the private key.
-    PublicKey pubK = new GnuRSAPublicKey(n, e);
-    PrivateKey secK = new GnuRSAPrivateKey(p, q, e, d);
+    PublicKey pubK = new GnuRSAPublicKey(preferredFormat, n, e);
+    PrivateKey secK = new GnuRSAPrivateKey(preferredFormat, p, q, e, d);
 
     return new KeyPair(pubK, secK);
   }

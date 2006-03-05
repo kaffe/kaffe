@@ -56,7 +56,7 @@ import java.security.interfaces.RSAPublicKey;
  *    Jakob Jonsson and Burt Kaliski.</li>
  * </ol>
  *
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class GnuRSAPublicKey extends GnuRSAKey implements PublicKey,
     RSAPublicKey
@@ -65,69 +65,72 @@ public class GnuRSAPublicKey extends GnuRSAKey implements PublicKey,
   // Constants and variables
   // -------------------------------------------------------------------------
 
-  /** The public exponent of an RSA public key. */
-  //   private final BigInteger e;
   // Constructor(s)
   // -------------------------------------------------------------------------
+
   /**
-   * <p>Trivial constructor.</p>
+   * Conveience constructor. Calls the constructor with 3 arguments passing
+   * {@link Registry#RAW_ENCODING_ID} as the identifier of the preferred
+   * encoding format.
    *
    * @param n the modulus.
    * @param e the public exponent.
    */
   public GnuRSAPublicKey(final BigInteger n, final BigInteger e)
   {
-    //      super(n);
-    super(n, e);
-    //
-    //      this.e = e;
+    this(Registry.RAW_ENCODING_ID, n, e);
+  }
+
+  /**
+   * Constructs a new instance of <code>GnuRSAPublicKey</code> given the
+   * designated arguments.
+   * 
+   * @param preferredFormat the identifier of the preferred encoding format to
+   *          use when externalizing this key.
+   * @param n the modulus.
+   * @param e the public exponent.
+   */
+  public GnuRSAPublicKey(int preferredFormat, BigInteger n, BigInteger e)
+  {
+    super(preferredFormat == Registry.ASN1_ENCODING_ID ? Registry.X509_ENCODING_ID
+                                                       : preferredFormat,
+          n, e);
   }
 
   // Class methods
   // -------------------------------------------------------------------------
 
   /**
-   * <p>A class method that takes the output of the <code>encodePublicKey()</code>
+   * A class method that takes the output of the <code>encodePublicKey()</code>
    * method of an RSA keypair codec object (an instance implementing
-   * {@link gnu.crypto.key.IKeyPairCodec} for RSA keys, and re-constructs an
-   * instance of this object.</p>
-   *
+   * {@link IKeyPairCodec} for RSA keys, and re-constructs an instance of this
+   * object.
+   * 
    * @param k the contents of a previously encoded instance of this object.
    * @throws ArrayIndexOutOfBoundsException if there is not enough bytes, in
-   * <code>k</code>, to represent a valid encoding of an instance of this object.
+   *           <code>k</code>, to represent a valid encoding of an instance
+   *           of this object.
    * @throws IllegalArgumentException if the byte sequence does not represent a
-   * valid encoding of an instance of this object.
+   *           valid encoding of an instance of this object.
    */
   public static GnuRSAPublicKey valueOf(final byte[] k)
   {
-    // check magic...
-    // we should parse here enough bytes to know which codec to use, and
-    // direct the byte array to the appropriate codec.  since we only have one
-    // codec, we could have immediately tried it; nevertheless since testing
-    // one byte is cheaper than instatiating a codec that will fail we test
-    // the first byte before we carry on.
+    // try RAW codec
     if (k[0] == Registry.MAGIC_RAW_RSA_PUBLIC_KEY[0])
-      {
-        // it's likely to be in raw format. get a raw codec and hand it over
-        final IKeyPairCodec codec = new RSAKeyPairRawCodec();
-        return (GnuRSAPublicKey) codec.decodePublicKey(k);
-      }
-    else
-      {
-        throw new IllegalArgumentException("magic");
-      }
+      try
+        {
+          return (GnuRSAPublicKey) new RSAKeyPairRawCodec().decodePublicKey(k);
+        }
+      catch (IllegalArgumentException ignored)
+        {
+        }
+
+    // try X.509 codec
+    return (GnuRSAPublicKey) new RSAKeyPairX509Codec().decodePublicKey(k);
   }
 
   // Instance methods
   // -------------------------------------------------------------------------
-
-  // java.security.interfaces.RSAPublicKey interface implementation ----------
-
-  //   public BigInteger getPublicExponent() {
-  //      return e;
-  //   }
-
-  // Other instance methods --------------------------------------------------
 
   /**
    * <p>Returns the encoded form of this public key according to the designated
@@ -147,8 +150,12 @@ public class GnuRSAPublicKey extends GnuRSAKey implements PublicKey,
       case IKeyPairCodec.RAW_FORMAT:
         result = new RSAKeyPairRawCodec().encodePublicKey(this);
         break;
+      case IKeyPairCodec.X509_FORMAT:
+        result = new RSAKeyPairX509Codec().encodePublicKey(this);
+        break;
       default:
-        throw new IllegalArgumentException("format");
+        throw new IllegalArgumentException("Unsupported encoding format: "
+                                           + format);
       }
     return result;
   }
@@ -172,7 +179,6 @@ public class GnuRSAPublicKey extends GnuRSAKey implements PublicKey,
         return false;
       }
     final RSAPublicKey that = (RSAPublicKey) obj;
-    //      return super.equals(that) && e.equals(that.getPublicExponent());
     return super.equals(that)
            && getPublicExponent().equals(that.getPublicExponent());
   }

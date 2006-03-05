@@ -877,7 +877,8 @@ public class StyleConstants
    * 
    * @see #getTabSet(AttributeSet)
    */
-  public static void setTabSet(MutableAttributeSet a, javax.swing.text.TabSet tabs)
+  public static void setTabSet(MutableAttributeSet a, 
+                               javax.swing.text.TabSet tabs)
   {
     a.addAttribute(StyleConstants.TabSet, tabs);
   } 
@@ -918,43 +919,46 @@ public class StyleConstants
     }
     
     /** An alias for {@link ColorConstants#Background}. */
-    public static Object Background = ColorConstants.Background;
+    public static final Object Background = ColorConstants.Background;
     
     /** A key for the bidi level character attribute. */
-    public static Object BidiLevel = new CharacterConstants("bidiLevel");
+    public static final Object BidiLevel = new CharacterConstants("bidiLevel");
     
     /** An alias for {@link FontConstants#Bold}. */
-    public static Object Bold = FontConstants.Bold;
+    public static final Object Bold = FontConstants.Bold;
     
     /** A key for the component character attribute. */
-    public static Object ComponentAttribute = new CharacterConstants("component");
+    public static final Object ComponentAttribute 
+        = new CharacterConstants("component");
     
     /** An alias for {@link FontConstants#Family}. */
-    public static Object Family = FontConstants.Family;
+    public static final Object Family = FontConstants.Family;
     
     /** An alias for {@link FontConstants#Size}. */
-    public static Object Size = FontConstants.Size;
+    public static final Object Size = FontConstants.Size;
     
     /** An alias for {@link ColorConstants#Foreground}. */
-    public static Object Foreground = ColorConstants.Foreground;
+    public static final Object Foreground = ColorConstants.Foreground;
     
     /** A key for the icon character attribute. */
-    public static Object IconAttribute = new CharacterConstants("icon");
+    public static final Object IconAttribute = new CharacterConstants("icon");
     
     /** A key for the italic character attribute. */
-    public static Object Italic = FontConstants.Italic;
+    public static final Object Italic = FontConstants.Italic;
     
     /** A key for the strike through character attribute. */
-    public static Object StrikeThrough = new CharacterConstants("strikethrough");
+    public static final Object StrikeThrough 
+        = new CharacterConstants("strikethrough");
     
     /** A key for the subscript character attribute. */
-    public static Object Subscript = new CharacterConstants("subscript");
+    public static final Object Subscript = new CharacterConstants("subscript");
     
     /** A key for the superscript character attribute. */
-    public static Object Superscript = new CharacterConstants("superscript");
+    public static final Object Superscript 
+        = new CharacterConstants("superscript");
     
     /** A key for the underline character attribute. */
-    public static Object Underline = new CharacterConstants("underline");
+    public static final Object Underline = new CharacterConstants("underline");
   
   }
 
@@ -976,10 +980,10 @@ public class StyleConstants
     }
     
     /** A key for the foreground color attribute. */
-    public static Object Foreground = new ColorConstants("foreground");
+    public static final Object Foreground = new ColorConstants("foreground");
 
     /** A key for the background color attribute. */
-    public static Object Background = new ColorConstants("background");
+    public static final Object Background = new ColorConstants("background");
   }
 
   /**
@@ -1000,16 +1004,16 @@ public class StyleConstants
     }
     
     /** A key for the bold font attribute. */
-    public static Object Bold = new FontConstants("bold");
+    public static final Object Bold = new FontConstants("bold");
 
     /** A key for the family font attribute. */
-    public static Object Family = new FontConstants("family");
+    public static final Object Family = new FontConstants("family");
     
     /** A key for the italic font attribute. */
-    public static Object Italic = new FontConstants("italic");
+    public static final Object Italic = new FontConstants("italic");
     
     /** A key for the size font attribute. */
-    public static Object Size = new FontConstants("size");
+    public static final Object Size = new FontConstants("size");
   }
 
   /**
@@ -1030,32 +1034,38 @@ public class StyleConstants
     }
     
     /** A key for the alignment paragraph attribute. */
-    public static Object Alignment = new ParagraphConstants("Alignment");
+    public static final Object Alignment = new ParagraphConstants("Alignment");
 
     /** A key for the first line indentation paragraph attribute. */
-    public static Object FirstLineIndent 
+    public static final Object FirstLineIndent 
         = new ParagraphConstants("FirstLineIndent");
     
     /** A key for the left indentation paragraph attribute. */
-    public static Object LeftIndent = new ParagraphConstants("LeftIndent");
+    public static final Object LeftIndent 
+        = new ParagraphConstants("LeftIndent");
     
     /** A key for the line spacing paragraph attribute. */
-    public static Object LineSpacing = new ParagraphConstants("LineSpacing");
+    public static final Object LineSpacing 
+        = new ParagraphConstants("LineSpacing");
     
     /** A key for the orientation paragraph attribute. */
-    public static Object Orientation = new ParagraphConstants("Orientation");
+    public static final Object Orientation 
+        = new ParagraphConstants("Orientation");
     
     /** A key for the right indentation paragraph attribute. */
-    public static Object RightIndent = new ParagraphConstants("RightIndent");
+    public static final Object RightIndent 
+        = new ParagraphConstants("RightIndent");
     
     /** A key for the 'space above' paragraph attribute. */
-    public static Object SpaceAbove = new ParagraphConstants("SpaceAbove");
+    public static final Object SpaceAbove 
+        = new ParagraphConstants("SpaceAbove");
     
     /** A key for the 'space below' paragraph attribute. */
-    public static Object SpaceBelow = new ParagraphConstants("SpaceBelow");
+    public static final Object SpaceBelow 
+        = new ParagraphConstants("SpaceBelow");
     
     /** A key for the tabset paragraph attribute. */
-    public static Object TabSet = new ParagraphConstants("TabSet");
+    public static final Object TabSet = new ParagraphConstants("TabSet");
     
   }
 

@@ -223,9 +223,15 @@ public interface Registry
 
   String DSS_SIG = "dss";
 
-  String RSA_PSS_SIG = "rsa-pss";
+  String RSA_SIG_PREFIX = "rsa-";
 
-  String RSA_PKCS1_V1_5_SIG = "rsa-pkcs1-v1.5";
+  String RSA_PSS_ENCODING = "pss";
+
+  String RSA_PSS_SIG = RSA_SIG_PREFIX + RSA_PSS_ENCODING;
+
+  String RSA_PKCS1_V1_5_ENCODING = "pkcs1-v1.5";
+
+  String RSA_PKCS1_V1_5_SIG = RSA_SIG_PREFIX + RSA_PKCS1_V1_5_ENCODING;
 
   /** DSA is synonymous to DSS. */
   String DSA_SIG = "dsa";
@@ -263,9 +269,28 @@ public interface Registry
   //   String TMMH32 = "tmmh32";
 
   // Format IDs used to identify how we externalise asymmetric keys ..........
+  // fully-qualified names of the supported codecs
   String RAW_ENCODING = "gnu.crypto.raw.format";
+  String X509_ENCODING = "gnu.crypto.x509.format";
+  String PKCS8_ENCODING = "gnu.crypto.pkcs8.format";
+  String ASN1_ENCODING = "gnu.crypto.asn1.format";
 
+  // short names of the same.  used by JCE adapters
+  String RAW_ENCODING_SHORT_NAME = "RAW";
+  String X509_ENCODING_SORT_NAME = "X.509";
+  String PKCS8_ENCODING_SHORT_NAME = "PKCS#8";
+  String ASN1_ENCODING_SHORT_NAME = "ASN.1";
+
+  // unique identifiers of the same
   int RAW_ENCODING_ID = 1;
+  int X509_ENCODING_ID = 2;
+  int PKCS8_ENCODING_ID = 3;
+  int ASN1_ENCODING_ID = 4;
+
+  // OID strings used in encoding/decoding keys
+  String DSA_OID_STRING = "1.2.840.10040.4.1";
+  String RSA_OID_STRING = "1.2.840.113549.1.1.1";
+  String DH_OID_STRING =  "1.2.840.10046.2.1";
 
   // Magic bytes we generate/expect in externalised asymmetric keys ..........
   // the four bytes represent G (0x47) for GNU, 1 (0x01) for Raw format,
@@ -289,6 +314,9 @@ public interface Registry
 
   byte[] MAGIC_RAW_RSA_PSS_SIGNATURE = new byte[] { 0x47, RAW_ENCODING_ID,
                                                    0x52, 0x53 };
+
+  byte[] MAGIC_RAW_RSA_PKCS1V1_5_SIGNATURE = new byte[] { 0x47, RAW_ENCODING_ID,
+                                                          0x52, 0x54 };
 
   byte[] MAGIC_RAW_DH_PUBLIC_KEY = new byte[] { 0x47, RAW_ENCODING_ID, 0x48,
                                                0x50 };

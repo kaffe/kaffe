@@ -39,6 +39,7 @@ exception statement from your version.  */
 package gnu.javax.crypto.key.dh;
 
 import gnu.java.security.Registry;
+import gnu.java.security.util.FormatUtil;
 
 import java.math.BigInteger;
 import java.security.Key;
@@ -79,20 +80,30 @@ public abstract class GnuDHKey implements Key, DHKey
   /** The generator g. */
   protected BigInteger g;
 
+  /**
+   * Identifier of the default encoding format to use when externalizing the
+   * key material.
+   */
+  protected final int defaultFormat;
+
   // Constructor(s)
   // -------------------------------------------------------------------------
 
   /**
-   * <p>Trivial protected constructor.</p>
-   *
+   * Trivial protected constructor.
+   * 
+   * @param defaultFormat the identifier of the encoding format to use by
+   *          default when externalizing the key.
    * @param q a prime divisor of p-1.
    * @param p the public prime.
    * @param g the generator of the group.
    */
-  protected GnuDHKey(BigInteger q, BigInteger p, BigInteger g)
+  protected GnuDHKey(int defaultFormat, BigInteger q, BigInteger p, BigInteger g)
   {
     super();
 
+    this.defaultFormat = defaultFormat <= 0 ? Registry.RAW_ENCODING_ID
+                                            : defaultFormat;
     this.q = q;
     this.p = p;
     this.g = g;
@@ -125,9 +136,15 @@ public abstract class GnuDHKey implements Key, DHKey
     return Registry.DH_KPG;
   }
 
+  /** @deprecated see getEncoded(int). */
+  public byte[] getEncoded()
+  {
+    return getEncoded(defaultFormat);
+  }
+
   public String getFormat()
   {
-    return null;
+    return FormatUtil.getEncodingShortName(defaultFormat);
   }
 
   // Other instance methods --------------------------------------------------
@@ -160,4 +177,8 @@ public abstract class GnuDHKey implements Key, DHKey
     return p.equals(that.getParams().getP())
            && g.equals(that.getParams().getG());
   }
+
+  // abstract methods to be implemented by subclasses ------------------------
+
+  public abstract byte[] getEncoded(int format);
 }

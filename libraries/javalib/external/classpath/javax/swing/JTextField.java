@@ -530,4 +530,18 @@ public class JTextField extends JTextComponent
     // javax.swing.text.FieldView.
     return horizontalVisibility;
   }
+
+  /**
+   * Returns <code>true</code>, unless this is embedded in a
+   * <code>JViewport</code> in which case the viewport takes responsibility of
+   * validating.
+   *
+   * @return <code>true</code>, unless this is embedded in a
+   *         <code>JViewport</code> in which case the viewport takes
+   *         responsibility of validating
+   */
+  public boolean isValidateRoot()
+  {
+    return ! (getParent() instanceof JViewport);
+  }
 }

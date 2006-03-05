@@ -40,23 +40,18 @@ package gnu.java.security.sig;
 
 import gnu.java.security.Registry;
 import gnu.java.security.sig.dss.DSSSignature;
-import gnu.java.security.sig.rsa.RSAPSSSignature;
-import gnu.java.security.sig.rsa.RSAPKCS1V1_5Signature;
+import gnu.java.security.sig.rsa.RSASignatureFactory;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * <p>A Factory to instantiate signature-with-appendix handlers.</p>
- *
- * @version $Revision: 1.1 $
+ * A Factory to instantiate signature-with-appendix handlers.
  */
 public class SignatureFactory
 {
-
-  // Constants and variables
-  // -------------------------------------------------------------------------
+  private static Set names;
 
   // Constructor(s)
   // -------------------------------------------------------------------------
@@ -71,7 +66,7 @@ public class SignatureFactory
   // -------------------------------------------------------------------------
 
   /**
-   * <p>Returns an instance of a signature-with-appendix scheme given its name.</p>
+   * Returns an instance of a signature-with-appendix scheme given its name.
    *
    * @param ssa the case-insensitive signature-with-appendix scheme name.
    * @return an instance of the scheme, or <code>null</code> if none found.
@@ -84,39 +79,35 @@ public class SignatureFactory
       }
 
     ssa = ssa.trim();
+    ssa = ssa.toLowerCase();
     ISignature result = null;
     if (ssa.equalsIgnoreCase(Registry.DSA_SIG) || ssa.equals(Registry.DSS_SIG))
       {
         result = new DSSSignature();
       }
-    else if (ssa.equalsIgnoreCase(Registry.RSA_PSS_SIG))
-      {
-        result = new RSAPSSSignature();
-      }
-    else if (ssa.equalsIgnoreCase(Registry.RSA_PKCS1_V1_5_SIG))
-      {
-        result = new RSAPKCS1V1_5Signature();
-      }
+    else if (ssa.startsWith(Registry.RSA_SIG_PREFIX))
+      result = RSASignatureFactory.getInstance(ssa);
 
     return result;
   }
 
   /**
-   * <p>Returns a {@link Set} of signature-with-appendix scheme names supported
-   * by this <i>Factory</i>.</p>
+   * Returns a {@link Set} of signature-with-appendix scheme names supported
+   * by this <i>Factory</i>.
    *
    * @return a {@link Set} of signature-with-appendix scheme names (Strings).
    */
-  public static final Set getNames()
+  public static synchronized final Set getNames()
   {
-    HashSet hs = new HashSet();
-    hs.add(Registry.DSS_SIG);
-    hs.add(Registry.RSA_PSS_SIG);
-    hs.add(Registry.RSA_PKCS1_V1_5_SIG);
+    if (names == null)
+      {
+        HashSet hs = new HashSet();
+        hs.add(Registry.DSS_SIG);
+        hs.addAll(RSASignatureFactory.getNames());
 
-    return Collections.unmodifiableSet(hs);
+        names = Collections.unmodifiableSet(hs);
+      }
+
+    return names;
   }
-
-  // Instance methods
-  // -------------------------------------------------------------------------
 }

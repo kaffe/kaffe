@@ -1,3 +1,8 @@
+2006-03-05  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* Resynchronized GNU Classpath pre-0.90. Reapplied patches from
+	Dalibor to fix bug #16.
+
 2006-03-04  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/string.c: Use gc_free instead of KFREE where

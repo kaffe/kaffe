@@ -40,7 +40,16 @@ package gnu.javax.crypto.key;
 
 import gnu.java.security.Registry;
 import gnu.java.security.key.IKeyPairCodec;
-import gnu.java.security.key.KeyPairCodecFactory;
+import gnu.java.security.key.dss.DSSKeyPairPKCS8Codec;
+import gnu.java.security.key.dss.DSSKeyPairRawCodec;
+import gnu.java.security.key.dss.DSSKeyPairX509Codec;
+import gnu.java.security.key.rsa.RSAKeyPairPKCS8Codec;
+import gnu.java.security.key.rsa.RSAKeyPairRawCodec;
+import gnu.java.security.key.rsa.RSAKeyPairX509Codec;
+import gnu.javax.crypto.key.dh.DHKeyPairPKCS8Codec;
+import gnu.javax.crypto.key.dh.DHKeyPairRawCodec;
+import gnu.javax.crypto.key.dh.DHKeyPairX509Codec;
+import gnu.javax.crypto.key.srp6.SRPKeyPairRawCodec;
 
 import java.io.ByteArrayInputStream;
 import java.io.UnsupportedEncodingException;
@@ -173,63 +182,63 @@ public class IncomingMessage
     return (in.available() > 0);
   }
 
+  /**
+   * Decodes a public key from the message.
+   * <p>
+   * See {@link OutgoingMessage#writePublicKey(java.security.PublicKey)} for
+   * more details on the internal format.
+   * 
+   * @throws KeyAgreementException if an encoding size constraint is violated or
+   *           a mismatch was detected in the encoding.
+   */
   public PublicKey readPublicKey() throws KeyAgreementException
   {
-    if (in.available() < 4)
-      {
-        throw new KeyAgreementException(
-                                        "not enough bytes for a public key in message");
-      }
+    if (in.available() < 5)
+      throw new KeyAgreementException("not enough bytes for a public key in message");
 
     byte[] elementLengthBytes = new byte[4];
     in.read(elementLengthBytes, 0, 4);
     int elementLength = fourBytesToLength(elementLengthBytes);
     if (in.available() < elementLength)
-      {
-        throw new KeyAgreementException("illegal public key encoding");
-      }
+      throw new KeyAgreementException("illegal public key encoding");
 
+    int keyTypeAndFormatID = in.read() & 0xFF;
+    elementLength--;
     byte[] kb = new byte[elementLength];
     in.read(kb, 0, elementLength);
 
     // instantiate the right codec and decode
-    IKeyPairCodec kpc = KeyPairCodecFactory.getInstance(kb);
-    if (kpc == null)
-      {
-        throw new KeyAgreementException(
-                                        "invalid public key, or encoded with an unknown codec");
-      }
-
+    IKeyPairCodec kpc = getKeyPairCodec(keyTypeAndFormatID);
     return kpc.decodePublicKey(kb);
   }
 
+  /**
+   * Decodes a private key from the message.
+   * <p>
+   * See {@link OutgoingMessage#writePrivateKey(java.security.PrivateKey)} for
+   * more details.
+   * 
+   * @throws KeyAgreementException if an encoding size constraint is violated or
+   *           a mismatch was detected in the encoding.
+   */
   public PrivateKey readPrivateKey() throws KeyAgreementException
   {
-    if (in.available() < 4)
-      {
-        throw new KeyAgreementException(
-                                        "not enough bytes for a private key in message");
-      }
+    if (in.available() < 5)
+      throw new KeyAgreementException("not enough bytes for a private key in message");
 
     byte[] elementLengthBytes = new byte[4];
     in.read(elementLengthBytes, 0, 4);
     int elementLength = fourBytesToLength(elementLengthBytes);
     if (in.available() < elementLength)
-      {
-        throw new KeyAgreementException("illegal private key encoding");
-      }
+      throw new KeyAgreementException("illegal private key encoding");
 
+    int keyTypeAndFormatID = in.read() & 0xFF;
+    elementLength--;
     byte[] kb = new byte[elementLength];
     in.read(kb, 0, elementLength);
 
     // instantiate the right codec and decode
-    IKeyPairCodec kpc = KeyPairCodecFactory.getInstance(kb);
-    if (kpc == null)
-      {
-        throw new KeyAgreementException(
-                                        "invalid private key, or encoded with an unknown codec");
-      }
-
+    IKeyPairCodec kpc = getKeyPairCodec(keyTypeAndFormatID);
     return kpc.decodePrivateKey(kb);
   }
 
@@ -289,5 +298,59 @@ public class IncomingMessage
       }
 
     return result;
+  }
+
+  private IKeyPairCodec getKeyPairCodec(int keyTypeAndFormatID)
+      throws KeyAgreementException
+  {
+    int keyType = (keyTypeAndFormatID >>> 4) & 0x0F;
+    int formatID = keyTypeAndFormatID & 0x0F;
+    switch (formatID)
+      {
+      case Registry.RAW_ENCODING_ID:
+        switch (keyType)
+          {
+          case 0:
+            return new DSSKeyPairRawCodec();
+          case 1:
+            return new RSAKeyPairRawCodec();
+          case 2:
+            return new DHKeyPairRawCodec();
+          case 3:
+            return new SRPKeyPairRawCodec();
+          default:
+            throw new KeyAgreementException("Unknown key-type for Raw format: "
+                                            + keyType);
+          }
+      case Registry.X509_ENCODING_ID:
+        switch (keyType)
+          {
+          case 0:
+            return new DSSKeyPairX509Codec();
+          case 1:
+            return new RSAKeyPairX509Codec();
+          case 2:
+            return new DHKeyPairX509Codec();
+          default:
+            throw new KeyAgreementException("Unknown key-type for X.509 format: "
+                                            + keyType);
+          }
+      case Registry.PKCS8_ENCODING_ID:
+        switch (keyType)
+          {
+          case 0:
+            return new DSSKeyPairPKCS8Codec();
+          case 1:
+            return new RSAKeyPairPKCS8Codec();
+          case 2:
+            return new DHKeyPairPKCS8Codec();
+          default:
+            throw new KeyAgreementException("Unknown key-type for PKCS#8 format: "
+                                            + keyType);
+          }
+      default:
+        throw new KeyAgreementException("Unknown format identifier: "
+                                        + formatID);
+      }
   }
 }
