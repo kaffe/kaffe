@@ -1,3 +1,9 @@
+2006-03-06  Dalibor Topic  <robilad@kaffe.org>
+
+        * gnu/java/net/protocol/file/Connection.java (unquote):
+        Update position in buffer after decoding a unicode character
+        outside of the basic plane.
+
 2006-03-05  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/kaffe.def: Small cleanup to
