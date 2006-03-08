@@ -107,9 +107,9 @@ Java_java_math_BigInteger_assignLong0(JNIEnv* env, jobject r, jlong v)
 		   do-nothing operation.  At last, the number will be made
 		   negative, as appropriate.  */
 
-		mpz_set_ui(res, (unsigned long)((v & 0x7FFFFFFF00000000L) >> shift_distance));
+		mpz_set_ui(res, (unsigned long)((v & 0x7FFFFFFF00000000LL) >> shift_distance));
 		mpz_mul_2exp(res, res, shift_distance);
-		mpz_add_ui(res, res, (unsigned long)(v & 0x00000000FFFFFFFFL));
+		mpz_add_ui(res, res, (unsigned long)(v & 0x00000000FFFFFFFFLL));
 
 		if (negative)
 			mpz_neg(res, res);
