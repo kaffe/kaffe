@@ -157,7 +157,11 @@ extern double erf __P((double));
 extern double erfc __P((double));
 extern double gamma __P((double));
 extern double hypot __P((double, double));
-extern int isnan __P((double));
+
+#if !defined(isnan) && !defined(HAVE_ISNAN)
+#define isnan(x) ((x) != (x))
+#endif
+
 extern int finite __P((double));
 extern double j0 __P((double));
 extern double j1 __P((double));
@@ -236,7 +240,7 @@ extern double __ieee754_y1 __P((double));
 extern double __ieee754_jn __P((int,double));
 extern double __ieee754_yn __P((int,double));
 extern double __ieee754_remainder __P((double,double));
-extern int    __ieee754_rem_pio2 __P((double,double*));
+extern int32_t    __ieee754_rem_pio2 __P((double,double*));
 #ifdef _SCALB_INT
 extern double __ieee754_scalb __P((double,int));
 #else

@@ -366,7 +366,8 @@ public class DefaultCaret extends Rectangle
    * <ul>
    * <li>If we receive a double click, the caret position (dot) is set
    *   to the position associated to the mouse click and the word at
-   *   this location is selected.</li>
+   *   this location is selected. If there is no word at the pointer
+   *   the gap is selected instead.</li>
    * <li>If we receive a triple click, the caret position (dot) is set
    *   to the position associated to the mouse click and the line at
    *   this location is selected.</li>
@@ -376,7 +377,50 @@ public class DefaultCaret extends Rectangle
    */
   public void mouseClicked(MouseEvent event)
   {
-    // TODO: Implement double- and triple-click behaviour here.
+    int count = event.getClickCount();
+    
+    if (count >= 2)
+      {
+        int newDot = getComponent().viewToModel(event.getPoint());
+        JTextComponent t = getComponent();
+
+        try
+          {
+            if (count == 3)
+              t.select(Utilities.getRowStart(t, newDot), Utilities.getRowEnd(t, newDot));
+            else
+              {
+                int nextWord = Utilities.getNextWord(t, newDot);
+                
+                // When the mouse points at the offset of the first character
+                // in a word Utilities().getPreviousWord will not return that
+                // word but we want to select that. We have to use
+                // Utilities.nextWord() to get it.
+                if (newDot == nextWord)
+                  t.select(nextWord, Utilities.getNextWord(t, nextWord));
+                else
+                  {
+                    int previousWord = Utilities.getPreviousWord(t, newDot);
+                    int previousWordEnd = Utilities.getWordEnd(t, previousWord);
+                    
+                    // If the user clicked in the space between two words,
+                    // then select the space.
+                    if (newDot >= previousWordEnd && newDot <= nextWord)
+                      t.select(previousWordEnd, nextWord);
+                    // Otherwise select the word under the mouse pointer.
+                    else
+                      t.select(previousWord, previousWordEnd);
+                  }
+              }
+          }
+        catch(BadLocationException ble)
+          {
+            // TODO: Swallowing ok here?
+          }
+        
+        dot = newDot;
+      }
+    
   }
 
   /**
@@ -411,7 +455,10 @@ public class DefaultCaret extends Rectangle
    */
   public void mousePressed(MouseEvent event)
   {
-    positionCaret(event);
+    if (event.isShiftDown())
+      moveCaret(event);
+    else
+      positionCaret(event);
   }
 
   /**

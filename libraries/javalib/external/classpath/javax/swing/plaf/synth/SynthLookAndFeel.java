@@ -217,7 +217,7 @@ public class SynthLookAndFeel
 
   /**
    * Returns a textual description of the Synth look and feel. This returns
-   * &quot;Synt look and feel&quot;.
+   * &quot;Synth look and feel&quot;.
    *
    * @return a textual description of the Synth look and feel
    */
@@ -238,7 +238,7 @@ public class SynthLookAndFeel
 
   /**
    * Returns the name of the Synth look and feel. This returns
-   * &quot;Synt look and feel&quot;.
+   * &quot;Synth look and feel&quot;.
    *
    * @return the name of the Synth look and feel
    */

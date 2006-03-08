@@ -539,7 +539,7 @@ public class URLClassLoader extends SecureClassLoader
       try 
  	{
  	  File file = new File(dir, name).getCanonicalFile();
- 	  if (file.exists() && !file.isDirectory())
+ 	  if (file.exists())
  	    return new FileResource(this, file);
  	}
       catch (IOException e)

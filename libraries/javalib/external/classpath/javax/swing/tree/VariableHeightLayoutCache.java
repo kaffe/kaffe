@@ -1,5 +1,5 @@
 /* VariableHeightLayoutCache.java --
-   Copyright (C) 2002, 2004  Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2006,  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -47,207 +47,215 @@ import javax.swing.event.TreeModelEvent;
  * VariableHeightLayoutCache
  * @author Andrew Selkirk
  */
-public class VariableHeightLayoutCache extends AbstractLayoutCache {
+public class VariableHeightLayoutCache extends AbstractLayoutCache 
+{
 
-	//-------------------------------------------------------------
-	// Variables --------------------------------------------------
-	//-------------------------------------------------------------
+  /**
+   * Constructor VariableHeightLayoutCache
+   */
+  public VariableHeightLayoutCache() 
+  {
+    // TODO
+  } 
 
+  /**
+   * setModel
+   * @param value0 TODO
+   */
+  public void setModel(TreeModel value0) 
+  {
+    // TODO
+  } 
 
-	//-------------------------------------------------------------
-	// Initialization ---------------------------------------------
-	//-------------------------------------------------------------
+  /**
+   * setRootVisible
+   * @param value0 TODO
+   */
+  public void setRootVisible(boolean value0) 
+  {
+    // TODO
+  } 
 
-	/**
-	 * Constructor VariableHeightLayoutCache
-	 */
-	public VariableHeightLayoutCache() {
-		// TODO
-	} // VariableHeightLayoutCache()
+  /**
+   * setNodeDimensions
+   * @param value0 TODO
+   */
+  public void setNodeDimensions(NodeDimensions value0) 
+  {
+    // TODO
+  } 
 
+  /**
+   * setExpandedState
+   * @param value0 TODO
+   * @param value1 TODO
+   */
+  public void setExpandedState(TreePath value0, boolean value1) 
+  {
+    // TODO
+  } 
 
-	//-------------------------------------------------------------
-	// Methods ----------------------------------------------------
-	//-------------------------------------------------------------
+  /**
+   * getExpandedState
+   * @param value0 TODO
+   * @return boolean
+   */
+  public boolean getExpandedState(TreePath value0) 
+  {
+    return false; // TODO
+  } 
 
-	/**
-	 * setModel
-	 * @param value0 TODO
-	 */
-	public void setModel(TreeModel value0) {
-		// TODO
-	} // setModel()
+  /**
+   * getBounds
+   * @param value0 TODO
+   * @param value1 TODO
+   * @return Rectangle
+   */
+  public Rectangle getBounds(TreePath value0, Rectangle value1) 
+  {
+    return null; // TODO
+  } 
 
-	/**
-	 * setRootVisible
-	 * @param value0 TODO
-	 */
-	public void setRootVisible(boolean value0) {
-		// TODO
-	} // setRootVisible()
+  /**
+   * getPathForRow
+   * @param value0 TODO
+   * @return TreePath
+   */
+  public TreePath getPathForRow(int value0) 
+  {
+    return null; // TODO
+  } 
 
-	/**
-	 * setNodeDimensions
-	 * @param value0 TODO
-	 */
-	public void setNodeDimensions(NodeDimensions value0) {
-		// TODO
-	} // setNodeDimensions()
+  /**
+   * getRowForPath
+   * @param value0 TODO
+   * @return int
+   */
+  public int getRowForPath(TreePath value0) 
+  {
+    return 0; // TODO
+  } 
 
-	/**
-	 * setExpandedState
-	 * @param value0 TODO
-	 * @param value1 TODO
-	 */
-	public void setExpandedState(TreePath value0, boolean value1) {
-		// TODO
-	} // setExpandedState()
+  /**
+   * getRowCount
+   * @return int
+   */
+  public int getRowCount() 
+  {
+    return 0; // TODO
+  } 
 
-	/**
-	 * getExpandedState
-	 * @param value0 TODO
-	 * @returns boolean
-	 */
-	public boolean getExpandedState(TreePath value0) {
-		return false; // TODO
-	} // getExpandedState()
+  /**
+   * invalidatePathBounds
+   * @param value0 TODO
+   */
+  public void invalidatePathBounds(TreePath value0) 
+  {
+    // TODO
+  } 
 
-	/**
-	 * getBounds
-	 * @param value0 TODO
-	 * @param value1 TODO
-	 * @returns Rectangle
-	 */
-	public Rectangle getBounds(TreePath value0, Rectangle value1) {
-		return null; // TODO
-	} // getBounds()
+  /**
+   * getPreferredHeight
+   * @return int
+   */
+  public int getPreferredHeight() 
+  {
+    return 0; // TODO
+  }
 
-	/**
-	 * getPathForRow
-	 * @param value0 TODO
-	 * @returns TreePath
-	 */
-	public TreePath getPathForRow(int value0) {
-		return null; // TODO
-	} // getPathForRow()
+  /**
+   * getPreferredWidth
+   * @param value0 TODO
+   * @return int
+   */
+  public int getPreferredWidth(Rectangle value0) 
+  {
+    return 0; // TODO
+  } 
 
-	/**
-	 * getRowForPath
-	 * @param value0 TODO
-	 * @returns int
-	 */
-	public int getRowForPath(TreePath value0) {
-		return 0; // TODO
-	} // getRowForPath()
+  /**
+   * getPathClosestTo
+   * @param value0 TODO
+   * @param value1 TODO
+   * @return TreePath
+   */
+  public TreePath getPathClosestTo(int value0, int value1) 
+  {
+    return null; // TODO
+  } 
 
-	/**
-	 * getRowCount
-	 * @returns int
-	 */
-	public int getRowCount() {
-		return 0; // TODO
-	} // getRowCount()
+  /**
+   * getVisiblePathsFrom
+   * @param value0 TODO
+   * @return Enumeration
+   */
+  public Enumeration getVisiblePathsFrom(TreePath value0) 
+  {
+    return null; // TODO
+  } 
 
-	/**
-	 * invalidatePathBounds
-	 * @param value0 TODO
-	 */
-	public void invalidatePathBounds(TreePath value0) {
-		// TODO
-	} // invalidatePathBounds()
+  /**
+   * getVisibleChildCount
+   * @param value0 TODO
+   * @return int
+   */
+  public int getVisibleChildCount(TreePath value0) 
+  {
+    return 0; // TODO
+  } 
 
-	/**
-	 * getPreferredHeight
-	 * @returns int
-	 */
-	public int getPreferredHeight() {
-		return 0; // TODO
-	} // getPreferredHeight()
+  /**
+   * invalidateSizes
+   */
+  public void invalidateSizes() 
+  {
+    // TODO 
+  }
 
-	/**
-	 * getPreferredWidth
-	 * @param value0 TODO
-	 * @returns int
-	 */
-	public int getPreferredWidth(Rectangle value0) {
-		return 0; // TODO
-	} // getPreferredWidth()
+  /**
+   * isExpanded
+   * @param value0 TODO
+   * @return boolean
+   */
+  public boolean isExpanded(TreePath value0) 
+  {
+    return false; // TODO
+  } 
 
-	/**
-	 * getPathClosestTo
-	 * @param value0 TODO
-	 * @param value1 TODO
-	 * @returns TreePath
-	 */
-	public TreePath getPathClosestTo(int value0, int value1) {
-		return null; // TODO
-	} // getPathClosestTo()
+  /**
+   * treeNodesChanged
+   * @param value0 TODO
+   */
+  public void treeNodesChanged(TreeModelEvent value0) 
+  {
+    // TODO
+  } 
 
-	/**
-	 * getVisiblePathsFrom
-	 * @param value0 TODO
-	 * @returns Enumeration
-	 */
-	public Enumeration getVisiblePathsFrom(TreePath value0) {
-		return null; // TODO
-	} // getVisiblePathsFrom()
+  /**
+   * treeNodesInserted
+   * @param value0 TODO
+   */
+  public void treeNodesInserted(TreeModelEvent value0) 
+  {
+    // TODO
+  } 
 
-	/**
-	 * getVisibleChildCount
-	 * @param value0 TODO
-	 * @returns int
-	 */
-	public int getVisibleChildCount(TreePath value0) {
-		return 0; // TODO
-	} // getVisibleChildCount()
+  /**
+   * treeNodesRemoved
+   * @param value0 TODO
+   */
+  public void treeNodesRemoved(TreeModelEvent value0) 
+  {
+    // TODO
+  } 
 
-	/**
-	 * invalidateSizes
-	 */
-	public void invalidateSizes() {
-		// TODO
-	} // invalidateSizes()
+  /**
+   * treeStructureChanged
+   * @param value0 TODO
+   */
+  public void treeStructureChanged(TreeModelEvent value0) 
+  {
+    // TODO
+  } 
 
-	/**
-	 * isExpanded
-	 * @param value0 TODO
-	 * @returns boolean
-	 */
-	public boolean isExpanded(TreePath value0) {
-		return false; // TODO
-	} // isExpanded()
-
-	/**
-	 * treeNodesChanged
-	 * @param value0 TODO
-	 */
-	public void treeNodesChanged(TreeModelEvent value0) {
-		// TODO
-	} // treeNodesChanged()
-
-	/**
-	 * treeNodesInserted
-	 * @param value0 TODO
-	 */
-	public void treeNodesInserted(TreeModelEvent value0) {
-		// TODO
-	} // treeNodesInserted()
-
-	/**
-	 * treeNodesRemoved
-	 * @param value0 TODO
-	 */
-	public void treeNodesRemoved(TreeModelEvent value0) {
-		// TODO
-	} // treeNodesRemoved()
-
-	/**
-	 * treeStructureChanged
-	 * @param value0 TODO
-	 */
-	public void treeStructureChanged(TreeModelEvent value0) {
-		// TODO
-	} // treeStructureChanged()
-
-
-} // VariableHeightLayoutCache
+}

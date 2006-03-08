@@ -91,7 +91,7 @@ public class MetalComboBoxButton extends JButton {
    * @param cb  the combo that the button is used for (<code>null</code> not 
    *            permitted).
    * @param i  the icon displayed on the button.
-   * @parma onlyIcon  a flag that specifies whether the button displays only an
+   * @param onlyIcon  a flag that specifies whether the button displays only an
    *                  icon, or text as well.
    * @param pane  the rendering pane.
    * @param list  the list.

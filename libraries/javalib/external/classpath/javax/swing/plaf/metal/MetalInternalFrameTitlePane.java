@@ -329,9 +329,10 @@ public class MetalInternalFrameTitlePane extends BasicInternalFrameTitlePane
   }
 
   /**
-   * Creates a new instance of {@link MetalTitlePaneLayout}.
+   * Creates a new instance of <code>MetalTitlePaneLayout</code> (not part of
+   * the public API).
    * 
-   * @return A new instance of {@link MetalTitlePaneLayout}.
+   * @return A new instance of <code>MetalTitlePaneLayout</code>.
    */
   protected LayoutManager createLayout()
   {

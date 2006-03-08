@@ -1,3 +1,216 @@
+2006-03-07  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* gnu/java/rmi/server/CombinedClassLoader.java (findClass,
+	findLibrary, findResouce, findResources): check all loaders in
+	array.
+
+2006-03-07  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	PR 25526
+	* gnu/java/rmi/dgc/DGCImpl.java (LeaseRecord, leaseCache): Removed. 
+	(RefProtector):	new inner class. (dirty): Rewritten.
+	* gnu/java/rmi/server/UnicastRef.java (dgcId, dgcInterfaceHash,
+	dgcSequence, DIRTY, this_id): New fields. (equals, hashCode, notifyDGC):
+	new methods. (readExternal): Create LeaseRenewingTask if non local.
+	* gnu/java/rmi/server/UnicastServer.java (objects): 
+	Use WeakHashMap. (refcache): Use WeakIdentityHashMap. 
+	(getExported): New method.
+	* gnu/java/rmi/dgc/LeaseRenewingTask.java: New file.
+
+2006-03-06  Mark Wielaard  <mark@klomp.org>
+
+	* doc/www.gnu.org/announce/20060306.wml: New file.
+	* doc/www.gnu.org/newsitems.txt: Add 0.90 release announcement.
+	* doc/www.gnu.org/downloads/downloads.wml: Add 0.90.
+
+2006-03-06  Mark Wielaard  <mark@klomp.org>
+
+	* NEWS: Fix typo.
+
+2006-03-06  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/plaf/metal/MetalLookAndFeel.java
+	(initComponentDefaults): Use Boolean.TRUE for 
+	'CheckBoxMenuItem.borderPainted'.
+
+2006-03-06  Lillian Angel  <langel@redhat.com>
+	
+	PR classpath/26569
+	* java/awt/List.java
+	(preferredSize): Return the size of the list if the peer is null.
+	* gnu/java/awt/peer/gtk/GtkListPeer.java
+	(preferredSize): Code was returning the minimum size of the list.
+	Added adjustment to the width of the list so it is a proper size.
+
+2006-03-06  Wolfgang Baer  <WBaer@gmx.de>
+
+	* gnu/java/net/protocol/http/HTTPURLConnection.java: Organized imports.
+	(getRequestProperty): Remove duplicated null check.
+	* java/net/URLConnection.java: 
+	(URLConnection): Javadoc fix.
+	(addRequestProperty): Likewise.
+	(getDefaultRequestProperty): Likewise.
+	(getHeaderField): Likewise.
+	(getHeaderFieldDate): Likewise.
+	(getHeaderFieldKey): Likewise.
+	(getHeaderFields): Likewise.
+	(getRequestProperties): Likewise.
+	(getRequestProperty): Likewise.
+	(setDefaultRequestProperty): Likewise.
+	(setRequestProperty): Likewise.
+
+2006-03-06  Tom Tromey  <tromey@redhat.com>
+
+	* javax/swing/plaf/synth/Region.java (FILE_CHOOSER): Renamed.
+	(FORMATTED_TEXT_FIELD): Likewise.
+
+2006-03-06  Tom Tromey  <tromey@redhat.com>
+
+	* javax/swing/plaf/synth/SynthPainter.java: Finished.
+
+2006-03-06  Mark Wielaard  <mark@klomp.org>
+
+	Fixes bug #26568 reported by Paul Jenner <psj@harker.dyndns.org>
+	* native/fdlibm/fdlibm.h (__ieee754_rem_pio2): Return an int32_t.
+	(isnan): Define explicitly isnan if it is not a macro.
+
+2006-03-06  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* NEWS: Fixed typo.
+
+2006-03-06  Robert Schuster  <robertschuster@fsfe.org>
+
+	* examples/gnu/classpath/examples/swing/Demo.java:
+	(mkMenuBar): Added menu entry that will display the VM's name,
+	version and distributor.
+
+2006-03-06  Tom Tromey  <tromey@redhat.com>
+
+	* javax/swing/plaf/synth/SynthLookAndFeel.java (getDescription): 
+	Javadoc fix.
+	(getName): Likewise.
+
+2006-03-06  Mark Wielaard  <mark@klomp.org>
+
+	* configure.ac (VERSION): Set to 0.91-pre.
+	* NEWS: Add updates for 0.90 release.
+
+2006-03-06  Robert Schuster  <robertschuster@fsfe.org>
+
+	* javax/swing/text/PlainDocument.java: Fix copyright header,
+	added author tags.
+	(insertUpdate): Do not copy the whole document any more, added some
+	more variables to prevent needless method calls.
+
+2006-03-06  Christian Thalinger <twisti@complang.tuwien.ac.at>
+
+	* configure.ac: Check for FREETYPE2.  This is a reverted patch and
+	is required on Darwin.
+	* native/jni/gtk-peer/Makefile.am (AM_LDFLAGS): Added FREETYPE2.
+	(AM_CFLAGS): Likewise.
+
+2006-03-06  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/tree/FixedHeightLayoutCache.java: Reformatted and fixed
+	API doc tag warnings,
+	* javax/swing/tree/VariableHeightLayoutCache.java: Likewise.
+	
+2006-03-06  Dalibor Topic  <robilad@kaffe.org>
+
+	* gnu/java/net/protocol/file/Connection.java (unquote):
+	Update position in buffer after decoding a unicode character
+	outside of the basic plane.
+
+2006-03-06  Robert Schuster  <robertschuster@fsfe.org>
+
+	* javax/swing/plaf/basic/BasicTextUI.java:
+	(damageRange): Rewritten if-expressions to correctly identify the
+	break condition.
+
+2006-03-06  Robert Schuster  <robertschuster@fsfe.org>
+
+	* javax/swing/text/DefaultCaret.java:
+	(mouseDragged): Do selection when shift is pressed.
+	(mouseClicked): Implemented.
+
+2006-03-06  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/external/classpath/java/net/URI.java (quote):
+	Pass Unicode characters outside the basic plane through.
+
+2006-03-06  Robert Schuster  <robertschuster@fsfe.org>
+
+	* javax/swing/text/PlainDocument.java:
+	(insertUpdate): Extended if-expression, added
+	code to generate another Element when newly inserted characters
+	and old ones will be on the same line.
+
+2006-03-05  Robert Schuster  <robertschuster@fsfe.org>
+
+	* javax/swing/text/GapContent.java:
+	(insertString): Throw exception when argument is below
+	zero.
+
+2006-03-05  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/plaf/metal/MetalComboBoxButton.java
+	(MetalComboBoxButton(JComboBox, Icon, boolean, CellRendererPane, 
+	JList)): Fixed API doc tag,
+	* javax/swing/plaf/metal/MetalInternalFrameTitlePane
+	(createLayout): Fixed API doc warning.
+
+2006-03-05  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/DefaultFocusManager.java: Fixed bad API doc tags,
+	* javax/swing/FocusManager.java: Likewise.
+
+2006-03-05  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/undo/StateEditable.java
+	(restoreState): Fixed bad API doc tag,
+	* javax/swing/undo/UndoableEdit.java: Copied API doc comments from
+	AbstractUndoableEdit.java,
+	* javax/swing/undo/UndoableEditSupport.java
+	(createCompoundEdit): Fixed bad API doc tag,
+	* javax/swing/undo/UndoManager.java
+	(editToBeUndone): Fixed bad API doc tag,
+	(editToBeRedone): Likewise.
+
+2006-03-05  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/plaf/ComboBoxUI.java: Fixed typo in class description, 
+	and corrected a bad API doc tag.
+
+2006-03-05  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/colorchooser/ColorSelectionModel.java: Reformatted and
+	added API docs all over.
+
+2006-03-05  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/filechooser/FileFilter.java: 
+	(accept): Fixed API doc tag,
+	(getDescription): Likewise,
+	* javax/swing/filechooser/FileView.java:
+	(isTraversable): Fixed API doc tag.
+
+2006-03-05  Tom Tromey  <tromey@redhat.com>
+
+	* vm/reference/java/lang/reflect/Constructor.java (toString): Use
+	ClassHelper.getUserName.
+	* vm/reference/java/lang/reflect/Method.java (toString): Use
+	ClassHelper.getUserName.
+	(getUserTypeName): Removed.
+	* gnu/java/lang/ClassHelper.java (getUserName): New method.
+	* vm/reference/java/lang/reflect/Field.java (toString): Use
+	ClassHelper.getUserName.
+
+2006-03-05  Olivier Jolly  <olivier.jolly@pcedev.com>
+
+	Fixes PR 22813
+	* java/net/URLClassLoader.java (FileURLLoader.getResource):	
+	Allows directories as valid resources.
+
 2006-03-04  Mark Wielaard  <mark@klomp.org>
 
 	* configure.ac (VERSION): Set to 0.90-pre.

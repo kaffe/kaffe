@@ -48,12 +48,8 @@ import java.io.OutputStream;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.security.cert.Certificate;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.net.ssl.HandshakeCompletedEvent;
@@ -410,10 +406,7 @@ public class HTTPURLConnection
   }
 
   public String getRequestProperty(String key)
-  {
-    if (key == null)
-      return null;
-    
+  {    
     return requestHeaders.getValue(key);
   }
 

@@ -347,8 +347,12 @@ public class GapContent
     int length = length();
     int strLen = str.length();
 
+    if (where < 0)
+      throw new BadLocationException("The where argument cannot be smaller"
+                                     + " than the zero", where);
+
     if (where >= length)
-      throw new BadLocationException("the where argument cannot be greater"
+      throw new BadLocationException("The where argument cannot be greater"
           + " than the content length", where);
 
     replace(where, 0, str.toCharArray(), strLen);

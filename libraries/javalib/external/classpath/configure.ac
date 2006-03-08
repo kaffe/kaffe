@@ -6,7 +6,7 @@ dnl -----------------------------------------------------------
 dnl define([AC_CACHE_LOAD], )dnl
 dnl define([AC_CACHE_SAVE], )dnl
 
-AC_INIT([GNU Classpath],[0.90-pre],[classpath@gnu.org],[classpath])
+AC_INIT([GNU Classpath],[0.91-pre],[classpath@gnu.org],[classpath])
 AC_CONFIG_SRCDIR(java/lang/System.java)
 
 AC_CANONICAL_TARGET
@@ -377,12 +377,15 @@ if test "x${COMPILE_JNI}" = xyes; then
       PKG_CHECK_MODULES(CAIRO, cairo >= 0.5.0)
     fi
 
+    PKG_CHECK_MODULES(FREETYPE2, freetype2)
     PKG_CHECK_MODULES(PANGOFT2, pangoft2)
-  
+
     AC_SUBST(GTK_CFLAGS)
     AC_SUBST(GTK_LIBS)
     AC_SUBST(CAIRO_LIBS)
     AC_SUBST(CAIRO_CFLAGS)
+    AC_SUBST(FREETYPE2_LIBS)
+    AC_SUBST(FREETYPE2_CFLAGS)
     AC_SUBST(PANGOFT2_LIBS)
     AC_SUBST(PANGOFT2_CFLAGS)
   fi

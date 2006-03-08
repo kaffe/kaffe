@@ -40,6 +40,7 @@ exception statement from your version. */
 package gnu.java.rmi.server;
 
 import gnu.java.rmi.dgc.DGCImpl;
+import gnu.java.util.WeakIdentityHashMap;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -51,16 +52,25 @@ import java.rmi.RemoteException;
 import java.rmi.ServerError;
 import java.rmi.server.ObjID;
 import java.rmi.server.UID;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Map;
-import java.util.Hashtable;
-import java.util.IdentityHashMap;
+import java.util.WeakHashMap;
 
 public class UnicastServer
 	implements ProtocolConstants {
 
-static private Hashtable objects = new Hashtable();  //mapping OBJID to server ref
-static private Map refcache = Collections.synchronizedMap(new IdentityHashMap()); //mapping obj itself to server ref
+      /**
+       * Mapping OBJID to server ref by .equals().
+       */
+static private Map objects = Collections.synchronizedMap(new WeakHashMap());  
+
+/**
+ * Mapping obj itself to server ref by identity.
+ */
+static private Map refcache = Collections.synchronizedMap(new WeakIdentityHashMap()); 
 static private DGCImpl dgc;
 
 public static void exportObject(UnicastServerRef obj) {
@@ -81,6 +91,34 @@ public static boolean unexportObject(UnicastServerRef obj, boolean force) {
 public static UnicastServerRef getExportedRef(Remote remote){
     return (UnicastServerRef)refcache.get(remote);
 }
+
+  /**
+   * Get the server references to the object, previously exported via this
+   * server. As the identity map is scanned, more than one reference may match
+   * this Id.
+   * 
+   * @param id the id of the exported object
+   * @return the server reference to this object, null if none.
+   */
+  public static Collection getExported(Object id)
+  {
+    synchronized (objects)
+      {
+        ArrayList list = new ArrayList();
+        Iterator iter = objects.entrySet().iterator();
+        Map.Entry e;
+        Object key;
+        while (iter.hasNext())
+          {
+             e = (Map.Entry) iter.next();
+             key = e.getKey();
+             if (key!=null && key.equals(id))
+               list.add(e.getValue());
+          }
+        return list;
+      }
+  }
+
 
 private static synchronized void startDGC() {
 	if (dgc == null) {

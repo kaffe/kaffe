@@ -1023,7 +1023,11 @@ public abstract class BasicTextUI extends TextUI
             // we should stop searching for one.
             
             int posBelow = Utilities.getPositionBelow(t, p0, l1.x);
-            if (posBelow < p1 && posBelow != -1 && posBelow != p0)
+            int p1RowStart = Utilities.getRowStart(t, p1);
+            
+            if (posBelow != -1
+                && posBelow != p0
+                && Utilities.getRowStart(t, posBelow) != p1RowStart)
               {
                 // Take the rectangle of the offset we just found and grow it
                 // to the maximum width. Retain y because this is our start
@@ -1034,10 +1038,15 @@ public abstract class BasicTextUI extends TextUI
                 
                 // Find further lines which have to be damaged completely.
                 int nextPosBelow = posBelow;
-                while (nextPosBelow < p1 && nextPosBelow != -1 && posBelow != nextPosBelow)
+                while (nextPosBelow != -1
+                       && posBelow != nextPosBelow
+                       && Utilities.getRowStart(t, nextPosBelow) != p1RowStart)
                   {
                     posBelow = nextPosBelow;
                     nextPosBelow = Utilities.getPositionBelow(t, posBelow, l1.x);
+                    
+                    if (posBelow == nextPosBelow)
+                      break;
                   }
                 // Now posBelow is an offset on the last line which has to be damaged
                 // completely. (newPosBelow is on the same line as p1)

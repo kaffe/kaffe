@@ -207,6 +207,10 @@ public class Demo
     new PopUpAction("TextField",
 		    (new TextFieldDemo("TextField Demo")).createContent(),
 		    examples);
+    
+    new PopUpAction("TextArea",
+                    (new TextAreaDemo("TextArea Demo")).createContent(),
+                    examples);
 
     new PopUpAction("FileChooser",
                     (new FileChooserDemo("FileChooser Demo")).createContent(),
@@ -232,9 +236,34 @@ public class Demo
                     mkTable(),
                     examples);
 
+    final JMenuItem vmMenu;
+    
     help.add(new JMenuItem("just play with the widgets"));
     help.add(new JMenuItem("and enjoy the sensation of"));
     help.add(new JMenuItem("your neural connections growing"));
+    help.add(new JSeparator());
+    help.add(vmMenu = new JMenuItem("Really, which VM is this running on?"));
+    vmMenu.addActionListener(new ActionListener()
+      {
+        public void actionPerformed(ActionEvent ae)
+          {
+            String message = "This is "
+                             + System.getProperty("java.vm.name")
+                             + " Version "
+                             + System.getProperty("java.vm.version")
+                             + " distributed by "
+                             + System.getProperty("java.vm.vendor");
+                         
+            String gnuClasspath = System.getProperty("gnu.classpath.version");
+            if(gnuClasspath != null)
+              message += "\nThe runtime's libraries are "
+                         + "kindly provided by the "
+                         + "members of GNU Classpath and are in version "
+                         + gnuClasspath + ".";
+                         
+                         JOptionPane.showMessageDialog(vmMenu, message);
+            }
+      });
 
     bar.add(file);
     bar.add(edit);
@@ -702,7 +731,6 @@ public class Demo
     main.add(mkButtonBar());
     component.add(main, BorderLayout.CENTER);
     frame.pack();
-    frame.setSize(800, 600);
     frame.show();
   }
 
@@ -958,7 +986,7 @@ public class Demo
   
   private JPanel mkButtonBar()
   {    
-    JPanel panel = new JPanel(new FlowLayout());
+    JPanel panel = new JPanel(new GridLayout(3, 1, 5, 5));
     new PopUpAction("Buttons",
 		    (new ButtonDemo("Button Demo")).createContent(),
 		    panel);
@@ -1005,8 +1033,12 @@ public class Demo
 		    new SpinnerDemo("Spinner Demo").createContent(), panel);
 
     new PopUpAction("TextField",
-		    (new TextFieldDemo("TextField Demo")).createContent(),
-		    panel);
+                    (new TextFieldDemo("TextField Demo")).createContent(),
+                    panel);
+    
+    new PopUpAction("TextArea",
+                    (new TextAreaDemo("TextArea Demo")).createContent(),
+                    panel);
 
     new PopUpAction("FileChooser",
                     (new FileChooserDemo("FileChooser Demo")).createContent(),
