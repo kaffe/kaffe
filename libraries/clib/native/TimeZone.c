@@ -28,7 +28,7 @@
 struct Hjava_lang_String*
 java_util_VMTimeZone_getSystemTimeZoneId(void)
 {
-	        char *tempZoneName = NULL;
+	        const char *tempZoneName = NULL;
 #if defined(HAVE_TM_ZONE)
 	        struct tm *tempTimeStruct;
 	        time_t tempTimeArithm;
