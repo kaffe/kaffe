@@ -22,11 +22,12 @@
 #include "toolkit.h"
 
 #include "jni.h"
+#include <jcl.h>
 
 #define getFontName(spec,style) (spec)
 #define getDefaultFontName(style) (spec)
 
-void*
+jobject
 Java_java_awt_Toolkit_fntInitFont( JNIEnv* envP, jclass clazz, jstring jSpec, jint style, jint size )
 {
 	GR_FONT_ID fontid;
@@ -52,21 +53,22 @@ Java_java_awt_Toolkit_fntInitFont( JNIEnv* envP, jclass clazz, jstring jSpec, ji
 #else
 	fontid = GrCreateFont(GR_FONT_SYSTEM_VAR, 0, NULL);
 #endif	
-	return (void*)fontid;
+	return JCL_NewRawDataObject(envP, fontid);
 }
 
 void
 Java_java_awt_Toolkit_fntFreeFont ( JNIEnv* env, jclass clazz, jobject _jfont )
 {
-
+        GR_FONT_ID nanoFont = (GR_FONT_ID)JCL_GetRawData(env, _jfont);
+  
 	if ( _jfont == NULL) {
 		SignalError("java.lang.NullPointerException", "no font object");
 		return;
 	}
-	GrDestroyFont((GR_FONT_ID)_jfont);
+	GrDestroyFont(nanoFont);
 }
 
-void*
+jobject
 Java_java_awt_Toolkit_fntInitFontMetrics( JNIEnv* env, jclass clazz, jobject _jfont )
 {
 	return _jfont;
@@ -87,7 +89,7 @@ Java_java_awt_Toolkit_fntGetFixedWidth ( JNIEnv* env, jclass clazz, jobject _jfo
 		SignalError("java.lang.NullPointerException", "no font object");
 		return 0;
 	}
-	fontid = (GR_FONT_ID)_jfont;
+	fontid = (GR_FONT_ID)JCL_GetRawData(env, _jfont);
 	GrGetFontInfo(fontid,&fontinfo);
 
 	return fontinfo.maxwidth;
@@ -103,7 +105,7 @@ Java_java_awt_Toolkit_fntGetHeight( JNIEnv* env, jclass clazz, jobject _jfont )
 		SignalError("java.lang.NullPointerException", "no font object");
 		return 0;
 	}
-	fontid = (GR_FONT_ID)_jfont;
+	fontid = (GR_FONT_ID)JCL_GetRawData(env, _jfont);
 	GrGetFontInfo(fontid,&fontinfo);
 
 	return fontinfo.height;
@@ -119,7 +121,7 @@ Java_java_awt_Toolkit_fntGetAscent( JNIEnv* env, jclass clazz, jobject _jfont )
 		SignalError("java.lang.NullPointerException", "no font object");
 		return 0;
 	}
-	fontid = (GR_FONT_ID)_jfont;
+	fontid = (GR_FONT_ID)JCL_GetRawData(env, _jfont);
 	GrGetFontInfo(fontid,&fontinfo);
 
 	return fontinfo.baseline;
@@ -135,7 +137,7 @@ Java_java_awt_Toolkit_fntGetDescent( JNIEnv* env, jclass clazz, jobject _jfont )
 		SignalError("java.lang.NullPointerException", "no font object");
 		return 0;
 	}
-	fontid = (GR_FONT_ID)_jfont;
+	fontid = (GR_FONT_ID)JCL_GetRawData(env, _jfont);
 	GrGetFontInfo(fontid,&fontinfo);
 
 	return fontinfo.height - fontinfo.baseline;
@@ -151,7 +153,7 @@ Java_java_awt_Toolkit_fntGetMaxAscent( JNIEnv* env, jclass clazz, jobject _jfont
 		SignalError("java.lang.NullPointerException", "no font object");
 		return 0;
 	}
-	fontid = (GR_FONT_ID)_jfont;
+	fontid = (GR_FONT_ID)JCL_GetRawData (env, _jfont);
 	GrGetFontInfo(fontid,&fontinfo);
 
 	return fontinfo.baseline;
@@ -167,7 +169,7 @@ Java_java_awt_Toolkit_fntGetMaxDescent( JNIEnv* env, jclass clazz, jobject _jfon
 		SignalError("java.lang.NullPointerException", "no font object");
 		return 0;
 	}
-	fontid = (GR_FONT_ID)_jfont;
+	fontid = (GR_FONT_ID)JCL_GetRawData (env, _jfont);
 	GrGetFontInfo(fontid,&fontinfo);
 
 	return fontinfo.height - fontinfo.baseline;
@@ -203,7 +205,7 @@ Java_java_awt_Toolkit_fntIsWideFont( JNIEnv* env, jclass clazz, jobject _jfont )
 		SignalError("java.lang.NullPointerException", "no font object");
 		return 0;
 	}
-	fontid = (GR_FONT_ID)_jfont;
+	fontid = (GR_FONT_ID)JCL_GetRawData (env, _jfont);
 	GrGetFontInfo(fontid,&fontinfo);
 
 	return (fontinfo.lastchar < 256 )?JNI_FALSE:JNI_TRUE;
@@ -231,7 +233,7 @@ Java_java_awt_Toolkit_fntStringWidth( JNIEnv* env, jclass clazz, jobject _jfont,
 	}
 	len = (*env)->GetStringLength( env, _jstr);
 
-	fontid = (GR_FONT_ID)_jfont;
+	fontid = (GR_FONT_ID) JCL_GetRawData (env, _jfont);
 	GrGetFontInfo(fontid,&fontinfo);
 	w = 0;
 	for( i = 0 ; i < len ; i++ ) {
@@ -261,7 +263,7 @@ Java_java_awt_Toolkit_fntGetWidths(JNIEnv* envP, jclass clazz, jobject _jfont )
 		SignalError("java.lang.NullPointerException", "no font object");
 		return 0;
 	}
-	fontid = (GR_FONT_ID)_jfont;
+	fontid = (GR_FONT_ID)JCL_GetRawData (envP, _jfont);
 	GrGetFontInfo(fontid,&fontinfo);
 
 	widths = (*envP)->NewIntArray(envP, fontinfo.lastchar + 1);
@@ -310,7 +312,7 @@ jbyteArray _jbytes, jint off, jint len)
 		SignalError("java.lang.NullPointerException", "no byte array ");
 		return 0;
 	}
-	fontid = (GR_FONT_ID)_jfont;
+	fontid = (GR_FONT_ID)JCL_GetRawData (envP, _jfont);
 	GrGetFontInfo(fontid,&fontinfo);
 
 	n = (*envP)->GetArrayLength(envP, _jbytes);
@@ -348,7 +350,7 @@ Java_java_awt_Toolkit_fntCharWidth( JNIEnv* envP, jclass clazz, jobject _jfont, 
 		SignalError("java.lang.NullPointerException", "no font object");
 		return 0;
 	}
-	fontid = (GR_FONT_ID)_jfont;
+	fontid = (GR_FONT_ID)JCL_GetRawData (envP, _jfont);
 	GrGetFontInfo(fontid,&fontinfo);
 
 	if ( fontinfo.lastchar < jChar ) {
@@ -377,7 +379,7 @@ Java_java_awt_Toolkit_fntCharsWidth ( JNIEnv* envP, jclass clazz, jobject _jfont
 		SignalError("java.lang.NullPointerException", "no char array object");
 		return 0;
 	}
-	fontid = (GR_FONT_ID)_jfont;
+	fontid = (GR_FONT_ID) JCL_GetRawData (envP, _jfont);
 	GrGetFontInfo(fontid,&fontinfo);
 	
 	n = (*envP)->GetArrayLength( envP, _jchars);

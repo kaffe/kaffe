@@ -22,6 +22,7 @@
 #include "toolkit.h"
 
 #include "jni.h"
+#include <jcl.h>
 
 jobject
 Java_java_awt_Toolkit_graInitGraphics(
@@ -40,19 +41,23 @@ Java_java_awt_Toolkit_graInitGraphics(
 		SignalError("java.lang.NullPointerException", "no object");
 		return NULL;
 	}
-	graphicsP = tlk_get_graphics((TLK_GRAPHICS_ID)_jgraphics);
+	if (_jgraphics != NULL)
+	  graphicsP = tlk_get_graphics((TLK_GRAPHICS_ID)JCL_GetRawData (env, _jgraphics));
+	else
+	  graphicsP = NULL;
+
 	if ( _jtarget ) {
 		switch ( targetType ) {
 		case TLK_TARGET_TYPE_WINDOW:
-			target = (GR_ID)_jtarget; 
+			target = (GR_ID)JCL_GetRawData (env, _jtarget); 
 			break;
 		case TLK_TARGET_TYPE_IMAGE:
-			target = (GR_ID)_jtarget; 
+			target = (GR_ID)JCL_GetRawData (env, _jtarget); 
 			break;
 		case TLK_TARGET_TYPE_GRAPHICS:
 		{
 			TLKGraphics *indgP;
-			indgP = tlk_get_graphics((TLK_GRAPHICS_ID)_jtarget);
+			indgP = tlk_get_graphics((TLK_GRAPHICS_ID)JCL_GetRawData (env, _jtarget));
 			if ( indgP == NULL ) {
 				SignalError("java.lang.InternalError", "illegal TLK_GRAPHICS_ID");
 				return NULL;
@@ -81,7 +86,7 @@ Java_java_awt_Toolkit_graInitGraphics(
 		graphicsP->magicNo = TLK_GRAPHICS_MAGIC_NO;
 	}
 
-	GrSetGCFont(graphicsP->gc,(GR_FONT_ID)_jfont);
+	GrSetGCFont(graphicsP->gc,(GR_FONT_ID)JCL_GetRawData(env, _jfont));
 
 	graphicsP->off_x = off_x;
 	graphicsP->off_y = off_y;
@@ -95,7 +100,7 @@ Java_java_awt_Toolkit_graInitGraphics(
 		GrClearWindow(graphicsP->gc, 0);
 	}
 
-	return graphicsP;
+	return JCL_NewRawDataObject (env, graphicsP);
 }
 
 void
@@ -103,7 +108,7 @@ Java_java_awt_Toolkit_graFreeGraphics ( JNIEnv* env, jclass clazz, jobject _jgra
 {
 	TLKGraphics *gp;
 	
-	gp = tlk_get_graphics((TLK_GRAPHICS_ID)_jgraphics);
+	gp = tlk_get_graphics((TLK_GRAPHICS_ID)JCL_GetRawData (env, _jgraphics));
 	if ( gp == NULL ) {
 		SignalError("java.lang.InternalError", "illegal TLK_GRAPHICS_ID");
 	}
@@ -121,7 +126,7 @@ Java_java_awt_Toolkit_graSetClip( JNIEnv* env, jclass clazz, jobject _jgraphics,
 	TLKGraphics *gp;
 	GR_RECT		clip_rect;
 	
-	gp = tlk_get_graphics((TLK_GRAPHICS_ID)_jgraphics);
+	gp = tlk_get_graphics((TLK_GRAPHICS_ID)JCL_GetRawData (env, _jgraphics));
 	if ( gp == NULL ) {
 		SignalError("java.lang.InternalError", "illegal TLK_GRAPHICS_ID");
 		return;
@@ -149,7 +154,7 @@ Java_java_awt_Toolkit_graSetVisible( JNIEnv* env, jclass clazz, jobject _jgraphi
 {
 	TLKGraphics *gp;
 	
-	gp = tlk_get_graphics((TLK_GRAPHICS_ID)_jgraphics);
+	gp = tlk_get_graphics((TLK_GRAPHICS_ID)JCL_GetRawData (env, _jgraphics));
 	if ( gp == NULL ) {
 		SignalError("java.lang.InternalError", "illegal TLK_GRAPHICS_ID");
 	}
@@ -171,7 +176,7 @@ Java_java_awt_Toolkit_graClearRect( JNIEnv* env, jclass clazz, jobject _jgraphic
 {
 	TLKGraphics *gp;
 	
-	gp = tlk_get_graphics((TLK_GRAPHICS_ID)_jgraphics);
+	gp = tlk_get_graphics((TLK_GRAPHICS_ID)JCL_GetRawData (env, _jgraphics));
 	if ( gp == NULL ) {
 		SignalError("java.lang.InternalError", "illegal TLK_GRAPHICS_ID");
 	}
@@ -219,7 +224,7 @@ Java_java_awt_Toolkit_graDraw3DRect(JNIEnv *env, jclass clazz, jobject _jgraphic
 {
 	TLKGraphics *gp;
 	
-	gp = tlk_get_graphics((TLK_GRAPHICS_ID)_jgraphics);
+	gp = tlk_get_graphics((TLK_GRAPHICS_ID)JCL_GetRawData (env, _jgraphics));
 	if ( gp == NULL ) {
 		SignalError("java.lang.InternalError", "illegal TLK_GRAPHICS_ID");
 	}
@@ -232,7 +237,7 @@ Java_java_awt_Toolkit_graFill3DRect ( JNIEnv* env, jclass clazz, jobject _jgraph
 {
 	TLKGraphics *gp;
 	
-	gp = tlk_get_graphics((TLK_GRAPHICS_ID)_jgraphics);
+	gp = tlk_get_graphics((TLK_GRAPHICS_ID)JCL_GetRawData (env, _jgraphics));
 	if ( gp == NULL ) {
 		SignalError("java.lang.InternalError", "illegal TLK_GRAPHICS_ID");
 	}
@@ -245,7 +250,7 @@ Java_java_awt_Toolkit_graDrawRect(JNIEnv* env, jclass clazz, jobject _jgraphics 
 {
 	TLKGraphics *gp;
 	
-	gp = tlk_get_graphics((TLK_GRAPHICS_ID)_jgraphics);
+	gp = tlk_get_graphics((TLK_GRAPHICS_ID)JCL_GetRawData (env, _jgraphics));
 	if ( gp == NULL ) {
 		SignalError("java.lang.InternalError", "illegal TLK_GRAPHICS_ID");
 		return;
@@ -262,7 +267,7 @@ Java_java_awt_Toolkit_graFillRect( JNIEnv* env, jclass clazz, jobject _jgraphics
 {
 	TLKGraphics *gp;
 	
-	gp = tlk_get_graphics((TLK_GRAPHICS_ID)_jgraphics);
+	gp = tlk_get_graphics((TLK_GRAPHICS_ID)JCL_GetRawData (env, _jgraphics));
 	if ( gp == NULL ) {
 		SignalError("java.lang.InternalError", "illegal TLK_GRAPHICS_ID");
 		return;
@@ -294,7 +299,7 @@ Java_java_awt_Toolkit_graDrawBytes(JNIEnv *envP, jclass k, jobject _jgraphics, j
 		SignalError("java.lang.NullPointerException", "byte array is null");
 		return;
 	}
-	gp = tlk_get_graphics((TLK_GRAPHICS_ID)_jgraphics);
+	gp = tlk_get_graphics((TLK_GRAPHICS_ID)JCL_GetRawData (envP, _jgraphics));
 	if ( gp == NULL ) {
 		SignalError("java.lang.InternalError", "illegal TLK_GRAPHICS_ID");
 		return;
@@ -328,7 +333,7 @@ Java_java_awt_Toolkit_graDrawChars(JNIEnv *envP, jclass k, jobject _jgraphics, j
 		SignalError("java.lang.NullPointerException", "char array is null");
 		return;
 	}
-	gp = tlk_get_graphics((TLK_GRAPHICS_ID)_jgraphics);
+	gp = tlk_get_graphics((TLK_GRAPHICS_ID)JCL_GetRawData (envP, _jgraphics));
 	if ( gp == NULL ) {
 		SignalError("java.lang.InternalError", "illegal TLK_GRAPHICS_ID");
 		return;
@@ -362,7 +367,7 @@ Java_java_awt_Toolkit_graDrawString(JNIEnv *envP, jclass k, jobject _jgraphics, 
 		SignalError("java.lang.NullPointerException", "char array is null");
 		return;
 	}
-	gp = tlk_get_graphics((TLK_GRAPHICS_ID)_jgraphics);
+	gp = tlk_get_graphics((TLK_GRAPHICS_ID)JCL_GetRawData (envP, _jgraphics));
 	if ( gp == NULL ) {
 		SignalError("java.lang.InternalError", "illegal TLK_GRAPHICS_ID");
 		return;
@@ -388,7 +393,7 @@ Java_java_awt_Toolkit_graCopyArea(JNIEnv* envP, jclass clazz, jobject _jgraphics
 	if ((width < 0) || (height < 0)) {
 		return;
 	}
-	gp = tlk_get_graphics((TLK_GRAPHICS_ID)_jgraphics);
+	gp = tlk_get_graphics((TLK_GRAPHICS_ID)JCL_GetRawData (envP, _jgraphics));
 	if ( gp == NULL ) {
 		SignalError("java.lang.InternalError", "illegal TLK_GRAPHICS_ID");
 	}
@@ -405,7 +410,7 @@ Java_java_awt_Toolkit_graDrawLine( JNIEnv* env, jclass clazz, jobject _jgraphics
 {
 	TLKGraphics *gp;
 	
-	gp = tlk_get_graphics((TLK_GRAPHICS_ID)_jgraphics);
+	gp = tlk_get_graphics((TLK_GRAPHICS_ID)JCL_GetRawData (env, _jgraphics));
 	if ( gp == NULL ) {
 		SignalError("java.lang.InternalError", "illegal TLK_GRAPHICS_ID");
 	}
@@ -423,7 +428,7 @@ Java_java_awt_Toolkit_graDrawArc( JNIEnv* env, jclass clazz, jobject _jgraphics,
 {
 	TLKGraphics *gp;
 	
-	gp = tlk_get_graphics((TLK_GRAPHICS_ID)_jgraphics);
+	gp = tlk_get_graphics((TLK_GRAPHICS_ID)JCL_GetRawData (env, _jgraphics));
 	if ( gp == NULL ) {
 		SignalError("java.lang.InternalError", "illegal TLK_GRAPHICS_ID");
 		return;
@@ -438,7 +443,7 @@ Java_java_awt_Toolkit_graFillArc( JNIEnv* env, jclass clazz, jobject _jgraphics,
 {
 	TLKGraphics *gp;
 	
-	gp = tlk_get_graphics((TLK_GRAPHICS_ID)_jgraphics);
+	gp = tlk_get_graphics((TLK_GRAPHICS_ID)JCL_GetRawData (env, _jgraphics));
 	if ( gp == NULL ) {
 		SignalError("java.lang.InternalError", "illegal TLK_GRAPHICS_ID");
 		return;
@@ -453,7 +458,7 @@ Java_java_awt_Toolkit_graDrawOval( JNIEnv* env, jclass clazz, jobject _jgraphics
 {
 	TLKGraphics *gp;
 	
-	gp = tlk_get_graphics((TLK_GRAPHICS_ID)_jgraphics);
+	gp = tlk_get_graphics((TLK_GRAPHICS_ID)JCL_GetRawData (env, _jgraphics));
 	if ( gp == NULL ) {
 		SignalError("java.lang.InternalError", "illegal TLK_GRAPHICS_ID");
 		return;
@@ -468,7 +473,7 @@ Java_java_awt_Toolkit_graFillOval( JNIEnv* env, jclass clazz, jobject _jgraphics
 {
 	TLKGraphics *gp;
 	
-	gp = tlk_get_graphics((TLK_GRAPHICS_ID)_jgraphics);
+	gp = tlk_get_graphics((TLK_GRAPHICS_ID)JCL_GetRawData (env, _jgraphics));
 	if ( gp == NULL ) {
 		SignalError("java.lang.InternalError", "illegal TLK_GRAPHICS_ID");
 		return;
@@ -517,7 +522,7 @@ Java_java_awt_Toolkit_graDrawPolygon(JNIEnv* envP, jclass clazz, jobject _jgraph
 	jboolean isCopy, needConnect;
 	GR_POINT *xyp;
 	
-	gp = tlk_get_graphics((TLK_GRAPHICS_ID)_jgraphics);
+	gp = tlk_get_graphics((TLK_GRAPHICS_ID)JCL_GetRawData (envP, _jgraphics));
 	if ( gp == NULL ) {
 		SignalError("java.lang.InternalError", "illegal TLK_GRAPHICS_ID");
 		return;
@@ -574,7 +579,7 @@ Java_java_awt_Toolkit_graDrawPolyline(JNIEnv* envP, jclass clazz, jobject _jgrap
 	jboolean isCopy;
 	GR_POINT *xyp;
 	
-	gp = tlk_get_graphics((TLK_GRAPHICS_ID)_jgraphics);
+	gp = tlk_get_graphics((TLK_GRAPHICS_ID)JCL_GetRawData (envP, _jgraphics));
 	if ( gp == NULL ) {
 		SignalError("java.lang.InternalError", "illegal TLK_GRAPHICS_ID");
 		return;
@@ -625,7 +630,7 @@ Java_java_awt_Toolkit_graFillPolyline(JNIEnv* envP, jclass clazz, jobject _jgrap
 	jboolean isCopy;
 	GR_POINT *xyp;
 	
-	gp = tlk_get_graphics((TLK_GRAPHICS_ID)_jgraphics);
+	gp = tlk_get_graphics((TLK_GRAPHICS_ID)JCL_GetRawData (envP, _jgraphics));
 	if ( gp == NULL ) {
 		SignalError("java.lang.InternalError", "illegal TLK_GRAPHICS_ID");
 		return;
@@ -674,7 +679,7 @@ Java_java_awt_Toolkit_graDrawRoundRect(JNIEnv* env, jclass clazz, jobject _jgrap
 	TLKGraphics *gp;
 	int x1, x2, y1, y2, a, b;
 	
-	gp = tlk_get_graphics((TLK_GRAPHICS_ID)_jgraphics);
+	gp = tlk_get_graphics((TLK_GRAPHICS_ID)JCL_GetRawData (env, _jgraphics));
 	if ( gp == NULL ) {
 		SignalError("java.lang.InternalError", "illegal TLK_GRAPHICS_ID");
 	}
@@ -715,7 +720,7 @@ Java_java_awt_Toolkit_graFillRoundRect(JNIEnv* env, jclass clazz, jobject _jgrap
 	TLKGraphics *gp;
 	int x1, x2, y1, y2, a, b;
 	
-	gp = tlk_get_graphics((TLK_GRAPHICS_ID)_jgraphics);
+	gp = tlk_get_graphics((TLK_GRAPHICS_ID)JCL_GetRawData (env, _jgraphics));
 	if ( gp == NULL ) {
 		SignalError("java.lang.InternalError", "illegal TLK_GRAPHICS_ID");
 	}
@@ -757,7 +762,7 @@ Java_java_awt_Toolkit_graAddClip ( JNIEnv* env, jclass clazz, jobject _jgraphics
 	/* not implemented yet */
 	TLKGraphics *gp;
 	
-	gp = tlk_get_graphics((TLK_GRAPHICS_ID)_jgraphics);
+	gp = tlk_get_graphics((TLK_GRAPHICS_ID)JCL_GetRawData (env, _jgraphics));
 	if ( gp == NULL ) {
 		SignalError("java.lang.InternalError", "illegal TLK_GRAPHICS_ID");
 	}
@@ -768,7 +773,7 @@ Java_java_awt_Toolkit_graSetPaintMode ( JNIEnv* env, jclass clazz, jobject _jgra
 {
 	TLKGraphics *gp;
 	
-	gp = tlk_get_graphics((TLK_GRAPHICS_ID)_jgraphics);
+	gp = tlk_get_graphics((TLK_GRAPHICS_ID)JCL_GetRawData (env, _jgraphics));
 	if ( gp == NULL ) {
 		SignalError("java.lang.InternalError", "illegal TLK_GRAPHICS_ID");
 	}
@@ -783,7 +788,7 @@ Java_java_awt_Toolkit_graSetXORMode( JNIEnv* env, jclass clazz, jobject _jgraphi
 {
 	TLKGraphics *gp;
 	
-	gp = tlk_get_graphics((TLK_GRAPHICS_ID)_jgraphics);
+	gp = tlk_get_graphics((TLK_GRAPHICS_ID)JCL_GetRawData (env, _jgraphics));
 	if ( gp == NULL ) {
 		SignalError("java.lang.InternalError", "illegal TLK_GRAPHICS_ID");
 	}
@@ -800,7 +805,7 @@ Java_java_awt_Toolkit_graSetColor( JNIEnv* env, jclass clazz, jobject _jgraphics
 	TLKGraphics *gp;
 	jint set_color;
 	
-	gp = tlk_get_graphics((TLK_GRAPHICS_ID)_jgraphics);
+	gp = tlk_get_graphics((TLK_GRAPHICS_ID)JCL_GetRawData (env, _jgraphics));
 	if ( gp == NULL ) {
 		SignalError("java.lang.InternalError", "illegal TLK_GRAPHICS_ID");
 		return;
@@ -822,7 +827,7 @@ Java_java_awt_Toolkit_graSetBackColor ( JNIEnv* env, jclass clazz, jobject _jgra
 {
 	TLKGraphics *gp;
 	
-	gp = tlk_get_graphics((TLK_GRAPHICS_ID)_jgraphics);
+	gp = tlk_get_graphics((TLK_GRAPHICS_ID)JCL_GetRawData (env, _jgraphics));
 	if ( gp == NULL ) {
 		SignalError("java.lang.InternalError", "illegal TLK_GRAPHICS_ID");
 		return;
@@ -841,13 +846,13 @@ Java_java_awt_Toolkit_graSetFont(JNIEnv* env, jclass clazz, jobject _jgraphics, 
 		SignalError("java.lang.NullPointerException", "no font object");
 		return;
 	}
-	gp = tlk_get_graphics((TLK_GRAPHICS_ID)_jgraphics);
+	gp = tlk_get_graphics((TLK_GRAPHICS_ID)JCL_GetRawData (env, _jgraphics));
 	if ( gp == NULL ) {
 		SignalError("java.lang.InternalError", "illegal TLK_GRAPHICS_ID");
 		return;
 	}
 
-	GrSetGCFont(gp->gc, (GR_FONT_ID)_jfont);
+	GrSetGCFont(gp->gc, (GR_FONT_ID)JCL_GetRawData (env, _jfont));
 }
 
 void
@@ -855,7 +860,7 @@ Java_java_awt_Toolkit_graSetOffset ( JNIEnv* env, jclass clazz, jobject _jgraphi
 {
 	TLKGraphics *gp;
 	
-	gp = tlk_get_graphics((TLK_GRAPHICS_ID)_jgraphics);
+	gp = tlk_get_graphics((TLK_GRAPHICS_ID)JCL_GetRawData (env, _jgraphics));
 	if ( gp == NULL ) {
 		SignalError("java.lang.InternalError", "illegal TLK_GRAPHICS_ID");
 		return;
@@ -875,12 +880,12 @@ Java_java_awt_Toolkit_graDrawImage(JNIEnv* env, jclass clazz, jobject _jgraphics
 		return;
 	}
 	
-	gp = tlk_get_graphics((TLK_GRAPHICS_ID)_jgraphics);
+	gp = tlk_get_graphics((TLK_GRAPHICS_ID)JCL_GetRawData (env, _jgraphics));
 	if ( gp == NULL ) {
 		SignalError("java.lang.InternalError", "illegal TLK_GRAPHICS_ID");
 		return;
 	}
-	image = (GR_WINDOW_ID)_jimage;
+	image = (GR_WINDOW_ID)JCL_GetRawData (env, _jimage);
 
 	GrSetGCForeground(gp->gc, native_bg_color);
 	GrFillRect(gp->target, gp->gc, gp->off_x + grX , gp->off_y + grY, width, height);
@@ -910,7 +915,7 @@ jint native_bg_color )
 		return;
 	}
 	
-	gp = tlk_get_graphics((TLK_GRAPHICS_ID)_jgraphics);
+	gp = tlk_get_graphics((TLK_GRAPHICS_ID)JCL_GetRawData (env, _jgraphics));
 	if ( gp == NULL ) {
 		SignalError("java.lang.InternalError", "illegal TLK_GRAPHICS_ID");
 		return;

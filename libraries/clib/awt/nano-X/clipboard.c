@@ -22,6 +22,7 @@
 #include "toolkit.h"
 
 #include "jni.h"
+#include <jcl.h>
 #include <ctype.h>
 
 static jclass     NativeClipboard;
@@ -46,7 +47,7 @@ Java_java_awt_Toolkit_cbdInitClipboard(JNIEnv* envP, jclass clazz )
 	lostOwnership   = (*envP)->GetStaticMethodID( envP, NativeClipboard, "lostOwnership", "()V");
 	createTransferable = (*envP)->GetStaticMethodID( envP, NativeClipboard, "createTransferable", "(Ljava/lang/String;[B)Ljava/awt/datatransfer/Transferable;");
 
-	return (jobject)wid;
+	return JCL_NewRawDataObject (envP, wid);
 }
 
 void
@@ -58,7 +59,7 @@ Java_java_awt_Toolkit_cbdFreeClipboard( JNIEnv* env, jclass clazz, jobject _jwin
 		SignalError("java.lang.NullPointerException", "no window object");
 		return;
 	}
-	wid = (GR_WINDOW_ID)_jwindow;
+	wid = (GR_WINDOW_ID)JCL_GetRawData (env, _jwindow);
 	GrDestroyWindow(wid);
 }
 
@@ -72,7 +73,7 @@ Java_java_awt_Toolkit_cbdSetOwner( JNIEnv* env, jclass clazz, jobject _jwindow)
 		SignalError("java.lang.NullPointerException", "no window object");
 		return JNI_FALSE;
 	}
-	wid = (GR_WINDOW_ID)_jwindow;
+	wid = (GR_WINDOW_ID)JCL_GetRawData (env, _jwindow);
 
 	GrSetSelectionOwner(wid, MIME0 " " MIME1);
 	
@@ -202,7 +203,7 @@ Java_java_awt_Toolkit_cbdGetContents(JNIEnv* envP, jclass clazz, jobject _jwindo
 		SignalError("java.lang.NullPointerException", "no window object");
 		return NULL;
 	}
-	wid = (GR_WINDOW_ID)_jwindow;
+	wid = (GR_WINDOW_ID)JCL_GetRawData (envP, _jwindow);
 
 	owid = GrGetSelectionOwner(&typelist);
 	if (( owid == NULL ) || ( typelist == NULL )) {

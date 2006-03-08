@@ -30,7 +30,7 @@ Java_java_awt_Toolkit_imgCreateImage(JNIEnv* env, jclass clazz, jint width, jint
 
 	image = GrNewPixmap( width, height, 0);
 
-	return (jobject)image;
+	return (jobject)JCL_NewRawDataObject (env, image);
 }
 
 jobject
@@ -40,7 +40,7 @@ Java_java_awt_Toolkit_imgCreateScreenImage(JNIEnv* env, jclass clazz, jint width
 
 	image = GrNewPixmap( width, height, 0);
 
-	return (jobject)image;
+	return (jobject)JCL_NewRawDataObject (env, image);
 }
 
 void
@@ -69,7 +69,7 @@ Java_java_awt_Toolkit_imgSetRGBPels(JNIEnv* envP, jclass clazz, jobject _jimage,
 	}
 
 	gc = GrNewGC();
-	image = (GR_WINDOW_ID)_jimage;
+	image = (GR_WINDOW_ID)JCL_GetRawData (envP, _jimage);
 	i0 = y * scan + off;
 	for ( yi = y; yi < (y + h); yi++, i0 +=scan) {
 		i = i0;
@@ -98,7 +98,7 @@ Java_java_awt_Toolkit_imgFreeImage(JNIEnv* envP, jclass clazz, jobject _jimage)
 		SignalError("java.lang.NullPointerException", "no object");
 		return;
 	}
-	image = (GR_WINDOW_ID)_jimage;
+	image = (GR_WINDOW_ID)JCL_GetRawData (envP, _jimage);
 
 	GrDestroyWindow(image);
 }
@@ -186,7 +186,7 @@ Java_java_awt_Toolkit_imgCreateFromFile(JNIEnv* envP, jclass clazz, jstring _jfi
 	GrDestroyGC(gc);
 	GrFreeImage(native_image);
 
-	return (jobject)image;
+	return (jobject)JLC_GetRawData (envP, image);
 }
 
 jobject
@@ -211,7 +211,7 @@ Java_java_awt_Toolkit_imgGetWidth( JNIEnv* env, jclass clazz, jobject _jimage)
 		SignalError("java.lang.NullPointerException", "no object");
 		return -1;
 	}
-	image = (GR_WINDOW_ID)_jimage;
+	image = (GR_WINDOW_ID)JCL_GetRawData (env, _jimage);
 
 	GrGetWindowInfo(image, &image_info);
 
@@ -228,7 +228,7 @@ Java_java_awt_Toolkit_imgGetHeight( JNIEnv* env, jclass clazz, jobject _jimage)
 		SignalError("java.lang.NullPointerException", "no object");
 		return -1;
 	}
-	image = (GR_WINDOW_ID)_jimage;
+	image = (GR_WINDOW_ID)JCL_GetRawData (env, _jimage);
 
 	GrGetWindowInfo(image, &image_info);
 
@@ -276,7 +276,7 @@ Java_java_awt_Toolkit_imgProduceImage(JNIEnv* envP, jclass clazz, jobject _produ
 		SignalError("java.lang.NullPointerException", "no object");
 		return;
 	}
-	image = (GR_WINDOW_ID)_jimage;
+	image = (GR_WINDOW_ID)JCL_GetRawData (envP, _jimage);
 
 	if ( modelClazz == NULL ) {
 		modelClazz = (*envP)->FindClass( envP, "kaffe/awt/JavaColorModel");

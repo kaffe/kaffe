@@ -48,7 +48,7 @@ Java_java_awt_Toolkit_evtRegisterSource( JNIEnv* env, jclass clazz, jobject wid 
 {
 	int i;
 
-	i = getSourceIndex((GR_WINDOW_ID)wid);
+	i = getSourceIndex((GR_WINDOW_ID)JCL_GetRawData (env, wid));
 	if ( i < 0 ) {
 		SignalError("java.lang.InternalError", "can't register source");
 		return -1;
@@ -63,7 +63,7 @@ Java_java_awt_Toolkit_evtUnregisterSource ( JNIEnv* env, jclass clazz, jobject _
 {
 	int index;
 
-	index = getSourceIndex((GR_WINDOW_ID)_jwindow);
+	index = getSourceIndex((GR_WINDOW_ID)JCL_GetRawData (env, _jwindow));
 
 	if ( index >= 0 ) {
 		nanoX.windowsP[index].wid = 0;

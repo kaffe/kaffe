@@ -67,14 +67,14 @@ Java_java_awt_Toolkit_wndCreateFrame(
 
 	TLK_GrSetReizable(wid, isResizable, x, y, width, height);
 	//printf("create 0x%x %d %d %d %d\n",wid,x,y,width,height);
-	return (jobject)wid;
+	return JCL_NewRawDataObject (env, wid);
 }
 
 void
 Java_java_awt_Toolkit_wndSetResizable( JNIEnv* env, jclass clazz, jobject _jwindow, jboolean isResizable, int x, int y, int width, int height )
 {
 	// NIY
-	TLK_GrSetReizable(wid, isResizable, x, y, width, height);
+	TLK_GrSetReizable(JCL_GetRawData(env, wid), isResizable, x, y, width, height);
 }
 
 void
@@ -83,7 +83,7 @@ Java_java_awt_Toolkit_wndSetBounds( JNIEnv* envP, jclass clazz, jobject _jwindow
 	GR_WINDOW_ID wid;
 	int index;
 
-	wid = (GR_WINDOW_ID)_jwindow;
+	wid = (GR_WINDOW_ID)JCL_GetRawData (envP, _jwindow);
 	index = getSourceIndex(wid);
 	if ( index < 0 ) {
 		SignalError("java.lang.InternalError", "illegal window id");
@@ -108,7 +108,7 @@ Java_java_awt_Toolkit_wndSetVisible( JNIEnv* env, jclass clazz, jobject _jwindow
 	GR_WINDOW_ID wid;
 
 	index = getSourceIndex((GR_WINDOW_ID)_jwindow);
-	wid = (GR_WINDOW_ID)_jwindow;
+	wid = (GR_WINDOW_ID)JCL_GetRawData (env, _jwindow);
 	if (( index < 0 ) || (nanoX.windowsP[index].flags & TLK_SOURCE_DESTROYED)) {
 #ifdef DEBUG
 		SignalError("java.lang.InternalError", "now, debug!!");
@@ -139,7 +139,7 @@ Java_java_awt_Toolkit_wndSetTitle( JNIEnv* envP, jclass clazz, jobject _jwindow,
 		SignalError("java.lang.NullPointerException", "no string object");
 		return;
 	}
-	index = getSourceIndex((GR_WINDOW_ID)_jwindow);
+	index = getSourceIndex((GR_WINDOW_ID)JCL_GetRawData (envP, _jwindow));
 	if ( index < 0 ) {
 		SignalError("java.lang.InternalError", "illegal window id");
 	}
@@ -156,11 +156,12 @@ jobject
 Java_java_awt_Toolkit_wndCreateWindow(JNIEnv* envP, jclass clazz, jobject _jowner_wid, jint x, jint y, jint width, jint height, jint jCursor, jint nativeBgColor )
 {
 	GR_WINDOW_ID wid, owner;
-	if ( getSourceIndex((GR_WINDOW_ID)_jowner_wid) < 0 ) {
+	
+	owner = (GR_WINDOW_ID)JCL_GetRawData (envP, _jowner_wid);
+	if ( getSourceIndex(owner) < 0 ) {
 		SignalError("java.lang.InternalError", "illegal owner window id");
 		return 0;
 	}
-	owner = (GR_WINDOW_ID)_jowner_wid;
 
 	wid = GrNewWindow(owner, x, y,
 			width, height, 0, 
@@ -172,18 +173,19 @@ Java_java_awt_Toolkit_wndCreateWindow(JNIEnv* envP, jclass clazz, jobject _jowne
 	}
 	TLK_GrSetReizable(wid, JNI_TRUE, x, y, width, height) 
 
-	return (jobject)wid;
+	return JCL_NewRawDataObject (envP, wid);
 }
 
 jobject
 Java_java_awt_Toolkit_wndCreateDialog(JNIEnv* envP, jclass clazz, jobject _jowner_wid, jint x, jint y, jint width, jint height, jint jCursor, jint nativeBgColor, jboolean isReisizable )
 {
 	GR_WINDOW_ID wid, owner;
-	if ( getSourceIndex((GR_WINDOW_ID)_jowner_wid) < 0 ) {
+
+	owner = (GR_WINDOW_ID)JCL_GetRawData (envP, _jowner_wid);
+	if ( getSourceIndex(owner) < 0 ) {
 		SignalError("java.lang.InternalError", "illegal owner window id");
 		return 0;
 	}
-	owner = (GR_WINDOW_ID)_jowner_wid;
 
 	wid = GrNewWindow(owner, x, y,
 			width, height, 0, 
@@ -195,7 +197,7 @@ Java_java_awt_Toolkit_wndCreateDialog(JNIEnv* envP, jclass clazz, jobject _jowne
 	}
 	TLK_GrSetReizable(wid, isResizable, x, y, width, height) 
 
-	return (jobject)wid;
+	return JCL_NewRawDataObject (envP, wid);
 }
 
 void
@@ -204,7 +206,7 @@ Java_java_awt_Toolkit_wndDestroyWindow( JNIEnv* envP, jclass clazz, jobject _jwi
 	GR_WINDOW_ID wid;
 	int index;
 
-	wid = (GR_WINDOW_ID)_jwindow;
+	wid = (GR_WINDOW_ID)JCL_GetRawData (envP, _jwindow);
 	index = getSourceIndex(wid);
 	if ( index < 0 ) {
 		SignalError("java.lang.InternalError", "illegal window id");
@@ -227,7 +229,7 @@ Java_java_awt_Toolkit_wndRequestFocus(JNIEnv* env, jclass clazz, jobject _jwindo
 	GR_WINDOW_ID wid;
 	int index;
 
-	wid = (GR_WINDOW_ID)_jwindow;
+	wid = (GR_WINDOW_ID)JCL_GetRawData (env, _jwindow);
 	index = getSourceIndex(wid);
 	if ( index < 0 ) {
 		SignalError("java.lang.InternalError", "illegal window id");
@@ -253,7 +255,7 @@ Java_java_awt_Toolkit_wndRepaint(JNIEnv* envP, jclass clazz, jobject _jwindow, j
 	GR_WINDOW_ID wid;
 	int index;
 
-	wid = (GR_WINDOW_ID)_jwindow;
+	wid = (GR_WINDOW_ID)JCL_GetRawData (envP, _jwindow);
 	index = getSourceIndex(wid);
 	if ( index < 0 ) {
 		SignalError("java.lang.InternalError", "illegal window id");
@@ -274,7 +276,7 @@ Java_java_awt_Toolkit_wndToBack(JNIEnv* env, jclass clazz, jobject _jwindow)
 	GR_WINDOW_ID wid;
 	int index;
 
-	wid = (GR_WINDOW_ID)_jwindow;
+	wid = (GR_WINDOW_ID)JCL_GetRawData (env, _jwindow);
 	index = getSourceIndex(wid);
 	if ( index < 0 ) {
 		SignalError("java.lang.InternalError", "illegal window id");
@@ -290,7 +292,7 @@ Java_java_awt_Toolkit_wndToFront(JNIEnv* env, jclass clazz, jobject _jwindow)
 	GR_WINDOW_ID wid;
 	int index;
 
-	wid = (GR_WINDOW_ID)_jwindow;
+	wid = (GR_WINDOW_ID)JCL_GetRawData (env, _jwindow);
 	index = getSourceIndex(wid);
 	if ( index < 0 ) {
 		SignalError("java.lang.InternalError", "illegal window id");

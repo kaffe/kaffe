@@ -1,3 +1,18 @@
+2006-03-08  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	Fix bug #23
+	
+	* libraries/clib/awt/nano-X/Makefile.in: Regenerated.
+	
+	* libraries/clib/awt/nano-X/Makefile.am,
+	libraries/clib/awt/nano-X/clipboard.c,
+	libraries/clib/awt/nano-X/event.c,
+	libraries/clib/awt/nano-X/font.c,
+	libraries/clib/awt/nano-X/graphics.c,
+	libraries/clib/awt/nano-X/image.c,
+	libraries/clib/awt/nano-X/window.c: Adapted to Classpath's RawData
+	structure.
+
 2006-03-08  Dalibor Topic  <robilad@kaffe.org>
 
 	* Resynchronized GNU Classpath 0.90. Reapplied patch for
