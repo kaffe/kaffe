@@ -1,3 +1,120 @@
+2006-03-08  Lillian Angel  <langel@redhat.com>
+
+	* java/awt/GridBagLayout.java
+	(GetLayoutInfo): If the last component added had gridwidth == REMAINDER,
+	then the next item should be set to current_y (not 0).
+
+2006-03-08  Lillian Angel  <langel@redhat.com>
+
+	* java/awt/GridBagLayout.java
+	(GetLayoutInfo): If gridy is RELATIVE and there is no component
+	in the bottom-most spot of the column, we need to place that component
+	at the y-location of the other components in that row. If there are
+	no other components in that row, then place it at y = 0.
+
+2006-03-08  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/ProgressMonitor.java: Updated API docs,
+	* javax/swing/ProgressMonitorInputStream.java: Likewise.
+
+2006-03-08  Michael Koch  <konqueror@gmx.de>
+
+	* java/net/InetSocketAddress.java
+	(InetSocketAddress(String,int,resolve)): New private contructor.
+	(InetSocketAddress(String,int)): Use new private constructor.
+	(createUnresolved): New method.
+
+2006-03-07  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* java/rmi/server/UID.java (constructor): Assign last and time fields
+ 	after pause.
+
+2006-03-07  Tom Tromey  <tromey@redhat.com>
+
+	* java/lang/System.java (clearProperty): New method, merged from
+	generics branch.
+	(getProperty): Removed 'else'.
+	(getProperty): Check for empty key.
+	(setProperty): Likewise.
+	* gnu/classpath/SystemProperties.java (remove): New method, merged
+	from generics branch.
+
+2006-03-07  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* java/rmi/server/UID.java: New file (replacing). 
+
+2006-03-08  Raif S. Naffah  <raif@swiftdsl.com.au>
+
+	* java/util/jar/Manifest.java: Removed unused imports.
+	(CRLF): New constant.
+	(read): Added method documentation.
+	Use UTF-8 encoding instead of 8859_1.
+	(write): Added method documentation.
+	Use BufferedOutputStream (w/ 4K buffer) instead of PrintWriter.
+	(write_main_section): Replace PrintWriter arg with OutputStream.
+	Replace JarException with IOException.
+	(write_version_info): Likewise.
+	(write_main_attributes): Likewise.
+	(write_attribute_entry): Likewise.
+	(write_individual_sections): Likewise.
+	(write_entry_attributes): Likewise.
+	(write_header): Replace PrintWriter arg with OutputStream.
+	Re-implemented.
+
+2006-03-07  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/tree/DefaultMutableTreeNode.java
+	(getFirstChild): Updated API docs,
+	(getLastChild): Likewise,
+	(getChildAfter): Likewise,
+	(getChildBefore): Likewise,
+	(isNodeSibling): Return true if node == this,
+	(getSiblingCount): Updated API docs,
+	(getNextSibling): Likewise,
+	(getPreviousSibling): Likewise,
+	(isLeaf): Likewise,
+	(getFirstLeaf): Likewise,
+	(getLastLeaf): Likewise,
+	(getNextLeaf): Implemented,
+	(getPreviousLeaf): Implemented.
+
+2006-03-07  Tom Tromey  <tromey@redhat.com>
+
+	* java/awt/image/ColorModel.java (getComponents): Javadoc fix.
+	* java/awt/datatransfer/FlavorEvent.java: Added missing @since.
+	* java/awt/dnd/DropTargetEvent.java (serialVersionUID): New field.
+	* java/awt/DefaultFocusTraversalPolicy.java (serialVersionUID): New
+	field.
+
+2006-03-07  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/tree/DefaultMutableTreeNode.java: API docs all over plus
+	(clone): Reimplemented,
+	(add): Throw IllegalArgumentException if child is an ancestor,
+	(remove(int)): Set child's parent to null,
+	(remove(MutableTreeNode)): Check arguments and set child's parent to 
+	null,
+	(insert): Check allowsChildren flag, check for null argument, and
+	check for a node that is an ancestor,
+	(getIndex): Throw IllegalArgumentException for null argument,
+	(setAllowsChildren): If setting to false, remove existing children,
+	(removeAllChildren): Set parent to null for removed children.
+
+2006-03-07  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/tree/TreeNode.java: Reformatted and added API docs all
+	over.
+
+2006-03-06  Tom Tromey  <tromey@redhat.com>
+
+	* java/lang/StrictMath.java (ulp): New methods.
+	* java/lang/Math.java (ulp): New methods.
+
+2006-03-07  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* gnu/java/rmi/server/UnicastRef.java,
+	gnu/java/rmi/server/UnicastServer.java: Formatted.
+
 2006-03-07  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
 
 	* gnu/java/rmi/server/CombinedClassLoader.java (findClass,

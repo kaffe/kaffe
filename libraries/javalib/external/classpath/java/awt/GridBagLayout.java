@@ -356,10 +356,9 @@ public class GridBagLayout
           // If component is not visible we dont have to care about it.
           if (!component.isVisible())
             continue;
-		
+
           GridBagConstraints constraints =
               lookupInternalConstraints(component);
-
           int cellx = sumIntArray(info.colWidths, constraints.gridx);
           int celly = sumIntArray(info.rowHeights, constraints.gridy);
           int cellw = sumIntArray(info.colWidths,
@@ -398,8 +397,8 @@ public class GridBagLayout
               break;
 	    }
 
-          int x;
-          int y;
+          int x = 0;
+          int y = 0;
 
           switch(constraints.anchor)
 	    {
@@ -440,7 +439,6 @@ public class GridBagLayout
               y = celly + (cellh - dim.height) / 2;
               break;
 	    }
-
           component.setBounds(info.pos_x + x, info.pos_y + y, dim.width, dim.height);
 	}
 
@@ -485,11 +483,10 @@ public class GridBagLayout
       for (int i = 0; i < components.length; i++)
 	{
           Component component = components [i];
-		
           // If component is not visible we dont have to care about it.
           if (!component.isVisible())
             continue;
-		
+
           // When looking up the constraint for the first time, check the
           // original unmodified constraint.  After the first time, always
           // refer to the internal modified constraint.
@@ -515,7 +512,6 @@ public class GridBagLayout
           // 4. neither gridx or gridy == RELATIVE
           //
           //       nothing to check; just add it
-
 
           // cases 1 and 2
           if(constraints.gridx == GridBagConstraints.RELATIVE)
@@ -560,7 +556,9 @@ public class GridBagLayout
               // this column. We want to add this component below it.
               // If this column is empty, add to the 0 position.
               if (!lastInCol.containsKey(new Integer(constraints.gridx))) 
-                y = 0;
+                {
+                  y = current_y;
+                }
               else
                 {
                   Component lastComponent = (Component)lastInCol.get(new Integer(constraints.gridx));
@@ -596,7 +594,7 @@ public class GridBagLayout
           // Update our reference points for RELATIVE gridx and gridy.
           if(constraints.gridwidth == GridBagConstraints.REMAINDER)
 	    {
-              current_y = constraints.gridy + Math.max(1, constraints.gridheight);
+          current_y = constraints.gridy + Math.max(1, constraints.gridheight);
 	    }
           else if (constraints.gridwidth != GridBagConstraints.REMAINDER)
 	    {

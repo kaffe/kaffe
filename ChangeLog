@@ -15,6 +15,14 @@
 
 2006-03-08  Dalibor Topic  <robilad@kaffe.org>
 
+	* test/regression/Reflect.java: Updated for java.lang.System
+	changes.
+
+	* Resynchronized GNU Classpath. Reapplied patch for
+	URLClassLoader pending review.
+
+2006-03-08  Dalibor Topic  <robilad@kaffe.org>
+
 	* Resynchronized GNU Classpath 0.90. Reapplied patch for
 	URLClassLoader pending review.
 

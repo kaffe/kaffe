@@ -149,4 +149,17 @@ public class SystemProperties
 
     SystemProperties.properties = properties;
   }
+
+  /**
+   * Removes the supplied system property and its current value.
+   * If the specified property does not exist, nothing happens.
+   * 
+   * @throws NullPointerException if the property name is null.
+   * @return the value of the removed property, or null if no
+   *         such property exists.
+   */
+  public static String remove(String name)
+  {
+    return (String) properties.remove(name);
+  }
 }
