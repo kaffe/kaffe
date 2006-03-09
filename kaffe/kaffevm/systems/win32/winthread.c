@@ -145,7 +145,7 @@ jthread_create(unsigned char pri, void (*func)(void*), int daemon, void* cookie,
 	nativeThread* ptr;
 
 	ptr = (nativeThread*)gc_malloc_fixed(sizeof(nativeThread));
-	// unhand(tid)->PrivateInfo = (struct Hkaffe_util_Ptr*)ptr;
+	// unhand(tid)->PrivateInfo = (struct Horg_kaffe_util_Ptr*)ptr;
 
 	ptr->func = (void(*)(void))func;
 	ptr->hand = CreateThread(NULL, stacksz,

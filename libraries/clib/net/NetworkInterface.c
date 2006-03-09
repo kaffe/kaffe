@@ -31,13 +31,13 @@
 static struct ifaddrs*
 detectInterfaces(void)
 {
-  struct Hkaffe_util_Ptr *retval = NULL;
+  struct Horg_kaffe_util_Ptr *retval = NULL;
   struct ifaddrs *ifa;
   errorInfo einfo;
   
   if( getifaddrs(&ifa) == 0 )
     {
-      retval = (struct Hkaffe_util_Ptr *)ifa;
+      retval = (struct Horg_kaffe_util_Ptr *)ifa;
     }
   else
     {

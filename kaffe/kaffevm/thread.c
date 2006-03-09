@@ -91,7 +91,7 @@ linkNativeAndJavaThread(jthread_t thread, Hjava_lang_VMThread *jlThread)
 	threadData *thread_data = KTHREAD(get_data)(thread);
 
 	thread_data->jlThread = jlThread;
-	unhand (jlThread)->vmdata = (struct Hkaffe_util_Ptr *)thread;
+	unhand (jlThread)->vmdata = (struct Horg_kaffe_util_Ptr *)thread;
 
 	thread_data->jnireferences = NULL;
 	thread_data->jniEnv = &Kaffe_JNINativeInterface;

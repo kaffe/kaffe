@@ -1,5 +1,13 @@
 2006-03-09  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/thread.c (linkNativeAndJavaThread),
+	libraries/clib/net/NetworkInterface.c (detectInterfaces),
+	kaffe/kaffevm/systems/win32/winthread.c (jthread_create):
+	Renamed Hkaffe_util_Ptr to Horg_kaffe_util_Ptr to fix compiler
+	warnings.
+
+2006-03-09  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/clib/native/String.c (java_lang_String_intern0): 
 	Added cast to remove constness from interned string and fix
 	a compiler warning.
