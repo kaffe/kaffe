@@ -1,5 +1,11 @@
 2006-03-09  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/clib/native/String.c (java_lang_String_intern0): 
+	Added cast to remove constness from interned string and fix
+	a compiler warning.
+
+2006-03-09  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/clib/math/BigInteger.c (Java_java_math_BigInteger_assignLong0): 
 	Use LL instead of L for the masking constants for jlongs.
 
