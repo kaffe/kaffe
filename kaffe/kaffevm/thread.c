@@ -170,6 +170,7 @@ startThread(Hjava_lang_VMThread* tid)
 {
 	jthread_t nativeTid;
 	struct _errorInfo info;
+	int r;
 
 DBG(VMTHREAD, dprintf ("%p starting thread %p (vmthread %p)\n\n", KTHREAD(current)(), unhand(tid)->thread, tid); );
 
@@ -184,7 +185,9 @@ DBG(VMTHREAD, dprintf ("%p starting thread %p (vmthread %p)\n\n", KTHREAD(curren
 	if (nativeTid == NULL) {
 		throwError(&info);
 	}
-	KSEM(get)(&THREAD_DATA()->sem, (jlong)0);
+	do {
+	  r = KSEM(get)(&THREAD_DATA()->sem, (jlong)0);
+	} while (!r);
 
 	linkNativeAndJavaThread (nativeTid, tid);
 
@@ -323,6 +326,7 @@ startSpecialThread(void *arg)
 	void *argument;
 	jthread_t calling_thread;
 	threadData *thread_data = THREAD_DATA();
+	int r;
 
 	KSEM(init)(&thread_data->sem);
 
@@ -338,7 +342,9 @@ startSpecialThread(void *arg)
 	/* We have now to wait the parent to synchronize the data
 	 * and link the thread to the Java VM.
 	 */
-	KSEM(get)(&thread_data->sem, (jlong)0);
+	do {
+	  r = KSEM(get)(&thread_data->sem, (jlong)0);
+	} while (!r);
 
 	thread_data->exceptObj = NULL;
 
@@ -364,6 +370,7 @@ createDaemon(void* func, const char* nm, void *arg, int prio,
   Hjava_lang_String* name;
   void *specialArgument[3];
   jvalue retval;
+  int r;
 
 DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	);
   
@@ -408,7 +415,9 @@ DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	);
   KTHREAD(get_data)(nativeTid)->exceptPtr = NULL;
   KTHREAD(get_data)(nativeTid)->exceptObj = NULL;
 
-  KSEM(get)(&THREAD_DATA()->sem, (jlong)0);
+  do {
+    r = KSEM(get)(&THREAD_DATA()->sem, (jlong)0);
+  } while (!r);
   
   linkNativeAndJavaThread (nativeTid, vmtid);
 
@@ -430,6 +439,8 @@ firstStartThread(void* arg)
 	jmethodID runmethod;
 	jthread_t calling_thread = (jthread_t) arg;
 	threadData *thread_data;
+	int r;
+
 
 	cur = KTHREAD(current)();
 	thread_data = KTHREAD(get_data)(cur);
@@ -439,7 +450,9 @@ firstStartThread(void* arg)
 	/* We acknowledge the parent thread that this thread has been started. */
 	KSEM(put)(&KTHREAD(get_data)(calling_thread)->sem);
 	/* Now we must wait the parent to link the thread to the Java VM. */
-	KSEM(get)(&thread_data->sem, (jlong)0);
+	do {
+	  r = KSEM(get)(&thread_data->sem, (jlong)0);
+	} while (!r);
  
 	tid = (Hjava_lang_VMThread *)(thread_data->jlThread);
 	env = &thread_data->jniEnv;

@@ -153,13 +153,12 @@ getHeavyLock(volatile iLock* volatile * lkp, volatile iLock *heavyLock)
   lk = GET_HEAVYLOCK(lk);
   
   /* The lock is allocated and ready to use. */
+  atomic_increment(&(lk->num_wait));
   for (;;) {
     /* Try to acquire the lock. We try to do an "atomic" incrementation. */
-    atomic_increment(&(lk->num_wait));
     if (!COMPARE_AND_EXCHANGE(&(lk->in_progress), 0, 1))
       {
 	KSEM(get)(&lk->sem, (jlong)0);
-        atomic_decrement(&(lk->num_wait));
 	continue;
       }
     lk->hlockHolder = KTHREAD(current)();
@@ -219,6 +218,7 @@ slowLockMutex(volatile iLock* volatile * lkp, iLock *heavyLock)
   volatile iLock* lk;
   jthread_t cur = KTHREAD(current) ();
   threadData *tdata;
+  int r;
 
 DBG(SLOWLOCKS,
     dprintf("slowLockMutex(lk=%p, th=%p)\n",
@@ -256,8 +256,15 @@ DBG(SLOWLOCKS,
    /* Otherwise wait for holder to release it */
    tdata->nextlk = lk->mux;
    lk->mux = cur;
+
    putHeavyLock(lk);
-   KSEM(get)(&tdata->sem, (jlong)0);
+   /* KSEM(get) cannot have a timeout because it is infinite.
+    * However, it can be interrupted and we do not want that for
+    * locking.
+    */
+   do {
+     r = KSEM(get)(&tdata->sem, (jlong)0);
+   } while (!r);
  }
 }
 
@@ -342,7 +349,7 @@ locks_internal_slowUnlockMutexIfHeld(iLock** lkp, iLock *heavyLock)
       !COMPARE_AND_EXCHANGE(lkp, (iLock*)cur, LOCKFREE))
     return;
 
-  /* ok, it is a heavy lock and it is acquire by someone. */
+  /* ok, it is a heavy lock and it is acquired by someone. */
   lk = getHeavyLock((volatile iLock *volatile *)lkp, heavyLock);
   holder = lk->holder;
   putHeavyLock(lk);
