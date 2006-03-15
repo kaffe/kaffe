@@ -34,6 +34,7 @@
 #include "object.h"
 #include "constants.h"
 #include "md.h"
+#include "methodcalls.h"
 #include "callKaffeException.h"
 #include "classMethod.h"
 #include "code.h"

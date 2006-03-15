@@ -1,3 +1,10 @@
+2006-03-15  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/exception.c: Include methodcalls.h.
+
+	* kaffe/kaffevm/jit/methodcalls.h: (engine_dispatchException)
+	Added missing prototype.
+
 2006-03-11  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/thread.c
