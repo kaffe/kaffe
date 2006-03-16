@@ -186,7 +186,7 @@ Java_java_awt_Toolkit_imgCreateFromFile(JNIEnv* envP, jclass clazz, jstring _jfi
 	GrDestroyGC(gc);
 	GrFreeImage(native_image);
 
-	return (jobject)JLC_GetRawData (envP, image);
+	return (jobject)JCL_NewRawDataObject (envP, image);
 }
 
 jobject
