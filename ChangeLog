@@ -1,5 +1,10 @@
 2006-03-16  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* config/i386/cygwin32/md.h
+	(ALIGNMENT_OF_SIZE): Redefine it specifically for cygwin.
+
+2006-03-16  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	Fix bug #23
 
 	* libraries/clib/awt/nano-X/img.c

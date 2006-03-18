@@ -21,6 +21,12 @@
 #include "i386/common.h"
 #include "i386/threads.h"
 
+/* It looks like that cygwin/gcc is aligning uint64 on 8 bytes.
+ * Putting this here fixes kaffe behaviour.
+ */
+#undef ALIGNMENT_OF_SIZE
+#define ALIGNMENT_OF_SIZE(S)    ((S) < 8 ? (S) : 8)
+
 /* Redefine the stack pointer offset */
 #undef SP_OFFSET
 #define	SP_OFFSET	7
