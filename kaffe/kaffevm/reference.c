@@ -175,7 +175,7 @@ referenceObjectFinalizer(jobject ob)
       referenceLinkList *temp = ll->next;
       errorInfo einfo;
       Hjava_lang_Class *ref_clazz = OBJECT_CLASS((Hjava_lang_Object*)ll->reference);
-      Method *mid = lookupClassMethod(ref_clazz, "enqueue", "()Z", &einfo);
+      Method *mid = lookupClassMethod(ref_clazz, "enqueue", "()Z", false, &einfo);
 
       if (mid != NULL && !METHOD_IS_STATIC(mid))
 	{

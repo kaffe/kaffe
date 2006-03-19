@@ -536,7 +536,7 @@ Kaffe_GetMethodID(JNIEnv* env, jclass cls, const char* name, const char* sig)
 	cls_local = unveil(cls);
 
 	meth = lookupClassMethod((Hjava_lang_Class*)cls_local, name, sig,
-				 &info);
+				 false, &info);
 	if (meth == NULL) {
 		postError(env, &info);
 	}
@@ -585,7 +585,7 @@ Kaffe_GetStaticMethodID(JNIEnv* env, jclass cls, const char* name, const char* s
 
 	cls_local = unveil(cls);
 	meth = lookupClassMethod((Hjava_lang_Class*)cls_local, name, sig,
-				 &info);
+				 true, &info);
 	if (meth == NULL) {
 		postError(env, &info);
 	} else if (!METHOD_IS_STATIC(meth)) {

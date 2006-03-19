@@ -45,5 +45,6 @@ Hjava_lang_Class* getClass(constIndex, Hjava_lang_Class*, errorInfo*);
 
 Method* findMethod(Hjava_lang_Class*, Utf8Const*, Utf8Const*, errorInfo*);
 Method* findMethodLocal(Hjava_lang_Class*, Utf8Const*, Utf8Const*);
+Method* KaffeVM_findDeclaredMethod(Hjava_lang_Class*, Utf8Const*, Utf8Const*, errorInfo*);
 
 #endif

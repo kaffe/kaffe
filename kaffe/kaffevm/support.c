@@ -103,7 +103,7 @@ do_execute_java_method_v(jvalue *retval, void* obj, const char* method_name, con
 		assert(method_name != NULL);
 		assert(signature != NULL);
 		if (isStaticCall) {
-			mb = lookupClassMethod((Hjava_lang_Class*)obj, method_name, signature, &info);
+			mb = lookupClassMethod((Hjava_lang_Class*)obj, method_name, signature, false, &info);
 		}
 		else {
 			mb = lookupObjectMethod((Hjava_lang_Object*)obj, method_name, signature, &info);
@@ -179,7 +179,7 @@ do_execute_java_class_method_v(jvalue *retval, const char* cname,
 
 	/* Get method */
 	if (clazz != NULL) {
-		mb = lookupClassMethod(clazz, method_name, signature, &info);
+		mb = lookupClassMethod(clazz, method_name, signature, false, &info);
 	}
 	if (mb == NULL) {
 		throwError(&info);
@@ -367,7 +367,7 @@ KaffeVM_safeCallMethodV(Method* meth, void* func, void* obj, va_list args, jvalu
  * @return struct _jmethodID of the method being searched or 0 in case of an error
  */
 Method*
-lookupClassMethod(Hjava_lang_Class* cls, const char* name, const char* sig, errorInfo *einfo)
+lookupClassMethod(Hjava_lang_Class* cls, const char* name, const char* sig, bool declared, errorInfo *einfo)
 {
 	Method *meth;
 	Utf8Const *name_utf8, *sig_utf8;
@@ -387,7 +387,10 @@ lookupClassMethod(Hjava_lang_Class* cls, const char* name, const char* sig, erro
 		postOutOfMemory(einfo);
 		return NULL;
 	}
-	meth = findMethod(cls, name_utf8, sig_utf8, einfo);
+	if (declared)
+	  meth = KaffeVM_findDeclaredMethod(cls, name_utf8, sig_utf8, einfo);
+	else
+	  meth = findMethod(cls, name_utf8, sig_utf8, einfo);
 	utf8ConstRelease(name_utf8);
 	utf8ConstRelease(sig_utf8);
 	return(meth);
@@ -407,7 +410,7 @@ Method*
 lookupObjectMethod(Hjava_lang_Object* obj, const char* name, const char* sig, errorInfo *einfo)
 {
 	assert(obj != NULL && name != NULL && sig != NULL);
-	return (lookupClassMethod(OBJECT_CLASS(obj), name, sig, einfo));
+	return (lookupClassMethod(OBJECT_CLASS(obj), name, sig, false, einfo));
 }
 
 /**

@@ -1403,7 +1403,7 @@ Hjava_lang_Class *userLoadClass(classEntry *ce,
 	     */
 	    if ((meth = lookupClassMethod(class_of_loader, "loadClass", 
 					 "(Ljava/lang/String;)Ljava/lang/Class;",
-					 einfo)) == NULL)
+					  false, einfo)) == NULL)
 	      {
 		retval = NULL;
 		goto userload_done;

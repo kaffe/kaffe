@@ -366,3 +366,31 @@ findMethod(Hjava_lang_Class* class, Utf8Const* name, Utf8Const* signature, error
 	postExceptionMessage(einfo, JAVA_LANG(NoSuchMethodError), "%s", name->data);
 	return (NULL);
 }
+
+
+Method*
+KaffeVM_findDeclaredMethod(Hjava_lang_Class *class, Utf8Const *name, Utf8Const *signature, errorInfo *einfo)
+{
+  Method *mptr;
+  bool success;
+  /*
+   * Waz CSTATE_LINKED - Must resolve constants before we do any
+   * translation.  Might not be right though ... XXX
+   */
+  if (class->state < CSTATE_USABLE) {
+    success = processClass(class, CSTATE_COMPLETE, einfo);
+    if (!success)
+      return (NULL);
+  }
+
+  /*
+   * Lookup method - this could be alot more efficient but never mind.
+   * Also there is no attempt to honour PUBLIC, PRIVATE, etc.
+   */
+  mptr = findMethodLocal(class, name, signature);
+  if (mptr != NULL)
+    return mptr;
+
+  postExceptionMessage(einfo, JAVA_LANG(NoSuchMethodError), "%s", name->data);
+  return NULL;
+}

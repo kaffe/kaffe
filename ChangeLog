@@ -1,4 +1,22 @@
-2006-03-16  Guilhem Lavaux  <guilhem@kaffe.org>
+2006-03-19  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	Fix for bug #14
+	
+	* kaffe/kaffevm/classMethod.c,
+	kaffe/kaffevm/reference.c,
+	kaffe/kaffevm/support.c,
+	kaffe/kaffevm/jni/jni.c: Adapted to new internal API.
+
+	* kaffe/kaffevm/lookup.c,
+	kaffe/kaffevm/lookup.h
+	(KaffeVM_findDeclaredMethod): New function to lookup for methods
+	declared in the specified class only.
+
+	* kaffe/kaffevm/support.c
+	(lookupClassMethod): New parameter to specify if we want the
+	declared methods or not.
+	
+2006-03-18  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* config/i386/cygwin32/md.h
 	(ALIGNMENT_OF_SIZE): Redefine it specifically for cygwin.
