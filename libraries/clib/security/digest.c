@@ -465,7 +465,7 @@ Java_org_kaffe_security_provider_SHA_Update(JNIEnv *env, jobject this,
 	}
 
 	/* Update with new data and release array data */
-	SHA1Update((SHA1_CTX *) ctxBytes, bufBytes + off, (unsigned)len);
+	SHA1Update((SHA1_CTX *) ctxBytes, (unsigned char *)(bufBytes + off), (unsigned)len);
 	(*env)->ReleaseByteArrayElements(env, ctxArray, ctxBytes, 0);
 	(*env)->ReleaseByteArrayElements(env, buf, bufBytes, JNI_ABORT);
 }
@@ -504,7 +504,7 @@ Java_org_kaffe_security_provider_SHA_Final(JNIEnv *env, jobject this,
 	}
 
 	/* Finalize and release byte arrays */
-	SHA1Final(bufBytes + off, (SHA1_CTX *) ctxBytes);
+	SHA1Final((unsigned char*)(bufBytes + off), (SHA1_CTX *) ctxBytes);
 	(*env)->ReleaseByteArrayElements(env, ctxArray, ctxBytes, 0);
 	(*env)->ReleaseByteArrayElements(env, buf, bufBytes, JNI_ABORT);
 }

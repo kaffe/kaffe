@@ -1,3 +1,9 @@
+2006-03-21  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/clib/security/digest.c (Java_org_kaffe_security_provider_SHA_Update) 
+	(Java_org_kaffe_security_provider_SHA_Final): Added missing casts for bufBytes
+	to fix compiler warnings.
+
 2006-03-20  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/jvmpi/jvmpi_kaffe.c (jvmpiRequestEvent): Changed
