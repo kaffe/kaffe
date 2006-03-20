@@ -1,5 +1,10 @@
 2006-03-21  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/clib/math/BigInteger.c (Java_java_math_BigInteger_assignString0): 
+	Changed type of str to const char * to match its use.
+
+2006-03-21  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/clib/security/digest.c (Java_org_kaffe_security_provider_SHA_Update) 
 	(Java_org_kaffe_security_provider_SHA_Final): Added missing casts for bufBytes
 	to fix compiler warnings.

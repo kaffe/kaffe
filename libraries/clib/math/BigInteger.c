@@ -159,13 +159,13 @@ jint
 Java_java_math_BigInteger_assignString0(JNIEnv* env, jobject r, jstring val, jint radix)
 {
 	mpz_ptr res;
-	const jbyte* str;
+	const char* str;
 	int rc;
 
 	res = (*env)->GetObjectField(env, r, number);
 	str = (*env)->GetStringUTFChars(env, val, NULL);
 
-	rc = mpz_set_str(res, (char*)str, (int)radix);
+	rc = mpz_set_str(res, str, (int)radix);
 
 	(*env)->ReleaseStringUTFChars(env, val, str);
 
