@@ -40,7 +40,7 @@ extern Utf8Const* stringJava2Utf8ConstReplace(Hjava_lang_String *,
 extern HArrayOfChar*	  stringC2CharArray(const char*);
 
 /* Return the interned version of the String object */
-extern const Hjava_lang_String* stringInternString(Hjava_lang_String*);
+extern Hjava_lang_String* stringInternString(Hjava_lang_String*);
 
 /* Remove the String object from the intern table. This should only be
    called during destruction of the corresponding String object. */

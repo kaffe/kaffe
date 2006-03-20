@@ -28,7 +28,7 @@
 
 /* Hashtable structure */
 struct _hashtab {
-	const void	**list; 	/* List of pointers to whatever */
+	void	        **list; 	/* List of pointers to whatever */
 	int		count;  	/* Number of slots used in the list */
 	int		size;   	/* Total size list; always a power of 2 */
 	compfunc_t	comp;   	/* Comparison function */
@@ -42,7 +42,7 @@ static int		hashFindSlot(hashtab_t, const void *ptr);
 static hashtab_t	hashResize(hashtab_t tab);
 
 /* Indicates a deleted pointer */
-static const void	*const DELETED = (const void *)&DELETED;
+static void             *const DELETED = (void *)&DELETED;
 
 /*
  * Create a new hashtable
@@ -99,11 +99,11 @@ hashDestroy(hashtab_t tab)
  * or is equal to something that is already there. This returns the
  * matching pointer that is actually in the table.
  */
-const void *
-hashAdd(hashtab_t tab, const void *ptr)
+void *
+hashAdd(hashtab_t tab, void *ptr)
 {
 	int	i;
-	const void	*rtn;
+	void	*rtn;
 
 	if (NEED_RESIZE(tab)) {
 		if (hashResize(tab) == 0) {
@@ -127,7 +127,7 @@ hashAdd(hashtab_t tab, const void *ptr)
  * we don't remove it.
  */
 void
-hashRemove(hashtab_t tab, const void *ptr)
+hashRemove(hashtab_t tab, void *ptr)
 {
 	int i;
 
@@ -144,11 +144,11 @@ hashRemove(hashtab_t tab, const void *ptr)
 /*
  * Find a matching pointer in the table.
  */
-const void *
+void *
 hashFind(hashtab_t tab, const void *ptr)
 {
 	int i;
-	const void *rtn;
+	void *rtn;
 
 	i = hashFindSlot(tab, ptr);
 	assert(i != -1);
@@ -178,7 +178,7 @@ hashFindSlot(hashtab_t tab, const void *ptr)
 	/* Find slot */
 	i = startIndex;
 	for (;;) {
-		const void **const ptr2 = &tab->list[i];
+		void **const ptr2 = &tab->list[i];
 
 		if (*ptr2 == NULL) {
 			return (deletedIndex >= 0) ? deletedIndex : i;
@@ -213,8 +213,8 @@ static hashtab_t
 hashResize(hashtab_t tab)
 {
 	const int newSize = (tab->size > 0) ? (tab->size * 2) : INITIAL_SIZE;
-	const void **newList;
-	const void **oldList;
+	void **newList;
+	void **oldList;
 	int i;
 
 	/* Get a bigger list */
@@ -243,7 +243,7 @@ hashResize(hashtab_t tab)
 
 	/* Rehash old list contents into new list */
 	for (i = tab->size - 1; i >= 0; i--) {
-		const void *ptr = tab->list[i];
+		void *ptr = tab->list[i];
 
 		if (ptr != NULL && ptr != DELETED) {
 			const int hash = (*tab->hash)(ptr);

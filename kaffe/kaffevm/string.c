@@ -312,17 +312,17 @@ stringFree(const void *ptr)
  * Return the interned version of a String object.
  * May or may not be the same String.
  */
-const Hjava_lang_String *
+Hjava_lang_String *
 stringInternString(Hjava_lang_String *string)
 {
-	const Hjava_lang_String *temp;
+	Hjava_lang_String *temp;
 
 	/* Lock intern table */
 	lockStaticMutex(&stringLock);
 
 	/* See if string is already in the table */
 	if (hashTable != NULL) {
-		const Hjava_lang_String *string2;
+		Hjava_lang_String *string2;
 
 		if ((string2 = hashFind(hashTable, string)) != NULL) {
 			unlockStaticMutex(&stringLock);

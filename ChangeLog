@@ -1,3 +1,16 @@
+2006-03-20  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/hashtab.c, kaffe/kaffevm/hashtab.h:
+	(_hashtab.list, DELETED, hashAdd, hashRemove, hashFind, hashResize)
+	Removed unnecessary const qualifiers to avoid compiler warnings.
+
+	* kaffe/kaffevm/string.c, kaffe/kaffevm/stringSupport.h: 
+	(stringInternString) Removed unnecessary const qualifiers to avoid 
+	compiler warnings.
+
+	* libraries/clib/native/String.c: (java_lang_String_intern0) Simplified.
+	Removed unnecessary const qualifier to avoid compiler warning.
+
 2006-03-19  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	Fix for bug #14
