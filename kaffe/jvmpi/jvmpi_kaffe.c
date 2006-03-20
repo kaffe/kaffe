@@ -640,11 +640,11 @@ static jint jvmpiRequestEvent(jint event_type, void *arg)
 		break;
 	case JVMPI_EVENT_THREAD_START:
 		{
-			struct Hjava_lang_Thread *tid;
+			struct Hjava_lang_VMThread *tid;
 			JVMPI_Event ev;
 
 			retval = JVMPI_SUCCESS;
-			tid = (struct Hjava_lang_Thread *)arg;
+			tid = (struct Hjava_lang_VMThread *)arg;
 			if (tid == NULL)
 				return JVMPI_FAIL;
 			jvmpiFillThreadStart(&ev, tid);

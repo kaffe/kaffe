@@ -1,5 +1,10 @@
 2006-03-20  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/jvmpi/jvmpi_kaffe.c (jvmpiRequestEvent): Changed
+	type of tid to Hjava_lang_VMThread to match its usage.
+
+2006-03-20  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/hashtab.c, kaffe/kaffevm/hashtab.h:
 	(_hashtab.list, DELETED, hashAdd, hashRemove, hashFind, hashResize)
 	Removed unnecessary const qualifiers to avoid compiler warnings.
