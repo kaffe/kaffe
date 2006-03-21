@@ -301,27 +301,27 @@ public class BasicInternalFrameTitlePane extends JComponent
     {
       String propName = evt.getPropertyName();
       if (propName.equals("closable"))
-	{
-	  if (evt.getNewValue().equals(Boolean.TRUE))
-	    closeButton.setVisible(true);
-	  else
-	    closeButton.setVisible(false);
-	}
-      else if (propName.equals("iconifiable"))
-	{
-	  if (evt.getNewValue().equals(Boolean.TRUE))
-	    iconButton.setVisible(true);
-	  else
-	    iconButton.setVisible(false);
-	}
+        {
+          if (evt.getNewValue().equals(Boolean.TRUE))
+            closeButton.setVisible(true);
+          else
+            closeButton.setVisible(false);
+        }
+      else if (propName.equals("iconable"))
+        {
+          if (evt.getNewValue().equals(Boolean.TRUE))
+            iconButton.setVisible(true);
+          else
+            iconButton.setVisible(false);
+        }
       else if (propName.equals("maximizable"))
-	{
-	  if (evt.getNewValue().equals(Boolean.TRUE))
-	    maxButton.setVisible(true);
-	  else
-	    maxButton.setVisible(false);
-	}
-	
+        {
+          if (evt.getNewValue().equals(Boolean.TRUE))
+            maxButton.setVisible(true);
+          else
+            maxButton.setVisible(false);
+        }
+      enableActions();
     }
   }
 
@@ -340,7 +340,7 @@ public class BasicInternalFrameTitlePane extends JComponent
      *
      * @return True if this Component can receive focus.
      */
-    public boolean isFocusTransversable()
+    public boolean isFocusTraversable()
     {
       return true;
     }

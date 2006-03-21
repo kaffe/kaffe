@@ -199,13 +199,13 @@ dnl -----------------------------------------------------------
 AC_ARG_WITH([native-libdir],
 	    [AS_HELP_STRING(--with-native-libdir,sets the installation directore for native libraries [default='${libdir}/${PACKAGE}'])],
 	    [
-	     nativelibdir=${withval}
+	     nativeexeclibdir=${withval}
 	    ],
 	    [
-	     nativelibdir='${libdir}/${PACKAGE}'
+	     nativeexeclibdir='${libdir}/${PACKAGE}'
 	    ])
 
-AC_SUBST(nativelibdir)
+AC_SUBST(nativeexeclibdir)
 
 dnl -----------------------------------------------------------
 dnl Sets the Java library installation dir.

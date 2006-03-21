@@ -68,7 +68,7 @@ public class BasicMenuBarUI extends MenuBarUI
   protected ContainerListener containerListener;
   
   /*Property change listeners that listener to PropertyChangeEvent from menu bar*/
-  protected PropertyChangeListener propertyChangeListener;
+  private PropertyChangeListener propertyChangeListener;
 
   /* menu bar for which this UI delegate is for*/
   protected JMenuBar menuBar;
@@ -252,7 +252,7 @@ public class BasicMenuBarUI extends MenuBarUI
     menuBar = null;
   }
 
-  protected class ChangeHandler implements ChangeListener
+  private class ChangeHandler implements ChangeListener
   {
     public void stateChanged(ChangeEvent event)
     {
@@ -264,7 +264,7 @@ public class BasicMenuBarUI extends MenuBarUI
    * This class handles ContainerEvents fired by JMenuBar. It revalidates
    * and repaints menu bar whenever menu is added or removed from it.
    */
-  protected class ContainerHandler implements ContainerListener
+  private class ContainerHandler implements ContainerListener
   {
     /**
      * This method is called whenever menu is added to the menu bar
@@ -292,7 +292,7 @@ public class BasicMenuBarUI extends MenuBarUI
   /**
    * This class handles PropertyChangeEvents fired from the JMenuBar
    */
-  protected class PropertyChangeHandler implements PropertyChangeListener
+  private class PropertyChangeHandler implements PropertyChangeListener
   {
     /**
      * This method is called whenever one of the properties of the MenuBar

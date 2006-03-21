@@ -56,6 +56,7 @@ import javax.swing.event.MenuDragMouseListener;
 import javax.swing.event.MenuKeyEvent;
 import javax.swing.event.MenuKeyListener;
 import javax.swing.plaf.MenuItemUI;
+import javax.swing.plaf.PanelUI;
 
 /**
  * JMenuItem represents element in the menu. It inherits most of
@@ -204,9 +205,7 @@ public class JMenuItem extends AbstractButton implements Accessible,
    */
   public void updateUI()
   {
-    MenuItemUI mi = ((MenuItemUI) UIManager.getUI(this));
-    setUI(mi);
-    invalidate();
+    setUI((MenuItemUI) UIManager.getUI(this));
   }
 
   /**

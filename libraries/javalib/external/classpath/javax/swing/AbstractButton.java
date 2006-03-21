@@ -405,7 +405,8 @@ public abstract class AbstractButton extends JComponent
 
     public AccessibleRelationSet getAccessibleRelationSet()
     {
-      return null; // TODO
+      // TODO: What should be modified here?
+      return super.getAccessibleRelationSet();
     }
 
     public AccessibleAction getAccessibleAction()
@@ -1139,7 +1140,6 @@ public abstract class AbstractButton extends JComponent
   {
     if (borderPainted == b)
       return;
-    
     boolean old = borderPainted;
     borderPainted = b;
     firePropertyChange(BORDER_PAINTED_CHANGED_PROPERTY, old, b);

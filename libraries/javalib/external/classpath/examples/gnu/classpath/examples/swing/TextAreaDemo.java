@@ -38,11 +38,13 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
 import javax.swing.text.Highlighter;
@@ -54,7 +56,7 @@ import javax.swing.text.LayeredHighlighter.LayerPainter;
  * A simple textare demo showing various textareas in different states.
  */
 public class TextAreaDemo
-    extends JFrame
+    extends JPanel
     implements ActionListener
 {
 
@@ -166,8 +168,6 @@ public class TextAreaDemo
     }
   }
 
-  private JPanel content;
-
   /**
    * The non wrapping text areas and state buttons.
    */
@@ -243,15 +243,11 @@ public class TextAreaDemo
 
   /**
    * Creates a new demo instance.
-   * 
-   * @param title the frame title.
    */
-  public TextAreaDemo(String title)
+  public TextAreaDemo()
   {
-    super(title);
-    JPanel content = createContent();
-    // initFrameContent() is only called (from main) when running this app
-    // standalone
+    super();
+    createContent();
   }
 
   /**
@@ -261,15 +257,14 @@ public class TextAreaDemo
    * the demo content panel is used, the frame itself is never displayed, so we
    * can avoid this step.
    */
-  public void initFrameContent()
+  void initFrameContent()
   {
     JPanel closePanel = new JPanel();
     JButton closeButton = new JButton("Close");
     closeButton.setActionCommand("CLOSE");
     closeButton.addActionListener(this);
     closePanel.add(closeButton);
-    content.add(closePanel, BorderLayout.SOUTH);
-    getContentPane().add(content);
+    add(closePanel, BorderLayout.SOUTH);
   }
 
   /**
@@ -278,21 +273,16 @@ public class TextAreaDemo
    * the bottom of the panel if they want to (a close button is added if this
    * demo is being run as a standalone demo).
    */
-  JPanel createContent()
+  private void createContent()
   {
-    if (content == null)
-      {
-        content = new JPanel(new BorderLayout());
-        JTabbedPane tabPane = new JTabbedPane();
-        tabPane.addTab("Non-wrap", createNonWrapPanel());
-        tabPane.addTab("Char-wrap", createCharWrapPanel());
-        tabPane.addTab("Word-wrap", createWordWrapPanel());
-        tabPane.addTab("Custom colors", createCustomColoredPanel());
-        tabPane.addTab("Misc", createMiscPanel());
-        content.add(tabPane);
-        // content.setPreferredSize(new Dimension(400, 300));
-      }
-    return content;
+    setLayout(new BorderLayout());
+    JTabbedPane tabPane = new JTabbedPane();
+    tabPane.addTab("Non-wrap", createNonWrapPanel());
+    tabPane.addTab("Char-wrap", createCharWrapPanel());
+    tabPane.addTab("Word-wrap", createWordWrapPanel());
+    tabPane.addTab("Custom colors", createCustomColoredPanel());
+    tabPane.addTab("Misc", createMiscPanel());
+    add(tabPane);
   }
 
   private JPanel createNonWrapPanel()
@@ -597,10 +587,34 @@ public class TextAreaDemo
 
   public static void main(String[] args)
   {
-    TextAreaDemo app = new TextAreaDemo("TextArea Demo");
-    app.initFrameContent();
-    app.pack();
-    app.setVisible(true);
+    SwingUtilities.invokeLater
+    (new Runnable()
+     {
+       public void run()
+       {
+         TextAreaDemo app = new TextAreaDemo();
+         app.initFrameContent();
+         JFrame frame = new JFrame();
+         frame.getContentPane().add(app);
+         frame.pack();
+         frame.setVisible(true);
+       }
+     });
   }
 
+  /**
+   * Returns a DemoFactory that creates a TextAreaDemo.
+   *
+   * @return a DemoFactory that creates a TextAreaDemo
+   */
+  public static DemoFactory createDemoFactory()
+  {
+    return new DemoFactory()
+    {
+      public JComponent createDemo()
+      {
+        return new TextAreaDemo();
+      }
+    };
+  }
 }

@@ -1,5 +1,5 @@
 /* ServantLocatorPOA.java --
-   Copyright (C) 2005 Free Software Foundation, Inc.
+   Copyright (C) 2005, 2006 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -59,12 +59,12 @@ import org.omg.PortableServer.ServantLocatorPackage.CookieHolder;
  * You do not need to derive your servant locator from this stub,
  * it is enough to implement the {@link ServantLocator} interface.
  * But you may choose to do this if you need its functional
- * {@link #_ids()} method or want to keep default behavior during per-
- * or post- invokcations.
+ * {@link org.omg.PortableServer.ServantActivatorPOA.delegator#_ids()} 
+ * method or want to keep default behaviour during pre- or post- invokcations.
  * </p>
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
-public class ServantLocatorPOA
+public abstract class ServantLocatorPOA
   extends Servant
   implements ServantLocatorOperations, InvokeHandler
 {

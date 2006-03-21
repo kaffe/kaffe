@@ -42,6 +42,7 @@ import java.awt.AWTEvent;
 import java.awt.Component;
 import java.awt.Frame;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.Window;
 import java.awt.event.PaintEvent;
 import java.awt.event.WindowEvent;
@@ -244,37 +245,55 @@ public class GtkWindowPeer extends GtkContainerPeer
     // TODO Auto-generated method stub
     
   }
+
+  protected void postExposeEvent (int x, int y, int width, int height)
+  {
+    // Translate GTK co-ordinates, which do not include a window
+    // frame's insets, to AWT co-ordinates, which do include a window
+    // frame's insets.  GtkWindowPeer should always have all-zero
+    // insets but GtkFramePeer and GtkDialogPeer insets will be
+    // non-zero.
+    q().postEvent (new PaintEvent (awtComponent, PaintEvent.PAINT,
+                                   new Rectangle (x + insets.left, 
+                                                  y + insets.top, 
+                                                  width, height)));
+  }
+
   public boolean requestWindowFocus()
   {
     // TODO Auto-generated method stub
     return false;
   }
   
-  public void handleEvent(AWTEvent event)
+  public Graphics getGraphics ()
   {
-    int id = event.getID();
-    if (id == PaintEvent.UPDATE || id == PaintEvent.PAINT)
-      {
-        try
-          {
-            Graphics g = getGraphics();
-            if (! awtComponent.isShowing() || awtComponent.getWidth() < 1
-                || awtComponent.getHeight() < 1 || g == null)
-              return;
+    Graphics g = super.getGraphics ();
+    // Translate AWT co-ordinates, which include a window frame's
+    // insets, to GTK co-ordinates, which do not include a window
+    // frame's insets.  GtkWindowPeer should always have all-zero
+    // insets but GtkFramePeer and GtkDialogPeer insets will be
+    // non-zero.
+    g.translate (-insets.left, -insets.top);
+    return g;
+  }
 
-            g.setClip(((PaintEvent) event).getUpdateRect());
+  protected void updateComponent (PaintEvent event)
+  {
+    // Do not clear anything before painting.  Sun never calls
+    // Window.update, only Window.paint.
+    paintComponent(event);
+  }
 
-            // Do not want to clear anything before painting.
-            awtComponent.paint(g);
-
-            g.dispose();
-            return;
-          }
-        catch (InternalError e)
-          {
-            System.err.println(e);
-          }
-      }
-    super.handleEvent(event);
+  protected void postMouseEvent(int id, long when, int mods, int x, int y, 
+				int clickCount, boolean popupTrigger)
+  {
+    // Translate AWT co-ordinates, which include a window frame's
+    // insets, to GTK co-ordinates, which do not include a window
+    // frame's insets.  GtkWindowPeer should always have all-zero
+    // insets but GtkFramePeer and GtkDialogPeer insets will be
+    // non-zero.
+    super.postMouseEvent (id, when, mods, 
+			  x + insets.left, y + insets.top, 
+			  clickCount, popupTrigger);
   }
 }

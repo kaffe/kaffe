@@ -427,6 +427,7 @@ public class ImageIcon
     finally
       {
         loadStatus = tracker.statusID(id - 1, false);
+        tracker.removeImage(image, id - 1);
       }
   }
 

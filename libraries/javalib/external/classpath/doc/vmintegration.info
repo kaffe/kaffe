@@ -171,6 +171,7 @@ implementation.
 * java.nio::
 * java.nio.channels::
 * gnu.java.nio::
+* java.lang.reflect::
 * Classpath Callbacks::
 
 
@@ -897,6 +898,7 @@ includes the context of a class (the stack) and the system properties.
 
 * gnu.classpath.VMStackWalker::
 * gnu.classpath.VMSystemProperties::
+* gnu.classpath.Unsafe::
 
 
 File: vmintegration.info,  Node: gnu.classpath.VMStackWalker,  Next: gnu.classpath.VMSystemProperties,  Prev: gnu.classpath,  Up: gnu.classpath
@@ -923,7 +925,7 @@ array) and its class loader, respectively.
      loader of the class.
 
 
-File: vmintegration.info,  Node: gnu.classpath.VMSystemProperties,  Prev: gnu.classpath.VMStackWalker,  Up: gnu.classpath
+File: vmintegration.info,  Node: gnu.classpath.VMSystemProperties,  Next: gnu.classpath.Unsafe,  Prev: gnu.classpath.VMStackWalker,  Up: gnu.classpath
 
 3.2.2 `gnu.classpath.VMSystemProperties'
 ----------------------------------------
@@ -949,6 +951,44 @@ classes should be avoided at this early stage.
      Classpath properties have been added.  The main purpose of this is
      to allow the VM to alter the properties added by GNU Classpath to
      suit it.
+
+
+File: vmintegration.info,  Node: gnu.classpath.Unsafe,  Prev: gnu.classpath.VMSystemProperties,  Up: gnu.classpath
+
+3.2.3 `gnu.classpath.Unsafe'
+----------------------------
+
+The `Unsafe' class provides access to some low-level unsafe operations
+as required by the addition of the java.util.concurrent classes.  These
+focus on direct memory access to the fields within the VM and providing
+atomic update methods.
+
+   * `objectFieldOffset(Field)' - Provides the caller with the memory
+     offset of a particular field.
+
+   * `compareAndSwap*(Object,long,*,*)' - One of these methods is
+     provided for each of int, long and Object (hence the *s).  The
+     value of a field pointed to by the given Object and offset is
+     compared with the first value and replaced with the second if they
+     are the same.  The reason for this method is to make this change
+     operation atomic.
+
+   * `put/get*(Object,long,*)' - These are like the last set of
+     methods, handling integers, longs and Objects, but the field is
+     always changed on a put.  Different methods are provided for
+     different semantics.  Ordered variants perform a lazy put, in that
+     the change does not immediately propogate to other threads, while
+     the others provide volatile or 'normal' semantics.
+
+   * `arrayBaseOffset(Class)' and `arrayIndexScale(Class)' - These two
+     methods allow an array class to be traversed by pointer
+     arithmetic, by gaining the address of the first element and then
+     scaling appropriately for the later ones.
+
+   * `park(boolean,long)' and `unpark(Thread)' - These methods block
+     and unblock threads respectively, with an optional timeout being
+     provided for the blocking.  `unpark' is unsafe as the thread may
+     have been destroyed by native code.
 
 
 File: vmintegration.info,  Node: java.util,  Next: java.io,  Prev: gnu.classpath,  Up: Classpath Hooks
@@ -1296,7 +1336,7 @@ channels in standard I/O classes from `java.io'.
      `FileOutputStream'.
 
 
-File: vmintegration.info,  Node: gnu.java.nio,  Next: Classpath Callbacks,  Prev: java.nio.channels,  Up: Classpath Hooks
+File: vmintegration.info,  Node: gnu.java.nio,  Next: java.lang.reflect,  Prev: java.nio.channels,  Up: Classpath Hooks
 
 3.9 gnu.java.nio
 ================
@@ -1336,7 +1376,33 @@ implementation of this is `VMSelector', and this allows the actual
 default implementation of this is provided.
 
 
-File: vmintegration.info,  Node: Classpath Callbacks,  Prev: gnu.java.nio,  Up: Classpath Hooks
+File: vmintegration.info,  Node: java.lang.reflect,  Next: Classpath Callbacks,  Prev: gnu.java.nio,  Up: Classpath Hooks
+
+3.10 `java.lang.reflect'
+========================
+
+`java.lang.reflect' provides the interface to Java's reflection
+facilities.  Via reflection, programmers can obtain type information
+about a particular instance at runtime or dynamically create new
+instances.
+
+* Menu:
+
+* java.lang.reflect.VMArray::
+
+
+File: vmintegration.info,  Node: java.lang.reflect.VMArray,  Up: java.lang.reflect
+
+3.10.1 `java.lang.reflect.VMArray'
+----------------------------------
+
+The `VMArray' class provides a hook, `createObjectArray', which the VM
+uses to generate a new non-primitive array of a particular class and
+size.  The default implementation simply passes the job down to the
+standard JNI function, `NewObjectArray'.
+
+
+File: vmintegration.info,  Node: Classpath Callbacks,  Prev: java.lang.reflect,  Up: Classpath Hooks
 
    Some of the classes you implement for the VM will need to call back
 to package-private methods in Classpath:
@@ -1580,49 +1646,52 @@ Node: Top496
 Node: Introduction1227
 Node: Initialization5801
 Node: Classpath Hooks6214
-Node: java.lang7434
-Node: java.lang.VMClass8157
-Node: java.lang.VMObject12427
-Node: java.lang.VMClassLoader14040
-Node: java.lang.VMSystem16892
-Node: java.lang.VMThrowable19519
-Node: java.lang.VMCompiler20539
-Node: java.lang.VMDouble21518
-Node: java.lang.VMFloat22783
-Node: java.lang.VMProcess23479
-Node: java.lang.VMRuntime24861
-Node: java.lang.VMString27424
-Node: java.lang.VMThread28244
-Node: java.lang.VMInstrumentationImpl31731
-Node: java.lang.VMMath34074
-Node: gnu.classpath36622
-Node: gnu.classpath.VMStackWalker37062
-Node: gnu.classpath.VMSystemProperties38128
-Node: java.util39461
-Node: java.util.VMTimeZone39924
-Node: java.io40840
-Node: java.io.VMFile41569
-Node: java.io.VMObjectInputStream44440
-Node: java.io.VMObjectStreamClass45121
-Node: java.security45951
-Node: java.security.VMAccessController46292
-Node: java.net47456
-Node: java.net.VMInetAddress47897
-Node: java.net.VMNetworkInterface48690
-Node: java.nio49122
-Node: java.nio.VMDirectByteBuffer49625
-Node: java.nio.channels51073
-Node: java.nio.channels.VMChannels51490
-Node: gnu.java.nio52258
-Node: gnu.java.nio.VMPipe52674
-Node: gnu.java.nio.VMSelector53191
-Node: Classpath Callbacks53737
-Node: VM Hooks54217
-Node: JNI Implementation58416
-Node: Miscellaneous VM Requirements60287
-Node: JNI Version60596
-Node: VM Threading Model61156
-Ref: VM Threading Model-Footnote-162772
-Node: Boot Library Path Property62884
+Node: java.lang7456
+Node: java.lang.VMClass8179
+Node: java.lang.VMObject12449
+Node: java.lang.VMClassLoader14062
+Node: java.lang.VMSystem16914
+Node: java.lang.VMThrowable19541
+Node: java.lang.VMCompiler20561
+Node: java.lang.VMDouble21540
+Node: java.lang.VMFloat22805
+Node: java.lang.VMProcess23501
+Node: java.lang.VMRuntime24883
+Node: java.lang.VMString27446
+Node: java.lang.VMThread28266
+Node: java.lang.VMInstrumentationImpl31753
+Node: java.lang.VMMath34096
+Node: gnu.classpath36644
+Node: gnu.classpath.VMStackWalker37109
+Node: gnu.classpath.VMSystemProperties38175
+Node: gnu.classpath.Unsafe39537
+Node: java.util41326
+Node: java.util.VMTimeZone41789
+Node: java.io42705
+Node: java.io.VMFile43434
+Node: java.io.VMObjectInputStream46305
+Node: java.io.VMObjectStreamClass46986
+Node: java.security47816
+Node: java.security.VMAccessController48157
+Node: java.net49321
+Node: java.net.VMInetAddress49762
+Node: java.net.VMNetworkInterface50555
+Node: java.nio50987
+Node: java.nio.VMDirectByteBuffer51490
+Node: java.nio.channels52938
+Node: java.nio.channels.VMChannels53355
+Node: gnu.java.nio54123
+Node: gnu.java.nio.VMPipe54537
+Node: gnu.java.nio.VMSelector55054
+Node: java.lang.reflect55600
+Node: java.lang.reflect.VMArray56026
+Node: Classpath Callbacks56433
+Node: VM Hooks56918
+Node: JNI Implementation61117
+Node: Miscellaneous VM Requirements62988
+Node: JNI Version63297
+Node: VM Threading Model63857
+Ref: VM Threading Model-Footnote-165473
+Node: Boot Library Path Property65585
 
 End Tag Table

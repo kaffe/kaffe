@@ -59,36 +59,18 @@ public class GtkPanelPeer extends GtkContainerPeer
   public void handleEvent(AWTEvent event)
   {
     int id = event.getID();
-    switch (id)
-      {
-      case MouseEvent.MOUSE_PRESSED:
-        awtComponent.requestFocusInWindow();
-        break;
-      case PaintEvent.UPDATE:
-      case PaintEvent.PAINT:
-      {
-        try
-          {
-            Graphics g = getGraphics();
-            if (! awtComponent.isShowing() || awtComponent.getWidth() < 1
-                || awtComponent.getHeight() < 1 || g == null)
-              return;
 
-            g.setClip(((PaintEvent) event).getUpdateRect());
+    if (id == MouseEvent.MOUSE_PRESSED)
+      awtComponent.requestFocusInWindow();
 
-            // Do not want to clear anything before painting.);
-            awtComponent.paint(g);
-
-            g.dispose();
-            return;
-          }
-        catch (InternalError e)
-          {
-            System.err.println(e);
-          }
-      }
-      }
     super.handleEvent(event);
+  }
+
+  protected void updateComponent (PaintEvent event)
+  {
+    // Do not want to clear anything before painting.  Sun never
+    // calls Panel.update, only Panel.paint.
+    paintComponent(event);
   }
 
   native void connectSignals ();

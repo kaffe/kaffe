@@ -63,12 +63,17 @@ import javax.swing.event.EventListenerList;
 /**
  * The default implementation of the {@link Caret} interface.
  *
- * @author orgininal author unknown
+ * @author original author unknown
  * @author Roman Kennke (roman@kennke.org)
  */
 public class DefaultCaret extends Rectangle
   implements Caret, FocusListener, MouseListener, MouseMotionListener
 {
+  
+  /** A text component in the current VM which currently has a
+   * text selection or <code>null</code>.
+   */ 
+  static JTextComponent componentWithSelection;
 
   /**
    * Controls the blinking of the caret.
@@ -346,7 +351,8 @@ public class DefaultCaret extends Rectangle
    */
   public void mouseDragged(MouseEvent event)
   {
-    moveCaret(event);
+    if (event.getButton() == MouseEvent.BUTTON1)
+      moveCaret(event);
   }
 
   /**
@@ -379,7 +385,7 @@ public class DefaultCaret extends Rectangle
   {
     int count = event.getClickCount();
     
-    if (count >= 2)
+    if (event.getButton() == MouseEvent.BUTTON1 && count >= 2)
       {
         int newDot = getComponent().viewToModel(event.getPoint());
         JTextComponent t = getComponent();
@@ -387,7 +393,10 @@ public class DefaultCaret extends Rectangle
         try
           {
             if (count == 3)
-              t.select(Utilities.getRowStart(t, newDot), Utilities.getRowEnd(t, newDot));
+              {
+                setDot(Utilities.getRowStart(t, newDot));
+                moveDot( Utilities.getRowEnd(t, newDot));
+              }
             else
               {
                 int nextWord = Utilities.getNextWord(t, newDot);
@@ -397,7 +406,10 @@ public class DefaultCaret extends Rectangle
                 // word but we want to select that. We have to use
                 // Utilities.nextWord() to get it.
                 if (newDot == nextWord)
-                  t.select(nextWord, Utilities.getNextWord(t, nextWord));
+                  {
+                    setDot(nextWord);
+                    moveDot(Utilities.getNextWord(t, nextWord));
+                  }
                 else
                   {
                     int previousWord = Utilities.getPreviousWord(t, newDot);
@@ -406,10 +418,16 @@ public class DefaultCaret extends Rectangle
                     // If the user clicked in the space between two words,
                     // then select the space.
                     if (newDot >= previousWordEnd && newDot <= nextWord)
-                      t.select(previousWordEnd, nextWord);
+                      {
+                        setDot(previousWordEnd);
+                        moveDot(nextWord);
+                      }
                     // Otherwise select the word under the mouse pointer.
                     else
-                      t.select(previousWord, previousWordEnd);
+                      {
+                        setDot(previousWord);
+                        moveDot(previousWordEnd);
+                      }
                   }
               }
           }
@@ -417,8 +435,6 @@ public class DefaultCaret extends Rectangle
           {
             // TODO: Swallowing ok here?
           }
-        
-        dot = newDot;
       }
     
   }
@@ -640,6 +656,11 @@ public class DefaultCaret extends Rectangle
           highlightEntry = highlighter.addHighlight(0, 0, getSelectionPainter());
         else
           highlighter.changeHighlight(highlightEntry, 0, 0);
+        
+        // Free the global variable which stores the text component with an active
+        // selection.
+        if (componentWithSelection == textComponent)
+          componentWithSelection = null;
       }
     catch (BadLocationException e)
       {
@@ -675,6 +696,17 @@ public class DefaultCaret extends Rectangle
 	      highlightEntry = highlighter.addHighlight(p0, p1, getSelectionPainter());
 	    else
 	      highlighter.changeHighlight(highlightEntry, p0, p1);
+            
+            // If another component currently has a text selection clear that selection
+            // first.
+            if (componentWithSelection != null)
+              if (componentWithSelection != textComponent)
+                {
+                  Caret c = componentWithSelection.getCaret();
+                  c.setDot(c.getDot());
+                }
+            componentWithSelection = textComponent;
+            
 	  }
 	catch (BadLocationException e)
 	  {

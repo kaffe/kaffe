@@ -51,6 +51,7 @@ import javax.accessibility.AccessibleContext;
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.plaf.ScrollBarUI;
 import javax.swing.plaf.ScrollPaneUI;
 import javax.swing.plaf.UIResource;
 
@@ -631,8 +632,7 @@ public class JScrollPane extends JComponent
   
   public void updateUI()
   {
-    ScrollPaneUI b = (ScrollPaneUI)UIManager.getUI(this);
-    setUI(b);
+    setUI((ScrollPaneUI) UIManager.getUI(this));
   }  
 
   /**

@@ -216,18 +216,34 @@ public class MenuSelectionManager
   public boolean isComponentPartOfCurrentMenu(Component c)
   {
     MenuElement[] subElements;
-      for (int i = 0; i < selectedPath.size(); i++)
+    boolean ret = false;
+    for (int i = 0; i < selectedPath.size(); i++)
       {
-         subElements = ((MenuElement) selectedPath.get(i)).getSubElements();
-         for (int j = 0; j < subElements.length; j++)
-         {
-            MenuElement me = subElements[j]; 
-            if (me != null && (me.getComponent()).equals(c))
-               return true;
-         }
+        // Check first element.
+        MenuElement first = (MenuElement) selectedPath.get(i);
+        if (SwingUtilities.isDescendingFrom(c, first.getComponent()))
+          {
+            ret = true;
+            break;
+          }
+        else
+          {
+            // Check sub elements.
+            subElements = first.getSubElements();
+            for (int j = 0; j < subElements.length; j++)
+              {
+                MenuElement me = subElements[j]; 
+                if (me != null
+                    && (SwingUtilities.isDescendingFrom(c, me.getComponent())))
+                  {
+                    ret = true;
+                    break;
+                  }
+              }
+          }
       }
 
-      return false;
+      return ret;
   }
 
   /**

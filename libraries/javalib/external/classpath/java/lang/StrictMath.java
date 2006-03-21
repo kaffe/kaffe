@@ -1843,6 +1843,50 @@ public final strictfp class StrictMath
   }
 
   /**
+   * <p>
+   * Returns the sign of the argument as follows:
+   * </p>
+   * <ul>
+   * <li>If <code>a</code> is greater than zero, the result is 1.0.</li>
+   * <li>If <code>a</code> is less than zero, the result is -1.0.</li>
+   * <li>If <code>a</code> is <code>NaN</code>, the result is <code>NaN</code>.
+   * <li>If <code>a</code> is positive or negative zero, the result is the
+   * same.</li>
+   * </ul>
+   * 
+   * @param a the numeric argument.
+   * @return the sign of the argument.
+   * @since 1.5.
+   */
+  public static double signum(double a)
+  {
+    // There's no difference.
+    return Math.signum(a);
+  }
+
+  /**
+   * <p>
+   * Returns the sign of the argument as follows:
+   * </p>
+   * <ul>
+   * <li>If <code>a</code> is greater than zero, the result is 1.0f.</li>
+   * <li>If <code>a</code> is less than zero, the result is -1.0f.</li>
+   * <li>If <code>a</code> is <code>NaN</code>, the result is <code>NaN</code>.
+   * <li>If <code>a</code> is positive or negative zero, the result is the
+   * same.</li>
+   * </ul>
+   * 
+   * @param a the numeric argument.
+   * @return the sign of the argument.
+   * @since 1.5.
+   */
+  public static float signum(float a)
+  {
+    // There's no difference.
+    return Math.signum(a);
+  }
+
+  /**
    * Return the ulp for the given double argument.  The ulp is the
    * difference between the argument and the next larger double.  Note
    * that the sign of the double argument is ignored, that is,

@@ -546,7 +546,6 @@ public abstract class BasicTextUI extends TextUI
   public void installUI(final JComponent c)
   {
     super.installUI(c);
-    c.setOpaque(true);
 
     textComponent = (JTextComponent) c;
     Document doc = textComponent.getDocument();

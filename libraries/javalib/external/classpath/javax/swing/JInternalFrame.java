@@ -559,8 +559,9 @@ public class JInternalFrame extends JComponent implements Accessible,
     this.iconable = iconifiable;
     storedBounds = new Rectangle();
     setRootPane(createRootPane());
-    // JInternalFrames are invisible by default.
+    // JInternalFrames are invisible and opaque by default.
     setVisible(false);
+    setOpaque(true);
     updateUI();
     setRootPaneCheckingEnabled(true); // Done the init stage, now adds go to content pane.
   }
@@ -1189,7 +1190,7 @@ public class JInternalFrame extends JComponent implements Accessible,
   {
     // If we're removing the root pane, use super.remove.  Otherwise
     // pass it on to the content pane instead.
-    if (comp==rootPane)
+    if (comp==rootPane || ! isRootPaneCheckingEnabled())
       super.remove(comp);
     else
       getContentPane().remove(comp);
@@ -1238,7 +1239,11 @@ public class JInternalFrame extends JComponent implements Accessible,
    */
   public void setClosable(boolean b)
   {
-    closable = b;
+    if (closable != b)
+      {
+        closable = b;
+        firePropertyChange("closable", ! closable, closable);
+      }
   }
 
   /**
@@ -1396,7 +1401,11 @@ public class JInternalFrame extends JComponent implements Accessible,
    */
   public void setIconifiable(boolean b)
   {
-    iconable = b;
+    if (iconable != b)
+      {
+        iconable = b;
+        firePropertyChange("iconable", ! iconable, iconable);
+      }
   }
 
   /**
@@ -1461,7 +1470,11 @@ public class JInternalFrame extends JComponent implements Accessible,
    */
   public void setMaximizable(boolean b)
   {
-    maximizable = b;
+    if (maximizable != b)
+      {
+        maximizable = b;
+        firePropertyChange("maximizable", ! maximizable, maximizable);
+      }
   }
 
   /**
@@ -1538,7 +1551,11 @@ public class JInternalFrame extends JComponent implements Accessible,
    */
   public void setResizable(boolean b)
   {
-    resizable = b;
+    if (b != resizable)
+      {
+        resizable = b;
+        firePropertyChange("resizable", ! resizable, resizable);
+      }
   }
 
   /**
@@ -1593,6 +1610,9 @@ public class JInternalFrame extends JComponent implements Accessible,
 
 	if (selected)
 	  restoreSubcomponentFocus();
+
+    if (isShowing())
+      repaint();
 
 	firePropertyChange(IS_SELECTED_PROPERTY, ! isSelected, isSelected);
 

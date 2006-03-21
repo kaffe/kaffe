@@ -38,7 +38,7 @@ build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
 subdir = tools
-DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
+DIST_COMMON = README $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/acattribute.m4 \
 	$(top_srcdir)/m4/accross.m4 $(top_srcdir)/m4/acinclude.m4 \
@@ -255,7 +255,7 @@ libexecdir = @libexecdir@
 localstatedir = @localstatedir@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
-nativelibdir = @nativelibdir@
+nativeexeclibdir = @nativeexeclibdir@
 oldincludedir = @oldincludedir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
@@ -301,13 +301,10 @@ READMES = $(srcdir)/gnu/classpath/tools/giop/README
 ALL_TOOLS_FILES = $(TOOLS_JAVA_FILES) $(TOOLS_TEMPLATES) $(TOOLS_HELPS) $(READMES)
 
 # Some architecture independent data to be installed.
-TOOLS_DATA = $(TOOLS_ZIP)
+TOOLS_DATA = $(TOOLS_ZIP) README
 
 # Where we want these data files installed.
-TOOLSdir = $(pkgdatadir)/tools
-
-# Make sure everything is included in the distribution.
-EXTRA_DIST = Makefile.am
+TOOLSdir = $(pkgdatadir)
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -457,7 +454,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-TOOLSDATA install-data-local
+install-data-am: install-TOOLSDATA
 
 install-exec-am:
 
@@ -483,44 +480,22 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-TOOLSDATA uninstall-info-am uninstall-local
+uninstall-am: uninstall-TOOLSDATA uninstall-info-am
 
 .PHONY: all all-am check check-am clean clean-generic clean-libtool \
 	clean-local dist-hook distclean distclean-generic \
 	distclean-libtool distdir dvi dvi-am html html-am info info-am \
 	install install-TOOLSDATA install-am install-data \
-	install-data-am install-data-local install-exec \
-	install-exec-am install-info install-info-am install-man \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	uninstall uninstall-TOOLSDATA uninstall-am uninstall-info-am \
-	uninstall-local
+	install-data-am install-exec install-exec-am install-info \
+	install-info-am install-man install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-generic \
+	mostlyclean-libtool pdf pdf-am ps ps-am uninstall \
+	uninstall-TOOLSDATA uninstall-am uninstall-info-am
 
 @FOUND_ECJ_FALSE@@FOUND_GCJX_FALSE@@FOUND_GCJ_FALSE@@FOUND_JIKES_FALSE@error dunno how to setup the JCOMPILER and compile
 
-# Make sure all sources and icons are also installed so users can use them.
-# (Be careful to strip off the srcdir part of the path when installing.)
-install-data-local:
-	srcdir_cnt=`echo $(srcdir) | wc -c`; \
-	for file in $(ALL_TOOLS_FILES); do \
-	  f=`echo $$file | cut -c$$srcdir_cnt-`; \
-	  fdir=`dirname $$f`; \
-	  if test ! -d $(DESTDIR)$(pkgdatadir)/tools/$$fdir; then \
-	    echo "$(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/tools/$$fdir"; \
-	    $(mkinstalldirs) $(DESTDIR)$(pkgdatadir)/tools/$$fdir; \
-	  fi; \
-	  echo "$(INSTALL_DATA) $$file $(DESTDIR)$(pkgdatadir)/tools/$$f"; \
-	  $(INSTALL_DATA) $$file $(DESTDIR)$(pkgdatadir)/tools/$$f; \
-	done
-
-uninstall-local:
-	srcdir_cnt=`echo $(srcdir) | wc -c`; \
-	for file in $(ALL_TOOLS_FILES); do \
-	  f=`echo $$file | cut -c$$srcdir_cnt-`; \
-	  echo "rm -f $(DESTDIR)$(pkgdatadir)/tools/$$f"; \
-	  rm -f $(DESTDIR)$(pkgdatadir)/tools/$$f; \
-	done
+# Make sure everything is included in the distribution.
 dist-hook:
 	srcdir_cnt=`echo $(srcdir) | wc -c`; \
 	for file in $(ALL_TOOLS_FILES); do \
@@ -534,9 +509,10 @@ dist-hook:
 	  cp -p $$file $(distdir)/$$f; \
 	done
 
-# To generate the example zip just depend on the sources and ignore the
-# class files. Always regenerate all .class files and remove them immediatly.
-# And copy the template files we use to the classes dir so they get also included.
+# To generate the example zip just depend on the sources and ignore
+# the class files. Always regenerate all .class files and remove them
+# immediately.  And copy the template files we use to the classes dir
+# so they get also included.
 $(TOOLS_ZIP): $(TOOLS_JAVA_FILES)
 	mkdir -p classes/gnu/classpath/tools/giop/grmic/templates
 	mkdir -p classes/gnu/classpath/tools/rmi/rmic/templates

@@ -78,7 +78,7 @@ public class CombinedClassLoader extends ClassLoader
       {
         cl = iter.next();
         if (!sLoaders.contains(cl))
-          sLoaders.add(iter.next());
+          sLoaders.add(cl);
       }
     
     loaders = new ClassLoader[sLoaders.size()];

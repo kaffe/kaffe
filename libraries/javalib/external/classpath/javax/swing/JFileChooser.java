@@ -1488,7 +1488,6 @@ public class JFileChooser extends JComponent implements Accessible
   public void updateUI()
   {
     setUI((FileChooserUI) UIManager.getUI(this));
-    revalidate();
   }
 
   /**

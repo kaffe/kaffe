@@ -1,5 +1,5 @@
 /* gnu/regexp/RETokenRange.java
-   Copyright (C) 1998-2001, 2004 Free Software Foundation, Inc.
+   Copyright (C) 2006 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -56,8 +56,16 @@ final class RETokenRange extends REToken {
     return 1;
   }
 
-    boolean match(CharIndexed input, REMatch mymatch) {
+    REMatch matchThis(CharIndexed input, REMatch mymatch) {
 	char c = input.charAt(mymatch.index);
+	if (matchOneChar(c)) {
+	    ++mymatch.index;
+	    return mymatch;
+	}
+	return null;
+    }
+
+    boolean matchOneChar(char c) {
 	if (c == CharIndexed.OUT_OF_BOUNDS) return false;
 	boolean matches = (c >= lo) && (c <= hi);
 	if (! matches && insens) {
@@ -68,11 +76,21 @@ final class RETokenRange extends REToken {
 	    matches = (c1 >= lo) && (c1 <= hi);
 	  }
 	}
-	if (matches) {
-	    ++mymatch.index;
-	    return next(input, mymatch);
+	return matches;
+    }
+
+    boolean returnsFixedLengthMatches() { return true; }
+
+    int findFixedLengthMatches(CharIndexed input, REMatch mymatch, int max) {
+        int index = mymatch.index;
+	int numRepeats = 0;
+	while (true) {
+	    if (numRepeats >= max) break;
+	    char ch = input.charAt(index++);
+	    if (! matchOneChar(ch)) break;
+	    numRepeats++;
 	}
-	return false;
+        return numRepeats;
     }
     
   void dump(StringBuffer os) {

@@ -180,7 +180,7 @@ public class FieldView extends PlainView
 
   public int viewToModel(float fx, float fy, Shape a, Position.Bias[] bias)
   {
-    return super.viewToModel(fx, fy, a, bias);
+    return super.viewToModel(fx, fy, adjustAllocation(a), bias);
   }
   
 }

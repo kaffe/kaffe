@@ -101,6 +101,16 @@ public class BasicSplitPaneUI extends SplitPaneUI
     protected int[] sizes = new int[3];
 
     /**
+     * Creates a new instance. This is package private because the reference
+     * implementation has no public constructor either. Still, we need to
+     * call it from BasicVerticalLayoutManager.
+     */
+    BasicHorizontalLayoutManager()
+    {
+      // Nothing to do here.
+    }
+
+    /**
      * This method adds the component given to the JSplitPane. The position of
      * the component is given by the constraints object.
      *

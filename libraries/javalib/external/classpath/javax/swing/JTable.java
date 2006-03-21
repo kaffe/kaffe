@@ -1018,19 +1018,7 @@ public class JTable
      * The CheckBox that is used for rendering.
      */
     private final JCheckBox checkBox = new JCheckBox();
-    
-    /**
-     * The check box must have the text field background and be centered.
-     */
-    private BooleanCellRenderer()
-    {
-      // Render the checkbox identically as the text field.
-      JTextField f = new JTextField();
-      checkBox.setForeground(f.getForeground());
-      checkBox.setBackground(f.getBackground());
-      checkBox.setHorizontalAlignment(SwingConstants.CENTER);      
-    }
-    
+   
     /**
      * Get the check box.
      */
@@ -1041,14 +1029,13 @@ public class JTable
 
     /**
      * Returns the component that is used for rendering the value.
-     *
+     * 
      * @param table the JTable
      * @param value the value of the object
      * @param isSelected is the cell selected?
      * @param hasFocus has the cell the focus?
      * @param row the row to render
      * @param column the cell to render
-     * 
      * @return this component (the default table cell renderer)
      */
     public Component getTableCellRendererComponent(JTable table, Object value,
@@ -1056,6 +1043,32 @@ public class JTable
                                                    boolean hasFocus, int row,
                                                    int column)
     {
+      if (isSelected)
+        {
+          checkBox.setBackground(table.getSelectionBackground());
+          checkBox.setForeground(table.getSelectionForeground());
+        }
+      else
+        {
+          checkBox.setBackground(table.getBackground());
+          checkBox.setForeground(table.getForeground());
+        }
+
+      if (hasFocus)
+        {
+          checkBox.setBorder(
+            UIManager.getBorder("Table.focusCellHighlightBorder"));
+          if (table.isCellEditable(row, column))
+            {
+              checkBox.setBackground(
+                UIManager.getColor("Table.focusCellBackground"));
+              checkBox.setForeground(
+                UIManager.getColor("Table.focusCellForeground"));
+            }
+        }
+      else
+        checkBox.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
+
       // Null is rendered as false.
       if (value == null)
         checkBox.setSelected(false);
@@ -1253,22 +1266,18 @@ public class JTable
        */
       TableTextField()
       {
-        setBorder(null);
+        setBorder(BorderFactory.createLineBorder(getGridColor(), 2));
       }
     
       /**
-       * Scroll the table, making the given rectangle of this component
-       * visible. Mind the component position with relate to the table. 
        * With not this method overridden, the scroll pane scrolls to the
        * top left cornec (untranslated position of the caret) after the first
-       * keystroke.
+       * keystroke. 
        */
       public void scrollRectToVisible(Rectangle r)
       {
-        // In private class we known that the rectangle data will not be
-        // reused and we need not to clone it.
-        r.translate(getX(), getY());
-        super.scrollRectToVisible(r);
+        // Do nothing here. If the editing session starts outside the visible
+        // bounds, the editCellAt will scroll.
       }
     }    
   
@@ -1316,7 +1325,6 @@ public class JTable
    * in the table) to provide or absorb excess space requirements.
    */
   public static final int AUTO_RESIZE_LAST_COLUMN = 3;
-
 
   /**
    * A table mapping {@link java.lang.Class} objects to 
@@ -1938,21 +1946,18 @@ public class JTable
    */
   public int columnAtPoint(Point point)
   {
-    if (point != null)
-      {
-        int ncols = getColumnCount();
-        Dimension gap = getIntercellSpacing();
-        TableColumnModel cols = getColumnModel();
-        int x = point.x;
+    int ncols = getColumnCount();
+    Dimension gap = getIntercellSpacing();
+    TableColumnModel cols = getColumnModel();
+    int x = point.x;
 
-        for (int i = 0; i < ncols; ++i)
-          {
-            int width = cols.getColumn(i).getWidth()
-                        + (gap == null ? 0 : gap.width);
-            if (0 <= x && x < width)
-              return i;
-            x -= width;
-          }
+    for (int i = 0; i < ncols; ++i)
+      {
+        int width = cols.getColumn(i).getWidth()
+                    + (gap == null ? 0 : gap.width);
+        if (0 <= x && x < width)
+          return i;
+        x -= width;
       }
     return -1;
   }
@@ -1961,8 +1966,7 @@ public class JTable
    * Returns index of the row that contains specified point or -1 if this table
    * doesn't contain this point.
    * 
-   * @param point
-   *          point to identify the row
+   * @param point point to identify the row
    * @return index of the row that contains specified point or -1 if this table
    *         doesn't contain this point.
    */
@@ -2088,25 +2092,38 @@ public class JTable
     else
       return true;
   }
-
-  public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction)
+  
+  /**
+   * Return the preferred scrolling amount (in pixels) for the given scrolling
+   * direction and orientation. This method handles a partially exposed row by
+   * returning the distance required to completely expose the item. When
+   * scrolling the top item is completely exposed.
+   * 
+   * @param visibleRect the currently visible part of the component.
+   * @param orientation the scrolling orientation
+   * @param direction the scrolling direction (negative - up, positive -down).
+   *          The values greater than one means that more mouse wheel or similar
+   *          events were generated, and hence it is better to scroll the longer
+   *          distance.
+   * @author Audrius Meskauskas (audriusa@bioinformatics.org)
+   */
+  public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation,
+                                        int direction)
   {
-    // FIXME: I don't exactly know what sun does here. in both cases they
-    // pick values which do *not* simply expose the next cell in a given
-    // scroll direction.
+    int h = (rowHeight + rowMargin);
+    int delta = h * direction;
 
+    // Round so that the top would start from the row boundary
     if (orientation == SwingConstants.VERTICAL)
-      return direction * rowHeight;
-    else
       {
-        int sum = 0;
-        for (int i = 0; i < getColumnCount(); ++i)
-          sum += columnModel.getColumn(0).getWidth();
-        int inc = getColumnCount() == 0 ? 10 : sum / getColumnCount();
-        return direction * inc;
+        // Completely expose the top row
+        int near = ((visibleRect.y + delta + h / 2) / h) * h;
+        int diff = visibleRect.y + delta - near;
+        delta -= diff;
       }
+    return delta;
+    // TODO when scrollng horizontally, scroll into the column boundary.
   }
-
 
   /**
    * Get the cell editor, suitable for editing the given cell. The default
@@ -3260,8 +3277,6 @@ public class JTable
   public void updateUI()
   {
     setUI((TableUI) UIManager.getUI(this));
-    revalidate();
-    repaint();
   }
   
   /**
@@ -3660,16 +3675,6 @@ public class JTable
   private void moveToCellBeingEdited(Component component)
   {
      Rectangle r = getCellRect(editingRow, editingColumn, true);
-     // Place the text field so that it would not touch the table
-     // border.
-     
-     // TODO Figure out while 5 and which constant should here be.
-     int xOffset = 5;
-     r.x+=xOffset;
-     r.y++;
-     r.width -=xOffset;
-     r.height --;
-     
      // Clone rectangle as getCellRect returns the cached value.
      component.setBounds(new Rectangle(r));
   }

@@ -110,14 +110,12 @@ class LightweightDispatcher
    */
   public boolean dispatchEvent(AWTEvent event)
   {
-    boolean dispatched = false;
     if (event instanceof MouseEvent && event.getSource() instanceof Window)
       {
         MouseEvent mouseEvent = (MouseEvent) event;
-        handleMouseEvent(mouseEvent);
-        dispatched = true;
+        return handleMouseEvent(mouseEvent);
       }
-    return dispatched;
+    return false;
   }
 
   /**
@@ -125,8 +123,9 @@ class LightweightDispatcher
    * (Window instances) and dispatches them to the correct lightweight child.
    *
    * @param ev the mouse event
+   * @return whether or not we found a lightweight that handled the event.
    */
-  private void handleMouseEvent(MouseEvent ev)
+  private boolean handleMouseEvent(MouseEvent ev)
   {
     Window window = (Window) ev.getSource();
     Component target = window.findComponentAt(ev.getX(), ev.getY());
@@ -195,6 +194,9 @@ class LightweightDispatcher
         // influenced by this modified event.
         ev.setSource(window);
         ev.translatePoint(-dx, -dy);
+	return true;
       }
+    else
+      return false;
   }
 }

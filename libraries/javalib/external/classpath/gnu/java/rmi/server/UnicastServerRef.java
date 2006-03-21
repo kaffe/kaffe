@@ -58,6 +58,10 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 
+/**
+ * This class connects the local, remotely available (exported) object to
+ * the local RMI server that accepts the remote calls. 
+ */
 public class UnicastServerRef
     extends UnicastRef
 { 
@@ -125,8 +129,7 @@ public class UnicastServerRef
       {
         myself = obj;
         // Save it to server manager, to let client calls in the same VM to
-        // issue
-        // local call
+        // issue local call
         manager.serverobj = obj;
 
         String ignoreStubs;
@@ -339,7 +342,11 @@ public class UnicastServerRef
     else
       return null;
   }
-
+  
+  /**
+   * This method is called from the {@link UnicastServer#incomingMessageCall}
+   * to deliver the remote call to this object.
+   */
   public Object incomingMessageCall(UnicastConnection conn, int method,
                                     long hash) throws Exception
   {

@@ -43,6 +43,46 @@ exception statement from your version. */
 
 static jmethodID initComponentGraphicsUnlockedID;
 
+/*
+ * AWT applications may call Graphics methods from threads other than
+ * the GDK main thread, so we must call XFlush after each batch of
+ * drawing operations, otherwise animations flicker.  Flushing after
+ * every graphics operation is excessive and negatively affects
+ * performance (PR 26486).  We set the maximum frequency to 50 times
+ * per second, or a minimum period of 20 milliseconds between calls to
+ * XFlush.  See gnu.classpath.examples.awt.AnimationApplet for an
+ * example applet that requires these XFlush calls.
+ */
+
+static short flush_scheduled = 0;
+
+static gboolean flush (gpointer data __attribute__((unused)))
+{
+  gdk_threads_enter ();
+
+  XFlush (GDK_DISPLAY ());
+  flush_scheduled = 0;
+
+  gdk_threads_leave ();
+
+  return FALSE;
+}
+
+/* The minimum time period between calls to XFlush, in
+   milliseconds. */
+#define MINIMUM_FLUSH_PERIOD 20
+
+/* schedule_flush must be called with the GDK lock held. */
+static void
+schedule_flush ()
+{
+  if (!flush_scheduled)
+    {
+      g_timeout_add (MINIMUM_FLUSH_PERIOD, flush, NULL);
+      flush_scheduled = 1;
+    }
+}
+
 void
 cp_gtk_graphics_init_jni (void)
 {
@@ -343,7 +383,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_drawString
   pango_layout_iter_free (iter);
   pango_layout_set_text (pfont->layout, "", -1);
   
-  gdk_flush ();
+  schedule_flush ();
 
   (*env)->ReleaseStringUTFChars (env, str, cstr);
 
@@ -363,7 +403,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_drawLine
   gdk_draw_line (g->drawable, g->gc, 
 		 x + g->x_offset, y + g->y_offset, 
 		 x2 + g->x_offset, y2 + g->y_offset);
-  gdk_flush ();
+  schedule_flush ();
 
   gdk_threads_leave ();
 }
@@ -380,7 +420,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_fillRect
 
   gdk_draw_rectangle (g->drawable, g->gc, TRUE, 
 		      x + g->x_offset, y + g->y_offset, width, height);
-  gdk_flush ();
+  schedule_flush ();
 
   gdk_threads_leave ();
 }
@@ -397,7 +437,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_drawRect
 
   gdk_draw_rectangle (g->drawable, g->gc, FALSE, 
 		      x + g->x_offset, y + g->y_offset, width, height);
-  gdk_flush ();
+  schedule_flush ();
 
   gdk_threads_leave ();
 }
@@ -419,7 +459,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_copyArea
 		     x + g->x_offset, y + g->y_offset,
 		     x + g->x_offset + dx, y + g->y_offset + dy,
 		     width, height);
-  gdk_flush ();
+  schedule_flush ();
 
   gdk_threads_leave ();
 }
@@ -461,7 +501,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_clearRect
       gdk_gc_set_foreground (g->gc, &(saved.foreground));
     }
 
-  gdk_flush ();
+  schedule_flush ();
 
   gdk_threads_leave ();
 }
@@ -517,7 +557,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_drawArc
   gdk_draw_arc (g->drawable, g->gc, FALSE, 
 		x + g->x_offset, y + g->y_offset, 
 		width, height, angle1 << 6, angle2 << 6);
-  gdk_flush ();
+  schedule_flush ();
 
   gdk_threads_leave ();
 }  
@@ -564,7 +604,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_drawPolyline
 			     g->x_offset, g->y_offset);
 
   gdk_draw_lines (g->drawable, g->gc, points, npoints);
-  gdk_flush ();
+  schedule_flush ();
 
   g_free (points);
 
@@ -591,7 +631,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_drawPolygon
     points[npoints++] = points[0];
 
   gdk_draw_lines (g->drawable, g->gc, points, npoints);
-  gdk_flush ();
+  schedule_flush ();
 
   g_free (points);
 
@@ -612,7 +652,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_fillPolygon
   points = translate_points (env, xpoints, ypoints, npoints,
 			     g->x_offset, g->y_offset);
   gdk_draw_polygon (g->drawable, g->gc, TRUE, points, npoints);
-  gdk_flush ();
+  schedule_flush ();
 
   g_free (points);
 
@@ -633,7 +673,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_fillArc
   gdk_draw_arc (g->drawable, g->gc, TRUE, 
 		x + g->x_offset, y + g->y_offset, 
 		width, height, angle1 << 6, angle2 << 6);
-  gdk_flush ();
+  schedule_flush ();
 
   gdk_threads_leave ();
 }  
@@ -651,7 +691,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_drawOval
   gdk_draw_arc (g->drawable, g->gc, FALSE, 
 		x + g->x_offset, y + g->y_offset, 
 		width, height, 0, 23040);
-  gdk_flush ();
+  schedule_flush ();
 
   gdk_threads_leave ();
 }  
@@ -669,7 +709,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_fillOval
   gdk_draw_arc (g->drawable, g->gc, TRUE, 
 		x + g->x_offset, y + g->y_offset, 
 		width, height, 0, 23040);
-  gdk_flush ();
+  schedule_flush ();
 
   gdk_threads_leave ();
 }

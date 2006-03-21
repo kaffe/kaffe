@@ -540,14 +540,15 @@ public abstract class AccessibleContext
 
   /**
    * Get any supported accessible relation set. The default implementation
-   * returns null.
+   * returns an empty AccessibleRelationSet.
    *
-   * @return the supported relation set, or null
+   * @return the supported relation set, or <code>null</code>
+   *
    * @see AccessibleRelationSet
    */
   public AccessibleRelationSet getAccessibleRelationSet()
   {
-    return null;
+    return new AccessibleRelationSet();
   }
 
   /**

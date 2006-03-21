@@ -59,6 +59,18 @@ public class PlainView extends View implements TabExpander
    * The color that is used to draw disabled text fields.
    */
   Color disabledColor;
+  
+  /**
+   * While painting this is the textcomponent's current start index
+   * of the selection.
+   */
+  int selectionStart;
+
+  /**
+   * While painting this is the textcomponent's current end index
+   * of the selection.
+   */
+  int selectionEnd;
 
   Font font;
   
@@ -150,12 +162,47 @@ public class PlainView extends View implements TabExpander
   {
     try
       {
-        metrics = g.getFontMetrics();
-        // FIXME: Selected text are not drawn yet.
         Element line = getElement().getElement(lineIndex);
-        drawUnselectedText(g, x, y, line.getStartOffset(),
-                           line.getEndOffset() - 1);
-        //drawSelectedText(g, , , , );
+        int startOffset = line.getStartOffset();
+        int endOffset = line.getEndOffset();
+        
+        if (selectionStart <= startOffset)
+          // Selection starts before the line ...
+          if (selectionEnd <= startOffset)
+            {
+              // end ends before the line: Draw completely unselected text.
+              drawUnselectedText(g, x, y, startOffset, endOffset);
+            }
+          else if (selectionEnd <= endOffset)
+            {
+              // and ends within the line: First part is selected,
+              // second is not.
+              x = drawSelectedText(g, x, y, startOffset, selectionEnd);
+              drawUnselectedText(g, x, y, selectionEnd, endOffset);
+            }
+          else
+            // and ends behind the line: Draw completely selected text.
+            drawSelectedText(g, x, y, startOffset, endOffset);
+        else if (selectionStart < endOffset)
+          // Selection starts within the line ..
+          if (selectionEnd < endOffset)
+            {
+              // and ends within it: First part unselected, second part
+              // selected, third part unselected.
+              x = drawUnselectedText(g, x, y, startOffset, selectionStart);
+              x = drawSelectedText(g, x, y, selectionStart, selectionEnd);
+              drawUnselectedText(g, x, y, selectionEnd, endOffset);
+            }
+          else
+            {
+              // and ends behind the line: First part unselected, second
+              // part selected.
+              x = drawUnselectedText(g, x, y, startOffset, selectionStart);
+              drawSelectedText(g, x, y, selectionStart, selectionEnd);
+            }
+        else
+          // Selection is behind this line: Draw completely unselected text.
+          drawUnselectedText(g, x, y, startOffset, endOffset);
       }
     catch (BadLocationException e)
     {
@@ -171,7 +218,7 @@ public class PlainView extends View implements TabExpander
     g.setColor(selectedColor);
     Segment segment = getLineBuffer();
     getDocument().getText(p0, p1 - p0, segment);
-    return Utilities.drawTabbedText(segment, x, y, g, this, 0);
+    return Utilities.drawTabbedText(segment, x, y, g, this, segment.offset);
   }
 
   /**
@@ -212,6 +259,8 @@ public class PlainView extends View implements TabExpander
     selectedColor = textComponent.getSelectedTextColor();
     unselectedColor = textComponent.getForeground();
     disabledColor = textComponent.getDisabledTextColor();
+    selectionStart = textComponent.getSelectionStart();
+    selectionEnd = textComponent.getSelectionEnd();
 
     Rectangle rect = s.getBounds();
 
@@ -219,11 +268,13 @@ public class PlainView extends View implements TabExpander
     Document document = textComponent.getDocument();
     Element root = document.getDefaultRootElement();
     int y = rect.y + metrics.getAscent();
+    int height = metrics.getHeight();
     
-    for (int i = 0; i < root.getElementCount(); i++)
+    int count = root.getElementCount();
+    for (int i = 0; i < count; i++)
       {
         drawLine(i, g, rect.x, y);
-        y += metrics.getHeight();
+        y += height;
       }
   }
 

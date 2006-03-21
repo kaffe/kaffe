@@ -465,7 +465,6 @@ public class JProgressBar extends JComponent implements SwingConstants,
   public void updateUI()
   {
     setUI((ProgressBarUI) UIManager.getUI(this));
-    invalidate();
   }
 
   /**

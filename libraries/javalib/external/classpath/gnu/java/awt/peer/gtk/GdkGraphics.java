@@ -48,6 +48,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.awt.Toolkit;
 import java.awt.image.ImageObserver;
 import java.text.AttributedCharacterIterator;
 
@@ -373,7 +374,9 @@ public class GdkGraphics extends Graphics
 
   public FontMetrics getFontMetrics (Font font)
   {
-    return new GdkFontMetrics (font);
+    // Get the font metrics through GtkToolkit to take advantage of
+    // the metrics cache.
+    return Toolkit.getDefaultToolkit().getFontMetrics (font);
   }
 
   native void setClipRectangle (int x, int y, int width, int height);

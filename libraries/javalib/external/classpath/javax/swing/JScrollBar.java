@@ -233,8 +233,6 @@ public class JScrollBar extends JComponent implements Adjustable, Accessible
   public void updateUI()
   {
     setUI((ScrollBarUI) UIManager.getUI(this));
-    invalidate();
-    repaint();
   }
 
   /**

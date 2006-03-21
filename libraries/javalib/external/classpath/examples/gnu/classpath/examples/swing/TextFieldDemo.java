@@ -36,9 +36,11 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
 import javax.swing.text.JTextComponent;
@@ -47,7 +49,7 @@ import javax.swing.text.JTextComponent;
  * A simple textfield demo showing various textfields in different states.
  */
 public class TextFieldDemo 
-  extends JFrame
+  extends JPanel
   implements ActionListener
 {
 
@@ -107,8 +109,6 @@ public class TextFieldDemo
     }
   }
 
-  private JPanel content;
-
   /**
    * The left aligned textfields and state buttons.
    */
@@ -157,15 +157,11 @@ public class TextFieldDemo
 
   /**
    * Creates a new demo instance.
-   * 
-   * @param title  the frame title.
    */
-  public TextFieldDemo(String title) 
+  public TextFieldDemo() 
   {
-    super(title);
-    JPanel content = createContent();
-    // initFrameContent() is only called (from main) when running this app 
-    // standalone
+    super();
+    createContent();
   }
   
   /**
@@ -175,15 +171,14 @@ public class TextFieldDemo
    * only the demo content panel is used, the frame itself is never displayed,
    * so we can avoid this step.
    */
-  public void initFrameContent() 
+  void initFrameContent() 
   {
     JPanel closePanel = new JPanel();
     JButton closeButton = new JButton("Close");
     closeButton.setActionCommand("CLOSE");
     closeButton.addActionListener(this);
     closePanel.add(closeButton);
-    content.add(closePanel, BorderLayout.SOUTH);
-    getContentPane().add(content);
+    add(closePanel, BorderLayout.SOUTH);
   }
 
   /**
@@ -193,21 +188,16 @@ public class TextFieldDemo
    * bottom of the panel if they want to (a close button is
    * added if this demo is being run as a standalone demo).
    */       
-  JPanel createContent() 
+  private void createContent() 
   {
-    if (content == null)
-      {
-        content = new JPanel(new BorderLayout());
-        JPanel panel = new JPanel(new GridLayout(5, 1));
-        panel.add(createLeftAlignedPanel());
-        panel.add(createRightAlignedPanel());
-        panel.add(createCenteredPanel());
-        panel.add(createCustomColoredPanel());
-        panel.add(createMiscPanel());
-        content.add(panel);
-        //content.setPreferredSize(new Dimension(400, 300));
-      }
-    return content;        
+    setLayout(new BorderLayout());
+    JPanel panel = new JPanel(new GridLayout(5, 1));
+    panel.add(createLeftAlignedPanel());
+    panel.add(createRightAlignedPanel());
+    panel.add(createCenteredPanel());
+    panel.add(createCustomColoredPanel());
+    panel.add(createMiscPanel());
+    add(panel);
   }
     
   private JPanel createLeftAlignedPanel() 
@@ -498,10 +488,35 @@ public class TextFieldDemo
 
   public static void main(String[] args) 
   {
-    TextFieldDemo app = new TextFieldDemo("TextField Demo");
-    app.initFrameContent();
-    app.pack();
-    app.setVisible(true);
+    SwingUtilities.invokeLater
+    (new Runnable()
+     {
+       public void run()
+       {
+         TextFieldDemo app = new TextFieldDemo();
+         app.initFrameContent();
+         JFrame frame = new JFrame("TextField demo");
+         frame.getContentPane().add(app);
+         frame.pack();
+         frame.setVisible(true);
+       }
+     });
+  }
+
+  /**
+   * Returns a DemoFactory that creates a TextFieldDemo.
+   *
+   * @return a DemoFactory that creates a TextFieldDemo
+   */
+  public static DemoFactory createDemoFactory()
+  {
+    return new DemoFactory()
+    {
+      public JComponent createDemo()
+      {
+        return new TextFieldDemo();
+      }
+    };
   }
 
 }

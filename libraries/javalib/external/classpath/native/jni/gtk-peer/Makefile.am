@@ -1,4 +1,4 @@
-nativelib_LTLIBRARIES = libgtkpeer.la
+nativeexeclib_LTLIBRARIES = libgtkpeer.la
 
 # Gtk/Cairo JNI sources.
 if GTK_CAIRO

@@ -255,7 +255,7 @@ public class BasicInternalFrameUI extends InternalFrameUI
       else if (e.getSource() == titlePane)
         {
           Rectangle fBounds = frame.getBounds();
-
+          frame.putClientProperty("bufferedDragging", Boolean.TRUE);
           dm.dragFrame(frame, e.getX() - xOffset + b.x, e.getY() - yOffset
                                                         + b.y);
         }
@@ -326,7 +326,10 @@ public class BasicInternalFrameUI extends InternalFrameUI
       if (e.getSource() == frame && frame.isResizable())
         dm.endResizingFrame(frame);
       else if (e.getSource() == titlePane)
-        dm.endDraggingFrame(frame);
+        {
+          dm.endDraggingFrame(frame);
+          frame.putClientProperty("bufferedDragging", null);
+        }
     }
 
     /**
@@ -1119,12 +1122,8 @@ public class BasicInternalFrameUI extends InternalFrameUI
         installComponents();
         installKeyboardActions();
 
-        ((JComponent) frame.getRootPane().getGlassPane()).setOpaque(false);
         if (! frame.isSelected())
-          frame.getRootPane().getGlassPane().setVisible(true);
-
-        frame.setOpaque(true);
-        frame.invalidate();
+          frame.getGlassPane().setVisible(true);
       }
   }
 
@@ -1140,9 +1139,7 @@ public class BasicInternalFrameUI extends InternalFrameUI
     uninstallListeners();
     uninstallDefaults();
 
-    ((JComponent) frame.getRootPane().getGlassPane()).setOpaque(true);
     frame.getRootPane().getGlassPane().setVisible(false);
-
     frame = null;
   }
 

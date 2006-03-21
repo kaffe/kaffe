@@ -696,9 +696,18 @@ public abstract class Toolkit
   public abstract Clipboard getSystemClipboard();
 
   /**
-   * Gets the singleton instance of the system selection as a Clipboard object.
+   * Gets the singleton instance of the system selection as a
+   * Clipboard object. The system selection contains the selected text
+   * of the last component/widget that had focus and a text selection.
+   * The default implementation returns null.
    *
-   * @exception HeadlessException If GraphicsEnvironment.isHeadless() is true.
+   * @return The Clipboard holding the system (text) selection or null
+   * if the Toolkit or system doesn't support a selection clipboard.
+   *
+   * @exception HeadlessException If GraphicsEnvironment.isHeadless()
+   * is true.
+   * @exception SecurityException If the current security manager
+   * checkSystemClipboardAccess() doesn't allow access.
    *
    * @since 1.4
    */

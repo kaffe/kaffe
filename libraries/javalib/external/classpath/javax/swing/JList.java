@@ -1536,7 +1536,9 @@ public class JList extends JComponent implements Accessible, Scrollable
    */
   public void ensureIndexIsVisible(int i)
   {
-    scrollRectToVisible(getUI().getCellBounds(this, i, i));
+    Rectangle r = getUI().getCellBounds(this, i, i);
+    if (r != null)
+      scrollRectToVisible(r);
   }
 
   /**

@@ -88,7 +88,7 @@ public interface TreeNode {
    * Returns <code>true</code> if this node allows children, and 
    * <code>false</code> otherwise.
    * 
-   * @returns A boolean.
+   * @return A boolean.
    */
   boolean getAllowsChildren();
 

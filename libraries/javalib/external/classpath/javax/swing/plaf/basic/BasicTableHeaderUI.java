@@ -96,7 +96,7 @@ public class BasicTableHeaderUI extends TableHeaderUI
   /**
    * The header cell border.
    */
-  protected Border cellBorder;
+  private Border cellBorder;
   
   /**
    * If not null, one of the columns is currently being dragged.

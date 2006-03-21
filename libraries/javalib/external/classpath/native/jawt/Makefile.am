@@ -1,4 +1,4 @@
-nativelib_LTLIBRARIES = libjawtgnu.la
+nativeexeclib_LTLIBRARIES = libjawtgnu.la
 
 libjawtgnu_la_SOURCES = jawt.c
 libjawtgnu_la_LIBADD = $(top_builddir)/native/jni/gtk-peer/libgtkpeer.la

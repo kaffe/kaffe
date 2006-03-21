@@ -60,6 +60,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Hashtable;
 
+import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -72,8 +73,8 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
+import javax.swing.border.EtchedBorder;
 import javax.swing.event.MouseInputListener;
-import javax.swing.plaf.BorderUIResource.EtchedBorderUIResource;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.ToolBarUI;
 import javax.swing.plaf.UIResource;
@@ -307,7 +308,7 @@ public class BasicToolBarUI extends ToolBarUI implements SwingConstants
    */
   protected Border createNonRolloverBorder()
   {
-    return new EtchedBorderUIResource();
+    return new EtchedBorder();
   }
 
   /**
@@ -328,7 +329,7 @@ public class BasicToolBarUI extends ToolBarUI implements SwingConstants
    */
   protected Border createRolloverBorder()
   {
-    return new EtchedBorderUIResource()
+    return new EtchedBorder()
       {
 	public void paintBorder(Component c, Graphics g, int x, int y,
 	                        int width, int height)
@@ -577,6 +578,7 @@ public class BasicToolBarUI extends ToolBarUI implements SwingConstants
     rolloverBorder = createRolloverBorder();
 
     borders = new Hashtable();
+    setRolloverBorders(toolBar.isRollover());
 
     fillHashtable();
   }
@@ -595,7 +597,6 @@ public class BasicToolBarUI extends ToolBarUI implements SwingConstants
 
     floatingBorderColor = UIManager.getColor("ToolBar.floatingForeground");
     floatingColor = UIManager.getColor("ToolBar.floatingBackground");
-    setRolloverBorders(toolBar.isRollover());
   }
 
   /**
@@ -707,9 +708,8 @@ public class BasicToolBarUI extends ToolBarUI implements SwingConstants
     if (c instanceof JToolBar)
       {
 	toolBar = (JToolBar) c;
-	toolBar.setOpaque(true);
-	installDefaults();
-	installComponents();
+    installDefaults();
+    installComponents();
 	installListeners();
 	installKeyboardActions();
       }
@@ -754,9 +754,9 @@ public class BasicToolBarUI extends ToolBarUI implements SwingConstants
    */
   protected void setBorderToNonRollover(Component c)
   {
-    if (c instanceof JButton)
+    if (c instanceof AbstractButton)
       {
-	JButton b = (JButton) c;
+	AbstractButton b = (AbstractButton) c;
 	b.setRolloverEnabled(false);
 	b.setBorder(nonRolloverBorder);
       }
@@ -875,8 +875,6 @@ public class BasicToolBarUI extends ToolBarUI implements SwingConstants
   {
     installNormalBorders(toolBar);
     borders = null;
-    rolloverBorder = null;
-    nonRolloverBorder = null;
     cachedBounds = null;
 
     floatFrame = null;
@@ -1231,8 +1229,8 @@ public class BasicToolBarUI extends ToolBarUI implements SwingConstants
     public void propertyChange(PropertyChangeEvent e)
     {
       // FIXME: need name properties so can change floatFrame title.
-      if (e.getPropertyName().equals("rollover"))
-	setRolloverBorders(toolBar.isRollover());
+      if (e.getPropertyName().equals("rollover") && toolBar != null)
+        setRolloverBorders(toolBar.isRollover());
     }
   }
 

@@ -121,7 +121,8 @@ public class UIManager implements Serializable
 
   /** The installed look and feel(s). */
   static LookAndFeelInfo [] installed = {
-    new LookAndFeelInfo("Metal", "javax.swing.plaf.metal.MetalLookAndFeel")
+    new LookAndFeelInfo("Metal", "javax.swing.plaf.metal.MetalLookAndFeel"),
+    new LookAndFeelInfo("GNU", "gnu.javax.swing.plaf.gnu.GNULookAndFeel")
   };
 
   /** The installed auxiliary look and feels. */

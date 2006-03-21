@@ -41,6 +41,7 @@ import java.io.Serializable;
 import java.util.Locale;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
+import java.util.Stack;
 import java.util.Vector;
 
 /**
@@ -1396,11 +1397,10 @@ public class RE extends REToken {
       return (input.charAt(0) == CharIndexed.OUT_OF_BOUNDS);
     REMatch m = new REMatch(numSubs, index, eflags);
     if (firstToken.match(input, m)) {
-	while (m != null) {
+	if (m != null) {
 	    if (input.charAt(m.index) == CharIndexed.OUT_OF_BOUNDS) {
 		return true;
 	    }
-	    m = m.next;
 	}
     }
     return false;
@@ -1508,7 +1508,7 @@ public class RE extends REToken {
   }
   
     /* Implements abstract method REToken.match() */
-    boolean match(CharIndexed input, REMatch mymatch) { 
+    boolean match(CharIndexed input, REMatch mymatch) {
 	if (firstToken == null) {
 	    return next(input, mymatch);
 	}
@@ -1518,7 +1518,19 @@ public class RE extends REToken {
 
 	return firstToken.match(input, mymatch);
     }
-  
+
+    REMatch findMatch(CharIndexed input, REMatch mymatch) {
+        if (mymatch.backtrackStack == null)
+	  mymatch.backtrackStack = new BacktrackStack();
+	boolean b = match(input, mymatch);
+	if (b) {
+	    // mymatch.backtrackStack.push(new REMatch.Backtrack(
+	    //     this, input, mymatch, null));
+	    return mymatch;
+	}
+	return null;
+    }
+
   /**
    * Returns the first match found in the input.  If no match is found,
    * null is returned.
@@ -1942,12 +1954,14 @@ public class RE extends REToken {
    }
 
   void dump(StringBuffer os) {
-    os.append('(');
+    os.append("(?#startRE subIndex=" + subIndex + ")");
     if (subIndex == 0)
       os.append("?:");
     if (firstToken != null)
       firstToken.dumpAll(os);
-    os.append(')');
+    if (subIndex == 0)
+      os.append(")");
+    os.append("(?#endRE subIndex=" + subIndex + ")");
   }
 
   // Cast input appropriately or throw exception

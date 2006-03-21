@@ -54,45 +54,8 @@ public class GtkCanvasPeer extends GtkComponentPeer implements CanvasPeer
     super (c);
   }
 
-  public Graphics getGraphics ()
-  {
-    if (GtkToolkit.useGraphics2D ())
-      return new GdkGraphics2D (this);
-    else
-    return new GdkGraphics (this);
-  }
-
-  public void handleEvent (AWTEvent event)
-  {
-    int id = event.getID();
-      
-    switch (id)
-      {
-      case PaintEvent.PAINT:
-      case PaintEvent.UPDATE:
-	{
-	  try 
-	    {
-	      Graphics g = getGraphics ();
-	      g.setClip (((PaintEvent)event).getUpdateRect());
-		
-	      if (id == PaintEvent.PAINT)
-		awtComponent.paint (g);
-	      else
-		awtComponent.update (g);
-	      
-	      g.dispose ();
-	    } 
-	  catch (InternalError e)
-	    { 
-	      System.err.println (e);
-	    }
-	}
-	break;
-      }
-  }
-
-  /* Preferred size for a drawing widget is always what the user requested */
+  // Preferred size for a drawing widget is always what the user
+  // requested.
   public Dimension getPreferredSize ()
   {
     return awtComponent.getSize ();

@@ -203,12 +203,12 @@ public class Value
   }
 
   /**
-   * Reads the an object of the given Class from the untagged value contained
+   * Reads an object of the given Class from the untagged value contained
    * in the ByteBuffer.
    * 
-   * @param bb contains the Object
+   * @param bb   contains the Object
    * @param type corresponds to the TAG of value to be read 
-   * @return
+   * @return the resultant object
    * @throws JdwpException
    * @throws IOException
    */

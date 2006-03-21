@@ -810,8 +810,6 @@ public class JSplitPane extends JComponent implements Accessible
   public void updateUI()
   {
     setUI((SplitPaneUI) UIManager.getUI(this));
-    invalidate();
-    repaint();
   }
 
   /**

@@ -198,7 +198,6 @@ public class JDesktopPane extends JLayeredPane implements Accessible
   public void updateUI()
   {
     setUI((DesktopPaneUI) UIManager.getUI(this));
-    invalidate();
   }
 
   /**

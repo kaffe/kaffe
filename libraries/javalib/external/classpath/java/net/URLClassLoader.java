@@ -723,13 +723,13 @@ public class URLClassLoader extends SecureClassLoader
           {
             String file = newUrl.getFile();
             String protocol = newUrl.getProtocol();
-	    File dir = new File(file);
 
 	    // If we have a file: URL, we want to make it absolute
 	    // here, before we decide whether it is really a jar.
 	    URL absoluteURL;
 	    if ("file".equals (protocol))
 	      {
+		File dir = new File(file);
 		URL absUrl;
 		try
 		  {
@@ -756,11 +756,10 @@ public class URLClassLoader extends SecureClassLoader
 	      }
 
             // Check that it is not a directory
-            if ("file".equals(protocol))
-		if (dir.isDirectory())
-		    loader = new FileURLLoader(this, newUrl, absoluteURL);
-		else
-		    loader = new JarURLLoader(this, newUrl, absoluteURL);
+            if (! (file.endsWith("/") || file.endsWith(File.separator)))
+              loader = new JarURLLoader(this, newUrl, absoluteURL);
+            else if ("file".equals(protocol))
+              loader = new FileURLLoader(this, newUrl, absoluteURL);
             else
               loader = new RemoteURLLoader(this, newUrl);
 

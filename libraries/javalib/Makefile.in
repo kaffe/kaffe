@@ -428,10 +428,12 @@ EXTRA_DIST = \
 	vmspecific/gnu/bytecodecvssnap/dump.java \
 	vmspecific/gnu/bytecodecvssnap/package.html \
 	vmspecific/gnu/classpath/Configuration.java.in \
+	vmspecific/gnu/classpath/Unsafe.java \
 	vmspecific/gnu/classpath/VMStackWalker.java \
 	vmspecific/gnu/classpath/VMSystemProperties.java \
 	vmspecific/gnu/classpath/jdwp/VMFrame.java \
 	vmspecific/gnu/classpath/jdwp/VMIdManager.java \
+	vmspecific/gnu/classpath/jdwp/VMMethod.java \
 	vmspecific/gnu/classpath/jdwp/VMVirtualMachine.java \
 	vmspecific/gnu/getopt/Getopt.java \
 	vmspecific/gnu/getopt/LongOpt.java \
@@ -544,6 +546,7 @@ EXTRA_DIST = \
 	vmspecific/java/lang/VMCompiler.java \
 	vmspecific/java/lang/VMDouble.java \
 	vmspecific/java/lang/VMFloat.java \
+	vmspecific/java/lang/VMMath.java \
 	vmspecific/java/lang/VMObject.java \
 	vmspecific/java/lang/VMProcess.java \
 	vmspecific/java/lang/VMRuntime.java \

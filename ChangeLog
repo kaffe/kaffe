@@ -1,3 +1,7 @@
+2006-03-22  Dalibor Topic  <robilad@kaffe.org>
+
+	* Resynchronized GNU Classpath.
+
 2006-03-21  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/clib/native/ClassLoader.c (java_lang_VMClassLoader_defineClass): 

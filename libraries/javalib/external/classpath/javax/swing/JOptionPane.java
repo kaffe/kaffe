@@ -1475,7 +1475,6 @@ public class JOptionPane extends JComponent implements Accessible
   public void updateUI()
   {
     setUI((OptionPaneUI) UIManager.getUI(this));
-    invalidate();
   }
 
   /**

@@ -62,6 +62,10 @@ public class BeanContextServicesSupport
     extends BeanContextSupport.BCSChild
   {
     private static final long serialVersionUID = -3263851306889194873L;
+
+    private BCSSChild()
+    {
+    }
   }
 
   protected class BCSSProxyServiceProvider
@@ -69,7 +73,11 @@ public class BeanContextServicesSupport
     BeanContextServiceRevokedListener
   {
     private static final long serialVersionUID = 7078212910685744490L;
-    
+
+    private BCSSProxyServiceProvider()
+    {
+    }
+
     public Iterator getCurrentServiceSelectors (BeanContextServices bcs,
                                                 Class serviceClass)
     {
@@ -103,6 +111,10 @@ public class BeanContextServicesSupport
     private static final long serialVersionUID = 861278251667444782L;
 
     protected BeanContextServiceProvider serviceProvider;
+
+    private BCSSServiceProvider()
+    {
+    }
 
     protected BeanContextServiceProvider getServiceProvider()
     {

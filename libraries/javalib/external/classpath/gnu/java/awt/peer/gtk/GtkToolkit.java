@@ -361,7 +361,16 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
     if (secman != null)
       secman.checkSystemClipboardAccess();
 
-    return GtkClipboard.getInstance();
+    return GtkClipboard.getClipboardInstance();
+  }
+
+  public Clipboard getSystemSelection()
+  {
+    SecurityManager secman = System.getSecurityManager();
+    if (secman != null)
+      secman.checkSystemClipboardAccess();
+    
+    return GtkClipboard.getSelectionInstance();
   }
 
   /**

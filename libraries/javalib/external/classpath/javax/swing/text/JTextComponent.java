@@ -1138,6 +1138,7 @@ public abstract class JTextComponent extends JComponent
     setFocusable(true);
     setEditable(true);
     enableEvents(AWTEvent.KEY_EVENT_MASK);
+    setOpaque(true);
     updateUI();
   }
 

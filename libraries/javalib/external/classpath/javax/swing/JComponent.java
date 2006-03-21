@@ -269,9 +269,8 @@ public abstract class JComponent extends Container implements Serializable
      */
     public String getAccessibleDescription()
     {
-      // TODO: Figure out what exactly to return here. It's possible that this
-      // method simply should return null.
-      return null;
+      // TODO: Figure out how this differs from the super method.
+      return super.getAccessibleDescription();
     }
 
     /**
@@ -548,6 +547,16 @@ public abstract class JComponent extends Container implements Serializable
    * Indicates if this component is currently painting a tile or not.
    */
   private boolean paintingTile;
+
+  /**
+   * A temporary buffer used for fast dragging of components.
+   */
+  private Image dragBuffer;
+
+  /**
+   * Indicates if the dragBuffer is already initialized.
+   */
+  private boolean dragBufferInitialized;
 
   /**
    * A cached Rectangle object to be reused. Be careful when you use that,
@@ -1556,17 +1565,54 @@ public abstract class JComponent extends Container implements Serializable
       }
     else
       {
+        if (getClientProperty("bufferedDragging") != null
+            && dragBuffer == null)
+          {
+            initializeDragBuffer();
+          }
+        else if (getClientProperty("bufferedDragging") == null
+            && dragBuffer != null)
+          {
+            dragBuffer = null;
+          }
+
         if (g.getClip() == null)
           g.setClip(0, 0, getWidth(), getHeight());
-        Graphics g2 = getComponentGraphics(g);
-        paintComponent(g2);
-        paintBorder(g2);
-        paintChildren(g2);
-        Rectangle clip = g2.getClipBounds();
-        if (clip.x == 0 && clip.y == 0 && clip.width == getWidth()
-            && clip.height == getHeight())
-          RepaintManager.currentManager(this).markCompletelyClean(this);
+        if (dragBuffer != null && dragBufferInitialized)
+          {
+            g.drawImage(dragBuffer, 0, 0, this);
+          }
+        else
+          {
+            Graphics g2 = getComponentGraphics(g);
+            paintComponent(g2);
+            paintBorder(g2);
+            paintChildren(g2);
+            Rectangle clip = g2.getClipBounds();
+            if (clip.x == 0 && clip.y == 0 && clip.width == getWidth()
+                && clip.height == getHeight())
+              RepaintManager.currentManager(this).markCompletelyClean(this);
+          }
       }
+  }
+
+  /**
+   * Initializes the drag buffer by creating a new image and painting this
+   * component into it.
+   */
+  private void initializeDragBuffer()
+  {
+    dragBufferInitialized = false;
+    // Allocate new dragBuffer if the current one is too small.
+    if (dragBuffer == null || dragBuffer.getWidth(this) < getWidth()
+        || dragBuffer.getHeight(this) < getHeight())
+      {
+        dragBuffer = createImage(getWidth(), getHeight());
+      }
+    Graphics g = dragBuffer.getGraphics();
+    paint(g);
+    g.dispose();
+    dragBufferInitialized = true;
   }
 
   /**
@@ -1993,14 +2039,14 @@ public abstract class JComponent extends Container implements Serializable
    * Return the condition that determines whether a registered action
    * occurs in response to the specified keystroke.
    *
+   * As of 1.3 KeyStrokes can be registered with multiple simultaneous
+   * conditions.
+   *
    * @param ks The keystroke to return the condition of
    *
    * @return One of the values {@link #UNDEFINED_CONDITION}, {@link
    *     #WHEN_ANCESTOR_OF_FOCUSED_COMPONENT}, {@link #WHEN_FOCUSED}, or {@link
    *     #WHEN_IN_FOCUSED_WINDOW}
-   *
-   * @deprecated As of 1.3 KeyStrokes can be registered with multiple
-   *     simultaneous conditions.
    *
    * @see #registerKeyboardAction(ActionListener, KeyStroke, int)   
    * @see #unregisterKeyboardAction   
@@ -2028,8 +2074,6 @@ public abstract class JComponent extends Container implements Serializable
    * @param ks The keystroke to retrieve the action of
    *
    * @return The action associated with the specified keystroke
-   *
-   * @deprecated Use {@link #getActionMap()}
    */
   public ActionListener getActionForKeyStroke(KeyStroke ks)
   {

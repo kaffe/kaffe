@@ -1,5 +1,5 @@
 /* ServantActivatorPOA.java --
-   Copyright (C) 2005 Free Software Foundation, Inc.
+   Copyright (C) 2005, 2006 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -58,11 +58,11 @@ import org.omg.CORBA.portable.ResponseHandler;
  * You do not need to derive your servant activator from this stub,
  * it is enough to implement the {@link ServantActivator} interface.
  * But you may choose to do this if you need the functional
- * {@link #_all_interfaces()} method or want to keep default behavior during
- * the incarnation or etherialization.
+ * {@link #_all_interfaces(POA, byte[])} method or want to keep default 
+ * behavior during the incarnation or etherialization.
  * </p>
  */
-public class ServantActivatorPOA
+public abstract class ServantActivatorPOA
   extends Servant
   implements InvokeHandler, ServantActivatorOperations
 {

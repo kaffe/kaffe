@@ -29,6 +29,11 @@ public class ZipOutputStream extends DeflaterOutputStream
 private static final int ZIPVER_1_0 = 0x000a;
 private static final int ZIPVER_2_0 = 0x0014;
 
+    /* Copied the fields over from GNU Claspath to make it compile again */
+  /* The following two fields are missing in SUN JDK */
+  private final int ENDNRD =  4;
+  private final int ENDDCD =  6;
+
 private int method = Deflater.DEFLATED;
 private int level = Deflater.DEFAULT_COMPRESSION;
 private ZipEntry curr;

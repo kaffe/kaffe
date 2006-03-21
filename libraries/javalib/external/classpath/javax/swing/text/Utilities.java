@@ -99,8 +99,10 @@ public class Utilities
     int pixelWidth = 0;
     int pos = s.offset;
     int len = 0;
+    
+    int end = s.offset + s.count;
 
-    for (int offset = s.offset; offset < (s.offset + s.count); ++offset)
+    for (int offset = s.offset; offset < end; ++offset)
       {
         char c = buffer[offset];
         if (c == '\t' || c == '\n')
@@ -140,7 +142,7 @@ public class Utilities
     if (len > 0)
       g.drawChars(buffer, pos, len, pixelX, pixelY + ascent);            
     
-    return pixelX;
+    return pixelX + pixelWidth;
   }
 
   /**
@@ -515,7 +517,7 @@ public class Utilities
     breaker.setText(s);
 
     // If mark is equal to the end of the string, just use that position
-    if (mark == s.count + s.offset)
+    if (mark >= s.count)
       return mark;
     
     // Try to find a word boundary previous to the mark at which we 

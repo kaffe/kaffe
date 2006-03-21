@@ -200,6 +200,7 @@ implementation.
 * java.nio::
 * java.nio.channels::
 * gnu.java.nio::
+* java.lang.reflect::
 * Classpath Callbacks::
 @end menu
 
@@ -786,6 +787,7 @@ includes the context of a class (the stack) and the system properties.
 @menu
 * gnu.classpath.VMStackWalker::
 * gnu.classpath.VMSystemProperties::
+* gnu.classpath.Unsafe::
 @end menu
 
 @node gnu.classpath.VMStackWalker,gnu.classpath.VMSystemProperties,gnu.classpath,gnu.classpath
@@ -809,7 +811,7 @@ accessing @code{getCallingClass()}.
 loader of the class.
 @end itemize
 
-@node gnu.classpath.VMSystemProperties,,gnu.classpath.VMStackWalker,gnu.classpath
+@node gnu.classpath.VMSystemProperties,gnu.classpath.Unsafe,gnu.classpath.VMStackWalker,gnu.classpath
 @subsection @code{gnu.classpath.VMSystemProperties}
 
 @code{VMSystemProperties} allows the VM to hook into the property creation
@@ -832,6 +834,38 @@ additional VM-specific ones may also be added.
 @item @code{postInit(Properties)} -- Same as the last, but called after the
 Classpath properties have been added.  The main purpose of this is to allow
 the VM to alter the properties added by GNU Classpath to suit it.
+@end itemize
+
+@node gnu.classpath.Unsafe,,gnu.classpath.VMSystemProperties,gnu.classpath
+@subsection @code{gnu.classpath.Unsafe}
+
+The @code{Unsafe} class provides access to some low-level unsafe operations
+as required by the addition of the java.util.concurrent classes.  These
+focus on direct memory access to the fields within the VM and providing
+atomic update methods.
+
+@itemize @bullet
+@item @code{objectFieldOffset(Field)} -- Provides the caller with the memory
+offset of a particular field.
+@item @code{compareAndSwap*(Object,long,*,*)} -- One of these methods is
+provided for each of int, long and Object (hence the *s).  The value of
+a field pointed to by the given Object and offset is compared with the
+first value and replaced with the second if they are the same.  The reason
+for this method is to make this change operation atomic.
+@item @code{put/get*(Object,long,*)} -- These are like the last set of
+methods, handling integers, longs and Objects, but the field is always
+changed on a put.  Different methods are provided for different semantics.
+Ordered variants perform a lazy put, in that the change does not
+immediately propogate to other threads, while the others provide
+volatile or 'normal' semantics.
+@item @code{arrayBaseOffset(Class)} and @code{arrayIndexScale(Class)} --
+These two methods allow an array class to be traversed by pointer
+arithmetic, by gaining the address of the first element and then
+scaling appropriately for the later ones.
+@item @code{park(boolean,long)} and @code{unpark(Thread)} -- These methods
+block and unblock threads respectively, with an optional timeout being
+provided for the blocking.  @code{unpark} is unsafe as the thread may have
+been destroyed by native code. 
 @end itemize
 
 @node java.util, java.io, gnu.classpath, Classpath Hooks
@@ -1111,7 +1145,7 @@ in a @code{FileInputStream}.
 in a @code{FileOutputStream}.
 @end itemize
 
-@node gnu.java.nio, Classpath Callbacks, java.nio.channels, Classpath Hooks
+@node gnu.java.nio, java.lang.reflect, java.nio.channels, Classpath Hooks
 @section gnu.java.nio
 
 The @code{gnu.java.nio} class provides Classpath implementations of the
@@ -1142,7 +1176,25 @@ operation to be performed.  This is represented by the @code{static}
 @code{native} method, @code{select(int[],int[],int[],long)}, and a default
 implementation of this is provided.
 
-@node Classpath Callbacks, , gnu.java.nio, Classpath Hooks
+@node java.lang.reflect, Classpath Callbacks, gnu.java.nio, Classpath Hooks
+@section @code{java.lang.reflect}
+@code{java.lang.reflect} provides the interface to Java's reflection
+facilities.  Via reflection, programmers can obtain type information about
+a particular instance at runtime or dynamically create new instances.
+
+@menu
+* java.lang.reflect.VMArray::
+@end menu
+
+@node java.lang.reflect.VMArray,,,java.lang.reflect
+@subsection @code{java.lang.reflect.VMArray}
+
+The @code{VMArray} class provides a hook, @code{createObjectArray},
+which the VM uses to generate a new non-primitive array of a
+particular class and size.  The default implementation simply passes
+the job down to the standard JNI function, @code{NewObjectArray}.
+
+@node Classpath Callbacks, , java.lang.reflect, Classpath Hooks
 Some of the classes you implement for the VM will need to call back to
 package-private methods in Classpath:
 

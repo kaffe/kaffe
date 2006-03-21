@@ -364,17 +364,20 @@ public class BasicSliderUI extends SliderUI
      */
     public void mouseDragged(MouseEvent e)
     {
-      currentMouseX = e.getX();
-      currentMouseY = e.getY();
-      if (slider.getValueIsAdjusting())
+      if (slider.isEnabled())
         {
-	  int value;
-	  if (slider.getOrientation() == JSlider.HORIZONTAL)
-	    value = valueForXPosition(currentMouseX) - offset;
-	  else
-	    value = valueForYPosition(currentMouseY) - offset;
+          currentMouseX = e.getX();
+          currentMouseY = e.getY();
+          if (slider.getValueIsAdjusting())
+            {
+              int value;
+              if (slider.getOrientation() == JSlider.HORIZONTAL)
+                value = valueForXPosition(currentMouseX) - offset;
+              else
+                value = valueForYPosition(currentMouseY) - offset;
 
-	  slider.setValue(value);
+              slider.setValue(value);
+            }
         }
     }
 
@@ -399,32 +402,35 @@ public class BasicSliderUI extends SliderUI
      */
     public void mousePressed(MouseEvent e)
     {
-      currentMouseX = e.getX();
-      currentMouseY = e.getY();
-
-      int value;
-      if (slider.getOrientation() == JSlider.HORIZONTAL)
-	value = valueForXPosition(currentMouseX);
-      else
-	value = valueForYPosition(currentMouseY);
-
-      if (slider.getSnapToTicks())
-	value = findClosestTick(value);
-
-      // If the thumb is hit, then we don't need to set the timers to move it. 
-      if (! thumbRect.contains(e.getPoint()))
+      if (slider.isEnabled())
         {
-	  // The mouse has hit some other part of the slider.
-	  // The value moves no matter where in the slider you hit.
-	  if (value > slider.getValue())
-	    scrollDueToClickInTrack(POSITIVE_SCROLL);
-	  else
-	    scrollDueToClickInTrack(NEGATIVE_SCROLL);
-        }
-      else
-        {
-	  slider.setValueIsAdjusting(true);
-	  offset = value - slider.getValue();
+          currentMouseX = e.getX();
+          currentMouseY = e.getY();
+
+          int value;
+          if (slider.getOrientation() == JSlider.HORIZONTAL)
+            value = valueForXPosition(currentMouseX);
+          else
+            value = valueForYPosition(currentMouseY);
+
+          if (slider.getSnapToTicks())
+            value = findClosestTick(value);
+
+          // If the thumb is hit, then we don't need to set the timers to move it. 
+          if (! thumbRect.contains(e.getPoint()))
+            {
+              // The mouse has hit some other part of the slider.
+              // The value moves no matter where in the slider you hit.
+              if (value > slider.getValue())
+                scrollDueToClickInTrack(POSITIVE_SCROLL);
+              else
+                scrollDueToClickInTrack(NEGATIVE_SCROLL);
+            }
+          else
+            {
+              slider.setValueIsAdjusting(true);
+              offset = value - slider.getValue();
+            }
         }
     }
 
@@ -436,17 +442,20 @@ public class BasicSliderUI extends SliderUI
      */
     public void mouseReleased(MouseEvent e)
     {
-      currentMouseX = e.getX();
-      currentMouseY = e.getY();
-
-      if (slider.getValueIsAdjusting())
+      if (slider.isEnabled())
         {
-	  slider.setValueIsAdjusting(false);
-	  if (slider.getSnapToTicks())
-	    slider.setValue(findClosestTick(slider.getValue()));
+          currentMouseX = e.getX();
+          currentMouseY = e.getY();
+
+          if (slider.getValueIsAdjusting())
+            {
+              slider.setValueIsAdjusting(false);
+              if (slider.getSnapToTicks())
+                slider.setValue(findClosestTick(slider.getValue()));
+            }
+          if (scrollTimer != null)
+            scrollTimer.stop();
         }
-      if (scrollTimer != null)
-	scrollTimer.stop();
     }
 
     /**

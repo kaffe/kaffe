@@ -59,6 +59,7 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.AbstractBorder;
 import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
 import javax.swing.plaf.BorderUIResource;
 import javax.swing.plaf.UIResource;
 import javax.swing.plaf.basic.BasicBorders;
@@ -1025,14 +1026,10 @@ public class MetalBorders
     public void paintBorder(Component c, Graphics g, int x, int y, int w, 
             int h)
     {
-      boolean mouseIsOver = false;
-      if (c instanceof AbstractButton)
-        {
-          ButtonModel bmodel = ((AbstractButton) c).getModel();
-          mouseIsOver = bmodel.isRollover();
-        }
-      if (mouseIsOver)
-        super.paintBorder(c, g, x, y, w, h);
+      // TODO: What should be done here? Obviously the ButtonBorder already
+      // handles the rollover state in Sun's impl. Maybe this is only there
+      // for backwards compatibility.
+      super.paintBorder(c, g, x, y, w, h);
     }
   }
   
@@ -1520,8 +1517,7 @@ public class MetalBorders
       {
         Border outer = new ButtonBorder();
         Border inner = new RolloverMarginBorder();
-        toolbarButtonBorder = new BorderUIResource.CompoundBorderUIResource
-          (outer, inner);
+        toolbarButtonBorder = new CompoundBorder(outer, inner);
       }
     return toolbarButtonBorder;
   }

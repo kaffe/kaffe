@@ -1,5 +1,5 @@
-/* java.lang.reflect.Array native functions
-   Copyright (C) 1998, 2004  Free Software Foundation, Inc.
+/* DemoFactory.java -- Creates components used as separate Swing demos
+   Copyright (C) 2006 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -7,7 +7,7 @@ GNU Classpath is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
 any later version.
- 
+
 GNU Classpath is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -35,28 +35,23 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
-/*
- * java.lang.reflect.Array native functions.
- * Author: John Keiser
- * Version: 1.1.0
- * Date: 2 Jun 1998
+
+package gnu.classpath.examples.swing;
+
+import javax.swing.JComponent;
+
+/**
+ * Creates components used in the Swing demo as separate demos.
+ *
+ * @author Roman Kennke (kennke@aicas.de)
  */
-
-#include <config.h>
-#include <stddef.h>
-
-#include "java_lang_reflect_Array.h"
-
-/*
- * Class:     java_lang_reflect_Array
- * Method:    createObjectArray
- * Signature: (Ljava/lang/Class;I)Ljava/lang/Object;
- */
-JNIEXPORT jobject JNICALL
-Java_java_lang_reflect_Array_createObjectArray
-  (JNIEnv * env,
-   jclass thisClass __attribute__ ((__unused__)),
-   jclass arrayType, jint arrayLength)
+public interface DemoFactory
 {
-  return (jobject) (*env)->NewObjectArray (env, arrayLength, arrayType, NULL);
+
+  /**
+   * Creates the component that should be as demo application.
+   * 
+   * @return the component that should be as demo application
+   */
+  JComponent createDemo();
 }

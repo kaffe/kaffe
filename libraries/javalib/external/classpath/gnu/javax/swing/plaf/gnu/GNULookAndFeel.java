@@ -19,7 +19,7 @@ Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 02110-1301 USA.
 */
 
-package gnu.classpath.examples.swing;
+package gnu.javax.swing.plaf.gnu;
 
 import java.awt.Color;
 import java.awt.Component;

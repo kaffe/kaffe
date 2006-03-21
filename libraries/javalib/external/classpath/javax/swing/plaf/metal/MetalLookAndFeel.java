@@ -90,7 +90,7 @@ public class MetalLookAndFeel extends BasicLookAndFeel
   protected void createDefaultTheme()
   {
     if (theme == null)
-      setCurrentTheme(new DefaultMetalTheme());
+      setCurrentTheme(new OceanTheme());
   }
 
   /**

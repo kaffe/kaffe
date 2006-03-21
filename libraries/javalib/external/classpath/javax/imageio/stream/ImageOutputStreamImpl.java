@@ -52,7 +52,7 @@ public abstract class ImageOutputStreamImpl extends ImageInputStreamImpl
     // Do nothing here.
   }
 
-  protected void flushBits()
+  protected final void flushBits()
     throws IOException
   {
     // FIXME: Implement me.

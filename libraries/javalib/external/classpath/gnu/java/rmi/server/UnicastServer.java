@@ -50,11 +50,14 @@ import java.rmi.NoSuchObjectException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.ServerError;
+import java.rmi.activation.ActivationException;
+import java.rmi.activation.ActivationID;
 import java.rmi.server.ObjID;
 import java.rmi.server.UID;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -72,9 +75,24 @@ public class UnicastServer
    * Mapping obj itself to server ref by identity.
    */
   static private Map refcache = Collections.synchronizedMap(new WeakIdentityHashMap());
-
+  
+  /**
+   * Mapping the registered activatable objects into they server references.
+   */
+  public static Map actIds = new Hashtable();
+  
+  /**
+   * The reference to the local distributed garbage collector. 
+   */
   static private DGCImpl dgc;
-
+  
+  /**
+   * Connect this server reference to the server, allowing the local
+   * implementation, associated with this object, to receive remote calls.
+   * 
+   * @param obj the server reference, encloses the (usually local) remote
+   *          object.
+   */
   public static void exportObject(UnicastServerRef obj)
   {
     startDGC();
@@ -82,16 +100,83 @@ public class UnicastServer
     refcache.put(obj.myself, obj);
     obj.manager.startServer();
   }
-
+  
+  /**
+   * Register the activatable object into the table of the activatable
+   * objects.
+   */
+  public static void registerActivatable(ActivatableServerRef ref)
+  {
+    actIds.put(ref.actId, ref);
+  }
+  
+  /**
+   * Export tha activatable object. The object id is placed into the map,
+   * but the object itself not. This is enough to deliver call to
+   * the ref.incomingMessageCall where the object will be instantiated,
+   * if not present.
+   */
+  public static void exportActivatableObject(ActivatableServerRef ref)
+  {
+    startDGC();
+    objects.put(ref.objid, ref);
+    ref.manager.startServer();
+    actIds.put(ref.actId, ref);
+  }
+    
+  
+  /**
+   * Get the activatable server reference that is handling activation of the
+   * given activation id.
+   */
+  public static ActivatableServerRef getActivatableRef(ActivationID id)
+      throws ActivationException
+  {
+    ActivatableServerRef ref = (ActivatableServerRef) actIds.get(id);
+    if (ref == null)
+      throw new ActivationException(id + " was not registered with this server");
+    return ref;
+  }
+  
+  /**
+   * Unregister the previously registered activatable server reference.
+   */
+  public static void unregisterActivatable(ActivationID id)
+  {
+     actIds.remove(id);    
+  }
+  
   // FIX ME: I haven't handle force parameter
+  /**
+   * Remove the given server reference. The remote object, associated with
+   * this reference, will no longer receive remote calls via this server.
+   */
   public static boolean unexportObject(UnicastServerRef obj, boolean force)
   {
     objects.remove(obj.objid);
     refcache.remove(obj.myself);
     obj.manager.stopServer();
+    
+    if (obj instanceof ActivatableServerRef)
+      {
+        ActivationID id = ((ActivatableServerRef) obj).actId;
+        unregisterActivatable(id);
+      }
     return true;
   }
-
+  
+  /**
+   * Get the exported reference of the given Remote. The identity map is used,
+   * the non-null value will only be returned if exactly the passed remote
+   * is part of the registered UnicastServerRef. 
+   * 
+   * @param remote the Remote that is connected to this server via 
+   * {@link UnicastServerRef}.
+   * 
+   * @return the UnicastServerRef that is used to connect the passed
+   * remote with this server or null, if this Remote is not connected
+   * to this server.
+   */
   public static UnicastServerRef getExportedRef(Remote remote)
   {
     return (UnicastServerRef) refcache.get(remote);

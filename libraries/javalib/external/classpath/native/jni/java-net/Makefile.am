@@ -1,4 +1,4 @@
-nativelib_LTLIBRARIES = libjavanet.la
+nativeexeclib_LTLIBRARIES = libjavanet.la
 
 libjavanet_la_SOURCES = javanet.c \
 			javanet.h \

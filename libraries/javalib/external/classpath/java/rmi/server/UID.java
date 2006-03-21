@@ -42,6 +42,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.InetAddress;
 
 /**
  * Represents the unique identifier over time for the host which has generated
@@ -187,10 +188,26 @@ public final class UID
    */
   static int getMachineId()
   {
+    int hostIpHash;
+
+    try
+      {
+        // Try to get the host IP.
+        String host = InetAddress.getLocalHost().toString();
+        // This hash is content - based, not the address based.
+        hostIpHash = host.hashCode();
+      }
+    catch (Exception e)
+      {
+        // Failed due some reason.
+        hostIpHash = 0;
+      }
+
     // Should be the unque address if hashcodes are addresses.
     // Additionally, add the time when the RMI system was probably started
     // (this class was first instantiated).
-    return UID.class.hashCode() + (int) System.currentTimeMillis();
+    return new Object().hashCode() ^ (int) System.currentTimeMillis()
+           ^ hostIpHash;
   }
   
   /**

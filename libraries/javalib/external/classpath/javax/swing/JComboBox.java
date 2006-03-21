@@ -252,7 +252,6 @@ public class JComboBox extends JComponent implements ItemSelectable,
   public void updateUI()
   {
     setUI((ComboBoxUI) UIManager.getUI(this));
-    invalidate();
   }
 
   /**
@@ -927,7 +926,7 @@ public class JComboBox extends JComponent implements ItemSelectable,
    */
   public void actionPerformed(ActionEvent e)
   {
-    setSelectedItem(((ComboBoxEditor) e.getSource()).getItem());
+    setSelectedItem(getEditor().getItem());
     setPopupVisible(false);
   }
 

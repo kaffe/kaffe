@@ -50,7 +50,6 @@ import javax.swing.JComponent;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.plaf.ComponentUI;
-import javax.swing.plaf.UIResource;
 import javax.swing.plaf.basic.BasicButtonListener;
 import javax.swing.plaf.basic.BasicButtonUI;
 
@@ -234,7 +233,8 @@ public class MetalButtonUI
   public void update(Graphics g, JComponent c)
   {
     AbstractButton b = (AbstractButton) c;
-    if (b.isOpaque() && UIManager.get(getPropertyPrefix() + "gradient") != null
+    if (b.isContentAreaFilled()
+        && UIManager.get(getPropertyPrefix() + "gradient") != null
         && !b.getModel().isPressed() && b.isEnabled())
       {
         MetalUtils.paintGradient(g, 0, 0, c.getWidth(), c.getHeight(),

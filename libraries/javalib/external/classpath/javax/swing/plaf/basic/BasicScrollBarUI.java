@@ -383,7 +383,7 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
      *
      * @return Whether the thumb should keep scrolling.
      */
-    public boolean shouldScroll(int direction)
+    boolean shouldScroll(int direction)
     {
       int value;
       if (scrollbar.getOrientation() == HORIZONTAL)

@@ -349,105 +349,121 @@ public class GridBagLayout
       // be invalidated, clearing the layout information cache,
       // layoutInfo.  So we wait until after this for loop to set
       // layoutInfo.
-      for(int i = 0; i < components.length; i++)
-	{
-          Component component = components [i];
-		
-          // If component is not visible we dont have to care about it.
-          if (!component.isVisible())
-            continue;
+      Component lastComp = null;
+      int cellx = 0;
+      int celly = 0;
+      int cellw = 0;
+      int cellh = 0;
+      for (int i = 0; i < components.length; i++)
+      {
+        Component component = components[i];
 
-          GridBagConstraints constraints =
-              lookupInternalConstraints(component);
-          int cellx = sumIntArray(info.colWidths, constraints.gridx);
-          int celly = sumIntArray(info.rowHeights, constraints.gridy);
-          int cellw = sumIntArray(info.colWidths,
-                                  constraints.gridx + constraints.gridwidth) - cellx;
-          int cellh = sumIntArray(info.rowHeights,
-                                  constraints.gridy + constraints.gridheight) - celly;
+        // If component is not visible we dont have to care about it.
+        if (! component.isVisible())
+          continue;
 
-          Insets insets = constraints.insets;
-          if (insets != null)
-	    {
-              cellx += insets.left;
-              celly += insets.top;
-              cellw -= insets.left + insets.right;
-              cellh -= insets.top + insets.bottom;
-	    }
+        Dimension dim = component.getPreferredSize();
+        GridBagConstraints constraints = lookupInternalConstraints(component);
+        
+        if (lastComp != null
+            && constraints.gridheight == GridBagConstraints.REMAINDER)
+          celly += cellh;
+        else
+          celly = sumIntArray(info.rowHeights, constraints.gridy);
+        
+        if (lastComp != null
+            && constraints.gridwidth == GridBagConstraints.REMAINDER)
+          cellx += cellw;
+        else
+          cellx = sumIntArray(info.colWidths, constraints.gridx);
 
-          Dimension dim = component.getPreferredSize();
+        cellw = sumIntArray(info.colWidths, constraints.gridx
+                                            + constraints.gridwidth) - cellx;
+        cellh = sumIntArray(info.rowHeights, constraints.gridy
+                                             + constraints.gridheight) - celly;
+        
+        Insets insets = constraints.insets;
+        if (insets != null)
+          {
+            cellx += insets.left;
+            celly += insets.top;
+            cellw -= insets.left + insets.right;
+            cellh -= insets.top + insets.bottom;
+          }
 
-          // Note: Documentation says that padding is added on both sides, but
-          // visual inspection shows that the Sun implementation only adds it
-          // once, so we do the same.
-          dim.width += constraints.ipadx;
-          dim.height += constraints.ipady;
+        // Note: Documentation says that padding is added on both sides, but
+        // visual inspection shows that the Sun implementation only adds it
+        // once, so we do the same.
+        dim.width += constraints.ipadx;
+        dim.height += constraints.ipady;
 
-          switch(constraints.fill)
-	    {
-            case GridBagConstraints.HORIZONTAL:
-              dim.width = cellw;
-              break;
-            case GridBagConstraints.VERTICAL:
-              dim.height = cellh;
-              break;
-            case GridBagConstraints.BOTH:
-              dim.width = cellw;
-              dim.height = cellh;
-              break;
-	    }
+        switch (constraints.fill)
+          {
+          case GridBagConstraints.HORIZONTAL:
+            dim.width = cellw;
+            break;
+          case GridBagConstraints.VERTICAL:
+            dim.height = cellh;
+            break;
+          case GridBagConstraints.BOTH:
+            dim.width = cellw;
+            dim.height = cellh;
+            break;
+          }
 
-          int x = 0;
-          int y = 0;
+        int x = 0;
+        int y = 0;
 
-          switch(constraints.anchor)
-	    {
-            case GridBagConstraints.NORTH:
-              x = cellx + (cellw - dim.width) / 2;
-              y = celly;
-              break;
-            case GridBagConstraints.SOUTH:
-              x = cellx + (cellw - dim.width) / 2;
-              y = celly + cellh - dim.height;
-              break;
-            case GridBagConstraints.WEST:
-              x = cellx;
-              y = celly + (cellh - dim.height) / 2;
-              break;
-            case GridBagConstraints.EAST:
-              x = cellx + cellw - dim.width;
-              y = celly + (cellh - dim.height) / 2;
-              break;
-            case GridBagConstraints.NORTHEAST:
-              x = cellx + cellw - dim.width;
-              y = celly;
-              break;
-            case GridBagConstraints.NORTHWEST:
-              x = cellx;
-              y = celly;
-              break;
-            case GridBagConstraints.SOUTHEAST:
-              x = cellx + cellw - dim.width;
-              y = celly + cellh - dim.height;
-              break;
-            case GridBagConstraints.SOUTHWEST:
-              x = cellx;
-              y = celly + cellh - dim.height;
-              break;
-            default:
-              x = cellx + (cellw - dim.width) / 2;
-              y = celly + (cellh - dim.height) / 2;
-              break;
-	    }
-          component.setBounds(info.pos_x + x, info.pos_y + y, dim.width, dim.height);
-	}
+        switch (constraints.anchor)
+          {
+          case GridBagConstraints.NORTH:
+            x = cellx + (cellw - dim.width) / 2;
+            y = celly;
+            break;
+          case GridBagConstraints.SOUTH:
+            x = cellx + (cellw - dim.width) / 2;
+            y = celly + cellh - dim.height;
+            break;
+          case GridBagConstraints.WEST:
+            x = cellx;
+            y = celly + (cellh - dim.height) / 2;
+            break;
+          case GridBagConstraints.EAST:
+            x = cellx + cellw - dim.width;
+            y = celly + (cellh - dim.height) / 2;
+            break;
+          case GridBagConstraints.NORTHEAST:
+            x = cellx + cellw - dim.width;
+            y = celly;
+            break;
+          case GridBagConstraints.NORTHWEST:
+            x = cellx;
+            y = celly;
+            break;
+          case GridBagConstraints.SOUTHEAST:
+            x = cellx + cellw - dim.width;
+            y = celly + cellh - dim.height;
+            break;
+          case GridBagConstraints.SOUTHWEST:
+            x = cellx;
+            y = celly + cellh - dim.height;
+            break;
+          default:
+            x = cellx + (cellw - dim.width) / 2;
+            y = celly + (cellh - dim.height) / 2;
+            break;
+          }
+        component.setBounds(info.pos_x + x, info.pos_y + y, dim.width,
+                            dim.height);
+        lastComp = component;
+      }
 
-      // DEBUG
-      //dumpLayoutInfo (info);
+    // DEBUG
+    //dumpLayoutInfo(info);
 
-      // Cache layout information.
-      layoutInfo = getLayoutInfo (parent, PREFERREDSIZE);
-    }
+    // Cache layout information.
+    layoutInfo = getLayoutInfo(parent, PREFERREDSIZE);
+  }
 
     /**
      * Obsolete.
@@ -786,7 +802,7 @@ public class GridBagLayout
             height += constraints.insets.top + constraints.insets.bottom;
 
           height += constraints.ipady;
-
+          
           distributeSizeAndWeight(height,
                                   constraints.weighty, 
                                   constraints.gridy,
@@ -916,7 +932,7 @@ public class GridBagLayout
           sizes[start] = Math.max(sizes[start], size);
           weights[start] = Math.max(weights[start], weight);
         }
-      else if (span > 1)
+      else
         {
           int numOccupied = span;
           int lastOccupied = -1;

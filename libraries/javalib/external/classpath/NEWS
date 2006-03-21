@@ -1,3 +1,22 @@
+New in release 0.91 (UNRELEASED)
+
+* Experimental printing support: The API implementation of the javax.print 
+  packages has been finished and work on the printing provider implementation
+  started. Currently supported features from the Java Print Service API are 
+  print service discovery (CUPS registered printers), single document print 
+  jobs and support for client-formatted print data. An example application
+  (see: examples/gnu/classpath/examples/print/Demo) has been added to show 
+  the API usage for service discovery and printing of files.
+* Free Swing improvements: Support for OceanTheme has been mostly completed
+  and turned on as default Metal theme.
+
+Runtime interface changes:
+
+* A new class, VMArray, is now available which separates the native
+  array creation method from java.lang.reflect.Array.  
+* A new class, gnu.classpath.Unsafe, is provided for handling the
+  new low-level operations required by java.util.concurrent.
+
 New in release 0.90 (March 6, 2006)
 
 * Free Swing improvements: JTable columns are rearrangeable and

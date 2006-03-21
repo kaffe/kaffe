@@ -157,13 +157,15 @@ public class MetalToggleButtonUI
   /**
    * Paints the text for the button.
    * 
+   * As of JDK 1.4 this method is obsolete.
+   * Use {@link BasicButtonUI#paintText(java.awt.Graphics, 
+   * javax.swing.AbstractButton, java.awt.Rectangle, java.lang.String)}.
+   *
    * @param g  the graphics device.
    * @param c  the component.
    * @param textRect  the bounds for the text.
    * @param text  the text.
    * 
-   * @deprecated 1.4 Use {@link BasicButtonUI#paintText(java.awt.Graphics, 
-   * javax.swing.AbstractButton, java.awt.Rectangle, java.lang.String)}.
    */
   protected void paintText(Graphics g, JComponent c, Rectangle textRect,
                            String text)

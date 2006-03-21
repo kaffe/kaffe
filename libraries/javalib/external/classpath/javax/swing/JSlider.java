@@ -381,8 +381,6 @@ public class JSlider extends JComponent implements SwingConstants, Accessible,
   public void updateUI()
   {
     setUI((SliderUI) UIManager.getUI(this));
-    invalidate();
-    repaint();
   }
 
   /**
