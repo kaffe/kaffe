@@ -66,16 +66,18 @@ java_lang_VMClassLoader_defineClass(struct Hjava_lang_ClassLoader* this, struct 
 	classFile hand;
 	classEntry *centry;
 	errorInfo info;
+	const unsigned char* buf;
 
 	/* This is the error sent by JDK 1.4.2 */
 	if (length == 0)
 		SignalError("java.lang.ClassFormatError", "truncated class");
 	if (length < 0)
 		SignalError("java.lang.ArrayIndexOutOfBoundsException", "invalid data length"); 
+	buf = (const unsigned char*) &unhand_array(data)->body[offset];
 	classFileInit(&hand,
 		      NULL,
-		      &unhand_array(data)->body[offset],
-		      (unsigned) length,
+		      buf,
+		      (size_t) length,
 		      CP_BYTEARRAY);
 
 	clazz = newClass();
