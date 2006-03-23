@@ -1,3 +1,8 @@
+2006-03-23 Alexander Boettcher  <alex@kaffe.org>
+
+	* config/i386/jit.h: fix compiler warning. Initialize last
+	element to zero.
+
 2006-03-23  Dalibor Topic  <robilad@kaffe.org>
 
 	* README, WHATSNEW: Added information about Blackfin support.
@@ -39,7 +44,7 @@
 
 	* config/i386/openbsd2/md.h (KAFFEMD_STACK_ERROR, KAFFEMD_STACK_INFINITE,
 	KAFFEMD_STACKSIZE, mdSetStackSize, KAFFEMD_STACKEND) Added.
-	
+
 2006-03-22  Dalibor Topic  <robilad@kaffe.org>
 
 	Fix for #30.
