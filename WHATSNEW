@@ -10,6 +10,7 @@ What's New Since Kaffe 1.1.6
   instead of the merged in one.
 * Merged in GNU Classpath completely.
 * Merged in port to DROPS.
+* Merged in port to Blackfin CPU.
 * Support for DragonFly BSD.
 * Added simple direct threading interpreter implementation.
 

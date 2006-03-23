@@ -3998,7 +3998,7 @@ _ACEOF
 _ACEOF
 
 	;;
-     *-*-linux*)
+     *-*-linux*|*-*-uclinux*)
 	cat >>confdefs.h <<\_ACEOF
 #define GC_LINUX_THREADS 1
 _ACEOF

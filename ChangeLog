@@ -1,3 +1,35 @@
+2006-03-23  Dalibor Topic  <robilad@kaffe.org>
+
+	* README, WHATSNEW: Added information about Blackfin support.
+
+2006-03-23  Kang Shuo  <blackfin.kang@gmail.com>
+
+	* config/Makefile.am,
+	config/Makefile.in,
+	config/config.alias,
+	kaffe/kaffevm/boehm-gc/boehm/config.sub,
+	kaffe/kaffevm/boehm-gc/boehm/configure,
+	kaffe/kaffevm/boehm-gc/boehm/configure.ac:
+	Updated to support blackfin.
+
+	* config/bfin/atomicity.h
+	config/bfin/callKaffeException.h
+	config/bfin/common.h
+	config/bfin/jit-bfin.def
+	config/bfin/jit-icode.h
+	config/bfin/jit.h
+	config/bfin/jit3-bfin.def
+	config/bfin/jit3-icode.h
+	config/bfin/sysdepCallMethod.h
+	config/bfin/threads.h
+	config/bfin/trampolines.S
+	config/bfin/uclinux/config.frag
+	config/bfin/uclinux/jit-md.h
+	config/bfin/uclinux/md.c
+	config/bfin/uclinux/md.h
+	config/bfin/uclinux/sigcontextinfo.h:
+	New files.
+
 2006-03-23  Kurt Miller <truk@optonline.net>
 
 	Fixes for OpenBSD stack handling.

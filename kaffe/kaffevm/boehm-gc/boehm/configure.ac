@@ -22,7 +22,7 @@ AC_INIT(gc,6.6,Hans.Boehm@hp.com)
 AC_CONFIG_SRCDIR(gcj_mlc.c)
 AC_CANONICAL_TARGET 
 AC_PREREQ(2.53)
-AC_REVISION($Revision: 1.4 $)
+AC_REVISION($Revision: 1.5 $)
 GC_SET_VERSION
 AM_INIT_AUTOMAKE
 
@@ -86,7 +86,7 @@ case "$THREADS" in
 	fi
 	AC_DEFINE(THREAD_LOCAL_ALLOC)
 	;;
-     *-*-linux*)
+     *-*-linux*|*-*-uclinux*)
 	AC_DEFINE(GC_LINUX_THREADS)
 	AC_DEFINE(_REENTRANT)
 	;;

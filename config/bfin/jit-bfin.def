@@ -1,0 +1,1755 @@
+/* 
+ * jit-arm.def
+ * ARM instruction definition.
+ *
+ * Copyright (c) 1996, 1997, 1999
+ *	Transvirtual Technologies, Inc.  All rights reserved.
+ *
+ * See the file "license.terms" for information on usage and redistribution 
+ * of this file. 
+ */
+
+#ifdef KAFFE_VMDEBUG
+int jit_debug;
+#define debug(x)        (jit_debug ? dprintf("%x:\t", CODEPC), dprintf x : 0)
+#else
+#define	debug(x)
+#endif
+
+#include "icode.h"
+
+/*
+ * The information in this file was extracted from the ARM
+ * Architecture Reference, Document ARM DDI 0100A.
+ *
+ * The page and section numbers correspond to this document.
+ */
+#define	R0	0		/* arg0 + int return */
+#define	R1	1		/* arg2 */
+#define	R2	2		/* arg3 */
+#define	R3	3		/* arg4 */
+#define	R4	4
+#define	R5	5
+#define	R6	6
+#define	R7	7
+#define	R8	8
+#define	R9	9
+#define	R10	10
+#define	R11	11
+#define	R12	12
+#define	R13	13
+#define	R14	14
+#define	R15	15
+
+#define	F0	0		/* float return */
+#define	F1	1
+#define	F2	2
+#define	F3	3
+#define	F4	4
+#define	F5	5
+#define	F6	6
+#define	F7	7
+
+#define	Reg_F0	(R15 + 1 + F0)
+#define	Reg_F1	(R15 + 1 + F1)
+#define	Reg_F2	(R15 + 1 + F2)
+#define	Reg_F3	(R15 + 1 + F3)
+#define	Reg_F4	(R15 + 1 + F4)
+#define	Reg_F5	(R15 + 1 + F5)
+#define	Reg_F6	(R15 + 1 + F6)
+#define	Reg_F7	(R15 + 1 + F7)
+
+/*
+ * The bits for each register - used for pushing and popping.
+ */
+#define	BR0	(1<<R0)
+#define	BR1	(1<<R1)
+#define	BR2	(1<<R2)
+#define	BR3	(1<<R3)
+#define	BR4	(1<<R4)
+#define	BR5	(1<<R5)
+#define	BR6	(1<<R6)
+#define	BR7	(1<<R7)
+#define	BR8	(1<<R8)
+#define	BR9	(1<<R9)
+#define	BR10	(1<<R10)
+#define	BR11	(1<<R11)
+#define	BR12	(1<<R12)
+#define	BR13	(1<<R13)
+#define	BR14	(1<<R14)
+#define	BR15	(1<<R15)
+
+/*
+ * Some register aliases.
+ */
+#define	FP	R11
+#define	IP	R12
+#define	SP	R13
+#define	LR	R14
+#define	PC	R15
+
+#define	BFP	BR11
+#define	BIP	BR12
+#define	BSP	BR13
+#define	BLR	BR14
+#define	BPC	BR15
+
+/*
+ * Define condition codes, see 3.2 pg 3-3
+ */
+#define	CC_EQ		( 0 << 28)	/* Equal */
+#define	CC_NE		( 1 << 28)	/* Not Equal */
+#define	CC_CS		( 2 << 28)	/* Carry Set/Unsigned Higher or Same */
+#define	CC_CC		( 3 << 28)	/* Carry Clear/Unsigned Lower */
+#define	CC_MI		( 4 << 28)	/* Minus/Negative */
+#define	CC_PL		( 5 << 28)	/* Plus/Positive or Zero */
+#define	CC_VS		( 6 << 28)	/* Overflow */
+#define	CC_VC		( 7 << 28)	/* No Overflow */
+#define	CC_HI		( 8 << 28)	/* Unsigned Higher */
+#define	CC_LS		( 9 << 28)	/* Unsigned Lower or Same */
+#define	CC_GE		(10 << 28)	/* Signed Greater Than or Equal */
+#define	CC_LT		(11 << 28)	/* Signed Less Than */
+#define	CC_GT		(12 << 28)	/* Signed Greater Than */
+#define	CC_LE		(13 << 28)	/* Signed Less Than or Equal */
+#define	CC_AL		(14 << 28)	/* Always (unconditional) */
+#define	CC_NV		(15 << 28)	/* Never */
+
+/*
+ * Selection of operand modes, see 3.6.2 pg 3-12
+ */
+#define ALU_OP_REG   (0 << 25)		/* operand is in register */
+#define ALU_OP_IMMED (1 << 25)		/* operand is 8bit+shifted immediate */
+
+/*
+ * Define ALU operations.
+ */
+#define ALU_SETCC	( 1 << 20)	/* Set condition codes for this op */
+
+#define	ALU_AND		( 0 << 21)	/* And */
+#define	ALU_EOR		( 1 << 21)	/* Exclusive OR */
+#define	ALU_SUB		( 2 << 21)	/* Subtract */
+#define	ALU_RSB		( 3 << 21)	/* Reverse subtract */
+#define	ALU_ADD		( 4 << 21)	/* Add */
+#define	ALU_ADC		( 5 << 21)	/* Add carry */
+#define	ALU_SBC		( 6 << 21)	/* Subtract carry */
+#define	ALU_RSC		( 7 << 21)	/* Reverser subtract carry */
+#define	ALU_TST		( 8 << 21)	/* Test (uses AND) */
+#define	ALU_TEQ		( 9 << 21)	/* Test Equivalence (uses EOR) */
+#define	ALU_CMP		(10 << 21)	/* Compare */
+#define	ALU_CMPN	(11 << 21)	/* Compared negated */
+#define	ALU_ORR		(12 << 21)	/* Logical inclusive OR */
+#define	ALU_MOV		(13 << 21)	/* Move */
+#define	ALU_BIC		(14 << 21)	/* Bit Clear */
+#define	ALU_MVN		(15 << 21)	/* Move Not */
+
+/*
+ * Define Shift operations.
+ * The "C" form use an immediate constant as opposed to a register.
+ * See 3.6.2 pg 3-12 and up.
+ */
+#define	SFT_LSLC	( 0 <<  8)
+#define	SFT_LSL		( 1 <<  8)
+#define	SFT_LSRC	( 2 <<  8)
+#define	SFT_LSR		( 3 <<  8)
+#define	SFT_ASRC	( 4 <<  8)
+#define	SFT_ASR		( 5 <<  8)
+#define	SFT_RORC	( 6 <<  8)
+#define	SFT_ROR		( 7 <<  8)
+
+/*
+ * Memory operations.
+ */
+
+/* 
+ * A. Load and Store Word or Unsigned Byte Addressing Modes 3.11 pg 3-55 
+ * B. Load and Store Halfword or Load Signed Byte Addr. Modes 3.13 pg 3-76
+ */
+#define	MEM_LOAD	0x00100000	/* load or store */
+#define	MEM_STORE	0x00000000
+
+/* NB: A only */
+#define MEM_UBYTE       0x00400000	/* unsigned byte or word */
+#define	MEM_WORD	0x00000000
+
+#define	MEM_ADDOFF	0x00800000	/* add or subtract offset */
+#define	MEM_SUBOFF	0x00000000
+
+#define	MEM_PREIDX	0x01000000	/* pre-indexing or post-indexing */
+#define	MEM_POSTIDX	0x00000000
+
+#define	MEM_WRTBCK	0x00200000	/* update register with addr or not */
+
+/* NB: B. only */
+#define	MEM_SGN		0x00000040	/* signed or unsigned halfword access */
+#define	MEM_USGN	0x00000000
+
+/* NB: B. only */
+#define	MEM_HALF	0x00000020	/* halfword or byte */
+#define	MEM_BYTE	0x00000000
+
+/*
+ * Multiple load/store operations. See 3.15 pg 3-88
+ */
+#define	MULTI_STORE	0x00000000
+#define	MULTI_LOAD	0x00100000
+
+#define	MULTI_DA	0x00000000	/* Decrement After */
+#define	MULTI_DB	0x01000000	/* Decrement Before */
+#define	MULTI_IA	0x00800000	/* Increment After */
+#define	MULTI_IB	0x01800000	/* Increment Before */
+
+/*
+ * Multiply operations.
+ * Not implemented in Architecture Version 1
+ */
+#define	MUL_MUL		0x00000000	/* Multiply */
+#define	MUL_MULLADD	0x00200000	/* Multiply Accumulate */
+
+/*
+ * Floating point operations.
+ */
+
+/*
+ * Dyadic operations
+ */
+
+#define	FLT_ADF		0x00000000
+#define	FLT_MUF		0x00100000
+#define	FLT_SUF		0x00200000
+#define	FLT_RSF		0x00300000
+#define	FLT_DVF		0x00400000
+#define	FLT_RDF		0x00500000
+#define	FLT_POW		0x00600000
+#define	FLT_RPW		0x00700000
+#define	FLT_RMF		0x00800000 /* remainder */
+#define	FLT_FML		0x00900000 /* fast multiply */
+#define	FLT_FDV		0x00A00000 /* fast divide */
+#define	FLT_FRD		0x00B00000 /* reverse fast divide */
+#define	FLT_POL		0x00C00000 /* polar arc (arctan2) */
+
+#define	FLT_MVF		0x00008000 /* Fd := Fm */
+#define	FLT_MNF		0x00108000 /* Fd := -Fm */
+#define	FLT_RND		0x00308000 /* Fd := integer value of Fm 
+				      (NOTE: float-to-float operation!) */
+
+/*
+ * Floating point coprocessor register transfer
+ */
+#define FLT_FLT  0x00000110  /* Fn := Rd */
+#define FLT_FIX  0x00100110  /* Rd := Fm */
+
+#define FLT_CMP  0x0090F110  /* Compare Fn, Fm */
+#define FLT_CMPE 0x00D0F110  /* Compare Fn, Fm */
+
+/*
+ * Floating point precision (arith).
+ */
+#define	FLT_PREC_SINGLE	0x00000000
+#define	FLT_PREC_DOUBLE	0x00000080
+#define	FLT_PREC_EXTEND	0x00080000
+
+/*
+ * Floating point precision (load/store).
+ * Notice that we also include the 0x100 to force this
+ * to be a floating point Ld/St.
+ */
+#define	FLT_MPREC_SINGLE 0x00000000
+#define	FLT_MPREC_DOUBLE 0x00008000
+#define	FLT_MPREC_EXTEND 0x00400000
+
+/*
+ * For ld/st of single values
+ */
+#define FLT_MEMOP_SINGLE   0x00000100
+
+/*
+ * for ld/st of multiple values
+ */
+#define FLT_MEMOP_MULTIPLE 0x00000200
+
+/*
+ * Floating point rounding modes
+ */
+#define	FLT_RND_NEAREST	0x00000000
+#define	FLT_RND_PLUSINF	0x00000020
+#define	FLT_RND_MININF	0x00000040
+#define	FLT_RND_ZERO	0x00000060
+
+/*
+ * Define general instruction forms.
+ *
+ * We use the following conventions:
+ * NB: Rd is called DST
+ *     Rn is called SRC1
+ *     Rm is called SRC2
+ *
+ * A constant is encoded as an 8-bit immediate IMM shifted left by
+ * a shift IMMSFT.
+ */
+/* register := register x register */
+#define	op_rrr(CC,ALU,SFT,SFTVAL,DST,SRC1,SRC2) \
+  LOUT(0x00000000|(CC)|(ALU)|(SFT)|((SFTVAL)<<7)|((DST)<<12)|((SRC1)<<16)|(SRC2))
+
+/* register := register x constant */
+#define	op_rrc(CC,ALU,DST,SRC1,IMM,IMMSFT) \
+  LOUT(0x02000000|(CC)|(ALU)|((DST)<<12)|((SRC1)<<16)|((IMMSFT)<<8)|((IMM)&0xFF))
+
+/* register := register x register */
+#define	op_muladd_rrr(CC,MULOP,DST,SRC1,SRC2) \
+  LOUT(0x00000090|(CC)|(MULOP)|((DST)<<16)|(SRC1)|((SRC2)<<8))
+
+/* Not used or debugged: see 3.8.5
+#define	op_muladd_rrrr(CC,MULOP,DST,SRC1,SRC2,SRC3) \
+  LOUT(0x00200090|(CC)|(MULOP)|((DST)<<16)|(SRC1)|((SRC2)<<8)|((SRC3)<<12))
+*/
+
+#define	op_branch(CC,DST) \
+  LOUT(0x0A000000|(CC)|(((DST)>>2)&0x00FFFFFF))
+
+#define	op_branch_linked(CC,DST) \
+  LOUT(0x0B000000|(CC)|(((DST)>>2)&0x00FFFFFF))
+
+/* Load/Store Word or Unsigned Byte, see 3.11
+ * ldr REG, [IDX, +/- IDX2] or
+ * str REG, [IDX, +/- IDX2]
+ */
+#define	op_mem_rrr(CC,MEM,SFT,SFTVAL,REG,IDX,IDX2) \
+  LOUT(0x04000000|(CC)|(MEM)|(SFT)|((SFTVAL)<<7)|((IDX)<<16)|((REG)<<12)|(IDX2))
+
+/* Load/Store Word or Unsigned Byte, see 3.11
+ * ldr REG, [IDX +/- OFF]
+ * str REG, [IDX +/- OFF]
+ */
+#define	op_mem_rrc(CC,MEM,REG,IDX,OFF) \
+  LOUT(0x04000000|(CC)|(MEM)|((REG)<<12)|((IDX)<<16)|((OFF)&0xFFF))
+
+/* Load and Store Halfword or Load Signed Byte with an immediate 8-bit offset 
+ * ldr{h|sh|sb} REG, [IDX +/- OFF]
+ * str{h|sh|sb} REG, [IDX +/- OFF]
+ * 
+ * See 3.13 pg 3-76
+ * NB: you cannot use this instruction to store a byte.
+ */
+#define	op_mem_hb_rrc(CC,MEM,SGN,SIZE,REG,IDX,OFF) \
+  LOUT(0x00400090|(CC)|(MEM)|(SGN)|(SIZE)|((IDX)<<16)|((REG)<<12)|((OFF)&0xF)|(((OFF)&0xF0)<<4))
+
+#define	op_f_rrr(CC,FALU,PREC,RND,DST,SRC1,SRC2) \
+  LOUT(0x0E000100|(CC)|(FALU)|(PREC)|(RND)|((DST)<<12)|((SRC1)<<16)|(SRC2))
+
+
+/*
+ * The FLT instruction has a non-obvious encoding in that the 
+ * "destination" register is really the source integer register
+ */
+#define op_cvt_i2f(F,R) op_f_rrr(CC_AL, FLT_FLT, FLT_PREC_SINGLE, FLT_RND_ZERO, R, F, 0)
+#define op_cvt_i2d(F,R) op_f_rrr(CC_AL, FLT_FLT, FLT_PREC_DOUBLE, FLT_RND_ZERO, R, F, 0)
+
+#define op_cvt_f2i(R,F) op_f_rrr(CC_AL, FLT_FIX, FLT_PREC_SINGLE, FLT_RND_ZERO, R, 0, F)
+#define op_cvt_d2i(R,F) op_f_rrr(CC_AL, FLT_FIX, FLT_PREC_DOUBLE, FLT_RND_ZERO, R, 0, F)
+
+
+/*
+ * Floating point memory operation
+ */
+#define	op_fmem_rrc(CC,MEM,MPREC,REG,IDX,OFF) \
+  LOUT(0x0C000100|(CC)|(MEM)|(MPREC)|((REG)<<12)|((IDX)<<16)|((OFF)&0xFF))
+
+#define	op_push_m(T,BITS) \
+  LOUT(0x08000000|CC_AL|MULTI_STORE|MULTI_DB|((T)<<16)|(BITS))
+
+/*
+ * Redefine push to use auto index & writeback (like C calling convention)
+ */
+#define	op_push_prologue(T,BITS) \
+  LOUT(0x08000000|CC_AL|MULTI_STORE|MULTI_DB|MEM_WRTBCK|((T)<<16)|(BITS))
+
+/*
+ * Note that this generates the same opcode as used in the normal C
+ * linkage convention. The T register should always be FP for
+ * this particular usage.
+ */
+#define	op_pop_epilogue(T,BITS) \
+  LOUT(0x08000000|CC_AL|MULTI_LOAD|MULTI_DB|((T)<<16)|(BITS))
+
+/*
+ * A pop that decrements the SP.  This would normally match an op_push
+ * (which used a MULTI_DB).  Note that it's different than the normal
+ * epilogue pop.
+ */
+#define	op_pop_m(T,BITS) \
+  LOUT(0x08000000|CC_AL| MULTI_LOAD | MULTI_IA | MEM_WRTBCK |((T)<<16)|(BITS))
+
+/*
+ * Define the instruction macros for later use.
+ *
+ * NB: We must use ALU_SETCC to set the condition code as the result of
+ * this operation.  We obviously need this for the CMP operation (in fact, 
+ * Dirk says the processor will SIGILL us otherwise)
+ *
+ * We must also set it for op_add and op_sub because we need the carry
+ * to construct a 64-bit add and sub via add/adc.
+ */
+#define	op_mov(T,F)		op_rrr(CC_AL,ALU_MOV,SFT_LSLC,0,T,0,F)
+
+/* NB: this will rotate right V by S bits before using it!  */
+#define	op_mov_c(T,V,S)		op_rrc(CC_AL,ALU_MOV,T,0,V,((S)>>1))
+
+#define	op_add(T,F1,F2)		op_rrr(CC_AL,ALU_ADD | ALU_SETCC,SFT_LSLC,0,T,F1,F2)
+#define	op_add_const(T,F1,I8)	op_rrr(CC_AL,ALU_ADD | ALU_SETCC | ALU_OP_IMMED, SFT_LSLC, 0, T, F1, I8 & 0xff)
+
+#define	op_adc(T,F1,F2)		op_rrr(CC_AL,ALU_ADC,SFT_LSLC,0,T,F1,F2)
+
+#define	op_sub(T,F1,F2)		op_rrr(CC_AL,ALU_SUB | ALU_SETCC,SFT_LSLC,0,T,F1,F2)
+#define	op_sub_const(T,F1,I8)	op_rrr(CC_AL,ALU_SUB | ALU_SETCC | ALU_OP_IMMED, SFT_LSLC, 0, T, F1, I8 & 0xff)
+
+#define	op_sbc(T,F1,F2)		op_rrr(CC_AL,ALU_SBC,SFT_LSLC,0,T,F1,F2)
+
+#define	op_add_c(T,F,V,S)	op_rrc(CC_AL,ALU_ADD,T,F,V,((S)>>1))
+#define	op_sub_c(T,F,V,S)	op_rrc(CC_AL,ALU_SUB,T,F,V,((S)>>1))
+
+#define	op_and(T,F1,F2)		op_rrr(CC_AL,ALU_AND,SFT_LSLC,0,T,F1,F2)
+#define	op_and_const(T,F1,I8)	op_rrr(CC_AL,ALU_AND | ALU_OP_IMMED, SFT_LSLC, 0, T, F1, I8 & 0xff)
+
+#define	op_or(T,F1,F2)		op_rrr(CC_AL,ALU_ORR,SFT_LSLC,0,T,F1,F2)
+#define	op_or_const(T,F1,I8)	op_rrr(CC_AL,ALU_OR | ALU_OP_IMMED, SFT_LSLC, 0, T, F1, I8 & 0xff)
+
+#define	op_eor(T,F1,F2)		op_rrr(CC_AL,ALU_EOR,SFT_LSLC,0,T,F1,F2)
+#define	op_eor_const(T,F1,I8)	op_rrr(CC_AL,ALU_EOR | ALU_OP_IMMED, SFT_LSLC, 0, T, F1, I8 & 0xff)
+
+#if 0
+/* defined differently below --- why? */
+#define	op_ashr(T,F1,F2)	op_rrr(CC_AL,ALU_MOV,SFT_ASR,(F2)<<1,T,0,F1)
+#define	op_lshr(T,F1,F2)	op_rrr(CC_AL,ALU_MOV,SFT_LSR,(F2)<<1,T,0,F1)
+#define	op_lshl(T,F1,F2)	op_rrr(CC_AL,ALU_MOV,SFT_LSL,(F2)<<1,T,0,F1)
+#endif
+
+/*
+ *
+ * These use the register-specified shift forms.
+ *
+ * F2 = register containing number of locations to shift
+ * F1 = source register
+ * T  = destination register
+ */
+#define	op_lshl(T,F1,F2)	op_rrr(CC_AL,ALU_MOV,0,0,T,0,((F2) << 8) | 0x10 | F1)
+#define	op_lshr(T,F1,F2)	op_rrr(CC_AL,ALU_MOV,0,0,T,0,((F2) << 8) | 0x30 | F1)
+#define	op_ashr(T,F1,F2)	op_rrr(CC_AL,ALU_MOV,0,0,T,0,((F2) << 8) | 0x50 | F1)
+
+#define	op_mul(T,F1,F2)		op_muladd_rrr(CC_AL,MUL_MUL,T,F1,F2)
+#define	op_not(T,F)		op_rrr(CC_AL,ALU_MVN,SFT_LSLC,0,T,0,F)
+#define	op_cmp(F1,F2)		op_rrr(CC_AL,ALU_CMP | ALU_SETCC,SFT_LSLC,0,0,F1,F2)
+#define	op_cmp_const(F1,I8)	op_rrr(CC_AL,ALU_CMP | ALU_SETCC | ALU_OP_IMMED,SFT_LSLC,0,0,F1,I8 & 0xff)
+
+#define	op_fmov(T,F)		op_f_rrr(CC_AL,FLT_MVF,FLT_PREC_SINGLE,FLT_RND_ZERO,T,0,F)
+#define	op_fmovl(T,F)		op_f_rrr(CC_AL,FLT_MVF,FLT_PREC_DOUBLE,FLT_RND_ZERO,T,0,F)
+
+#define	op_fadd(T,F1,F2)	op_f_rrr(CC_AL,FLT_ADF,FLT_PREC_SINGLE,FLT_RND_ZERO,T,F1,F2)
+#define	op_fsub(T,F1,F2)	op_f_rrr(CC_AL,FLT_SUF,FLT_PREC_SINGLE,FLT_RND_ZERO,T,F1,F2)
+#define	op_fmul(T,F1,F2)	op_f_rrr(CC_AL,FLT_MUF,FLT_PREC_SINGLE,FLT_RND_ZERO,T,F1,F2)
+#define	op_fdiv(T,F1,F2)	op_f_rrr(CC_AL,FLT_DVF,FLT_PREC_SINGLE,FLT_RND_ZERO,T,F1,F2)
+
+#define	op_faddl(T,F1,F2)	op_f_rrr(CC_AL,FLT_ADF,FLT_PREC_DOUBLE,FLT_RND_ZERO,T,F1,F2)
+#define	op_fsubl(T,F1,F2)	op_f_rrr(CC_AL,FLT_SUF,FLT_PREC_DOUBLE,FLT_RND_ZERO,T,F1,F2)
+#define	op_fmull(T,F1,F2)	op_f_rrr(CC_AL,FLT_MUF,FLT_PREC_DOUBLE,FLT_RND_ZERO,T,F1,F2)
+#define	op_fdivl(T,F1,F2)	op_f_rrr(CC_AL,FLT_DVF,FLT_PREC_DOUBLE,FLT_RND_ZERO,T,F1,F2)
+
+/*
+ * fixz == float->int or double -> int
+ */
+#define op_fixz(R,F) op_f_rrr(CC_AL, FLT_ADF, FLT_PREC_SINGLE, FLT_RND_FTOI, R, F, 0)
+
+/*
+ * Floating compare - we only use CMPE. Precision doesn't matter
+ */
+#define op_fcmp(Fn,Fm) op_f_rrr(CC_AL, FLT_CMPE, FLT_PREC_SINGLE, FLT_RND_NEAREST, 0xf, Fn, Fm)
+
+
+/* 
+ * We only encode positive offset constants.
+ * If the offset is negative, we negate it and subtract it.
+ */
+#define	op_load_offset(R,A,O) \
+    if ((O) < 0) \
+	op_mem_rrc(CC_AL,MEM_LOAD|MEM_PREIDX|MEM_SUBOFF,R,A,-(O)); \
+    else \
+	op_mem_rrc(CC_AL,MEM_LOAD|MEM_PREIDX|MEM_ADDOFF,R,A,O)
+
+#define	op_load_ub_offset(R,A,O)  \
+    if ((O) < 0) \
+	op_mem_hb_rrc(CC_AL,MEM_LOAD|MEM_PREIDX|MEM_SUBOFF,MEM_USGN,MEM_BYTE,R,A,-(O)); \
+    else \
+	op_mem_hb_rrc(CC_AL,MEM_LOAD|MEM_PREIDX|MEM_ADDOFF,MEM_USGN,MEM_BYTE,R,A,O)
+
+#define	op_load_uh_offset(R,A,O)  \
+    if ((O) < 0) \
+	op_mem_hb_rrc(CC_AL,MEM_LOAD|MEM_PREIDX|MEM_SUBOFF,MEM_USGN,MEM_HALF,R,A,-(O)); \
+    else \
+	op_mem_hb_rrc(CC_AL,MEM_LOAD|MEM_PREIDX|MEM_ADDOFF,MEM_USGN,MEM_HALF,R,A,O)
+
+#define	op_load_sb_offset(R,A,O)  \
+    if ((O) < 0) \
+	op_mem_hb_rrc(CC_AL,MEM_LOAD|MEM_PREIDX|MEM_SUBOFF,MEM_SGN,MEM_BYTE,R,A,-(O)); \
+    else \
+	op_mem_hb_rrc(CC_AL,MEM_LOAD|MEM_PREIDX|MEM_ADDOFF,MEM_SGN,MEM_BYTE,R,A,O)
+
+#define	op_load_sh_offset(R,A,O)  \
+    if ((O) < 0) \
+	op_mem_hb_rrc(CC_AL,MEM_LOAD|MEM_PREIDX|MEM_SUBOFF,MEM_SGN,MEM_HALF,R,A,-(O)); \
+    else \
+	op_mem_hb_rrc(CC_AL,MEM_LOAD|MEM_PREIDX|MEM_ADDOFF,MEM_SGN,MEM_HALF,R,A,O)
+
+/***************************************************************************
+ *
+ * NOTE: Floating loads and stores treat the offset as a *word* index,
+ * not a BYTE index as in the regular ld/st. We don't compensate
+ * for this here, we do it in the individual memory operations.
+ * For this reason, we should have the rangecheck actually be
+ * larger than an I8 rangecheck, but I haven't done that yet.
+ *
+ ***************************************************************************/
+
+
+#define	op_fload_offset(R,A,O)  \
+    if ((O) < 0) \
+	op_fmem_rrc(CC_AL,MEM_LOAD|MEM_PREIDX|MEM_SUBOFF,FLT_MPREC_SINGLE,R,A,-(O)); \
+    else \
+	op_fmem_rrc(CC_AL,MEM_LOAD|MEM_PREIDX|MEM_ADDOFF,FLT_MPREC_SINGLE,R,A,O)
+
+#define	op_floadl_offset(R,A,O)	\
+    if ((O) < 0) \
+	op_fmem_rrc(CC_AL,MEM_LOAD|MEM_PREIDX|MEM_SUBOFF,FLT_MPREC_DOUBLE,R,A,-(O)); \
+    else \
+	op_fmem_rrc(CC_AL,MEM_LOAD|MEM_PREIDX|MEM_ADDOFF,FLT_MPREC_DOUBLE,R,A,O)
+
+#define	op_store_offset(R,A,O)	\
+    if ((O) < 0) \
+	op_mem_rrc(CC_AL,MEM_STORE|MEM_PREIDX|MEM_SUBOFF,R,A,-(O)); \
+    else \
+	op_mem_rrc(CC_AL,MEM_STORE|MEM_PREIDX|MEM_ADDOFF,R,A,O)
+
+/* Do not use op_mem_hb_rrc here because that does not store bytes */
+#define	op_store_b_offset(R,A,O) \
+    if ((O) < 0) \
+	op_mem_rrc(CC_AL,MEM_STORE|MEM_PREIDX|MEM_SUBOFF|MEM_UBYTE,R,A,-(O)); \
+    else \
+	op_mem_rrc(CC_AL,MEM_STORE|MEM_PREIDX|MEM_ADDOFF|MEM_UBYTE,R,A,O)
+
+#define	op_store_h_offset(R,A,O) \
+    if ((O) < 0) \
+	op_mem_hb_rrc(CC_AL,MEM_STORE|MEM_PREIDX|MEM_SUBOFF,MEM_USGN,MEM_HALF,R,A,-(O)); \
+    else \
+	op_mem_hb_rrc(CC_AL,MEM_STORE|MEM_PREIDX|MEM_ADDOFF,MEM_USGN,MEM_HALF,R,A,O)
+
+#define	op_fstore_offset(R,A,O)	\
+    if ((O) < 0) \
+	op_fmem_rrc(CC_AL,MEM_STORE|MEM_PREIDX|MEM_SUBOFF,FLT_MPREC_SINGLE,R,A,-(O)); \
+    else \
+	op_fmem_rrc(CC_AL,MEM_STORE|MEM_PREIDX|MEM_ADDOFF,FLT_MPREC_SINGLE,R,A,O)
+
+#define	op_fstorel_offset(R,A,O) \
+    if ((O) < 0) \
+	op_fmem_rrc(CC_AL,MEM_STORE|MEM_PREIDX|MEM_SUBOFF,FLT_MPREC_DOUBLE,R,A,-(O)); \
+    else \
+	op_fmem_rrc(CC_AL,MEM_STORE|MEM_PREIDX|MEM_ADDOFF,FLT_MPREC_DOUBLE,R,A,O)
+
+#define	op_push(T,R)		op_mem_rrc(CC_AL,MEM_STORE|MEM_PREIDX|MEM_WRTBCK,R,T,4)
+
+/*
+ * Remember to left shift the offset since it's a WORD, not a BYTE offset.
+ */
+#define	op_fpush(T,R)		op_fmem_rrc(CC_AL,MEM_STORE|MEM_PREIDX|MEM_WRTBCK,FLT_MPREC_SINGLE,R,T,(4 >> 2));
+#define	op_fpushl(T,R)		op_fmem_rrc(CC_AL,MEM_STORE|MEM_PREIDX|MEM_WRTBCK,FLT_MPREC_DOUBLE,R,T,(8 >> 2))
+
+
+/* Define convenience macros for load/store instructions with offset zero */ 
+#define	op_load(R,A)		op_load_offset(R,A,0)
+#define	op_load_ub(R,A)		op_load_ub_offset(R,A,0)
+#define	op_load_sb(R,A)		op_load_sb_offset(R,A,0)
+#define	op_load_uh(R,A)		op_load_uh_offset(R,A,0)
+#define	op_load_sh(R,A)		op_load_sh_offset(R,A,0)
+#define	op_fload(R,A)		op_fload_offset(R,A,0)
+#define	op_floadl(R,A)		op_floadl_offset(R,A,0)
+
+#define	op_store(R,A)		op_store_offset(R,A,0)
+#define	op_store_b(R,A)		op_store_b_offset(R,A,0)
+#define	op_store_h(R,A)		op_store_h_offset(R,A,0)
+#define	op_fstore(R,A)		op_fstore_offset(R,A,0)
+#define	op_fstorel(R,A)		op_fstorel_offset(R,A,0)
+
+#define	xop_mov(T,F)		if ((T) != (F)) op_mov(T,F)
+#define	xop_fmov(T,F)		if ((T) != (F)) op_fmov(T,F)
+#define	xop_fmovl(T,F)		if ((T) != (F)) op_fmovl(T,F)
+
+/* --------------------------------------------------------------------- */
+
+define_insn(unimplemented, unimplemented)
+{
+	abort();
+}
+
+define_insn(nop, nop)
+{
+	op_mov(R0,R0);
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(prologue, prologue_xxx)
+{
+	int i;
+	int limit;
+	label* l = const_label(1);
+
+	l->type = Lframe|Labsolute|Lgeneral;
+
+	op_mov(IP, SP);
+	/*
+	 * Every stack segment saves all callee saves registers
+ 	 * NB: this takes 4 * REGISTERS_SAVED = 40 bytes below the fp. 
+	 */
+
+	op_push_prologue(SP,BPC|BFP|BIP|BLR|BR4|BR5|BR6|BR7|BR8|BR9|BR10);
+	debug(("maxStack = %d, maxLocal = %d, maxTemp = %d\n", maxStack, maxLocal, maxTemp));
+
+	/*
+	 * This effectively hides/removes the just-pushed
+	 * PC from the stack pop
+	 * and when the stack pop occurs, the FP over-write
+	 * reclaims the storage.
+	 */
+	op_sub_c(FP, IP, 4, 0); 
+
+	/* FOO:  Should save floating point state here !!! F4-F7 */
+
+	l->at = (uintp)CODEPC;
+
+	/* Framesize is filled in by Lframe */
+	op_sub_const(SP,SP,0); 
+
+	limit = 4;
+	if (maxArgs < limit) {
+		limit = maxArgs;
+	}
+
+	/* Force first 4 arguments into corresponding registers */
+	for (i = 0; i < limit; i++) {
+		forceRegister(&localinfo[i], R0+i, Rint /* ? */);
+	}
+}
+
+define_insn(exception_prologue, eprologue_xxx)
+{
+	label* l = const_label(1);
+
+	l->type = Lframe|Labsolute|Lgeneral;
+
+	/* Initially, the FP is set --- see CALL_KAFFE_EXCEPTION
+	 * We must restore the SP and we must do so in a way that never 
+	 * frees anything on the stack.  We use IP as a temp register.
+	 */
+	op_mov(IP, FP);
+	op_sub_c(IP, IP, (REGISTERS_SAVED * SLOTSIZE), 0);
+	l->at = (uintp)CODEPC;
+	op_sub_const(SP,IP,0); /* Framesize is filled in by Lframe */
+}
+
+define_insn(epilogue, epilogue_xxx)
+{
+	KaffeJIT_setEpilogueLabel ((uintp)CODEPC);
+
+	/* Should restore floating point state here !!! F4-F7 */
+
+	debug(("maxStack = %d, maxLocal = %d, maxTemp = %d\n", maxStack, maxLocal, maxTemp));
+	/*
+	 * Pushed as
+	 * FP	-> FP
+	 * IP 	-> SP (actually, SP -> SP)
+	 * LR   -> PC
+	 * Rest are caller-saves
+	 */
+	op_pop_epilogue(FP,BFP|BSP|BPC|BR4|BR5|BR6|BR7|BR8|BR9|BR10);
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(spill_int, spill_Rxx)
+{
+	int r = sreg_int(0);
+	int o = const_int(1);
+
+	assert(__I12const_rangecheck(o));
+	op_store_offset(r, FP, o);
+
+	debug(("spill_int %d, [FP, %d]\n", r, o));
+}
+
+define_insn(spill_float, fspill_Rxx)
+{
+	int r = sreg_float(0);
+	int o = const_int(1);
+
+	assert(__I10const_rangecheck(o));
+	assert( (o & 0x3) == 0);
+	op_fstore_offset(r, FP, o >> 2);
+
+	debug(("spill_float %d, [FP, %d]\n", r, o));
+}
+
+define_insn(spill_double, fspilll_Rxx)
+{
+	int r = sreg_double(0);
+	int o = const_int(1);
+
+	assert(__I10const_rangecheck(o));
+	assert( (o & 0x3) == 0);
+	op_fstorel_offset(r, FP, o >> 2);
+
+	debug(("spill_double %d, [FP, %d]\n", r, o));
+}
+
+define_insn(reload_int, reload_Rxx)
+{
+	int r = lreg_int(0);
+	int o = const_int(1);
+
+	assert(__I12const_rangecheck(o));
+	op_load_offset(r, FP, o);
+
+	debug(("reload_int %d, [FP, %d]\n", r, o));
+}
+
+define_insn(reload_float, freload_Rxx)
+{
+	int r = lreg_float(0);
+	int o = const_int(1);
+
+	assert(__I10const_rangecheck(o));
+	assert( (o & 0x3) == 0);
+	op_fload_offset(r, FP, o >> 2);
+
+	debug(("reload_float %d, [FP, %d]\n", r, o));
+}
+
+define_insn(reload_double, freloadl_Rxx)
+{
+	int r = lreg_double(0);
+	int o = const_int(1);
+
+	assert(__I10const_rangecheck(o));
+	assert( (o & 0x3) == 0);
+	op_floadl_offset(r, FP, o >> 2);
+
+	debug(("reload_double %d, [FP, %d]\n", r, o));
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(move_int_const, move_RxC)
+{
+	int val = const_int(2);
+	int w = wreg_int(0);
+	int shift = 0;
+	int sval = val;
+
+	while (shift < 32) {
+		/* Does sval fit in 8 bits after shifted by `shift' bits?
+		 * NB: op_mov_c requires that the 8-bit immediate 
+		 * be ROTATED to the right, hence the (32 - shift) % 32.
+		 */
+		if ((sval & 0xFFFFFF00) == 0) {
+			op_mov_c(w, sval, (32 - shift) % 32);
+
+			debug(("move_int_const %d, %d (0x%x) via shift (%d, %d)\n", w, val, val, sval, shift));
+
+			return;
+		}
+		else if ((sval & 0x000000FF) != 0) {
+			/* Can't handle this kind of number encoding */
+			break;
+		}
+		sval = sval >> 2;
+		shift += 2;
+	}
+
+	/* Fail to encode in a short fashion - fall back on a long one */
+	op_mov_c(w, val & 0x000000FF, 0);
+	op_add_c(w, w, (val >> 8) & 0x000000FF, 24);
+	op_add_c(w, w, (val >> 16) & 0x000000FF, 16);
+	op_add_c(w, w, (val >> 24) & 0x000000FF, 8);
+
+	debug(("move_int_const %d, %d (0x%x)\n", w, val, val));
+}
+
+define_insn(move_label_const, move_RxL)
+{
+	label* l = const_label(2);
+	int w = wreg_int(0);
+
+	l->type |= Llong8x8x8x8|Labsolute;
+	l->at = CODEPC;
+
+	/* Assemble constants with a move and four shifted adds */
+	op_mov_c(w, 0, 0);
+	op_add_c(w, w, 0, 24);
+	op_add_c(w, w, 0, 16);
+	op_add_c(w, w, 0, 8);
+
+	debug(("move_label_const %d, ?\n", w));
+}
+
+define_insn(move_int, move_RxR)
+{
+	int r = rreg_int(2);
+	int w = wreg_int(0);
+
+	op_mov(w, r);
+
+	debug(("move_int %d, %d\n", w, r));
+}
+
+define_insn(move_float, fmove_RxR)
+{
+	int r = rreg_float(2);
+	int w = wreg_float(0);
+
+	op_fmov(w, r);
+
+	debug(("move_float %d, %d\n", w, r));
+}
+
+define_insn(move_float_const, fmove_RxC)
+{
+	float o = const_float(2);
+	int w = wreg_float(0);
+
+	int r = 0;
+
+	if ( o == 0.0 ) {
+	    r = 0x8 | 0;
+	} else if (o == 1.0) {
+	    r = 0x8 | 1;
+	} else if (o == 2.0) {
+	    r = 0x8 | 2;
+	} else if (o == 3.0) {
+	    r = 0x8 | 3;
+	} else if (o == 4.0) {
+	    r = 0x8 | 4;
+	} else if (o == 5.0) {
+	    r = 0x8 | 5;
+	} else if (o == 0.5) {
+	    r = 0x8 | 6;
+	} else if (o == 10.0) {
+	    r = 0x8 | 7;
+	} else {
+	    fprintf(stderr,"[%s:%d] Can't represent the floating value %f as a manifest constant\n",
+		    __FILE__, __LINE__, o);
+	    abort();
+	}
+
+	op_fmov(w, r);
+
+	debug(("move_float_const %d, %f(0x%x)\n", w, o,r ));
+}
+
+define_insn(move_double, fmovel_RxR)
+{
+	int r = rreg_double(2);
+	int w = wreg_double(0);
+
+	op_fmovl(w, r);
+
+	debug(("move_double %d, %d\n", w, r));
+}
+
+define_insn(move_double_const, fmovel_RxC)
+{
+	double o = const_double(2);
+	int w = wreg_double(0);
+
+	int r = 0;
+
+	if ( o == 0.0 ) {
+	    r = 0x8 | 0;
+	} else if (o == 1.0) {
+	    r = 0x8 | 1;
+	} else if (o == 2.0) {
+	    r = 0x8 | 2;
+	} else if (o == 3.0) {
+	    r = 0x8 | 3;
+	} else if (o == 4.0) {
+	    r = 0x8 | 4;
+	} else if (o == 5.0) {
+	    r = 0x8 | 5;
+	} else if (o == 0.5) {
+	    r = 0x8 | 6;
+	} else if (o == 10.0) {
+	    r = 0x8 | 7;
+	} else {
+	    fprintf(stderr,"[%s:%d] Can't represent the floating value %f as a manifest constant\n",
+		    __FILE__, __LINE__, o);
+	    abort();
+	}
+
+	op_fmovl(w, r);
+
+	debug(("move_double_const %d, %f(0x%x)\n", w, o,r ));
+}
+
+
+/* --------------------------------------------------------------------- */
+
+define_insn(add_int, add_RRR)
+{
+	int r2 = rreg_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	op_add(w, r1, r2);
+
+	debug(("add_int %d, %d, %d\n", w, r1, r2));
+}
+
+define_insn(add_int_const, add_RRC)
+{
+	int o = const_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	if ( o < 0 ) {
+		op_sub_const(w, r1, -o);
+		debug(("sub_int_const %d, %d, %d\n", w, r1, -o));
+	} else {
+		op_add_const(w, r1, o);
+		debug(("add_int_const %d, %d, %d\n", w, r1, o));
+	}
+}
+
+define_insn(adc_int, adc_RRR)
+{
+	int r2 = rreg_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	op_adc(w, r1, r2);
+
+	debug(("adc_int %d, %d, %d\n", w, r1, r2));
+}
+
+define_insn(add_float, fadd_RRR)
+{
+	int r2 = rreg_float(2);
+	int r1 = rreg_float(1);
+	int w = wreg_float(0);
+
+	op_fadd(w, r1, r2);
+
+	debug(("add_float %d, %d, %d\n", w, r1, r2));
+}
+
+define_insn(add_double, faddl_RRR)
+{
+	int r2 = rreg_double(2);
+	int r1 = rreg_double(1);
+	int w = wreg_double(0);
+
+	op_faddl(w, r1, r2);
+
+	debug(("add_double %d, %d, %d\n", w, r1, r2));
+}
+
+define_insn(sub_int, sub_RRR)
+{
+	int r2 = rreg_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	op_sub(w, r1, r2);
+
+	debug(("sub_int %d, %d, %d\n", w, r1, r2));
+}
+
+define_insn(sub_int_const, sub_RRC)
+{
+	int o = const_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	if ( o < 0 ) {
+		op_add_const(w, r1, -o);
+		debug(("add_int_const %d, %d, %d\n", w, r1, -o));
+	} else {
+		op_sub_const(w, r1, o);
+		debug(("add_int_const %d, %d, %d\n", w, r1, o));
+	}
+
+	debug(("sub_int_const %d, %d, %d\n", w, r1, 0));
+}
+
+define_insn(sbc_int, sbc_RRR)
+{
+	int r2 = rreg_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	op_sbc(w, r1, r2);
+
+	debug(("sbc_int %d, %d, %d\n", w, r1, r2));
+}
+
+define_insn(sub_float, fsub_RRR)
+{
+	int r2 = rreg_float(2);
+	int r1 = rreg_float(1);
+	int w = wreg_float(0);
+
+	op_fsub(w, r1, r2);
+
+	debug(("sub_float %d, %d, %d\n", w, r1, r2));
+}
+
+define_insn(sub_double, fsubl_RRR)
+{
+	int r2 = rreg_double(2);
+	int r1 = rreg_double(1);
+	int w = wreg_double(0);
+
+	op_fsubl(w, r1, r2);
+
+	debug(("sub_double %d, %d, %d\n", w, r1, r2));
+}
+
+define_insn(mul_int, mul_RRR)
+{
+	int r2 = rreg_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	op_mul(w, r1, r2);
+
+	debug(("mul_int %d, %d, %d\n", w, r1, r2));
+}
+
+define_insn(mul_float, fmul_RRR)
+{
+	int r2 = rreg_float(2);
+	int r1 = rreg_float(1);
+	int w = wreg_float(0);
+
+	op_fmul(w, r1, r2);
+
+	debug(("mul_float %d, %d, %d\n", w, r1, r2));
+}
+
+define_insn(mul_double, fmull_RRR)
+{
+	int r2 = rreg_double(2);
+	int r1 = rreg_double(1);
+	int w = wreg_double(0);
+
+	op_fmull(w, r1, r2);
+
+	debug(("mul_double %d, %d, %d\n", w, r1, r2));
+}
+
+define_insn(div_float, fdiv_RRR)
+{
+	int r2 = rreg_float(2);
+	int r1 = rreg_float(1);
+	int w = wreg_float(0);
+
+	op_fdiv(w, r1, r2);
+
+	debug(("div_float %d, %d, %d\n", w, r1, r2));
+}
+
+define_insn(div_double, fdivl_RRR)
+{
+	int r2 = rreg_double(2);
+	int r1 = rreg_double(1);
+	int w = wreg_double(0);
+
+	op_fdivl(w, r1, r2);
+
+	debug(("div_double %d, %d, %d\n", w, r1, r2));
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(and_int, and_RRR)
+{
+	int r2 = rreg_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	op_and(w, r1, r2);
+
+	debug(("and_int %d, %d, %d\n", w, r1, r2));
+}
+
+define_insn(and_int_const, and_RRC)
+{
+	int o = const_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	op_and_const(w, r1, o);
+
+	debug(("and_int_const %d, %d, %d\n", w, r1, 0));
+}
+
+
+define_insn(or_int, or_RRR)
+{
+	int r2 = rreg_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	op_or(w, r1, r2);
+
+	debug(("or_int %d, %d, %d\n", w, r1, r2));
+}
+
+define_insn(xor_int, xor_RRR)
+{
+	int r2 = rreg_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	op_eor(w, r1, r2);
+
+	debug(("xor_int %d, %d, %d\n", w, r1, r2));
+}
+
+define_insn(ashr_int, ashr_RRR)
+{
+	int r2 = rreg_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	op_ashr(w, r1, r2);
+
+	debug(("ashr_int %d, %d, %d\n", w, r1, r2));
+}
+
+define_insn(lshr_int, lshr_RRR)
+{
+	int r2 = rreg_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	op_lshr(w, r1, r2);
+
+	debug(("lshr_int %d, %d, %d\n", w, r1, r2));
+}
+
+define_insn(lshl_int, lshl_RRR)
+{
+	int r2 = rreg_int(2);
+	int r1 = rreg_int(1);
+	int w = wreg_int(0);
+
+	op_lshl(w, r1, r2);
+
+	debug(("lshl_int %d, %d, %d\n", w, r1, r2));
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(load_byte, loadb_RxR)
+{
+	int r = rreg_int(2);
+	int w = wreg_int(0);
+
+	op_load_sb(w, r);
+
+	debug(("load_byte %d, [%d]\n", w, r));
+}
+
+define_insn(load_char, loadc_RxR)
+{
+	int r = rreg_int(2);
+	int w = wreg_int(0);
+
+	op_load_sh(w, r);
+
+	debug(("load_char %d, [%d]\n", w, r));
+}
+
+define_insn(load_short, loads_RxR)
+{
+	int r = rreg_int(2);
+	int w = wreg_int(0);
+
+	op_load_sh(w, r);
+
+	debug(("load_short %d, [%d]\n", w, r));
+}
+
+define_insn(load_int, load_RxR)
+{
+	int r = rreg_int(2);
+	int w = wreg_int(0);
+
+	op_load(w, r);
+
+	debug(("ld %d, [%d]\n", w, r));
+}
+
+define_insn(load_offset_int, load_RRC)
+{
+	int o = const_int(2);
+	int r = rreg_int(1);
+	int w = wreg_int(0);
+
+	op_load_offset(w,r,o);
+
+	debug(("ld %d,[%d+%d]\n", w, r, o));
+}
+
+define_insn(load_float, fload_RxR)
+{
+	int r = rreg_int(2);
+	int w = wreg_float(0);
+
+	op_fload(w, r);
+
+	debug(("load_float %d, [%d]\n", w, r));
+}
+
+define_insn(load_double, floadl_RxR)
+{
+	int r = rreg_int(2);
+	int w = wreg_double(0);
+
+	op_floadl(w, r);
+
+	debug(("load_double %d, [%d]\n", w, r));
+}
+
+define_insn(store_byte, storeb_xRR)
+{
+	int w = rreg_int(2);
+	int r = rreg_int(1);
+
+	op_store_b(w, r);
+	debug(("store_byte %d, [%d]\n", r, w));
+}
+
+define_insn(store_short, stores_xRR)
+{
+	int w = rreg_int(2);
+	int r = rreg_int(1);
+
+	op_store_h(w, r);
+
+	debug(("store_short %d, [%d]\n", r, w));
+}
+
+define_insn(store_int, store_xRR)
+{
+	int r = rreg_int(2);
+	int w = rreg_int(1);
+
+	op_store(r, w);
+
+	debug(("store_int %d, [%d]\n", r, w));
+}
+
+define_insn(store_offset_int, store_xRRC)
+{
+	int o = const_int(2);
+	int r = rreg_int(1);
+	int w = rreg_int(0);
+
+	op_store_offset(r,w,o);
+
+	debug(("st %d,[%d+%d]\n", r, w, o));
+}
+
+define_insn(store_float, fstore_RxR)
+{
+	int r = rreg_float(2);
+	int w = rreg_int(1);
+
+	op_fstore(r, w);
+
+	debug(("store_float %d, [%d]\n", r, w));
+}
+
+define_insn(store_double, fstorel_RxR)
+{
+	int r = rreg_double(2);
+	int w = rreg_int(1);
+
+	op_fstorel(r, w);
+
+	debug(("store_double %d, [%d]\n", r, w));
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(cmp_int, cmp_xRR)
+{
+	int r1 = rreg_int(1);
+	int r2 = rreg_int(2);
+
+	op_cmp(r1, r2);
+
+	debug(("cmp_int r%d, r%d\n", r1, r2));
+}
+
+define_insn(cmp_int_const, cmp_xRC)
+{
+	int r = rreg_int(1);
+	int o = const_int(2);
+
+	op_cmp_const(r, o);
+
+	debug(("cmp_int_const r%d, #%d\n", r, o));
+}
+
+define_insn(cmp_ref, cmpref_xRR)
+{
+	int r1 = rreg_ref(1);
+	int r2 = rreg_ref(2);
+
+	op_cmp(r1, r2);
+
+	debug(("cmp_ref r%d, r%d\n", r1, r2));
+}
+
+define_insn(cmp_ref_const, cmpref_xRC)
+{
+	int r = rreg_ref(1);
+	int o = const_int(2);
+
+	op_cmp_const(r, o);
+
+	debug(("cmp_ref_const r%d, #%d\n", r, o));
+}
+
+
+/* --------------------------------------------------------------------- */
+
+define_insn(cvt_int_float, cvtif_RxR)
+{
+	int r = rreg_int(2); /* CHECKME */
+	int w = wreg_float(0);
+	op_cvt_i2f(w,r);
+	debug(("cvt_int_float %d, %d\n", w, r));
+}
+
+define_insn(cvt_int_double, cvtid_RxR)
+{
+	int r = rreg_int(2);
+	int w = wreg_double(0);
+	op_cvt_i2d(w,r);
+	debug(("cvt_int_double %d, %d\n", w, r));
+}
+
+define_insn(cvt_float_int, cvtfi_RxR)
+{
+	int r = rreg_float(2);
+	int w = wreg_int(0);
+	op_cvt_f2i(w,r);
+	debug(("cvt_float_int r%d, f%d\n", w, r));
+}
+
+define_insn(cvt_int_double, cvtdi_RxR)
+{
+	int r = rreg_double(2);
+	int w = wreg_int(0);
+	op_cvt_f2i(w,r);
+	debug(("cvt_double_int %d, %d\n", w, r));
+}
+
+#if 0
+/* these aren't being used */
+define_insn(cvt_long_float, cvtlf_RxR)
+{
+	/* Is a long a 64-bit quantity? */
+	debug(("NOT IMPLEMENTED: cvt_long_float\n"));
+}
+
+define_insn(cvt_long_double, cvtld_RxR)
+{
+	debug(("NOT IMPLEMENTED: cvt_long_double\n"));
+    }
+#endif
+
+define_insn(cvt_float_double, cvtfd_RxR)
+{
+	int r = rreg_float(2);
+	int w = wreg_double(0);
+	op_fmovl(w,r);
+	debug(("cvt_float_double f%d, f%d\n",w,r));
+}
+
+define_insn(cvt_double_float, cvtdf_RxR)
+{
+	int r = rreg_double(2);
+	int w = wreg_float(0);
+	op_fmov(w,r);
+	debug(("cvt_double_float f%d, f%d\n",w,r));
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(build_key, set_word_xxC)
+{
+	jint val = const_int(2);
+
+	LOUT(val);
+
+	debug(("build_key %d", val));
+}
+
+define_insn(build_code_ref, set_wordpc_xxC)
+{
+	label* l = const_label(2);
+
+	l->type |= Llong|Labsolute;
+	l->at = CODEPC;
+	l->from = CODEPC;
+	LOUT(0);
+
+	debug(("build_code_ref (@0x%x from 0x%x)\n", l->at, l->from));
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(set_label, set_label_xxC)
+{
+	label* l = const_label(2);
+
+	l->to = CODEPC;
+
+	debug(("set_label (@0x%x to 0x%x)\n", l->at, l->to));
+}
+
+define_insn(branch, branch_xCC)
+{
+	label* l = const_label(1);
+	int bt = const_int(2);
+
+	l->type |= Llong26|Lrelative;
+
+	l->at = CODEPC;
+	l->from = CODEPC + 8;
+
+	switch (bt) {
+	case ba:
+		op_branch(CC_AL, 0);
+		break;
+	case beq:
+		op_branch(CC_EQ, 0);
+		break;
+	case bne:
+		op_branch(CC_NE, 0);
+		break;
+	case blt:
+		op_branch(CC_LT, 0);
+		break;
+	case ble:
+		op_branch(CC_LE, 0);
+		break;
+	case bgt:
+		op_branch(CC_GT, 0);
+		break;
+	case bge:
+		op_branch(CC_GE, 0);
+		break;
+	case bult:
+		op_branch(CC_CC, 0);
+		break;
+	case bugt:
+		op_branch(CC_HI, 0);
+		break;
+	case buge:
+		op_branch(CC_CS, 0);
+		break;
+	default:
+		abort();
+	}
+
+	debug(("branch type %d at 0x%x from 0x%x\n", bt, l -> at, l -> from));
+}
+
+#if 0
+define_insn(call_ref, call_xCC)
+{
+	label* l = const_label(1);
+	assert(const_int(2) == ba);
+
+	//
+	// What's the point if it doesn't fit in a 24-bit
+	// displacement?
+	//
+	assert((abs(CODEPC-ba) & 0x00ffffff) == 0 );
+
+	l->type |= Llong26|Lrelative;
+	l->at = CODEPC;
+	l->from = CODEPC + 8;
+
+	op_branch_linked(CC_AL, 0);
+}
+#endif
+
+define_insn(call, call_xRC)
+{
+	int r = rreg_int(1);
+	assert(const_int(2) == ba);
+
+	op_mov(LR, PC);
+	op_mov(PC, r);
+
+	debug(("call [%d]\n", r));
+}
+
+define_insn(branch_indirect, branch_indirect_xRC)
+{
+	int r = rreg_int(1);
+	assert(const_int(2) == ba);
+	op_mov(PC, r);
+	debug(("branch_indirect [r%d]\n", r));
+}
+
+define_insn(push_int, push_xRC)
+{
+	int a = const_int(2);
+	int r;
+
+	/* Tell register allocator we prefer register R0+a 
+	 * XXX: This should go in a macro `rreg_int_pref(1, R0+a)'
+	 */
+	if (a < 4) {
+	 	KaffeVM_jitSetIdealReg(R0 + a);
+	}
+	r = rreg_int(1);
+	KaffeVM_jitSetIdealReg(NOREG);	/* reset idealReg */
+
+	if (a < 4) {
+		int w = R0 + a;
+		clobberRegister(w);
+		register_reserve(w);
+
+		if (r != w) {
+			op_mov(w, r);
+
+			debug(("push_int via mov %d,%d\n", w, r));
+		} 
+	}
+	else {
+		op_push(SP, r);
+		debug(("push_int via push SP,r%d\n", r));
+	}
+
+}
+
+define_insn(push_float, fpush_xRC)
+{
+	int r;
+	int w;
+	int a = const_int(2);
+
+
+	switch (a) {
+	case 0:
+	case 1:
+	case 2:
+	case 3:
+		w = R0 + a;
+		clobberRegister(w);
+		register_reserve(w);
+		/*
+		 * Push it on to the stack
+		 */
+		r = rreg_float(1);
+		op_fpush(SP, r);
+		/*
+		 * Now pop it into the register pair
+		 */
+		op_pop_m(SP, (1 << w));
+		debug(("push_float via elaborate mov r(%d) := f%d\n", w, r));
+		break;
+
+	default:
+		/*
+		 * Push it on to the stack
+		 */
+		r = rreg_float(1);
+		op_fpush(SP, r);
+		debug(("push_float via SP, f%d\n", r));
+		break;
+	}
+}
+
+
+define_insn(push_double, fpushl_xRC)
+{
+	int r;
+	int w;
+	int a = const_int(2);
+
+
+	switch (a) {
+	case 0:
+	case 1:
+	case 2:
+		w = R0 + a;
+		clobberRegister(w);
+		register_reserve(w);
+		clobberRegister(w+1);
+		register_reserve(w+1);
+		/*
+		 * Push it on to the stack
+		 */
+		r = rreg_double(1);
+		op_fpushl(SP, r);
+		/*
+		 * Now pop it into the register pair
+		 */
+		op_pop_m(SP, (1 << w) | (1 << (w+1)));
+		debug(("push_double via elaborate mov r(%d,%d) := f%d\n", w, w+1, r));
+		break;
+
+	case 3:
+		/*
+		 * Pass half of the double in R3, half on the stack
+		 */
+		w = R3;
+		clobberRegister(w);
+		register_reserve(w);
+		r = rreg_double(1);
+		op_fpushl(SP, r);
+
+		/* Pop the first word */
+		op_pop_m(SP, (1 << w));
+		debug(("push_double via partial register, partial stack SP, f%d\n", r));
+		break;
+
+	default:
+		/*
+		 * Push it on to the stack
+		 */
+		r = rreg_double(1);
+		op_fpushl(SP, r);
+		debug(("push_double via SP, f%d\n", r));
+		break;
+	}
+}
+
+define_insn(popargs, popargs_xxC)
+{
+	int o = const_int(2);
+	int i;
+
+	/* Reset reserve bit for all register arguments */
+	for (i = 0; i < 4 && i < o; i++) {
+		register_unreserve(R0 + i);
+	}
+
+	/* Don't bother if we have 4 or less arguments to pop */
+	if (o > 4) {
+		o = (o - 4) * SLOTSIZE;
+		assert(__I8const_rangecheck(o >> 2));
+		op_add_c(SP, SP, (o >> 2), 30);
+
+		debug(("popargs SP, SP, %d\n", o));
+	} else {
+		debug(("null popargs with %d args\n", const_int(2)));
+	}
+}
+
+define_insn(returnarg_int, returnarg_xxR)
+{
+	int r = rreg_int(2);
+
+	xop_mov(R0, r);
+
+	debug(("returnarg_int R0,%d\n", r));
+}
+
+define_insn(returnarg_long, returnargl_xxR)
+{
+	REGSLOT* r;
+	int r1;  
+	int r2;
+
+	r = seq_slot(s, 2);
+	r1 = _slowSlotRegister(r, Rint, rread);
+	r2 = _slowSlotRegister(r+1, Rint, rread);
+
+	debug(("returnarg_long R0,%d,%d\n", r1, r2));
+
+	/* Return long is a bit complicated since part of the source may
+	 * be the destination.
+	 */ 
+	if (R0 != r2) {
+		op_mov(R0, r1);
+		op_mov(R1, r2);
+	}
+	else if (R1 != r1) {
+		op_mov(R1, r2);
+		op_mov(R0, r1);
+	}
+	else {
+		/* Need to swap R0 and R1.  Force R0 into R2 (writing back
+		 * R2 if necessary) and then move things about until the
+		 * swap is done.
+		 */
+		forceRegister(r, R2, Rint);
+		op_mov(R2, R0);
+		op_mov(R0, R1);
+		op_mov(R1, R2);
+	}
+}
+
+define_insn(returnarg_float, freturnarg_xxR)
+{
+	int r = rreg_float(2);
+
+	xop_fmov(F0, r);
+
+	debug(("returnarg_float R0,%d\n", r));
+}
+
+define_insn(returnarg_double, freturnargl_xxR)
+{
+	int r = rreg_double(2);
+
+	xop_fmovl(F0, r);
+
+	debug(("returnarg_double R0,%d\n", r));
+}
+
+define_insn(return_int, return_Rxx)
+{
+	forceRegister(seq_dst(s), R0, Rint);
+
+	debug(("return_int R0\n"));
+}
+
+define_insn(return_long, returnl_Rxx)
+{
+	forceRegister(seq_dst(s), R0, Rint);
+	forceRegister(seq_dst(s)+1, R1, Rint);
+
+	debug(("return_long R0,R1\n"));
+}
+
+define_insn(return_float, freturn_Rxx)
+{
+	forceRegister(seq_dst(s), Reg_F0, Rfloat);
+
+	debug(("return_float F0\n"));
+}
+
+define_insn(return_double, freturnl_Rxx)
+{
+	forceRegister(seq_dst(s), Reg_F0, Rdouble);
+
+	debug(("return_double F0\n"));
+}
+
+/* --------------------------------------------------------------------- */

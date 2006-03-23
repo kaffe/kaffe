@@ -442,6 +442,21 @@ EXTRA_DIST = \
 	arm/threads.h \
 	arm/sysdepCallMethod.h \
 	arm/trampolines.S \
+	bfin/atomicity.h \
+        bfin/callKaffeException.h \
+        bfin/common.h \
+        bfin/jit-arm.def \
+        bfin/jit-icode.h \
+        bfin/jit.h \
+        bfin/jit3-arm.def \
+        bfin/jit3-icode.h \
+        bfin/uclinux/config.frag \
+        bfin/uclinux/jit-md.h \
+        bfin/uclinux/md.c \
+        bfin/uclinux/md.h \
+	bfin/threads.h \
+        bfin/sysdepCallMethod.h \
+        bfin/trampolines.S \
 	ia64/atomic.h \
 	ia64/common.h \
 	ia64/hpux/config.frag \

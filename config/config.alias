@@ -17,6 +17,7 @@ powerpc*)	Khost_cpu=powerpc ;;
 rs6000*)	Khost_cpu=powerpc ;;
 s390*)		Khost_cpu=s390 ;;
 sh[34]*)	Khost_cpu=sh ;;
+bfin*)		Khost_cpu=bfin ;;
 
 esac
 
@@ -44,5 +45,6 @@ solaris2*)	Khost_os=solaris2 ;;
 sunos4*)	Khost_os=sunos4 ;;
 sysv*)		Khost_os=univel_svr4 ;;
 ultrix4*)	Khost_os=ultrix4 ;;
+uclinux*)	Khost_os=uclinux ;;
 
 esac

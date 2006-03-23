@@ -34,6 +34,12 @@ while 'I' means 'interpreter'):
   ========================================================================
   Alpha     | J+I  |    Linux		OSF/1		NetBSD 1.x
   ------------------------------------------------------------------------
+  ARM       | J+I  |    Linux/Netwinder NetBSD 1.x	RISC OS
+  ------------------------------------------------------------------------
+  Blackfin  | J+I  |    uclinux
+  ------------------------------------------------------------------------
+  ia64	    | I	   |	Linux 2.x	HPUX 11.x
+  ------------------------------------------------------------------------
   i386      | J+I  |    Linux 2.x       FreeBSD 2.x +   NetBSD 1.x
             |      |    Solaris 2.x     BSDI 2.x        Unixware
             |      |    SCO 3.2v5       NeXTStep 3.x    Windows '95/98/NT
@@ -41,12 +47,6 @@ while 'I' means 'interpreter'):
             |      |    QNX 4.x		NCR MP-RAS 3.x  OSKit 0.96 +
             |      |    GNU Hurd	BeOS		Cygwin
 	    |      |    Darwin          DragonFly BSD
-  ------------------------------------------------------------------------
-  Sparc     | J+I  |    Linux 2.x       SunOS 4.x       NetBSD 1.x
-            |      |    NeXTStep 3.x    Solaris 2.x	Fujitsu UXP/DS
-            |      |    BSDI 3.x	OpenBSD 2.x
-  ------------------------------------------------------------------------
-  ARM       | J+I  |    Linux/Netwinder NetBSD 1.x	RISC OS
   ------------------------------------------------------------------------
   MIPS      | J+I  |    Linux/Cobalt    IRIX 5 & 6	NetBSD 1.x
 	    |	   |	Ultrix 4.2      PS2Linux
@@ -60,13 +60,15 @@ while 'I' means 'interpreter'):
   PowerPC   | I    |    Linux 2.x       MachTen 4.0.3	AIX
 	    |	   |	Darwin		NetBSD1.x       Mac OS X
   ------------------------------------------------------------------------
-  ia64	    | I	   |	Linux 2.x	HPUX 11.x
-  ------------------------------------------------------------------------
-  x86-64    | I    |    Linux 2.x	FreeBSD 2.x +
-  ------------------------------------------------------------------------
   s390	    | I	   |	Linux 2.x
   ------------------------------------------------------------------------
+  Sparc     | J+I  |    Linux 2.x       SunOS 4.x       NetBSD 1.x
+            |      |    NeXTStep 3.x    Solaris 2.x	Fujitsu UXP/DS
+            |      |    BSDI 3.x	OpenBSD 2.x
+  ------------------------------------------------------------------------
   SuperH    | I    |    Linux 2.x
+  ------------------------------------------------------------------------
+  x86-64    | I    |    Linux 2.x	FreeBSD 2.x +
   ========================================================================
 
 Who can use Kaffe?
