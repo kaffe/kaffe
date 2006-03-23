@@ -84,7 +84,7 @@ jrelibDATA_INSTALL = $(INSTALL_DATA)
 DATA = $(jrelib_DATA)
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = external/classpath . awt-implementations gmp-math
+DIST_SUBDIRS = . external/classpath awt-implementations gmp-math
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 ALSA_CFLAGS = @ALSA_CFLAGS@
@@ -369,7 +369,7 @@ with_engine = @with_engine@
 # to build the native libraries as well.
 @COND_PURE_JAVA_MATH_FALSE@MAYBE_GMP_JAVA_MATH = gmp-math
 @USE_PRECOMPILED_RT_JAR_TRUE@MAYBE_GLIBJ_ZIP = glibj.zip
-SUBDIRS = external/classpath . $(MAYBE_PEERLESS_KAFFE_AWT) $(MAYBE_GMP_JAVA_MATH)
+SUBDIRS = . external/classpath $(MAYBE_PEERLESS_KAFFE_AWT) $(MAYBE_GMP_JAVA_MATH)
 jrelib_DATA = \
 	     logging.properties \
 	     $(MAYBE_GLIBJ_ZIP)

@@ -1,5 +1,16 @@
 2006-03-22  Dalibor Topic  <robilad@kaffe.org>
 
+	Fix for #30.
+
+	* libraries/javalib/Makefile.am.in: (SUBDIRS) Reordered to
+	first copy glibj.zip to classpath subdirectory, if necessary,
+	before descending into it.
+
+	* libraries/javalib/external/classpath/tools/Makefile.am: Fixed the compiler
+	calls to use glibj.zip.
+
+2006-03-22  Dalibor Topic  <robilad@kaffe.org>
+
 	* Resynchronized GNU Classpath.
 
 2006-03-21  Dalibor Topic  <robilad@kaffe.org>

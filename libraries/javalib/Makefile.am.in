@@ -37,7 +37,7 @@ endif
 clean-local:
 	rm -rf stamp-glibj glibj.zip
 
-SUBDIRS= external/classpath . $(MAYBE_PEERLESS_KAFFE_AWT) $(MAYBE_GMP_JAVA_MATH)
+SUBDIRS= . external/classpath $(MAYBE_PEERLESS_KAFFE_AWT) $(MAYBE_GMP_JAVA_MATH)
 
 jrelib_DATA= \
 	     logging.properties \

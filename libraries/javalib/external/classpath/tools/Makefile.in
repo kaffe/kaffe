@@ -268,12 +268,12 @@ target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
 vm_classes = @vm_classes@
-@FOUND_ECJ_TRUE@@FOUND_GCJX_FALSE@@FOUND_GCJ_FALSE@@FOUND_JIKES_FALSE@JCOMPILER = $(ECJ) -bootclasspath '$(top_builddir)/lib' -classpath .
-@FOUND_GCJX_TRUE@@FOUND_GCJ_FALSE@@FOUND_JIKES_FALSE@JCOMPILER = $(GCJX) -bootclasspath '' -sourcepath '' -classpath $(top_builddir)/lib:.
-@FOUND_GCJ_FALSE@@FOUND_JIKES_TRUE@JCOMPILER = $(JIKES) -bootclasspath '' -extdirs '' -sourcepath '' --classpath $(top_builddir)/lib:.
+@FOUND_ECJ_TRUE@@FOUND_GCJX_FALSE@@FOUND_GCJ_FALSE@@FOUND_JIKES_FALSE@JCOMPILER = $(ECJ) -bootclasspath '$(top_builddir)/lib/glibj.zip' -classpath .
+@FOUND_GCJX_TRUE@@FOUND_GCJ_FALSE@@FOUND_JIKES_FALSE@JCOMPILER = $(GCJX) -bootclasspath '' -sourcepath '' -classpath $(top_builddir)/lib/glibj.zip:.
+@FOUND_GCJ_FALSE@@FOUND_JIKES_TRUE@JCOMPILER = $(JIKES) -bootclasspath '' -extdirs '' -sourcepath '' --classpath $(top_builddir)/lib/glibj.zip:.
 
 # Setup the compiler to use the GNU Classpath library we just build
-@FOUND_GCJ_TRUE@JCOMPILER = $(GCJ) --bootclasspath '$(top_builddir)/lib' --classpath . -C
+@FOUND_GCJ_TRUE@JCOMPILER = $(GCJ) --bootclasspath '$(top_builddir)/lib/glibj.zip' --classpath . -C
 
 # All our example java source files
 TOOLS_JAVA_FILES = $(srcdir)/gnu/classpath/tools/*.java $(srcdir)/gnu/classpath/tools/*/*.java $(srcdir)/gnu/classpath/tools/*/*/*.java
