@@ -5,6 +5,11 @@
 
 2006-03-23  Dalibor Topic  <robilad@kaffe.org>
 
+	* config/Makfile.am: (EXTRA_DIST) Renamed blackfin jitter
+	files to match the actual names of files. Fixes make distcheck.
+
+2006-03-23  Dalibor Topic  <robilad@kaffe.org>
+
 	Fix for Debian bug #357427
 
 	* libraries/javalib/vmspecific/java/lang/String.java 

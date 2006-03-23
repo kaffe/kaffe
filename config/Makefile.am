@@ -108,10 +108,10 @@ EXTRA_DIST = \
 	bfin/atomicity.h \
         bfin/callKaffeException.h \
         bfin/common.h \
-        bfin/jit-arm.def \
+        bfin/jit-bfin.def \
         bfin/jit-icode.h \
         bfin/jit.h \
-        bfin/jit3-arm.def \
+        bfin/jit3-bfin.def \
         bfin/jit3-icode.h \
         bfin/uclinux/config.frag \
         bfin/uclinux/jit-md.h \
