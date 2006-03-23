@@ -45,6 +45,24 @@
 #include "jit-md.h"
 #endif
 
-#include "kaffe-unix-stack.h"
+#define KAFFEMD_STACK_ERROR 0
+#define KAFFEMD_STACK_INFINITE KAFFEMD_STACK_ERROR
+
+#define KAFFEMD_STACKSIZE
+extern size_t mdGetStackSize(void);
+
+/* this is only used for the main thread and is ok for that */
+/* this may change with rthreads when thats done */
+static inline void mdSetStackSize(rlim_t limit)
+{
+  struct rlimit rl;
+
+  getrlimit(RLIMIT_STACK, &rl);
+  rl.rlim_cur = limit;
+  setrlimit(RLIMIT_STACK, &rl);
+}
+
+#define KAFFEMD_STACKEND
+extern void *mdGetStackEnd(void);
 
 #endif
