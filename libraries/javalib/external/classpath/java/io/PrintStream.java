@@ -86,6 +86,8 @@ public class PrintStream extends FilterOutputStream
    */
   private boolean auto_flush;
 
+  private boolean defaultEncoding;
+
   /**
    * This method intializes a new <code>PrintStream</code> object to write
    * to the specified output sink.
@@ -124,6 +126,7 @@ public class PrintStream extends FilterOutputStream
 	this.encoding = "ISO8859_1";
     }
     this.auto_flush = auto_flush;
+    this.defaultEncoding = true;
   }
 
   /**
@@ -259,15 +262,43 @@ public class PrintStream extends FilterOutputStream
   private void writeChars(char[] buf, int offset, int count)
     throws IOException
   {
-      byte[] bytes = (new String(buf, offset, count)).getBytes(encoding);
-      out.write(bytes, 0, bytes.length);
+    try
+      {
+	byte[] bytes = (new String(buf, offset, count)).getBytes(encoding);
+	out.write(bytes, 0, bytes.length);
+      }
+    catch (UnsupportedEncodingException e)
+      {
+	if (defaultEncoding)
+	  {
+	    this.encoding = "ISO8859_1";
+	    writeChars(buf, offset, count);
+	  }
+	else
+	  throw e;
+      }
   }
 
   private void writeChars(String str, int offset, int count)
     throws IOException
   {
-      byte[] bytes = str.substring(offset, offset+count).getBytes(encoding);
-      out.write(bytes, 0, bytes.length);
+    try
+      {
+	byte[] bytes = str.substring(offset, offset+count).getBytes(encoding);
+	out.write(bytes, 0, bytes.length);
+      }
+    catch (UnsupportedEncodingException e)
+      {
+	if (defaultEncoding)
+	  {
+	    this.encoding = "ISO8859_1";
+	    writeChars(str, offset, count);
+	  }
+	else
+	  {
+	    throw e;
+	  }
+      }
   }
 
   /**
