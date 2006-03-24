@@ -1,4 +1,4 @@
-AC_INIT([Kaffe Virtual Machine],[1.1.7-rc1],[kaffe@kaffe.org],[kaffe])
+AC_INIT([Kaffe Virtual Machine],[1.1.7-rc2],[kaffe@kaffe.org],[kaffe])
 
 AC_PREREQ(2.59)
 
@@ -713,6 +713,10 @@ if test x$with_threads = xunix-pthreads ; then
 	fi
  else
         CPPFLAGS="$CPPFLAGS -DBR_PTHREADS=0"
+fi
+
+if test x$with_threads = xunix-pthreads ; then
+	AC_DEFINE([KAFFE_SYSTEM_UNIX_PTHREADS], 1, [Defined if we are using the unix-pthreads threading system])
 fi
 
 AC_SUBST(VM_LIBS)

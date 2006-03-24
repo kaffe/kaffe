@@ -783,6 +783,9 @@
 /* Do we enable stats in the vm? */
 #undef KAFFE_STATS
 
+/* Defined if we are using the unix-pthreads threading system */
+#undef KAFFE_SYSTEM_UNIX_PTHREADS
+
 /* Enable debugging symbol generation for jitted code */
 #undef KAFFE_XDEBUGGING
 

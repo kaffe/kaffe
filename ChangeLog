@@ -1,3 +1,12 @@
+2006-03-24  Dalibor Topic  <robilad@kaffe.org>
+
+	* configure.ac: AC_DEFINE KAFFE_SYSTEM_UNIX_PTHREADS when
+	we are using unix-pthreads.
+
+2006-03-24  Dalibor Topic  <robilad@kaffe.org>
+
+	* README, configure.ac: bumped up version to 1.1.7-rc2.
+
 2006-03-24  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* libraries/javalib/external/classpath/java/io/PrintStream.java
