@@ -1,0 +1,27 @@
+FAQ for Kaffe on Blackfin/uclinux
+==================================
+
+Author: Michael Kang
+
+Q: What is blackfin?
+A: Blackfin processor is the product of ADI company(http://www.analog.com).
+You can visit his officail website to get hardware manual of blackfin.
+
+Q: How can I can get kaffe run on uClinux for blackfin?
+A: You need to read the docs in
+http://docs.blackfin.uclinux.org/doku.php?id=3Drun_java_application_on_stamp_board.
+You will get a step-by-step guide that how to setup uClinux on blackfin
+and how to run java on blackfin uClinux.
+
+Q: Is it work completely?
+A: Now interpret engine is work. But not all the regression testcase under
+kaffe/test/regression/ can run.Only HelloWorldApp and some file operation
+testcases can work well.So it still have some bugs. JIT engine is not
+completed. The porting is still in progress.
+
+Q: How can I help kaffe porting for blackfin uClinux ?
+A: You can visit http://blackfin.uclinux.org and apply for a developer. Or
+just send email to me,blackfin.kang AT gamil.com
+
+- Thanks
+- Michael.kang

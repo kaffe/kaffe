@@ -72,6 +72,7 @@ EXTRA_DIST = \
 	FAQ/FAQ.awt \
 	FAQ/FAQ.benchmarking \
 	FAQ/FAQ.bignum \
+	FAQ/FAQ.blackfin \
 	FAQ/FAQ.charsets \
 	FAQ/FAQ.class-states \
 	FAQ/FAQ.classlibrary-compile \
