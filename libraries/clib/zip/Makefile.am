@@ -10,7 +10,7 @@ if COND_SYSTEM_ZLIB
 LINKED_ZIP_LIBS=$(ZIP_LIBS)
 else
 LINKED_ZIP_LIBS=../../../external/gcc/zlib/libz.la
-MAYBE_INTERNAL_ZIP_INCLUDES=-I../../../external/gcc/zlib/
+MAYBE_INTERNAL_ZIP_INCLUDES=-I$(srcdir)/../../../external/gcc/zlib/
 endif
 
 AM_CPPFLAGS = \

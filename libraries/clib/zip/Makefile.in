@@ -379,7 +379,7 @@ toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 @COND_SYSTEM_ZLIB_FALSE@LINKED_ZIP_LIBS = ../../../external/gcc/zlib/libz.la
 @COND_SYSTEM_ZLIB_TRUE@LINKED_ZIP_LIBS = $(ZIP_LIBS)
-@COND_SYSTEM_ZLIB_FALSE@MAYBE_INTERNAL_ZIP_INCLUDES = -I../../../external/gcc/zlib/
+@COND_SYSTEM_ZLIB_FALSE@MAYBE_INTERNAL_ZIP_INCLUDES = -I$(srcdir)/../../../external/gcc/zlib/
 AM_CPPFLAGS = \
 	-I$(top_builddir)/include \
 	$(MAYBE_INTERNAL_ZIP_INCLUDES)

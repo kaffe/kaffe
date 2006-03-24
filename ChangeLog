@@ -5,6 +5,11 @@
 
 2006-03-23  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/clib/zip/Makefile.am (MAYBE_INTERNAL_ZIP_INCLUDES):
+	Fixed the path to bundled zlib. 
+
+2006-03-23  Dalibor Topic  <robilad@kaffe.org>
+
 	* config/Makfile.am: (EXTRA_DIST) Renamed blackfin jitter
 	files to match the actual names of files. Fixes make distcheck.
 
