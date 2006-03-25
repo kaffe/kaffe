@@ -168,3 +168,8 @@ autoconf # -Wall
   cd libraries/javalib/external/classpath
   patch -p0 <../../../../developers/config3.patch
 )
+
+(
+  cd external/gcc/fastjar/scripts
+  patch -p0 <../../../../developers/config4.patch
+)

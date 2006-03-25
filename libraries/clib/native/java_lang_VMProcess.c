@@ -39,8 +39,8 @@ exception statement from your version. */
 
 #include "java_lang_VMProcess.h"
 #include <sys/types.h>
-#include <sys/wait.h>
 #include <signal.h>
+#include <sys/wait.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>

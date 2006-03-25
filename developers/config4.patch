@@ -1,0 +1,17 @@
+Index: config.sub
+===================================================================
+RCS file: /cvs/kaffe/kaffe/external/gcc/fastjar/scripts/config.sub,v
+retrieving revision 1.1
+diff -u -r1.1 config.sub
+--- config.sub	9 Jan 2006 03:19:30 -0000	1.1
++++ config.sub	25 Mar 2006 17:13:51 -0000
+@@ -1315,6 +1315,9 @@
+ 	-kaos*)
+ 		os=-kaos
+ 		;;
++	-*drops)
++		os=-drops
++		;;
+ 	-zvmoe)
+ 		os=-zvmoe
+ 		;;

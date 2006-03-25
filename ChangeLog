@@ -1,4 +1,14 @@
 2006-03-25 Alexander Boettcher  <alex@kaffe.org>
+
+	* developers/config4.patch:
+	patch config.sub of fastjar (add drops as os for configure) 
+	* developers/autogen.sh:
+	add config4.patch file
+	* libraries/clib/native/java_lang_VMProcess.c:
+	rearrange signal.h and sys/wait.h - fix build when dietlibc
+	is used, hopefully other libc don't stumble (glibc work) 
+	
+2006-03-25 Alexander Boettcher  <alex@kaffe.org>
 	
 	DROPS/L4 specific shared library wrapper is obsolete.
 	Instead usage of new ldso package of DROPS, which is now
