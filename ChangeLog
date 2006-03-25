@@ -24,6 +24,10 @@
 
 2006-03-25  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac (AM_INIT): Added dist-bz2 and dist-zip.
+
+2006-03-25  Dalibor Topic  <robilad@kaffe.org>
+
 	* FAQ/FAQ.awt: Added information on runtime switches to use
 	the peerless AWT implementations.
 
