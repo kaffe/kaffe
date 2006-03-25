@@ -85,6 +85,12 @@ So far, you have the following choices:
 
   See http://www.x.org for information on X Window System.
 
+  You need to run kaffe with -Xkaffe-xlib-awt option, in order for it
+  to load the correct classes for this AWT. So you should run your
+  code with
+
+  kaffe -Xkaffe-xlib-awt YourClass
+
 * --with-kaffe-qt-awt
 
   a Qt based AWT backend. It uses Trolltech's cross-platform graphical
@@ -126,6 +132,12 @@ So far, you have the following choices:
 
   More information on Qt is available from http://www.trolltech.com.
 
+  You need to run kaffe with -Xkaffe-qt-awt option, in order for it
+  to load the correct classes for this AWT. So you should run your
+  code with
+
+  kaffe -Xkaffe-qt-awt YourClass
+
 * --with-kaffe-nanox-awt
 
   a Nano-X based AWT backend. It uses famous Nano-X library provided
@@ -145,6 +157,12 @@ So far, you have the following choices:
   --with-nanox-library, to specify the the corresponding Nano-X path.
 
   See http://www.microwindows.org/ for informations on Nano-X.
+
+  You need to run kaffe with -Xkaffe-nanox-awt option, in order for it
+  to load the correct classes for this AWT. So you should run your
+  code with
+
+  kaffe -Xkaffe-nanox-awt YourClass
 
 Troubleshooting
 ---------------

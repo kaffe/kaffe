@@ -1,3 +1,8 @@
+2006-03-25  Dalibor Topic  <robilad@kaffe.org>
+
+	* FAQ/FAQ.awt: Added information on runtime switches to use
+	the peerless AWT implementations.
+
 2006-03-24  Dalibor Topic  <robilad@kaffe.org>
 
 	* README, configure.ac: bumped up version to 1.1.7-rc2.
