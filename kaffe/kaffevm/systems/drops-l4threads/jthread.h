@@ -40,8 +40,8 @@ typedef struct _jthread {
         struct _jthread * next; /* next live thread */
         struct _jthread * prev; /* prev live thread */
 	void   (*func)(void *); /* Start function */
-        unsigned int eip; 
-        unsigned int esp;
+        l4_umword_t eip; 
+        l4_umword_t esp;
         l4thread_t l4thread;    /* native thread id */
 	int interrupting;       /* FLAG, if thread is in interrupting state */
 #ifdef REALTIME_EXTENSION

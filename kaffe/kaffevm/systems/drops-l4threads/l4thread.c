@@ -98,7 +98,7 @@ asm("_l4threads_suspendall:       \n\t"
 void 
 jthread_suspendall(void)
 {
- unsigned int  old_eflags;
+ l4_umword_t   old_eflags;
  l4_umword_t   dummy;
  l4_msgdope_t  result;
  l4_threadid_t src;
@@ -154,7 +154,7 @@ void
 jthread_unsuspendall(void)
 {
  volatile unsigned long int * ret_addr;
- unsigned int old_eflags,dummy;
+ l4_umword_t   old_eflags,dummy;
  l4_threadid_t preempter = L4_INVALID_ID;
  l4_threadid_t pager     = L4_INVALID_ID;
  l4thread_t    myself    = l4thread_myself();
@@ -200,7 +200,7 @@ bool jthread_detach_current_thread (void)
 
 int jthread_extract_stack(jthread_t jtid, void **from, unsigned *len)
 {
-  unsigned int esp,eip,eflags;
+  l4_umword_t esp,eip,eflags;
   l4_addr_t low,high;
   l4_threadid_t pager     = L4_INVALID_ID;
   l4_threadid_t preempter = L4_INVALID_ID;

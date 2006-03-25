@@ -2,7 +2,15 @@ Building kaffe on DROPS[1]
 ==========================
 
 author: Alexander Boettcher <alex@kaffe.org>
-date: 20.12.2005
+date: 25.03.2006
+
+Changes
+-------
+20.12.2005
+ - initial checkin
+25.03.2006
+ - DROPS/L4 specific shared library wrapper removed
+ - usage of ldso packet in order to support shared libraries
 
 Notes about the DROPS port
 --------------------------
@@ -10,7 +18,7 @@ The DROPS port of Kaffe uses its own threading system (drops-l4threads),
 which requires the L4Env [2] threading packet. Additionally, it uses the
 semaphore implementation of L4Env for the KSem interface of Kaffe. Further,
 the DROPS Kaffe port requires the DietLibC port, which does not provide
-the full LibC functionality (state 2005). Therefore, you will find a lot of
+the full LibC functionality (state 2006). Therefore, you will find a lot of
 unimplemented functions in the syscall interface of Kaffe, because they are
 not enabled or supported in the DROPS port of the DietLibC.
  
@@ -84,34 +92,28 @@ L4DIR	?= $(PKGDIR)/../..
 
 TARGET   = kaffevm
 SYSTEMS  = x86-l4v2
-
-#INSTALL_TARGET =
+MODE     = l4env_base
 
 include $(L4DIR)/mk/prog.mk
-
-L4DIR_ABS        =$(shell cd $(L4DIR);pwd)
 
 #
 # Kaffe configure parameters
 # 
-# adapt KAFFE_KAFFEH, KAFFE_SRC to your environment !
+# adapt KAFFE_KAFFEH, KAFFE_SRC to your enviornment !
 #
 KAFFE_KAFFEH	 = $(shell cd $(PKGDIR);pwd)/native/kaffe/kaffeh/kaffeh
 KAFFE_SRC        = $(PKGDIR)/contrib
-#
-#
-#
 
-KAFFE_L4_OPTION  = -DARCH_$(ARCH) \
-                   -DDROPS_SHARED_LIBRARIES
+L4DIR_ABS        =$(shell cd $(L4DIR);pwd)
+KAFFE_L4_OPTION  = -DARCH_$(ARCH) 
 
-KAFFE_CC        = $(CC_x86) -nostdinc -nostdlib -DL4API_l4v2 $(KAFFE_L4_OPTION) -I$(L4DIR_ABS)/include/$(ARCH)/$(L4API) -I$(L4DIR_ABS)/include/$(ARCH) -I$(L4DIR_ABS)/include -I$(L4DIR_ABS)/include/l4/gmp -I$(L4DIR_ABS)/include/dietlibc -I$(GCCDIR_x86)/include -I$(DROPS_STDDIR)/include/$(ARCH)/$(L4API) -I$(DROPS_STDDIR)/include/$(ARCH) -I$(DROPS_STDDIR)/include -I$(L4DIR_ABS)/include/dietlibc -DSIZE_MAX=4294967295U
+KAFFE_CC        = $(CC_x86) -nostdinc -nostdlib -DL4API_l4v2 $(KAFFE_L4_OPTION) -I$(L4DIR_ABS)/include/$(ARCH)/$(L4API) -I$(L4DIR_ABS)/include/$(ARCH) -I$(L4DIR_ABS)/include -I$(L4DIR_ABS)/include/l4/gmp -I$(L4DIR_ABS)/include/dietlibc -I$(GCCDIR_x86)/include -I$(DROPS_STDDIR)/include/$(ARCH)/$(L4API) -I$(DROPS_STDDIR)/include/$(ARCH) -I$(DROPS_STDDIR)/include -I$(L4DIR_ABS)/include/dietlibc -DSIZE_MAX=4294967295U -I/$(L4DIR_ABS)/include/l4/zlib
 
 KAFFE_CXX       = $(KAFFE_CC)
 
-KAFFE_LDFLAGS   = -nostdlib -L$(L4DIR_ABS)/lib/$(ARCH)_$(CPU)/$(L4API) -L$(L4DIR_ABS)/lib/$(ARCH)_$(CPU) -Ttext=0x0154f000 -Wl,-gc-sections
+KAFFE_LDFLAGS   = -nostdlib -L$(L4DIR_ABS)/lib/$(ARCH)_$(CPU)/$(L4API) -L$(L4DIR_ABS)/lib/$(ARCH)_$(CPU) -Wl,--export-dynamic,--dynamic-linker=libld-l4.s.so -Wl,--rpath-link,$(L4DIR_ABS)/lib/$(ARCH)_$(CPU)/$(L4API)
 
-KAFFE_LIBS    = -T$(L4DIR_ABS)/lib/$(ARCH)_$(CPU)/main_stat.ld -lcrt0.o -lloader.s -ldiet_be_l4_start_stop -lc_be_io.o -lc_be_mmap -lc_be_mmap_util -lc_be_socket_io -lc_be_select -ldiet_c -lc_be_simple_mem -lc_be_mmap -lc_be_time -ll4util -lrtc -ll4env -lgcc -ldiet_be_simple_sleep -ll4vfs_select -ll4vfs_select_listener-server -ll4vfs_basic_name_server -ll4vfs_basic_io -ll4vfs_connection -ll4vfs_net_io -ll4vfs_name_server -ldiet_be_l4_start_stop -ll4vfs_common_io -lc_be_file-table
+KAFFE_LIBS = -nostdlib -Wl,-nostdlib -T$(L4DIR_ABS)/lib/$(ARCH)_$(CPU)/main_dyn.ld -Bdynamic -lloader.s -ldl.s -Bstatic -lcrt0.o -lc_be_io.o -lc_be_socket_io -lc_be_select -ldiet_c -u mmap_anon -lslab -lc_be_time -lrtc -lgcc -ldiet_be_simple_sleep -ll4vfs_select -ll4vfs_select_listener-server -ll4vfs_basic_name_server -ll4vfs_basic_io -ll4vfs_connection -ll4vfs_net_io -ll4vfs_name_server -ldiet_be_l4_start_stop -ll4vfs_common_io -lc_be_file-table
 
 kaffe_configure:
 	if [ ! -e ../build/config.ready ]; then \
@@ -125,20 +127,28 @@ kaffe_configure:
 	        CC="$(KAFFE_CC)" \
         	CXX="$(KAFFE_CXX)" \
 	        $(KAFFE_SRC)/configure --build=i386-linux --host=i386-drops \
-                               --enable-pure-java-math --disable-sound --without-alsa --without-esd \
-                               --with-threads=drops-l4threads --with-engine=intrp \
-                               --disable-boehm-gc-configuration \
-                               --disable-nls --disable-gjdoc --disable-largefile \
-                               --disable-gtk-peer \
+                               --enable-pure-java-math \
+				--disable-sound \
+				--without-alsa \
+				--without-esd \
+				--with-threads=drops-l4threads \
+				--disable-boehm-gc-configuration \
+				--disable-nls \
+				--disable-gjdoc --disable-largefile \
+				--disable-gtk-peer \
+				--with-engine=intrp \
+				--disable-fastjar \
 		&& echo "ready" >config.ready; \
 	fi
 
 kaffevm: kaffe_configure
-	ln ../build/kaffe/kaffe/kaffe-bin kaffevm -sf
 	cd ../build \
-	&& make 
-	if [ ! -L ../build/libraries/javalib/rt.jar ]; then \
-		ln -s external/classpath/lib/glibj.zip ../build/libraries/javalib/rt.jar; \
+	&& make;
+	#ld -s ../build/kaffe/kaffe/kaffe-bin -o kaffevm
+	cp ../build/kaffe/kaffe/kaffe-bin kaffevm
+	if [ ! -e ../build/libraries/javalib/rt.jar ]; then \
+	  ln -s -f external/classpath/lib/glibj.zip \
+		../build/libraries/javalib/rt.jar; \
 	fi
 
 clean::
@@ -147,4 +157,4 @@ clean::
 cleanall::
 	rm build -rf
 
-.PHONY: kaffe_configure kaffevm
+.PHONY: clean cleanall kaffe_configure kaffevm
