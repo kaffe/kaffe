@@ -1,3 +1,10 @@
+2006-03-25  Kurt Miller <truk@optonline.net>
+
+	* kaffe/kaffe/main.c (options): Make sure to terminate
+	the newbootcpath string.
+
+	* config/i386/openbsd2/md.c: Added missing include.
+
 2006-03-25 Alexander Boettcher  <alex@kaffe.org>
 
 	* developers/config4.patch:

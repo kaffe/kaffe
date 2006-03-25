@@ -13,6 +13,7 @@
 #include <pthread.h>
 #include <pthread_np.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 void *mdGetStackEnd(void)
 {

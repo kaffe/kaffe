@@ -620,6 +620,9 @@ options(char** argv, int argc)
 			  	strcpy(newbootcpath, vmargs.bootClasspath);
 				strcat(newbootcpath, path_separator);
 			}
+			else
+				newbootcpath[0]='\0';
+
 			strcat(newbootcpath, &argv[i][j]);
 
 			/* set the new boot classpath */
