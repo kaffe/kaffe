@@ -122,6 +122,9 @@ EXTRA_DIST = \
         bfin/trampolines.S \
 	ia64/atomic.h \
 	ia64/common.h \
+	ia64/freebsd2/config.frag \
+	ia64/freebsd2/md.c \
+	ia64/freebsd2/md.h \
 	ia64/hpux/config.frag \
 	ia64/hpux/md.h \
 	ia64/linux/config.frag \

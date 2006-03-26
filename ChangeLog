@@ -1,5 +1,12 @@
 2006-03-26  Dalibor Topic  <robilad@kaffe.org>
 
+	* config/ia64/freebsd2/config.frag,
+	config/ia64/freebsd2/md.c,
+	config/ia64/freebsd2/md.h:
+	New files for a new port.
+
+2006-03-26  Dalibor Topic  <robilad@kaffe.org>
+
 	* developers/test-kaffe-sh: Add regression test failures in
 	a separate tar invocation to avoid breakage if no test failures
 	exist.
