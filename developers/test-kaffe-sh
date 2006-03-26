@@ -97,4 +97,4 @@ $KVER/configure --prefix=/tmp/kaffe/$ENG-$THRD $DEFAULT --with-engine=$ENG --wit
 cd /tmp/kaffe
 
 
-/tmp/kaffe/bin/tar cvf ~/`uname -n`.tar /tmp/kaffe/*-unix-*/*.log 
+/tmp/kaffe/bin/tar cvf ~/`uname -n`.tar /tmp/kaffe/*-unix-*/*.log /tmp/kaffe/*-unix-*/test/regression/*.fail

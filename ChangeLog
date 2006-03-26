@@ -1,5 +1,12 @@
 2006-03-26  Dalibor Topic  <robilad@kaffe.org>
 
+	* developers/test-kaffe-sh: Add regression test failures to
+	result tarball.
+
+	* Makefile.am: (EXTRA_DIST) Added developers/test-kaffe-sh.
+
+2006-03-26  Dalibor Topic  <robilad@kaffe.org>
+
 	* FAQ.requiredlibraries: libz is no longer required to use
 	zip files, since we're using the shipped one by default.
 

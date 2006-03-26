@@ -146,6 +146,7 @@ EXTRA_DIST = \
 	developers/resync-classpath.sh \
 	developers/rpm-kaffe.spec \
 	developers/sp_offset.c \
+	developers/test-kaffe-sh \
 	developers/unicode.pl \
 	developers/update-class-list \
 	developers/update-vm-list \
