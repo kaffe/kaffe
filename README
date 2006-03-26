@@ -33,8 +33,9 @@ while 'I' means 'interpreter'):
   ========================================================================
   ========================================================================
   Alpha     | J+I  |    Linux		OSF/1		NetBSD 1.x
+            |      |    FreeBSD
   ------------------------------------------------------------------------
-  ARM       | J+I  |    Linux/Netwinder NetBSD 1.x	RISC OS
+  ARM       | J+I  |    Linux           NetBSD 1.x	RISC OS
   ------------------------------------------------------------------------
   Blackfin  | J+I  |    uclinux
   ------------------------------------------------------------------------
@@ -48,7 +49,7 @@ while 'I' means 'interpreter'):
             |      |    GNU Hurd	BeOS		Cygwin
 	    |      |    Darwin          DragonFly BSD
   ------------------------------------------------------------------------
-  MIPS      | J+I  |    Linux/Cobalt    IRIX 5 & 6	NetBSD 1.x
+  MIPS      | J+I  |    Linux           IRIX 5 & 6	NetBSD 1.x
 	    |	   |	Ultrix 4.2      PS2Linux
   ------------------------------------------------------------------------
   M68K      | J+I  |    AmigaOS         NeXTStep 3.x    NetBSD 1.x

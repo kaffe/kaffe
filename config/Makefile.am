@@ -64,6 +64,9 @@ EXTRA_DIST = \
 	alpha/jit-alpha.def \
 	alpha/jit-icode.h \
 	alpha/jit.h \
+	alpha/freebsd2/config.frag \
+	alpha/freebsd2/md.c \
+	alpha/freebsd2/md.h \
 	alpha/linux/config.frag \
 	alpha/linux/jit-md.h \
 	alpha/linux/md.c \

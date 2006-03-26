@@ -1,5 +1,16 @@
 2006-03-26  Dalibor Topic  <robilad@kaffe.org>
 
+	New port to alpha-freebsd.
+
+	* config/alpha/freebsd2/config.frag,
+	config/alpha/freebsd2/md.c,
+	config/alpha/freebsd2/md.h:
+	New files.
+
+2006-03-26  Dalibor Topic  <robilad@kaffe.org>
+
+	New port to ia64-freebsd.
+
 	* config/ia64/freebsd2/config.frag,
 	config/ia64/freebsd2/md.c,
 	config/ia64/freebsd2/md.h:
