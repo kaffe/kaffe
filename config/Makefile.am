@@ -344,6 +344,9 @@ EXTRA_DIST = \
 	powerpc/netbsd1/md.c \
 	powerpc/netbsd1/md.h \
 	powerpc/netbsd1/jit3-md.h \
+	powerpc/openbsd2/config.frag \
+	powerpc/openbsd2/md.c \
+	powerpc/openbsd2/md.h \
 	powerpc/powerpc32/atomic.h \
 	powerpc/powerpc64/atomic.h \
 	powerpc/callmethod_ppc.h \

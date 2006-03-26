@@ -25,11 +25,11 @@
 #endif
 
 #undef SP_OFFSET
-#define SP_OFFSET 2
+#define SP_OFFSET 1
 
 /* Function prototype for signal handlers */
 #undef SA_SIGINFO
-#define	SIGNAL_ARGS(sig, sc) int sig, int code, struct sigcontext* sc
+#define	SIGNAL_ARGS(sig, sc) int sig, siginfo_t *__sip, struct sigcontext* sc
 #define SIGNAL_CONTEXT_POINTER(scp) struct sigcontext* scp
 #define GET_SIGNAL_CONTEXT_POINTER(scp) (scp)
 #define SIGNAL_PC(scp) ((scp)->sc_pc)
@@ -41,6 +41,23 @@
 #include "jit-md.h"
 #endif
 
+#if defined(KAFFE_SYSTEM_UNIX_PTHREADS)
+
+#define KAFFEMD_STACK_ERROR 0
+#define KAFFEMD_STACK_INFINITE KAFFEMD_STACK_ERROR
+
+#define KAFFEMD_STACKSIZE
+extern size_t mdGetStackSize(void);
+
+#define KAFFEMD_DISABLE_SETSTACKSIZE
+
+#define KAFFEMD_STACKEND
+extern void *mdGetStackEnd(void);
+
+#else /* KAFFE_SYSTEM_UNIX_PTHREADS */
+
 #include "kaffe-unix-stack.h"
+
+#endif /* KAFFE_SYSTEM_UNIX_PTHREADS */
 
 #endif

@@ -1,5 +1,33 @@
 2006-03-26  Dalibor Topic  <robilad@kaffe.org>
 
+	* RELEASE-NOTES: Updated for 1.1.7.
+
+2006-03-26  Dalibor Topic  <robilad@kaffe.org>
+
+	* README: Added powerpc-openbsd port.
+
+	* WHATSNEW: Added powerpc-openbsd port, and various other little bits of
+	information.
+
+	* config/Makefile.am: (EXTRA_DIST) Added powerpc/openbsd files.
+
+2006-03-26  Kurt Miller <truk@optonline.net>
+
+	* config/i386/openbsd2/md.c,
+	config/i386/openbsd2/md.h: 
+	Fixes for jthreads & stack handling with pthreads.
+
+	* config/sparc/openbsd2/md.c,
+	config/sparc/openbsd2/md.h:
+	Fixes for sparc64-openbsd & stack handling with pthreads.
+
+	* config/powerpc/openbsd2/config.frag,
+	config/powerpc/openbsd2/md.c,
+	config/powerpc/openbsd2/md.h:
+	New files.
+
+2006-03-26  Dalibor Topic  <robilad@kaffe.org>
+
 	New port to alpha-freebsd.
 
 	* config/alpha/freebsd2/config.frag,

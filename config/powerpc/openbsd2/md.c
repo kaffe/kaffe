@@ -1,12 +1,9 @@
 /*
- * i386/openbsd2/md.c
- * OpenBSD i386 specific functions.
+ * powerpc/openbsd2/md.c
+ * OpenBSD PowerPC specific functions.
  *
- * Copyright (c) 1996, 1997
- *	Transvirtual Technologies, Inc.  All rights reserved.
- *
- * See the file "license.terms" for information on usage and redistribution 
- * of this file. 
+ * See the file "license.terms" for information on usage and redistribution
+ * of this file.
  */
 
 #include "config.h"
@@ -44,5 +41,4 @@ size_t mdGetStackSize(void)
       }
     return stack.ss_size;
 }
-
 #endif

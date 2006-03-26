@@ -1,11 +1,11 @@
-Release Notes for 1.1.6
+Release Notes for 1.1.7
 =======================
 
-Release 1.1.6 of Kaffe is a "development" release.
+Release 1.1.7 of Kaffe is a "development" release.
 
 It has been tested, but not as thoroughly as a
 production release would be. It contains major 
-improvements over 1.1.5, which was released six 
+improvements over 1.1.6, which was released six 
 months ago. I anticipate that most people will have 
 less trouble with this release, and more fun.
 
@@ -15,6 +15,137 @@ been added in this release.
 Bug reports, comments and patches are always
 welcome -- send them to the team at kaffe@kaffe.org.
 
+
+How to help
+===========
+
+We would appreciate your help in making Kaffe better,
+faster, and nicer. As a collaborative Free Software
+project, Kaffe only gets to be as good as its users
+and developers make it. If you want to track Kaffe
+development, and become a part of the Kaffe community
+please join the Kaffe mailing list. Instructions for
+joining the list are available at 
+http://www.kaffe.org/mailinglists.shtml
+
+If you find bugs, you should report them to the Kaffe
+bug tracker. The bug tracker is located at 
+http://www.kaffe.org/bugzilla/
+
+A lot of informal communication between developers 
+and users happens on IRC, on the #kaffe channel on
+irc.freenode.org. It's a friendly channel where 
+someone may help you debug or port Kaffe, if you need
+hands on help.
+
+If you have studied Sun's J2SE source code, 
+or signed NDAs that would prevent you from 
+contributing to Kaffe, we can not take source code 
+contributions from you. Otherwise, you're most welcome 
+to send in patches to the Kaffe mailing list at 
+kaffe@kaffe.org. If you have doubts, please ask.
+
+An easy project to get yourself familiar with the source 
+code base are cleaning up the compiler warnings on 
+your platform. Every patch is welcome, and appreciated,
+no matter how small.
+
+If Kaffe doesn't pass all regression tests executed by 
+'make check' on your platform of choice under your desired
+configuration, patches to fix the regression failures would
+also be very appreciated.
+
+If there is some CPU architecture or a configuration you 
+care about dearly, and don't want to see it degrade
+between releases without someone noticing, please consider 
+running a Tinderbox client every now and then. The Kaffe
+tinderbox is hosted by Eric Anholt, and located at
+http://tinderbox.freedesktop.org .
+
+That way we can notice when patches go bad, and a simple 
+warning fix breaks your build, for example. 
+
+We won't ask you for copyright assignment. If you contribute 
+patches to code coming from other projects, then you should
+also send your patches 'upstream' to those projects, 
+beside contributing it to Kaffe, so that all users of 
+those upstream projects can benefit from your work.
+
+A particularly important upstream project for Kaffe is
+GNU Classpath, which provides the core class libraries.
+
+Even if Kaffe doesn't meat your needs, you are likely
+to find another Free Software runtime among the GNU
+Classpath family that suits your needs better. A list
+of such runtimes is available at 
+http://www.gnu.org/software/classpath/stories.html#jvm
+
+If you are not interested in hacking Kaffe, but want to 
+hack on GNU Classpath instead, Kaffe provides a quick, 
+efficient way to get yourself up and running with the 
+latest GNU Classpath code and have a working development 
+environment 'out of the box'. While not 100% merged with
+GNU Classpath yet, Kaffe follows for the 99% of the merged
+classes the developments in the GNU Classpath CVS regularly
+in its CVS head, and a script exists in the developers
+directory to make keeping in sync with GNU Classpath as
+simple as possible.
+
+Future Plans
+============
+
+Check out the TODO file for a list of things that are
+planned.
+
+Among other things, it is planed to fully switch Kaffe
+over to use GNU Classpath out of the box. Help to complete
+that task faster would be very welcome. What remains to be
+done is the String class, java.util.zip and 
+java.lang.reflect packages.
+
+Also planned is support for features introduced in 
+J2SE 1.5.
+
+After making Kaffe the integration melting pot for class 
+library components, it would be quite interesting to make 
+Kaffe an integration test bed for runtime components as 
+well.
+
+If you are looking for an interesting contribution to 
+make to the core VM, you may want to help with merging 
+in the new JIT engine, the merge of the gcj verifier 
+engine, the efforts to make Kaffe use shared libraries
+complied by gcj, or the vmgen-generated interpreter from
+Cacao.
+
+We'd also appreciate help with merging in the various other
+interesting developments from Kaffe forks like 
+JanosVM (Isolation), Latte (Hotspot-like engine), 
+BeKaffe (BeOS port), KaffeCE (WindowsCE port) and others.
+
+Platform Matrix
+===============
+
+The following platforms have been tested for this release:
+
+  arch	|   os	   | engine | threads |  gc   | passed
+======================================================
+  alpha | linux    | intrp  | pthread | kaffe | 147/150
+  alpha | freebsd  | intrp  | pthread | kaffe | 134/150
+  amd64 | linux    | intrp  | jthread | kaffe | 150/150
+  amd64 | linux    | intrp  | pthread | kaffe | 149/150  
+  i386  | linux    | intrp  | pthread | kaffe | 150/150
+  i386  | linux    | intrp  | jthread | kaffe | 150/150
+  i386  | linux    | jit    | pthread | kaffe | 149/150
+  i386  | linux    | jit    | jthread | kaffe | 149/150
+  i386  | linux    | jit3   | pthread | kaffe | 150/150
+  i386  | linux    | jit3   | jthread | kaffe | 150/150
+  i386  | cygwin   | intrp  | jthread | kaffe | 146/150
+  i386  | openbsd  | intrp  | jthread | kaffe | 150/150
+  i386  | openbsd  | intrp  | pthread | kaffe | 150/150
+  i386  | openbsd  | jit    | pthread | kaffe |~138/150
+powerpc | linux    | intrp  | pthread | kaffe | 150/150
+powerpc | linux    | intrp  | jthread | kaffe | 150/150
 
 Platform Specific Notes
 =======================
@@ -52,104 +183,19 @@ a MIPS(EL) board on Kaffe instead of hacking on the jit
 please pass the option --with-engine=intrp to Kaffe's
 configure script.
 
-How to help
-===========
+* Blackfin
 
-We would appreciate your help in making Kaffe better,
-faster, and nicer. As a collaborative Free Software
-project, Kaffe only gets to be as good as its users
-and developers make it. If you want to track Kaffe
-development, and become a part of the Kaffe community
-please join the Kaffe mailing list. Instructions for
-joining the list are available at 
-http://www.kaffe.org/mailinglists.shtml
+The port has been started. Currently HelloWorld works
+on the interpreter, and some other regresson tests run.
+Work remains to be done both on the jitter and the 
+interpreter. See FAQ/FAQ.blackfin for details.
 
-A lot of informal communication between developers 
-and users happens on IRC, on the #kaffe channel on
-irc.freenode.org. It's a friendly channel where 
-someone may help you debug or port Kaffe, if you need
-hands on help.
+* Cygwin
 
-If you have looked at Sun's J2SE source code, 
-or signed NDAs that would prevent you from 
-contributing to Kaffe, we can not take source code 
-contributions from you. Otherwise, you're most welcome 
-to send in patches to the Kaffe mailing list at 
-kaffe@kaffe.org.
-
-An easy project to get yourself familiar with the source 
-code base are cleaning up the compiler warnings on 
-your platform. Every patch is welcome, and appreciated,
-no matter how small.
-
-If Kaffe doesn't pass all regression tests executed by 
-'make check' on your platform of choice under your desired
-configuration, patches to fix the regression failures would
-also be very appreciated.
-
-We won't ask you for copyright assignment. If you contribute 
-patches to code coming from other projects, then you should
-also send your patches 'upstream' to those projects, 
-beside contributing it to Kaffe, so that all users of 
-those upstream projects can benefit from your work.
-
-A particularly important upstream project for Kaffe is
-GNU Classpath, which provides the core class libraries.
-Even if Kaffe doesn't meat your needs, you are likely
-to find another Free Software runtime among the GNU
-Classpath family that suits your needs better. A list
-of such runtimes is available at 
-http://www.gnu.org/software/classpath/stories.html#jvm
-
-If you are not interested in hacking Kaffe, but want to 
-hack on GNU Classpath instead, Kaffe provides a quick, 
-efficient way to get yourself up and running with the 
-latest GNU Classpath code and have a working development 
-environment 'out of the box'. While not 100% merged with
-GNU Classpath yet, Kaffe follows for the 99% of the merged
-classes the developments in the GNU Classpath CVS regularly
-in its CVS head, and a script exists in the developers
-directory to make keeping in sync with GNU Classpath as
-simple as possible.
-
-Future Plans
-============
-
-Check out the TODO file for a list of things that are
-planned.
-
-Among other things, it is planed to fully switch Kaffe
-over to use GNU Classpath out of the box. Help to complete
-that task faster would be very welcome.
-
-After making Kaffe the integration melting pot for class 
-library components, it would be quite interesting to make 
-Kaffe an integration test bed for runtime components as 
-well.
-
-If you are looking for an interesting contribution to 
-make to the core VM, you may want to help with merging 
-in the new JIT engine, the merge of the gcj verifier 
-engine, or the efforts to make Kaffe use shared libraries
-complied by gcj.
-
-We'd also appreciate help with merging in the various other
-interesting developments from Kaffe forks like 
-JanosVM (Isolation), Latte (Hotspot-like engine), 
-BeKaffe (BeOS port), KaffeCE (WindowsCE port) and others.
-
-Platform Matrix
-===============
-
-The following platforms have been tested for this release:
-
-  arch	|   os	   | engine | threads |  gc   | passed
-======================================================
-  i386  | linux    | jit3   | pthread | kaffe | 148/148
-  i386  | linux    | jit3   | jthread | kaffe | 148/148
-powerpc | linux    | intrp  | pthread | kaffe | 148/148
-powerpc | linux    | intrp  | jthread | kaffe | 148/148
-
+The interpreter and the jitter work with jthreads. 
+When building Kaffe on Cygwin, one needs to take some 
+care with configure options to get a working build. 
+Please see FAQ/FAQ.win32 for details.
 
 Have fun!
 
