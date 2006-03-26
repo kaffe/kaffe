@@ -1,5 +1,11 @@
 2006-03-26  Dalibor Topic  <robilad@kaffe.org>
 
+	* developers/test-kaffe-sh: Add regression test failures in
+	a separate tar invocation to avoid breakage if no test failures
+	exist.
+
+2006-03-26  Dalibor Topic  <robilad@kaffe.org>
+
 	* FAQ/FAQ.win32: Improved Cygwin build documentation.
 	We're down to 4 regression test failures with interpreter
 	and jthreads.
