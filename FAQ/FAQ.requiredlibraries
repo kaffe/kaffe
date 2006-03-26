@@ -90,17 +90,6 @@ Esd:
 	at:
 	http://www.tux.org/~ricdude/EsounD.html
 
-Compression libraries
----------------------
-
-If you want to work with ZIP or Jar files, you need this
-library.
-
-libz:
-    You need libz to use the functionality in java.util.zip.  It's
-    available at:
-    http://www.cdrom.com/pub/infozip/zlib/
-
 Mathematical libraries
 ----------------------
 

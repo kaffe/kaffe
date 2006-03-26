@@ -1,3 +1,8 @@
+2006-03-26  Dalibor Topic  <robilad@kaffe.org>
+
+	* FAQ.requiredlibraries: libz is no longer required to use
+	zip files, since we're using the shipped one by default.
+
 2006-03-25  Kurt Miller <truk@optonline.net>
 
 	* kaffe/kaffe/main.c (options): Make sure to terminate
