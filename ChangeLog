@@ -1,3 +1,12 @@
+2006-03-27  Kurt Miller <kurt@intricatesoftware.com>
+
+	* config/powerpc//threads.h: (THREADSTACKSIZE) Increased 
+	stack size. 
+
+2006-03-27  Dalibor Topic  <robilad@kaffe.org>
+
+	* ChangeLog: Updated Kurt Miller's e-mail address.
+
 2006-03-27  Dalibor Topic  <robilad@kaffe.org>
 
         * configure.ac, README: Bumped version number up to 1.1.8-pre.
@@ -19,7 +28,7 @@
 
 	* config/Makefile.am: (EXTRA_DIST) Added powerpc/openbsd files.
 
-2006-03-26  Kurt Miller <truk@optonline.net>
+2006-03-26  Kurt Miller <kurt@intricatesoftware.com>
 
 	* config/i386/openbsd2/md.c,
 	config/i386/openbsd2/md.h: 
@@ -82,7 +91,7 @@
 	* FAQ.requiredlibraries: libz is no longer required to use
 	zip files, since we're using the shipped one by default.
 
-2006-03-25  Kurt Miller <truk@optonline.net>
+2006-03-25  Kurt Miller <kurt@intricatesoftware.com>
 
 	* kaffe/kaffe/main.c (options): Make sure to terminate
 	the newbootcpath string.
@@ -201,7 +210,7 @@
 	config/bfin/uclinux/sigcontextinfo.h:
 	New files.
 
-2006-03-23  Kurt Miller <truk@optonline.net>
+2006-03-23  Kurt Miller <kurt@intricatesoftware.com>
 
 	Fixes for OpenBSD stack handling.
 
@@ -7006,7 +7015,7 @@
         (reset): Likewise.
         (getValue): Return unsigned int value.
 
-2005-09-09  Kurt Miller <truk@optonline.net>
+2005-09-09  Kurt Miller <kurt@intricatesoftware.com>
 
 	* configure.ac: Don't check for functions to set 
 	priorities on OpenBSD, to avoid starvation on 
