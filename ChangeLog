@@ -1,5 +1,9 @@
 2006-03-26  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac, README: Bumped version number up to 1.1.7.
+
+2006-03-26  Dalibor Topic  <robilad@kaffe.org>
+
 	* RELEASE-NOTES: Updated for 1.1.7.
 
 2006-03-26  Dalibor Topic  <robilad@kaffe.org>

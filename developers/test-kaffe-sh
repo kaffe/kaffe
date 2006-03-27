@@ -45,7 +45,7 @@ ls -l  /tmp/kaffe/bin/jikes
 
 /tmp/kaffe/bin/tar xvf ~/kaffe*.tar
 
-KVER=/tmp/kaffe/kaffe-1.1.7-rc2
+KVER=/tmp/kaffe/kaffe-1.1.7
 DEFAULT="--disable-boehm-gc-configuration --disable-sound --disable-native-awt --enable-pure-java-math --with-jikes=/tmp/kaffe/bin/jikes --disable-gtk-peer"
 
 ENG=intrp
