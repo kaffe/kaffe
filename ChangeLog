@@ -1,3 +1,19 @@
+2006-03-28  Dalibor Topic  <robilad@kaffe.org>
+
+	* external/gcc/fastjar/jartool.c: Cast filenames to char*
+	before calling canonical_filename to fix compiler warnings.
+
+2005-03-28  Antoine Reilles  <tonio@kaffe.org>,
+	    Joerg Sonnenberger  <joerg@britannica.bec.de>
+
+	* external/gcc/fastjar/jartool.c: Fix security problem for 
+	fastjar reported at : http://secunia.com/advisories/14902
+	Confirmed by Dalibor.
+
+	Use a canonical_filename function as proposed by joerg, 
+	since the problem can't be fixed by realpath, see
+	http://mail-index.netbsd.org/tech-pkg/2006/03/07/0002.html
+
 2006-03-27  Dalibor Topic  <robilad@kaffe.org>
 
 	* ChangeLog.18, ChangeLog: Moved old change logs to 

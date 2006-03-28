@@ -1724,7 +1724,7 @@ int extract_jar(int fd, char **files, int file_num){
     pb_read(&pbf, filename, fnlen);
     filename[fnlen] = '\0';
 
-    canonical_filename(filename);
+    canonical_filename((char *)filename);
 
     if (*filename == '\0') {
        fprintf(stderr, "Error extracting JAR archive, empty file name!\n");
@@ -2039,7 +2039,7 @@ int list_jar(int fd, char **files, int file_num){
       }
       filename[fnlen] = '\0';
     
-      canonical_filename(filename);
+      canonical_filename((char*)filename);
       if (*filename == '\0') {
           fprintf(stderr, "Error extracting JAR archive, empty file name!\n");
           exit(1);
