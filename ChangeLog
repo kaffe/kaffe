@@ -1,5 +1,12 @@
 2006-03-28  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffe/main.c,
+	kaffe/kaffe/version.c,
+	kaffe/kaffeh/main.c:
+	Fixed pscan security warnings.
+
+2006-03-28  Dalibor Topic  <robilad@kaffe.org>
+
 	* external/gcc/fastjar/jartool.c: Cast filenames to char*
 	before calling canonical_filename to fix compiler warnings.
 

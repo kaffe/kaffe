@@ -402,7 +402,7 @@ setKaffeAWT(const char * propStr)
       	/* Get longer buffer FIXME:  free the old one */
        	if ((newbootcpath = malloc(bootcpathlength)) == NULL) 
 	{
-           	fprintf(stderr,  _("Error: out of memory.\n"));
+           	fprintf(stderr, "%s", _("Error: out of memory.\n"));
                 exit(EXIT_FAILURE);
       	}
 
@@ -496,7 +496,7 @@ options(char** argv, int argc)
 
 			/* Get longer buffer FIXME:  free the old one */
 			if ((newcpath = malloc(cpathlength)) == NULL) {
-				fprintf(stderr,  _("Error: out of memory.\n"));
+				fprintf(stderr,  "%s", _("Error: out of memory.\n"));
 				exit(EXIT_FAILURE);
 			}
 
@@ -559,7 +559,7 @@ options(char** argv, int argc)
 
                         /* Get longer buffer FIXME:  free the old one */
                         if ((newbootcpath = malloc(bootcpathlength)) == NULL) {
-                                fprintf(stderr,  _("Error: out of memory.\n"));
+                                fprintf(stderr,  "%s", _("Error: out of memory.\n"));
                                 exit(EXIT_FAILURE);
                         }
 
@@ -586,7 +586,7 @@ options(char** argv, int argc)
 
 			/* Get longer buffer FIXME:  free the old one */
 			if ((newbootcpath = malloc(bootcpathlength)) == NULL) {
-				fprintf(stderr,  _("Error: out of memory.\n"));
+				fprintf(stderr,  "%s", _("Error: out of memory.\n"));
 				exit(EXIT_FAILURE);
 			}
 
@@ -611,7 +611,7 @@ options(char** argv, int argc)
 
 			/* Get longer buffer FIXME:  free the old one */
 			if ((newbootcpath = malloc(bootcpathlength)) == NULL) {
-				fprintf(stderr,  _("Error: out of memory.\n"));
+				fprintf(stderr,  "%s", _("Error: out of memory.\n"));
 				exit(EXIT_FAILURE);
 			}
 
@@ -636,7 +636,7 @@ options(char** argv, int argc)
 
 			/* Get longer buffer FIXME:  free the old one */
 			if ((newbootcpath = malloc(bootcpathlength)) == NULL) {
-				fprintf(stderr,  _("Error: out of memory.\n"));
+				fprintf(stderr,  "%s", _("Error: out of memory.\n"));
 				exit(EXIT_FAILURE);
 			}
 
@@ -651,7 +651,7 @@ options(char** argv, int argc)
 			if (argv[i][j] == 0) {
 				i++;
 				if (argv[i] == 0) {
-					fprintf(stderr, _("Error: No stack size found for -ss option.\n"));
+					fprintf(stderr, "%s", _("Error: No stack size found for -ss option.\n"));
 					exit(EXIT_FAILURE);
 				}
 				sz = parseSize(argv[i]);
@@ -659,7 +659,7 @@ options(char** argv, int argc)
 				sz = parseSize(&argv[i][j]);
 			}
 			if (sz < THREADSTACKSIZE) {
-				fprintf(stderr,  _("Warning: Attempt to set stack size smaller than %d - ignored.\n"), THREADSTACKSIZE);
+				fprintf(stderr, _("Warning: Attempt to set stack size smaller than %d - ignored.\n"), THREADSTACKSIZE);
 			}
 			else {
 				vmargs.nativeStackSize = sz;
@@ -670,7 +670,7 @@ options(char** argv, int argc)
 			if (argv[i][j] == 0) {
 				i++;
 				if (argv[i] == 0) {
-					fprintf(stderr,  _("Error: No heap size found for -mx option.\n"));
+					fprintf(stderr,  "%s", _("Error: No heap size found for -mx option.\n"));
 					exit(EXIT_FAILURE);
 				}
 				if (strcmp(argv[i], "unlimited") == 0)
@@ -689,7 +689,7 @@ options(char** argv, int argc)
 			if (argv[i][j] == 0) {
 				i++;
 				if (argv[i] == 0) {
-					fprintf(stderr,  _("Error: No heap size found for -ms option.\n"));
+					fprintf(stderr,  "%s", _("Error: No heap size found for -ms option.\n"));
 					exit(EXIT_FAILURE);
 				}
 				vmargs.minHeapSize = parseSize(argv[i]);
@@ -701,7 +701,7 @@ options(char** argv, int argc)
 			if (argv[i][3] == 0) {
 				i++;
 				if (argv[i] == 0) {
-					fprintf(stderr,  _("Error: No heap size found for -as option.\n"));
+					fprintf(stderr,  "%s", _("Error: No heap size found for -as option.\n"));
 					exit(EXIT_FAILURE);
 				}
 				vmargs.allocHeapSize = parseSize(argv[i]);
@@ -747,7 +747,7 @@ options(char** argv, int argc)
 
 			newcpath = (char *)malloc (cpathlength);
 			if (newcpath == NULL) {
-				fprintf(stderr,  _("Error: out of memory.\n"));
+				fprintf(stderr,  "%s", _("Error: out of memory.\n"));
 				exit(EXIT_FAILURE);
 			}
 
@@ -799,13 +799,13 @@ options(char** argv, int argc)
 			i++;
 			if (argv[i] == 0) {
 				fprintf(stderr, 
-					_("Error: -Xxprof_syms option requires "
+					"%s", _("Error: -Xxprof_syms option requires "
 					"a file name.\n"));
 			}
 			else if( !profileSymbolFile(argv[i]) )
 			{
 				fprintf(stderr, 
-					_("Unable to create profiler symbol "
+					 _("Unable to create profiler symbol "
 					"file %s.\n"),
 					argv[i]);
 			}
@@ -814,7 +814,7 @@ options(char** argv, int argc)
 			i++;
 			if (argv[i] == 0) {
 				fprintf(stderr, 
-					_("Error: -Xxprof_gmon option requires "
+					"%s", _("Error: -Xxprof_gmon option requires "
 					"a file name.\n"));
 			}
 			else if (!profileGmonFile(argv[i]))
@@ -834,7 +834,7 @@ options(char** argv, int argc)
 			i++;
 			if (argv[i] == 0) {
 				fprintf(stderr, 
-					_("Error: -Xxdebug_file option requires "
+					"%s", _("Error: -Xxdebug_file option requires "
 					"a file name.\n"));
 			}
 			else
@@ -848,7 +848,7 @@ options(char** argv, int argc)
 			i++;
 			if (argv[i] == 0) {
 				fprintf(stderr, 
-					_("Error: -Xfeedback option requires a "
+					"%s", _("Error: -Xfeedback option requires a "
 					"file name.\n"));
 			}
 			else
@@ -866,7 +866,7 @@ options(char** argv, int argc)
                         i++;
                         if (argv[i] == 0) { /* forgot second arg */
                                 fprintf(stderr, 
-					_("Error: -vmstats option requires a "
+					"%s", _("Error: -vmstats option requires a "
 					"second arg.\n"));
                                 exit(EXIT_FAILURE);
                         }
@@ -878,7 +878,7 @@ options(char** argv, int argc)
                         i++;
                         if (argv[i] == 0) { /* forgot second arg */
                                 fprintf(stderr, 
-					_("Error: -vmdebug option requires a "
+					"%s", _("Error: -vmdebug option requires a "
 					"debug flag. Use `list' for a list.\n"));
                                 exit(EXIT_FAILURE);
                         }
@@ -891,13 +891,13 @@ options(char** argv, int argc)
                         i++;
                         if (argv[i] == 0) { /* forgot second arg */
                                 fprintf(stderr, 
-					_("Error: -debug-fd an open descriptor.\n"));
+					"%s", _("Error: -debug-fd an open descriptor.\n"));
                                 exit(EXIT_FAILURE);
                         }
 			dbgSetDprintfFD(strtol(argv[i], &end, 10));
 			if (end != 0 && *end != '\0') {
 				fprintf(stderr,
-					_("Error: -debug-fd requires an integer.\n"));
+					"%s", _("Error: -debug-fd requires an integer.\n"));
 				exit(EXIT_FAILURE);
 			}
                 }
@@ -924,7 +924,7 @@ options(char** argv, int argc)
 			i++;
 		}
 		else {
-			fprintf(stderr,  _("Unknown flag: %s\n"), argv[i]);
+			fprintf(stderr, _("Unknown flag: %s\n"), argv[i]);
 		}
 	}
 
@@ -940,15 +940,15 @@ void
 usage(void)
 {
 	fprintf(stderr,
-		_("usage: kaffe [-options] class\n"
+		"%s", _("usage: kaffe [-options] class\n"
 		  "Options are:\n"
 		  "	-help			 Print this message\n"
 		  "	-version		 Print version number\n"
 		  "	-fullversion		 Print verbose version info\n"));
 #if defined(__ia64__)
-	fprintf(stderr, _("	-ia32			 Execute the ia32 version of Kaffe\n"));
+	fprintf(stderr, "%s", _("	-ia32			 Execute the ia32 version of Kaffe\n"));
 #endif
-	fprintf(stderr, _("	-ss <size>		 Maximum native stack size\n"
+	fprintf(stderr, "%s", _("	-ss <size>		 Maximum native stack size\n"
 			  "	-mx <size> 		 Maximum heap size\n"
 			  "	-ms <size> 		 Initial heap size\n"
 			  "	-as <size> 		 Heap increment\n"
@@ -968,45 +968,45 @@ usage(void)
 			  "	-verbosecall		 Print detailed call flow information\n"
 			  "	-nodeadlock		 Disable deadlock detection\n"));
 #if defined(KAFFE_PROFILER)
-	fprintf(stderr, _("	-prof			 Enable profiling of Java methods\n"));
+	fprintf(stderr, "%s", _("	-prof			 Enable profiling of Java methods\n"));
 #endif
 #if defined(KAFFE_XPROFILER)
-	fprintf(stderr, _("	-Xxprof			 Enable cross language profiling\n"
+	fprintf(stderr, "%s", _("	-Xxprof			 Enable cross language profiling\n"
 			  "	-Xxprof_syms <file>	 Name of the profiling symbols file [Default: kaffe-jit-symbols.s]\n"
 			  "	-Xxprof_gmon <file>	 Base name for gmon files [Default: xgmon.out]\n"));
 #endif
 #if defined(KAFFE_XDEBUGGING)
-	fprintf(stderr, _("	-Xxdebug_file <file>	 Name of the debugging symbols file\n"));
+	fprintf(stderr, "%s", _("	-Xxdebug_file <file>	 Name of the debugging symbols file\n"));
 #endif
 #if defined(KAFFE_FEEDBACK)
-	fprintf(stderr, _("	-Xfeedback <file>	 The file name to write feedback data to\n"));
+	fprintf(stderr, "%s", _("	-Xfeedback <file>	 The file name to write feedback data to\n"));
 #endif
-	fprintf(stderr, _("	-debug * 		 Trace method calls\n"
+	fprintf(stderr, "%s", _("	-debug * 		 Trace method calls\n"
 			  "	-noasyncgc *		 Do not garbage collect asynchronously\n"
 			  "	-cs, -checksource *	 Check source against class files\n"
 			  "	-oss <size> *		 Maximum java stack size\n"
 			  "	-jar                     Executable is a JAR\n"));
 #ifdef KAFFE_VMDEBUG
-        fprintf(stderr, _("	-vmdebug <flag{,flag}>	 Internal VM debugging.  Set flag=list for a list\n"));
+        fprintf(stderr, "%s", _("	-vmdebug <flag{,flag}>	 Internal VM debugging.  Set flag=list for a list\n"));
 #endif
-        fprintf(stderr, _("	-debug-fd <descriptor>	 Descriptor to send debug info to\n"));
+        fprintf(stderr, "%s", _("	-debug-fd <descriptor>	 Descriptor to send debug info to\n"));
 #ifdef KAFFE_STATS
-        fprintf(stderr, _("	-vmstats <flag{,flag}>	 Print VM statistics.  Set flag=all for all\n"));
+        fprintf(stderr, "%s", _("	-vmstats <flag{,flag}>	 Print VM statistics.  Set flag=all for all\n"));
 #endif
 #if defined(USE_GMP)
-        fprintf(stderr, _("	-Xnative-big-math	 Use GMP for faster, native bignum calculations\n"));
+        fprintf(stderr, "%s", _("	-Xnative-big-math	 Use GMP for faster, native bignum calculations\n"));
 #endif /* defined(USE_GMP) */
 #ifdef KAFFE_X_AWT_INCLUDED
-	fprintf(stderr, _("	-Xkaffe-xlib-awt	 Use Kaffe's Xlib AWT backend\n"));
+	fprintf(stderr, "%s", _("	-Xkaffe-xlib-awt	 Use Kaffe's Xlib AWT backend\n"));
 #endif
 #ifdef KAFFE_QT_AWT_INCLUDED
-	fprintf(stderr, _("	-Xkaffe-qt-awt		 Use Kaffe's Qt2/3/Embedded AWT backend\n"));
+	fprintf(stderr, "%s", _("	-Xkaffe-qt-awt		 Use Kaffe's Qt2/3/Embedded AWT backend\n"));
 #endif
 #ifdef KAFFE_NANOX_AWT_INCLUDED
-	fprintf(stderr, _("	-Xkaffe-nanox-awt	 Use Kaffe's Nano-X AWT backend\n"));
+	fprintf(stderr, "%s", _("	-Xkaffe-nanox-awt	 Use Kaffe's Nano-X AWT backend\n"));
 #endif
 
-	fprintf(stderr, _("  * Option currently ignored.\n"
+	fprintf(stderr, "%s", _("  * Option currently ignored.\n"
 			  "\n"
 			  "Compatibility options:\n"
 			  "	-Xss <size>		 Maximum native stack size\n"

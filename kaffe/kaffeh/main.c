@@ -245,7 +245,7 @@ options(int argc, char** argv)
 	bootclasspath = malloc(1);
 	if (bootclasspath == NULL) 
 	  {
-	    fprintf(stderr,  _("Error: out of memory.\n"));
+	    fprintf(stderr, "%s", _("Error: out of memory.\n"));
 	    exit(EXIT_FAILURE);
 	  }
 	*bootclasspath = '\0';
@@ -253,7 +253,7 @@ options(int argc, char** argv)
 	classpath = malloc(1);
 	if (classpath == NULL) 
 	  {
-	    fprintf(stderr,  _("Error: out of memory.\n"));
+	    fprintf(stderr, "%s",  _("Error: out of memory.\n"));
 	    exit(EXIT_FAILURE);
 	  }
 	*classpath = '\0';
@@ -300,7 +300,7 @@ options(int argc, char** argv)
 		  newcp = malloc(cplen);
 		  if (newcp == NULL)
 		    {
-		      fprintf(stderr,  _("Error: out of memory.\n"));
+		      fprintf(stderr, "%s", _("Error: out of memory.\n"));
 		      exit(EXIT_FAILURE);
 		    }
 		  
@@ -325,7 +325,7 @@ options(int argc, char** argv)
 		  newcp = malloc(cplen);
 		  if (newcp == NULL)
 		    {
-		      fprintf(stderr,  _("Error: out of memory.\n"));
+		      fprintf(stderr, "%s", _("Error: out of memory.\n"));
 		      exit(EXIT_FAILURE);
 		    }
 		  
