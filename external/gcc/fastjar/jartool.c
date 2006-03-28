@@ -1591,6 +1591,31 @@ int create_central_header(int fd){
   return 0;
 }
 
+static void canonical_filename(char *filename)
+{
+    char *iterator, *iterator2;
+
+    for (;;) {
+	if (*filename == '/')
+	    memmove(filename, filename + 1, strlen(filename));
+	else if (filename[0] == '.' && filename[1] == '/')
+	    memmove(filename, filename + 2, strlen(filename) - 1);
+	else if (filename[0] == '.' && filename[1] == '.' && filename[2] == '/')
+	    memmove(filename, filename + 3, strlen(filename) - 2);
+	else if ((iterator = strstr(filename, "//")) != NULL)
+	    memmove(iterator, iterator + 1, strlen(iterator));
+	else if ((iterator = strstr(filename, "/./")) != NULL)
+	    memmove(iterator, iterator + 2, strlen(iterator) - 1);
+	else if ((iterator = strstr(filename, "/../")) != NULL) {
+	    for (iterator2 = iterator - 1; iterator2 > filename && *iterator2 != '/'; --iterator2)
+		continue;
+	    /* iterator2 >= filename, handle the initial slash above, if necessary */
+	    memmove(iterator2, iterator + 3, strlen(iterator) - 2);
+	} else
+	    break;
+    }
+}
+
 int extract_jar(int fd, char **files, int file_num){
   int rdamt;
   int out_a, in_a;
@@ -1698,6 +1723,13 @@ int extract_jar(int fd, char **files, int file_num){
 
     pb_read(&pbf, filename, fnlen);
     filename[fnlen] = '\0';
+
+    canonical_filename(filename);
+
+    if (*filename == '\0') {
+       fprintf(stderr, "Error extracting JAR archive, empty file name!\n");
+       exit(1);
+     }
 
 #ifdef DEBUG    
     printf("filename is %s\n", filename);
@@ -2007,6 +2039,12 @@ int list_jar(int fd, char **files, int file_num){
       }
       filename[fnlen] = '\0';
     
+      canonical_filename(filename);
+      if (*filename == '\0') {
+          fprintf(stderr, "Error extracting JAR archive, empty file name!\n");
+          exit(1);
+      }
+
       /* if the user specified a list of files on the command line,
          we'll only display those, otherwise we'll display everything */
       if(file_num > 0){
