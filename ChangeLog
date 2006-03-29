@@ -1,3 +1,10 @@
+2006-03-29  Dalibor Topic  <robilad@kaffe.org>
+
+	Fix for #31.
+	
+	* kaffe/kaffevm/intrp/methodcalls.c: Added
+	missing include to define jvalue.
+
 2006-03-28  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffe/main.c,

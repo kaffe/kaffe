@@ -18,6 +18,7 @@
 #define NEED_sysdepCallMethod 1
 #endif
 
+#include "jni.h"
 #include "locks.h"
 #include "machine.h"
 #include "methodcalls.h"
