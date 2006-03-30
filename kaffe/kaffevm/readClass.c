@@ -196,6 +196,24 @@ readFields(classFile* fp, Hjava_lang_Class* this, errorInfo *einfo)
 	return (true);
 }
 
+static bool
+readSignatureAttribute(Hjava_lang_Class* this, u2 idx, Utf8Const **signature, errorInfo *einfo)
+{
+  constants* pool;
+  
+  pool = CLASS_CONSTANTS (this);
+  
+  if (pool->tags[idx] != CONSTANT_Utf8) {
+    postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
+			 "invalid signature index: %d",
+			 idx);
+    return false;
+  }
+  
+  *signature = WORD2UTF (pool->data[idx]);
+  return true;
+}
+
 /*
  * Read in attributes.
  */
@@ -285,6 +303,41 @@ readAttributes(classFile* fp, Hjava_lang_Class* this,
 					return false;
 				}
 			}
+#if !defined(KAFFEH)
+			else if (utf8ConstEqual(name, Synthetic_name)) {
+			  switch (thingType)
+			    {
+			    case READATTR_CLASS:
+			      ((Hjava_lang_Class *)thing)->accflags |= ACC_SYNTHETIC;
+			      break;
+			    case READATTR_METHOD:
+			      ((Method *)thing)->accflags |= ACC_SYNTHETIC;
+			      break;
+			    case READATTR_FIELD:
+			      ((Field *)thing)->accflags |= ACC_SYNTHETIC;
+			      break;
+			    }
+			}
+			else if (utf8ConstEqual(name, Signature_name)) {
+			  Utf8Const *signature;
+			  readu2(&idx, fp);
+			  if (!readSignatureAttribute(this, idx, &signature, einfo))
+			    return false;
+			  
+			  switch (thingType)
+			    {
+			    case READATTR_CLASS:
+			      ((Hjava_lang_Class *)thing)->extSignature = signature;
+			      break;
+			    case READATTR_METHOD:
+			      ((Method *)thing)->extSignature = signature;
+			      break;
+			    case READATTR_FIELD:
+			      ((Field *)thing)->extSignature = signature;
+			      break;
+			    }
+			}
+#endif
 			else {
 				DBG(READCLASS,
 				    dprintf("%s: don't know how to parse %s on %s\n",

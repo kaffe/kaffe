@@ -73,6 +73,7 @@
 #define	method_nargs()		(cinfo.in)
 #define	method_dtable_offset	(OBJECT_DTABLE_OFFSET)
 #define	method_returntype()	(cinfo.rettype)
+#define current_method() (meth)
 
 /* -------------------------------------------------------------------- */
 /* Fields */

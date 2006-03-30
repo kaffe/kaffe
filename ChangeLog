@@ -1,3 +1,59 @@
+2006-03-28  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffeh/main.c
+
+	* kaffe/kaffevm/access.h: Moved kaffe flags on class members into
+	its own namespace. Added Java 1.5 accessibility flags.
+
+	* kaffe/kaffevm/baseClasses.c
+	(initialiseKaffe): Added support for Signature and Synthetic
+	keywords.
+
+	* kaffe/kaffevm/classMethod.c
+	(addInnerClasses): Copy accessibility flags.
+	(addMethod): put kaffe flags into its own variable. 
+
+	* kaffe/kaffevm/classMethod.h
+	(Hjava_lang_Class): Added fields to support kaffe flags and
+	extended Java 1.5 signature.
+	Kaffe Flags are in their own variable now.
+
+	* kaffe/kaffevm/code-analyse.c: Likewise.
+
+	* kaffe/kaffevm/code-analyse.h
+	(CONSTANTTYPE): Added support for CONSTANT_Class and
+	CONSTANT_ResolvedClass.
+	(SET_NEWFRAME): Updated kaffe flags.
+
+	* kaffe/kaffevm/external.c: Updated kaffe flags.
+
+	* kaffe/kaffevm/gtypes.h: Introduced a new type for kaffe flags.
+
+	* kaffe/kaffevm/kaffe.def
+	(LDC): Class can be loaded directly now as of Java 1.5.
+	(PUTFIELD, PUTSTATIC): Updated checking of accessibility to Java
+	1.5 standard.
+	
+	* kaffe/kaffevm/readClass.c
+	(readSignatureAttribute): New function.
+	(readAttributes): Added support for Synthetic and Signature.
+
+	* kaffe/kaffevm/readClass.h: Added support for Java 1.5 classes.
+
+	* kaffe/kaffevm/gcj/gcj-glue.c,
+	kaffe/kaffevm/intrp/machine.c,
+	kaffe/kaffevm/jit/native-wrapper.c,
+	kaffe/kaffevm/jni/jni.c,
+	kaffe/kaffevm/intrp/methodcalls.c,
+	libraries/clib/native/Class.c: Updated kaffe flags.
+	
+	* kaffe/kaffevm/intrp/machine.h,
+	kaffe/kaffevm/jit3/machine.h,
+	kaffe/kaffevm/jit/machine.h
+	(current_method): New icode.
+
+	* test/internal/jit_stub.c: Updated to new internal API.
+	
 2006-03-29  Dalibor Topic  <robilad@kaffe.org>
 
 	Fix for #31.

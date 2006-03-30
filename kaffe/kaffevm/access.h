@@ -24,26 +24,31 @@
 #define	ACC_FINAL		0x0010
 #define	ACC_SYNCHRONISED	0x0020
 #define	ACC_VOLATILE		0x0040
+#define ACC_BRIDGE              0x0040
 #define	ACC_TRANSIENT		0x0080
+#define ACC_VARARGS		0x0080
 #define	ACC_NATIVE		0x0100
 #define	ACC_INTERFACE		0x0200
 #define	ACC_ABSTRACT		0x0400
 #define	ACC_STRICT		0x0800
+#define ACC_SYNTHETIC		0x1000
+#define ACC_ANNOTATION		0x2000
+#define ACC_ENUM		0x4000
 
-#define	ACC_MASK		0x07FF
+#define	ACC_MASK		0x0FFF
 
 /* Warning: strictfp aka ACC_STRICT is also 0x0800 and used for
    classes and methods */
-#define	ACC_CONSTRUCTOR		0x0800
+#define	KFLAG_CONSTRUCTOR	0x01
 
 /* only for class */
-#define	ACC_GCJ			0x1000
+#define	KFLAG_GCJ		0x02
 /* only for method: method was jitted */
-#define	ACC_JITTED		0x1000
-#define ACC_JNI                 0x2000
+#define	KFLAG_JITTED		0x02
+#define KFLAG_JNI               0x04
 /* either jitted or native method was found */
-#define	ACC_TRANSLATED		0x4000
-#define	ACC_VERIFIED		0x8000
+#define	KFLAG_TRANSLATED	0x08
+#define	KFLAG_VERIFIED		0x10
 
 typedef enum {
 	ACC_TYPE_CLASS,

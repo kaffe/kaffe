@@ -59,6 +59,8 @@ Utf8Const* ConstantValue_name;
 Utf8Const* Exceptions_name;
 Utf8Const* SourceFile_name;
 Utf8Const* InnerClasses_name;
+Utf8Const* Signature_name;
+Utf8Const* Synthetic_name;
 
 static struct _dispatchTable *ClassClass_vtable;
 static Hjava_lang_Class*	ClassClass;
@@ -255,11 +257,14 @@ initialiseKaffe(void)
 	Exceptions_name = utf8ConstNew("Exceptions", -1);
 	SourceFile_name = utf8ConstNew("SourceFile", -1);
 	InnerClasses_name = utf8ConstNew("InnerClasses", -1);
+	Signature_name = utf8ConstNew("Signature", -1);
+	Synthetic_name = utf8ConstNew("Synthetic", -1);
 
 	if (!(init_name && final_name && void_signature &&
 	      constructor_name && Code_name && LineNumberTable_name &&
 	      LocalVariableTable_name && ConstantValue_name &&
-	      Exceptions_name && SourceFile_name && InnerClasses_name)) {
+	      Exceptions_name && SourceFile_name && InnerClasses_name && 
+	      Signature_name && Synthetic_name)) {
 		DBG(INIT, dprintf("not enough memory to run kaffe\n"); );
 		KAFFEVM_ABORT();
 	}

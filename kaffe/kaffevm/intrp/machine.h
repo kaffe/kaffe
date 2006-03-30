@@ -44,6 +44,7 @@
   if (getMethodSignatureClass(idx, meth->class, true, 2, &cinfo, &einfo) \
         == false) { throwError(&einfo); }
 
+#define current_method()        (meth)
 #define	method_name()		(cinfo.name)
 #define	method_sig()		(cinfo.signature)
 #define method_idx()		(cinfo.method->idx)

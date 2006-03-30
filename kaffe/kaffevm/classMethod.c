@@ -1072,6 +1072,11 @@ addSourceFile(Hjava_lang_Class* c, int idx, errorInfo *einfo)
 	return (success);
 }
 
+
+/*
+ * Add a Java 1.5 signature to the class descriptor.
+ */
+
 /*
  * Read in InnerClasses declares for a class
  */
@@ -1112,6 +1117,7 @@ addInnerClasses(Hjava_lang_Class* c, size_t len UNUSED, classFile* fp,
 		readu2(&ic->inner_class_accflags, fp);
 
 		if (c->this_index && ic->inner_class == c->this_index) {
+//		    c->accflags = (ic->inner_class_accflags & ACC_MASK);
 		    c->this_inner_index = i;
 		}
 	}
@@ -1200,8 +1206,7 @@ DBG(CLASSFILE,
 		return NULL;
 	}
 	mt->class = c;
-	/* Warning: ACC_CONSTRUCTION match ACC_STRICT */
-	mt->accflags = access_flags & ACC_MASK;
+	mt->accflags = access_flags;
 	mt->c.bcode.code = NULL;
 	mt->stacksz = 0;
 	mt->localsz = 0;
@@ -1210,7 +1215,7 @@ DBG(CLASSFILE,
 
 	/* Mark constructors as such */
 	if (utf8ConstEqual (name, constructor_name)) {
-		mt->accflags |= ACC_CONSTRUCTOR;
+		mt->kFlags |= KFLAG_CONSTRUCTOR;
 	}
 
 	CLASS_NMETHODS(c)++;

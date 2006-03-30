@@ -61,6 +61,7 @@
 #define	get_interface_method_info(IDX) \
 	if (getMethodSignatureClass(IDX, xmeth->class, true, 2, &cinfo, einfo) == false) { success = false; goto done; }
 
+#define current_method()  (xmeth)
 #define	method_name()	(cinfo.name)
 #define	method_sig()	(cinfo.signature)
 #define	method_idx()	(cinfo.method->idx)

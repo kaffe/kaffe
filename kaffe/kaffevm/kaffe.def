@@ -148,6 +148,21 @@ define_insn(LDC1)
 	case CONSTANT_ResolvedString:
 		move_string_const(stack(0), (void*)CLASS_CONST_DATA(current_class(),idx));
 		break;
+	case CONSTANT_Class:
+	        {
+		        errorInfo ei;
+			void *s;
+	    
+			s = getClass(idx, current_class(), &ei);
+			if (s == 0) {
+			  compile_time_error(ei);	      
+			}
+			move_string_const(stack(0), s);
+		}
+		break;
+	case CONSTANT_ResolvedClass:
+	        move_ref_const(stack(0), (void*)CLASS_CONST_DATA(current_class(), idx));
+		break;
 	case CONSTANT_Float:
 		move_float_const(stack(0), *(float*)&CLASS_CONST_DATA(current_class(),idx));
 		break;
@@ -187,6 +202,21 @@ define_insn(LDC2)
 		break;
 	case CONSTANT_ResolvedString:
 		move_string_const(stack(0), (void*)CLASS_CONST_DATA(current_class(),idx));
+		break;
+	case CONSTANT_Class:
+	        {
+		        errorInfo ei;
+			void *s;
+	    
+			s = getClass(idx, current_class(), &ei);
+			if (s == 0) {
+			  compile_time_error(ei);	      
+			}
+			move_string_const(stack(0), s);
+		}
+		break;
+	case CONSTANT_ResolvedClass:
+	        move_ref_const(stack(0), (void*)CLASS_CONST_DATA(current_class(), idx));
 		break;
 	case CONSTANT_Float:
 		move_float_const(stack(0), *(jfloat*)&CLASS_CONST_DATA(current_class(),idx));
@@ -2523,7 +2553,8 @@ define_insn(PUTSTATIC)
 		}
 	}
 	else if (((field_field()->accflags & ACC_FINAL) &&
-		  ((field_class() != current_class()))) ||
+		  (field_class() != current_class() ||
+		  !utf8ConstEqual(METHOD_NAME(current_method()), init_name))) ||
 		 !checkFieldAccess(current_class(),
 				   field_class(),
 				   field_field())) {
@@ -2705,7 +2736,8 @@ define_insn(PUTFIELD)
 		}
 	}
 	else if (((field_field()->accflags & ACC_FINAL) &&
-		  ((field_class() != current_class()))) ||
+		  (field_class() != current_class() )) ||
+//		   !utf8ConstEqual(METHOD_NAME(current_method()), constructor_name) )) ||
 		 !checkFieldAccess(current_class(),
 				   field_class(),
 				   field_field())) {
@@ -2977,7 +3009,7 @@ define_insn(INVOKESPECIAL)
 		pop(method_nargs() + 1);
 		METHOD_RETURN_VALUE();
 	}
-	else if ((method_method()->accflags & ACC_CONSTRUCTOR) &&
+	else if ((method_method()->kFlags & KFLAG_CONSTRUCTOR) &&
 		 (method_method()->class != method_class())) {
 		/* XXX I think this test is wrong. */
 		softcall_nosuchmethod(method_class(), method_name(), method_sig());

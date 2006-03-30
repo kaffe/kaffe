@@ -73,6 +73,10 @@ typedef struct codeinfo {
 	case CONSTANT_ResolvedString:				\
 		VAL = TOBJ;					\
 		break;						\
+        case CONSTANT_Class:                                    \
+	case CONSTANT_ResolvedClass:                            \
+                VAL = TOBJ;                                     \
+                break;                                          \
 	default:						\
 		VAL = TUNSTABLE;				\
 		break;						\
@@ -162,7 +166,7 @@ typedef struct codeinfo {
 	if (FRAME(pc) == 0) {					\
 		FRAME(pc) = ALLOCFRAME();			\
 		if (!FRAME(pc)) {				\
-			meth->accflags &= ~ACC_VERIFIED;	\
+			meth->kFlags &= ~KFLAG_VERIFIED;	\
 			tidyAnalyzeMethod(&codeInfo);		\
 			postOutOfMemory(einfo);			\
 			return false;				\

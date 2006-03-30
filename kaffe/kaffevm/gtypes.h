@@ -55,6 +55,7 @@ typedef uint32			u4;
 
 typedef	u1		nativecode;
 typedef u2		accessFlags;
+typedef u1              kaffeClassFlags;
 typedef u2		constIndex;
 
 typedef struct _jfieldID Field;

@@ -456,7 +456,7 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 	installMethodCode(NULL, xmeth, &ncode);
 
 	if (use_JNI)
-		xmeth->accflags |= ACC_JNI;
+		xmeth->kFlags |= KFLAG_JNI;
 
 	goto done;
 exitOOM:
@@ -490,5 +490,5 @@ done:
 void
 engine_create_wrapper (Method *meth, void *func)
 {
-	Kaffe_wrapper (meth, func, (meth->accflags&ACC_JNI)!=0);
+	Kaffe_wrapper (meth, func, (meth->kFlags & KFLAG_JNI)!=0);
 }

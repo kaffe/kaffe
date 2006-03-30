@@ -290,20 +290,20 @@ DBG(GCJ,
 
         /* Mark constructors as such */
         if (utf8ConstEqual (mt->name, constructor_name)) {
-                mt->accflags |= ACC_CONSTRUCTOR;
+                mt->kFlags |= KFLAG_CONSTRUCTOR;
         }
 
 	/* Assumption 1: gcj always sets the 0x4000 ACC_TRANSLATED flag, 
 	 * even in abstract methods.
 	 */
-	assert(mt->accflags & ACC_TRANSLATED);
+	assert(mt->accflags & KFLAG_TRANSLATED);
 
 	/*
 	 * We clear ACC_TRANSLATED flags for methods with no code, such as
 	 * abstract methods.
 	 */
 	if (info->ncode == 0 || (info->accflags & ACC_NATIVE)) {
-		mt->accflags &= ~ACC_TRANSLATED;
+		mt->kFlags &= ~KFLAG_TRANSLATED;
 	}
 
         CLASS_NMETHODS(c)++;

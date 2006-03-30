@@ -654,7 +654,7 @@ Kaffe_RegisterNatives(JNIEnv* env UNUSED, jclass cls, const JNINativeMethod* met
 			if (strcmp(meth[i].name->data, methodArray[j].name) == 0 &&
 			    strcmp(METHOD_SIGD(&meth[i]), methodArray[j].signature) == 0 &&
 			    (meth[i].accflags & ACC_NATIVE) != 0) {
-				meth[i].accflags |= ACC_JNI;
+				meth[i].kFlags |= KFLAG_JNI;
 				engine_create_wrapper(&meth[i], methodArray[j].fnPtr); 
 				goto found;
 			}

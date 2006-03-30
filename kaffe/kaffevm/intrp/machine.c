@@ -138,6 +138,7 @@ virtualMachine(methods*volatile meth, slots* volatile arg, slots* volatile retva
 	Hjava_lang_Object* volatile mobj;
 	VmExceptHandler mjbuf;
 	accessFlags methaccflags;
+	kaffeClassFlags methkflags;
 
 	slots* volatile lcl;
 	slots* volatile sp;
@@ -174,6 +175,7 @@ CDBG(	dprintf("Call: %s.%s%s.\n", meth->class->name->data, meth->name->data, MET
 
 	/* If this is native, then call the real function */
 	methaccflags = meth->accflags;
+	methkflags = meth->kFlags;
 
 #if defined(ENABLE_JVMPI)
 	if (methaccflags & ACC_STATIC)
@@ -199,7 +201,7 @@ NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name-
 	}
 
 	/* Analyze method if required */
-	if ((methaccflags & ACC_VERIFIED) == 0) {
+	if ((methkflags & KFLAG_VERIFIED) == 0) {
 		codeinfo* codeInfo;
 		bool success = analyzeMethod(meth, &codeInfo, &einfo);
 		tidyAnalyzeMethod(&codeInfo);

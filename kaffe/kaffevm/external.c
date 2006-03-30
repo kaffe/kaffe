@@ -440,7 +440,7 @@ Kaffe_JNI_native(Method* meth)
 	}
 
 	if (func != NULL) {
-		meth->accflags |= ACC_JNI;
+		meth->kFlags |= KFLAG_JNI;
 	}
 
 	return (func);

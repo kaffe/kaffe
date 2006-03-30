@@ -135,11 +135,14 @@ int main(int argc, char *argv[])
 	Exceptions_name = utf8ConstNew("Exceptions", -1);
 	SourceFile_name = utf8ConstNew("SourceFile", -1);
 	InnerClasses_name = utf8ConstNew("InnerClasses", -1);
+	Synthetic_name = utf8ConstNew("Synthetic", -1);
+	Signature_name = utf8ConstNew("Signature", -1);
 
 	if (!(init_name && final_name && void_signature &&
 	      constructor_name && Code_name && LineNumberTable_name &&
 	      LocalVariableTable_name && ConstantValue_name &&
-	      Exceptions_name && SourceFile_name && InnerClasses_name)) {
+	      Exceptions_name && SourceFile_name && InnerClasses_name &&
+	      Synthetic_name && Signature_name)) {
 		dprintf("not enough memory to run kaffe\n");
 		KAFFEVM_ABORT();
 	}

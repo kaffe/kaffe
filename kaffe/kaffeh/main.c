@@ -54,6 +54,8 @@ Utf8Const* ConstantValue_name;
 Utf8Const* Exceptions_name;
 Utf8Const* SourceFile_name;
 Utf8Const* InnerClasses_name;
+Utf8Const* Signature_name;
+Utf8Const* Synthetic_name;
 
 FILE* include;
 FILE* jni_include;
@@ -110,6 +112,8 @@ main(int argc, char* argv[])
 	Exceptions_name = utf8ConstNew("Exceptions", -1);
 	SourceFile_name = utf8ConstNew("SourceFile", -1);
 	InnerClasses_name = utf8ConstNew("InnerClasses", -1);
+	Synthetic_name = utf8ConstNew("Synthetic", -1);
+	Signature_name = utf8ConstNew("Signature", -1);
 
 	/* Process each class */
 	for (nm = argv[farg]; nm != 0; nm = argv[++farg]) {

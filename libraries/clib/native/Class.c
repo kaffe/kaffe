@@ -318,7 +318,7 @@ java_lang_VMClass_getDeclaredMethods(struct Hjava_lang_Class* clazz, jboolean pu
 		if (publicOnly && ((mth[i].accflags&ACC_PUBLIC)==0))
 			continue;
 		
-		if ((mth[i].accflags & ACC_CONSTRUCTOR)!=0)
+		if ((mth[i].kFlags & KFLAG_CONSTRUCTOR)!=0)
 			continue;
 
 		if (utf8ConstEqual(init_name, mth[i].name))
@@ -335,7 +335,7 @@ java_lang_VMClass_getDeclaredMethods(struct Hjava_lang_Class* clazz, jboolean pu
 		if (publicOnly && ((mth[i].accflags&ACC_PUBLIC)==0))
 			continue;
 
-		if ((mth[i].accflags & ACC_CONSTRUCTOR)!=0)
+		if ((mth[i].kFlags & KFLAG_CONSTRUCTOR)!=0)
 			continue;
 
 		if (utf8ConstEqual(init_name, mth[i].name))
@@ -359,7 +359,7 @@ java_lang_VMClass_getDeclaredConstructors(struct Hjava_lang_Class* clas, jboolea
 
 	count = 0;
 	for (i = CLASS_NMETHODS(clas)-1; i >= 0;  i--) {
-		if ((mth[i].accflags & ACC_CONSTRUCTOR) == 0)
+		if ((mth[i].kFlags & KFLAG_CONSTRUCTOR) == 0)
 			continue;
 
 		if (publicOnly && ((mth[i].accflags&ACC_PUBLIC)==0))
@@ -372,7 +372,7 @@ java_lang_VMClass_getDeclaredConstructors(struct Hjava_lang_Class* clas, jboolea
 	ptr = (Hjava_lang_reflect_Constructor**)&unhand_array(array)->body[0];
 
 	for (i = CLASS_NMETHODS(clas)-1; i >= 0;  i--) {
-		if ((mth[i].accflags & ACC_CONSTRUCTOR) == 0)
+		if ((mth[i].kFlags & KFLAG_CONSTRUCTOR) == 0)
 			continue;
 
 		if (publicOnly && ((mth[i].accflags&ACC_PUBLIC)==0))

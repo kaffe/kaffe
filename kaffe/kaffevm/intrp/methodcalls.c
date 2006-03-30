@@ -130,12 +130,12 @@ engine_callMethod (callMethodInfo *call)
 				throwError(&einfo);
 			}
 			setMethodCodeStart(meth, func);
-			meth->accflags |= ACC_TRANSLATED;
+			meth->kFlags |= KFLAG_TRANSLATED;
 		}
 
 		call->function = getMethodCodeStart(meth);
 
-		if (meth->accflags & ACC_JNI)
+		if (meth->kFlags & KFLAG_JNI)
 		{
 			if (meth->accflags & ACC_STATIC)
 			{
@@ -170,7 +170,7 @@ engine_callMethod (callMethodInfo *call)
 			if (meth->accflags & ACC_STATIC) {
 				syncobj = &meth->class->head;
 			}
-			else if (meth->accflags & ACC_JNI) {
+			else if (meth->kFlags & KFLAG_JNI) {
 				syncobj = (Hjava_lang_Object*)call->args[1].l;
 			}
 			else {
@@ -192,7 +192,7 @@ engine_callMethod (callMethodInfo *call)
 		 * that JNI call we're cleaning up the pointer and we will
 		 * put it again to the value afterward.
 		 */
-		if ((meth->accflags & ACC_JNI) != 0) {
+		if ((meth->kFlags & KFLAG_JNI) != 0) {
 			if (thread_data->exceptObj != NULL)
 				save_except = thread_data->exceptObj;
 			else
@@ -208,7 +208,7 @@ engine_callMethod (callMethodInfo *call)
 		}
 
 		/* If we have a pending exception and this is JNI, throw it */
-		if ((meth->accflags & ACC_JNI) != 0) {
+		if ((meth->kFlags & KFLAG_JNI) != 0) {
 		        if (call->rettype == 'L')
 			        call->ret->l = unveil(call->ret->l);
 		        finishJNIcall();

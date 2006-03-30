@@ -89,7 +89,7 @@ DBG(CODEANALYSE,
 	codeInfo->localuse = localuse;
 
 	/* We don't need to do this twice */
-	meth->accflags |= ACC_VERIFIED;
+	meth->kFlags |= KFLAG_VERIFIED;
 
 	for (lcl = 0; lcl < meth->localsz; lcl++) {
 		localuse = codeInfo->localuse;

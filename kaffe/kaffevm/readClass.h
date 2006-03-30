@@ -5,6 +5,10 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright(c) 2005
+ * 	The Kaffe.org's developers. All Rights reserved.
+ * 	See ChangeLog for details.
+ *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  */
@@ -25,6 +29,8 @@
 #define	MINOR_VERSION_V1_3	0
 #define	MAJOR_VERSION_V1_4	48
 #define	MINOR_VERSION_V1_4	0
+#define MAJOR_VERSION_V1_5	49
+#define MINOR_VERSION_V1_5	0
 
 typedef enum ReadAttrType {
 	READATTR_METHOD = 11,

@@ -99,9 +99,11 @@ struct Hjava_lang_Class {
 	struct _classEntry*	centry;
 
 	Utf8Const*		name;
+        Utf8Const*              extSignature;
 	unsigned int		packageLength;
 	char*			sourcefile;	/* source file name if known */
 	accessFlags		accflags;
+        kaffeClassFlags         kFlags;
 
 	/* If non-NULL, a pointer to the superclass.
 	 * However, if state < CSTATE_DOING_PREPARE, then
@@ -197,8 +199,8 @@ typedef struct Hjava_lang_Class Hjava_lang_Class;
 #define signalOnClass(C) signalCond(((C)))
 #define broadcastOnClass(C) broadcastCond(((C)))
 
-#define METHOD_TRANSLATED(M)		((M)->accflags & ACC_TRANSLATED)
-#define METHOD_JITTED(M)		((M)->accflags & ACC_JITTED)
+#define METHOD_TRANSLATED(M)		((M)->kFlags & KFLAG_TRANSLATED)
+#define METHOD_JITTED(M)		((M)->kFlags & KFLAG_JITTED)
 
 #define	METHOD_NATIVECODE(M)		(((M)->idx == -1) ? \
 		((M)->ncode) : \
@@ -235,9 +237,9 @@ void setMethodCodeStart(Method * method, struct _jitCodeHeader* start);
 	} \
 } while (0)
 #define	SET_METHOD_NATIVECODE(M, C)	_SET_METHOD_NATIVECODE(M, C); \
-					(M)->accflags |= ACC_TRANSLATED
+					(M)->kFlags |= KFLAG_TRANSLATED
 #define	SET_METHOD_JITCODE(M, C)	_SET_METHOD_NATIVECODE(M, C); \
-					(M)->accflags |= ACC_TRANSLATED|ACC_JITTED
+					(M)->kFlags |= KFLAG_TRANSLATED|KFLAG_JITTED;
 
 /*
  * Stats for the nameMapping object.
@@ -306,7 +308,9 @@ typedef struct _parsed_signature {
 typedef struct _jmethodID {
 	Utf8Const*		name;
 	parsed_signature_t*	parsed_sig;
+        Utf8Const*              extSignature;
 	accessFlags		accflags;
+        kaffeClassFlags         kFlags;
 	long			idx;	/* Index into class->vtable */
 	u2			stacksz;
 	u2			localsz;
@@ -376,6 +380,7 @@ typedef struct _jfieldID {
 	Hjava_lang_Class*	clazz;
 	Utf8Const*		name;
 	Utf8Const*		signature;
+        Utf8Const*              extSignature;
 	Hjava_lang_Class*	type;
 	accessFlags		accflags;
 	u2			bsize;		/* in bytes */
@@ -475,7 +480,7 @@ struct classFile;
 #define METHOD_IS_PROTECTED(METH)    ((METH)->accflags & ACC_PROTECTED)
 #define METHOD_IS_PRIVATE(METH)      ((METH)->accflags & ACC_PRIVATE)
 
-#define METHOD_IS_CONSTRUCTOR(METH)  ((METH)->accflags & ACC_CONSTRUCTOR)
+#define METHOD_IS_CONSTRUCTOR(METH)  ((METH)->kFlags & KFLAG_CONSTRUCTOR)
 #define METHOD_IS_STATIC(METH)       ((METH)->accflags & ACC_STATIC)
 
 #define METHOD_IS_ABSTRACT(METH)     ((METH)->accflags & ACC_ABSTRACT)
@@ -486,8 +491,8 @@ struct classFile;
 #define METHOD_IS_SYNCHRONISED(METH) ((METH)->accflags & ACC_SYNCHRONISED)
 
 
-#define CLASS_GCJ(C)		((C)->accflags & ACC_GCJ)
-#define SET_CLASS_GCJ(C)	(C)->accflags |= ACC_GCJ
+#define CLASS_GCJ(C)		((C)->kFlags & KFLAG_GCJ)
+#define SET_CLASS_GCJ(C)	(C)->kFlags |= KFLAG_GCJ
 
 /* For manipulating the constant pool in a class */
 #define CLASS_CONSTANTS(CL) (&(CL)->constants)
@@ -691,6 +696,8 @@ extern Utf8Const* ConstantValue_name;	/* "ConstantValue" */
 extern Utf8Const* Exceptions_name;	/* "Exceptions" */
 extern Utf8Const* SourceFile_name;	/* "SourceFile" */
 extern Utf8Const* InnerClasses_name;	/* "InnerClasses" */
+extern Utf8Const* Signature_name;       /* "Signature" */
+extern Utf8Const* Synthetic_name;       /* "Synthetic" */
 
 void initialiseSecurity (void);
 
