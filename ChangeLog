@@ -1,3 +1,10 @@
+2006-03-31  Riccardo Mottola  <riccardo@kaffe.org>
+
+	* libraries/javalib/awt-implementations/kaffe/java/awt/AWTEvent.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/Toolkit.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/event/WindowEvent.java:
+	Updated AWT implementation by importing 1.3/1.4 stuff from classpath
+
 2006-03-28  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffeh/main.c

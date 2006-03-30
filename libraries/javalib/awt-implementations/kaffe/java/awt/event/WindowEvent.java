@@ -23,6 +23,28 @@ public class WindowEvent
 	final public static int WINDOW_ACTIVATED = 205;
 	final public static int WINDOW_DEACTIVATED = 206;
 	final public static int WINDOW_LAST = 206;
+	
+	  /**
+   * This is the id for a window becoming the focused window.
+   *
+   * @since 1.4
+   */
+  public static final int WINDOW_GAINED_FOCUS = 207;
+
+  /**
+   * This is the id for a window losing all focus.
+   *
+   * @since 1.4
+   */
+  public static final int WINDOW_LOST_FOCUS = 208;
+
+  /**
+   * This is the id for a window state change, such as maximization.
+   *
+   * @since 1.4
+   */
+  public static final int WINDOW_STATE_CHANGED = 209;
+  
 	private static final long serialVersionUID = -1567959133147912127L;
 
 public WindowEvent ( Window  src, int evtId ) {

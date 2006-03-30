@@ -1,6 +1,18 @@
 package java.awt;
 
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
+import java.awt.event.ComponentEvent;
+import java.awt.event.PaintEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.TextEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.InputMethodEvent;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.ContainerEvent;
+import java.awt.event.InvocationEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.KeyEvent;
 import java.util.EventObject;
 
 import org.kaffe.awt.FocusHook;
@@ -26,19 +38,49 @@ public class AWTEvent
 	protected boolean consumed;
 	protected AWTEvent next;
 	final private static long serialVersionUID = -1825314779160409405L;
-	final public static long COMPONENT_EVENT_MASK = 0x01;
-	final public static long CONTAINER_EVENT_MASK = 0x02;
-	final public static long FOCUS_EVENT_MASK = 0x04;
-	final public static long KEY_EVENT_MASK = 0x08;
-	final public static long MOUSE_EVENT_MASK = 0x10;
-	final public static long MOUSE_MOTION_EVENT_MASK = 0x20;
-	final public static long WINDOW_EVENT_MASK = 0x40;
-	final public static long ACTION_EVENT_MASK = 0x80;
-	final public static long ADJUSTMENT_EVENT_MASK = 0x100;
-	final public static long ITEM_EVENT_MASK = 0x200;
-	final public static long TEXT_EVENT_MASK = 0x400;
+	public static final long COMPONENT_EVENT_MASK = 0x01;
+	public static final long CONTAINER_EVENT_MASK = 0x02;
+	public static final long FOCUS_EVENT_MASK = 0x04;
+	public static final long KEY_EVENT_MASK = 0x08;
+	public static final long MOUSE_EVENT_MASK = 0x10;
+	public static final long MOUSE_MOTION_EVENT_MASK = 0x20;
+	public static final long WINDOW_EVENT_MASK = 0x40;
+	public static final long ACTION_EVENT_MASK = 0x80;
+	public static final long ADJUSTMENT_EVENT_MASK = 0x100;
+	public static final long ITEM_EVENT_MASK = 0x200;
+	public static final long TEXT_EVENT_MASK = 0x400;
         public static final long INPUT_METHOD_EVENT_MASK = 0x800;
-	final public static int RESERVED_ID_MAX = 1999;
+	public static final int RESERVED_ID_MAX = 1999;
+	  /**
+   * Mask for paint events.
+   * @since 1.3
+   */
+  public static final long PAINT_EVENT_MASK = 0x02000;
+
+  /**
+   * Mask for invocation events.
+   * @since 1.3
+   */
+  public static final long INVOCATION_EVENT_MASK = 0x04000;
+  
+    /**
+   * Mask for mouse wheel events.
+   * @since 1.4
+   */
+  public static final long MOUSE_WHEEL_EVENT_MASK = 0x20000;
+
+  /**
+   * Mask for window state events.
+   * @since 1.4
+   */
+  public static final long WINDOW_STATE_EVENT_MASK = 0x40000;
+  
+    /**
+   * Mask for window focus events.
+   * @since 1.4
+   */
+  public static final long WINDOW_FOCUS_EVENT_MASK = 0x80000;
+  
 	final static long DISABLED_MASK = 0x80000000;
 	final static long TEMP_DISABLED_MASK = 0x40000000;
 	static Component keyTgt;
@@ -186,4 +228,95 @@ static void unregisterSource ( Component c, Pointer nativeData ) {
 		}
 	}
 }
+
+  /**
+   * Converts an event id to the appropriate event mask.
+   *
+   * @param id the event id
+   *
+   * @return the event mask for the specified id
+   */
+  static long eventIdToMask(int id)
+  {
+    long mask = 0;
+    switch (id)
+    {
+      case ActionEvent.ACTION_PERFORMED:
+        mask = ACTION_EVENT_MASK;
+        break;
+      case AdjustmentEvent.ADJUSTMENT_VALUE_CHANGED:
+        mask = ADJUSTMENT_EVENT_MASK;
+        break;
+      case ComponentEvent.COMPONENT_MOVED:
+      case ComponentEvent.COMPONENT_RESIZED:
+      case ComponentEvent.COMPONENT_SHOWN:
+      case ComponentEvent.COMPONENT_HIDDEN:
+        mask = COMPONENT_EVENT_MASK;
+        break;
+      case ContainerEvent.COMPONENT_ADDED:
+      case ContainerEvent.COMPONENT_REMOVED:
+        mask = CONTAINER_EVENT_MASK;
+        break;
+      case FocusEvent.FOCUS_GAINED:
+      case FocusEvent.FOCUS_LOST:
+        mask = FOCUS_EVENT_MASK;
+        break;
+      case InputMethodEvent.INPUT_METHOD_TEXT_CHANGED:
+      case InputMethodEvent.CARET_POSITION_CHANGED:
+        mask = INPUT_METHOD_EVENT_MASK;
+        break;
+      case InvocationEvent.INVOCATION_DEFAULT:
+        mask = INVOCATION_EVENT_MASK;
+        break;
+      case ItemEvent.ITEM_STATE_CHANGED:
+        mask = ITEM_EVENT_MASK;
+        break;
+      case KeyEvent.KEY_TYPED:
+      case KeyEvent.KEY_PRESSED:
+      case KeyEvent.KEY_RELEASED:
+        mask = KEY_EVENT_MASK;
+        break;
+      case MouseEvent.MOUSE_CLICKED:
+      case MouseEvent.MOUSE_PRESSED:
+      case MouseEvent.MOUSE_RELEASED:
+        mask = MOUSE_EVENT_MASK;
+        break;
+      case MouseEvent.MOUSE_MOVED:
+      case MouseEvent.MOUSE_ENTERED:
+      case MouseEvent.MOUSE_EXITED:
+      case MouseEvent.MOUSE_DRAGGED:
+        mask = MOUSE_MOTION_EVENT_MASK;
+        break;
+      case MouseEvent.MOUSE_WHEEL:
+        mask = MOUSE_WHEEL_EVENT_MASK;
+        break;
+      case PaintEvent.PAINT:
+      case PaintEvent.UPDATE:
+        mask = PAINT_EVENT_MASK;
+        break;
+      case TextEvent.TEXT_VALUE_CHANGED:
+        mask = TEXT_EVENT_MASK;
+        break;
+      case WindowEvent.WINDOW_OPENED:
+      case WindowEvent.WINDOW_CLOSING:
+      case WindowEvent.WINDOW_CLOSED:
+      case WindowEvent.WINDOW_ICONIFIED:
+      case WindowEvent.WINDOW_DEICONIFIED:
+      case WindowEvent.WINDOW_ACTIVATED:
+      case WindowEvent.WINDOW_DEACTIVATED:
+        mask = WINDOW_EVENT_MASK;
+        break;
+      case WindowEvent.WINDOW_GAINED_FOCUS:
+      case WindowEvent.WINDOW_LOST_FOCUS:
+        mask = WINDOW_FOCUS_EVENT_MASK;
+        break;
+      case WindowEvent.WINDOW_STATE_CHANGED:
+        mask = WINDOW_STATE_EVENT_MASK;
+        break;
+      default:
+        mask = 0;
+    }
+    return mask;
+  }
+
 }
