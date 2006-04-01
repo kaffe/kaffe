@@ -26,7 +26,7 @@ private Field() {
 }
 
 private void checkFinal() throws IllegalAccessException {    
-	if (Modifier.isFinal(getModifiers())) {
+	if (Modifier.isFinal(getModifiers()) && !flag) {
 		throw new IllegalAccessException("trying to set final field " + toString());
 	}
 }

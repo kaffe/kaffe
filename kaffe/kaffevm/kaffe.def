@@ -2553,8 +2553,7 @@ define_insn(PUTSTATIC)
 		}
 	}
 	else if (((field_field()->accflags & ACC_FINAL) &&
-		  (field_class() != current_class() ||
-		  !utf8ConstEqual(METHOD_NAME(current_method()), init_name))) ||
+		  (field_class() != current_class() || current_class()->state != CSTATE_DOING_INIT )) ||
 		 !checkFieldAccess(current_class(),
 				   field_class(),
 				   field_field())) {
@@ -2737,7 +2736,6 @@ define_insn(PUTFIELD)
 	}
 	else if (((field_field()->accflags & ACC_FINAL) &&
 		  (field_class() != current_class() )) ||
-//		   !utf8ConstEqual(METHOD_NAME(current_method()), constructor_name) )) ||
 		 !checkFieldAccess(current_class(),
 				   field_class(),
 				   field_field())) {
