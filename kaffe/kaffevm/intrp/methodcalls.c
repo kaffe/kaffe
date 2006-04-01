@@ -18,7 +18,6 @@
 #define NEED_sysdepCallMethod 1
 #endif
 
-#include "jni.h"
 #include "locks.h"
 #include "machine.h"
 #include "methodcalls.h"
@@ -89,6 +88,7 @@ engine_callMethod (callMethodInfo *call)
 	  jint i;
 	  jint numArgs;
 	  errorInfo einfo;
+	  jvalue *newargs, *curarg;
 
 	  /* Calculate number of arguments */
 	  numArgs = sizeofSigMethod(meth, false);
@@ -98,8 +98,8 @@ engine_callMethod (callMethodInfo *call)
 	  }
 	  numArgs += (meth->accflags & ACC_STATIC ? 0 : 1);
 
-	  jvalue *newargs = (jvalue *)alloca(sizeof(jvalue) * numArgs);
-	  jvalue *curarg = newargs;
+	  newargs = (jvalue *)alloca(sizeof(jvalue) * numArgs);
+	  curarg = newargs;
 	  for (i = 2; i < call->nrargs; i++, curarg++)
 	    {
 	      switch (call->calltype[i])

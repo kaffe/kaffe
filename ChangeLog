@@ -1,3 +1,10 @@
+2006-04-01  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
+	Really fix for #31.
+
+	* kaffe/kaffevm/intrp/methodcalls.c: Reorder the variables
+	declaration compatible with older C syntax.
+
 2006-04-01  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/kaffe.def
