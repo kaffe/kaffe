@@ -1787,7 +1787,7 @@ dnl -------------------------------------------------------------------------
 
 AC_ARG_ENABLE([native-awt],
 	AS_HELP_STRING([--disable-native-awt],
-		       [disable build of Kaffe's all native AWT backends (enabled by default)]),
+		       [disable build of all native AWT backends (enabled by default)]),
 	[],
 	[enable_native_awt=yes]
 )
@@ -2459,6 +2459,10 @@ fi
 
 if test x"$use_ecj" = x"yes"; then
   ac_configure_args="$ac_configure_args --with-ecj=${JAVA_COMPILER}"
+fi
+
+if test x"$enable_native_awt" = x"no"; then
+  ac_configure_args="$ac_configure_args --disable-gtk-peer"
 fi
 
 ac_configure_args="$ac_configure_args --disable-core-jni"

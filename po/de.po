@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: kaffe@kaffe.org\n"
-"POT-Creation-Date: 2006-03-25 23:35+0100\n"
+"POT-Creation-Date: 2006-04-01 16:13+0200\n"
 "PO-Revision-Date: 2005-07-18 23:27+0200\n"
 "Last-Translator: \n"
 "Language-Team:  <de@li.org>\n"
@@ -20,12 +20,10 @@ msgstr ""
 #: kaffe/kaffe/main.c:405 kaffe/kaffe/main.c:499 kaffe/kaffe/main.c:562
 #: kaffe/kaffe/main.c:589 kaffe/kaffe/main.c:614 kaffe/kaffe/main.c:639
 #: kaffe/kaffe/main.c:750
-#, c-format
 msgid "Error: out of memory.\n"
 msgstr "Fehler: Nicht genügend Speicher.\n"
 
 #: kaffe/kaffe/main.c:654
-#, c-format
 msgid "Error: No stack size found for -ss option.\n"
 msgstr "Fehler: Keine Stack Angabe für -ss Option gefunden.\n"
 
@@ -36,22 +34,18 @@ msgstr ""
 "Warnung: Versuch die Größe des Stacks kleiner als %d zu setzen ignoriert.\n"
 
 #: kaffe/kaffe/main.c:673
-#, c-format
 msgid "Error: No heap size found for -mx option.\n"
 msgstr "Fehler: Keine Heap-Größenangabe für -mx Option gefunden.\n"
 
 #: kaffe/kaffe/main.c:692
-#, c-format
 msgid "Error: No heap size found for -ms option.\n"
 msgstr "Fehler: Keine Heap-Größenangabe für -ms Option gefunden.\n"
 
 #: kaffe/kaffe/main.c:704
-#, c-format
 msgid "Error: No heap size found for -as option.\n"
 msgstr "Fehler: Keine Heap-Größenangabe für -as Option gefunden.\n"
 
 #: kaffe/kaffe/main.c:802
-#, c-format
 msgid "Error: -Xxprof_syms option requires a file name.\n"
 msgstr "Fehler: -Xxprof_syms Option benötigt einen Dateinamen.\n"
 
@@ -61,7 +55,6 @@ msgid "Unable to create profiler symbol file %s.\n"
 msgstr "Kann die Profiler Symboldatei %s nicht erstellen.\n"
 
 #: kaffe/kaffe/main.c:817
-#, c-format
 msgid "Error: -Xxprof_gmon option requires a file name.\n"
 msgstr "Fehler: -Xxprof_gmon Option benötigt einen Dateinamen.\n"
 
@@ -71,34 +64,28 @@ msgid "Unable to create gmon file %s.\n"
 msgstr "Kann die gmon Datei %s nicht erstellen.\n"
 
 #: kaffe/kaffe/main.c:837
-#, c-format
 msgid "Error: -Xxdebug_file option requires a file name.\n"
 msgstr "Fehler: -Xxdebug_file Option benötigt einen Dateinamen.\n"
 
 #: kaffe/kaffe/main.c:851
-#, c-format
 msgid "Error: -Xfeedback option requires a file name.\n"
 msgstr "Fehler: -Xfeedback Option benötigt einen Dateinamen.\n"
 
 #: kaffe/kaffe/main.c:869
-#, c-format
 msgid "Error: -vmstats option requires a second arg.\n"
 msgstr "Fehler: -vmstats Option benötigt ein zweites Argument.\n"
 
 #: kaffe/kaffe/main.c:881
-#, c-format
 msgid "Error: -vmdebug option requires a debug flag. Use `list' for a list.\n"
 msgstr ""
 "Fehler: -vmdebug Option benötigt ein Debug-Flag. Verwende `list' für eine "
 "Liste.\n"
 
 #: kaffe/kaffe/main.c:894
-#, c-format
 msgid "Error: -debug-fd an open descriptor.\n"
 msgstr "Fehler: -debug-fd ist ein offener Deskriptor.\n"
 
 #: kaffe/kaffe/main.c:900
-#, c-format
 msgid "Error: -debug-fd requires an integer.\n"
 msgstr "Fehler: -debug-fd benötigt eine Ganzzahl.\n"
 
@@ -113,7 +100,6 @@ msgid "Unknown flag: %s\n"
 msgstr "Unbekanntes Flag: %s\n"
 
 #: kaffe/kaffe/main.c:943
-#, c-format
 msgid ""
 "usage: kaffe [-options] class\n"
 "Options are:\n"
@@ -128,12 +114,10 @@ msgstr ""
 "\t-fullversion\t\t Ausgabe ausführlicher Versionsinformationen\n"
 
 #: kaffe/kaffe/main.c:949
-#, c-format
 msgid "\t-ia32\t\t\t Execute the ia32 version of Kaffe\n"
 msgstr "\t-ia32\t\t\t Ausführung der ia32 Version von Kaffe\n"
 
 #: kaffe/kaffe/main.c:951
-#, c-format
 msgid ""
 "\t-ss <size>\t\t Maximum native stack size\n"
 "\t-mx <size> \t\t Maximum heap size\n"
@@ -176,12 +160,10 @@ msgstr ""
 "\t-nodeadlock\t\t Abschalten der Deadlock Erkennung\n"
 
 #: kaffe/kaffe/main.c:971
-#, c-format
 msgid "\t-prof\t\t\t Enable profiling of Java methods\n"
 msgstr "\t-prof\t\t\t Aktiviere Profiling von Java Methoden\n"
 
 #: kaffe/kaffe/main.c:974
-#, c-format
 msgid ""
 "\t-Xxprof\t\t\t Enable cross language profiling\n"
 "\t-Xxprof_syms <file>\t Name of the profiling symbols file [Default: kaffe-"
@@ -194,17 +176,14 @@ msgstr ""
 "\t-Xxprof_gmon <file>\t Basisname für gmon Dateien [Standard: xgmon.out]\n"
 
 #: kaffe/kaffe/main.c:979
-#, c-format
 msgid "\t-Xxdebug_file <file>\t Name of the debugging symbols file\n"
 msgstr "\t-Xxdebug_file <Datei>\t Name der Debug symbols Datei\n"
 
 #: kaffe/kaffe/main.c:982
-#, c-format
 msgid "\t-Xfeedback <file>\t The file name to write feedback data to\n"
 msgstr "\t-Xfeedback <Datei>\t Dateiname zum Schreiben der Rückmeldungsdaten\n"
 
 #: kaffe/kaffe/main.c:984
-#, c-format
 msgid ""
 "\t-debug * \t\t Trace method calls\n"
 "\t-noasyncgc *\t\t Do not garbage collect asynchronously\n"
@@ -219,7 +198,6 @@ msgstr ""
 "\t-jar                     Ausführbare Datei ist eine JAR Datei\n"
 
 #: kaffe/kaffe/main.c:990
-#, c-format
 msgid ""
 "\t-vmdebug <flag{,flag}>\t Internal VM debugging.  Set flag=list for a list\n"
 msgstr ""
@@ -227,43 +205,36 @@ msgstr ""
 "eine Liste\n"
 
 #: kaffe/kaffe/main.c:992
-#, c-format
 msgid "\t-debug-fd <descriptor>\t Descriptor to send debug info to\n"
 msgstr ""
 "\t-debug-fd <Deskriptor>\t Deskriptor an den die Debug Informationen "
 "gesendet werden\n"
 
 #: kaffe/kaffe/main.c:994
-#, c-format
 msgid "\t-vmstats <flag{,flag}>\t Print VM statistics.  Set flag=all for all\n"
 msgstr ""
 "\t-vmstats <Flag{,Flag}>\t Ausgabe von VM Statistiken.  Setze Flag=all für "
 "alle\n"
 
 #: kaffe/kaffe/main.c:997
-#, c-format
 msgid "\t-Xnative-big-math\t Use GMP for faster, native bignum calculations\n"
 msgstr ""
 "\t-Xnative-big-math\t Nutze GMP für schnellere, native bignum Berechnungen\n"
 
 #: kaffe/kaffe/main.c:1000
-#, c-format
 msgid "\t-Xkaffe-xlib-awt\t Use Kaffe's Xlib AWT backend\n"
 msgstr "\t-Xkaffe-xlib-awt\t Benutze Kaffe's Xlib AWT Implementierung\n"
 
 #: kaffe/kaffe/main.c:1003
-#, c-format
 msgid "\t-Xkaffe-qt-awt\t\t Use Kaffe's Qt2/3/Embedded AWT backend\n"
 msgstr ""
 "\t-Xkaffe-qt-awt\t\t Benutze Kaffe's Qt2/3/Embedded AWT Implementierung\n"
 
 #: kaffe/kaffe/main.c:1006
-#, c-format
 msgid "\t-Xkaffe-nanox-awt\t Use Kaffe's Nano-X AWT backend\n"
 msgstr "\t-Xkaffe-nanox-awt\t Benutze Kaffe's Nano-X AWT Implementierung\n"
 
 #: kaffe/kaffe/main.c:1009
-#, c-format
 msgid ""
 "  * Option currently ignored.\n"
 "\n"
@@ -282,9 +253,9 @@ msgstr ""
 "\t-cp <Pfad> \t\t Setzt den classpath\n"
 
 #: kaffe/kaffe/version.c:46
-#, c-format
+#, fuzzy
 msgid ""
-"Copyright (c) 1996-2005 Kaffe.org project contributors (please see\n"
+"Copyright (c) 1996-2006 Kaffe.org project contributors (please see\n"
 "  the source code for a full list of contributors).  All rights reserved.\n"
 "Portions Copyright (c) 1996-2002 Transvirtual Technologies, Inc.\n"
 "\n"

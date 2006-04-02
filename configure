@@ -1104,8 +1104,8 @@ Optional Features:
   --enable-gcj            Enable GCJ support
   --disable-mips2         Disable MIPS II instructions
   --enable-xscale         Enable XScale support
-  --disable-native-awt    disable build of Kaffe's all native AWT backends
-                          (enabled by default)
+  --disable-native-awt    disable build of all native AWT backends (enabled by
+                          default)
   --disable-xawt-xi18n    disable build of Xi18n support of Xlib AWT backend
                           (enabled by default)
   --disable-alsatest      Do not try to compile and run a test Alsa program
@@ -50654,6 +50654,10 @@ fi
 
 if test x"$use_ecj" = x"yes"; then
   ac_configure_args="$ac_configure_args --with-ecj=${JAVA_COMPILER}"
+fi
+
+if test x"$enable_native_awt" = x"no"; then
+  ac_configure_args="$ac_configure_args --disable-gtk-peer"
 fi
 
 ac_configure_args="$ac_configure_args --disable-core-jni"
