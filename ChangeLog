@@ -1,3 +1,11 @@
+2006-04-03  Dalibor Topic  <robilad@kaffe.org>
+
+	* THIRDPARTY: Updated to boehm-gc 6.7
+
+	* kaffe/kaffevm/boehm-gc/boehm/ : Updated to boehm-gc 6.7.
+	All regression tests pass now with boehm-gc/jit3/pthreads 
+	on x86-linux.
+
 2006-04-02  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/vmspecific/java/lang/reflect/Array.java,
