@@ -42,7 +42,7 @@ REF_SRCS= \
 	  java_lang_ref_Reference.c
 
 REFLECT_SRCS = \
-		Array.c \
+		java_lang_reflect_VMArray.c \
 		Constructor.c \
 		Field.c \
 		Method.c

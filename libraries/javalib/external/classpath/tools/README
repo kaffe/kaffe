@@ -39,6 +39,20 @@ in gnu.classpath.tools.rmi package):
                          research and backward-compatibile applications, as
                          Classpath supports the 1.5 feature to replace such 
                          stubs by proxy classes.
+* REGISTRY -             The persistent RMI naming service.                                                   
+* RMID -                 The persistent RMI activation daemon, supports the
+                         java.rmi.activation package.
   
-  
-                         
+== Security tools ==
+
+Security tools (currently) are used for signing and verifying JAR files
+as well as (planned) generating and managing cryptographic tokens and
+credentials.
+
+The list of individual tools, the name of their main class that should be
+invoked by the Java launcher, and a summary of what they provide follows:
+
+* jarsigner              gnu.classpath.tools.jarsigner.Main
+                         A drop-in replacement for the "jarsigner" tool.
+
+

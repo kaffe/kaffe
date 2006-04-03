@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package java.awt;
 
+import gnu.classpath.NotImplementedException;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -323,6 +325,7 @@ public class GridBagLayout
      * Obsolete.
      */
     protected void AdjustForGravity (GridBagConstraints gbc, Rectangle rect)
+      throws NotImplementedException
     {
       // FIXME
       throw new Error ("Not implemented");

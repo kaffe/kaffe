@@ -1465,7 +1465,7 @@ public class Container extends Component
       {
         Container ancestor = getFocusCycleRootAncestor ();
 
-	if (ancestor != this)
+	if (ancestor != this && ancestor !=  null)
 	  return ancestor.getFocusTraversalPolicy ();
 	else
 	  {

@@ -39,9 +39,7 @@ exception statement from your version. */
 package gnu.java.awt.peer.gtk;
 
 import java.awt.AWTEvent;
-import java.awt.Graphics;
 import java.awt.Panel;
-import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.PaintEvent;
 import java.awt.peer.PanelPeer;
@@ -62,15 +60,8 @@ public class GtkPanelPeer extends GtkContainerPeer
 
     if (id == MouseEvent.MOUSE_PRESSED)
       awtComponent.requestFocusInWindow();
-
+    
     super.handleEvent(event);
-  }
-
-  protected void updateComponent (PaintEvent event)
-  {
-    // Do not want to clear anything before painting.  Sun never
-    // calls Panel.update, only Panel.paint.
-    paintComponent(event);
   }
 
   native void connectSignals ();

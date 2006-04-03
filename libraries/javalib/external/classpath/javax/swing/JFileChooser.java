@@ -37,6 +37,8 @@ exception statement from your version. */
 
 package javax.swing;
 
+import gnu.classpath.NotImplementedException;
+
 import java.awt.Component;
 import java.awt.Frame;
 import java.awt.HeadlessException;
@@ -49,7 +51,6 @@ import java.util.ArrayList;
 import javax.accessibility.Accessible;
 import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleRole;
-import javax.swing.JDialog;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileSystemView;
 import javax.swing.filechooser.FileView;
@@ -491,6 +492,7 @@ public class JFileChooser extends JComponent implements Accessible
    * @param b DOCUMENT ME!
    */
   public void setDragEnabled(boolean b)
+    throws NotImplementedException
   {
     // FIXME: Implement
   }
@@ -501,6 +503,7 @@ public class JFileChooser extends JComponent implements Accessible
    * @return DOCUMENT ME!
    */
   public boolean getDragEnabled()
+    throws NotImplementedException
   {
     // FIXME: Implement
     return false;

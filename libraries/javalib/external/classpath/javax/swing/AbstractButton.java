@@ -37,6 +37,8 @@ exception statement from your version. */
 
 package javax.swing;
 
+import gnu.classpath.NotImplementedException;
+
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Insets;
@@ -389,132 +391,163 @@ public abstract class AbstractButton extends JComponent
     }
 
     public AccessibleStateSet getAccessibleStateSet()
+      throws NotImplementedException
     {
       return null; // TODO
     }
 
+    /**
+     * Returns the accessible name for the button.
+     */
     public String getAccessibleName()
     {
-      return null; // TODO
+      String result = super.getAccessibleName();
+      if (result == null)
+        result = text;
+      return result;
     }
 
     public AccessibleIcon[] getAccessibleIcon()
+      throws NotImplementedException
     {
       return null; // TODO
     }
 
     public AccessibleRelationSet getAccessibleRelationSet()
+      throws NotImplementedException
     {
       // TODO: What should be modified here?
       return super.getAccessibleRelationSet();
     }
 
     public AccessibleAction getAccessibleAction()
+      throws NotImplementedException
     {
       return null; // TODO
     }
 
     public AccessibleValue getAccessibleValue()
+      throws NotImplementedException
     {
       return null; // TODO
     }
 
     public int getAccessibleActionCount()
+      throws NotImplementedException
     {
       return 0; // TODO
     }
 
     public String getAccessibleActionDescription(int value0)
+      throws NotImplementedException
     {
       return null; // TODO
     }
 
     public boolean doAccessibleAction(int value0)
+      throws NotImplementedException
     {
       return false; // TODO
     }
 
     public Number getCurrentAccessibleValue()
+      throws NotImplementedException
     {
       return null; // TODO
     }
 
     public boolean setCurrentAccessibleValue(Number value0)
+      throws NotImplementedException
     {
       return false; // TODO
     }
 
     public Number getMinimumAccessibleValue()
+      throws NotImplementedException
     {
       return null; // TODO
     }
 
     public Number getMaximumAccessibleValue()
+      throws NotImplementedException
     {
       return null; // TODO
     }
 
     public AccessibleText getAccessibleText()
+      throws NotImplementedException
     {
       return null; // TODO
     }
 
     public int getIndexAtPoint(Point value0)
+      throws NotImplementedException
     {
       return 0; // TODO
     }
 
     public Rectangle getCharacterBounds(int value0)
+      throws NotImplementedException
     {
       return null; // TODO
     }
 
     public int getCharCount()
+      throws NotImplementedException
     {
       return 0; // TODO
     }
 
     public int getCaretPosition()
+      throws NotImplementedException
     {
       return 0; // TODO
     }
 
     public String getAtIndex(int value0, int value1)
+      throws NotImplementedException
     {
       return null; // TODO
     }
 
     public String getAfterIndex(int value0, int value1)
+      throws NotImplementedException
     {
       return null; // TODO
     }
 
     public String getBeforeIndex(int value0, int value1)
+      throws NotImplementedException
     {
       return null; // TODO
     }
 
     public AttributeSet getCharacterAttribute(int value0)
+      throws NotImplementedException
     {
       return null; // TODO
     }
 
     public int getSelectionStart()
+      throws NotImplementedException
     {
       return 0; // TODO
     }
 
     public int getSelectionEnd()
+      throws NotImplementedException
     {
       return 0; // TODO
     }
 
     public String getSelectedText()
+      throws NotImplementedException
     {
       return null; // TODO
     }
 
     private Rectangle getTextRectangle()
+      throws NotImplementedException
     {
       return null; // TODO
     }
@@ -1283,6 +1316,8 @@ public abstract class AbstractButton extends JComponent
    * Set the value of the {@link #iconTextGap} property.
    * 
    * @param i The new value of the property
+   * 
+   * @since 1.4
    */
   public void setIconTextGap(int i)
   {
@@ -1291,7 +1326,7 @@ public abstract class AbstractButton extends JComponent
     
     int old = iconTextGap;
     iconTextGap = i;
-    fireStateChanged();
+    firePropertyChange("iconTextGap", new Integer(old), new Integer(i));
     revalidate();
     repaint();
   }
@@ -1300,6 +1335,8 @@ public abstract class AbstractButton extends JComponent
    * Get the value of the {@link #iconTextGap} property.
    *
    * @return The current value of the property
+   * 
+   * @since 1.4
    */
   public int getIconTextGap()
   {
@@ -1920,12 +1957,12 @@ public abstract class AbstractButton extends JComponent
     if (contentAreaFilled == b)
       return;
     
-    boolean old = contentAreaFilled;
-    contentAreaFilled = b;
-    firePropertyChange(CONTENT_AREA_FILLED_CHANGED_PROPERTY, old, b);
     // The JDK sets the opaque property to the value of the contentAreaFilled
     // property, so should we do.
     setOpaque(b);
+    boolean old = contentAreaFilled;
+    contentAreaFilled = b;
+    firePropertyChange(CONTENT_AREA_FILLED_CHANGED_PROPERTY, old, b);
    }
 
   /**

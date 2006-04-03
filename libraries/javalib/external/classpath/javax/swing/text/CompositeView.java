@@ -1,5 +1,5 @@
 /* CompositeView.java -- An abstract view that manages child views
-   Copyright (C) 2005  Free Software Foundation, Inc.
+   Copyright (C) 2005, 2006  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -218,21 +218,24 @@ public abstract class CompositeView
     throws BadLocationException
   {
     int childIndex = getViewIndex(pos, bias);
+    if (childIndex == -1)
+      throw new BadLocationException("Position " + pos + " is not represented by view.", pos);
+      
     Shape ret = null;
-    if (childIndex != -1)
-      {
-        View child = getView(childIndex);
-        Shape childAlloc = getChildAllocation(childIndex, a);
-        if (childAlloc == null)
-          ret = createDefaultLocation(a, bias);
-        Shape result = child.modelToView(pos, childAlloc, bias);
-        if (result != null)
-          ret = result;
-        else
-          ret =  createDefaultLocation(a, bias);
-      }
-    else
+
+    View child = getView(childIndex);
+    Shape childAlloc = getChildAllocation(childIndex, a);
+    
+    if (childAlloc == null)
       ret = createDefaultLocation(a, bias);
+    
+    Shape result = child.modelToView(pos, childAlloc, bias);
+
+    if (result != null)
+      ret = result;
+    else
+      ret =  createDefaultLocation(a, bias);
+
     return ret;
   }
 
@@ -301,7 +304,7 @@ public abstract class CompositeView
       {
         Rectangle r = getInsideAllocation(a);
         View view = getViewAtPoint((int) x, (int) y, r);
-        return view.viewToModel(x, y, a, b);
+        return view.viewToModel(x, y, r, b);
       }
     return 0;
   }

@@ -1,5 +1,5 @@
 /* DatatypeFactory.java -- 
-   Copyright (C) 2004, 2005  Free Software Foundation, Inc.
+   Copyright (C) 2004, 2005, 2006  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -46,7 +46,7 @@ import java.util.GregorianCalendar;
  * objects.
  *
  * @author (a href='mailto:dog@gnu.org'>Chris Burdess</a)
- * @since 1.3
+ * @since 1.5
  */
 public abstract class DatatypeFactory
 {
@@ -172,7 +172,7 @@ public abstract class DatatypeFactory
                                      BigInteger days,
                                      BigInteger hours,
                                      BigInteger minutes,
-                                     BigDecimal seconds)
+                                     BigInteger seconds)
   {
     return newDuration(isPositive,
                        null,
@@ -180,7 +180,7 @@ public abstract class DatatypeFactory
                        days,
                        hours,
                        minutes,
-                       seconds);
+                       new BigDecimal(seconds));
   }
 
   /**

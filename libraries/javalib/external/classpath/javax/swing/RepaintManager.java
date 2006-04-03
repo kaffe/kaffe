@@ -43,7 +43,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
-import java.awt.Window;
 import java.awt.image.VolatileImage;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -414,7 +413,6 @@ public class RepaintManager
   {
     if (w <= 0 || h <= 0 || !component.isShowing())
       return;
-
     component.computeVisibleRect(rectCache);
     SwingUtilities.computeIntersection(x, y, w, h, rectCache);
 
@@ -663,8 +661,7 @@ public class RepaintManager
             dy1 = Math.min(bufferHeight, dy1);
             dx2 = Math.min(bufferWidth, dx2);
             dy2 = Math.min(bufferHeight, dy2);
-            g.drawImage(buffer, dx1, dy1, dx2, dy2,
-                                dx1, dy1, dx2, dy2, root);
+            g.drawImage(buffer, 0, 0, root);
             g.dispose();
           }
         // Otherwise queue this request up, until all the RepaintManager work

@@ -1,5 +1,5 @@
 /* Utilities.java --
-   Copyright (C) 2004, 2005  Free Software Foundation, Inc.
+   Copyright (C) 2004, 2005, 2006  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -238,14 +238,14 @@ public class Utilities
     // At the end of the for loop, this holds the requested model location
     int pos;
     int currentX = x0;
-
+    
     for (pos = 0; pos < s.count; pos++)
       {
         char nextChar = s.array[s.offset+pos];
         
         if (nextChar == 0)
           {
-            if (! round)
+            if (! round && pos > 0)
               pos--;
             break;
           }
@@ -259,14 +259,13 @@ public class Utilities
               currentX = (int) te.nextTabStop(currentX, pos);
           }
         
-        if (currentX > x)
+        if (currentX >= x)
           {
-            if (! round)
+            if (! round && pos > 0)
               pos--;
             break;
           }
       }
-    
     return pos + p0;
   }
 
@@ -621,8 +620,22 @@ public class Utilities
     if(offs == -1)
       return -1;
 
-    // Effectively calculates the y value of the previous line.
-    Point pt = c.modelToView(offs+1).getLocation();
+    Point pt = null;
+    
+    // Note: Some views represent the position after the last
+    // typed character others do not. Converting offset 3 in "a\nb"
+    // in a PlainView will return a valid rectangle while in a
+    // WrappedPlainView this will throw a BadLocationException.
+    // This behavior has been observed in the RI.
+    try
+      {
+        // Effectively calculates the y value of the next line.
+        pt = c.modelToView(offs+1).getLocation();
+      }
+    catch(BadLocationException ble)
+      {
+        return offset;
+      }
     
     pt.x = x;
     

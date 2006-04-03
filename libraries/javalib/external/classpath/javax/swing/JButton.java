@@ -72,8 +72,11 @@ public class JButton extends AbstractButton
   }
 
   private static final long serialVersionUID = -1907255238954382202L;
-  boolean def;
-  boolean is_def;
+
+  /**
+   * Indicates if this button is capable to become the default button.
+   */
+  private boolean defaultCapable;
 
   public JButton()
   {
@@ -101,11 +104,7 @@ public class JButton extends AbstractButton
     super();
     init(text, icon);
     setModel(new DefaultButtonModel());
-  }
-
-  public Object[] getSelectedObjects()
-  {
-    return null;
+    defaultCapable = true;
   }
 
   protected void configurePropertiesFromAction(Action a)
@@ -129,18 +128,48 @@ public class JButton extends AbstractButton
     return "ButtonUI";
   }
 
+  /**
+   * Returns <code>true</code> if this button is the default button in
+   * its <code>JRootPane</code>. The default button gets automatically
+   * activated when the user presses <code>ENTER</code> (or whatever
+   * key this is bound to in the current Look and Feel).
+   *
+   * @return <code>true</code> if this button is the default button in
+   *         its <code>JRootPane</code>
+   *
+   * @see #isDefaultCapable()
+   * @see #setDefaultCapable()
+   * @see JRootPane#getDefaultButton()
+   * @see JRootPane#setDefaultButton(JButton)
+   */
   public boolean isDefaultButton()
   {
-    // Returns whether or not this button is the default button on the
-    // RootPane.
-    return is_def;
+    // The default button is managed by the JRootPane, so the safest way
+    // to determine this property is to ask the root pane of this button,
+    // if it exists.
+    JRootPane rp = SwingUtilities.getRootPane(this);
+    boolean isDefault = false;
+    if (rp != null)
+      isDefault = rp.getDefaultButton() == this;
+    return isDefault;
   }
 
+  /**
+   * Returns <code>true</code> if this button can act as the default button.
+   * This is <code>true</code> by default.
+   *
+   * @return <code>true</code> if this button can act as the default button
+   *
+   * @see #setDefaultCapable()
+   * @see #isDefaultButton()
+   * @see JRootPane#getDefaultButton()
+   * @see JRootPane#setDefaultButton(JButton)
+   */
   public boolean isDefaultCapable()
   {
     // Returns whether or not this button is capable of being the default
     // button on the RootPane. 
-    return def;
+    return defaultCapable;
   }
 
   protected String paramString()
@@ -149,8 +178,8 @@ public class JButton extends AbstractButton
 
     // 41 is the maximum number of chars which may be needed.
     StringBuffer sb = new StringBuffer(41);
-    sb.append(",defaultButton=").append(is_def);
-    sb.append(",defaultCapable=").append(def);
+    sb.append(",defaultButton=").append(isDefaultButton());
+    sb.append(",defaultCapable=").append(defaultCapable);
 
     return superParam + sb.toString();
   }
@@ -169,9 +198,21 @@ public class JButton extends AbstractButton
     super.removeNotify();
   }
 
+  /**
+   * Sets the <code>defaultCapable</code> property which indicates if
+   * this button may become the default button in its <code>JRootPane</code>.
+   *
+   * @param defaultCapable <code>true</code> if this button can become the
+   *        default button in its JRootPane, <code>false</code> otherwise
+   *
+   * @see #setDefaultCapable()
+   * @see #isDefaultButton()
+   * @see JRootPane#getDefaultButton()
+   * @see JRootPane#setDefaultButton(JButton)
+   */
   public void setDefaultCapable(boolean defaultCapable)
   {
-    def = defaultCapable;
+    this.defaultCapable = defaultCapable;
   }
 
   public void updateUI()

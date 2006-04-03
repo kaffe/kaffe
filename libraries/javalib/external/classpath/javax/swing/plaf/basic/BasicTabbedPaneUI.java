@@ -1652,9 +1652,10 @@ public class BasicTabbedPaneUI extends TabbedPaneUI implements SwingConstants
     lightHighlight = null;
     highlight = null;
 
-    tabPane.setBackground(null);
-    tabPane.setForeground(null);
-    tabPane.setFont(null);
+    // Install UI colors and fonts.
+    LookAndFeel.installColorsAndFont(tabPane, "TabbedPane.background",
+                                     "TabbedPane.foreground",
+                                     "TabbedPane.font");
   }
 
   /**

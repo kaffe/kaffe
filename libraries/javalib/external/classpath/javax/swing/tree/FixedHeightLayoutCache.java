@@ -37,6 +37,8 @@ exception statement from your version. */
 
 package javax.swing.tree;
 
+import gnu.classpath.NotImplementedException;
+
 import java.awt.Rectangle;
 import java.util.Enumeration;
 
@@ -55,6 +57,7 @@ public class FixedHeightLayoutCache
    * Constructor FixedHeightLayoutCache
    */
   public FixedHeightLayoutCache()
+    throws NotImplementedException
   {
     // TODO
   } 
@@ -65,6 +68,7 @@ public class FixedHeightLayoutCache
    * @return int
    */
   public int getRowCount() 
+    throws NotImplementedException
   {
     return 0; // TODO
   }  
@@ -75,6 +79,7 @@ public class FixedHeightLayoutCache
    * @param value0 TODO
    */
   public void invalidatePathBounds(TreePath value0)
+    throws NotImplementedException
   {
     // TODO
   } 
@@ -83,6 +88,7 @@ public class FixedHeightLayoutCache
    * invalidateSizes
    */
   public void invalidateSizes()
+    throws NotImplementedException
   {
     // TODO
   } 
@@ -94,6 +100,7 @@ public class FixedHeightLayoutCache
    * @return boolean
    */
   public boolean isExpanded(TreePath value0)
+    throws NotImplementedException
   {
     return false; // TODO
   } 
@@ -106,6 +113,7 @@ public class FixedHeightLayoutCache
    * @return Rectangle
    */
   public Rectangle getBounds(TreePath value0, Rectangle value1)
+    throws NotImplementedException
   {
     return null; // TODO
   } 
@@ -117,6 +125,7 @@ public class FixedHeightLayoutCache
    * @return TreePath
    */
   public TreePath getPathForRow(int row)
+    throws NotImplementedException
   {
     //TODO
     return null;
@@ -129,6 +138,7 @@ public class FixedHeightLayoutCache
    * @return int
    */
   public int getRowForPath(TreePath value0)
+    throws NotImplementedException
   {
     return 0;
   } 
@@ -141,6 +151,7 @@ public class FixedHeightLayoutCache
    * @return TreePath
    */
   public TreePath getPathClosestTo(int value0, int value1)
+    throws NotImplementedException
   {
     return null; // TODO
   } 
@@ -152,6 +163,7 @@ public class FixedHeightLayoutCache
    * @return int
    */
   public int getVisibleChildCount(TreePath value0)  
+    throws NotImplementedException
   {
     return 0; // TODO
   } 
@@ -163,6 +175,7 @@ public class FixedHeightLayoutCache
    * @return Enumeration
    */
   public Enumeration getVisiblePathsFrom(TreePath value0)
+    throws NotImplementedException
   {
     return null; // TODO
   }
@@ -174,6 +187,7 @@ public class FixedHeightLayoutCache
    * @param value1 TODO
    */
   public void setExpandedState(TreePath value0, boolean value1)
+    throws NotImplementedException
   {
     // TODO
   } 
@@ -185,6 +199,7 @@ public class FixedHeightLayoutCache
    * @return boolean
    */
   public boolean getExpandedState(TreePath value0)
+    throws NotImplementedException
   {
     return false; // TODO
   }
@@ -195,6 +210,7 @@ public class FixedHeightLayoutCache
    * @param value0 TODO
    */
   public void treeNodesChanged(TreeModelEvent value0)
+    throws NotImplementedException
   {
     // TODO
   } 
@@ -205,6 +221,7 @@ public class FixedHeightLayoutCache
    * @param value0 TODO
    */
   public void treeNodesInserted(TreeModelEvent value0)
+    throws NotImplementedException
   {
     // TODO
   } 
@@ -215,6 +232,7 @@ public class FixedHeightLayoutCache
    * @param value0 TODO
    */
   public void treeNodesRemoved(TreeModelEvent value0)
+    throws NotImplementedException
   {
     // TODO
   } 
@@ -225,6 +243,7 @@ public class FixedHeightLayoutCache
    * @param value0 TODO
    */
   public void treeStructureChanged(TreeModelEvent value0)
+    throws NotImplementedException
   {
     // TODO
   } 

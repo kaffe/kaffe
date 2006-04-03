@@ -77,7 +77,7 @@ public class CombinedClassLoader extends ClassLoader
     while (iter.hasNext())
       {
         cl = iter.next();
-        if (!sLoaders.contains(cl))
+        if (cl!=null && !sLoaders.contains(cl))
           sLoaders.add(cl);
       }
     

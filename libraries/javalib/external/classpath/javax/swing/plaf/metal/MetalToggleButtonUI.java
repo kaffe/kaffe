@@ -45,12 +45,14 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 
 import javax.swing.AbstractButton;
+import javax.swing.ButtonModel;
 import javax.swing.JComponent;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.plaf.ComponentUI;
+import javax.swing.plaf.UIResource;
 import javax.swing.plaf.basic.BasicButtonUI;
 import javax.swing.plaf.basic.BasicToggleButtonUI;
 
@@ -209,7 +211,12 @@ public class MetalToggleButtonUI
    */
   public void update(Graphics g, JComponent c)
   {
-    if (c.isOpaque() && UIManager.get(getPropertyPrefix() + "gradient") != null)
+    AbstractButton b = (AbstractButton) c;
+    ButtonModel m = b.getModel();
+    if (b.getBackground() instanceof UIResource
+        && b.isContentAreaFilled()
+        && b.isEnabled() && ! m.isArmed() && ! m.isPressed()
+        && UIManager.get(getPropertyPrefix() + "gradient") != null)
       {
         MetalUtils.paintGradient(g, 0, 0, c.getWidth(), c.getHeight(),
                                  SwingConstants.VERTICAL,

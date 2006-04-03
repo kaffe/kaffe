@@ -37,6 +37,8 @@ exception statement from your version. */
 
 package javax.swing.tree;
 
+import gnu.classpath.NotImplementedException;
+
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -128,7 +130,8 @@ public class DefaultTreeSelectionModel
 	 * 
 	 * @return a clone of this DefaultTreeSelectionModel
 	 */
-	public Object clone() throws CloneNotSupportedException
+	public Object clone() 
+      throws CloneNotSupportedException, NotImplementedException
 	{
 		return null; // TODO
 	}
@@ -139,6 +142,7 @@ public class DefaultTreeSelectionModel
 	 * @return a string that shows this object's properties
 	 */
 	public String toString()
+      throws NotImplementedException
 	{
 		return null; // TODO
 	}
@@ -176,6 +180,7 @@ public class DefaultTreeSelectionModel
 	 * @see RowMapper
 	 */
 	public void setRowMapper(RowMapper rowMapper)
+      throws NotImplementedException
 	{
 		// TODO
 	}
@@ -249,6 +254,7 @@ public class DefaultTreeSelectionModel
 	 * @param paths the paths to set as selection
 	 */
 	public void setSelectionPaths(TreePath[] paths)
+      throws NotImplementedException
 	{
 		// TODO
 	}
@@ -594,6 +600,7 @@ public class DefaultTreeSelectionModel
 	 *         <code>false</code> otherwise
 	 */
 	public boolean isRowSelected(int row)
+      throws NotImplementedException
 	{
 		return false; // TODO
 	}
@@ -602,6 +609,7 @@ public class DefaultTreeSelectionModel
 	 * Updates the mappings from TreePaths to row indices.
 	 */
 	public void resetRowSelection()
+      throws NotImplementedException
 	{
 		// TODO
 	}
@@ -675,6 +683,7 @@ public class DefaultTreeSelectionModel
 	 * only the first path.
 	 */
 	protected void insureRowContinuity()
+      throws NotImplementedException
 	{
 		// TODO
 	}
@@ -688,8 +697,9 @@ public class DefaultTreeSelectionModel
 	 *         RowMapper assigned
 	 */
 	protected boolean arePathsContiguous(TreePath[] paths)
+      throws NotImplementedException
 	{
-		return false; // TODO
+		return false; // STUB
 	}
 
 	/**
@@ -708,8 +718,9 @@ public class DefaultTreeSelectionModel
 	 *         selectionMode
 	 */
 	protected boolean canPathsBeAdded(TreePath[] paths)
+      throws NotImplementedException
 	{
-		return false; // TODO
+		return false; // STUB
 	}
 
 	/**
@@ -721,8 +732,9 @@ public class DefaultTreeSelectionModel
 	 *         the selectionMode
 	 */
 	protected boolean canPathsBeRemoved(TreePath[] paths)
+      throws NotImplementedException
 	{
-		return false; // TODO
+		return false; // STUB
 	}
 
 	/**
@@ -732,22 +744,25 @@ public class DefaultTreeSelectionModel
 	 * @param value1 TODO
 	 */
 	protected void notifyPathChange(Vector value0, TreePath value1)
+      throws NotImplementedException
 	{
-		// TODO
+		// STUB
 	}
 
 	/**
 	 * Updates the lead index instance field.
 	 */
 	protected void updateLeadIndex()
+      throws NotImplementedException
 	{
-		// TODO
+		// STUB
 	}
 
 	/**
 	 * Deprecated and not used.
 	 */
 	protected void insureUniqueness()
+      throws NotImplementedException
 	{
 		// TODO
 	}

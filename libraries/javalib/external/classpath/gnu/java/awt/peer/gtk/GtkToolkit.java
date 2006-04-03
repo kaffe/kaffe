@@ -579,6 +579,11 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
     return q;
   }
 
+  public Cursor createCustomCursor(Image image, Point hotspot, String name)
+  {
+    return new GtkCursor(image, hotspot, name);
+  }
+
   protected native void loadSystemColors (int[] systemColors);
 
   public DragSourceContextPeer createDragSourceContextPeer(DragGestureEvent e)

@@ -624,12 +624,15 @@ public class JRootPane extends JComponent implements Accessible
   
   public void setDefaultButton(JButton newButton)
   {
-    if (defaultButton == newButton)
-      return;
-    
-    JButton oldButton = defaultButton;
-    defaultButton = newButton;
-    firePropertyChange("defaultButton", oldButton, newButton);
+    // We only change the default button if the new button is defaultCapable
+    // or null and the old and new button are different objects.
+    if (defaultButton != newButton
+        && (newButton == null || newButton.isDefaultCapable()))
+      {
+        JButton oldButton = defaultButton;
+        defaultButton = newButton;
+        firePropertyChange("defaultButton", oldButton, newButton);
+      }
   }
 
   /**

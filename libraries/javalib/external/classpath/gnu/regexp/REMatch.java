@@ -65,7 +65,12 @@ public final class REMatch implements Serializable, Cloneable {
 
     // Package scope; used by RE.
     int index; // used while matching to mark current match position in input
+    // start1[i] is set when the i-th subexp starts. And start1[i] is copied
+    // to start[i] when the i-th subexp ends.  So start[i] keeps the previously
+    // assigned value while the i-th subexp is being processed. This makes
+    // backreference to the i-th subexp within the i-th subexp possible.
     int[] start; // start positions (relative to offset) for each (sub)exp.
+    int[] start1; // start positions (relative to offset) for each (sub)exp.
     int[] end;   // end positions for the same
     // start[i] == -1 or end[i] == -1 means that the start/end position is void.
     // start[i] == p or end[i] == p where p < 0 and p != -1 means that
@@ -81,6 +86,7 @@ public final class REMatch implements Serializable, Cloneable {
 	    REMatch copy = (REMatch) super.clone();
 
 	    copy.start = (int[]) start.clone();
+	    copy.start1 = (int[]) start1.clone();
 	    copy.end = (int[]) end.clone();
 
 	    return copy;
@@ -91,6 +97,7 @@ public final class REMatch implements Serializable, Cloneable {
 
     void assignFrom(REMatch other) {
 	start = other.start;
+	start1 = other.start1;
 	end = other.end;
 	index = other.index;
 	backtrackStack = other.backtrackStack;
@@ -98,6 +105,7 @@ public final class REMatch implements Serializable, Cloneable {
 
     REMatch(int subs, int anchor, int eflags) {
 	start = new int[subs+1];
+	start1 = new int[subs+1];
 	end = new int[subs+1];
 	this.anchor = anchor;
 	this.eflags = eflags;
@@ -128,7 +136,7 @@ public final class REMatch implements Serializable, Cloneable {
 	offset = index;
 	this.index = 0;
 	for (int i = 0; i < start.length; i++) {
-	    start[i] = end[i] = -1;
+	    start[i] = start1[i] = end[i] = -1;
 	}
 	backtrackStack = null;
     }

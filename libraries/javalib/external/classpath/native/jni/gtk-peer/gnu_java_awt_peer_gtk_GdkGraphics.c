@@ -160,7 +160,8 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_nativeCopyState
   else /* GDK_IS_WINDOW (g->drawable) */
     g_object_ref (g->drawable);
 
-  g_object_ref (g->cm);
+  if (g->cm != NULL)
+    g_object_ref (g->cm);
 
   NSA_SET_G_PTR (env, obj, g);
 
@@ -181,7 +182,9 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_initState__II
   g->drawable = (GdkDrawable *) gdk_pixmap_new (NULL, width, height, 
 						gdk_rgb_get_visual ()->depth);
   g->cm = gdk_rgb_get_colormap ();
-  g_object_ref (g->cm);
+  
+  if (g->cm != NULL)
+    g_object_ref (g->cm);
   g->gc = gdk_gc_new (g->drawable);
 
   NSA_SET_G_PTR (env, obj, g);
@@ -208,7 +211,9 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_initFromImage
   g->drawable = (GdkDrawable *)pixmap;
 
   g->cm = gdk_drawable_get_colormap (g->drawable);
-  g_object_ref (g->cm);
+  
+  if (g->cm != NULL)
+    g_object_ref (g->cm);
   g->gc = gdk_gc_new (g->drawable);
 
   NSA_SET_G_PTR (env, obj, g);
@@ -235,7 +240,10 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_initStateUnlocked
 
   g_object_ref (g->drawable);
   g->cm = gtk_widget_get_colormap (widget);
-  g_object_ref (g->cm);
+  
+  if (g->cm != NULL)
+    g_object_ref (g->cm);
+    
   g->gc = gdk_gc_new (g->drawable);
   gdk_gc_copy (g->gc, widget->style->fg_gc[GTK_STATE_NORMAL]);
   color = widget->style->fg[GTK_STATE_NORMAL];
@@ -293,15 +301,17 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_nativeDispose
     }
 
   XFlush (GDK_DISPLAY ());
-
-  g_object_unref (g->gc);
+  
+  if (g->gc != NULL)
+    g_object_unref (g->gc);
 
   if (GDK_STABLE_IS_PIXMAP (g->drawable))
     g_object_unref (g->drawable);
-  else /* GDK_IS_WINDOW (g->drawable) */
+  else if (g->drawable != NULL)
     g_object_unref (g->drawable);
 
-  g_object_unref (g->cm);
+  if (g->cm != NULL)
+    g_object_unref (g->cm);
 
   g_free (g);
 
@@ -495,7 +505,7 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_clearRect
   else
     {
       gdk_gc_get_values (g->gc, &saved);
-      gdk_gc_set_foreground (g->gc, &(saved.background));
+      gdk_gc_set_background (g->gc, &(saved.background));
       gdk_draw_rectangle (g->drawable, g->gc, TRUE, 
 			  x + g->x_offset, y + g->y_offset, width, height);
       gdk_gc_set_foreground (g->gc, &(saved.foreground));
@@ -536,10 +546,12 @@ Java_gnu_java_awt_peer_gtk_GdkGraphics_setFGColor
   color.blue = blue << 8;
 
   g = (struct graphics *) NSA_GET_G_PTR (env, obj);
-
-  gdk_colormap_alloc_color (g->cm, &color, TRUE, TRUE);
+  
+  if (g->cm != NULL)
+    gdk_colormap_alloc_color (g->cm, &color, TRUE, TRUE);
+    
   gdk_gc_set_foreground (g->gc, &color);
-
+  
   gdk_threads_leave ();
 }
 

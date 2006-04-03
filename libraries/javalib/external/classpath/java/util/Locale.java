@@ -39,6 +39,7 @@ exception statement from your version. */
 package java.util;
 
 import gnu.classpath.SystemProperties;
+import gnu.java.locale.LocaleHelper;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -384,15 +385,15 @@ public final class Locale implements Serializable, Cloneable
   {
     if (availableLocales == null)
       {
-	String[] localeNames = LocaleData.localeNames;
-        availableLocales = new Locale[localeNames.length];
+        int len = LocaleHelper.getLocaleCount();
+        availableLocales = new Locale[len];
 
-        for (int i = 0; i < localeNames.length; i++)
+        for (int i = 0; i < len; i++)
           {
             String language;
             String region = "";
             String variant = "";
-            String name = localeNames[i];
+            String name = LocaleHelper.getLocaleName(i);
 
             language = name.substring(0, 2);
 
@@ -410,7 +411,7 @@ public final class Locale implements Serializable, Cloneable
           }
       }
     
-    return availableLocales;
+    return (Locale[]) availableLocales.clone();
   }
 
   /**
@@ -426,7 +427,7 @@ public final class Locale implements Serializable, Cloneable
 	countryCache = getISOStrings("territories");
       }
 
-    return countryCache;
+    return (String[]) countryCache.clone();
   }
 
   /**
@@ -441,7 +442,7 @@ public final class Locale implements Serializable, Cloneable
       {
 	languageCache = getISOStrings("languages");
       }
-    return languageCache;
+    return (String[]) languageCache.clone();
   }
 
   /**

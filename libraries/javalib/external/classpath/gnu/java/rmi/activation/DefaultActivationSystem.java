@@ -39,19 +39,80 @@ exception statement from your version. */
 package gnu.java.rmi.activation;
 
 import java.rmi.activation.ActivationSystem;
-import java.rmi.activation.Activator;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
 /**
- * The default activation system for this jre.
+ * Finds and returns the default activation system for this jre.
  * 
- * @author Audrius Meskauskas (audriusa@bioinformatics.org) 
+ * @author Audrius Meskauskas (audriusa@bioinformatics.org)
  */
 public abstract class DefaultActivationSystem
-    implements ActivationSystem, Activator
 {
   /**
-   * The singleton instance of the default activation system.
+   * The activation system (assigned if once found).
    */
-  public static final ActivationSystem singleton 
-    = ActivationSystemTransient.getInstance();
+  static ActivationSystem system;
+  
+  /**
+   * The default activation registry port.
+   */
+  static int ACTIVATION_REGISTRY_PORT;
+  
+  /**
+   * The name of the activation system registry port property.
+   */
+  static String AS_PORT_PROPERTY = "java.rmi.activation.port";
+  
+  /**
+   * The defalut name of the activation system in the activation registry.
+   */
+  static String ACTIVATION_SYSTEM_NAME = "java.rmi.activation.ActivationSystem";
+
+  /**
+   * Get the activation system, default for this jre. If no external activation
+   * system exists, the internal activation system will be activated. This
+   * internal system is limited in capabilities and should be used exclusively
+   * for automated testing, to avoid necessity of starting rmi daemon during
+   * testing process.
+   */
+  public static ActivationSystem get()
+  {
+    if (system == null)
+      try
+        {
+          // Obtain the port:
+          String asr = System.getProperty("java.rmi.activation.port");
+
+          if (asr != null)
+            {
+              try
+                {
+                  ACTIVATION_REGISTRY_PORT = Integer.parseInt(asr);
+                  if (ACTIVATION_REGISTRY_PORT <= 0)
+                    throw new InternalError("Invalid " + asr + " value, "
+                                            + ACTIVATION_REGISTRY_PORT);
+                }
+              catch (NumberFormatException e)
+                {
+                  throw new InternalError("Unable to parse " + asr
+                                          + " to integer");
+                }
+            }
+          else
+            ACTIVATION_REGISTRY_PORT = ActivationSystem.SYSTEM_PORT;
+
+          // Expect the naming service running first.
+          // The local host may want to use the shared registry
+          Registry r = LocateRegistry.getRegistry(ACTIVATION_REGISTRY_PORT);
+          ActivationSystem system = (ActivationSystem) r.lookup(ACTIVATION_SYSTEM_NAME);
+          return system;
+        }
+      catch (Exception ex)
+        {
+          system = ActivationSystemTransient.getInstance();
+        }
+
+    return system;
+  }
 }

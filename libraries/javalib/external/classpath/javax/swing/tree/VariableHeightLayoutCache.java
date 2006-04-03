@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package javax.swing.tree;
 
+import gnu.classpath.NotImplementedException;
+
 import java.awt.Rectangle;
 import java.util.Enumeration;
 
@@ -54,6 +56,7 @@ public class VariableHeightLayoutCache extends AbstractLayoutCache
    * Constructor VariableHeightLayoutCache
    */
   public VariableHeightLayoutCache() 
+    throws NotImplementedException
   {
     // TODO
   } 
@@ -63,6 +66,7 @@ public class VariableHeightLayoutCache extends AbstractLayoutCache
    * @param value0 TODO
    */
   public void setModel(TreeModel value0) 
+    throws NotImplementedException
   {
     // TODO
   } 
@@ -72,6 +76,7 @@ public class VariableHeightLayoutCache extends AbstractLayoutCache
    * @param value0 TODO
    */
   public void setRootVisible(boolean value0) 
+    throws NotImplementedException
   {
     // TODO
   } 
@@ -81,6 +86,7 @@ public class VariableHeightLayoutCache extends AbstractLayoutCache
    * @param value0 TODO
    */
   public void setNodeDimensions(NodeDimensions value0) 
+    throws NotImplementedException
   {
     // TODO
   } 
@@ -91,6 +97,7 @@ public class VariableHeightLayoutCache extends AbstractLayoutCache
    * @param value1 TODO
    */
   public void setExpandedState(TreePath value0, boolean value1) 
+    throws NotImplementedException
   {
     // TODO
   } 
@@ -101,6 +108,7 @@ public class VariableHeightLayoutCache extends AbstractLayoutCache
    * @return boolean
    */
   public boolean getExpandedState(TreePath value0) 
+    throws NotImplementedException
   {
     return false; // TODO
   } 
@@ -112,6 +120,7 @@ public class VariableHeightLayoutCache extends AbstractLayoutCache
    * @return Rectangle
    */
   public Rectangle getBounds(TreePath value0, Rectangle value1) 
+    throws NotImplementedException
   {
     return null; // TODO
   } 
@@ -122,6 +131,7 @@ public class VariableHeightLayoutCache extends AbstractLayoutCache
    * @return TreePath
    */
   public TreePath getPathForRow(int value0) 
+    throws NotImplementedException
   {
     return null; // TODO
   } 
@@ -132,6 +142,7 @@ public class VariableHeightLayoutCache extends AbstractLayoutCache
    * @return int
    */
   public int getRowForPath(TreePath value0) 
+    throws NotImplementedException
   {
     return 0; // TODO
   } 
@@ -141,6 +152,7 @@ public class VariableHeightLayoutCache extends AbstractLayoutCache
    * @return int
    */
   public int getRowCount() 
+    throws NotImplementedException
   {
     return 0; // TODO
   } 
@@ -150,6 +162,7 @@ public class VariableHeightLayoutCache extends AbstractLayoutCache
    * @param value0 TODO
    */
   public void invalidatePathBounds(TreePath value0) 
+    throws NotImplementedException
   {
     // TODO
   } 
@@ -159,6 +172,7 @@ public class VariableHeightLayoutCache extends AbstractLayoutCache
    * @return int
    */
   public int getPreferredHeight() 
+    throws NotImplementedException
   {
     return 0; // TODO
   }
@@ -169,6 +183,7 @@ public class VariableHeightLayoutCache extends AbstractLayoutCache
    * @return int
    */
   public int getPreferredWidth(Rectangle value0) 
+    throws NotImplementedException
   {
     return 0; // TODO
   } 
@@ -180,6 +195,7 @@ public class VariableHeightLayoutCache extends AbstractLayoutCache
    * @return TreePath
    */
   public TreePath getPathClosestTo(int value0, int value1) 
+    throws NotImplementedException
   {
     return null; // TODO
   } 
@@ -190,6 +206,7 @@ public class VariableHeightLayoutCache extends AbstractLayoutCache
    * @return Enumeration
    */
   public Enumeration getVisiblePathsFrom(TreePath value0) 
+    throws NotImplementedException
   {
     return null; // TODO
   } 
@@ -200,6 +217,7 @@ public class VariableHeightLayoutCache extends AbstractLayoutCache
    * @return int
    */
   public int getVisibleChildCount(TreePath value0) 
+    throws NotImplementedException
   {
     return 0; // TODO
   } 
@@ -208,6 +226,7 @@ public class VariableHeightLayoutCache extends AbstractLayoutCache
    * invalidateSizes
    */
   public void invalidateSizes() 
+    throws NotImplementedException
   {
     // TODO 
   }
@@ -218,6 +237,7 @@ public class VariableHeightLayoutCache extends AbstractLayoutCache
    * @return boolean
    */
   public boolean isExpanded(TreePath value0) 
+    throws NotImplementedException
   {
     return false; // TODO
   } 
@@ -227,6 +247,7 @@ public class VariableHeightLayoutCache extends AbstractLayoutCache
    * @param value0 TODO
    */
   public void treeNodesChanged(TreeModelEvent value0) 
+    throws NotImplementedException
   {
     // TODO
   } 
@@ -236,6 +257,7 @@ public class VariableHeightLayoutCache extends AbstractLayoutCache
    * @param value0 TODO
    */
   public void treeNodesInserted(TreeModelEvent value0) 
+    throws NotImplementedException
   {
     // TODO
   } 
@@ -245,6 +267,7 @@ public class VariableHeightLayoutCache extends AbstractLayoutCache
    * @param value0 TODO
    */
   public void treeNodesRemoved(TreeModelEvent value0) 
+    throws NotImplementedException
   {
     // TODO
   } 
@@ -254,6 +277,7 @@ public class VariableHeightLayoutCache extends AbstractLayoutCache
    * @param value0 TODO
    */
   public void treeStructureChanged(TreeModelEvent value0) 
+    throws NotImplementedException
   {
     // TODO
   } 

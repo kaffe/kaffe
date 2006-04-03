@@ -562,7 +562,11 @@ formatted (and some other code conventions):
 
    * Don't declare unchecked exceptions in the `throws' clause of a
      method.  However, if throwing an unchecked exception is part of the
-     method's API, you should mention it in the Javadoc.
+     method's API, you should mention it in the Javadoc.  There is one
+     important exception to this rule, which is that a stub method
+     should be marked as throwing
+     `gnu.classpath.NotImplementedException'.  This will let our API
+     comparison tools note that the method is not fully implemented.
 
    * When overriding `Object.equals', remember that `instanceof'
      filters out `null', so an explicit check is not needed.
@@ -1653,26 +1657,26 @@ Node: Project Goals9459
 Node: Needed Tools and Libraries12490
 Node: Programming Standards17371
 Node: Source Code Style Guide18398
-Node: Hacking Code25419
-Node: Branches30283
-Node: Writing ChangeLogs32896
-Node: Programming Goals35845
-Node: Portability36814
-Node: Utility Classes37837
-Node: Robustness38793
-Node: Java Efficiency40126
-Node: Native Efficiency41012
-Node: Security44105
-Node: API Compatibility44753
-Node: Serialization45015
-Node: Deprecated Methods46612
-Node: Specification Sources49043
-Node: Naming Conventions51482
-Node: Character Conversions54984
-Node: Localization60612
-Node: String Collation64863
-Node: Break Iteration65592
-Node: Date Formatting and Parsing66244
-Node: Decimal/Currency Formatting and Parsing68353
+Node: Hacking Code25672
+Node: Branches30536
+Node: Writing ChangeLogs33149
+Node: Programming Goals36098
+Node: Portability37067
+Node: Utility Classes38090
+Node: Robustness39046
+Node: Java Efficiency40379
+Node: Native Efficiency41265
+Node: Security44358
+Node: API Compatibility45006
+Node: Serialization45268
+Node: Deprecated Methods46865
+Node: Specification Sources49296
+Node: Naming Conventions51735
+Node: Character Conversions55237
+Node: Localization60865
+Node: String Collation65116
+Node: Break Iteration65845
+Node: Date Formatting and Parsing66497
+Node: Decimal/Currency Formatting and Parsing68606
 
 End Tag Table

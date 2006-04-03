@@ -157,7 +157,7 @@ public final class ObjID
    */
   public int hashCode()
   {
-    return ((int) objNum);
+    return space == null ? (int) objNum : space.hashCode() ^ (int) objNum;
   }
 
   /**
@@ -165,19 +165,33 @@ public final class ObjID
    */
   public boolean equals(Object obj)
   {
-    if (obj instanceof ObjID && this.objNum == ((ObjID) obj).objNum)
+    if (obj instanceof ObjID)
       {
-        return (true);
+        ObjID that = (ObjID) obj;
+        return that.objNum == objNum && eq(that.space, space);
       }
-    return (false);
+    else
+      return false;
   }
 
+  /**
+   * Compare by .equals if both a and b are not null, compare directly if at
+   * least one of them is null.
+   */
+  static final boolean eq(Object a, Object b)
+  {
+    if (a == null || b == null)
+      return a == b;
+    else
+      return a.equals(b);
+  }  
+  
   /**
    * Get the string representation.
    */
   public String toString()
   {
-    return ("[objNum: " + objNum + ", " + space + "]");
+    return (objNum + ":" + space);
   }
 
 }

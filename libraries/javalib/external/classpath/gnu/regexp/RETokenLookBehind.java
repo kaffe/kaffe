@@ -65,6 +65,7 @@ final class RETokenLookBehind extends REToken
     int diff = behind.length() - input.length();
     int curIndex = trymatch.index + diff;
     trymatch.index = 0;
+    trymatch.offset = 0;
     RETokenMatchHereOnly stopper = new RETokenMatchHereOnly(curIndex);
     REToken re1 = (REToken) re.clone();
     re1.chain(stopper);
@@ -79,6 +80,7 @@ final class RETokenLookBehind extends REToken
 	  }
       }
       trymatch.index = mymatch.index;
+      trymatch.offset = mymatch.offset;
       return trymatch;
     }
     else {

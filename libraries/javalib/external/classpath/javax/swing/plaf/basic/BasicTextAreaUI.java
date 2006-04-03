@@ -45,9 +45,11 @@ import javax.swing.JComponent;
 import javax.swing.JTextArea;
 import javax.swing.UIDefaults;
 import javax.swing.plaf.ComponentUI;
+import javax.swing.text.Document;
 import javax.swing.text.Element;
 import javax.swing.text.PlainView;
 import javax.swing.text.View;
+import javax.swing.text.ViewFactory;
 import javax.swing.text.WrappedPlainView;
 
 public class BasicTextAreaUI extends BasicTextUI
@@ -108,6 +110,9 @@ public class BasicTextAreaUI extends BasicTextUI
     JTextArea comp = (JTextArea)getComponent();
     if (ev.getPropertyName() == "lineWrap"
         || ev.getPropertyName() == "wrapStyleWord")
-      modelChanged();
+      {
+        // Changes the View (without modifying the document or it's listeners).
+        setView(create(textComponent.getDocument().getDefaultRootElement()));
+      }
   }
 }

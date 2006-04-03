@@ -1030,7 +1030,7 @@ public class AsyncBoxView
    *
    * @since 1.4
    */
-  public void setEstimatedMajorSpan(boolean estimated)
+  protected void setEstimatedMajorSpan(boolean estimated)
   {
     estimatedMajorSpan = estimated;
   }
@@ -1045,7 +1045,7 @@ public class AsyncBoxView
    *
    * @since 1.4
    */
-  public boolean getEstimatedMajorSpan()
+  protected boolean getEstimatedMajorSpan()
   {
     return estimatedMajorSpan;
   }

@@ -126,7 +126,7 @@ public class FieldView extends PlainView
     try
       {
         text = elem.getDocument().getText(elem.getStartOffset(),
-                                          elem.getEndOffset());
+                                          elem.getEndOffset() - 1);
       }
     catch (BadLocationException e)
       {

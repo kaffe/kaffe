@@ -141,7 +141,7 @@ public class ActivationID
     if (obj instanceof ActivationID)
       {
         ActivationID that = (ActivationID) obj;
-        return eq(uid, that.uid) && eq(activator, that.activator);
+        return eq(uid, that.uid);
       }
     else
       return false;
@@ -159,7 +159,7 @@ public class ActivationID
       ClassNotFoundException
   {
      uid = (UID) in.readObject();
-     // TODO not complete!
+     activator = (Activator) in.readObject();
   }
   
   /**
@@ -173,7 +173,7 @@ public class ActivationID
       ClassNotFoundException
   {
     out.writeObject(uid);
-     // TODO not complete!
+    out.writeObject(activator);
   };
   
   /**
@@ -188,4 +188,12 @@ public class ActivationID
       return a.equals(b);
   }  
 
+  /**
+   * Return the content based string representation.
+   */
+  public String toString()
+  {
+    return uid.toString();
+  }
+  
 }

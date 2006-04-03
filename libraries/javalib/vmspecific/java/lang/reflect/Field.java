@@ -493,4 +493,24 @@ native private void setLong0(Object obj, long v);
 native private void setFloat0(Object obj, float v);
 native private void setDouble0(Object obj, double v);
 native private void setObject0(Object obj, Object v);
+
+/* taken from GNU Classpath */
+  /**
+   * Return true if this field is synthetic, false otherwise.
+   * @since 1.5
+   */
+  public boolean isSynthetic()
+  {
+    return (getModifiers() & Modifier.SYNTHETIC) != 0;
+  }
+
+  /**
+   * Return true if this field represents an enum constant,
+   * false otherwise.
+   * @since 1.5
+   */
+  public boolean isEnumConstant()
+  {
+    return (getModifiers() & Modifier.ENUM) != 0;
+  }
 }

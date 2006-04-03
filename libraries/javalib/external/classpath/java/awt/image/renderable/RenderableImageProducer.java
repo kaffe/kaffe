@@ -38,42 +38,52 @@ exception statement from your version. */
 
 package java.awt.image.renderable;
 
+import gnu.classpath.NotImplementedException;
+
 import java.awt.image.ImageConsumer;
 import java.awt.image.ImageProducer;
 
 public class RenderableImageProducer implements ImageProducer, Runnable
 {
   public RenderableImageProducer(RenderableImage image, RenderContext context)
+    throws NotImplementedException
   {
     throw new Error("not implemented");
   }
 
   public void setRenderContext(RenderContext context)
+    throws NotImplementedException
   {
   }
 
   public void addConsumer(ImageConsumer consumer)
+    throws NotImplementedException
   {
   }
 
   public boolean isConsumer(ImageConsumer consumer)
+    throws NotImplementedException
   {
     return false;
   }
 
   public void removeConsumer(ImageConsumer consumer)
+    throws NotImplementedException
   {
   }
 
   public void startProduction(ImageConsumer consumer)
+    throws NotImplementedException
   {
   }
 
   public void requestTopDownLeftRightResend(ImageConsumer consumer)
+    throws NotImplementedException
   {
   }
 
   public void run()
+    throws NotImplementedException
   {
   }
 } // class RenderableImageProducer

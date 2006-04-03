@@ -521,11 +521,9 @@ public class BasicTableUI extends TableUI
       if (command.equals("selectPreviousRowExtendSelection"))
         {
           rowModel.setLeadSelectionIndex(Math.max(rowLead - 1, 0));
-          colModel.setLeadSelectionIndex(colLead);
         }
       else if (command.equals("selectLastColumn"))
         {
-          rowModel.setSelectionInterval(rowLead, rowLead);
           colModel.setSelectionInterval(colMax, colMax);
         }
       else if (command.equals("startEditing"))
@@ -536,53 +534,43 @@ public class BasicTableUI extends TableUI
       else if (command.equals("selectFirstRowExtendSelection"))
         {              
           rowModel.setLeadSelectionIndex(0);
-          colModel.setLeadSelectionIndex(colLead);
         }
       else if (command.equals("selectFirstColumn"))
         {
-          rowModel.setSelectionInterval(rowLead, rowLead);
           colModel.setSelectionInterval(0, 0);
         }
       else if (command.equals("selectFirstColumnExtendSelection"))
         {
           colModel.setLeadSelectionIndex(0);
-          rowModel.setLeadSelectionIndex(rowLead);
         }      
       else if (command.equals("selectLastRow"))
         {
           rowModel.setSelectionInterval(rowMax,rowMax);
-          colModel.setSelectionInterval(colLead, colLead);
         }
       else if (command.equals("selectNextRowExtendSelection"))
         {
           rowModel.setLeadSelectionIndex(Math.min(rowLead + 1, rowMax));
-          colModel.setLeadSelectionIndex(colLead);
         }
       else if (command.equals("selectFirstRow"))
         {
           rowModel.setSelectionInterval(0,0);
-          colModel.setSelectionInterval(colLead, colLead);
         }
       else if (command.equals("selectNextColumnExtendSelection"))
         {
           colModel.setLeadSelectionIndex(Math.min(colLead + 1, colMax));
-          rowModel.setLeadSelectionIndex(rowLead);
         }
       else if (command.equals("selectLastColumnExtendSelection"))
         {
           colModel.setLeadSelectionIndex(colMax);
-          rowModel.setLeadSelectionIndex(rowLead);
         }
       else if (command.equals("selectPreviousColumnExtendSelection"))
         {
           colModel.setLeadSelectionIndex(Math.max(colLead - 1, 0));
-          rowModel.setLeadSelectionIndex(rowLead);
         }
       else if (command.equals("selectNextRow"))
         {
           rowModel.setSelectionInterval(Math.min(rowLead + 1, rowMax),
                                         Math.min(rowLead + 1, rowMax));
-          colModel.setSelectionInterval(colLead,colLead);
         }
       else if (command.equals("scrollUpExtendSelection"))
         {
@@ -601,7 +589,6 @@ public class BasicTableUI extends TableUI
         {
           rowModel.setSelectionInterval(Math.max(rowLead - 1, 0),
                                         Math.max(rowLead - 1, 0));
-          colModel.setSelectionInterval(colLead,colLead);
         }
       else if (command.equals("scrollRightChangeSelection"))
         {
@@ -618,7 +605,6 @@ public class BasicTableUI extends TableUI
         }
       else if (command.equals("selectPreviousColumn"))
         {
-          rowModel.setSelectionInterval(rowLead,rowLead);
           colModel.setSelectionInterval(Math.max(colLead - 1, 0),
                                         Math.max(colLead - 1, 0));
         }
@@ -727,7 +713,6 @@ public class BasicTableUI extends TableUI
         }
       else if (command.equals("selectNextColumn"))
         {
-          rowModel.setSelectionInterval(rowLead,rowLead);
           colModel.setSelectionInterval(Math.min(colLead + 1, colMax),
                                         Math.min(colLead + 1, colMax));
         }
@@ -915,7 +900,6 @@ public class BasicTableUI extends TableUI
       table.scrollRectToVisible
         (table.getCellRect(rowModel.getLeadSelectionIndex(), 
                            colModel.getLeadSelectionIndex(), false));
-      table.repaint();
     }
     
     /**
@@ -1258,7 +1242,7 @@ public class BasicTableUI extends TableUI
     int rn = table.rowAtPoint(p2);
     if (rn == -1)
       rn = table.getRowCount() - 1;
-
+    
     TableColumnModel cmodel = table.getColumnModel();
     int [] widths = new int[cn+1];
     for (int i = c0; i <=cn ; i++)

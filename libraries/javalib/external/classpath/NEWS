@@ -1,5 +1,7 @@
 New in release 0.91 (UNRELEASED)
 
+* Experimental activation (java.rmi.activation) support, including RMI
+  activation daemon and persistent naming service tools.
 * Experimental printing support: The API implementation of the javax.print 
   packages has been finished and work on the printing provider implementation
   started. Currently supported features from the Java Print Service API are 
@@ -7,8 +9,15 @@ New in release 0.91 (UNRELEASED)
   jobs and support for client-formatted print data. An example application
   (see: examples/gnu/classpath/examples/print/Demo) has been added to show 
   the API usage for service discovery and printing of files.
+* The GTKToolkit now gives access to the both the system clipboard and
+  system selection.
+* Custom mouse cursor support has been added to the gtk+ peers. And cursors
+  can now also be set on light-weight components.
 * Free Swing improvements: Support for OceanTheme has been mostly completed
-  and turned on as default Metal theme.
+  and turned on as default Metal theme. X11-style Copy and Paste behavior in
+  text components with the middle mouse button. Support cursor changes on
+  various components when resizing.
+* Updated locale data information to CLDR 1.3.
 
 Runtime interface changes:
 
@@ -16,6 +25,10 @@ Runtime interface changes:
   array creation method from java.lang.reflect.Array.  
 * A new class, gnu.classpath.Unsafe, is provided for handling the
   new low-level operations required by java.util.concurrent.
+* The reference implementations of Method, Constructor, and Field
+  now have a new native getModifiersInternal() method.  The public
+  getModifiers() method in each case has been rewritten in terms of
+  this method.
 
 New in release 0.90 (March 6, 2006)
 

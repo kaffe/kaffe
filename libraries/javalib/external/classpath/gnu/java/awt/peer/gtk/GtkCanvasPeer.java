@@ -38,16 +38,14 @@ exception statement from your version. */
 
 package gnu.java.awt.peer.gtk;
 
-import java.awt.AWTEvent;
 import java.awt.Canvas;
 import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.event.PaintEvent;
 import java.awt.peer.CanvasPeer;
 
 public class GtkCanvasPeer extends GtkComponentPeer implements CanvasPeer
 {
   native void create ();
+  native void realize ();
 
   public GtkCanvasPeer (Canvas c)
   {

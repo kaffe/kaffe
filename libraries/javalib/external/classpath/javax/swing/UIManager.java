@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package javax.swing;
 
+import gnu.classpath.NotImplementedException;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -613,7 +615,10 @@ public class UIManager implements Serializable
    */
   public static void installLookAndFeel(LookAndFeelInfo info)
   {
-    // FIXME: not yet implemented
+    LookAndFeelInfo[] newInstalled = new LookAndFeelInfo[installed.length + 1];
+    System.arraycopy(installed, 0, newInstalled, 0, installed.length);
+    newInstalled[newInstalled.length - 1] = info;
+    setInstalledLookAndFeels(newInstalled);
   }
 
   /**
@@ -633,7 +638,7 @@ public class UIManager implements Serializable
    */
   public static void setInstalledLookAndFeels(UIManager.LookAndFeelInfo[] infos)
   {
-    // FIXME: not yet implemented.
+    installed = infos;
   }
   
   /**

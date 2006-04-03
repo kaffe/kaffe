@@ -68,4 +68,13 @@ class CharIndexedStringBuffer implements CharIndexed, Serializable {
   public int length() {
     return s.length() - anchor;
   }
+
+  private REMatch lastMatch;
+  public void setLastMatch(REMatch match) {
+    lastMatch = (REMatch)match.clone();
+    lastMatch.anchor = anchor;
+  }
+  public REMatch getLastMatch() { return lastMatch; }
+
+  public int getAnchor() { return anchor; }
 }

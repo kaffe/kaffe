@@ -49,8 +49,6 @@ import java.util.Set;
 
 /**
  * <p>A Factory to instantiate asymmetric keypair generators.</p>
- *
- * @version $Revision: 1.1 $
  */
 public class KeyPairGeneratorFactory
 {

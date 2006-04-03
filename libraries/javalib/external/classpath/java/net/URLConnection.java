@@ -459,10 +459,16 @@ public abstract class URLConnection
    * @exception UnknownServiceException If the protocol does not support the
    * content type
    */
-  public Object getContent(Class[] classes) throws IOException
+  public Object getContent(Class[] classes)
+    throws IOException
   {
-    // FIXME: implement this
-    return getContent();
+    if (! connected)
+      connect();
+    String type = getContentType();
+    ContentHandler ch = getContentHandler(type);
+    if (ch != null)
+      return ch.getContent(this, classes);
+    throw new UnknownServiceException("protocol does not support the content type");
   }
 
   /**

@@ -45,11 +45,13 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 
 import javax.swing.AbstractButton;
+import javax.swing.ButtonModel;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.plaf.ComponentUI;
+import javax.swing.plaf.UIResource;
 import javax.swing.plaf.basic.BasicButtonListener;
 import javax.swing.plaf.basic.BasicButtonUI;
 
@@ -159,8 +161,8 @@ public class MetalButtonUI
   }    
 
   /**
-   * Paints the background of the button to indicate that it is in the "pressed"
-   * state.
+   * Paints the background of the button to indicate that it is in the
+   * "pressed" state.
    * 
    * @param g  the graphics context.
    * @param b  the button.
@@ -233,9 +235,12 @@ public class MetalButtonUI
   public void update(Graphics g, JComponent c)
   {
     AbstractButton b = (AbstractButton) c;
+    ButtonModel m = b.getModel();
     if (b.isContentAreaFilled()
-        && UIManager.get(getPropertyPrefix() + "gradient") != null
-        && !b.getModel().isPressed() && b.isEnabled())
+        && (UIManager.get(getPropertyPrefix() + "gradient") != null)
+        && ! m.isPressed() && ! m.isArmed()
+        && b.isEnabled()
+        && (b.getBackground() instanceof UIResource))
       {
         MetalUtils.paintGradient(g, 0, 0, c.getWidth(), c.getHeight(),
                                  SwingConstants.VERTICAL,

@@ -244,7 +244,12 @@ public class UnicastServer
         throw new Exception("bad method type");
       }
   }
-
+  
+  /**
+   * This method is invoked when the remote call is received. The method
+   * dispatches the call to the responsible object, connected to this 
+   * server via UnicastServerReference.
+   */
   private static void incomingMessageCall(UnicastConnection conn)
       throws IOException
   {
@@ -282,14 +287,14 @@ public class UnicastServer
         catch (Error e)
           {
             returnval = new ServerError(
-                                        "An Error is thrown while processing the invocation on the server",
-                                        e);
+              "Server error, ObjID: " + objid + 
+              ", method: " + method + ", hash: "+ hash, e);
             returncode = RETURN_NACK;
           }
       }
     else
       {
-        returnval = new NoSuchObjectException("");
+        returnval = new NoSuchObjectException("ObjID: " + objid);
         returncode = RETURN_NACK;
       }
 

@@ -264,7 +264,7 @@ public class Segment implements Cloneable, CharacterIterator
    */
   public String toString()
   {
-    return new String(array, offset, count);
+    return (array != null) ? new String(array, offset, count) : "";
   }
 
   /**

@@ -99,8 +99,9 @@ public class GtkComponentPeer extends GtkGenericPeer
   native void gtkWidgetGetPreferredDimensions (int[] dim);
   native void gtkWindowGetLocationOnScreen (int[] point);
   native void gtkWidgetGetLocationOnScreen (int[] point);
-  native void gtkWidgetSetCursor (int type);
-  native void gtkWidgetSetCursorUnlocked (int type);
+  native void gtkWidgetSetCursor (int type, GtkImage image, int x, int y);
+  native void gtkWidgetSetCursorUnlocked (int type, GtkImage image,
+					  int x, int y);
   native void gtkWidgetSetBackground (int red, int green, int blue);
   native void gtkWidgetSetForeground (int red, int green, int blue);
   native void gtkWidgetSetSensitive (boolean sensitive);
@@ -149,6 +150,9 @@ public class GtkComponentPeer extends GtkGenericPeer
     setNativeEventMask ();
 
     realize ();
+
+    if (awtComponent.isCursorSet())
+      setCursor ();
   }
 
   void setParentAndBounds ()
@@ -503,10 +507,28 @@ public class GtkComponentPeer extends GtkGenericPeer
 
   public void setCursor (Cursor cursor) 
   {
-    if (Thread.currentThread() == GtkToolkit.mainThread)
-      gtkWidgetSetCursorUnlocked (cursor.getType ());
+    int x, y;
+    GtkImage image;
+    int type = cursor.getType();
+    if (cursor instanceof GtkCursor)
+      {
+	GtkCursor gtkCursor = (GtkCursor) cursor;
+	image = gtkCursor.getGtkImage();
+	Point hotspot = gtkCursor.getHotspot();
+	x = hotspot.x;
+	y = hotspot.y;
+      }
     else
-      gtkWidgetSetCursor (cursor.getType ());
+      {
+	image = null;
+	x = 0;
+	y = 0;
+      }
+
+    if (Thread.currentThread() == GtkToolkit.mainThread)
+      gtkWidgetSetCursorUnlocked(cursor.getType(), image, x, y);
+    else
+      gtkWidgetSetCursor(cursor.getType(), image, x, y);
   }
 
   public void setEnabled (boolean b)
@@ -545,7 +567,7 @@ public class GtkComponentPeer extends GtkGenericPeer
   public void setVisible (boolean b)
   {
     // Only really set visible when component is bigger than zero pixels.
-    if (b)
+    if (b && ! (awtComponent instanceof Window))
       {
         Rectangle bounds = awtComponent.getBounds();
 	b = (bounds.width > 0) && (bounds.height > 0);

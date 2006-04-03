@@ -937,6 +937,7 @@ public class MetalRootPaneUI
    */
   public void propertyChange(PropertyChangeEvent ev)
   {
+    super.propertyChange(ev);
     String propertyName = ev.getPropertyName();
     if (propertyName.equals("windowDecorationStyle"))
       {

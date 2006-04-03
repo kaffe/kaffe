@@ -42,6 +42,7 @@ import java.awt.AWTEvent;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Insets;
@@ -164,6 +165,12 @@ public class BasicInternalFrameUI extends InternalFrameUI
   protected class BorderListener extends MouseInputAdapter
     implements SwingConstants
   {
+    /**
+     * If true, the cursor is being already shown in the alternative "resize"
+     * shape. 
+     */
+    transient boolean showingResizeCursor;
+    
     /** FIXME: Use for something. */
     protected final int RESIZE_NONE = 0;
 
@@ -263,25 +270,69 @@ public class BasicInternalFrameUI extends InternalFrameUI
 
     /**
      * This method is called when the mouse exits the JInternalFrame.
-     *
+     * 
      * @param e The MouseEvent.
      */
     public void mouseExited(MouseEvent e)
     {
-      // There is nothing to do when the mouse exits 
-      // the border area.
+      // Reset the cursor shape.
+      if (showingResizeCursor)
+        {
+          frame.setCursor(Cursor.getDefaultCursor());
+          showingResizeCursor = false;
+        }
     }
 
     /**
-     * This method is called when the mouse is moved inside the
-     * JInternalFrame.
-     *
+     * This method is called when the mouse is moved inside the JInternalFrame.
+     * 
      * @param e The MouseEvent.
      */
     public void mouseMoved(MouseEvent e)
     {
-      // There is nothing to do when the mouse moves
-      // over the border area.
+      // Turn off the resize cursor if we are in the frame header.
+      if (showingResizeCursor && e.getSource() != frame)
+        {
+          frame.setCursor(Cursor.getDefaultCursor());
+          showingResizeCursor = false;
+        }
+      else if (e.getSource()==frame && frame.isResizable())
+        {
+          int cursor;
+          switch (sectionOfClick(e.getX(), e.getY()))
+            {
+            case NORTH:
+              cursor = Cursor.N_RESIZE_CURSOR;
+              break;
+            case NORTH_EAST:
+              cursor = Cursor.NE_RESIZE_CURSOR;
+              break;
+            case EAST:
+              cursor = Cursor.E_RESIZE_CURSOR;
+              break;
+            case SOUTH_EAST:
+              cursor = Cursor.SE_RESIZE_CURSOR;
+              break;
+            case SOUTH:
+              cursor = Cursor.S_RESIZE_CURSOR;
+              break;
+            case SOUTH_WEST:
+              cursor = Cursor.SW_RESIZE_CURSOR;
+              break;
+            case WEST:
+              cursor = Cursor.W_RESIZE_CURSOR;
+              break;
+            case NORTH_WEST:
+              cursor = Cursor.NW_RESIZE_CURSOR;
+              break;
+            default:
+              cursor = Cursor.DEFAULT_CURSOR;
+            }
+
+          Cursor resize = Cursor.getPredefinedCursor(cursor);
+          frame.setCursor(resize);
+          showingResizeCursor = true;
+        }
     }
 
     /**

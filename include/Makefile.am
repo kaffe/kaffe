@@ -50,7 +50,6 @@ NOINSTALL_DERIVED_HDRS = \
 	java_lang_Cloneable.h \
 	java_lang_Integer.h \
 	java_lang_Math.h \
-	java_lang_reflect_Array.h \
 	java_lang_reflect_Constructor.h \
 	java_lang_reflect_Field.h \
 	java_lang_reflect_Method.h \

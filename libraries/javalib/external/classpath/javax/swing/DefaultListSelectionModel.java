@@ -286,8 +286,14 @@ public class DefaultListSelectionModel implements Cloneable,
     int beg = sel.nextSetBit(0), end = -1;
     for(int i=beg; i >= 0; i=sel.nextSetBit(i+1)) 
       end = i;
-    if (sel.equals(oldSel) == false)
-      fireValueChanged(beg, end, valueIsAdjusting);    
+    
+    BitSet old = (BitSet) oldSel;
+    
+    // The new and previous lead location requires repainting.
+    old.set(oldLeadIndex, !sel.get(oldLeadIndex));
+    old.set(leadSelectionIndex, !sel.get(leadSelectionIndex));
+    
+    fireDifference(sel, old);
   }
 
   /**
@@ -492,8 +498,7 @@ public class DefaultListSelectionModel implements Cloneable,
         leadSelectionIndex = index1;
         anchorSelectionIndex = index0;
         sel.set(lo, hi+1);
-        if (sel.equals(oldSel) == false)
-          fireValueChanged(lo, hi, valueIsAdjusting);
+        fireDifference(sel, (BitSet) oldSel);
       }
   }
 
@@ -530,8 +535,8 @@ public class DefaultListSelectionModel implements Cloneable,
     //TODO: will probably need MouseDragged to test properly and know if this works
     setAnchorSelectionIndex(index0);
     leadSelectionIndex = index1;
-    if (sel.equals(oldSel) == false)
-      fireValueChanged(lo, hi, valueIsAdjusting);
+    
+    fireDifference(sel, (BitSet) oldSel);
   }
 
   /**
@@ -539,20 +544,47 @@ public class DefaultListSelectionModel implements Cloneable,
    */
   public void clearSelection()
   {
-    oldSel = sel.clone();
-    int sz = sel.size();
-    sel.clear();
-    if (sel.equals(oldSel) == false)
-      fireValueChanged(0, sz, valueIsAdjusting);
+    // Find the selected interval.
+    int from = sel.nextSetBit(0);
+    if (from < 0)
+      return; // Empty selection - nothing to do.
+    int to = from;
+    
+    int i;
+
+    Up: for (i = from; i>=0; i=sel.nextSetBit(i+1))
+      to = i;
+    
+    fireValueChanged(from, to, valueIsAdjusting);
   }
   
   /**
-   * Clears the current selection and marks a given interval as
-   * "selected". If the current selection mode is
-   * <code>SINGLE_SELECTION</code> only the index <code>index2</code> is
-   * selected.
-   *
-   * @param index0 The low end of the new selection 
+   * Fire the change event, covering the difference between the two sets.
+   * 
+   * @param current the current set
+   * @param x the previous set, the object will be reused.
+   */
+  private void fireDifference(BitSet current, BitSet x)
+  {
+    x.xor(current);
+    int from = x.nextSetBit(0);
+    if (from < 0)
+      return; // No difference.
+    int to = from;
+    int i;
+
+    for (i = from; i >= 0; i = x.nextSetBit(i+1))
+      to = i;
+
+    fireValueChanged(from, to, valueIsAdjusting);
+  }
+  
+  /**
+   * Clears the current selection and marks a given interval as "selected". If
+   * the current selection mode is <code>SINGLE_SELECTION</code> only the
+   * index <code>index2</code> is selected.
+   * 
+   * @param index0 The low end of the new selection
    * @param index1 The high end of the new selection
    */
   public void setSelectionInterval(int index0, int index1)
@@ -560,7 +592,7 @@ public class DefaultListSelectionModel implements Cloneable,
     if (index0 == -1 || index1 == -1)
       return;
     
-    oldSel = sel.clone();
+    BitSet oldSel = (BitSet) sel.clone();
     sel.clear();
     if (selectionMode == SINGLE_SELECTION)
       index0 = index1;
@@ -571,8 +603,8 @@ public class DefaultListSelectionModel implements Cloneable,
     // update the anchorSelectionIndex and leadSelectionIndex variables
     setAnchorSelectionIndex(index0);
     leadSelectionIndex=index1;
-    if (sel.equals(oldSel) == false)
-      fireValueChanged(lo, hi, valueIsAdjusting);
+    
+    fireDifference(sel, oldSel);
   }
 
   /**

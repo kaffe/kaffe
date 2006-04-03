@@ -48,7 +48,7 @@ import java.lang.reflect.Field;
  * @author Tom Tromey (tromey@redhat.com)
  * @author Andrew John Hughes (gnu_andrew@member.fsf.org)
  */
-public class Unsafe
+public final class Unsafe
 {
   // Singleton class.
   private static Unsafe unsafe = new Unsafe();
@@ -279,7 +279,7 @@ public class Unsafe
    * @param arrayClass the class for which the first element's address should
    *                   be obtained.
    * @return the offset of the first element of the array class.
-   * @see arrayIndexScale(Class)
+   * @see #arrayIndexScale(Class)
    */
   public native int arrayBaseOffset(Class arrayClass);
 

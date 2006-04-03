@@ -39,6 +39,7 @@ exception statement from your version. */
 package java.rmi.activation;
 
 import java.io.Serializable;
+import java.rmi.server.UID;
 
 /**
  * This identifier identifies the activation group inside the scope of its
@@ -58,17 +59,23 @@ public class ActivationGroupID
   /**
    * The associated activation system.
    */
-  private ActivationSystem system;
+  final ActivationSystem system;
+  
+  /**
+   * The object identifier, making the ID unique.
+   */
+  final UID uid;
 
   /**
    * Create the new activation group id in the scope of the given activation
    * system
    * 
-   * @param system the activation system
+   * @param aSystem the activation system
    */
-  public ActivationGroupID(ActivationSystem system)
+  public ActivationGroupID(ActivationSystem aSystem)
   {
-    this.system = system;
+    system = aSystem;
+    uid = new UID();
   }
 
   /**
@@ -86,7 +93,7 @@ public class ActivationGroupID
    */
   public int hashCode()
   {
-    return system.hashCode();
+    return uid.hashCode();
   }
 
   /**
@@ -98,10 +105,18 @@ public class ActivationGroupID
     if (obj instanceof ActivationGroupID)
       {
         ActivationGroupID that = (ActivationGroupID) obj;
-        return system.equals(that.system);
+        return uid.equals(that.uid);
       }
     else
       return false;
+  }
+  
+  /**
+   * Get the string representation
+   */
+  public String toString()
+  {
+    return uid.toString();
   }
 
 }

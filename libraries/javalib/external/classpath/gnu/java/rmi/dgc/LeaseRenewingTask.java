@@ -110,9 +110,12 @@ public class LeaseRenewingTask
    */
   public LeaseRenewingTask(UnicastRef renewIt)
   {
-    ref.add(new WeakReference(renewIt));
     lease = notifyDGC(renewIt);
-    schedule(lease);
+    if (lease != null)
+      {
+        schedule(lease);
+        ref.add(new WeakReference(renewIt));
+      }
   }
   
   /**
@@ -122,6 +125,9 @@ public class LeaseRenewingTask
    */
   public static void scheduleLeases(UnicastRef renewIt)
   {
+    // No need to schedule leases for null.
+    if (renewIt == null)
+      return;
     try {
     synchronized (existingTasks)
       {
@@ -144,7 +150,9 @@ public class LeaseRenewingTask
     }
     catch (Exception ex)
     {
-      ex.printStackTrace();
+      InternalError ierr = new InternalError("Lease for "+renewIt);
+      ierr.initCause(ex);
+      throw ierr;
     }
   }
   

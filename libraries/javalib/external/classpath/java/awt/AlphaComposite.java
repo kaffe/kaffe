@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package java.awt;
 
+import gnu.classpath.NotImplementedException;
+
 import java.awt.image.ColorModel;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -140,6 +142,7 @@ public final class AlphaComposite implements Composite
   public CompositeContext createContext(ColorModel srcColorModel,
                                         ColorModel dstColorModel,
                                         RenderingHints hints)
+    throws NotImplementedException
   {
     // XXX Implement. Sun uses undocumented implementation class
     // sun.java2d.SunCompositeContext.

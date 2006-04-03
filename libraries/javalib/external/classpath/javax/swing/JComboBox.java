@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package javax.swing;
 
+import gnu.classpath.NotImplementedException;
+
 import java.awt.ItemSelectable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -55,8 +57,8 @@ import javax.accessibility.AccessibleRole;
 import javax.accessibility.AccessibleSelection;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
-import javax.swing.event.PopupMenuListener;
 import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.plaf.ComboBoxUI;
 
 /**
@@ -942,6 +944,7 @@ public class JComboBox extends JComponent implements ItemSelectable,
    *         exists in the combo box. Otherwise false is returned.
    */
   public boolean selectWithKeyChar(char keyChar)
+    throws NotImplementedException
   {
     // FIXME: Need to implement
     return false;

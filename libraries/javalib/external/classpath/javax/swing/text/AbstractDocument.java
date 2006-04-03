@@ -329,7 +329,7 @@ public abstract class AbstractDocument implements Document, Serializable
    *
    * @return the {@link AttributeContext} used in this <code>Document</code>
    */
-  protected AttributeContext getAttributeContext()
+  protected final AttributeContext getAttributeContext()
   {
     return context;
   }
@@ -366,7 +366,7 @@ public abstract class AbstractDocument implements Document, Serializable
    * @return the thread that currently modifies this <code>Document</code>
    *         if there is one, otherwise <code>null</code>
    */
-  protected Thread getCurrentWriter()
+  protected final Thread getCurrentWriter()
   {
     return currentWriter;
   }
@@ -392,7 +392,7 @@ public abstract class AbstractDocument implements Document, Serializable
    * @return a {@link Position} which will always mark the end of the
    *         <code>Document</code>
    */
-  public Position getEndPosition()
+  public final Position getEndPosition()
   {
     // FIXME: Properly implement this by calling Content.createPosition().
     return new Position() 
@@ -437,7 +437,7 @@ public abstract class AbstractDocument implements Document, Serializable
    * @return the property for <code>key</code> or <code>null</code> if there
    *         is no such property stored
    */
-  public Object getProperty(Object key)
+  public final Object getProperty(Object key)
   {
     // FIXME: make me thread-safe
     Object value = null;
@@ -470,7 +470,7 @@ public abstract class AbstractDocument implements Document, Serializable
    * @return a {@link Position} which will always mark the beginning of the
    *         <code>Document</code>
    */
-  public Position getStartPosition()
+  public final Position getStartPosition()
   {
     // FIXME: Properly implement this using Content.createPosition().
     return new Position() 
@@ -589,7 +589,7 @@ public abstract class AbstractDocument implements Document, Serializable
    * @param key the key of the property to be stored
    * @param value the value of the property to be stored
    */
-  public void putProperty(Object key, Object value)
+  public final void putProperty(Object key, Object value)
   {
     // FIXME: make me thread-safe
     if (properties == null)
@@ -602,7 +602,7 @@ public abstract class AbstractDocument implements Document, Serializable
    * Blocks until a read lock can be obtained.  Must block if there is
    * currently a writer modifying the <code>Document</code>.
    */
-  public void readLock()
+  public final void readLock()
   {
     if (currentWriter != null && currentWriter.equals(Thread.currentThread()))
       return;
@@ -627,7 +627,7 @@ public abstract class AbstractDocument implements Document, Serializable
    * Releases the read lock. If this was the only reader on this
    * <code>Document</code>, writing may begin now.
    */
-  public void readUnlock()
+  public final void readUnlock()
   {
     // Note we could have a problem here if readUnlock was called without a
     // prior call to readLock but the specs simply warn users to ensure that
@@ -854,7 +854,7 @@ public abstract class AbstractDocument implements Document, Serializable
    * Blocks until a write lock can be obtained.  Must wait if there are 
    * readers currently reading or another thread is currently writing.
    */
-  protected void writeLock()
+  protected final void writeLock()
   {
     if (currentWriter != null && currentWriter.equals(Thread.currentThread()))
       return;
@@ -881,7 +881,7 @@ public abstract class AbstractDocument implements Document, Serializable
    * Releases the write lock. This allows waiting readers or writers to
    * obtain the lock.
    */
-  protected void writeUnlock()
+  protected final void writeUnlock()
   {
     synchronized (documentCV)
     {

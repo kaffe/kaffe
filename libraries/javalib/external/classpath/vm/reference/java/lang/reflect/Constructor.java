@@ -81,6 +81,9 @@ extends AccessibleObject implements Member
   private Class clazz;
   private int slot;
   
+  private static final int CONSTRUCTOR_MODIFIERS
+    = Modifier.PRIVATE | Modifier.PROTECTED | Modifier.PUBLIC;
+
   /**
    * This class is uninstantiable except from native code.
    */
@@ -114,6 +117,13 @@ extends AccessibleObject implements Member
   }
 
   /**
+   * Return the raw modifiers for this constructor.  In particular
+   * this will include the synthetic and varargs bits.
+   * @return the constructor's modifiers
+   */
+  private native int getModifiersInternal();
+
+  /**
    * Gets the modifiers this constructor uses.  Use the <code>Modifier</code>
    * class to interpret the values. A constructor can only have a subset of the
    * following modifiers: public, private, protected.
@@ -121,7 +131,31 @@ extends AccessibleObject implements Member
    * @return an integer representing the modifiers to this Member
    * @see Modifier
    */
-  public native int getModifiers();
+  public int getModifiers()
+  {
+    return getModifiersInternal() & CONSTRUCTOR_MODIFIERS;
+  }
+
+  /**
+   * Return true if this constructor is synthetic, false otherwise.
+   * A synthetic member is one which is created by the compiler,
+   * and which does not appear in the user's source code.
+   * @since 1.5
+   */
+  public boolean isSynthetic()
+  {
+    return (getModifiersInternal() & Modifier.SYNTHETIC) != 0;
+  }
+
+  /**
+   * Return true if this is a varargs constructor, that is if
+   * the constructor takes a variable number of arguments.
+   * @since 1.5
+   */
+  public boolean isVarArgs()
+  {
+    return (getModifiersInternal() & Modifier.VARARGS) != 0;
+  }
 
   /**
    * Get the parameter list for this constructor, in declaration order. If the

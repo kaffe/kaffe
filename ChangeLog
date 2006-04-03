@@ -1,5 +1,26 @@
 2006-04-02  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/vmspecific/java/lang/reflect/Array.java,
+	libraries/clib/native/Array.c: Removed.
+
+	* libraries/javalib/vmspecific/java/lang/reflect/Constructor.java
+	libraries/javalib/vmspecific/java/lang/reflect/Field.java
+	libraries/javalib/vmspecific/java/lang/reflect/Method.java:
+	Added missing methods from GNU Classpath.
+
+	* libraries/javalib/vmspecific/java/lang/reflect/VMArray.java
+	libraries/clib/native/java_lang_reflect_VMArray.c: New files,
+	taken from GNU Classpath.
+
+	* include/Makefile.am: Don't generate include file for Array.
+
+	* libraries/clib/native/Makefile.am: Removed Array.c. Added 
+	java_lang_reflect_VMArray.c.
+
+        * Resynchronized GNU Classpath.
+
+2006-04-02  Dalibor Topic  <robilad@kaffe.org>
+
 	Fix for #32.
 
 	* configure.ac: Make --disable-native-awt disable GNU Classpath's

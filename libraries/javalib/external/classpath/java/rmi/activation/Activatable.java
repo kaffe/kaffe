@@ -215,18 +215,25 @@ public abstract class Activatable
   }
   
   /**
-   * Obtain the activation Id from the activation descriptor bu registering
+   * Obtain the activation Id from the activation descriptor by registering
    * within the current group.
    */
-  static ActivationID obtainId(ActivationDesc descriptor) throws RemoteException,
-      UnknownGroupException, ActivationException
+  static ActivationID obtainId(ActivationDesc descriptor)
+      throws RemoteException, UnknownGroupException, ActivationException
   {
-    return ActivationGroup.currentGroupID().getSystem().registerObject(descriptor);
+    ActivationGroupID id = descriptor.getGroupID();
+    ActivationSystem system;
+
+    if (id != null)
+      system = id.getSystem();
+    else
+      system = ActivationGroup.currentGroupID().getSystem();
+    return system.registerObject(descriptor);
   }
   
   /**
-   * This method registers an activatable object. The object is expected to
-   * be on the anonymous port (null client and server socket factories).
+   * This method registers an activatable object. The object is expected to be
+   * on the anonymous port (null client and server socket factories).
    * 
    * @param desc the object description.
    * @return the remote stub for the activatable object (the first call on this
@@ -239,7 +246,17 @@ public abstract class Activatable
       throws UnknownGroupException, ActivationException, RemoteException
   {
     ActivationID id = obtainId(desc);
-    return id.activate(false);
+    try
+      {
+        return toStub(
+                      id,
+                      Thread.currentThread().getContextClassLoader().loadClass(
+                        desc.getClassName()));
+      }
+    catch (ClassNotFoundException e)
+      {
+        throw new ActivationException("Class not found: "+desc.getClassName());
+      }
   }
   
   /**
@@ -449,16 +466,9 @@ public abstract class Activatable
                               RMIServerSocketFactory serverSocketFactory)
       throws RemoteException
   {
-    UnicastServerRef sref = null;
-    if (obj instanceof RemoteObject)
-      sref = (UnicastServerRef) ((RemoteObject) obj).getRef();
-
-    if (sref == null)
-      sref = new ActivatableServerRef(makeId(id), id, port, serverSocketFactory);
-
-    Remote stub = sref.exportObject(obj);
-    // addStub(obj, stub); // need probably the stub repository elsewhere
-    return stub;
+    ActivatableServerRef sref = null;
+    sref = new ActivatableServerRef(makeId(id), id, port, serverSocketFactory);
+    return sref.exportObject(obj);
   }  
   
   /**
@@ -497,4 +507,25 @@ public abstract class Activatable
     return id;
   }  
   
+  /**
+   * Connect the object to the UnicastServer (export), but not activate it.
+   * The object will be activated on the first call.
+   */
+  static Remote toStub(ActivationID anId, Class stubFor)
+  {
+    try
+      {
+        ActivatableServerRef asr = 
+          new ActivatableServerRef(makeId(anId), anId, 0, null);
+        UnicastServer.exportActivatableObject(asr);
+        return asr.exportClass(stubFor);
+      }
+    catch (RemoteException e)
+      {
+        InternalError ierr = new InternalError(
+          "Failed to obtain activatable stub");
+        ierr.initCause(e);
+        throw ierr;
+      }
+  }
 }

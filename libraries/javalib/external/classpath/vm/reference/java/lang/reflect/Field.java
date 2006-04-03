@@ -80,6 +80,11 @@ extends AccessibleObject implements Member
   private String name;
   private int slot;
 
+  private static final int FIELD_MODIFIERS
+    = Modifier.FINAL | Modifier.PRIVATE | Modifier.PROTECTED
+      | Modifier.PUBLIC | Modifier.STATIC | Modifier.TRANSIENT
+      | Modifier.VOLATILE;
+
   /**
    * This class is uninstantiable except natively.
    */
@@ -110,6 +115,12 @@ extends AccessibleObject implements Member
   }
 
   /**
+   * Return the raw modifiers for this field.
+   * @return the field's modifiers
+   */
+  private native int getModifiersInternal();
+
+  /**
    * Gets the modifiers this field uses.  Use the <code>Modifier</code>
    * class to interpret the values.  A field can only have a subset of the
    * following modifiers: public, private, protected, static, final,
@@ -118,7 +129,29 @@ extends AccessibleObject implements Member
    * @return an integer representing the modifiers to this Member
    * @see Modifier
    */
-  public native int getModifiers();
+  public int getModifiers()
+  {
+    return getModifiersInternal() & FIELD_MODIFIERS;
+  }
+
+  /**
+   * Return true if this field is synthetic, false otherwise.
+   * @since 1.5
+   */
+  public boolean isSynthetic()
+  {
+    return (getModifiersInternal() & Modifier.SYNTHETIC) != 0;
+  }
+
+  /**
+   * Return true if this field represents an enum constant,
+   * false otherwise.
+   * @since 1.5
+   */
+  public boolean isEnumConstant()
+  {
+    return (getModifiersInternal() & Modifier.ENUM) != 0;
+  }
 
   /**
    * Gets the type of this field.

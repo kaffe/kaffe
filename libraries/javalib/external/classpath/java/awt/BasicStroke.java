@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package java.awt;
 
+import gnu.classpath.NotImplementedException;
+
 import java.util.Arrays;
 
 /**
@@ -248,6 +250,7 @@ public class BasicStroke implements Stroke
    * @param s  the shape.
    */
   public Shape createStrokedShape(Shape s)
+    throws NotImplementedException
   {
     // FIXME: Implement this
     throw new Error("not implemented");

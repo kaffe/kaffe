@@ -47,6 +47,7 @@ import javax.swing.JComponent;
 import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
 import javax.swing.plaf.ComponentUI;
+import javax.swing.plaf.UIResource;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
 
 /**
@@ -136,7 +137,12 @@ public class MetalTabbedPaneUI extends BasicTabbedPaneUI
 
   /** The graphics to draw the highlight below the tab. */
   private Graphics hg;
-  
+
+  /**
+   * Indicates if the tabs are having their background filled.
+   */
+  private boolean tabsOpaque;
+
   /**
    * Constructs a new instance of MetalTabbedPaneUI.
    */
@@ -326,13 +332,13 @@ public class MetalTabbedPaneUI extends BasicTabbedPaneUI
     int firstIndex = tabRuns[currentRun];
 
     // Paint the part of the above tab.
-    if (tabIndex != firstIndex)
+    if (tabIndex != firstIndex && tabIndex > 0 && tabsOpaque)
       {
         Color c;
         if (tabPane.getSelectedIndex() == tabIndex - 1)
           c = selectColor;
         else
-          c = UIManager.getColor("TabbedPane.unselectedBackground");
+          c = getUnselectedBackground(tabIndex - 1);
         g.setColor(c);
         g.fillRect(2, 0, 4, 3);
         g.drawLine(2, 3, 2, 3);
@@ -453,13 +459,13 @@ public class MetalTabbedPaneUI extends BasicTabbedPaneUI
     int firstIndex = tabRuns[currentRun];
 
     // Paint part of the above tab.
-    if (tabIndex != firstIndex)
+    if (tabIndex != firstIndex && tabIndex > 0 && tabsOpaque)
       {
         Color c;
         if (tabPane.getSelectedIndex() == tabIndex - 1)
           c = UIManager.getColor("TabbedPane.tabAreaBackground");
         else
-          c = UIManager.getColor("TabbedPane.unselectedBackground");
+          c = getUnselectedBackground(tabIndex - 1);
         g.fillRect(right - 5, 0, 5, 3);
         g.fillRect(right - 2, 3, 2, 2);
       }
@@ -658,7 +664,7 @@ public class MetalTabbedPaneUI extends BasicTabbedPaneUI
     if (isSelected)
       g.setColor(selectColor);
     else
-      g.setColor(tabPane.getBackgroundAt(tabIndex));
+      g.setColor(getUnselectedBackground(tabIndex));
 
     switch (tabPlacement)
     {
@@ -708,6 +714,7 @@ public class MetalTabbedPaneUI extends BasicTabbedPaneUI
     selectColor = UIManager.getColor("TabbedPane.selected");
     selectHighlight = UIManager.getColor("TabbedPane.selectHighlight");
     tabAreaBackground = UIManager.getColor("TabbedPane.tabAreaBackground");
+    tabsOpaque = UIManager.getBoolean("TabbedPane.tabsOpaque");
     minTabWidth = 0;
   }
   
@@ -1114,5 +1121,27 @@ public class MetalTabbedPaneUI extends BasicTabbedPaneUI
     int run = getRunForTab(count, tabIndex);
     int lastIndex = lastTabInRun(count, run);
     return tabIndex == lastIndex;
+  }
+
+  /**
+   * Returns the background for an unselected tab. This first asks the
+   * JTabbedPane for the background at the specified tab index, if this
+   * is an UIResource (that means, it is inherited from the JTabbedPane)
+   * and the TabbedPane.unselectedBackground UI property is not null,
+   * this returns the value of the TabbedPane.unselectedBackground property,
+   * otherwise the value returned by the JTabbedPane.
+   *
+   * @param tabIndex the index of the tab for which we query the background
+   *
+   * @return the background for an unselected tab
+   */
+  private Color getUnselectedBackground(int tabIndex)
+  {
+    Color bg = tabPane.getBackgroundAt(tabIndex);
+    Color unselectedBackground =
+      UIManager.getColor("TabbedPane.unselectedBackground");
+    if (bg instanceof UIResource && unselectedBackground != null)
+      bg = unselectedBackground;
+    return bg;
   }
 }

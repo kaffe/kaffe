@@ -381,7 +381,7 @@ public class JTabbedPane extends JComponent implements Serializable,
     {
       Color background;
       if (bg == null)
-        background = component.getBackground();
+        background = JTabbedPane.this.getBackground();
       else
         background = bg;
       return background;
@@ -406,7 +406,7 @@ public class JTabbedPane extends JComponent implements Serializable,
     {
       Color foreground;
       if (fg == null)
-        foreground = component.getForeground();
+        foreground = JTabbedPane.this.getForeground();
       else
         foreground = fg;
       return foreground;
@@ -959,7 +959,11 @@ public class JTabbedPane extends JComponent implements Serializable,
    */
   public Component getSelectedComponent()
   {
-    return getComponentAt(getSelectedIndex());
+    int selectedIndex = getSelectedIndex();
+    Component selected = null;
+    if (selectedIndex >= 0)
+      selected = getComponentAt(selectedIndex);
+    return selected;
   }
 
   /**
@@ -1153,8 +1157,45 @@ public class JTabbedPane extends JComponent implements Serializable,
   public void removeTabAt(int index)
   {
     checkIndex(index, 0, tabs.size());
+
+    // We need to adjust the selection if we remove a tab that comes
+    // before the selected tab or if the selected tab is removed.
+    // This decrements the selected index by 1 if any of this is the case.
+    // Note that this covers all cases:
+    // - When the selected tab comes after the removed tab, this simply
+    //   adjusts the selection so that after the removal the selected tab
+    //   is still the same.
+    // - When we remove the currently selected tab, then the tab before the
+    //   selected tab gets selected.
+    // - When the last tab is removed, then we have an index==0, which gets
+    //   decremented to -1, which means no selection, which is 100% perfect.
+    int selectedIndex = getSelectedIndex();
+    if (selectedIndex >= index)
+      setSelectedIndex(selectedIndex - 1);
+
+    Component comp = getComponentAt(index);
+
+    // Remove the tab object.
     tabs.remove(index);
-    getComponentAt(index).show();
+
+    // Remove the component. I think we cannot assume that the tab order
+    // is equal to the component order, so we iterate over the children
+    // here to find the and remove the correct component.
+    if (comp != null)
+      {
+        Component[] children = getComponents();
+        for (int i = children.length - 1; i >= 0; --i)
+          {
+            if (children[i] == comp)
+              {
+                super.remove(i);
+                comp.setVisible(true);
+                break;
+              }
+          }
+      }
+    revalidate();
+    repaint();
   }
 
   /**
@@ -1184,7 +1225,8 @@ public class JTabbedPane extends JComponent implements Serializable,
    */
   public void removeAll()
   {
-    for (int i = tabs.size() - 1; i >= 0; i--)
+    setSelectedIndex(-1);
+    for (int i = getTabCount() - 1; i >= 0; i--)
       removeTabAt(i);
   }
 

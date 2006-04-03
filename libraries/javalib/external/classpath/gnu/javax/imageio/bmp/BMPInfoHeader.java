@@ -170,9 +170,6 @@ public class BMPInfoHeader
         biCompression = BI_RGB;        
       }
     
-    biCompression = BI_RLE8; // !!!!!!!!!!!!!! XXX
-    biBitCount = 8;
-    
     biXPelsPerMeter = 0x0;
     biYPelsPerMeter = 0x0;
     biClrUsed = 0;

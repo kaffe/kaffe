@@ -219,8 +219,10 @@ public class GdkGraphics extends Graphics
   public boolean drawImage (Image img, int x, int y, 
 			    Color bgcolor, ImageObserver observer)
   {
-    return drawImage(img, x, y, img.getWidth(null), img.getHeight(null),
-		     bgcolor, observer);
+    if (img != null)
+      return drawImage(img, x, y, img.getWidth(null), img.getHeight(null),
+                       bgcolor, observer);
+    return false;
   }
 
   public boolean drawImage (Image img, int x, int y, ImageObserver observer)
@@ -228,16 +230,19 @@ public class GdkGraphics extends Graphics
     return drawImage (img, x, y, null, observer);
   }
 
-  public boolean drawImage (Image img, int x, int y, int width, int height, 
-			    Color bgcolor, ImageObserver observer)
+  public boolean drawImage(Image img, int x, int y, int width, int height,
+                           Color bgcolor, ImageObserver observer)
   {
-    if (img instanceof GtkImage)
-      return ((GtkImage)img).drawImage (this, x, y, width, height, 
-					bgcolor, observer);
-    else
-      return (new GtkImage(img.getSource())).drawImage (this, x, y, 
-							width, height, 
-							bgcolor, observer);
+    if (img != null)
+      {
+        if (img instanceof GtkImage)
+          return ((GtkImage) img).drawImage(this, x, y, width, height, bgcolor,
+                                            observer);
+        return (new GtkImage(img.getSource())).drawImage(this, x, y, width,
+                                                         height, bgcolor,
+                                                         observer);
+      }
+    return false;
   }
 
   public boolean drawImage (Image img, int x, int y, int width, int height, 
@@ -250,14 +255,16 @@ public class GdkGraphics extends Graphics
 			    int sx1, int sy1, int sx2, int sy2, 
 			    Color bgcolor, ImageObserver observer)
   {
-    if (img instanceof GtkImage)
-      return ((GtkImage)img).drawImage(this, dx1, dy1, dx2, dy2, 
-				       sx1, sy1, sx2, sy2, bgcolor, observer);
-    else
-      return (new GtkImage(img.getSource())).drawImage(this, dx1, dy1, 
-						       dx2, dy2, 
-						       sx1, sy1, sx2, sy2, 
-						       bgcolor, observer);
+    if (img != null)
+      {
+        if (img instanceof GtkImage)
+          return ((GtkImage) img).drawImage(this, dx1, dy1, dx2, dy2, sx1, sy1,
+                                            sx2, sy2, bgcolor, observer);
+        return (new GtkImage(img.getSource())).drawImage(this, dx1, dy1, dx2,
+                                                         dy2, sx1, sy1, sx2,
+                                                         sy2, bgcolor, observer);
+      }
+    return false;
   }
 
   public boolean drawImage (Image img, int dx1, int dy1, int dx2, int dy2, 

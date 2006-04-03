@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package java.beans.beancontext;
 
+import gnu.classpath.NotImplementedException;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -80,6 +82,7 @@ public class BeanContextServicesSupport
 
     public Iterator getCurrentServiceSelectors (BeanContextServices bcs,
                                                 Class serviceClass)
+      throws NotImplementedException
     {
       throw new Error ("Not implemented");
     }
@@ -88,6 +91,7 @@ public class BeanContextServicesSupport
                               Object requestor,
                               Class serviceClass,
                               Object serviceSelector)
+      throws NotImplementedException
     {
       throw new Error ("Not implemented");
     }
@@ -95,11 +99,13 @@ public class BeanContextServicesSupport
     public void releaseService (BeanContextServices bcs,
                                 Object requestor,
                                 Object service)
+      throws NotImplementedException
     {
       throw new Error ("Not implemented");
     }
 
     public void serviceRevoked (BeanContextServiceRevokedEvent bcsre)
+      throws NotImplementedException
     {
       throw new Error ("Not implemented");
     }
@@ -165,6 +171,7 @@ public class BeanContextServicesSupport
   }
 
   public boolean addService (Class serviceClass, BeanContextServiceProvider bcsp)
+    throws NotImplementedException
   {
     throw new Error ("Not implemented");
   }
@@ -172,78 +179,90 @@ public class BeanContextServicesSupport
   protected boolean addService (Class serviceClass,
                                 BeanContextServiceProvider bcsp,
                                 boolean fireEvent)
+    throws NotImplementedException
   {
     throw new Error ("Not implemented");
   }
   
   protected void bcsPreDeserializationHook (ObjectInputStream ois)
-    throws ClassNotFoundException, IOException
+    throws ClassNotFoundException, IOException, NotImplementedException
   {
     throw new Error ("Not implemented");
   }
 
   protected void bcsPreSerializationHook (ObjectOutputStream oos) 
-    throws IOException
+    throws IOException, NotImplementedException
   {
     throw new Error ("Not implemented");
   }
   
   protected void childJustRemovedHook (Object child,
                                        BeanContextSupport.BCSChild bcsc)
+    throws NotImplementedException
   {
     throw new Error ("Not implemented");
   }
 
   protected BeanContextSupport.BCSChild createBCSChild (Object targetChild,
-                                                        Object peer) 
+                                                        Object peer)
+    throws NotImplementedException
   {
     throw new Error ("Not implemented");
   }
 
   protected BeanContextServicesSupport.BCSSServiceProvider
   createBCSSServiceProvider (Class sc, BeanContextServiceProvider bcsp)
+    throws NotImplementedException
   {
     throw new Error ("Not implemented");
   }
 
   protected final void fireServiceAdded (BeanContextServiceAvailableEvent bcssae)
+    throws NotImplementedException
   {
     throw new Error ("Not implemented");
   }
 
-  protected final void fireServiceAdded (Class serviceClass) 
+  protected final void fireServiceAdded (Class serviceClass)
+    throws NotImplementedException
   {
     throw new Error ("Not implemented");
   }
 
   protected final void fireServiceRevoked(BeanContextServiceRevokedEvent event)
+    throws NotImplementedException
   {
     throw new Error ("Not implemented");
   }
 
   protected final void fireServiceRevoked (Class serviceClass,
                                            boolean revokeNow)
+    throws NotImplementedException
   {
     throw new Error ("Not implemented");
   }
 
   public BeanContextServices getBeanContextServicesPeer ()
+    throws NotImplementedException
   {
     throw new Error ("Not implemented");
   }
 
   protected static final BeanContextServicesListener
-  getChildBeanContextServicesListener (Object child) 
+  getChildBeanContextServicesListener (Object child)
+    throws NotImplementedException
   {
     throw new Error ("Not implemented");
   }
 
-  public Iterator getCurrentServiceClasses () 
+  public Iterator getCurrentServiceClasses ()
+    throws NotImplementedException
   {
     throw new Error ("Not implemented");
   }
 
-  public Iterator getCurrentServiceSelectors (Class serviceClass) 
+  public Iterator getCurrentServiceSelectors (Class serviceClass)
+    throws NotImplementedException
   {
     throw new Error ("Not implemented");
   }
@@ -251,12 +270,13 @@ public class BeanContextServicesSupport
   public Object getService (BeanContextChild child, Object requestor,
                             Class serviceClass, Object serviceSelector,
                             BeanContextServiceRevokedListener bcsrl)
-    throws TooManyListenersException
+    throws TooManyListenersException, NotImplementedException
   {
     throw new Error ("Not implemented");
   }
 
   public boolean hasService (Class serviceClass)
+    throws NotImplementedException
   {
     throw new Error ("Not implemented");
   }
@@ -269,18 +289,21 @@ public class BeanContextServicesSupport
     services = new HashMap();
   }
 
-  protected  void initializeBeanContextResources () 
+  protected  void initializeBeanContextResources ()
+    throws NotImplementedException
   {
     throw new Error ("Not implemented");
   }
 
-  protected  void releaseBeanContextResources () 
+  protected  void releaseBeanContextResources ()
+    throws NotImplementedException
   {
     throw new Error ("Not implemented");
   }
 
   public void releaseService (BeanContextChild child, Object requestor,
                               Object service)
+    throws NotImplementedException
   {
     throw new Error ("Not implemented");
   }
@@ -295,17 +318,20 @@ public class BeanContextServicesSupport
   }
 
   public void revokeService (Class serviceClass, BeanContextServiceProvider bcsp,
-                             boolean revokeCurrentServicesNow) 
+                             boolean revokeCurrentServicesNow)
+    throws NotImplementedException
   {
     throw new Error ("Not implemented");
   }
 
-  public void serviceAvailable (BeanContextServiceAvailableEvent bcssae) 
+  public void serviceAvailable (BeanContextServiceAvailableEvent bcssae)
+    throws NotImplementedException
   {
     throw new Error ("Not implemented");
   }
 
-  public void serviceRevoked (BeanContextServiceRevokedEvent bcssre) 
+  public void serviceRevoked (BeanContextServiceRevokedEvent bcssre)
+    throws NotImplementedException
   {
     throw new Error ("Not implemented");
   }

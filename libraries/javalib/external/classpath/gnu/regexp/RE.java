@@ -236,6 +236,13 @@ public class RE extends REToken {
    */
   public static final int REG_REPLACE_USE_BACKSLASHESCAPE = 0x0200;
 
+  /**
+   * Compilation flag. Allow whitespace and comments in pattern.
+   * This is equivalent to the "/x" operator in Perl.
+   */
+
+  public static final int REG_X_COMMENTS = 0x0400;
+
   /** Returns a string representing the version of the gnu.regexp package. */
   public static final String version() {
     return VERSION;
@@ -373,6 +380,31 @@ public class RE extends REToken {
       if (quot)
       	unit.bk = false;
 
+      if (((cflags & REG_X_COMMENTS) > 0) && (!unit.bk) && (!quot)) {
+	if (Character.isWhitespace(unit.ch)) {
+	     continue;
+	}
+	if (unit.ch == '#') {
+	  for (int i = index; i < pLength; i++) {
+	    if (pattern[i] == '\n') {
+	      index = i + 1;
+	      continue;
+	    }
+	    else if (pattern[i] == '\r') {
+	      if (i + 1 < pLength && pattern[i + 1] == '\n') {
+		index = i + 2;
+	      }
+	      else {
+		index = i + 1;
+	      }
+	      continue;
+	    }
+	  }
+	  index = pLength;
+	  continue;
+	}
+      }
+
       // ALTERNATION OPERATOR
       //  \| or | (if RE_NO_BK_VBAR) or newline (if RE_NEWLINE_ALT)
       //  not available if RE_LIMITED_OPS is set
@@ -497,7 +529,7 @@ public class RE extends REToken {
 	  case 'm':
 	  case 's':
 	  // case 'u':  not supported
-	  // case 'x':  not supported
+	  case 'x':
 	  case '-':
             if (!syntax.get(RESyntax.RE_EMBEDDED_FLAGS)) break;
 	    // Set or reset syntax flags.
@@ -537,7 +569,13 @@ public class RE extends REToken {
 		  flagIndex++;
 		  break;
 	  	// case 'u': not supported
-	  	// case 'x': not supported
+	  	case 'x':
+		  if (negate)
+		    newCflags &= ~REG_X_COMMENTS;
+		  else
+		    newCflags |= REG_X_COMMENTS;
+		  flagIndex++;
+		  break;
 	  	case '-':
 		  negate = true;
 		  flagIndex++;
@@ -928,9 +966,15 @@ public class RE extends REToken {
 	}
 
 	// END OF STRING OPERATOR
-        //  \Z
+        //  \Z, \z
 
-	else if (unit.bk && (unit.ch == 'Z') && syntax.get(RESyntax.RE_STRING_ANCHORS)) {
+	// FIXME: \Z and \z are different in that if the input string
+	// ends with a line terminator, \Z matches the position before
+	// the final terminator.  This special behavior of \Z is yet
+	// to be implemented.
+
+	else if (unit.bk && (unit.ch == 'Z' || unit.ch == 'z') &&
+		 syntax.get(RESyntax.RE_STRING_ANCHORS)) {
 	  addToken(currentToken);
 	  currentToken = new RETokenEnd(subIndex,null);
 	}
@@ -959,6 +1003,15 @@ public class RE extends REToken {
 	  index = index - 2 + np.len;
 	  addToken(currentToken);
 	  currentToken = getRETokenNamedProperty(subIndex,np,insens,index);
+	}
+
+	// END OF PREVIOUS MATCH
+        //  \G
+
+	else if (unit.bk && (unit.ch == 'G') &&
+		 syntax.get(RESyntax.RE_STRING_ANCHORS)) {
+	  addToken(currentToken);
+	  currentToken = new RETokenEndOfPreviousMatch(subIndex);
 	}
 
 	// NON-SPECIAL CHARACTER (or escape to make literal)
@@ -1514,7 +1567,7 @@ public class RE extends REToken {
 	}
 
 	// Note the start of this subexpression
-	mymatch.start[subIndex] = mymatch.index;
+	mymatch.start1[subIndex] = mymatch.index;
 
 	return firstToken.match(input, mymatch);
     }
@@ -1524,8 +1577,6 @@ public class RE extends REToken {
 	  mymatch.backtrackStack = new BacktrackStack();
 	boolean b = match(input, mymatch);
 	if (b) {
-	    // mymatch.backtrackStack.push(new REMatch.Backtrack(
-	    //     this, input, mymatch, null));
 	    return mymatch;
 	}
 	return null;
@@ -1614,6 +1665,7 @@ public class RE extends REToken {
 		  */
 		  best.end[0] = best.index;
 		  best.finish(input);
+		  input.setLastMatch(best);
 		  return best;
 	      }
 	  }
@@ -1965,19 +2017,23 @@ public class RE extends REToken {
   }
 
   // Cast input appropriately or throw exception
-  private static CharIndexed makeCharIndexed(Object input, int index) {
+  // This method was originally a private method, but has been made
+  // public because java.util.regex.Matcher uses this.
+  public static CharIndexed makeCharIndexed(Object input, int index) {
       // We could let a String fall through to final input, but since
       // it's the most likely input type, we check it first.
+      // The case where input is already an instance of CharIndexed is
+      // also supposed to be very likely.
     if (input instanceof String)
       return new CharIndexedString((String) input,index);
+    else if (input instanceof CharIndexed)
+	return (CharIndexed) input; // do we lose index info?
     else if (input instanceof char[])
       return new CharIndexedCharArray((char[]) input,index);
     else if (input instanceof StringBuffer)
       return new CharIndexedStringBuffer((StringBuffer) input,index);
     else if (input instanceof InputStream)
       return new CharIndexedInputStream((InputStream) input,index);
-    else if (input instanceof CharIndexed)
-	return (CharIndexed) input; // do we lose index info?
     else 
 	return new CharIndexedString(input.toString(), index);
   }

@@ -38,7 +38,10 @@ exception statement from your version. */
 
 package gnu.java.rmi.activation;
 
-import java.util.Hashtable;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * The bidirectional hash table, maps both a to b and b to a.
@@ -55,17 +58,36 @@ public class BidiTable
   /**
    * Maps keys to values
    */
-  Hashtable k2v = new Hashtable();
+  protected Map k2v;
   
   /**
    * Maps values to keys (in reverse)
    */
-  Hashtable v2k = new Hashtable();
+  protected Map v2k;
+  
+  /**
+   * Create a new table that is ready to use.
+   */
+  public BidiTable()
+  {
+    k2v = new HashMap();
+    v2k = new HashMap();
+  }
+  
+  /**
+   * Create a new instance where the hashtable fields are not initialised
+   * (called from derivatives that intialise hashtables in they own way.
+   * 
+   * @param flags currently used to mark the different constructor only.
+   */
+  protected BidiTable(int flags)
+  {
+  }
   
   /**
    * Get key by value
    */
-  Object getKey(Object value)
+  public synchronized Object getKey(Object value)
   {
     return v2k.get(value);
   }
@@ -73,7 +95,7 @@ public class BidiTable
   /**
    * Put key-value pair.
    */
-  public void put(Object key, Object value)
+  public synchronized void put(Object key, Object value)
   {
     k2v.put(key, value);
     v2k.put(value, key);
@@ -82,7 +104,7 @@ public class BidiTable
   /**
    * Get value from key
    */
-  public Object get(Object key)
+  public synchronized Object get(Object key)
   {
     return k2v.get(key);
   }
@@ -90,7 +112,7 @@ public class BidiTable
   /**
    * Remove the key-value pair by key
    */
-  public void removeKey(Object key)
+  public synchronized void removeKey(Object key)
   {
     Object value = k2v.get(key);
     if (value!=null)
@@ -103,9 +125,39 @@ public class BidiTable
   /**
    * Check if the table contains this key.
    */
-  public boolean containsKey(Object key)
+  public synchronized boolean containsKey(Object key)
   {
     return k2v.containsKey(key);
   }
   
+  /**
+   * This method is called before exit and may be used to write the database
+   * to the disk. The default method does nothing.
+   */
+  public synchronized void shutdown()
+  {
+  }
+  
+  /**
+   * Get the size.
+   */
+  public synchronized int size()
+  {
+    return k2v.size();
+  }
+  
+  /**
+   * Get the key collection.
+   */
+  public synchronized Object[] keys()
+  {
+    Collection keys = k2v.keySet();
+    Object[] k = new Object[keys.size()];
+
+    Iterator iter = keys.iterator();
+    for (int i = 0; i < k.length; i++)
+      k[i] = iter.next();
+    
+    return k;
+  }
 }

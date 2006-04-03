@@ -293,7 +293,7 @@ if test "x${COMPILE_JNI}" = xyes; then
 		  strerror_r \
                   fcntl \
 		  mmap munmap mincore msync madvise getpagesize sysconf \
-		  isnan])
+		  ])
 
   AC_HEADER_TIME
   AC_STRUCT_TM
@@ -584,6 +584,33 @@ AC_ARG_ENABLE([portable-native-sync],
 
 AX_CREATE_STDINT_H([include/config-int.h])
 
+dnl -----------------------------------------------------------------------
+dnl                    Support for using a prebuilt class library
+dnl -----------------------------------------------------------------------
+AC_ARG_WITH([glibj_zip],
+            AS_HELP_STRING([--with-glibj-zip=ABS.PATH],
+                           [use prebuilt glibj.zip class library]))
+
+case "$with_glibj_zip" in
+"")
+        use_glibj_zip=false
+        ;;
+"no" )
+        use_glibj_zip=false
+        ;;
+"yes")
+        AC_MSG_ERROR([Please suply an absolute path to a prebuilt glibj.zip])
+        ;;
+*)
+        use_glibj_zip=true
+        PATH_TO_GLIBJ_ZIP=$with_glibj_zip
+	;;
+esac;
+
+AM_CONDITIONAL(USE_PREBUILT_GLIBJ_ZIP, test x$use_glibj_zip = xtrue)
+AC_SUBST(PATH_TO_GLIBJ_ZIP)
+
+
 dnl -----------------------------------------------------------
 dnl output files
 dnl -----------------------------------------------------------
@@ -621,6 +648,7 @@ lib/Makefile
 lib/gen-classlist.sh
 lib/copy-vmresources.sh
 tools/Makefile
+tools/jarsigner.sh
 examples/Makefile
 examples/Makefile.jawt])
 AC_CONFIG_COMMANDS([gen-classlist],[chmod 755 lib/gen-classlist.sh])

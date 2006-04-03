@@ -158,6 +158,26 @@ public class Modifier
   static final int ALL_FLAGS = 0xfff;
 
   /**
+   * Flag indicating a bridge method.
+   */
+  static final int BRIDGE = 0x40;
+
+  /**
+   * Flag indicating a varargs method.
+   */
+  static final int VARARGS = 0x80;
+
+  /**
+   * Flag indicating a synthetic member.
+   */
+  static final int SYNTHETIC = 0x1000;
+
+  /**
+   * Flag indicating an enum constant or an enum class.
+   */
+  static final int ENUM = 0x4000;
+
+  /**
    * Check whether the given modifier is abstract.
    * @param mod the modifier.
    * @return <code>true</code> if abstract, <code>false</code> otherwise.

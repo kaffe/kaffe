@@ -149,7 +149,7 @@ public final class UID
    */
   public int hashCode()
   {
-    return (int) (unique ^ time ^ machineId);
+    return (int) (unique ^ time ^ count);
   }
   
   /**
@@ -212,9 +212,16 @@ public final class UID
   
   /**
    * Get the string representation of this UID.
+   * 
+   * @return a string, uniquely identifying this id.
    */
   public String toString()
   {
-    return ("[UID: " + unique + "," + time + "," + count + "]");
+    int max = Character.MAX_RADIX;
+    // Translate into object count, counting from 0.
+    long lc = (count + Short.MIN_VALUE) & 0xFFFF;
+    return Long.toString(time, max) + ":"
+           + Long.toString(unique, max) + ":"
+           + Long.toString(lc, max);
   }
 }

@@ -38,7 +38,6 @@ exception statement from your version. */
 
 package java.rmi.activation;
 
-import gnu.java.rmi.activation.ActivationSystemTransient;
 import gnu.java.rmi.activation.DefaultActivationGroup;
 import gnu.java.rmi.activation.DefaultActivationSystem;
 
@@ -162,6 +161,11 @@ public abstract class ActivationGroup
                                             long incarnation)
       throws ActivationException
   {
+    // If the activation system is not yet set, set it to the system.
+    // passed in the group id.
+    if (system == null)
+      system = id.system;
+    
     ActivationGroup group = null;
 
     // TODO at the moment all groups are created on the current jre and the
@@ -177,9 +181,9 @@ public abstract class ActivationGroup
           }
         catch (ClassNotFoundException e)
           {
-            ActivationException acex = new ActivationException("Cannot load "
-                                                               + desc.className);
-            acex.initCause(e);
+            ActivationException acex = new ActivationException(
+              "Cannot load " + desc.className);
+            acex.detail = e;
             throw acex;
           }
       }
@@ -189,16 +193,14 @@ public abstract class ActivationGroup
     try
       {
         Constructor constructor = groupClass.getConstructor(cConstructorTypes);
-        group = (ActivationGroup) constructor.newInstance(new Object[] {
-                                                                        id,
-                                                                        desc.data });
+        group = (ActivationGroup) constructor.newInstance(
+          new Object[] { id, desc.data });
       }
     catch (Exception e)
       {
         ActivationException acex = new ActivationException(
-                                                           "Cannot instantiate "
-                                                               + desc.className);
-        acex.initCause(e);
+          "Cannot instantiate " + desc.className);
+        acex.detail = e;
         throw acex;
       }
 
@@ -211,7 +213,7 @@ public abstract class ActivationGroup
     catch (RemoteException e)
       {
         ActivationException acex = new ActivationException("createGroup");
-        acex.initCause(e);
+        acex.detail = e;
         throw acex;
       }
   }
@@ -227,7 +229,9 @@ public abstract class ActivationGroup
       {
         if (currentGroupId==null)
           {
-            setSystem(ActivationSystemTransient.getInstance());
+            // This will also assing the currentGroupId to the current
+            // (default) group of the default system.
+            setSystem(DefaultActivationSystem.get());
           }
       }
     catch (ActivationException e)
@@ -236,7 +240,6 @@ public abstract class ActivationGroup
         ierr.initCause(e);
         throw ierr;
       }
-      
       
     return currentGroupId;
   }
@@ -278,8 +281,18 @@ public abstract class ActivationGroup
   }
   
   /**
-   * Get the current activation system. If the system is not set via this
-   * method, the default implementatin for this virtual machine is returned.
+   * Get the current activation system. If the system is not set via
+   * {@link #setSystem} method, the default system for this virtual machine is
+   * returned. The default system is first searched by name
+   * "java.rmi.activation.ActivationSystem" on the activation registry port. The
+   * default value of the activation registry port is
+   * {@link ActivationSystem#SYSTEM_PORT}, but it can be changed by putting the
+   * system property java.rmi.activation.port. Both activation system and
+   * activation registry are provided by the RMI daemon tool, RMID, if it is
+   * running on the local host. If the RMID is not running, the internal
+   * transient activation system will be created and returned. This internal
+   * system is highly limited in in capabilities and is not intended to be used
+   * anywhere apart automated testing.
    * 
    * @return the activation system for this virtual machine
    * @throws ActivationException
@@ -287,9 +300,8 @@ public abstract class ActivationGroup
   public static ActivationSystem getSystem() throws ActivationException
   {
     if (system == null)
-      return DefaultActivationSystem.singleton;
-    else
-      return system;
+      system = DefaultActivationSystem.get();
+    return system;
   }
 
   /**

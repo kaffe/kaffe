@@ -399,19 +399,20 @@ public class DefaultCaret extends Rectangle
               }
             else
               {
-                int nextWord = Utilities.getNextWord(t, newDot);
+                int wordStart = Utilities.getWordStart(t, newDot);
                 
                 // When the mouse points at the offset of the first character
                 // in a word Utilities().getPreviousWord will not return that
                 // word but we want to select that. We have to use
-                // Utilities.nextWord() to get it.
-                if (newDot == nextWord)
+                // Utilities.getWordStart() to get it.
+                if (newDot == wordStart)
                   {
-                    setDot(nextWord);
-                    moveDot(Utilities.getNextWord(t, nextWord));
+                    setDot(wordStart);
+                    moveDot(Utilities.getWordEnd(t, wordStart));
                   }
                 else
                   {
+                    int nextWord = Utilities.getNextWord(t, newDot);
                     int previousWord = Utilities.getPreviousWord(t, newDot);
                     int previousWordEnd = Utilities.getWordEnd(t, previousWord);
                     
@@ -471,10 +472,35 @@ public class DefaultCaret extends Rectangle
    */
   public void mousePressed(MouseEvent event)
   {
-    if (event.isShiftDown())
-      moveCaret(event);
-    else
-      positionCaret(event);
+    int button = event.getButton();
+    
+    // The implementation assumes that consuming the event makes the AWT event
+    // mechanism forget about this event instance and not transfer focus.
+    // By observing how the RI reacts the following behavior has been
+    // implemented (in regard to text components):
+    // - a left-click moves the caret
+    // - a left-click when shift is held down expands the selection
+    // - a right-click or click with any additionaly mouse button
+    //   on a text component is ignored
+    // - a middle-click positions the caret and pastes the clipboard
+    //   contents.
+    // - a middle-click when shift is held down is ignored
+    
+    if (button == MouseEvent.BUTTON1)
+      if (event.isShiftDown())
+        moveCaret(event);
+      else
+        positionCaret(event);
+      else if(button == MouseEvent.BUTTON2)
+        if (event.isShiftDown())
+          event.consume();
+        else
+          {
+            positionCaret(event);
+            textComponent.paste();
+          }
+      else
+        event.consume();
   }
 
   /**
@@ -808,7 +834,7 @@ public class DefaultCaret extends Rectangle
     if (visible)
       {
         g.setColor(textComponent.getCaretColor());
-        g.drawLine(rect.x, rect.y, rect.x, rect.y + rect.height);
+        g.drawLine(rect.x, rect.y, rect.x, rect.y + rect.height - 1);
       }
   }
 
@@ -934,8 +960,8 @@ public class DefaultCaret extends Rectangle
         this.dot = Math.max(this.dot, 0);
         
         handleHighlight();
-        adjustVisibility(this);
         appear();
+        adjustVisibility(this);
       }
   }
 
@@ -959,8 +985,8 @@ public class DefaultCaret extends Rectangle
         this.mark = this.dot;
         
         clearHighlight();
-        adjustVisibility(this);
         appear();
+        adjustVisibility(this);
       }
   }
   
@@ -1075,7 +1101,16 @@ public class DefaultCaret extends Rectangle
     // must set a valid value here, since otherwise the painting mechanism
     // sets a zero clip and never calls paint.
     if (height <= 0)
-      height = getComponent().getHeight();
+      try
+        {
+          height = textComponent.modelToView(dot).height;
+        }
+      catch (BadLocationException ble)
+        {
+          // Should not happen.
+          throw new InternalError("Caret location not within document range.");
+        }
+      
     repaint();
   }
 

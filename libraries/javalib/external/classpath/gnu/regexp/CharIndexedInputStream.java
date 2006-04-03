@@ -155,5 +155,21 @@ class CharIndexedInputStream implements CharIndexed {
 	throw new UnsupportedOperationException(
 	    "difficult to tell the length for an input stream");
     }
+
+    public void setLastMatch(REMatch match) {
+	throw new UnsupportedOperationException(
+	    "difficult to support setLastMatch for an input stream");
+    }
+
+    public REMatch getLastMatch() {
+	throw new UnsupportedOperationException(
+	    "difficult to support getLastMatch for an input stream");
+    }
+
+    public int getAnchor() {
+	throw new UnsupportedOperationException(
+	    "difficult to support getAnchor for an input stream");
+    }
+
 }
 

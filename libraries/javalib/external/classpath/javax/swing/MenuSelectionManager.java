@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package javax.swing;
 
+import gnu.classpath.NotImplementedException;
+
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Point;
@@ -252,6 +254,7 @@ public class MenuSelectionManager
    * @param e DOCUMENT ME!
    */
   public void processKeyEvent(KeyEvent e)
+    throws NotImplementedException
   {
     throw new UnsupportedOperationException("not implemented");
   }

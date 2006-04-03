@@ -87,9 +87,18 @@ endif # INSTALL_CLASS_FILES
 
 .PHONY: genclasses
 
+if USE_PREBUILT_GLIBJ_ZIP
+
+glibj.zip:
+	cp $(PATH_TO_GLIBJ_ZIP) .
+
+else
+
 glibj.zip: classes compile-classes resources
 	if test "$(ZIP)" != ""; then $(ZIP) -r -D glibj.zip gnu java javax org META-INF > /dev/null; fi
 	if test "$(FASTJAR)" != ""; then $(FASTJAR) cf glibj.zip gnu java javax org META-INF; fi
+
+endif # USE_PREBUILT_GLIBJ_ZIP
 
 resources: copy-vmresources.sh
 	if ! [ -e gnu ]; then mkdir gnu; fi
@@ -113,11 +122,11 @@ resources: copy-vmresources.sh
 
 classes: genclasses
 
-$(top_builddir)/java/util/LocaleData.java: $(top_srcdir)/scripts/generate-locale-list.sh 
-	mkdir -p $(top_builddir)/java/util
-	$(top_srcdir)/scripts/generate-locale-list.sh > $(top_builddir)/java/util/LocaleData.java
+$(top_builddir)/gnu/java/locale/LocaleData.java: $(top_srcdir)/scripts/generate-locale-list.sh 
+	mkdir -p $(top_builddir)/gnu/java/locale
+	$(top_srcdir)/scripts/generate-locale-list.sh > $(top_builddir)/gnu/java/locale/LocaleData.java
 
-genclasses: gen-classlist.sh standard.omit $(top_builddir)/java/util/LocaleData.java gen-xpath-parser
+genclasses: gen-classlist.sh standard.omit $(top_builddir)/gnu/java/locale/LocaleData.java gen-xpath-parser
 	top_builddir=$(top_builddir) top_srcdir=$(top_srcdir) $(SHELL) ./gen-classlist.sh standard
 
 # Only rebuild parsers when explicitly asked to.
@@ -155,8 +164,8 @@ endif
 
 EXTRA_DIST = standard.omit mkcollections.pl.in Makefile.gcj split-for-gcj.sh
 CLEANFILES = compile-classes resources classes \
-	glibj.zip classes.1 \
-	$(top_builddir)/java/util/LocaleData.java \
+	glibj.zip classes.1 classes.2 \
+	$(top_builddir)/gnu/java/locale/LocaleData.java \
 	$(JAVA_DEPEND)
 
 clean-local:
@@ -177,4 +186,4 @@ dist-hook:
 	$(FIND) $(distdir)/../gnu $(distdir)/../java $(distdir)/../javax $(distdir)/../org $(distdir)/../vm $(distdir)/../resource -name .cvsignore -print | xargs rm -f
 	$(FIND) $(distdir)/../gnu $(distdir)/../java $(distdir)/../javax $(distdir)/../org $(distdir)/../vm -name class-dependencies.conf -print | xargs rm -f
 	rm -f $(distdir)/../gnu/classpath/Configuration.java
-	rm -f $(distdir)/../java/util/LocaleData.java
+	rm -f $(distdir)/../gnu/java/locale/LocaleData.java

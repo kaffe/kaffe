@@ -37,6 +37,8 @@ exception statement from your version. */
 
 package javax.swing.tree;
 
+import gnu.classpath.NotImplementedException;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -46,7 +48,6 @@ import java.util.EventListener;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
-import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
  * DefaultTreeModel
@@ -227,6 +228,7 @@ public class DefaultTreeModel
    * listeners that the model has changed.
    */
   public void reload()
+    throws NotImplementedException
   {
     // TODO
   }
@@ -239,6 +241,7 @@ public class DefaultTreeModel
    * @param node - TODO
    */
   public void reload(TreeNode node)
+    throws NotImplementedException
   {
     // TODO
   }
@@ -389,6 +392,7 @@ public class DefaultTreeModel
    * @param node that had its children and grandchildren changed.
    */
   public void nodeStructureChanged(TreeNode node)
+    throws NotImplementedException
   {
     // TODO
   }

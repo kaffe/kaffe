@@ -642,6 +642,14 @@ public class GapContent
     if (addItems != null)
       {
         System.arraycopy(addItems, 0, buffer, gapStart, addSize);
+        
+        // Position objects having their mark at the end of the gap
+        // (results in an offset equal to gapStart) should be moved down
+        // because the size of the gap will decrease by addSize and the
+        // offsets will increase by the same amount and the latter should
+        // not happen.
+        setPositionsInRange(gapEnd, 0, gapStart);
+        
         gapStart += addSize;
       }
   }

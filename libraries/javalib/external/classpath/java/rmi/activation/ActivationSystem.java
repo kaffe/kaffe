@@ -55,12 +55,15 @@ import java.rmi.RemoteException;
  * methods in this interface throw {@link java.rmi.AccessException} if called
  * from the client that is not reside on the same host as the activation system.
  * </p>
+ * @see ActivationGroup#getSystem()
  */
 public interface ActivationSystem
     extends Remote
 {
   /**
-   * The port, used by the activation system (1098 by default).
+   * The port, used by the activation system. The value is equal to 1098 by
+   * default, but it can be changed by putting the system property
+   * .
    */
   int SYSTEM_PORT = 1098;
   

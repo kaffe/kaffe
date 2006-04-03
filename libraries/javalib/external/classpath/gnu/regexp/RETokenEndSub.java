@@ -47,11 +47,13 @@ final class RETokenEndSub extends REToken {
     }
     
     REMatch matchThis(CharIndexed input, REMatch mymatch) {
+	mymatch.start[subIndex] = mymatch.start1[subIndex];
 	mymatch.end[subIndex] = mymatch.index;
 	return mymatch;
     }
 
     REMatch findMatch(CharIndexed input, REMatch mymatch) {
+	mymatch.start[subIndex] = mymatch.start1[subIndex];
 	mymatch.end[subIndex] = mymatch.index;
 	return super.findMatch(input, mymatch);
     }

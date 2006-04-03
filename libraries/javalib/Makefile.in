@@ -554,10 +554,10 @@ EXTRA_DIST = \
 	vmspecific/java/lang/VMThread.java \
 	vmspecific/java/lang/VMThrowable.java \
 	vmspecific/java/lang/ref/Reference.java \
-	vmspecific/java/lang/reflect/Array.java \
 	vmspecific/java/lang/reflect/Constructor.java \
 	vmspecific/java/lang/reflect/Field.java \
 	vmspecific/java/lang/reflect/Method.java \
+	vmspecific/java/lang/reflect/VMArray.java \
 	vmspecific/java/lang/reflect/VMProxy.java \
 	vmspecific/java/net/InetAddress.java \
 	vmspecific/java/net/VMInetAddress.java \

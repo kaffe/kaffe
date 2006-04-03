@@ -94,7 +94,7 @@ public final class Pattern implements Serializable
 
     if ((flags & COMMENTS) != 0)
       {
-	// Use a syntax with support for comments?
+	gnuFlags |= RE.REG_X_COMMENTS;
       }
 
     try

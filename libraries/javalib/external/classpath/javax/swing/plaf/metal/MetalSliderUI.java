@@ -1,5 +1,5 @@
 /* MetalSliderUI.java
-   Copyright (C) 2005 Free Software Foundation, Inc.
+   Copyright (C) 2005, 2006, Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -210,7 +210,7 @@ public class MetalSliderUI extends BasicSliderUI
       {
         int trackX = trackRect.x;
         int trackY = trackRect.y + (trackRect.height - getTrackWidth()) / 2;
-        int trackW = trackRect.width - 1;
+        int trackW = trackRect.width;
         int trackH = getTrackWidth();
         
         // draw border
@@ -264,7 +264,7 @@ public class MetalSliderUI extends BasicSliderUI
         int trackX = trackRect.x  + (trackRect.width - getTrackWidth()) / 2;
         int trackY = trackRect.y;
         int trackW = getTrackWidth();
-        int trackH = trackRect.height - 1;
+        int trackH = trackRect.height;
         if (slider.isEnabled())
           BasicGraphicsUtils.drawEtchedRect(g, trackX, trackY, trackW, trackH, 
               darkShadowColor, shadowColor, darkShadowColor, highlightColor);

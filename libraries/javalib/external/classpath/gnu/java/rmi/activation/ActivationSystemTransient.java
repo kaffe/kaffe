@@ -1,4 +1,4 @@
-/* DefaultActivationSystem.java -- FIXME: briefly describe file purpose
+/* ActivationSystemTransient.java -- The transient RMI object activation system.
    Copyright (C) 2006 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -49,6 +49,7 @@ import java.rmi.activation.ActivationID;
 import java.rmi.activation.ActivationInstantiator;
 import java.rmi.activation.ActivationMonitor;
 import java.rmi.activation.ActivationSystem;
+import java.rmi.activation.Activator;
 import java.rmi.activation.UnknownGroupException;
 import java.rmi.activation.UnknownObjectException;
 import java.util.HashMap;
@@ -63,28 +64,28 @@ import java.util.Map;
  */
 public class ActivationSystemTransient
     extends DefaultActivationSystem
-    implements ActivationSystem, ActivationMonitor
+    implements ActivationSystem, ActivationMonitor, Activator
 {
   /**
    * Maps group identifiers into group descriptions.
    */
-  BidiTable groupDescs = new BidiTable();  
+  protected final BidiTable groupDescs;  
   
   /**
    * Maps object identifiers into object activation descriptions
    */
-  BidiTable descriptions = new BidiTable();
+  protected final BidiTable descriptions;
 
   /**
-   * Maps group descriptions into group object instantiators.
+   * Maps group identifiers into already activated groups.
    */
-  Map groupInstantiators = new Hashtable();
+  protected transient final Map groupInstantiators = new Hashtable();
   
   /**
    * The cache of the activated objects, maps activation ids to remote
    * object stubs.
    */
-  Map activatedObjects = new HashMap();
+  protected transient final Map activatedObjects = new HashMap();
  
   /**
    * The object incarnation counter.
@@ -99,13 +100,25 @@ public class ActivationSystemTransient
   /**
    * Set to true to print the event messages to console.
    */
-  static boolean debug = false;
+  public static boolean debug = false;
+  
   
   /**
-   * This group should not be instantiated outside the group code.
+   * Creates the group which uses the given maps to store the data.
    */
-  private ActivationSystemTransient()
+  protected ActivationSystemTransient(BidiTable objectDescriptions,
+                                      BidiTable groupDescriptiopns)
   {
+    descriptions = objectDescriptions;
+    groupDescs = groupDescriptiopns;
+  }
+  
+  /**
+   * Creates the group with transient maps.
+   */
+  protected ActivationSystemTransient()
+  {
+    this (new BidiTable(), new BidiTable());
   }
   
   public static ActivationSystem getInstance()
@@ -133,7 +146,8 @@ public class ActivationSystemTransient
 
     ActivationDesc desc = (ActivationDesc) descriptions.get(id);
     if (desc == null)
-      throw new UnknownObjectException(id == null ? "null" : id.toString());
+      throw new UnknownObjectException("Activating unknown object  "+
+                                       id == null ? "null" : id.toString());
 
     ActivationInstantiator group = 
       (ActivationInstantiator) groupInstantiators.get(desc.getGroupID());
@@ -145,8 +159,8 @@ public class ActivationSystemTransient
         ActivationGroupDesc adesc = (ActivationGroupDesc) groupDescs.get(gid);
 
         if (adesc == null)
-          throw new UnknownGroupException("Unknown group, " + gid + " for "
-                                          + id+" this "+this);
+          throw new UnknownGroupException("Activating unknown group " 
+                                          + gid + " for "+ id+" this "+this);
 
         synchronized (ActivationSystemTransient.class)
           {
@@ -190,7 +204,8 @@ public class ActivationSystemTransient
   {
     ActivationDesc desc = (ActivationDesc) descriptions.get(id);
     if (desc == null)
-      throw new UnknownObjectException(id == null ? "null" : id.toString());
+      throw new UnknownObjectException("No desc for "+
+                                       id == null ? "null" : id.toString());
     return desc;
   }
   
@@ -279,11 +294,13 @@ public class ActivationSystemTransient
   }
   
   /**
-   * No action.
+   * Calls .shutdown on all bidirectional tables (has no effect if these
+   * table are not persistent).
    */
   public void shutdown() throws RemoteException
   {
-    // Nothing to do.
+    descriptions.shutdown();
+    groupDescs.shutdown();
   }
   
   /**

@@ -315,4 +315,23 @@ static String getPrettyName(Class cls) {
 	}
 }
 
+    /* taken from GNU Classpath */
+  /**
+   * Return true if this method is synthetic, false otherwise.
+   * @since 1.5
+   */
+  public boolean isSynthetic()
+  {
+    return (getModifiers() & Modifier.SYNTHETIC) != 0;
+  }
+
+  /**
+   * Return true if this is a varargs method, that is if
+   * the method takes a variable number of arguments.
+   * @since 1.5
+   */
+  public boolean isVarArgs()
+  {
+    return (getModifiers() & Modifier.VARARGS) != 0;
+  }
 }

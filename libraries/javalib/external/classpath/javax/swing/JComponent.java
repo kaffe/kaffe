@@ -67,10 +67,10 @@ import java.awt.event.MouseEvent;
 import java.awt.peer.LightweightPeer;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.Hashtable;
 import java.util.Locale;
@@ -161,14 +161,9 @@ public abstract class JComponent extends Container implements Serializable
     protected ContainerListener accessibleContainerHandler;
     protected FocusListener accessibleFocusHandler;
 
-    /**
-     * Manages the property change listeners;
-     */
-    private PropertyChangeSupport changeSupport;
-
     protected AccessibleJComponent()
     {
-      changeSupport = new PropertyChangeSupport(this);
+      // nothing to do here
     }
 
     /**
@@ -178,7 +173,8 @@ public abstract class JComponent extends Container implements Serializable
      */
     public void addPropertyChangeListener(PropertyChangeListener listener)
     {
-      changeSupport.addPropertyChangeListener(listener);
+      // TODO: figure out what is done differently here, if anything...
+      super.addPropertyChangeListener(listener);
     }
 
     /**
@@ -188,7 +184,8 @@ public abstract class JComponent extends Container implements Serializable
      */
     public void removePropertyChangeListener(PropertyChangeListener listener)
     {
-      changeSupport.removePropertyChangeListener(listener);
+      // TODO: figure out what is done differently here, if anything...
+      super.removePropertyChangeListener(listener);
     }
 
     /**
@@ -256,9 +253,8 @@ public abstract class JComponent extends Container implements Serializable
      */
     public String getAccessibleName()
     {
-      // TODO: Figure out what exactly to return here. It's possible that this
-      // method simply should return null.
-      return null;
+      // TODO: Figure out what exactly to return here.
+      return super.getAccessibleName();
     }
 
     /**
@@ -1650,39 +1646,237 @@ public abstract class JComponent extends Container implements Serializable
    */
   protected void paintChildren(Graphics g)
   {
+    if (getComponentCount() > 0)
+      {
+        if (isOptimizedDrawingEnabled())
+          paintChildrenOptimized(g);
+        else
+          paintChildrenWithOverlap(g);
+      }
+  }
+
+  /**
+   * Paints the children of this JComponent in the case when the component
+   * is not marked as optimizedDrawingEnabled, that means the container cannot
+   * guarantee that it's children are tiled. For this case we must
+   * perform a more complex optimization to determine the minimal rectangle
+   * to be painted for each child component.
+   *
+   * @param g the graphics context to use
+   */
+  private void paintChildrenWithOverlap(Graphics g)
+  {
     Shape originalClip = g.getClip();
     Rectangle inner = SwingUtilities.calculateInnerArea(this, rectCache);
     g.clipRect(inner.x, inner.y, inner.width, inner.height);
     Component[] children = getComponents();
 
-    // Find the bottommost component that needs to be painted. This is a
-    // component that completely covers the current clip and is opaque. In
-    // this case we don't need to paint the components below it.
-    int startIndex = children.length - 1;
-    // No need to check for overlapping components when this component is
-    // optimizedDrawingEnabled (== it tiles its children).
-    if (! isOptimizedDrawingEnabled())
+    // Find the rectangles that need to be painted for each child component.
+    // We push on this list arrays that have the Rectangles to be painted as
+    // the first elements and the component to be painted as the last one.
+    // Later we go through that list in reverse order and paint the rectangles.
+    ArrayList paintRegions = new ArrayList(children.length);
+    ArrayList paintRectangles = new ArrayList();
+    ArrayList newPaintRects = new ArrayList();
+    paintRectangles.add(g.getClipBounds());
+    ArrayList componentRectangles = new ArrayList();
+
+    // Go through children from top to bottom and find out their paint
+    // rectangles.
+    int index = 0;
+    while (paintRectangles.size() > 0 && index < children.length)
       {
-        for (int i = 0; i < children.length; i++)
+        Component comp = children[index];
+        if (! comp.isVisible())
+          continue;
+
+        Rectangle compBounds = comp.getBounds();
+        boolean isOpaque = comp instanceof JComponent
+                           && ((JComponent) comp).isOpaque();
+
+        // Add all the current paint rectangles that intersect with the
+        // component to the component's paint rectangle array.
+        for (int i = paintRectangles.size() - 1; i >= 0; i--)
           {
-            Rectangle childBounds = children[i].getBounds();
-            if (children[i].isOpaque() && children[i].isVisible()
-                && SwingUtilities.isRectangleContainingRectangle(childBounds,
-                                                            g.getClipBounds()))
+            Rectangle r = (Rectangle) paintRectangles.get(i);
+            if (r.intersects(compBounds))
+              {
+                Rectangle compRect = r.intersection(compBounds);
+                componentRectangles.add(compRect);
+                // If the component is opaque, split up each paint rect and
+                // add paintRect - compBounds to the newPaintRects array.
+                if (isOpaque)
+                  {
+                    int x, y, w, h;
+                    Rectangle rect = new Rectangle();
+
+                    // The north retangle.
+                    x = Math.max(compBounds.x, r.x);
+                    y = r.y;
+                    w = Math.min(compBounds.width, r.width + r.x - x);
+                    h = compBounds.y - r.y;
+                    rect.setBounds(x, y, w, h);
+                    if (! rect.isEmpty())
+                      {
+                        newPaintRects.add(rect);
+                        rect = new Rectangle();
+                      }
+
+                    // The south rectangle.
+                    x = Math.max(compBounds.x, r.x);
+                    y = compBounds.y + compBounds.height;
+                    w = Math.min(compBounds.width, r.width + r.x - x);
+                    h = r.height - (compBounds.y - r.y) - compBounds.height;
+                    rect.setBounds(x, y, w, h);
+                    if (! rect.isEmpty())
+                      {
+                        newPaintRects.add(rect);
+                        rect = new Rectangle();
+                      }
+
+                    // The west rectangle.
+                    x = r.x;
+                    y = r.y;
+                    w = compBounds.x - r.x;
+                    h = r.height;
+                    rect.setBounds(x, y, w, h);
+                    if (! rect.isEmpty())
+                      {
+                        newPaintRects.add(rect);
+                        rect = new Rectangle();
+                      }
+
+                    // The east rectangle.
+                    x = compBounds.x + compBounds.width;
+                    y = r.y;
+                    w = r.width - (compBounds.x - r.x) - compBounds.width;
+                    h = r.height;
+                    rect.setBounds(x, y, w, h);
+                    if (! rect.isEmpty())
+                      {
+                        newPaintRects.add(rect);
+                      }
+                  }
+                
+              }
+            else
+              {
+                newPaintRects.add(r);
+              }
+          }
+
+        // Replace the paintRectangles with the new split up
+        // paintRectangles.
+        paintRectangles.clear();
+        paintRectangles.addAll(newPaintRects);
+        newPaintRects.clear();
+
+        // Store paint rectangles if there are any for the current component.
+        int compRectsSize = componentRectangles.size();
+        if (compRectsSize > 0)
+          {
+            componentRectangles.add(comp);
+            paintRegions.add(componentRectangles);
+            componentRectangles = new ArrayList();
+          }
+
+        index++;
+      }
+
+    // paintingTile becomes true just before we start painting the component's
+    // children.
+    paintingTile = true;
+
+    // We must go through the painting regions backwards, because the
+    // topmost components have been added first, followed by the components
+    // below.
+    int prEndIndex = paintRegions.size() - 1;
+    for (int i = prEndIndex; i >= 0; i--)
+      {
+        // paintingTile must be set to false before we begin to start painting
+        // the last tile.
+        if (i == 0)
+          paintingTile = false;
+
+        ArrayList paintingRects = (ArrayList) paintRegions.get(i);
+        // The last element is always the component.
+        Component c = (Component) paintingRects.get(paintingRects.size() - 1);
+        int endIndex = paintingRects.size() - 2;
+        for (int j = 0; j <= endIndex; j++)
+          {
+            Rectangle cBounds = c.getBounds();
+            Rectangle bounds = (Rectangle) paintingRects.get(j);
+            Rectangle oldClip = g.getClipBounds();
+            if (oldClip == null)
+              oldClip = bounds;
+
+            boolean translated = false;
+            try
+              {
+                g.setClip(bounds);
+                g.translate(cBounds.x, cBounds.y);
+                translated = true;
+                c.paint(g);
+              }
+            finally
+              {
+                if (translated)
+                  g.translate(-cBounds.x, -cBounds.y);
+                g.setClip(oldClip);
+              }
+          }
+      }
+    g.setClip(originalClip);
+  }
+
+  /**
+   * Paints the children of this container when it is marked as
+   * optimizedDrawingEnabled. In this case the container can guarantee that
+   * it's children are tiled, which allows for a much more efficient
+   * algorithm to determine the minimum rectangles to be painted for
+   * each child.
+   *
+   * @param g the graphics context to use
+   */
+  private void paintChildrenOptimized(Graphics g)
+  {
+    Shape originalClip = g.getClip();
+    Rectangle inner = SwingUtilities.calculateInnerArea(this, rectCache);
+    g.clipRect(inner.x, inner.y, inner.width, inner.height);
+    Component[] children = getComponents();
+
+    // Find the bottommost component that needs to be painted. This is the
+    // component that - together with the rectangles of the components that
+    // are painted above it - covers the whole clip area.
+    Rectangle rect = new Rectangle();
+    int startIndex = children.length - 1;
+    for (int i = 0; i < children.length; i++)
+      {
+        Rectangle b = children[i].getBounds();
+        if (children[i].isOpaque() && children[i].isVisible()
+            && g.hitClip(b.x, b.y, b.width, b.height))
+          {
+            if (rect.isEmpty())
+              rect.setBounds(b);
+            else
+              SwingUtilities.computeUnion(b.x, b.y, b.width, b.height, rect);
+
+            if (SwingUtilities.isRectangleContainingRectangle(rect, inner))
               {
                 startIndex = i;
                 break;
               }
           }
       }
+
     // paintingTile becomes true just before we start painting the component's
     // children.
     paintingTile = true;
-    for (int i = startIndex; i >= 0; --i)
+    for (int i = startIndex; i >= 0; i--) //children.length; i++)
       {
         // paintingTile must be set to false before we begin to start painting
         // the last tile.
-        if (i == 0)
+        if (i == children.length - 1)
           paintingTile = false;
 
         if (!children[i].isVisible())
