@@ -1,5 +1,11 @@
 2006-04-03  Dalibor Topic  <robilad@kaffe.org>
 
+	* THIRDPARTY: Updated fastjar to gcc 4.1.0.
+
+	* external/gcc/fastjar: Updated to 4.1.0.
+
+2006-04-03  Dalibor Topic  <robilad@kaffe.org>
+
         * Resynchronized GNU Classpath.
 
 2006-04-03  Dalibor Topic  <robilad@kaffe.org>

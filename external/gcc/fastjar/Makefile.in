@@ -49,8 +49,7 @@ DIST_COMMON = README $(am__configure_deps) $(fastjar_TEXINFOS) \
 	scripts/ltmain.sh scripts/missing
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/accross.m4 \
-	$(top_srcdir)/m4/ax_cflags_gcc_option.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/ax_cflags_gcc_option.m4 \
 	$(top_srcdir)/m4/ax_cflags_warn_all.m4 \
 	$(top_srcdir)/m4/gcc_AC_FUNC_MKDIR_TAKES_ONE_ARG.m4 \
 	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/configure.ac

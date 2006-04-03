@@ -1,6 +1,15 @@
-/* $Id: pushback.c,v 1.1 2006/01/03 15:27:02 robilad Exp $
+/* $Id: pushback.c,v 1.2 2006/04/03 22:30:28 robilad Exp $
 
    $Log: pushback.c,v $
+   Revision 1.2  2006/04/03 22:30:28  robilad
+   updated fastjar to version from gcc 4.1.0
+
+   2006-04-03  Dalibor Topic  <robilad@kaffe.org>
+
+           * THIRDPARTY: Updated fastjar to gcc 4.1.0.
+
+           * external/gcc/fastjar: Updated to 4.1.0.
+
    Revision 1.1  2006/01/03 15:27:02  robilad
    Merged in fastjar
 
@@ -106,7 +115,7 @@
   
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
 #include <unistd.h>

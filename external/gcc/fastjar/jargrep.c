@@ -1,6 +1,6 @@
 /*
   jargrep.c - main functions for jargrep utility
-  Copyright (C) 2002, 2003 Free Software Foundation
+  Copyright (C) 2002, 2003, 2006 Free Software Foundation
   Copyright (C) 1999, 2000 Bryan Burns
   Copyright (C) 2000 Cory Hollingsworth 
  
@@ -19,7 +19,7 @@
   
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 /* Id: jargrep.c,v 1.5 2002/01/03 04:57:56 rodrigc Exp
@@ -783,7 +783,7 @@ void version ()
   printf("grepjar (%s) %s\n\n", PACKAGE, VERSION);
   printf("Copyright 1999, 2000, 2001  Bryan Burns\n");
   printf("Copyright 2000 Cory Hollingsworth\n");
-  printf("Copyright 2002 Free Software Foundation\n");
+  printf("Copyright 2006 Free Software Foundation\n");
   printf("\
 This is free software; see the source for copying conditions.  There is NO\n\
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n");

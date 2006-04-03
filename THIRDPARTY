@@ -44,8 +44,7 @@ More information on zlib is available from http://www.zlib.net.
 
 * external/gcc/fastjar
 
-This code has been merged in from gcc. Kaffe tracks this projects's
-SVN HEAD.
+This code has been merged in from gcc 4.1.0.
 
 fastjar is distributed under the GNU General Public License Version 2.
 

@@ -129,7 +129,7 @@
 .\" ========================================================================
 .\"
 .IX Title "FASTJAR 1"
-.TH FASTJAR 1 "2005-09-28" "gcc-4.0.2" "GNU"
+.TH FASTJAR 1 "2006-02-28" "gcc-4.1.0" "GNU"
 .SH "NAME"
 fastjar \- archive tool for Java archives
 .SH "SYNOPSIS"
@@ -178,6 +178,10 @@ in the \s-1GCC\s0 version.
 .IP "\fB\-M\fR" 4
 .IX Item "-M"
 Do not create a manifest file for the entries.
+.IP "\fB\-i\fR" 4
+.IX Item "-i"
+Generate an index of the packages in this jar and its Class-Path
+(currently a no-op for jar command-line compatibility).
 .IP "\fB\-0\fR" 4
 .IX Item "-0"
 Store only; use no \s-1ZIP\s0 compression.
