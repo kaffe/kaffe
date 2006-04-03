@@ -217,10 +217,10 @@ Java_gnu_java_awt_peer_gtk_GdkFontPeer_getGlyphVector
     }
 
   (*env)->ReleaseStringUTFChars (env, chars, str);
-  
+
   for (i = g_list_first (items); i != NULL; i = g_list_next (i))
-    g_free (i->data);
-  
+    pango_item_free(i->data);
+
   g_list_free (items);
 
   gdk_threads_leave ();

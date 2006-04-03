@@ -276,6 +276,7 @@ public class WrappedPlainView extends BoxView implements TabExpander
   {
     Container c = getContainer();
     Rectangle alloc = new Rectangle(0, 0, getWidth(), getHeight());
+    
     updateMetrics();
     
     try
@@ -340,8 +341,8 @@ public class WrappedPlainView extends BoxView implements TabExpander
   public void insertUpdate (DocumentEvent e, Shape a, ViewFactory f)
   {
     super.insertUpdate(e, a, viewFactory);
-    // FIXME: could improve performance by repainting only the necessary area
-    getContainer().repaint();
+
+    // No repaint needed, as this is done by the WrappedLine instances.
   }
   
   /**
@@ -351,8 +352,8 @@ public class WrappedPlainView extends BoxView implements TabExpander
   public void removeUpdate (DocumentEvent e, Shape a, ViewFactory f)
   {
     super.removeUpdate(e, a, viewFactory);
-    // FIXME: could improve performance by repainting only the necessary area
-    getContainer().repaint();
+    
+    // No repaint needed, as this is done by the WrappedLine instances.
   }
   
   /**
@@ -363,8 +364,8 @@ public class WrappedPlainView extends BoxView implements TabExpander
   public void changedUpdate (DocumentEvent e, Shape a, ViewFactory f)
   {
     super.changedUpdate(e, a, viewFactory);
-    // FIXME: could improve performance by repainting only the necessary area
-    getContainer().repaint();
+    
+    // No repaint needed, as this is done by the WrappedLine instances.
   }
     
   class WrappedLineCreator implements ViewFactory
@@ -450,16 +451,16 @@ public class WrappedPlainView extends BoxView implements TabExpander
     }
     
     /**
-     * Determines the number of logical lines that the Element
-     * needs to be displayed
-     * @return the number of lines needed to display the Element
+     * Calculates the number of logical lines that the Element
+     * needs to be displayed and updates the variable numLines
+     * accordingly.
      */
-    int determineNumLines()
+    void determineNumLines()
     {      
       numLines = 0;
       int end = getEndOffset();
       if (end == 0)
-        return 0;
+        return;
             
       int breakPoint;
       for (int i = getStartOffset(); i < end;)
@@ -468,12 +469,14 @@ public class WrappedPlainView extends BoxView implements TabExpander
           // careful: check that there's no off-by-one problem here
           // depending on which position calculateBreakPosition returns
           breakPoint = calculateBreakPosition(i, end);
+          
+          // If breakPoint is equal to the current index no further
+          // line is needed and we can end the loop.
           if (breakPoint == i)
-            i ++;
+            break;
           else
             i = breakPoint;
         }
-      return numLines;
     }
     
     /**
@@ -629,12 +632,11 @@ public class WrappedPlainView extends BoxView implements TabExpander
      */
     void updateDamage (Rectangle a)
     {
-      int newNumLines = determineNumLines();
-      if (numLines != newNumLines)
-        {
-          numLines = newNumLines;
-          getContainer().repaint();
-        }
+      int oldNumLines = numLines;
+      determineNumLines();
+      
+      if (numLines != oldNumLines)
+        preferenceChanged(this, false, true);
       else
         getContainer().repaint(a.x, a.y, a.width, a.height);
     }
@@ -649,11 +651,6 @@ public class WrappedPlainView extends BoxView implements TabExpander
      */
     public void insertUpdate (DocumentEvent changes, Shape a, ViewFactory f)
     {
-      int oldNumLines = numLines;
-      determineNumLines();
-      if (oldNumLines != numLines)
-        getParent().preferenceChanged(this, false, true);
-      
       updateDamage((Rectangle)a); 
     }
     
@@ -667,10 +664,14 @@ public class WrappedPlainView extends BoxView implements TabExpander
      */
     public void removeUpdate (DocumentEvent changes, Shape a, ViewFactory f)
     {
-      int oldNumLines = numLines;
-      determineNumLines();
-      if (oldNumLines != numLines)
-        getParent().preferenceChanged(this, false, true);
+      // Note: This method is not called when characters from the
+      // end of the document are removed. The reason for this
+      // can be found in the implementation of View.forwardUpdate:
+      // The document event will denote offsets which do not exist
+      // any more, getViewIndex() will therefore return -1 and this
+      // makes View.forwardUpdate() skip this method call.
+      // However this seems to cause no trouble and as it reduces the
+      // number of method calls it can stay this way.
       
       updateDamage((Rectangle)a); 
     }

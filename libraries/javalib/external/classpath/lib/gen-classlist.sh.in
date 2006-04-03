@@ -72,8 +72,8 @@ done
 
 # FIXME: could be more efficient by constructing a series of greps.
 for filexp in `cat tmp.omit`; do
-   grep -v ${filexp} < ${top_builddir}/lib/classes.1 > ${top_builddir}/lib/classes.2
-   mv ${top_builddir}/lib/classes.2 ${top_builddir}/lib/classes.1
+   grep -v ${filexp} < ${top_builddir}/lib/classes.1 > ${top_builddir}/lib/classes.tmp
+   mv ${top_builddir}/lib/classes.tmp ${top_builddir}/lib/classes.1
 done
 
 

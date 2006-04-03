@@ -28,8 +28,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.cert.CRLException;
-import java.security.cert.CertificateEncodingException;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -52,7 +50,7 @@ public class JarSigner
     this.main = main;
   }
 
-  void start() throws IOException, CertificateEncodingException, CRLException
+  void start() throws Exception
   {
     log.entering("JarSigner", "start");
 

@@ -1,5 +1,5 @@
 /* Logger.java -- a class for logging messages
-   Copyright (C) 2002, 2004 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2006 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -67,6 +67,9 @@ import java.util.ResourceBundle;
  */
 public class Logger
 {
+
+  static final Logger root = new Logger("", null);
+
   /**
    * A logger provided to applications that make only occasional use
    * of the logging framework, typically early prototypes.  Serious
@@ -175,7 +178,7 @@ public class Logger
     /* This is null when the root logger is being constructed,
      * and the root logger afterwards.
      */
-    parent = LogManager.getLogManager().rootLogger;
+    parent = root;
 
     useParentHandlers = (parent != null);
   }
@@ -1148,16 +1151,12 @@ public class Logger
    */
   public synchronized void setParent(Logger parent)
   {
-    LogManager lm;
-
     /* Throw a new NullPointerException if parent is null. */
     parent.getClass();
 
-    lm = LogManager.getLogManager();
-
-    if (this == lm.rootLogger)
+    if (this == root)
         throw new IllegalArgumentException(
-          "only the root logger can have a null parent");
+          "the root logger can only have a null parent");
 
     /* An application is allowed to control an anonymous logger
      * without having the permission to control the logging

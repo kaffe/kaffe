@@ -75,7 +75,7 @@ public class JarVerifier
     this.main = main;
   }
 
-  void start() throws IOException, CRLException, CertificateException
+  void start() throws Exception
   {
     log.entering("JarVerifier", "start");
 

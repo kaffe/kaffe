@@ -172,15 +172,12 @@ public class GtkClipboard extends Clipboard
 	      || flavor.isRepresentationClassReader())
 	    text = true;
 
-	// XXX - We only support automatic image conversion for
-	// GtkImages at the moment. So explicitly check that we have
-	// one.
 	if (! images && flavors[i].equals(DataFlavor.imageFlavor))
 	  {
 	    try
 	      {
 		Object o = contents.getTransferData(DataFlavor.imageFlavor);
-		if (o instanceof GtkImage)
+		if (o instanceof Image)
 		  images = true;
 	      }
 	    catch (UnsupportedFlavorException ufe)
@@ -291,7 +288,11 @@ public class GtkClipboard extends Clipboard
 
     try
       {
-	return (GtkImage) contents.getTransferData(DataFlavor.imageFlavor);
+	Object o = contents.getTransferData(DataFlavor.imageFlavor);
+	if( o instanceof GtkImage )
+	  return (GtkImage) o;
+	else
+	  return new GtkImage(((Image)o).getSource());
       }
     catch (UnsupportedFlavorException ufe)
       {

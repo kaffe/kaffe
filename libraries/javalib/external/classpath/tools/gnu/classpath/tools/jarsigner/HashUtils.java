@@ -21,15 +21,15 @@ Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 
 package gnu.classpath.tools.jarsigner;
 
+import gnu.java.security.hash.Sha160;
+import gnu.java.security.util.Base64;
+import gnu.java.util.jar.JarUtils;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Logger;
-
-import gnu.java.security.hash.Sha160;
-import gnu.java.security.util.Base64;
-import gnu.java.util.jar.JarUtils;
 
 /**
  * Collection of utility methods used in JAR file signing and verification.

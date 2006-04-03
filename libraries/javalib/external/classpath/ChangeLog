@@ -1,3 +1,122 @@
+2006-04-03  Tom Tromey  <tromey@redhat.com>
+
+	* javax/security/auth/kerberos/ServicePermission.java: New file.
+	* javax/security/auth/kerberos/DelegationPermission.java: New file.
+	* javax/security/auth/kerberos/KerberosKey.java: New file.
+	* javax/security/auth/kerberos/KeyImpl.java: New file.
+	* javax/security/auth/kerberos/KerberosTicket.java: New file.
+	* javax/security/auth/kerberos/KerberosPrincipal.java: New file.
+
+2006-04-03  Sven de Marothy  <sven@physto.se>
+
+	* gnu/java/awt/peer/gtk/GtkClipboard.java: Add support for
+	non-GtkImage images.
+
+2006-04-03  Mark Wielaard  <mark@klomp.org>
+
+	* lib/gen-classlist.sh.in: Use classes.tmp, not classes.2
+	as temporary file name.
+
+2006-04-03  Dalibor Topic  <robilad@kaffe.org>
+
+	* INSTALL: Documented --with-glibj-zip option.
+
+2006-04-03  Dalibor Topic  <robilad@kaffe.org>
+
+	Fixed all pscan warnings.
+
+	* native/jni/classpath/jcl.c (JCL_ThrowException),
+	native/jni/classpath/jcl.h (DBG),
+	native/target/generic/target_generic.h (TARGET_NATIVE_LAST_ERROR_STRING_FORMAT),
+	native/target/generic/target_generic_misc.h (TARGET_NATIVE_MISC_FORMAT_STRING0):
+	Use "%s" format in fprintf and snprintf explicitely when printing a single 
+	string to prevent format string exploits.
+	
+	* native/jni/java-net/javanet.h (DBG): Removed duplicate
+	definition. Included jcl.h instead.
+ 
+2006-04-03  Raif S. Naffah  <raif@swiftdsl.com.au>
+
+	* tools/gnu/classpath/tools/jarsigner/Main.java: Removed unused imports.
+	(provider): Made it protected.
+	(providerInstalled): New field.
+	(Main): Made it a 0-arguments constructor.
+	Removed throws clasue.
+	(main): Removed throws clause.
+	Call processArgs(args) after constructing instance.
+	Call teardown() before existing.
+	(processArgs): Added javadoc.
+	Reduced to throws Exception.
+	(start): Likewise.
+	(teardown): New method.
+	(setupCommonParams): Added javadoc.
+	Install designated provider if not already installed.
+	(installNewProvider): New method.
+	(setupSigningParams): Added javadoc.
+	Instantiate the KeyStore using type only.
+	* tools/gnu/classpath/tools/jarsigner/JarSigner.java:
+	Removed unused imports.
+	(start): Reduced to throws Exception.
+	* tools/gnu/classpath/tools/jarsigner/JarVerifier.java (start): Likewise.
+	* tools/gnu/classpath/tools/jarsigner/HashUtils.java:
+	Re-organized imports.
+	* gnu/java/security/key/KeyPairGeneratorFactory.java (getInstance):
+	Test ignoring case.
+	(getNames): Add "dsa" as an algorithm provided by this Factory.
+	(makeInstance): Construct IllegalArgumentException with 2 arguments.
+
+2006-04-03  Roman Kennke  <kennke@aicas.com>
+
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkFontPeer.c
+	(Java_gnu_java_awt_peer_gtk_GdkFontPeer_getGlyphVector):
+	Replaced g_free() with pango_item_free() to avoid problems
+	with the allocator.
+
+2006-04-03  Rafael H. Schloming  <rafaels@redhat.com>
+
+	Fixes bug #26668
+	* java/util/logging/Level.java (parse): Document.
+	* java/util/logging/LogManager.java (rootLogger): Removed.
+	(LogManager): Just set loggers to new HashMap.
+	(getLogManager): Make synchronized. Create and init LogManager if it
+	doesn't exist yet.
+	(static): Removed block.
+	(MANAGER_PROPERTY): New private final string.
+	(makeLogManager): Use new property string, move warning to
+	createInstance() method.
+	(CONFIG_PROPERTY): New private final string.
+	(initLogManager): New method.
+	(addLogger): Use Logger.root, not rootLogger.
+	(findAncestor): Likewise.
+	(readConfiguration): Move warning to createInstance() method.
+	Add handlers directly to Logger.root. Warn about bad level values.
+	(getClassProperty): Use new locateClass() method.
+	(getInstanceProperty): Only catch specific newInstance Errors.
+	(createInstance): Make private and takes a string to use in warning
+	messages. Use new locateClass() method and generate appropriate
+	warning message.
+	(warn): New methods.
+	(locateClass): Locates a class through the context class loader and
+	system class loader as backup.
+	* java/util/logging/Logger.java (root): New static final field.
+	(Logger): Set parent to root.
+	(setParent): Directly check root field.
+
+2006-04-02  Robert Schuster  <robertschuster@fsfe.org>
+
+	* javax/swing/text/Segment.java:
+	(setPosition): Make exception message more verbose.
+	* javax/swing/text/WrappedPlainView.java:
+	(insertUpdate): Removed unneeded repaint call.
+	(changeUpdate): Dito.
+	(removeUpdate): Dito.
+	(WrappedLine.determineNumLines): Do not return numLines, break
+	from loop if no new break point has been calculated.
+	(WrappedLine.updateDamage): Rewritten.
+	(WrappedLine.insertUpdate): Removed unneeded update code.
+	(WrappedLine.removeUpdate): Removed unneeded update code, added
+	comment.	
+
 2006-04-02  Dalibor Topic  <robilad@kaffe.org>
 
 	* configure.ac (with-glibj-zip): Added new option.
@@ -9,7 +128,7 @@
 
 2006-04-02  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
 
-	tools/gnu/classpath/tools/giop/GRMIC.java,
+	* tools/gnu/classpath/tools/giop/GRMIC.java,
 	tools/gnu/classpath/tools/giop/IorParser.java,
 	tools/gnu/classpath/tools/giop/grmic/CompilationError.java,
 	tools/gnu/classpath/tools/giop/grmic/Generator.java,

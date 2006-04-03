@@ -245,7 +245,8 @@ public class Segment implements Cloneable, CharacterIterator
 	|| position > getEndIndex())
       throw new IllegalArgumentException("position: " + position
                                          + ", beginIndex: " + getBeginIndex()
-                                         + ", endIndex: " + getEndIndex());
+                                         + ", endIndex: " + getEndIndex()
+                                         + ", text: " + toString());
 
     current = position;
 

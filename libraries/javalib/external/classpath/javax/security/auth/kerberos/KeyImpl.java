@@ -1,5 +1,5 @@
-/* jcl.h
-   Copyright (C) 1998 Free Software Foundation, Inc.
+/* KeyImpl.java -- kerberos key implementation
+   Copyright (C) 2006 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -7,7 +7,7 @@ GNU Classpath is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
 any later version.
- 
+
 GNU Classpath is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -35,45 +35,59 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
-#ifndef __JCL_H__
-#define __JCL_H__
 
-#include <stddef.h>
-#include <jni.h>
-#include <config.h>
+package javax.security.auth.kerberos;
 
-#if SIZEOF_VOID_P == 4
-typedef jint jpointer;
-#elif SIZEOF_VOID_P == 8
-typedef jlong jpointer;
-#else
-#error "Unknown pointer size"
-#endif
+import java.io.Serializable;
 
-JNIEXPORT jclass JNICALL JCL_FindClass (JNIEnv * env, const char *className);
-JNIEXPORT void JNICALL JCL_ThrowException (JNIEnv * env,
-					   const char *className,
-					   const char *errMsg);
-JNIEXPORT void *JNICALL JCL_malloc (JNIEnv * env, size_t size);
-JNIEXPORT void *JNICALL JCL_realloc (JNIEnv * env, void *ptr, size_t size);
-JNIEXPORT void JNICALL JCL_free (JNIEnv * env, void *p);
-JNIEXPORT const char *JNICALL JCL_jstring_to_cstring (JNIEnv * env,
-						      jstring s);
-JNIEXPORT void JNICALL JCL_free_cstring (JNIEnv * env, jstring s,
-					 const char *cstr);
-JNIEXPORT jint JNICALL JCL_MonitorEnter (JNIEnv * env, jobject o);
-JNIEXPORT jint JNICALL JCL_MonitorExit (JNIEnv * env, jobject o);
+import javax.crypto.SecretKey;
 
-JNIEXPORT jobject JNICALL JCL_NewRawDataObject (JNIEnv * env, void *data);
-JNIEXPORT void * JNICALL JCL_GetRawData (JNIEnv * env, jobject rawdata);
+/**
+ * Note that the name of this class is fixed by the serialization
+ * spec, even though the class itself is not public.
+ */
+final class KeyImpl implements Serializable, SecretKey
+{
+  // Enable this when serialization works.
+  // private static final long serialVersionUID = -7889313790214321193L;
 
-#define JCL_RETHROW_EXCEPTION(env) if((*(env))->ExceptionOccurred((env)) != NULL) return NULL;
+  public String algorithm;
+  public int type;
+  public byte[] key;
 
-/* Simple debug macro */
-#ifdef DEBUG
-#define DBG(x) fprintf(stderr, "%s", (x));
-#else
-#define DBG(x)
-#endif
+  public KeyImpl(byte[] key, int type)
+  {
+    // From kerberos spec.
+    if (type == 0)
+      this.algorithm = null;
+    else if (type == 1)
+      this.algorithm = "DES";
+    else
+      this.algorithm = "FIXME";
+    this.type = type;
+    this.key = (byte[]) key.clone();
+  }
 
-#endif
+  public KeyImpl(char[] passwd, String algo)
+  {
+    this.algorithm = (algo == null) ? "DES" : algo;
+    this.type = 0; // FIXME
+    this.key = null; // double FIXME
+  }
+
+  public String getAlgorithm()
+  {
+    return algorithm;
+  }
+
+  public byte[] getEncoded()
+  {
+    return key;
+  }
+
+  public String getFormat()
+  {
+    // FIXME.
+    return null;
+  }
+}
