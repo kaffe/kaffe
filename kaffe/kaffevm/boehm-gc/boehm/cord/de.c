@@ -61,12 +61,12 @@
 #	define standend() cinverse(0, stdout)
 #	define move(line,col) cgotoxy(col + 1, line + 1, stdout)
 #	define clrtoeol() ccleol(stdout)
-#	define de_error(s) { fprintf(stderr, s); getchar(); }
+#	define de_error(s) { fprintf(stderr, "%s", s); getchar(); }
 #	define LINES 25
 #	define COLS 80
 #else
 #  include <curses.h>
-#  define de_error(s) { fprintf(stderr, s); sleep(2); }
+#  define de_error(s) { fprintf(stderr, "%s", s); sleep(2); }
 #endif
 #include "de_cmds.h"
 

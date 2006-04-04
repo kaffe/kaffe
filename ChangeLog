@@ -1,5 +1,12 @@
 2006-04-03  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/boehm-gc/boehm/cord/de.c,
+	libraries/clib/target/generic/target_generic.h,
+	libraries/clib/target/generic/target_generic_misc.h:
+	Fixed remaining pscan warnings.
+
+2006-04-03  Dalibor Topic  <robilad@kaffe.org>
+
 	* THIRDPARTY: Updated fastjar to gcc 4.1.0.
 
 	* external/gcc/fastjar: Updated to 4.1.0.
