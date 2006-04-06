@@ -34,322 +34,12 @@
 #include "gc.h"
 
 static void mergeFrame(codeinfo*, int, int, frameElement*, Method*);
-static bool analyzeBasicBlock(codeinfo*, Method*, int32, errorInfo*);
 static void updateLocals(codeinfo*, int32, frameElement*);
 static bool analyzeCatchClause(jexceptionEntry*, Hjava_lang_Class*, errorInfo*);
 
-bool
-analyzeMethod(Method* meth, codeinfo **pcodeinfo, errorInfo *einfo)
-{
-	int32 pc;
-	int32 tabpc;
-	int32 idx;
-	int32 sp;
-	int32 lcl;
-	int count;
-	perPCInfo* bhead;
-	perPCInfo* btail;
-	perPCInfo* bcurr;
-	bool rerun;
-	bool failed;
-	bool wide;
-	codeinfo *codeInfo;
-	localUse* localuse;
-
-DBG(CODEANALYSE,
-	dprintf("%s %p: %s.%s\n", __FUNCTION__, THREAD_NATIVE(), 
-		meth->class->name->data, meth->name->data);
-    );
-
-	if( meth->c.bcode.code == 0 )
-	{
-		postExceptionMessage(einfo, JAVA_LANG(VerifyError),
-				     "No code attribute for %s.%s.",
-				     meth->class->name->data,
-				     meth->name->data);
-		return false;
-	}
-
-	codeInfo = gc_malloc(sizeof(codeinfo) + meth->c.bcode.codelen*sizeof(perPCInfo),
-			     KGC_ALLOC_CODEANALYSE);
-	*pcodeinfo = codeInfo;
-	if (!codeInfo) {
-		postOutOfMemory(einfo);
-		return false;
-	}
-	/* Allocate space for local register info - we add in an extra one
-	 * to avoid mallocing 0 bytes.
-	 */
-	localuse = gc_malloc(sizeof(localUse) * (meth->localsz+1), KGC_ALLOC_CODEANALYSE);
-	if (!localuse) {
-		KFREE(codeInfo);
-		postOutOfMemory(einfo);
-		return false;
-	}
-	codeInfo->localuse = localuse;
-
-	/* We don't need to do this twice */
-	meth->kFlags |= KFLAG_VERIFIED;
-
-	for (lcl = 0; lcl < meth->localsz; lcl++) {
-		localuse = codeInfo->localuse;
-		localuse[lcl].use = 0;
-		localuse[lcl].first = 0x7FFFFFFF;
-		localuse[lcl].last = -1;
-		localuse[lcl].write = -1;
-		localuse[lcl].type = NULL;
-	}
-
-DBG(CODEANALYSE,
-	dprintf("%s %p: codeInfo = %p\n", __FUNCTION__, THREAD_NATIVE(), codeInfo);	
-    );
-
-	/* Allocate code info. block */
-	codeInfo->localsz = meth->localsz;
-	codeInfo->stacksz = meth->stacksz;
-	codeInfo->codelen = meth->c.bcode.codelen;
-
-	/* First basic block becomes head of block chain */
-	SET_NEEDVERIFY(0);
-	bhead = &codeInfo->perPC[0];
-	btail = bhead;
-
-	/* Scan the code and mark the beginning of basic blocks */
-	wide = false;
-	for (pc = 0; pc < codeInfo->codelen;) {
-		SET_STARTOFINSTRUCTION(pc);
-		/* set native pc to -1 so that we can recognize whether
-		 * a corresponding native PC will be generated.
-		 */
-		SET_INSNPC(pc, -1);
-		switch (INSN(pc)) {
-		case IFEQ:	case IFNE:	case IFLT:
-		case IFGE:	case IFGT:	case IFLE:
-		case IF_ICMPEQ: case IF_ICMPNE:
-		case IF_ICMPLT: case IF_ICMPGE:
-		case IF_ICMPGT: case IF_ICMPLE:
-		case IF_ACMPEQ: case IF_ACMPNE:
-		case IFNULL:	case IFNONNULL:
-			tabpc = pc + WORD(pc+1);
-			SET_STARTOFBASICBLOCK(tabpc);
-			SET_JUMPFLOW(pc, tabpc);
-			pc = pc + INSNLEN(pc);
-			SET_STARTOFBASICBLOCK(pc);
-			SET_NORMALFLOW(pc);
-			break;
-		case GOTO:
-			tabpc = pc + WORD(pc+1);
-			SET_STARTOFBASICBLOCK(tabpc);
-			SET_JUMPFLOW(pc, tabpc);
-			pc = pc + INSNLEN(pc);
-			if (pc < codeInfo->codelen) {
-				SET_STARTOFBASICBLOCK(pc);
-			}
-			break;
-		case GOTO_W:
-			tabpc = pc + DWORD(pc+1);
-			SET_STARTOFBASICBLOCK(tabpc);
-			SET_JUMPFLOW(pc, tabpc);
-			pc = pc + INSNLEN(pc);
-			if (pc < codeInfo->codelen) {
-				SET_STARTOFBASICBLOCK(pc);
-			}
-			break;
-		case JSR:
-			tabpc = pc + WORD(pc+1);
-			SET_STARTOFBASICBLOCK(tabpc);
-			SET_JUMPFLOW(pc, tabpc);
-			pc = pc + INSNLEN(pc);
-			SET_STARTOFBASICBLOCK(pc);
-			SET_NORMALFLOW(pc);
-			break;
-		case JSR_W:
-			tabpc = pc + DWORD(pc+1);
-			SET_STARTOFBASICBLOCK(tabpc);
-			SET_JUMPFLOW(pc, tabpc);
-			pc = pc + INSNLEN(pc);
-			SET_STARTOFBASICBLOCK(pc);
-			SET_NORMALFLOW(pc);
-			break;
-		case TABLESWITCH:
-			tabpc = (pc + 4) & -4;
-			idx = DWORD(tabpc+8)-DWORD(tabpc+4)+1;
-			for (; idx > 0; idx--) {
-				SET_STARTOFBASICBLOCK(pc+DWORD(tabpc+idx*4+8));
-				SET_JUMPFLOW(pc, pc+DWORD(tabpc+idx*4+8));
-			}
-			SET_STARTOFBASICBLOCK(pc+DWORD(tabpc));
-			SET_JUMPFLOW(pc, pc+DWORD(tabpc));
-			pc = tabpc + (DWORD(tabpc+8)-DWORD(tabpc+4)+1+3) * 4;
-			if (pc < codeInfo->codelen) {
-				SET_STARTOFBASICBLOCK(pc);
-			}
-			break;
-		case LOOKUPSWITCH:
-			tabpc = (pc + 4) & -4;
-			idx = DWORD(tabpc+4);
-			for (; idx > 0; idx--) {
-				SET_STARTOFBASICBLOCK(pc+DWORD(tabpc+idx*8+4));
-				SET_JUMPFLOW(pc, pc+DWORD(tabpc+idx*8+4));
-			}
-			SET_STARTOFBASICBLOCK(pc+DWORD(tabpc));
-			SET_JUMPFLOW(pc, pc+DWORD(tabpc));
-			pc = tabpc + (DWORD(tabpc+4)+1) * 8;
-			if (pc < codeInfo->codelen) {
-				SET_STARTOFBASICBLOCK(pc);
-			}
-			break;
-		case IRETURN:	case LRETURN:	case ARETURN:
-		case FRETURN:	case DRETURN:	case RETURN:
-		case ATHROW:	case RET:
-			pc = pc + INSNLEN(pc);
-			if (pc < codeInfo->codelen) {
-				SET_STARTOFBASICBLOCK(pc);
-			}
-			break;
-		case WIDE:
-			wide = true;
-			pc = pc + INSNLEN(pc);
-			SET_NORMALFLOW(pc);
-			break;
-		case ILOAD:	case LLOAD:	case FLOAD:
-		case DLOAD:	case ALOAD:
-		case ISTORE:	case LSTORE:	case FSTORE:
-		case DSTORE:	case ASTORE:
-			pc = pc + INSNLEN(pc);
-			if (wide == true) {
-				wide = false;
-				pc += 1;
-			}
-			SET_NORMALFLOW(pc);
-			break;
-		case IINC:
-			pc = pc + INSNLEN(pc);
-			if (wide == true) {
-				wide = false;
-				pc += 2;
-			}
-			SET_NORMALFLOW(pc);
-			break;
-		default:
-			/* The default */
-			pc = pc + INSNLEN(pc);
-			SET_NORMALFLOW(pc);
-			break;
-		}
-	}
-
-	/* Setup exception info. */
-	sp = meth->localsz + meth->stacksz - 1;
-	if (meth->exception_table != 0) {
-		for (lcl = 0; lcl < (int32)meth->exception_table->length; lcl++) {
-			bool succ;
-			jexceptionEntry *entry;
-			
-			entry = &(meth->exception_table->entry[lcl]);
-			
-			/* Verify catch clause exception has valid type. */
-			succ = analyzeCatchClause(entry, meth->class, einfo);
-			if (succ == false) {
-				return false;
-			}
-
-			pc = entry->handler_pc;
-			ATTACH_NEW_BASICBLOCK(pc);
-			SET_STARTOFEXCEPTION(pc);
-			SET_STACKPOINTER(pc, sp);
-			SET_NEWFRAME(pc);
-			STACKINIT(0, TOBJ);
-		}
-	}
-
-	/* Mark the various starting states.  These include the main
-	 * entry point plus all the exception entry points, their arguments
-	 * and stack values.
-	 */
-	pc = 0;
-	SET_STACKPOINTER(pc, meth->localsz + meth->stacksz);
-	SET_NEWFRAME(pc);
-
-	/* Parse the method signature to setup the inital locals
-	 */
-	idx = 0;
-	if ((meth->accflags & ACC_STATIC) == 0) {
-		LOCALINIT(0, TOBJ);
-		idx++;
-	}
-
-	for (count = 0; count < METHOD_NARGS(meth); ++count) {
-		switch (*METHOD_ARG_TYPE(meth, count)) {
-		case 'L':
-		case '[':
-			LOCALINIT(idx, TOBJ);
-			idx += 1;
-			break;
-		case 'I':
-		case 'Z':
-		case 'S':
-		case 'B':
-		case 'C':
-			LOCALINIT(idx, TINT);
-			idx += 1;
-			break;
-		case 'J':
-			LOCALINIT(idx, TLONG);
-			LOCALINIT(idx+1, TVOID);
-			idx += 2;
-			break;
-		case 'F':
-			LOCALINIT(idx, TFLOAT);
-			idx += 1;
-			break;
-		case 'D':
-			LOCALINIT(idx, TDOUBLE);
-			LOCALINIT(idx+1, TVOID);
-			idx += 2;
-			break;
-		default:
-			assert("Signature character unknown" == 0);
-		}
-	}
-
-	/* Scan out list of basic blocks.  Unfortunately they're not in
-	 * precise order so we have to do this until they're all done.
-	 */
-	do {
-		rerun = false;
-		for (bcurr = bhead; bcurr != NULL; bcurr = bcurr->nextBB) {
-			pc = bcurr - codeInfo->perPC;
-			if (IS_NEEDVERIFY(pc)) {
-				failed = analyzeBasicBlock(codeInfo, meth, 
-							    pc, einfo);
-
-				if (failed) {
-					tidyAnalyzeMethod(pcodeinfo);
-					return (false);
-				}
-				rerun = true;
-			}
-		}
-	} while (rerun == true);
-
-	/* Check we've processed each block at least once */
-	/* Note that it is perfectly legal for code to contain unreachable
-	 * basic blocks;  There's no need to complain.
-	 */
-#if VDBG(1) - 1 == 0
-	for (bcurr = bhead; bcurr != NULL; bcurr = bcurr->nextBB) {
-		if ((bcurr->flags & FLAG_DONEVERIFY) == 0) {
-			VDBG(dprintf("%s.%s%s pc %d bcurr->flags 0x%04x\n", meth->class->name->data, meth->name->data, METHOD_SIGD(meth), bcurr - codeInfo->perPC, bcurr->flags);)
-		}
-	}
-#endif
-	return (true);
-}
-
 static
 bool
-analyzeBasicBlock(codeinfo* codeInfo, Method* meth, int32 pc, errorInfo *einfo)
+analyzeBasicBlock(codeinfo* codeInfo, Method* meth, uint32 pc, errorInfo *einfo)
 {
 	int32 tabpc;
 	int32 idx;
@@ -409,7 +99,8 @@ analyzeBasicBlock(codeinfo* codeInfo, Method* meth, int32 pc, errorInfo *einfo)
 		 */
 		if (meth->exception_table != 0) {
 			for (idx = 0; idx < (int32)meth->exception_table->length; idx++) {
-				if (pc >= (int32)meth->exception_table->entry[idx].start_pc && pc < (int32)meth->exception_table->entry[idx].end_pc) {
+				if (pc >= meth->exception_table->entry[idx].start_pc 
+				    && pc < meth->exception_table->entry[idx].end_pc) {
 					FRAMEMERGE_LOCALS((int32)(meth->exception_table->entry[idx].handler_pc));
 				}
 			}
@@ -1998,6 +1689,315 @@ done:
 done_fail:
 	failed = true;
 	goto done;
+}
+
+bool
+analyzeMethod(Method* meth, codeinfo **pcodeinfo, errorInfo *einfo)
+{
+	uint32 pc;
+	int32 tabpc;
+	int32 idx;
+	int32 sp;
+	int32 lcl;
+	int count;
+	perPCInfo* bhead;
+	perPCInfo* btail;
+	perPCInfo* bcurr;
+	bool rerun;
+	bool failed;
+	bool wide;
+	codeinfo *codeInfo;
+	localUse* localuse;
+
+DBG(CODEANALYSE,
+	dprintf("%s %p: %s.%s\n", __FUNCTION__, THREAD_NATIVE(), 
+		meth->class->name->data, meth->name->data);
+    );
+
+	if( meth->c.bcode.code == 0 )
+	{
+		postExceptionMessage(einfo, JAVA_LANG(VerifyError),
+				     "No code attribute for %s.%s.",
+				     meth->class->name->data,
+				     meth->name->data);
+		return false;
+	}
+
+	codeInfo = gc_malloc(sizeof(codeinfo) + meth->c.bcode.codelen*sizeof(perPCInfo),
+			     KGC_ALLOC_CODEANALYSE);
+	*pcodeinfo = codeInfo;
+	if (!codeInfo) {
+		postOutOfMemory(einfo);
+		return false;
+	}
+	/* Allocate space for local register info - we add in an extra one
+	 * to avoid mallocing 0 bytes.
+	 */
+	localuse = gc_malloc(sizeof(localUse) * (meth->localsz+1), KGC_ALLOC_CODEANALYSE);
+	if (!localuse) {
+		KFREE(codeInfo);
+		postOutOfMemory(einfo);
+		return false;
+	}
+	codeInfo->localuse = localuse;
+
+	/* We don't need to do this twice */
+	meth->kFlags |= KFLAG_VERIFIED;
+
+	for (lcl = 0; lcl < meth->localsz; lcl++) {
+		localuse = codeInfo->localuse;
+		localuse[lcl].use = 0;
+		localuse[lcl].first = 0x7FFFFFFF;
+		localuse[lcl].last = -1;
+		localuse[lcl].write = -1;
+		localuse[lcl].type = NULL;
+	}
+
+DBG(CODEANALYSE,
+	dprintf("%s %p: codeInfo = %p\n", __FUNCTION__, THREAD_NATIVE(), codeInfo);	
+    );
+
+	/* Allocate code info. block */
+	codeInfo->localsz = meth->localsz;
+	codeInfo->stacksz = meth->stacksz;
+	codeInfo->codelen = meth->c.bcode.codelen;
+
+	/* First basic block becomes head of block chain */
+	SET_NEEDVERIFY(0);
+	bhead = &codeInfo->perPC[0];
+	btail = bhead;
+
+	/* Scan the code and mark the beginning of basic blocks */
+	wide = false;
+	for (pc = 0; pc < codeInfo->codelen;) {
+		SET_STARTOFINSTRUCTION(pc);
+		/* set native pc to -1 so that we can recognize whether
+		 * a corresponding native PC will be generated.
+		 */
+		SET_INSNPC(pc, -1);
+		switch (INSN(pc)) {
+		case IFEQ:	case IFNE:	case IFLT:
+		case IFGE:	case IFGT:	case IFLE:
+		case IF_ICMPEQ: case IF_ICMPNE:
+		case IF_ICMPLT: case IF_ICMPGE:
+		case IF_ICMPGT: case IF_ICMPLE:
+		case IF_ACMPEQ: case IF_ACMPNE:
+		case IFNULL:	case IFNONNULL:
+			tabpc = pc + WORD(pc+1);
+			SET_STARTOFBASICBLOCK(tabpc);
+			SET_JUMPFLOW(pc, tabpc);
+			pc = pc + INSNLEN(pc);
+			SET_STARTOFBASICBLOCK(pc);
+			SET_NORMALFLOW(pc);
+			break;
+		case GOTO:
+			tabpc = pc + WORD(pc+1);
+			SET_STARTOFBASICBLOCK(tabpc);
+			SET_JUMPFLOW(pc, tabpc);
+			pc = pc + INSNLEN(pc);
+			if (pc < codeInfo->codelen) {
+				SET_STARTOFBASICBLOCK(pc);
+			}
+			break;
+		case GOTO_W:
+			tabpc = pc + DWORD(pc+1);
+			SET_STARTOFBASICBLOCK(tabpc);
+			SET_JUMPFLOW(pc, tabpc);
+			pc = pc + INSNLEN(pc);
+			if (pc < codeInfo->codelen) {
+				SET_STARTOFBASICBLOCK(pc);
+			}
+			break;
+		case JSR:
+			tabpc = pc + WORD(pc+1);
+			SET_STARTOFBASICBLOCK(tabpc);
+			SET_JUMPFLOW(pc, tabpc);
+			pc = pc + INSNLEN(pc);
+			SET_STARTOFBASICBLOCK(pc);
+			SET_NORMALFLOW(pc);
+			break;
+		case JSR_W:
+			tabpc = pc + DWORD(pc+1);
+			SET_STARTOFBASICBLOCK(tabpc);
+			SET_JUMPFLOW(pc, tabpc);
+			pc = pc + INSNLEN(pc);
+			SET_STARTOFBASICBLOCK(pc);
+			SET_NORMALFLOW(pc);
+			break;
+		case TABLESWITCH:
+			tabpc = (pc + 4) & -4;
+			idx = DWORD(tabpc+8)-DWORD(tabpc+4)+1;
+			for (; idx > 0; idx--) {
+				SET_STARTOFBASICBLOCK(pc+DWORD(tabpc+idx*4+8));
+				SET_JUMPFLOW(pc, pc+DWORD(tabpc+idx*4+8));
+			}
+			SET_STARTOFBASICBLOCK(pc+DWORD(tabpc));
+			SET_JUMPFLOW(pc, pc+DWORD(tabpc));
+			pc = tabpc + (DWORD(tabpc+8)-DWORD(tabpc+4)+1+3) * 4;
+			if (pc < codeInfo->codelen) {
+				SET_STARTOFBASICBLOCK(pc);
+			}
+			break;
+		case LOOKUPSWITCH:
+			tabpc = (pc + 4) & -4;
+			idx = DWORD(tabpc+4);
+			for (; idx > 0; idx--) {
+				SET_STARTOFBASICBLOCK(pc+DWORD(tabpc+idx*8+4));
+				SET_JUMPFLOW(pc, pc+DWORD(tabpc+idx*8+4));
+			}
+			SET_STARTOFBASICBLOCK(pc+DWORD(tabpc));
+			SET_JUMPFLOW(pc, pc+DWORD(tabpc));
+			pc = tabpc + (DWORD(tabpc+4)+1) * 8;
+			if (pc < codeInfo->codelen) {
+				SET_STARTOFBASICBLOCK(pc);
+			}
+			break;
+		case IRETURN:	case LRETURN:	case ARETURN:
+		case FRETURN:	case DRETURN:	case RETURN:
+		case ATHROW:	case RET:
+			pc = pc + INSNLEN(pc);
+			if (pc < codeInfo->codelen) {
+				SET_STARTOFBASICBLOCK(pc);
+			}
+			break;
+		case WIDE:
+			wide = true;
+			pc = pc + INSNLEN(pc);
+			SET_NORMALFLOW(pc);
+			break;
+		case ILOAD:	case LLOAD:	case FLOAD:
+		case DLOAD:	case ALOAD:
+		case ISTORE:	case LSTORE:	case FSTORE:
+		case DSTORE:	case ASTORE:
+			pc = pc + INSNLEN(pc);
+			if (wide == true) {
+				wide = false;
+				pc += 1;
+			}
+			SET_NORMALFLOW(pc);
+			break;
+		case IINC:
+			pc = pc + INSNLEN(pc);
+			if (wide == true) {
+				wide = false;
+				pc += 2;
+			}
+			SET_NORMALFLOW(pc);
+			break;
+		default:
+			/* The default */
+			pc = pc + INSNLEN(pc);
+			SET_NORMALFLOW(pc);
+			break;
+		}
+	}
+
+	/* Setup exception info. */
+	sp = meth->localsz + meth->stacksz - 1;
+	if (meth->exception_table != 0) {
+		for (lcl = 0; lcl < (int32)meth->exception_table->length; lcl++) {
+			bool succ;
+			jexceptionEntry *entry;
+			
+			entry = &(meth->exception_table->entry[lcl]);
+			
+			/* Verify catch clause exception has valid type. */
+			succ = analyzeCatchClause(entry, meth->class, einfo);
+			if (succ == false) {
+				return false;
+			}
+
+			pc = entry->handler_pc;
+			ATTACH_NEW_BASICBLOCK(pc);
+			SET_STARTOFEXCEPTION(pc);
+			SET_STACKPOINTER(pc, sp);
+			SET_NEWFRAME(pc);
+			STACKINIT(0, TOBJ);
+		}
+	}
+
+	/* Mark the various starting states.  These include the main
+	 * entry point plus all the exception entry points, their arguments
+	 * and stack values.
+	 */
+	pc = 0;
+	SET_STACKPOINTER(pc, meth->localsz + meth->stacksz);
+	SET_NEWFRAME(pc);
+
+	/* Parse the method signature to setup the inital locals
+	 */
+	idx = 0;
+	if ((meth->accflags & ACC_STATIC) == 0) {
+		LOCALINIT(0, TOBJ);
+		idx++;
+	}
+
+	for (count = 0; count < METHOD_NARGS(meth); ++count) {
+		switch (*METHOD_ARG_TYPE(meth, count)) {
+		case 'L':
+		case '[':
+			LOCALINIT(idx, TOBJ);
+			idx += 1;
+			break;
+		case 'I':
+		case 'Z':
+		case 'S':
+		case 'B':
+		case 'C':
+			LOCALINIT(idx, TINT);
+			idx += 1;
+			break;
+		case 'J':
+			LOCALINIT(idx, TLONG);
+			LOCALINIT(idx+1, TVOID);
+			idx += 2;
+			break;
+		case 'F':
+			LOCALINIT(idx, TFLOAT);
+			idx += 1;
+			break;
+		case 'D':
+			LOCALINIT(idx, TDOUBLE);
+			LOCALINIT(idx+1, TVOID);
+			idx += 2;
+			break;
+		default:
+			assert("Signature character unknown" == 0);
+		}
+	}
+
+	/* Scan out list of basic blocks.  Unfortunately they're not in
+	 * precise order so we have to do this until they're all done.
+	 */
+	do {
+		rerun = false;
+		for (bcurr = bhead; bcurr != NULL; bcurr = bcurr->nextBB) {
+			pc = bcurr - codeInfo->perPC;
+			if (IS_NEEDVERIFY(pc)) {
+				failed = analyzeBasicBlock(codeInfo, meth, 
+							    pc, einfo);
+
+				if (failed) {
+					tidyAnalyzeMethod(pcodeinfo);
+					return (false);
+				}
+				rerun = true;
+			}
+		}
+	} while (rerun == true);
+
+	/* Check we've processed each block at least once */
+	/* Note that it is perfectly legal for code to contain unreachable
+	 * basic blocks;  There's no need to complain.
+	 */
+#if VDBG(1) - 1 == 0
+	for (bcurr = bhead; bcurr != NULL; bcurr = bcurr->nextBB) {
+		if ((bcurr->flags & FLAG_DONEVERIFY) == 0) {
+			VDBG(dprintf("%s.%s%s pc %d bcurr->flags 0x%04x\n", meth->class->name->data, meth->name->data, METHOD_SIGD(meth), bcurr - codeInfo->perPC, bcurr->flags);)
+		}
+	}
+#endif
+	return (true);
 }
 
 /*

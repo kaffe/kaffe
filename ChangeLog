@@ -1,5 +1,19 @@
 2006-04-06  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/classMethod.h: Made 
+	methods.c.bcode.codelen an unsigned int.
+
+	* kaffe/kaffevm/code-analyse.c (analyzeBasicBlock): 
+	Removed unnecessary casts. Moved function up, so
+	that the static prototype could be removed. Changed
+	parameter pc's type to uint32.
+	(analyzeMethod): Made pc an uint32.
+
+	* kaffe/kaffevm/verifier/verify3a.c (verifyMethod3a): 
+	Throw a verifier error if code length is 0.
+
+2006-04-06  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/object.c (newArrayChecked): Added assert to check
 	that count is >= 0. Simplified a bit, and added casts to fix
 	compiler warnings.

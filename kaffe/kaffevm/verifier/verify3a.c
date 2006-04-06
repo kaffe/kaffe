@@ -136,8 +136,8 @@ verifyMethod3a(Verifier* v)
 	
 	
 	DBG(VERIFY3, dprintf("    Verifier Pass 3a: checking static constraints and finding basic blocks...\n"); );
-	if (METHOD_BYTECODE_LEN(v->method) < 0) {
-		verifyError(v, "method bytecode length is less than 0");
+	if (METHOD_BYTECODE_LEN(v->method) == 0) {
+		verifyError(v, "method bytecode length is 0");
 	}
 	
 	/* find the start of every instruction and basic block to determine legal branches

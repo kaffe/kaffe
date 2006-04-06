@@ -323,7 +323,7 @@ typedef struct _jmethodID {
 	  } ncode;
 	  struct {
 		unsigned char*	code;
-		int		codelen;
+		unsigned int	codelen;
 	  } bcode;
 	} c;
 	Hjava_lang_Class*	class;
