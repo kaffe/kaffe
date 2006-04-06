@@ -196,6 +196,7 @@ readFields(classFile* fp, Hjava_lang_Class* this, errorInfo *einfo)
 	return (true);
 }
 
+#if !defined(KAFFEH)
 static bool
 readSignatureAttribute(Hjava_lang_Class* this, u2 idx, Utf8Const **signature, errorInfo *einfo)
 {
@@ -213,6 +214,7 @@ readSignatureAttribute(Hjava_lang_Class* this, u2 idx, Utf8Const **signature, er
   *signature = WORD2UTF (pool->data[idx]);
   return true;
 }
+#endif /* !defined(KAFFEH) */
 
 /*
  * Read in attributes.
