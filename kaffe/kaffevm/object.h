@@ -30,11 +30,11 @@
 #define	OBJARRAY_DATA(ARRAY)	((Hjava_lang_Object**)&(((HArrayOfObject*)(ARRAY))->data))
 
 /*
- * These bizzare casts provide various offset into the object structure.
+ * Offsets into the object structure.
  */
-#define	OBJECT_DTABLE_OFFSET	((int)&(*(Hjava_lang_Object*)0).vtable)
-#define	ARRAY_SIZE_OFFSET	((int)&ARRAY_SIZE(0))
-#define	ARRAY_DATA_OFFSET	((int)ARRAY_DATA(0))
+#define	OBJECT_DTABLE_OFFSET	(offsetof(struct Hjava_lang_Object, vtable))
+#define	ARRAY_SIZE_OFFSET	(offsetof(struct HArrayOfObject, length))
+#define	ARRAY_DATA_OFFSET	(offsetof(struct HArrayOfObject, data))
 
 struct Hjava_lang_Class;
 struct _errorInfo;

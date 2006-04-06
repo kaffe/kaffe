@@ -11,6 +11,7 @@
 #ifndef __machine_h
 #define	__machine_h
 
+#include "object.h"
 #include "threadData.h"
 
 #define current_class()		(meth->class)

@@ -15,6 +15,9 @@
 #define	ADBG(s)
 
 #include "config.h"
+
+#include <assert.h>
+
 #include "debug.h"
 #include "config-std.h"
 #include "config-mem.h"
@@ -137,12 +140,15 @@ newArrayChecked(Hjava_lang_Class* elclass, jsize count, errorInfo *info)
 	Hjava_lang_Class* class = NULL;
 	Hjava_lang_Object* obj = NULL;
 
+	assert(count >= 0);
+
 	if ((class = lookupArray(elclass, info)) != NULL) {
 		size_t total_count;
+		const size_t MAX_MEM = KGC_MAX_MALLOC_TYPE - ARRAY_DATA_OFFSET;
 
 		if (CLASS_IS_PRIMITIVE(elclass) || elclass == PtrClass) {
 
-			if (((KGC_MAX_MALLOC_TYPE - ARRAY_DATA_OFFSET) / TYPE_SIZE(elclass)) < count)
+			if ((MAX_MEM / TYPE_SIZE(elclass)) < (size_t) count)
 			  {
 			    postOutOfMemory(info);
 			  }
@@ -155,7 +161,7 @@ newArrayChecked(Hjava_lang_Class* elclass, jsize count, errorInfo *info)
 			  }
 		}
 		else {
-			if (((KGC_MAX_MALLOC_TYPE - ARRAY_DATA_OFFSET) / PTR_TYPE_SIZE) < count)
+			if ((MAX_MEM / PTR_TYPE_SIZE) < (size_t) count)
 			  {
 			    postOutOfMemory(info);
 			  }
