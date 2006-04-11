@@ -1,3 +1,8 @@
+2006-04-12  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/xprof/mangle.c (mangleClassType): 
+	Added missing cast to ptrdiff_t to fix compiler warning.
+
 2006-04-06  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/readClass.c (readSignatureAttribute): 

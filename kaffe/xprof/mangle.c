@@ -479,7 +479,7 @@ char *mangleClassType(int prepend, void *cl, const char *name)
 			curr += len + 1;
 			quals--;
 		}
-		assert((dest - retval) <= (prepend + total_len + 1));
+		assert((dest - retval) <= (ptrdiff_t)(prepend + total_len + 1));
 	}
 	return( retval );
 }
