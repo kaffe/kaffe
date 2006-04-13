@@ -1,3 +1,8 @@
+2006-04-13  Riccardo Mottola <riccardo@kaffe.org>
+
+	* libraries/javalib/awt-implementations/kaffe/java/awt/Component.java:
+	copied over change property methods from classpath
+	
 2006-04-12  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/xprof/mangle.c (mangleClassType): 

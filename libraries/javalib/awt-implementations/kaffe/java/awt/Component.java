@@ -43,6 +43,8 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.Locale;
 import java.awt.dnd.DropTarget;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 
 import org.kaffe.awt.DoNothingPeer;
 
@@ -110,6 +112,17 @@ abstract public class Component
 	final static int IS_MOUSE_AWARE = 0x10000;
 	final static int IS_TEMP_HIDDEN = 0x20000;
 	final static int IS_SHOWING = IS_ADD_NOTIFIED | IS_PARENT_SHOWING | IS_VISIBLE;
+	
+ /**
+   * Describes all registered PropertyChangeListeners.
+   *
+   * @see #addPropertyChangeListener(PropertyChangeListener)
+   * @see #removePropertyChangeListener(PropertyChangeListener)
+   * @see #firePropertyChange(String, Object, Object)
+   * @serial the property change listeners
+   * @since 1.2
+   */
+  PropertyChangeSupport changeSupport;
 
 static class TreeLock
 {
@@ -1903,6 +1916,8 @@ public void applyComponentOrientation(ComponentOrientation orientation) {
 public void addMouseWheelListener(MouseWheelListener l) {
 }
 
+
+
 synchronized void updateLinkedGraphics () {
 	GraphicsLink li, last, next;
 
@@ -1925,6 +1940,55 @@ synchronized void updateLinkedGraphics () {
 		}
 	}
 }
+
+  /**
+   * Adds the specified property listener to this component. This is harmless
+   * if the listener is null, but if the listener has already been registered,
+   * it will now be registered twice. The property listener ignores inherited
+   * properties. Recognized properties include:<br>
+   * <ul>
+   * <li>the font (<code>"font"</code>)</li>
+   * <li>the background color (<code>"background"</code>)</li>
+   * <li>the foreground color (<code>"foreground"</code>)</li>
+   * <li>the focusability (<code>"focusable"</code>)</li>
+   * <li>the focus key traversal enabled state
+   *     (<code>"focusTraversalKeysEnabled"</code>)</li>
+   * <li>the set of forward traversal keys
+   *     (<code>"forwardFocusTraversalKeys"</code>)</li>
+   * <li>the set of backward traversal keys
+   *     (<code>"backwardFocusTraversalKeys"</code>)</li>
+   * <li>the set of up-cycle traversal keys
+   *     (<code>"upCycleFocusTraversalKeys"</code>)</li>
+   * </ul>
+   *
+   * @param listener the new listener to add
+   * @see #removePropertyChangeListener(PropertyChangeListener)
+   * @see #getPropertyChangeListeners()
+   * @see #addPropertyChangeListener(String, PropertyChangeListener)
+   * @since 1.1
+   */
+  public void addPropertyChangeListener(PropertyChangeListener listener)
+  {
+    if (changeSupport == null)
+      changeSupport = new PropertyChangeSupport(this);
+    changeSupport.addPropertyChangeListener(listener);
+  }
+
+  /**
+   * Removes the specified property listener from the component. This is
+   * harmless if the listener was not previously registered.
+   *
+   * @param listener the listener to remove
+   * @see #addPropertyChangeListener(PropertyChangeListener)
+   * @see #getPropertyChangeListeners()
+   * @see #removePropertyChangeListener(String, PropertyChangeListener)
+   * @since 1.1
+   */
+  public void removePropertyChangeListener(PropertyChangeListener listener)
+  {
+    if (changeSupport != null)
+      changeSupport.removePropertyChangeListener(listener);
+  }
 
 public void validate () {
 	// we can't validate a not-yet-addNotifyed Component
