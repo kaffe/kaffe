@@ -17,8 +17,6 @@ kaffeawt_jar_SRCS = \
 	$(java_awt_SRCS) \
 	$(java_awt_color_SRCS) \
 	$(java_awt_datatransfer_SRCS) \
-	$(java_awt_dnd_SRCS) \
-	$(java_awt_dnd_peer_SRCS) \
 	$(java_awt_event_SRCS) \
 	$(java_awt_font_SRCS) \
 	$(java_awt_geom_SRCS) \
@@ -94,10 +92,6 @@ java_awt_SRCS = \
 	java/awt/GraphicsEnvironment.java \
 	java/awt/Graphics.java \
 	java/awt/GraphicsLink.java \
-	java/awt/GridBagConstraints.java \
-	java/awt/GridBagLayoutInfo.java \
-	java/awt/GridBagLayout.java \
-	java/awt/GridLayout.java \
 	java/awt/HeadlessException.java \
 	java/awt/IllegalComponentStateException.java \
 	java/awt/ImageCapabilities.java \
@@ -185,34 +179,6 @@ java_awt_datatransfer_SRCS = \
 	java/awt/datatransfer/SystemFlavorMap.java \
 	java/awt/datatransfer/Transferable.java \
 	java/awt/datatransfer/UnsupportedFlavorException.java
-java_awt_dnd_SRCS = \
-	java/awt/dnd/Autoscroll.java \
-	java/awt/dnd/DnDConstants.java \
-	java/awt/dnd/DnDEventMulticaster.java \
-	java/awt/dnd/DragGestureEvent.java \
-	java/awt/dnd/DragGestureListener.java \
-	java/awt/dnd/DragGestureRecognizer.java \
-	java/awt/dnd/DragSourceAdapter.java \
-	java/awt/dnd/DragSourceContext.java \
-	java/awt/dnd/DragSourceDragEvent.java \
-	java/awt/dnd/DragSourceDropEvent.java \
-	java/awt/dnd/DragSourceEvent.java \
-	java/awt/dnd/DragSource.java \
-	java/awt/dnd/DragSourceListener.java \
-	java/awt/dnd/DragSourceMotionListener.java \
-	java/awt/dnd/DropTargetAdapter.java \
-	java/awt/dnd/DropTargetContext.java \
-	java/awt/dnd/DropTargetDragEvent.java \
-	java/awt/dnd/DropTargetDropEvent.java \
-	java/awt/dnd/DropTargetEvent.java \
-	java/awt/dnd/DropTarget.java \
-	java/awt/dnd/DropTargetListener.java \
-	java/awt/dnd/InvalidDnDOperationException.java \
-	java/awt/dnd/MouseDragGestureRecognizer.java
-java_awt_dnd_peer_SRCS = \
-	java/awt/dnd/peer/DragSourceContextPeer.java \
-	java/awt/dnd/peer/DropTargetContextPeer.java \
-	java/awt/dnd/peer/DropTargetPeer.java
 java_awt_event_SRCS = \
 	java/awt/event/ActionEvent.java \
 	java/awt/event/ActionListener.java \

@@ -1,3 +1,42 @@
+2006-04-13  Riccardo Mottola <riccardo@kaffe.org>
+
+	libraries/javalib/awt-implementations/kaffe/Makefile.am:
+	Removed some classes that came from GNU Classpath.
+
+	* libraries/javalib/awt-implementations/kaffe/java/awt/GridBagConstraints.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/GridBagLayout.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/GridBagLayoutInfo.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/GridLayout.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/dnd/Autoscroll.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/dnd/DnDConstants.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/dnd/DnDEventMulticaster.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/dnd/DragGestureEvent.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/dnd/DragGestureListener.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/dnd/DragGestureRecognizer.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/dnd/DragSource.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/dnd/DragSourceAdapter.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/dnd/DragSourceContext.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/dnd/DragSourceDragEvent.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/dnd/DragSourceDropEvent.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/dnd/DragSourceEvent.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/dnd/DragSourceListener.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/dnd/DragSourceMotionListener.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/dnd/DropTarget.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/dnd/DropTargetAdapter.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/dnd/DropTargetContext.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/dnd/DropTargetDragEvent.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/dnd/DropTargetDropEvent.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/dnd/DropTargetEvent.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/dnd/DropTargetListener.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/dnd/InvalidDnDOperationException.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/dnd/MouseDragGestureRecognizer.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/dnd/package.html,
+	libraries/javalib/awt-implementations/kaffe/java/awt/dnd/peer/DragSourceContextPeer.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/dnd/peer/DropTargetContextPeer.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/dnd/peer/DropTargetPeer.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/dnd/peer/package.html:
+	Removed.
+
 2006-04-14  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/jit3/icode.c,
