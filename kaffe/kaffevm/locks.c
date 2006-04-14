@@ -71,10 +71,10 @@ static timespent locksTime;
 
 #define IS_HEAVY_LOCK(ptr) ((((uintp)ptr)&1)==1)
 
-static volatile iLock *
-getHeavyLock(volatile iLock* volatile * lkp, volatile iLock *heavyLock)
+static iLock *
+getHeavyLock(iLock** lkp, iLock *heavyLock)
 {
-  volatile iLock *lk;
+  iLock *lk;
   iLock *newLock;
 
   DBG(SLOWLOCKS,
@@ -193,7 +193,7 @@ void destroyStaticLock(iStaticLock *slock)
  * so there's no need for locked instructions.
  */
 static void
-putHeavyLock(volatile iLock* lk)
+putHeavyLock(iLock* lk)
 {
   DBG(SLOWLOCKS,
       dprintf("  putHeavyLock(lk=%p, th=%p)\n", 
@@ -213,9 +213,9 @@ putHeavyLock(volatile iLock* lk)
  * If we can't lock it we suspend until we can.
  */
 static void
-slowLockMutex(volatile iLock* volatile * lkp, iLock *heavyLock)
+slowLockMutex(iLock** lkp, iLock *heavyLock)
 {
-  volatile iLock* lk;
+  iLock* lk;
   jthread_t cur = KTHREAD(current) ();
   threadData *tdata;
   int r;
@@ -274,9 +274,9 @@ DBG(SLOWLOCKS,
  * a fast thin lock.
  */
 static void
-slowUnlockMutex(volatile iLock* volatile * lkp, iLock *heavyLock)
+slowUnlockMutex(iLock** lkp, iLock *heavyLock)
 {
-  volatile iLock* lk;
+  iLock* lk;
   jthread_t tid;
   jthread_t cur = KTHREAD(current)();
 
@@ -329,7 +329,7 @@ slowUnlockMutex(volatile iLock* volatile * lkp, iLock *heavyLock)
 void
 locks_internal_slowUnlockMutexIfHeld(iLock** lkp, iLock *heavyLock)
 {
-  volatile iLock* lk;
+  iLock* lk;
   volatile void* holder;
   jthread_t cur = KTHREAD(current)();
   
@@ -350,18 +350,18 @@ locks_internal_slowUnlockMutexIfHeld(iLock** lkp, iLock *heavyLock)
     return;
 
   /* ok, it is a heavy lock and it is acquired by someone. */
-  lk = getHeavyLock((volatile iLock *volatile *)lkp, heavyLock);
+  lk = getHeavyLock(lkp, heavyLock);
   holder = lk->holder;
   putHeavyLock(lk);
   
   if (holder == cur)
-    slowUnlockMutex((volatile iLock *volatile *)lkp, heavyLock);
+    slowUnlockMutex(lkp, heavyLock);
 }
 
 jboolean
 locks_internal_waitCond(iLock** lkp, iLock *heavyLock, jlong timeout)
 {
-  volatile iLock* lk;
+  iLock* lk;
   volatile void* holder;
   jthread_t cur = KTHREAD(current)();
   volatile jthread_t *ptr;
@@ -374,7 +374,7 @@ locks_internal_waitCond(iLock** lkp, iLock *heavyLock, jlong timeout)
 	      *lkp, (long)timeout, KTHREAD(current)());
       );
   
-  lk = getHeavyLock((volatile iLock *volatile *)lkp, heavyLock);
+  lk = getHeavyLock(lkp, heavyLock);
   holder = lk->holder;
   
   /* I must be holding the damn thing */
@@ -393,12 +393,12 @@ locks_internal_waitCond(iLock** lkp, iLock *heavyLock, jlong timeout)
   lk->lockCount = 1;
 
   putHeavyLock(lk);
-  slowUnlockMutex((volatile iLock *volatile *)lkp, heavyLock);
+  slowUnlockMutex(lkp, heavyLock);
   r = KSEM(get)(&tdata->sem, timeout);
   
   /* Timeout */
   if (r == false) {
-    lk = getHeavyLock((volatile iLock *volatile *)lkp, heavyLock);
+    lk = getHeavyLock(lkp, heavyLock);
     /* Remove myself from CV or MUX queue - if I'm * not on either
      * then I should wait on myself to remove any pending signal.
      */
@@ -423,7 +423,7 @@ locks_internal_waitCond(iLock** lkp, iLock *heavyLock, jlong timeout)
     putHeavyLock(lk);
   }
   
-  slowLockMutex((volatile iLock *volatile *)lkp, heavyLock);
+  slowLockMutex(lkp, heavyLock);
   /* This is safe as no other thread touches the lockcount if it is not
    * owning the lock.
    */
@@ -435,7 +435,7 @@ locks_internal_waitCond(iLock** lkp, iLock *heavyLock, jlong timeout)
 void
 locks_internal_signalCond(iLock** lkp, iLock *heavyLock)
 {
-  volatile iLock* lk;
+  iLock* lk;
   jthread_t tid;
   
   DBG(SLOWLOCKS,
@@ -443,7 +443,7 @@ locks_internal_signalCond(iLock** lkp, iLock *heavyLock)
 	      *lkp, KTHREAD(current)());
       );
   
-  lk = getHeavyLock((volatile iLock *volatile *)lkp, heavyLock);
+  lk = getHeavyLock(lkp, heavyLock);
   
   if (lk->holder != KTHREAD(current)()) {
     putHeavyLock(lk);
@@ -466,7 +466,7 @@ locks_internal_signalCond(iLock** lkp, iLock *heavyLock)
 void
 locks_internal_broadcastCond(iLock** lkp, iLock *heavyLock)
 {
-  volatile iLock* lk;
+  iLock* lk;
   jthread_t tid;
   
   DBG(SLOWLOCKS,
@@ -474,7 +474,7 @@ locks_internal_broadcastCond(iLock** lkp, iLock *heavyLock)
 	      *lkp, KTHREAD(current)());
       );
   
-  lk = getHeavyLock((volatile iLock *volatile *)lkp, heavyLock);
+  lk = getHeavyLock(lkp, heavyLock);
 
   if (lk->holder != KTHREAD(current)()) {
     putHeavyLock(lk);
@@ -504,7 +504,7 @@ void
 locks_internal_lockMutex(iLock** lkp, iLock *heavyLock)
 {  
   if (!COMPARE_AND_EXCHANGE(lkp, LOCKFREE, (iLock *)KTHREAD(current)()))
-      slowLockMutex((volatile iLock *volatile *)lkp, heavyLock);
+      slowLockMutex(lkp, heavyLock);
 }
 
 /*
@@ -516,7 +516,7 @@ locks_internal_unlockMutex(iLock** lkp, iLock *heavyLock)
 {
   /* slowUnlockMutex should be fast enough. */
   if (!COMPARE_AND_EXCHANGE(lkp, (iLock *)KTHREAD(current)(), LOCKFREE))
-    slowUnlockMutex((volatile iLock * volatile *)lkp, heavyLock);
+    slowUnlockMutex(lkp, heavyLock);
 }
 
 void
@@ -561,7 +561,7 @@ slowLockObject(Hjava_lang_Object* obj)
 	}
     }
 #endif
-  slowLockMutex((volatile iLock * volatile *)&obj->lock, NULL);
+  slowLockMutex(&obj->lock, NULL);
 #if defined(ENABLE_JVMPI)
   if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_MONITOR_CONTENDED_ENTERED) && isContention)
     {
@@ -591,7 +591,7 @@ slowUnlockObject(Hjava_lang_Object* obj)
 	}
     }
 #endif
-  slowUnlockMutex((volatile iLock *volatile *)&obj->lock, NULL);
+  slowUnlockMutex(&obj->lock, NULL);
 }
 
 void

@@ -1,3 +1,13 @@
+2006-04-14  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/ksem.h,
+	kaffe/kaffevm/ksem.c (ksem_put, ksem_get),
+	kaffe/kaffevm/locks.c (getHeavyLock, putHeavyLock, slowLockMutex,
+	slowUnlockMutex, locks_internal_slowUnlockMutexIfHeld, 
+	locks_internal_waitCond, locks_internal_signalCond, 
+	locks_internal_broadcastCond, locks_internal_lockMutex) Removed
+	volatile qualifiers and casts to fix compiler warnings.
+	
 2006-04-13  Riccardo Mottola <riccardo@kaffe.org>
 
 	* libraries/javalib/awt-implementations/kaffe/java/awt/Component.java:

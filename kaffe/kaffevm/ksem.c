@@ -41,7 +41,7 @@ ksem_init(Ksem* sem)
  * we timed-out in wait and semaphore still wasn't available.
  */
 jboolean
-ksem_get(volatile Ksem* sem, jlong timeout)
+ksem_get(Ksem* sem, jlong timeout)
 {
 	jboolean r;
 
@@ -81,7 +81,7 @@ ksem_get(volatile Ksem* sem, jlong timeout)
  * on the cv (if any).
  */
 void
-ksem_put(volatile Ksem* sem)
+ksem_put(Ksem* sem)
 {
 	assert(sem != NULL);
 	KMUTEX(lock)(&sem->mux);
