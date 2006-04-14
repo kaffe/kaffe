@@ -408,7 +408,7 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseFrame)
 	     lastJniFrame = lastJniFrame->prev);
 
 	DBG(ELOOKUP,
-		dprintf ("dispatchException(): lastJniFrame is %p, fp %p\n", lastJniFrame, (lastJniFrame?lastJniFrame->frame.jni.fp:0)); );
+		dprintf ("dispatchException(): lastJniFrame is %p, fp %p\n", lastJniFrame, (lastJniFrame?(void*)lastJniFrame->frame.jni.fp:0)); );
 
 	/*
 	 * now walk up the stack 
