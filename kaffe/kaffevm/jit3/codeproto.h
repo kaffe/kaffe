@@ -279,7 +279,7 @@ void check_array_index(SlotInfo*, SlotInfo*);
 void check_array_store(SlotInfo*, SlotInfo*);
 void check_array_constindex(SlotInfo*, jint);
 
-void softcall_lookupinterfacemethod(SlotInfo*, Method*, SlotInfo*);
+void softcall_lookupinterfacemethod(SlotInfo*, const Method*, SlotInfo*);
 void softcall_nullpointer(void);
 void softcall_divzero(void);
 void softcall_new(SlotInfo*, struct Hjava_lang_Class*);

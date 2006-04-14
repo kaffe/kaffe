@@ -4643,7 +4643,7 @@ void
 #endif
 
 void
-softcall_lookupinterfacemethod(SlotInfo* dst, Method* meth, SlotInfo* obj)
+softcall_lookupinterfacemethod(SlotInfo* dst, const Method* meth, SlotInfo* obj)
 {
 	/* 'obj' must be written back since it will be reused */
 	begin_func_sync();
