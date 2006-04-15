@@ -33,6 +33,9 @@ esac
 CLASSPATH_MODULE="${cp_module} -version-info ${LIBVERSION} -no-undefined"
 AC_SUBST(CLASSPATH_MODULE)
 
+CLASSPATH_CONVENIENCE="-no-undefined"
+AC_SUBST(CLASSPATH_CONVENIENCE)
+
 AC_PREREQ(2.59)
 AM_INIT_AUTOMAKE([1.9.0 gnu std-options tar-ustar])
 AC_CONFIG_HEADERS([include/config.h])
