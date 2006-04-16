@@ -1,3 +1,9 @@
+2006-04-16  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-internal.h:
+	Conditionally define (__USE_GNU) if it has not been defined
+	to fix a compiler warning.
+
 2006-04-16  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	Fix for bug #35

@@ -15,7 +15,10 @@
 #ifndef __thread_internal_h
 #define __thread_internal_h
 
+#if !defined(__USE_GNU)
 #define __USE_GNU
+#endif /* !defined(__USE_GNU) */
+
 #include <pthread.h>
 #include "repsemaphore.h"
 
