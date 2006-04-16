@@ -188,34 +188,49 @@ void jvmpiFillObjectAlloc(JVMPI_Event *ev, struct Hjava_lang_Object *obj)
 
 void jvmpiFillThreadStart(JVMPI_Event *ev, struct Hjava_lang_VMThread *vmtid)
 {
-	struct Hjava_lang_String *name;
-	struct Hjava_lang_Thread *tid = unhand(vmtid)->thread;
-	
-	assert(ev != NULL);
-	assert(tid != NULL);
-	
-	ev->event_type = JVMPI_EVENT_THREAD_START;
-	if( (name = stringCharArray2Java(unhand_char_array(tid->name->value),
-					 tid->name->count)) != NULL )
+  struct Hjava_lang_String *name;
+  struct Hjava_lang_Thread *tid = unhand(vmtid)->thread;
+  
+  assert(ev != NULL);
+  assert(tid != NULL);
+  
+  ev->event_type = JVMPI_EVENT_THREAD_START;
+  if( (name = stringCharArray2Java(unhand_char_array(tid->name->value),
+				   tid->name->count)) != NULL )
+      ev->u.thread_start.thread_name = stringJava2C(name);
+  else
+      ev->u.thread_start.thread_name = NULL;
+
+  if (tid->group != NULL)
+    {
+      ev->u.thread_start.group_name = stringJava2C(tid->group->name);
+      if (tid->group->parent != NULL)
+	ev->u.thread_start.parent_name = stringJava2C(tid->group->parent->name);
+      else
 	{
-		ev->u.thread_start.thread_name = stringJava2C(name);
+	  ev->u.thread_start.parent_name = (char *)KMALLOC(7);
+	  strcpy(ev->u.thread_start.parent_name, "system");		
 	}
-	else
-	{
-		ev->u.thread_start.thread_name = NULL;
-	}
-	ev->u.thread_start.group_name = stringJava2C(tid->group->name);
-	ev->u.thread_start.parent_name = NULL;
-	ev->u.thread_start.thread_id = tid;
-	ev->u.thread_start.thread_env_id = 
-		&KTHREAD(get_data)((jthread_t)tid->vmThread->vmdata)->jniEnv;
+    }
+  else
+    {
+      ev->u.thread_start.group_name = (char *)KMALLOC(7);
+      strcpy(ev->u.thread_start.group_name, "system");
+      ev->u.thread_start.parent_name = NULL;
+    }
+  ev->u.thread_start.thread_id = tid;
+  ev->u.thread_start.thread_env_id = 
+    &KTHREAD(get_data)((jthread_t)tid->vmThread->vmdata)->jniEnv;
 }
 
 void jvmpiCleanupThreadStart(JVMPI_Event *ev)
 {
-        KFREE(ev->u.thread_start.parent_name);
-	KFREE(ev->u.thread_start.group_name);
-	KFREE(ev->u.thread_start.thread_name);
+  if (ev->u.thread_start.parent_name != NULL)
+    KFREE(ev->u.thread_start.parent_name);
+  if (ev->u.thread_start.group_name != NULL)
+    KFREE(ev->u.thread_start.group_name);
+  if (ev->u.thread_start.thread_name != NULL)
+    KFREE(ev->u.thread_start.thread_name);
 }
 
 void jvmpiFillClassLoad(JVMPI_Event *ev, struct Hjava_lang_Class *cl)

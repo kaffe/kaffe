@@ -92,30 +92,74 @@ static jclass
 Kaffe_DefineClass(JNIEnv* env, const char *name UNUSED, jobject loader,
 		  const jbyte* buf, jsize len)
 {
-	Hjava_lang_Class* cls;
-	classFile hand;
-	errorInfo info;
-	jobject loader_local;
+  Hjava_lang_Class* cls, *dup_cls;
+  classFile hand;
+  errorInfo info;
+  jobject loader_local;
+  classEntry *centry;
 
-	BEGIN_EXCEPTION_HANDLING(NULL);
+  BEGIN_EXCEPTION_HANDLING(NULL);
 
-	loader_local = unveil(loader); /* save clobbered reg.  */
+  loader_local = unveil(loader); /* save clobbered reg.  */
 
-	classFileInit(&hand, NULL, (unsigned char*)buf, (size_t)len,
-		      CP_BYTEARRAY);
+  classFileInit(&hand, NULL, (unsigned char*)buf, (size_t)len,
+		CP_BYTEARRAY);
 
-	cls = newClass();
-	if (cls == 0) {
-		postOutOfMemory(&info);
-	} else {
-		cls = readClass(cls, &hand, loader_local, &info);
+  cls = newClass();
+  if (cls == NULL) {
+    postOutOfMemory(&info);
+  } else {
+    cls = readClass(cls, &hand, loader_local, &info);
+  }
+  if (cls == NULL) {
+    postError(env, &info);
+  }
+
+  /*
+   * See if an entry for that name and class loader already exists
+   * create one if not.
+   */
+  centry = lookupClassEntry(cls->name, loader_local, &info);
+  if (centry == 0) {
+    throwError(&info);
+  }
+
+  if( classMappingLoad(centry, &dup_cls, &info) )
+    {
+      if(dup_cls != NULL)
+	{
+	  postExceptionMessage(&info,
+			       JAVA_LANG(ClassFormatError),
+			       "Duplicate name: %s",
+			       centry->name->data);
+	  throwError(&info);
 	}
-	if (cls == 0) {
-		postError(env, &info);
+      /*
+       * While it is not necessary that one be able to actually *use*
+       * the returned class object at this point, it is mandatory
+       * that the returned clazz object is a functional Class object.
+       *
+       * The following call will make sure that the returned class
+       * object has its dispatch table set.  The transition
+       * PRELOADED->PREPARED in processClass sets class->head.dtable.
+       *
+       * Presumably, it shouldn't be necessary here, but is at the
+       * moment - XXX
+       */
+      else if( processClass(cls,
+			    CSTATE_PREPARED,
+			    &info) == false )
+	{
+	  throwError(&info);
 	}
+    }
+  else
+    {
+      throwError(&info);
+    }
+  END_EXCEPTION_HANDLING();
 
-	END_EXCEPTION_HANDLING();
-	return (cls);
+  return cls;
 }
 
 static jclass
@@ -728,8 +772,8 @@ Kaffe_AttachCurrentThread(JavaVM* vm UNUSED, void** penv, void* args UNUSED)
 {
 	if (KTHREAD(attach_current_thread) (false)) {
 		KSEM(init)(&THREAD_DATA()->sem);
-		KaffeVM_attachFakedThreadInstance ("test attach", false);
-		*penv = THREAD_JNIENV();
+		KaffeVM_attachFakedThreadInstance ("thread attach", false);
+		*penv = THREAD_JNIENV();		
 		return 0;
 	}
 	return -1;
@@ -750,7 +794,7 @@ Kaffe_AttachCurrentThreadAsDaemon(JavaVM* vm UNUSED, void** penv, void* args UNU
 static jint
 Kaffe_DetachCurrentThread(JavaVM* vm UNUSED)
 {
-	if (jthread_detach_current_thread ()) {
+	if (KTHREAD(detach_current_thread) ()) {
 		return 0;
 	} else {
 		return -1;

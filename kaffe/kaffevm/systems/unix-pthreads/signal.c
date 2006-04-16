@@ -9,6 +9,7 @@
  * of this file. 
  */
 
+#define _GNU_SOURCE
 #include "config.h"
 #include "debug.h"
 #include "config-std.h"
@@ -368,7 +369,7 @@ blockAsyncSignals(void)
  * value it has detected.
  */
 void
-detectStackBoundaries(jthread_t jtid, size_t mainThreadStackSize)
+KaffePThread_detectStackBoundaries(jthread_t jtid, size_t mainThreadStackSize)
 {
         void *stackPointer;
 
@@ -386,7 +387,7 @@ detectStackBoundaries(jthread_t jtid, size_t mainThreadStackSize)
  */
 
 void
-detectStackBoundaries(jthread_t jtid, size_t mainThreadStackSize)
+KaffePThread_detectStackBoundaries(jthread_t jtid, size_t mainThreadStackSize)
 {
         void *stackPointer;
 
@@ -405,7 +406,7 @@ detectStackBoundaries(jthread_t jtid, size_t mainThreadStackSize)
  */
 
 void
-detectStackBoundaries(jthread_t jtid, size_t mainThreadStackSize)
+KaffePThread_detectStackBoundaries(jthread_t jtid, size_t mainThreadStackSize)
 {
         void *stackPointer;
 
@@ -416,14 +417,14 @@ detectStackBoundaries(jthread_t jtid, size_t mainThreadStackSize)
         jtid->stackCur = jtid->stackMax;
 }
 
-#elif defined(SA_ONSTACK) && defined(HAVE_SIGALTSTACK) && !defined(KAFFEMD_BUGGY_STACK_OVERFLOW)
+#elif !defined(KAFFEMD_BUGGY_STACK_OVERFLOW)
 
 static JTHREAD_JMPBUF outOfLoop;
 
 /*
  * This function is called by the system when we go beyond stack boundaries
  * in infiniteLoop. We get the stack address using the stack pointer register
- * and then go back in detectStackBoundaries() using the old stack.
+ * and then go back in KaffePThread_detectStackBoundaries() using the old stack.
  */
 static void NONRETURNING
 stackOverflowDetector(SIGNAL_ARGS(sig UNUSED, sc))
@@ -442,7 +443,7 @@ void kaffeNoopFunc(char c UNUSED)
  * the faulty adress directly.
  */
 void
-detectStackBoundaries(jthread_t jtid, size_t mainThreadStackSize)
+KaffePThread_detectStackBoundaries(jthread_t jtid, size_t mainThreadStackSize)
 {
 	static volatile char *guessPointer;
 	void *handler_segv, *handler_bus;
@@ -504,7 +505,7 @@ detectStackBoundaries(jthread_t jtid, size_t mainThreadStackSize)
  */
 
 void
-detectStackBoundaries(jthread_t jtid, size_t mainThreadStackSize)
+KaffePThread_detectStackBoundaries(jthread_t jtid, size_t mainThreadStackSize)
 {
 #if defined(STACK_GROWS_UP)
 	jtid->stackMin = (void*)(uintp)(&jtid - 0x100);
@@ -518,3 +519,32 @@ detectStackBoundaries(jthread_t jtid, size_t mainThreadStackSize)
 }
 
 #endif
+
+
+void
+KaffePThread_detectThreadStackBoundaries(jthread_t jtid)
+{
+#if defined(HAVE_PTHREAD_GETATTR_NP)
+  pthread_attr_t attr;
+  size_t stackSize;
+
+  pthread_getattr_np (jtid->tid, &attr);
+
+  pthread_attr_getstack (&attr, &jtid->stackMin, &stackSize);
+
+  jtid->stackMax = (void*)(((char*)jtid->stackMin) + stackSize);
+
+  pthread_attr_destroy(&attr);
+#elif !defined(KAFFEMD_BUGGY_STACK_OVERFLOW)
+#warning KaffePThread_detectStackBoundaries is not implemented for KAFFEMD_BUGGY_STACK_OVERFLOW
+  fprintf(stderr, "Kaffe does not yet support detection of stack boundaries within unknown threads\n"
+		  "Aborting.\n");
+  KAFFEVM_ABORT();
+#else
+#warning This code is totally unsafe if you plug some random application to the JVM.
+#warning This port should implement KAFFEMD_THREAD_STACK
+  fprintf(stderr, "Kaffe is not able to detect stack boundaries within unknown threads on this platform.\n"
+		  "Aborting.\n");
+   KAFFEVM_ABORT();
+#endif
+}

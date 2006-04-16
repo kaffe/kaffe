@@ -617,7 +617,7 @@ jthread_createfirst(size_t mainThreadStackSize, unsigned int pri UNUSED,
   /* Get stack boundaries. Note that this is just an approximation
    * which should cover all gc-relevant stack locations
    */
-  detectStackBoundaries(nt, mainThreadStackSize);
+  KaffePThread_detectStackBoundaries(nt, mainThreadStackSize);
 
   DBG( JTHREAD, TMSG_SHORT( "create first ", nt));
 
@@ -694,6 +694,9 @@ bool jthread_attach_current_thread (bool isDaemon)
   jthread_t		nt;
   rlim_t		stackSize;
 
+  if (jthread_current() != NULL)
+    return false;
+
   /* create the jthread* thingy */
   nt = thread_malloc( sizeof(struct _jthread) );
 
@@ -716,13 +719,15 @@ bool jthread_attach_current_thread (bool isDaemon)
 #else
   stackSize = MAINSTACKSIZE;
 #endif
-  detectStackBoundaries(nt, stackSize);
-  nt->stackCur     = NULL; 
-  nt->daemon       = isDaemon;
-
   /* link everything together */
   nt->tid = pthread_self();
   pthread_setspecific( ntKey, nt);
+
+  KaffePThread_detectThreadStackBoundaries(nt);
+  tInitSignalHandlers();
+
+  nt->stackCur     = NULL; 
+  nt->daemon       = isDaemon;
 
   /* and done */
   return true;

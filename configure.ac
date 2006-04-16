@@ -696,6 +696,10 @@ if test x$with_threads = xunix-pthreads ; then
 	ACX_PTHREAD([THREADLIBS="$PTHREAD_LIBS "
 		     CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
                      CC="$PTHREAD_CC"])
+	OLD_LIBS="$LIBS"
+	LIBS="$LIBS $THREADLIBS"
+	AC_CHECK_FUNCS([pthread_getattr_np])
+	LIBS="$OLD_LIBS"
 	AC_CHECK_LIB(semaphore,sem_init,SEMAPHORE_LIB="-lsemaphore")
 	AC_SUBST(SEMAPHORE_LIB)
 	KAFFE_LIB_SOLARIS_PTHREAD

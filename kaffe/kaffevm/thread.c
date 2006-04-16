@@ -253,6 +253,7 @@ KaffeVM_attachFakedThreadInstance(const char* nm, int isDaemon)
 	Hjava_lang_Thread* tid;
 	jvalue retval;
 	int i;
+	jnirefs *reftable;
 
 	DBG(VMTHREAD, dprintf("attachFakedThreadInstance(%s)\n", nm); );
 
@@ -312,6 +313,13 @@ KaffeVM_attachFakedThreadInstance(const char* nm, int isDaemon)
 	do_execute_java_method(NULL, unhand(tid)->group, "addThread", "(Ljava/lang/Thread;)V", NULL, 0, tid);
 
 	DBG(VMTHREAD, dprintf("attachFakedThreadInstance(%s)=%p done\n", nm, tid); );
+	
+	/* Setup JNI for this newly attached thread */
+	reftable = (jnirefs *)gc_malloc(sizeof(jnirefs) + sizeof(jref) * DEFAULT_JNIREFS_NUMBER,
+					KGC_ALLOC_STATIC_THREADDATA);
+	reftable->frameSize = DEFAULT_JNIREFS_NUMBER;
+	reftable->localFrames = 1;
+	THREAD_DATA()->jnireferences = reftable;
 }
 
 /*
@@ -390,10 +398,10 @@ DBG(VMTHREAD,	dprintf("createDaemon %s\n", nm);	);
   unhand(vmtid)->thread = tid;
   unhand(vmtid)->running = true;
 
-    do_execute_java_class_method (&retval, "java/lang/ClassLoader",
-				  NULL,
-				  "getSystemClassLoader",
-				  "()Ljava/lang/ClassLoader;");
+  do_execute_java_class_method (&retval, "java/lang/ClassLoader",
+				NULL,
+				"getSystemClassLoader",
+				"()Ljava/lang/ClassLoader;");
   unhand(tid)->contextClassLoader = (struct Hjava_lang_ClassLoader *) retval.l;
   
   specialArgument[0] = func;

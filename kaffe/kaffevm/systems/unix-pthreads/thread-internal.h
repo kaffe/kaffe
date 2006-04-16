@@ -389,6 +389,7 @@ void KaffePThread_WaitForResume(int releaseMutex, unsigned int state);
 void KaffePThread_AckAndWaitForResume(jthread_t cur, unsigned int newState);
 int KaffePThread_getSuspendSignal(void);
 
-void detectStackBoundaries(jthread_t jtid, size_t mainThreadStackSize);
+void KaffePThread_detectStackBoundaries(jthread_t jtid, size_t mainThreadStackSize);
+void KaffePThread_detectThreadStackBoundaries(jthread_t jtid);
 
 #endif /* __thread_impl_h */

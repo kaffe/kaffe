@@ -267,12 +267,24 @@ KaffeJNI_ParseArgs(KaffeVM_Arguments *args, JavaVMOption *options, jint nOptions
   return 1;
 }
 
+static void
+detectAllActiveThreads(jthread_t jtid, void *param UNUSED)
+{
+  JVMPI_Event ev;
+  Hjava_lang_VMThread *tid;
+
+  tid = (Hjava_lang_VMThread *)(KTHREAD(get_data)(jtid)->jlThread);
+
+  jvmpiFillThreadStart(&ev, tid);
+  jvmpiPostEvent(&ev);
+  jvmpiCleanupThreadStart(&ev);
+}
+
 jint
 JNI_CreateJavaVM(JavaVM** vm, void** penv, void* args)
 {
   JavaVMInitArgs *vm_args = (JavaVMInitArgs *)args;
   JNIEnv **env = (JNIEnv **)penv;
-  jnirefs *reftable;
 
   switch (vm_args->version)
     {
@@ -296,14 +308,6 @@ JNI_CreateJavaVM(JavaVM** vm, void** penv, void* args)
 
   /* Setup the machine */
   initialiseKaffe();
-
-  /* Setup JNI for main thread */
-  reftable =
-    (jnirefs *)gc_malloc(sizeof(jnirefs) + sizeof(jref) * DEFAULT_JNIREFS_NUMBER,
-			 KGC_ALLOC_STATIC_THREADDATA);
-  reftable->frameSize = DEFAULT_JNIREFS_NUMBER;
-  reftable->localFrames = 1;
-  THREAD_DATA()->jnireferences = reftable; 
 
   /* Return the VM and JNI we're using */
   *vm = KaffeJNI_GetKaffeVM();
@@ -338,6 +342,16 @@ JNI_CreateJavaVM(JavaVM** vm, void** penv, void* args)
       ev.event_type = JVMPI_EVENT_JVM_INIT_DONE;
       jvmpiPostEvent(&ev);
     }
+
+ 
+  if ( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_THREAD_START) )
+    {
+      KTHREAD(suspendall)();
+      
+      KTHREAD(walkLiveThreads) (detectAllActiveThreads, NULL);
+
+      KTHREAD(unsuspendall)();
+    } 
 #endif
 
   return 0;
@@ -349,6 +363,16 @@ KaffeJNI_DestroyJavaVM(JavaVM* vm UNUSED)
   /* The destroy function must be called by the same thread that has
    * built the VM object
    */
+#if defined(ENABLE_JVMPI)
+  if ( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_JVM_SHUT_DOWN) )
+    {
+      JVMPI_Event ev;
+
+      ev.event_type = JVMPI_EVENT_JVM_SHUT_DOWN;
+      jvmpiPostEvent(&ev);
+    }
+#endif
+
   if (KTHREAD(current)() != startingThread)
     return -1;
 

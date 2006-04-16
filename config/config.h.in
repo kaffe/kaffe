@@ -443,6 +443,9 @@
 /* Define to 1 if you have the `pthread_attr_setschedpolicy' function. */
 #undef HAVE_PTHREAD_ATTR_SETSCHEDPOLICY
 
+/* Define to 1 if you have the `pthread_getattr_np' function. */
+#undef HAVE_PTHREAD_GETATTR_NP
+
 /* Define to 1 if you have the <pthread.h> header file. */
 #undef HAVE_PTHREAD_H
 
