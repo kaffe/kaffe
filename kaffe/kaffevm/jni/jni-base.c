@@ -267,6 +267,8 @@ KaffeJNI_ParseArgs(KaffeVM_Arguments *args, JavaVMOption *options, jint nOptions
   return 1;
 }
 
+#if defined(ENABLE_JVMPI)
+
 static void
 detectAllActiveThreads(jthread_t jtid, void *param UNUSED)
 {
@@ -279,6 +281,8 @@ detectAllActiveThreads(jthread_t jtid, void *param UNUSED)
   jvmpiPostEvent(&ev);
   jvmpiCleanupThreadStart(&ev);
 }
+
+#endif /* defined(ENABLE_JVMPI) */
 
 jint
 JNI_CreateJavaVM(JavaVM** vm, void** penv, void* args)
