@@ -1,5 +1,10 @@
 2006-04-17  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* kaffe/kaffevm/intrp/machine.c
+	(virtualMachine): Removed volatile.
+
+2006-04-17  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* libraries/javalib/external/classpath: Resynchronized with GNU
 	Classpath.
 

@@ -140,9 +140,9 @@ virtualMachine(methods*volatile meth, slots* volatile arg, slots* volatile retva
 	accessFlags methaccflags;
 	kaffeClassFlags methkflags;
 
-	slots* volatile lcl;
-	slots* volatile sp;
-	uintp volatile npc;
+	slots* lcl;
+	slots* sp;
+	uintp npc;
 
 	int32 idx;
 	jint low;
