@@ -74,40 +74,6 @@ public abstract class ServantLocatorPOA
   final ServantLocatorPOA THIS = this;
 
   /**
-   * It is your responsibility to take the preinvoke actions, if any,
-   * and also supply an appropriate servant for the current invocation.
-   *
-   * The default method instructs POA that the servant cannot be
-   * provided by locator. The OBJ_ADAPTER exception will be
-   * thrown by POA, unless it uses the available default servant for all
-   * invocations.
-   *
-   * @specnote in GNU Classpath, returning null means that the
-   * locator does not supply the servant.
-   *
-   * @see ServantLocatorOperations#preinvoke
-   */
-  public Servant preinvoke(byte[] Object_Id, POA poa, String method,
-                           CookieHolder cookie_holder
-                          )
-                    throws org.omg.PortableServer.ForwardRequest
-  {
-    return null;
-  }
-
-  /**
-   * It is your responsibility to take the postinvoke actions, if any,
-   * by overriding this method. The default method does nothing.
-   *
-   * @see ServantLocatorOperations#postinvoke
-   */
-  public void postinvoke(byte[] Object_Id, POA poa, String method,
-                         java.lang.Object cookie, Servant servant
-                        )
-  {
-  }
-
-  /**
    * Our implementation will not call this method. After setting your
    * manager to POA, it will call incarnate and etherialize directly.
    */

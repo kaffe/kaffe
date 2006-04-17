@@ -24,5 +24,5 @@ class IndexTest {
 5
 Catch
 java.lang.ArrayIndexOutOfBoundsException
-   at IndexTest.main (IndexTest.java:7)
+   at IndexTest.main(IndexTest.java:7)
 */

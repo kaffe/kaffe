@@ -98,42 +98,6 @@ public abstract class ServantActivatorPOA
   }
 
   /**
-   * It is your responsibility to handle the incarnation event and
-   * supply the servant.
-   * The default method instructs POA that the servant cannot be
-   * provided by activator. The OBJ_ADAPTER exception will be
-   * thrown by POA, unless the servant is provided as one of the
-   * parameters in the activation method, or the default servant is set.
-   *
-   * @see ServantActivatorOperations#incarnate
-   *
-   * @specnote in GNU Classpath, returning null means that the
-   * activator does not supply the servant. The servant can still be supplied
-   * as one of parameters in some POA activation methods or as a default
-   * servant.
-   *
-   * @throws ForwardRequest
-   */
-  public Servant incarnate(byte[] Object_Id, POA poa)
-                    throws ForwardRequest
-  {
-    return null;
-  }
-
-  /**
-   * It is your responsibility to handle the etherialization event.
-   * Override this method if using the class. The default method
-   * does nothing.
-   *
-   * @see ServantActivatorOperations#incarnate
-   */
-  public void etherealize(byte[] Object_Id, POA poa, Servant servant,
-                          boolean cleanup, boolean remains
-                         )
-  {
-  }
-
-  /**
    * Our implementation will not call this method. After setting your
    * manager to POA, it will call incarnate and etherialize directly.
    */

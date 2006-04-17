@@ -58,8 +58,11 @@ done
 if test ! "${top_builddir}" -ef "@top_srcdir@"; then
   echo "Adding generated files in builddir '${top_builddir}'."
   # Currently the only generated files are in gnu.*.
-  @FIND@ ${top_builddir}/gnu -follow -name '*.java' -print \
-  | sort >> ${top_builddir}/lib/classes.1
+  (cd ${top_builddir}; @FIND@ gnu -follow -name '*.java' -print) |
+  sort | sed -e 's,/\([^/]*\)$, \1,' |
+  while read pkg file; do
+     echo $pkg $top_builddir $pkg/$file
+  done >> ${top_builddir}/lib/classes.1
 fi
 
 

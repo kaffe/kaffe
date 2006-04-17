@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package javax.swing;
 
+import gnu.classpath.NotImplementedException;
+
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -50,7 +52,6 @@ import javax.accessibility.Accessible;
 import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleRole;
 import javax.accessibility.AccessibleStateSet;
-import javax.swing.JButton;
 import javax.swing.plaf.ToolBarUI;
 
 /**
@@ -89,6 +90,7 @@ public class JToolBar extends JComponent implements SwingConstants, Accessible
      * @return AccessibleStateSet
      */
     public AccessibleStateSet getAccessibleStateSet()
+      throws NotImplementedException
     {
       return null; // TODO
     }

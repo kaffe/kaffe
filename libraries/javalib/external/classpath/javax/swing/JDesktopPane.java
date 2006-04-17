@@ -85,6 +85,15 @@ public class JDesktopPane extends JLayeredPane implements Accessible
   private transient int dragMode = LIVE_DRAG_MODE;
 
   /**
+   * Indicates if the dragMode property has been set by a client
+   * program or by the UI.
+   *
+   * @see #setUIProperty(String, Object)
+   * @see LookAndFeel#installProperty(JComponent, String, Object)
+   */
+  private boolean clientDragModeSet = false;
+
+  /**
    * AccessibleJDesktopPane
    */
   protected class AccessibleJDesktopPane extends AccessibleJComponent
@@ -152,6 +161,8 @@ public class JDesktopPane extends JLayeredPane implements Accessible
   {
     if ((mode != LIVE_DRAG_MODE) && (mode != OUTLINE_DRAG_MODE))
       throw new IllegalArgumentException("Drag mode not valid.");
+
+    clientDragModeSet = true;
 
     // FIXME: Unsupported mode.
     if (mode == OUTLINE_DRAG_MODE)
@@ -329,5 +340,35 @@ public class JDesktopPane extends JLayeredPane implements Accessible
       accessibleContext = new AccessibleJDesktopPane();
 
     return accessibleContext;
+  }
+
+  /**
+   * Helper method for
+   * {@link LookAndFeel#installProperty(JComponent, String, Object)}.
+   * 
+   * @param propertyName the name of the property
+   * @param value the value of the property
+   *
+   * @throws IllegalArgumentException if the specified property cannot be set
+   *         by this method
+   * @throws ClassCastException if the property value does not match the
+   *         property type
+   * @throws NullPointerException if <code>c</code> or
+   *         <code>propertyValue</code> is <code>null</code>
+   */
+  void setUIProperty(String propertyName, Object value)
+  {
+    if (propertyName.equals("dragMode"))
+      {
+        if (! clientDragModeSet)
+          {
+            setDragMode(((Integer) value).intValue());
+            clientDragModeSet = false;
+          }
+      }
+    else
+      {
+        super.setUIProperty(propertyName, value);
+      }
   }
 }

@@ -124,9 +124,10 @@ public class DomHTMLParser
     try
       {
         document = new DomHTMLDocument();
-
+        document.setCheckWellformedness(false);
+        
         cursor = document;
-
+        
         parse(input);
 
         DomHTMLDocument h = document;
@@ -224,7 +225,6 @@ public class DomHTMLParser
               open.addFirst(close);
             close = close.getParentNode();
           }
-
         if (close == null)
           cursor = document;
         else
@@ -235,9 +235,8 @@ public class DomHTMLParser
         while (iter.hasNext())
           {
             Node item = (Node) iter.next();
-            Node copy = item.cloneNode(true);
-            cursor.appendChild(copy);
-            cursor = copy;
+            cursor.appendChild(item);
+            cursor = item;
           }
       }
   }

@@ -1443,6 +1443,33 @@ public class JTree extends JComponent implements Scrollable, Accessible
     new TreeSelectionRedirector();
 
   /**
+   * Indicates if the rowHeight property has been set by a client
+   * program or by the UI.
+   *
+   * @see #setUIProperty(String, Object)
+   * @see LookAndFeel#installProperty(JComponent, String, Object)
+   */
+  private boolean clientRowHeightSet = false;
+
+  /**
+   * Indicates if the scrollsOnExpand property has been set by a client
+   * program or by the UI.
+   *
+   * @see #setUIProperty(String, Object)
+   * @see LookAndFeel#installProperty(JComponent, String, Object)
+   */
+  private boolean clientScrollsOnExpandSet = false;
+
+  /**
+   * Indicates if the showsRootHandles property has been set by a client
+   * program or by the UI.
+   *
+   * @see #setUIProperty(String, Object)
+   * @see LookAndFeel#installProperty(JComponent, String, Object)
+   */
+  private boolean clientShowsRootHandlesSet = false;
+
+  /**
    * Creates a new <code>JTree</code> object.
    */
   public JTree()
@@ -1619,7 +1646,7 @@ public class JTree extends JComponent implements Scrollable, Accessible
    */
   public Dimension getPreferredScrollableViewportSize()
   {
-    return new Dimension (getPreferredSize().width, getVisibleRowCount()*getRowHeight());
+    return getPreferredSize();
   }
   
   /**
@@ -1926,6 +1953,8 @@ public class JTree extends JComponent implements Scrollable, Accessible
 
   public void setShowsRootHandles(boolean flag)
   {
+    clientShowsRootHandlesSet = true;
+
     if (showsRootHandles == flag)
       return;
     
@@ -2025,6 +2054,8 @@ public class JTree extends JComponent implements Scrollable, Accessible
 
   public void setRowHeight(int height)
   {
+    clientRowHeightSet = true;
+
     if (rowHeight == height)
       return;
 
@@ -2114,6 +2145,7 @@ public class JTree extends JComponent implements Scrollable, Accessible
 
   public void setScrollsOnExpand(boolean scroll)
   {
+    clientScrollsOnExpandSet = true;
     if (scrollsOnExpand == scroll)
       return;
 
@@ -2943,5 +2975,51 @@ public class JTree extends JComponent implements Scrollable, Accessible
   public void treeDidChange()
   {
     repaint();
+  }
+
+  /**
+   * Helper method for
+   * {@link LookAndFeel#installProperty(JComponent, String, Object)}.
+   * 
+   * @param propertyName the name of the property
+   * @param value the value of the property
+   *
+   * @throws IllegalArgumentException if the specified property cannot be set
+   *         by this method
+   * @throws ClassCastException if the property value does not match the
+   *         property type
+   * @throws NullPointerException if <code>c</code> or
+   *         <code>propertyValue</code> is <code>null</code>
+   */
+  void setUIProperty(String propertyName, Object value)
+  {
+    if (propertyName.equals("rowHeight"))
+      {
+        if (! clientRowHeightSet)
+          {
+            setRowHeight(((Integer) value).intValue());
+            clientRowHeightSet = false;
+          }
+      }
+    else if (propertyName.equals("scrollsOnExpand"))
+      {
+        if (! clientScrollsOnExpandSet)
+          {
+            setScrollsOnExpand(((Boolean) value).booleanValue());
+            clientScrollsOnExpandSet = false;
+          }
+      }
+    else if (propertyName.equals("showsRootHandles"))
+      {
+        if (! clientShowsRootHandlesSet)
+          {
+            setShowsRootHandles(((Boolean) value).booleanValue());
+            clientShowsRootHandlesSet = false;
+          }
+      }
+    else
+      {
+        super.setUIProperty(propertyName, value);
+      }
   }
 }

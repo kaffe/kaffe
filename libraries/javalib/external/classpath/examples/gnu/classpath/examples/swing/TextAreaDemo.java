@@ -1,5 +1,5 @@
 /* TextAreaDemo.java -- An example showing various textareas in Swing.
- Copyright (C) 2005, 2006, Free Software Foundation, Inc.
+ Copyright (C) 2005, 2006 Free Software Foundation, Inc.
 
  This file is part of GNU Classpath examples.
 
@@ -426,7 +426,7 @@ public class TextAreaDemo
     innerPanel.add(new JScrollPane(textarea10));
 
     textarea11 = new JTextArea("custom background", 10, 15);
-    textarea11.setForeground(Color.YELLOW);
+    textarea11.setBackground(Color.YELLOW);
     innerPanel.add(new JScrollPane(textarea11));
 
     textarea12 = new JTextArea("custom disabled textcolor", 10, 15);
@@ -438,7 +438,7 @@ public class TextAreaDemo
     innerPanel.add(new JScrollPane(textarea13));
 
     textarea14 = new JTextArea("custom selection color", 10, 15);
-    textarea14.setSelectionColor(Color.CYAN);
+    textarea14.setSelectionColor(Color.RED);
     innerPanel.add(new JScrollPane(textarea14));
 
     textarea14b = new JTextArea("custom selection and selected text color", 10, 15);

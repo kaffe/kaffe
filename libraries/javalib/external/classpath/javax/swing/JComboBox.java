@@ -944,10 +944,20 @@ public class JComboBox extends JComponent implements ItemSelectable,
    *         exists in the combo box. Otherwise false is returned.
    */
   public boolean selectWithKeyChar(char keyChar)
-    throws NotImplementedException
   {
-    // FIXME: Need to implement
-    return false;
+    if (keySelectionManager == null)
+      {
+        keySelectionManager = createDefaultKeySelectionManager();
+      }
+
+    int index = keySelectionManager.selectionForKey(keyChar, getModel());
+    boolean retVal = false;
+    if (index >= 0)
+      {
+        setSelectedIndex(index);
+        retVal = true;
+      }
+    return retVal;
   }
 
   /**
@@ -1209,32 +1219,41 @@ public class JComboBox extends JComponent implements ItemSelectable,
   {
     private static final long serialVersionUID = 8217828307256675666L;
 
-    protected AccessibleJComboBox()
+    /**
+     * @specnote This constructor was protected in 1.4, but made public
+     * in 1.5.
+     */
+    public AccessibleJComboBox()
     {
       // Nothing to do here.
     }
 
     public int getAccessibleChildrenCount()
+      throws NotImplementedException
     {
       return 0;
     }
 
     public Accessible getAccessibleChild(int value0)
+      throws NotImplementedException
     {
       return null;
     }
 
     public AccessibleSelection getAccessibleSelection()
+      throws NotImplementedException
     {
       return null;
     }
 
     public Accessible getAccessibleSelection(int value0)
+      throws NotImplementedException
     {
       return null;
     }
 
     public boolean isAccessibleChildSelected(int value0)
+      throws NotImplementedException
     {
       return false;
     }
@@ -1245,46 +1264,55 @@ public class JComboBox extends JComponent implements ItemSelectable,
     }
 
     public AccessibleAction getAccessibleAction()
+      throws NotImplementedException
     {
       return null;
     }
 
     public String getAccessibleActionDescription(int value0)
+      throws NotImplementedException
     {
       return null;
     }
 
     public int getAccessibleActionCount()
+      throws NotImplementedException
     {
       return 0;
     }
 
     public boolean doAccessibleAction(int value0)
+      throws NotImplementedException
     {
       return false;
     }
 
     public int getAccessibleSelectionCount()
+      throws NotImplementedException
     {
       return 0;
     }
 
     public void addAccessibleSelection(int value0)
+      throws NotImplementedException
     {
       // TODO: Implement this properly.
     }
 
     public void removeAccessibleSelection(int value0)
+      throws NotImplementedException
     {
       // TODO: Implement this properly.
     }
 
     public void clearAccessibleSelection()
+      throws NotImplementedException
     {
       // TODO: Implement this properly.
     }
 
     public void selectAllAccessibleSelection()
+      throws NotImplementedException
     {
       // TODO: Implement this properly.
     }

@@ -295,6 +295,8 @@ public class JLabel extends JComponent implements Accessible, SwingConstants
   /** DOCUMENT ME! */
   private static final long serialVersionUID = 5496508283662221534L;
 
+  static final String LABEL_PROPERTY = "labeledBy";
+
   /**
    * The Component the label will give focus to when its mnemonic is
    * activated.
@@ -860,8 +862,23 @@ public class JLabel extends JComponent implements Accessible, SwingConstants
   {
     if (c != labelFor)
       {
+        // We put the label into the client properties for the labeled
+        // component so that it can be read by the AccessibleJComponent.
+        // The other option would be to reserve a default visible field
+        // in JComponent, but since this is relativly seldomly used, it
+        // would be unnecessary waste of memory to do so.
 	Component oldLabelFor = labelFor;
+        if (oldLabelFor instanceof JComponent)
+          {
+            ((JComponent) oldLabelFor).putClientProperty(LABEL_PROPERTY, null);
+          }
+
 	labelFor = c;
+	if (labelFor instanceof JComponent)
+          {
+            ((JComponent) labelFor).putClientProperty(LABEL_PROPERTY, this);
+          }
+
 	firePropertyChange("labelFor", oldLabelFor, labelFor);
       }
   }

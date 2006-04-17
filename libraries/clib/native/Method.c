@@ -25,6 +25,7 @@
 #include <native.h>
 #include "jni.h"
 #include "defs.h"
+#include "stringSupport.h"
 
 static jclass Zclass;
 static jclass Bclass;
@@ -88,26 +89,38 @@ Java_java_lang_reflect_Method_init0(JNIEnv* env)
 }
 
 jint
-java_lang_reflect_Method_getModifiers(struct Hjava_lang_reflect_Method* this)
+java_lang_reflect_Method_getModifiersInternal(struct Hjava_lang_reflect_Method* this)
 {
 	Hjava_lang_Class* clazz;
 	jint slot;
 	int flags;
 
-	clazz = unhand(this)->clazz;
+	clazz = unhand(this)->declaringClass;
 	slot = unhand(this)->slot;
 
 	assert(slot < CLASS_NMETHODS(clazz));
 
 	flags = clazz->methods[slot].accflags;
 	if (flags & ACC_ABSTRACT)
-		/* If an abstract method is ever referenced,
-		 * it's native code is throwAbstractMethodError, and
-		 * ACC_NATIVE is set in findLocalMethod.
-		 */
-		return (flags & (ACC_MASK-ACC_NATIVE));
+	  /* If an abstract method is ever referenced,
+	   * it's native code is throwAbstractMethodError, and
+	   * ACC_NATIVE is set in findLocalMethod.
+	   */
+	  return (flags & ~ACC_NATIVE);
 	else
-		return (flags & ACC_MASK);
+	  return flags;
+}
+
+Hjava_lang_String*
+java_lang_reflect_Method_getSignature(struct Hjava_lang_reflect_Method* this)
+{
+  Hjava_lang_Class *clazz = unhand(this)->declaringClass;
+  jint slot = unhand(this)->slot;
+  Method *meth;
+
+  meth = &CLASS_METHODS(clazz)[slot];
+
+  return utf8Const2Java(meth->extSignature);
 }
 
 JNIEXPORT jobject JNICALL
@@ -133,7 +146,7 @@ Java_java_lang_reflect_Method_invoke0(JNIEnv* env, jobject _this, jobject _obj, 
 	HArrayOfObject* argobj = (HArrayOfObject*)_argobj;
 	jthrowable targetexc;
 
-	clazz = unhand(this)->clazz;
+	clazz = unhand(this)->declaringClass;
 	paramtypes = unhand(this)->parameterTypes;
 
 	/* 

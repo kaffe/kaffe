@@ -39,7 +39,7 @@
  * Convert string name to class object.
  */
 struct Hjava_lang_Class*
-java_lang_VMClass_forName0(struct Hjava_lang_String* str, struct Hjava_lang_ClassLoader* loader)
+java_lang_VMClass_forName(struct Hjava_lang_String* str, jboolean initialize, struct Hjava_lang_ClassLoader* loader)
 {
 	errorInfo einfo;
 	Hjava_lang_Class* clazz;
@@ -111,7 +111,7 @@ java_lang_VMClass_forName0(struct Hjava_lang_String* str, struct Hjava_lang_Clas
 	 * was introduced in 1.2, presumably for the convenience of
 	 * programs such as stub compilers.
 	 */
-	if (processClass(clazz, CSTATE_COMPLETE, &einfo) == false) {
+	if (initialize && processClass(clazz, CSTATE_COMPLETE, &einfo) == false) {
 		throwError(&einfo);
 	}
 	return (clazz);
@@ -526,13 +526,184 @@ java_lang_VMClass_throwException (struct Hjava_lang_Throwable *throwable)
 	throwExternalException(throwable);
 }
 
-
-
-void
-java_lang_VMClass_checkAccess (struct Hjava_lang_Class *clazz,
-                               struct Hjava_lang_Class *caller,
-                               jint flags)
+jboolean
+java_lang_VMClass_isSynthetic (struct Hjava_lang_Class* klass)
 {
-	if (checkAccess (caller, clazz, flags) == 0)
-		SignalError (JAVA_LANG(IllegalAccessException), NULL);
+  return (klass->accflags & ACC_SYNTHETIC) != 0;
 }
+
+jboolean
+java_lang_VMClass_isEnum(struct Hjava_lang_Class* klass)
+{
+  return (klass->accflags & ACC_ENUM) != 0;
+}
+
+struct Hjava_lang_Class*
+java_lang_VMClass_getEnclosingClass(struct Hjava_lang_Class* klass)
+{
+  errorInfo einfo;
+  struct Hjava_lang_Class *enclosing;
+
+  if (klass->enclosingClassIndex == 0)
+    return NULL;
+
+  enclosing = getClass(klass->enclosingClassIndex, klass, &einfo);
+  if (enclosing == NULL)
+    discardErrorInfo(&einfo);
+
+  return enclosing;
+}
+
+struct Hjava_lang_reflect_Constructor*
+java_lang_VMClass_getEnclosingConstructor(struct Hjava_lang_Class* klass)
+{
+  errorInfo einfo;
+  constants *pool;
+  constIndex emi = klass->enclosingMethodIndex;
+  constIndex eci = klass->enclosingClassIndex;
+  constIndex ni;
+  Utf8Const *name, *sig;
+  Hjava_lang_Class *enclosingClass;
+  Method *method;
+  int methodSlot;
+
+  if (emi == 0)
+    return NULL;
+
+  pool = CLASS_CONSTANTS (klass);
+
+  enclosingClass = getClass(eci, klass, &einfo);
+  if (enclosingClass == NULL)
+    {
+      discardErrorInfo(&einfo);
+      return NULL;
+    }
+  
+  switch (pool->tags[emi])
+    {
+    case CONSTANT_Methodref:
+      ni = METHODREF_NAMEANDTYPE(emi, pool);
+      name = WORD2UTF(pool->data[NAMEANDTYPE_NAME(ni, pool)]);
+      sig = WORD2UTF(pool->data[NAMEANDTYPE_SIGNATURE(ni, pool)]);
+      method = findMethodLocal(enclosingClass, name, sig);
+      if (method != NULL)
+	{
+	  lockClass (klass);
+	  if (pool->tags[emi] != CONSTANT_ResolvedMethod)
+	    {
+	      pool->tags[emi] = CONSTANT_ResolvedMethod;
+	      pool->data[emi] = (ConstSlot)method;
+	    }
+	  else
+	    method = (Method*)pool->data[emi];
+	  unlockClass (klass);
+	}
+      break;
+    case CONSTANT_ResolvedMethod:
+      method = (Method *)pool->data[emi];
+      break;
+    default:
+      return NULL;
+    }
+
+  if (method == NULL || !METHOD_IS_CONSTRUCTOR (method))
+    return NULL;
+
+  methodSlot = method - CLASS_METHODS(klass);
+  assert(methodSlot < CLASS_NMETHODS(klass));
+  
+  return KaffeVM_makeReflectConstructor(klass, methodSlot);
+}
+
+struct Hjava_lang_reflect_Method*
+java_lang_VMClass_getEnclosingMethod(struct Hjava_lang_Class* klass)
+{
+  errorInfo einfo;
+  constants *pool;
+  constIndex emi = klass->enclosingMethodIndex;
+  constIndex eci = klass->enclosingClassIndex;
+  constIndex ni;
+  Utf8Const *name, *sig;
+  Hjava_lang_Class *enclosingClass;
+  Method *method;
+  int methodSlot;
+
+  if (emi == 0)
+    return NULL;
+
+  pool = CLASS_CONSTANTS (klass);
+
+  enclosingClass = getClass(eci, klass, &einfo);
+  if (enclosingClass == NULL)
+    {
+      discardErrorInfo(&einfo);
+      return NULL;
+    }
+  
+  switch (pool->tags[emi])
+    {
+    case CONSTANT_Methodref:
+      ni = METHODREF_NAMEANDTYPE(emi, pool);
+      name = WORD2UTF(pool->data[NAMEANDTYPE_NAME(ni, pool)]);
+      sig = WORD2UTF(pool->data[NAMEANDTYPE_SIGNATURE(ni, pool)]);
+      method = findMethodLocal(enclosingClass, name, sig);
+      if (method != NULL)
+	{
+	  lockClass (klass);
+	  if (pool->tags[emi] != CONSTANT_ResolvedMethod)
+	    {
+	      pool->tags[emi] = CONSTANT_ResolvedMethod;
+	      pool->data[emi] = (ConstSlot)method;
+	    }
+	  else
+	    method = (Method*)pool->data[emi];
+	  unlockClass (klass);
+	}
+      break;
+    case CONSTANT_ResolvedMethod:
+      method = (Method *)pool->data[emi];
+      break;
+    default:
+      return NULL;
+    }
+
+  if (method == NULL || METHOD_IS_CONSTRUCTOR (method))
+    return NULL;
+
+  methodSlot = method - CLASS_METHODS(klass);
+  assert(methodSlot < CLASS_NMETHODS(klass));
+  
+  return KaffeVM_makeReflectMethod(klass, methodSlot);
+}
+
+struct Hjava_lang_String*
+java_lang_VMClass_getClassSignature(struct Hjava_lang_Class* klass)
+{
+  if (klass->extSignature == NULL)
+    return NULL;
+
+  return utf8Const2Java(klass->extSignature);
+}
+
+jboolean
+java_lang_VMClass_isAnonymousClass(struct Hjava_lang_Class* klass)
+{
+  /* We do not follow the specification exactly here. However we may want to be
+   * compatible. Testcase ?
+   */
+  return ((klass->kFlags & KFLAG_ANONYMOUS) != 0);
+}
+
+
+jboolean
+java_lang_VMClass_isLocalClass(struct Hjava_lang_Class* klass)
+{
+  return (klass->enclosingClassIndex != 0);
+}
+
+jboolean
+java_lang_VMClass_isMemberClass(struct Hjava_lang_Class* klass)
+{
+  return (klass->this_inner_index >= 0);
+}
+

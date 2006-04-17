@@ -38,8 +38,6 @@ exception statement from your version. */
 
 package javax.swing;
 
-import gnu.classpath.NotImplementedException;
-
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Point;
@@ -249,14 +247,59 @@ public class MenuSelectionManager
   }
 
   /**
-   * DOCUMENT ME!
+   * Processes key events on behalf of the MenuElements. MenuElement
+   * instances should always forward their key events to this method and
+   * get their {@link MenuElement#processKeyEvent(KeyEvent, MenuElement[],
+   * MenuSelectionManager)} eventually called back.
    *
-   * @param e DOCUMENT ME!
+   * @param e the key event
    */
   public void processKeyEvent(KeyEvent e)
-    throws NotImplementedException
   {
-    throw new UnsupportedOperationException("not implemented");
+    MenuElement[] selection = (MenuElement[])
+                    selectedPath.toArray(new MenuElement[selectedPath.size()]);
+    MenuElement[] path;
+    for (int index = selection.length - 1; index >= 0; index--)
+      {
+        MenuElement el = selection[index];
+        // This method's main purpose is to forward key events to the
+        // relevant menu items, so that they can act in response to their
+        // mnemonics beeing typed. So we also need to forward the key event
+        // to all the subelements of the currently selected menu elements
+        // in the path.
+        MenuElement[] subEls = el.getSubElements();
+        path = null;
+        for (int subIndex = 0; subIndex < subEls.length; subIndex++)
+          {
+            MenuElement sub = subEls[subIndex];
+            // Skip elements that are not showing or not enabled.
+            if (sub == null || ! sub.getComponent().isShowing()
+                || ! sub.getComponent().isEnabled())
+              {
+                continue;
+              }
+
+            if (path == null)
+              {
+                path = new MenuElement[index + 2];
+                System.arraycopy(selection, 0, path, 0, index + 1);
+              }
+            path[index + 1] = sub;
+            sub.processKeyEvent(e, path, this);
+            if (e.isConsumed())
+              break;
+          }
+        if (e.isConsumed())
+          break;
+      }
+
+    // Dispatch to first element in selection if it hasn't been consumed.
+    if (! e.isConsumed())
+      {
+        path = new MenuElement[1];
+        path[0] = selection[0];
+        path[0].processKeyEvent(e, path, this);
+      }
   }
 
   /**
@@ -363,7 +406,7 @@ public class MenuSelectionManager
       {
 	oldSelectedItem = (MenuElement) selectedPath.get(i);
 
-	if (path[i].equals(oldSelectedItem))
+	if ((i + 1) < path.length && path[i + 1].equals(oldSelectedItem))
 	  break;
 
 	oldSelectedItem.menuSelectionChanged(false);

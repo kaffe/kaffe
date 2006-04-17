@@ -120,23 +120,19 @@ public class ViewportLayout implements LayoutManager, Serializable
   }
 
   /**
-   * Layout the view and viewport to respect the following rules. These are
-   * not precisely the rules described in sun's javadocs, but they are the
-   * rules which sun's swing implementation follows, if you watch its
-   * behavior:
-   *
-   * <ol> 
-   * 
-   * <li>If the port is smaller than the view, leave the view at its
-   * current size.</li>
+   * Layout the view and viewport to respect the following rules. These are not
+   * precisely the rules described in sun's javadocs, but they are the rules
+   * which sun's swing implementation follows, if you watch its behavior:
+   * <ol>
+   * <li>If the port is smaller than the view, leave the view at its current
+   * size.</li>
    * <li>If the view is smaller than the port, the view is top aligned.</li>
-   * <li>If the view tracks the port size, the view position is always zero
-   * and the size equal to the viewport size</li>
+   * <li>If the view tracks the port size, the view position is always zero and
+   * the size equal to the viewport size</li>
    * <li>In {@link JViewport#setViewSize(Dimension)}, the view size is never
    * set smaller that its minimum size.</li>
-   *
    * </ol>
-   *
+   * 
    * @see JViewport#getViewSize
    * @see JViewport#setViewSize
    * @see JViewport#getViewPosition
@@ -147,7 +143,7 @@ public class ViewportLayout implements LayoutManager, Serializable
     // The way to interpret this function is basically to ignore the names
     // of methods it calls, and focus on the variable names here. getViewRect
     // doesn't, for example, return the view; it returns the port bounds in
-    // view space. Likwise setViewPosition doesn't reposition the view; it 
+    // view space. Likwise setViewPosition doesn't reposition the view; it
     // positions the port, in view coordinates.
 
     JViewport port = (JViewport) parent;
@@ -156,7 +152,7 @@ public class ViewportLayout implements LayoutManager, Serializable
     if (view == null)
       return;
 
-    // These dimensions and positions are in *view space*.  Do not mix
+    // These dimensions and positions are in *view space*. Do not mix
     // variables in here from port space (eg. parent.getBounds()). This
     // function should be entirely in view space, because the methods on
     // the viewport require inputs in view space.
@@ -185,20 +181,23 @@ public class ViewportLayout implements LayoutManager, Serializable
             portBounds.y = 0;
           }
       }
-    else
+
+    // The scroll pane manages the view size itself.
+    if (! (port.getParent() instanceof JScrollPane) )
       {
         if (viewPref.width < portBounds.width)
           viewPref.width = portBounds.width;
         if (viewPref.height < portBounds.height)
           viewPref.height = portBounds.height;
-
-        // If the view is larger than the port, the port is top and right aligned.
-        if (portLowerRight.x > viewPref.width)
-          portBounds.x = 0;
-
-        if (portLowerRight.y > viewPref.height)
-          portBounds.y = 0;
       }
+
+    // If the view is larger than the port, the port is top and right
+    // aligned.
+    if (portLowerRight.x > viewPref.width)
+      portBounds.x = 0;
+
+    if (portLowerRight.y > viewPref.height)
+      portBounds.y = 0;
 
     port.setViewSize(viewPref);
     port.setViewPosition(portBounds.getLocation());

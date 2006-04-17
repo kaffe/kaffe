@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package javax.swing.plaf.basic;
 
+import gnu.classpath.NotImplementedException;
+
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -1137,7 +1139,7 @@ public abstract class BasicTextUI extends TextUI
   public int getNextVisualPositionFrom(JTextComponent t, int pos,
                                        Position.Bias b, int direction,
                                        Position.Bias[] biasRet)
-    throws BadLocationException
+    throws BadLocationException, NotImplementedException
   {
     return 0; // TODO: Implement me.
   }

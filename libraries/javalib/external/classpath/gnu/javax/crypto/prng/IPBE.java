@@ -40,8 +40,6 @@ package gnu.javax.crypto.prng;
 
 /**
  * <p>Trivial interface to group Password-based encryption property names.</p>
- *
- * @version $Revision: 1.1 $
  */
 public interface IPBE
 {

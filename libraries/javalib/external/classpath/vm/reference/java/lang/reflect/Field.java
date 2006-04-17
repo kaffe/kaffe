@@ -1,5 +1,5 @@
 /* java.lang.reflect.Field - reflection of Java fields
-   Copyright (C) 1998, 2001 Free Software Foundation, Inc.
+   Copyright (C) 1998, 2001, 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -39,6 +39,8 @@ exception statement from your version. */
 package java.lang.reflect;
 
 import gnu.java.lang.ClassHelper;
+
+import gnu.java.lang.reflect.FieldSignatureParser;
 
 /**
  * The Field class represents a member variable of a class. It also allows
@@ -212,6 +214,16 @@ extends AccessibleObject implements Member
     return sb.toString();
   }
  
+  public String toGenericString()
+  {
+    StringBuffer sb = new StringBuffer(64);
+    Modifier.toString(getModifiers(), sb).append(' ');
+    sb.append(getGenericType()).append(' ');
+    sb.append(getDeclaringClass().getName()).append('.');
+    sb.append(getName());
+    return sb.toString();
+  }
+
   /**
    * Get the value of this Field.  If it is primitive, it will be wrapped
    * in the appropriate wrapper type (boolean = java.lang.Boolean).<p>
@@ -621,4 +633,30 @@ extends AccessibleObject implements Member
    */
   public native void setDouble(Object o, double value)
     throws IllegalAccessException;
+
+  /**
+   * Return the generic type of the field. If the field type is not a generic
+   * type, the method returns the same as <code>getType()</code>.
+   *
+   * @throws GenericSignatureFormatError if the generic signature does
+   *         not conform to the format specified in the Virtual Machine
+   *         specification, version 3.
+   * @since 1.5
+   */
+  public Type getGenericType()
+  {
+    String signature = getSignature();
+    if (signature == null)
+      return getType();
+    FieldSignatureParser p = new FieldSignatureParser(getDeclaringClass(),
+                                                      signature);
+    return p.getFieldType();
+  }
+
+  /**
+   * Return the String in the Signature attribute for this field. If there
+   * is no Signature attribute, return null.
+   */
+  private native String getSignature();
+
 }

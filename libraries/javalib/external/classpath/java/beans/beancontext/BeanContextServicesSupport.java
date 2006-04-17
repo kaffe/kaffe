@@ -65,8 +65,9 @@ public class BeanContextServicesSupport
   {
     private static final long serialVersionUID = -3263851306889194873L;
 
-    private BCSSChild()
+    BCSSChild(Object targetChild, Object peer)
     {
+      super(targetChild, peer);
     }
   }
 
@@ -166,22 +167,33 @@ public class BeanContextServicesSupport
   public void addBeanContextServicesListener
     (BeanContextServicesListener listener)
   {
-    if (! bcsListeners.contains(listener))
-      bcsListeners.add(listener);
+    synchronized (bcsListeners)
+      {
+        if (! bcsListeners.contains(listener))
+          bcsListeners.add(listener);
+      }
   }
 
-  public boolean addService (Class serviceClass, BeanContextServiceProvider bcsp)
-    throws NotImplementedException
+  public boolean addService (Class serviceClass,
+                             BeanContextServiceProvider bcsp)
   {
-    throw new Error ("Not implemented");
+    return addService(serviceClass, bcsp, true);
   }
 
   protected boolean addService (Class serviceClass,
                                 BeanContextServiceProvider bcsp,
                                 boolean fireEvent)
-    throws NotImplementedException
   {
-    throw new Error ("Not implemented");
+    synchronized (services)
+      {
+        if (services.containsKey(serviceClass))
+          return false;
+        services.put(serviceClass, bcsp);
+        if (bcsp instanceof Serializable)
+          ++serializable;
+        fireServiceAdded(serviceClass);
+        return true;
+      }
   }
   
   protected void bcsPreDeserializationHook (ObjectInputStream ois)
@@ -205,9 +217,8 @@ public class BeanContextServicesSupport
 
   protected BeanContextSupport.BCSChild createBCSChild (Object targetChild,
                                                         Object peer)
-    throws NotImplementedException
   {
-    throw new Error ("Not implemented");
+    return new BCSSChild(targetChild, peer);
   }
 
   protected BeanContextServicesSupport.BCSSServiceProvider
@@ -218,28 +229,44 @@ public class BeanContextServicesSupport
   }
 
   protected final void fireServiceAdded (BeanContextServiceAvailableEvent bcssae)
-    throws NotImplementedException
   {
-    throw new Error ("Not implemented");
+    synchronized (bcsListeners)
+      {
+        int size = bcsListeners.size();
+        for (int i = 0; i < size; ++i)
+          {
+            BeanContextServicesListener bcsl
+              = (BeanContextServicesListener) bcsListeners.get(i);
+            bcsl.serviceAvailable(bcssae);
+          }
+      }
   }
 
   protected final void fireServiceAdded (Class serviceClass)
-    throws NotImplementedException
   {
-    throw new Error ("Not implemented");
+    fireServiceAdded(new BeanContextServiceAvailableEvent(this,
+                                                          serviceClass));
   }
 
   protected final void fireServiceRevoked(BeanContextServiceRevokedEvent event)
-    throws NotImplementedException
   {
-    throw new Error ("Not implemented");
+    synchronized (bcsListeners)
+      {
+        int size = bcsListeners.size();
+        for (int i = 0; i < size; ++i)
+          {
+            BeanContextServicesListener bcsl
+              = (BeanContextServicesListener) bcsListeners.get(i);
+            bcsl.serviceRevoked(event);
+          }
+      }
   }
 
   protected final void fireServiceRevoked (Class serviceClass,
                                            boolean revokeNow)
-    throws NotImplementedException
   {
-    throw new Error ("Not implemented");
+    fireServiceRevoked(new BeanContextServiceRevokedEvent(this, serviceClass,
+                                                          revokeNow));
   }
 
   public BeanContextServices getBeanContextServicesPeer ()
@@ -256,15 +283,22 @@ public class BeanContextServicesSupport
   }
 
   public Iterator getCurrentServiceClasses ()
-    throws NotImplementedException
   {
-    throw new Error ("Not implemented");
+    synchronized (services)
+      {
+        return services.keySet().iterator();
+      }
   }
 
   public Iterator getCurrentServiceSelectors (Class serviceClass)
-    throws NotImplementedException
   {
-    throw new Error ("Not implemented");
+    synchronized (services)
+      {
+        // FIXME: what if service does not exist?  Must write a test.
+        BeanContextServiceProvider bcsp
+          = (BeanContextServiceProvider) services.get(serviceClass);
+        return bcsp.getCurrentServiceSelectors(this, serviceClass);
+      }
   }
 
   public Object getService (BeanContextChild child, Object requestor,
@@ -276,9 +310,11 @@ public class BeanContextServicesSupport
   }
 
   public boolean hasService (Class serviceClass)
-    throws NotImplementedException
   {
-    throw new Error ("Not implemented");
+    synchronized (services)
+      {
+        return services.containsKey(serviceClass);
+      }
   }
 
   public void initialize ()
@@ -311,10 +347,12 @@ public class BeanContextServicesSupport
   public void removeBeanContextServicesListener
     (BeanContextServicesListener listener)
   {
-    int index = bcsListeners.indexOf(listener);
-
-    if (index > -1)
-      bcsListeners.remove(index);
+    synchronized (bcsListeners)
+      {
+        int index = bcsListeners.indexOf(listener);
+        if (index > -1)
+          bcsListeners.remove(index);
+      }
   }
 
   public void revokeService (Class serviceClass, BeanContextServiceProvider bcsp,
@@ -325,14 +363,36 @@ public class BeanContextServicesSupport
   }
 
   public void serviceAvailable (BeanContextServiceAvailableEvent bcssae)
-    throws NotImplementedException
   {
-    throw new Error ("Not implemented");
+    synchronized (services)
+      {
+        Class klass = bcssae.getServiceClass();
+        if (services.containsKey(klass))
+          return;
+        Iterator it = bcsChildren();
+        while (it.hasNext())
+          {
+            Object obj = it.next();
+            if (obj instanceof BeanContextServices)
+              ((BeanContextServices) obj).serviceAvailable(bcssae);
+          }
+      }
   }
 
   public void serviceRevoked (BeanContextServiceRevokedEvent bcssre)
-    throws NotImplementedException
   {
-    throw new Error ("Not implemented");
+    synchronized (services)
+      {
+        Class klass = bcssre.getServiceClass();
+        if (services.containsKey(klass))
+          return;
+        Iterator it = bcsChildren();
+        while (it.hasNext())
+          {
+            Object obj = it.next();
+            if (obj instanceof BeanContextServices)
+              ((BeanContextServices) obj).serviceRevoked(bcssre);
+          }
+      }
   }
 }

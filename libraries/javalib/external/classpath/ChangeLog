@@ -1,3 +1,1405 @@
+2006-04-15  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* javax/accessibility/AccessibleAction.java:
+	(DECREMENT): Added field.
+	(INCREMENT): Likewise.
+	(TOGGLE_EXPAND): Likewise.
+	* javax/accessibility/AccessibleRole.java:
+	(EDITBAR): Added field.
+	(FOOTER): Likewise.
+	(HEADER): Likewise.
+	(PARAGRAPH): Likewise.
+	(PROGRESS_MONITOR): Likewise.
+	(RULER): Likewise.
+	* javax/accessibility/AccessibleState.java:
+	(INDETERMINATE): Added field.
+	(MANAGES_DESCENDANTS): Likewise.
+	(TRUNCATED): Likewise.
+	* vm/reference/java/lang/reflect/Constructor.java:
+	Fixed copyright header to match generics branch.
+	* vm/reference/java/lang/reflect/Field.java:
+	Fixed copyright header to match generics branch.
+	(toGenericString()): Ported from generics branch.
+	(getGenericType()): Likewise.
+	(getSignature()): Likewise.
+
+2006-04-14  Robert Schuster  <robertschuster@fsfe.org>
+
+	* javax/swing/text/DefaultCaret.java:
+	(getBypass): New method.
+	(moveDot): Rewritten.
+	(moveDotImpl): New method.
+	(setDot): Rewritten.
+	(setDotImpl): New method.
+	(DefaultCaret.Bypass): New class.
+
+2006-04-14  Robert Schuster  <robertschuster@fsfe.org>
+
+	* javax/swing/text/AbstractDocument.java:
+	(getBypass): New method.
+	(insertString): Rewritten.
+	(remove): Rewritten.
+	(replace): Rewritten.
+	(insertStringImpl): New method.
+	(removeImpl): New method.
+	(replaceImpl): New method.
+	(AbstractDocument.Bypass): New class.
+
+2006-04-14  Casey Marshall  <csm@gnu.org>
+
+	Fixes PR classpath/24642
+	* NEWS: add note about SecureRandom changes, and addition of
+	VMSecureRandom.
+	* java/security/SecureRandom.java (isSeeded): new field.
+	(setSeed, setSeed): set `isSeeded' to `true.'
+	(nextBytes): seed this instance if `isSeeded' is false.
+	(getSeed): call `generateSeed.'
+	(SECURERANDOM_SOURCE, JAVA_SECURITY_EGD, logger): new constants.
+	(generateSeed, generateSeed): new methods.
+	* vm/reference/java/security/VMSecureRandom.java: new file.
+
+2006-04-14  Robert Schuster  <robertschuster@fsfe.org>
+
+	* javax/swing/text/FieldView.java:
+	(paint): Apply clipping rectangle of the allocation area
+	before painting the text.
+	* javax/swing/text/DefaultHighlighter.java:
+	(DefaultHighlighter.DefaultHighlightPainter): Use SwingUtilities to
+	compute union and intersection,	calculate intersection with allocation
+	area before painting, adjust x and width when painting multiple lines
+	by the range of the allocation area.
+
+2006-04-14  Robert Schuster  <robertschuster@fsfe.org>
+
+	* javax/swing/text/DefaultHighlighter.java:
+	(paintLayeredHighlights): Marked as stub.
+
+2006-04-14  Robert Schuster  <robertschuster@fsfe.org>
+
+	* javax/swing/plaf/basic/BasicTextFieldUI.java:
+	(propertyChanged): Added note, change color only if current background
+	is a ColorUIResource instance.
+
+2006-04-14  Tom Tromey  <tromey@redhat.com>
+
+	* java/beans/beancontext/BeanContextSupport.java (hasNext): No longer
+	a stub.
+	(next): Likewise.
+
+2006-04-14  Tom Tromey  <tromey@redhat.com>
+
+	* javax/swing/JComboBox.java (AccessibleJComboBox): Now public.
+
+2006-04-14  Mark Wielaard  <mark@klomp.org>
+
+	* java/lang/Thread.java (getUncaughtExceptionHandler): Return
+	thread group when exceptionHandler isn't set.
+	* vm/reference/java/lang/VMThread.java (run): Use result of
+	thread.getUncaughtExceptionHandler directly.
+
+2006-04-14  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/JSplitPane.java
+	(AccessibleJSplitPane.getAccessibleStateSet): Implemented,
+	(AccessibleJSplitPane.getAccessibleRole): Implemented,
+	(AccessibleJSplitPane.getAccessibleValue): Implemented,
+	(AccessibleJSplitPane.getCurrentAccessibleValue): Implemented,
+	(AccessibleJSplitPane.setCurrentAccessibleValue): Implemented,
+	(AccessibleJSplitPane.getMinimumAccessibleValue): Implemented,
+	(AccessibleJSplitPane.getMaximumAccessibleValue): Implemented.
+
+2006-04-13  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+	
+	* gnu/javax/crypto/assembly/Assembly.java,
+	* gnu/javax/crypto/assembly/Cascade.java,
+	* gnu/javax/crypto/assembly/CascadeStage.java,
+	* gnu/javax/crypto/assembly/CascadeTransformer.java,
+	* gnu/javax/crypto/assembly/Direction.java,
+	* gnu/javax/crypto/assembly/LoopbackTransformer.java,
+	* gnu/javax/crypto/assembly/ModeStage.java,
+	* gnu/javax/crypto/assembly/Operation.java,
+	* gnu/javax/crypto/assembly/PaddingTransformer.java,
+	* gnu/javax/crypto/assembly/Stage.java,
+	* gnu/javax/crypto/assembly/Transformer.java,
+	* gnu/javax/crypto/cipher/Square.java,
+	* gnu/javax/crypto/jce/cipher/AESSpi.java,
+	* gnu/javax/crypto/jce/cipher/ARCFourSpi.java,
+	* gnu/javax/crypto/jce/cipher/AnubisSpi.java,
+	* gnu/javax/crypto/jce/cipher/BlowfishSpi.java,
+	* gnu/javax/crypto/jce/cipher/CipherAdapter.java,
+	* gnu/javax/crypto/jce/cipher/DESSpi.java,
+	* gnu/javax/crypto/jce/cipher/KhazadSpi.java,
+	* gnu/javax/crypto/jce/cipher/NullCipherSpi.java,
+	* gnu/javax/crypto/jce/cipher/PBES2.java,
+	* gnu/javax/crypto/jce/cipher/RijndaelSpi.java,
+	* gnu/javax/crypto/jce/cipher/SerpentSpi.java,
+	* gnu/javax/crypto/jce/cipher/SquareSpi.java,
+	* gnu/javax/crypto/jce/cipher/TripleDESSpi.java,
+	* gnu/javax/crypto/jce/cipher/TwofishSpi.java,
+	* gnu/javax/crypto/jce/mac/HMacMD2Spi.java,
+	* gnu/javax/crypto/jce/mac/HMacMD4Spi.java,
+	* gnu/javax/crypto/jce/mac/HMacMD5Spi.java,
+	* gnu/javax/crypto/jce/mac/HMacRipeMD128Spi.java,
+	* gnu/javax/crypto/jce/mac/HMacRipeMD160Spi.java,
+	* gnu/javax/crypto/jce/mac/HMacSHA160Spi.java,
+	* gnu/javax/crypto/jce/mac/HMacSHA256Spi.java,
+	* gnu/javax/crypto/jce/mac/HMacSHA384Spi.java,
+	* gnu/javax/crypto/jce/mac/HMacSHA512Spi.java,
+	* gnu/javax/crypto/jce/mac/HMacTigerSpi.java,
+	* gnu/javax/crypto/jce/mac/HMacWhirlpoolSpi.java,
+	* gnu/javax/crypto/jce/mac/MacAdapter.java,
+	* gnu/javax/crypto/jce/mac/TMMH16Spi.java,
+	* gnu/javax/crypto/jce/mac/UHash32Spi.java,
+	* gnu/javax/crypto/jce/mac/UMac32Spi.java,
+	* gnu/javax/crypto/key/dh/DiffieHellmanSender.java,
+	* gnu/javax/crypto/key/srp6/SRP6TLSServer.java,
+	* gnu/javax/crypto/keyring/PrivateKeyEntry.java,
+	* gnu/javax/crypto/mode/IAuthenticatedMode.java,
+	* gnu/javax/crypto/pad/WrongPaddingException.java,
+	* gnu/javax/crypto/prng/ICMGenerator.java,
+	* gnu/javax/crypto/prng/IPBE.java,
+	* gnu/javax/crypto/prng/PBKDF2.java,
+	* gnu/javax/crypto/sasl/ConfidentialityException.java,
+	* gnu/javax/crypto/sasl/IllegalMechanismStateException.java,
+	* gnu/javax/crypto/sasl/srp/IALG.java,
+	* gnu/javax/crypto/sasl/srp/SRPServer.java:
+	Remove CVS revision tags.
+
+2006-04-13  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* javax/swing/plaf/basic/BasicTreeUI.java (getPreferredSize): 
+	Removed debugging code.
+
+2006-04-13  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+ 
+	* javax/swing/JTree.java (getPreferredSize): Return the
+	cloned instance.
+	* javax/swing/ViewportLayout.java (layoutContainer):
+	Do not manage the view size and location if the view is
+	in the scroll pane. Also manage size and location for
+	Scrollable, if it is not in the scroll pane.
+	* javax/swing/plaf/basic/BasicTreeUI.java,
+	* javax/swing/tree/FixedHeightLayoutCache.java,
+	* javax/swing/tree/VariableHeightLayoutCache.java: Rewritten.
+	* gnu/javax/swing/tree/GnuPath.java: New file.
+
+2006-04-13  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/JToolBar.java
+	(AccessibleJToolBar.getAccessibleStateSet): Marked as stub.
+
+2006-04-13  Robert Schuster  <robertschuster@fsfe.org>
+
+	* examples/gnu/classpath/examples/swing/TextAreaDemo.java:
+	(createCustomColoredPanel): Set background color as demo intends,
+	changed custom selection color to red.
+	* examples/gnu/classpath/examples/swing/TextFieldDemo.java:
+	Replaced various single variables with a Compound instance, added
+	custom highlighter demo.
+	(TextFieldDemo.DemoHighlightPainter): New class (taken from
+	TextAreaDemo).
+	(TextFieldDemo.Compound): New class.
+	(createTextFieldCompound): New method.
+	(createLeftAlignedPanel): Rewritten.
+	(createRightAlignedPanel): Rewritten.
+	(createCenteredPanel): Rewritten.
+	(createCustomColoredPanel): Removed.
+	(createCustomColoredPanel1): New method.
+	(createCustomColoredPanel2): New method.
+	(createCustomBordersPanel): New method.
+	(createMiscPanel): Rewritten.
+	(actionPerformed): Rewritten.
+	(createContent): Add panels of new compounds to main panel, put
+	main panel in a JScrollPane.
+	* examples/gnu/classpath/examples/swing/Demo.java:
+	(Demo): Put desktop in a scrollpane.
+	(mkMenuBar): Check availability of MetalLookAndFeel.getCurrentTheme()
+	method via reflection.
+
+2006-04-13  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/plaf/metal/MetalDesktopIconUI.java
+	(createUI): Return new instance rather than shared instance.
+
+2006-04-13  Robert Schuster  <robertschuster@fsfe.org>
+
+	* javax/swing/text/FieldView.java:
+	(checkContainer): Call updateVisibility() at the end.
+
+2006-04-13  Robert Schuster  <robertschuster@fsfe.org>
+
+	* java/awt/event/MouseEvent.java:
+	(paramString): Add value of 'consumed' variable in string.
+
+2006-04-13  Robert Schuster  <robertschuster@fsfe.org>
+
+	PR 26967
+	* javax/swing/JTextField.java: Removed scrollOffset variable.
+	(JTextField): Moved up initialization of horizontalVisibility field.
+	(getScrollOffset): Implemented.
+	(setScrollOffset): Implemented.
+	(getHorizonztalVisibility): Removed note.
+	(scrollRectToVisible): New method.
+	* javax/swing/text/FieldView.java: Added cachedSpan variable.
+	(checkContainer): New method.
+	(updateVisibility): New method.
+	(calculateHorizontalSpan): New method.
+	(adjustAllocation): Removed unneeded local variables, added code
+	to handle scrolling.
+	(getPreferredSpan): Use new method calculateHorizontalSpan,
+	avoid calculation by returning cached value cachedSpan.
+	(paint): Added check whether the hosted component is a JTextField.
+	(insertUpdate): Invalidate cached span value, update visibility
+	if neccessary.
+	(removeUpdate): Dito.
+	(changeUpdate): Dito.
+
+2006-04-13  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/JInternalFrame.java
+	(setTitle): Set old value to 'this.title', not 'title'.
+
+2006-04-13  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/JInternalFrame.java
+	(AccessibleJInternalFrame.getAccessibleName): Implemented,
+	(AccessibleJInternalFrame.getAccessibleRole): Implemented,
+	(AccessibleJInternalFrame.getAccessibleValue): Implemented,
+	(AccessibleJInternalFrame.getCurrentAccessibleValue): Implemented,
+	(AccessibleJInternalFrame.getMaximumAccessibleValue): Implemented,
+	(AccessibleJInternalFrame.getMinimumAccessibleValue): Implemented,
+	(AccessibleJInternalFrame.setCurrentAccessibleValue): Implemented,
+	(JDesktopIcon.AccessibleJDesktopIcon.getAccessibleRole): Implemented,
+	(JDesktopIcon.AccessibleJDesktopIcon.getAccessibleValue): Implemented,
+	(JDesktopIcon.AccessibleJDesktopIcon.getCurrentAccessibleValue): 
+	Implemented,
+	(JDesktopIcon.AccessibleJDesktopIcon.getMaximumAccessibleValue): 
+	Implemented,
+	(JDesktopIcon.AccessibleJDesktopIcon.getMinimumAccessibleValue): 
+	Implemented,
+	(JDesktopIcon.AccessibleJDesktopIcon.setCurrentAccessibleValue): 
+	Implemented,
+	(JInternalFrame()): Use "" for default title,
+	(getAccessibleContext): Updated API docs,
+	(getDesktopIcon): Likewise,
+	(getLayer): Check for layer in client properties, and return 
+	DEFAULT_LAYER if no setting is found,
+	(getTitle): Updated API docs,
+	(setDesktopIcon): Fire property change event.
+
+2006-04-13  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* javax/swing/ScrollPaneLayout.java (layoutContainer):
+	Mind that the presence of one scroll bar may cause the
+	need for another.
+
+2006-04-12  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* gnu/regexp/REToken.java(unicodeAware): New field,
+	(toLowerCase, toUpperCase): New methods.
+	* gnu/regexp/RETokenBackRef.java, gnu/regexp/RETokenChar.java,
+	gnu/regexp/RETokenNamedProperty.java, gnu/regexp/RETokenRange.java:
+	Use toLowerCase and toUpperCase defined in REToken instead of
+	those defined in java.lang.Character.
+	* gnu/regexp/gnu/regexp/RE.java(REG_ICASE_USASCII): New flag.
+	(initialize): Sets unicodeAware of the generated REToken to false if
+	REG_ICASE_USASCII is set.
+	* gnu/regexp/RETokenChar.java(constructor): Don't convert the character
+	to lower case and keep the original value.
+	(matchOneString): Use the new method charEquals to compare characters.
+	(charEquals): New method to compare characters.
+	* java/util/regex/Pattern.java: Sets the flag REG_ICASE_USASCII to true.
+
+2006-04-12  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/event/InternalFrameEvent.java:
+	(paramString): Implemented,
+	updated API docs all over.
+	
+2006-04-12  Casey Marshall  <csm@gnu.org>
+
+	* gnu/javax/crypto/prng/Fortuna.java (setup): call `fillBlock.'
+	(Generator.setup): call `fillBlock.'
+
+2006-04-12  Casey Marshall  <csm@gnu.org>
+
+	Fixes PR classpath/24481.
+	* gnu/java/security/jce/prng/SecureRandomAdapter.java (<init>):
+	initialize the adaptee.
+	(setSeed): call `addRandomBytes;' don't re-initialize the adaptee.
+	* gnu/java/security/prng/MDGenerator.java (addRandomByte,
+	addRandomBytes): new methods.
+
+2006-04-12  Tom Tromey  <tromey@redhat.com>
+
+	* java/io/DataOutputStream.java (writeUTF): Correctly handle zero
+	length strings.
+
+2006-04-12  Lillian Angel  <langel@redhat.com>
+
+	* gnu/xml/dom/DomDocument.java
+	(checkNCName): Removed unneeded part of check.
+	* gnu/xml/dom/DomNode.java
+	(dispatchEvent): Added code to grow ancestors array
+	if needed. Changed checks to use depth of node instead.
+	Fixes an infinite loop and segmentation fault.
+	* gnu/xml/dom/html2/DomHTMLParser.java
+	(handleEndTag): No need to use/make a copy of the node.
+	Causes an infinite loop.
+
+2006-04-12  Tom Tromey  <tromey@redhat.com>
+
+	PR classpath/27131:
+	* java/util/BitSet.java (get): Early return if to==from.
+
+2006-04-12  Mark Wielaard  <mark@klomp.org>
+
+	* java/security/SecureRandom.java (algorithm): New private field.
+	(SecureRandom): Initialize algorithm.
+	(SecureRandom(SecureRandomSpi,Provider,String)): New private
+	constructor.
+	(getInstance): Call 3 argument constructor.
+	(getAlgorithm): New method.
+
+2006-04-12  Mark Wielaard  <mark@klomp.org>
+
+	Port UncaughtExceptionHandler support from generics branch.
+	* NEWS: Document Thread.UncaughtExceptionHandler VMThread change.
+
+2006-04-12  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* java/lang/Thread.java:
+	(setUncaughtExceptionHandler(UncaughtExceptionHandler):
+	Added docs and security check.
+	(getUncaughtExceptionHandler()): Documented.
+	(setDefaultUncaughtExceptionHandler(UncaughtExceptionHandler):
+	Added docs and security check.
+	(getDefaultUncaughtExceptionHandler()): Documented.
+	(getId()): Documented.
+
+2006-04-12  Tom Tromey  <tromey@redhat.com>
+
+	* vm/reference/java/lang/VMThread.java (run): Use thread's
+	uncaught handler.
+	* java/lang/Thread.java (defaultHandler): New field.
+	(setDefaultUncaughtExceptionHandler,
+	getDefaultUncaughtExceptionHandler, setUncaughtExceptionHandler,
+	getUncaughtExceptionHandler): New methods.
+	* java/lang/ThreadGroup.java (ThreadGroup): Implements
+	UncaughtExceptionHandler.
+	(uncaughtException): Use getDefaultUncaughtExceptionHandler.
+
+2006-04-11  Bryce McKinlay  <mckinlay@redhat.com>
+
+	* java/io/DataOutputStream.java (writeUTF): Re-use fixed length byte
+	buffer. Loop only once to determine Utf8 length	when possible. Make
+	the inner loop bounded by buf.length.
+	(getUTFlength): New private method.
+	(buf): New private field.
+
+2006-04-11  Lillian Angel  <langel@redhat.com>
+
+	* gnu/xml/dom/DomNodeIterator.java
+	(nextNode): Moved line of code to avoid an infinite loop.
+	* gnu/xml/dom/html2/DomHTMLAppletElement.java
+	(getCls): New function.
+	(setCls): Likewise.
+	(getSrc): Likewise.
+	(setSrc): Likewise.
+	* gnu/xml/dom/html2/DomHTMLDocument.java:
+	Added DomHTMLEmbedElement to map.
+	(getApplets): Added node name, 'embed'.
+	* gnu/xml/dom/html2/DomHTMLEmbedElement.java:
+	New class.
+	* gnu/xml/dom/html2/DomHTMLObjectElement.java
+	(getJavaCode): New function.
+	(setJavaCode): Likewise.
+	(getObject): Likewise.
+	(setObject): Likewise.
+	(getJavaObject): Likewise.
+	(setJavaObject): Likewise.
+	(getJavaArchive): Likewise.
+	(setJavaArchive): Likewise.
+	(getJavaCodeBase): Likewise.
+	(setJavaCodeBase): Likewise.
+	(getJavaType): Likewise.
+	(setJavaType): Likewise.
+	(setMayscript): Likewise.
+	(getMayscript): Likewise.
+	(setScriptable): Likewise.
+	(getScriptable): Likewise.
+	* gnu/xml/dom/html2/DomHTMLParser.java
+	(parseDocument): Should not check for well formedness
+	when parsing an html document.
+	* java/awt/Window.java
+	(dispatchEvent): Added check to avoid NPE.
+
+2006-04-10  Tom Tromey  <tromey@redhat.com>
+
+	* javax/accessibility/AccessibleStreamable.java (getStream): Fixed
+	name.
+	* javax/accessibility/AccessibleRelation.java (EMBEDS): Fixed value.
+	(SUBWINDOW_OF, SUBWINDOW_OF_PROPERTY): Likewise.
+
+2006-04-10  Robert Schuster  <robertschuster@fsfe.org>
+
+	* javax/swing/plaf/basic/BasicTextUI.java:
+	(getNextVisualPositionFrom): Marked as stub.
+
+2006-04-10  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/basic/BasicLookAndFeel.java
+	(initSystemColorDefaults): Changed to use loadSystemColorDefaults
+	and create the defaults as strings constants.
+	(loadSystemColors): Implemented stubbed method.
+
+2006-04-10  Tom Tromey  <tromey@redhat.com>
+
+	* .settings/org.eclipse.core.resources.prefs: Set encoding for
+	ChangeLog.
+
+2006-04-10  Tom Tromey  <tromey@redhat.com>
+
+	* java/io/CharArrayWriter.java (append): Javadoc fix.
+	(append): Likewise.
+
+2006-04-10  Tom Tromey  <tromey@redhat.com>
+
+	* javax/accessibility/AccessibleTextSequence.java: New file.
+	* javax/accessibility/AccessibleRelation.java (CHILD_NODE_OF): New
+	field.
+	(CHILD_NODE_OF_PROPERTY, EMBEDDED_BY, EMBEDDED_BY_PROPERTY, EMBEDS,
+	EMBEDS_PROPERTY, FLOWS_FROM, FLOWS_FROM_PROPERTY, FLOWS_TO,
+	FLOWS_TO_PROPERTY, PARENT_WINDOW_OF, PARENT_WINDOW_OF_PROPERTY,
+	SUBWINDOW_OF, SUBWINDOW_OF_PROPERTY): Likewise.
+	* javax/accessibility/AccessibleExtendedText.java: New file.
+	* javax/accessibility/AccessibleContext.java
+	(ACCESSIBLE_COMPONENT_BOUNDS_CHANGED): New field.
+	(ACCESSIBLE_INVALIDATE_CHILDREN): Likewise.
+	(ACCESSIBLE_TEXT_ATTRIBUTES_CHANGED): Likewise.
+	* javax/accessibility/AccessibleAttributeSequence.java: New file.
+	* javax/accessibility/AccessibleStreamable.java: New file.
+	* javax/accessibility/AccessibleText.java (getIndexAtPoint): Javadoc
+	fix.
+
+2006-04-10  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* javax/swing/tree/AbstractLayoutCache.java 
+	(getNodeDimensions, getRowsForPath): Implemented.
+	* javax/swing/tree/FixedHeightLayoutCache.java: Rewritten.
+	* javax/swing/tree/VariableHeightLayoutCache.java: Rewritten.
+
+2006-04-10  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/tree/AbstractLayoutCache.java: Reformatted.
+
+2006-04-10  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JInternalFrame.java
+	(AccessibleJInternalFrame): Marked all stubbed methods as such
+	by adding throws NotImplementedException.
+
+2006-04-10  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JFileChooser.java
+	(getAccessibleContext): Don't create a new instance on each
+	call, instead store the accessible context in the
+	accessibleContext field.
+
+2006-04-10  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JComboBox.java
+	(AccessibleJComboBox): Marked all stubbed methods as such
+	by adding throws NotImplementedException.
+
+2006-04-10  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/ActionMap.java
+	(readObject): Removed.
+	(writeObject): Removed.
+
+2006-04-10  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* javax/swing/tree/DefaultTreeSelectionModel.java
+	(addSelectionPaths, setSelectionPaths): Call 
+	insureUniqueness. (clone, setRowMapper): Implemented.
+	* TreePath (path): Marked final.
+
+2006-04-10  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* javax/swing/tree/DefaultTreeSelectionModel.java:
+	Documented and autoformatted. (insureUniqueness):
+	Removed stub marking.
+
+2006-04-09  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/SizeSequence.java
+	(sizes): Don't initialise here,
+	(SizeSequence(int, int)): Initialise sizes field,
+	(SizeSequence(int[])): Clone argument instead of calling setSizes(),
+	(setSize): Do nothing when index is out of bounds,
+	(getIndex): Implemented,
+	(setSizes): Reimplemented,
+	(getSizes): Likewise,
+	(insertEntries): Likewise,
+	(removeEntries): Likewise,
+	plus added API docs all over.
+
+2006-04-09  Audrius Meskauskas  <AudriusA@Bioinformatics.org
+
+	* gnu/CORBA/gnuRequest.java (submit): Do not read any response after
+	one way message and retry after any IOException.
+
+2006-04-09  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* gnu/CORBA/CDR/EncapsulationStream.java (constructor):
+	Set the byte order.
+
+2006-04-09  Wolfgang Baer  <WBaer@gmx.de>
+
+	* org/omg/PortableServer/ServantLocatorPOA.java: 
+	(preinvoke, postinvoke): Remove default implementation.
+	* org/omg/PortableServer/ServantActivatorPOA.java: 
+	(incarnate, etherealize): Remove default implementation.	
+	* org/omg/PortableInterceptor/ObjectReferenceFactory.java: 
+	Extends from ValueBase and not from ObjectReferenceFactoryOperations.
+	(make_object): Moved method from ObjectReferenceFactoryOperations.
+	* org/omg/PortableInterceptor/ObjectReferenceFactoryOperations.java: 
+	Removed unspecified interface.	
+	* org/omg/DynamicAny/_DynAnyStub.java:
+	(_DynAnyStub(Delegate)): Removed constructor.
+	* org/omg/DynamicAny/_DynArrayStub.java,
+	* org/omg/DynamicAny/_DynAnyFactoryStub.java,
+	* org/omg/DynamicAny/_DynEnumStub.java,
+	* org/omg/DynamicAny/_DynFixedStub.java,
+	* org/omg/DynamicAny/_DynSequenceStub.java,
+	* org/omg/DynamicAny/_DynStructStub.java,
+	* org/omg/DynamicAny/_DynUnionStub.java,
+	* org/omg/DynamicAny/_DynValueStub.java: 
+	Extend from ObjectImpl and not from _DynAnyStub.
+	(type, next, destroy, copy, rewind, assign, component_count, 
+	current_component, equal, from_any, get_any, get_boolean, get_char, 
+	get_double, get_dyn_any, get_float, get_long, get_longlong, get_octet, 
+	get_reference, get_short, get_string, get_typecode, get_ulong, 
+	get_ulonglong, get_ushort, get_val, get_wchar, get_wstring, insert_any,
+	insert_boolean, insert_char, insert_double, insert_dyn_any, insert_float,
+	insert_long, insert_longlong, insert_octet, insert_reference, 
+	insert_short, insert_string, insert_typecode, insert_ulong, 
+	insert_ulonglong, insert_ushort, insert_val, insert_wchar, 
+	insert_wstring, seek, to_any): New methods copied from _DynAnyStub.		
+	* org/omg/CosNaming/_BindingIteratorStub.java:
+	(_BindingIteratorStub(Delegate)): Made package private.
+	* org/omg/CosNaming/_NamingContextExtStub.java:
+	(_NamingContextExtStub(Delegate)): Made package private.
+	* org/omg/CosNaming/_NamingContextStub.java:
+	(_NamingContextStub(Delegate)): Made package private.
+	(throw4, throw5): Likewise.
+	* gnu/CORBA/NamingService/NameParser.java (resolve): 
+	Adapt to package private constructor. Use _set_delegate instead.	
+	* org/omg/CosNaming/NamingContextOperations.java: Do not extend IDLEntity.
+	* org/omg/CORBA/ORB.java: 
+	(create_recursive_sequence_tc): Made abstract.
+	(get_default_context): Likewise.
+	* gnu/CORBA/OrbRestricted.java: 
+	(create_recursive_sequence_tc): New moved method.
+	(get_default_context): Likewise.	
+	* org/omg/CORBA/ParameterMode.java: 
+	(PARAM_IN, PARAM_OUT, PARAM_INOUT): Made final.	
+
+2006-04-09  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* gnu/CORBA/GIOP/MessageHeader.java (write): 
+	More informative exception.
+	* gnu/CORBA/IorDelegate.java (release): Do not close the socket.
+	* gnu/CORBA/SocketRepository.java (get_socket):
+	Removed debugging code.
+
+2006-04-09  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* gnu/CORBA/gnuRequest.java (submit): Try to read the response for the
+	one way message, but ignore if EOF was received.
+	* gnu/CORBA/GIOP/MessageHeader.java (read): Set the minor code to
+	Minor.EOF if the end of file is received instead of the header.
+
+2006-04-09  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/metal/MetalRootPaneUI.java
+	(MetalTitlePane.IconifyAction): New inner class.
+	(MetalTitlePane.MaximizeAction): New inner class.
+	(MetalTitlePane.createActions): Create iconifyAction and
+	maximizeAction.
+	(MetalRootLayout.titlePane): New field.
+	(MetalRootLayout.MetalRootLayout): Take titlePane parameter in
+	constructor.
+	(MetalRootLayout.preferredLayoutSize): Changed to not make
+	assumptions about the actual component order.
+	(MetalRootLayout.layoutContainer): Changed to not make
+	assumptions about the actual component order.
+	(installWindowDecorations): Pass the titlePane as parameter to
+	the MetalRootLayout constructor.
+	(uninstallWindowDecorations): Changed to not make
+	assumptions about the actual component order.
+
+2006-04-08  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/metal/MetalRootPaneUI.java
+	(MetalTitlePane.MouseHandler): New inner class to handle dragging
+	of frames.
+	(MetalTitlePane.installListeners): Don't register a focus listener
+	on the window. This is a potential memory leak and must be
+	implemented on a different way. Install mouse listener here.
+	(installWindowDecorations): Fixed assertion condition. Always
+	insert the window decoration at index#1 in the layered 
+	pane.
+
+2006-04-08  Roman Kennke  <kennke@aicas.com>
+
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkWindowPeer.c
+	(Java_gnu_java_awt_peer_gtk_GtkWindowPeer_nativeSetBoundsUnlocked):
+	Only resize window if actual width or height value changes.
+	Avoids nasty flicker when only setLocation() is beeing called
+	on a window.
+
+2006-04-08  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* gnu/CORBA/GIOP/MessageHeader.java (read): Throw more informative
+	exception if the magic sequence does not match.
+
+2006-04-08  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* gnu/CORBA/gnuRequest.java (p_invoke, submit): Do not try to read
+	response for the one way messages.
+
+2006-04-08  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/MenuSelectionManager.java
+	(processKeyEvent): Implemented stub method.
+	* javax/swing/JMenu.java
+	(processKeyEvent): Implemented stub method.
+	* javax/swing/JMenu.java
+	(processKeyEvent): Implemented stub method.
+	(processMenuKeyEvent): Implemented stub method.
+
+2006-04-08  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/AbstractAction.java
+	(readObject): Removed unneeded method.
+	(writeObject): Removed unneeded method.
+
+2006-04-08  Wolfgang Baer  <WBaer@gmx.de>
+
+	* javax/swing/plaf/synth/SynthPainter.java: 
+	(paintSplitPaneDividerBorder): Removed.
+
+2006-04-08  Wolfgang Baer  <WBaer@gmx.de>
+
+	* javax/swing/plaf/basic/BasicInternalFrameTitlePane.java: 
+	(CLOSE_CMD, ICONIFY_CMD, MAXIMIZE_CMD, MOVE_CMD, RESTORE_CMD, SIZE_CMD):
+	No longer constants.
+	(static_initializer): Added to initialize above fields.
+	* javax/accessibility/AccessibleRelation.java (LABEL_FOR, LABELED_BY, 
+	MEMBER_OF, CONTROLLER_FOR, CONTROLLED_BY): No longer constants.
+	(static_initializer): Added to initialize above fields.
+
+2006-04-08  Wolfgang Baer  <WBaer@gmx.de>
+
+	* java/awt/Dialog.java: Improved documentation all over.
+	(Dialog(Frame)): If gc is null use the owners GraphicsConfiguration.
+	(Dialog(Dialog)): Likewise.
+
+2006-04-08  Mark Wielaard  <mark@klomp.org>
+
+	* java/util/jar/JarFile.java (provider): New static field.
+	(verify, verifyHashes, EntryInputStream.<init>): Pass provider
+	to `getInstance.'
+
+2006-04-08  Mark Wielaard  <mark@klomp.org>
+
+	PR 27081
+	* java/lang/StackTraceElement.java (toString): Don't add space
+	between type and source indicator.
+
+2006-04-07  Casey Marshall  <csm@gnu.org>
+
+	Fixes PR classpath/24464	
+	* java/util/jar/JarFile.java (verify, verifyHashes,
+	EntryInputStream.<init>): pass the Gnu provider directly to
+	`getInstance.'
+
+2006-04-08  Raif S. Naffah  <raif@swiftdsl.com.au>
+
+	PR classpath/27071
+	* gnu/java/security/hash/Whirlpool.java: Updated documentation.
+	(DIGEST0): Use version 3 test vector.
+	(Sd): Removed.
+	(S_box): New field: Version 3 S-box values.
+	(<clinit>): Use Version 3 circulant matrix to construct lookup tables.
+	(transform): Formating.
+	(padBuffer): Likewise.
+	(getResult): Likewise.
+	(selfTest): Likewise.
+
+2006-04-07  Tom Tromey  <tromey@redhat.com>
+
+	* java/util/InvalidPropertiesFormatException.java
+	(serialVersionUID): New field.
+	(readObject, writeObject): New methods.
+	* java/util/Arrays.java (toString): Javadoc fixes.
+	* java/net/URLConnection.java: Cleaned up imports.
+	* java/lang/reflect/ParameterizedType.java: Javadoc fix.
+	* java/lang/reflect/MalformedParameterizedTypeException.java
+	(serialVersionUID): New field.
+	* java/lang/reflect/GenericSignatureFormatError.java
+	(serialVersionUID): New field.
+	* java/lang/Class.java (Class): Javado fixes.
+	(getComponentType): Likewise.
+	(getGenericInterfaces): Likewise.
+	(getTypeParameters): Likewise.
+	* java/io/CharArrayWriter.java (append): Javadoc fixes.
+	* java/lang/annotation/AnnotationFormatError.java (serialVersionUID):
+	New field.
+	* java/lang/TypeNotPresentException.java (serialVersionUID): New
+	field.
+	* java/lang/EnumConstantNotPresentException.java (serialVersionUID):
+	New field.
+
+2006-04-07  Wolfgang Baer  <WBaer@gmx.de>
+
+	* java/awt/Dialog.java 
+	(AccessibleAWTDialog): Added api docs
+	(AccessibleAWTDialog.getAccessibleStateSet):
+	 Renamed from getAccessibleState.
+	* java/awt/Frame.java 
+	(AccessibleAWTFrame): Added api docs
+	(AccessibleAWTFrame.getAccessibleStateSet):
+	 Renamed from getAccessibleState.
+
+2006-04-07  Wolfgang Baer  <WBaer@gmx.de>
+
+	* java/awt/Dialog.java: Reformatted.
+
+2006-04-07  Lillian Angel  <langel@redhat.com>
+
+	* java/awt/Component.java
+	(eventTypeEnabled): Added code for HierarchyEvent.HIERARCHY_CHANGED,
+	HierarchyEvent.ANCESTOR_MOVED and HierarchyEvent.ANCESTOR_RESIZED.
+
+2006-04-07  Tom Tromey  <tromey@redhat.com>
+
+	* java/beans/beancontext/BeanContextMembershipEvent.java
+	(serialVersionUID): New field.
+	* java/beans/beancontext/BeanContextServicesSupport.java
+	(addBeanContextServicesListener): Synchronize.
+	(addService): Implemented.
+	(createBCSChild): Implemented.
+	(BCSSChild): Added arguments.
+	(fireServiceAdded): Implemented.
+	(fireServiceRevoked): Implemented.
+	(getCurrentServiceSelectors): Implemented.
+	(hasService): Implemented.
+	(removeBeanContextServicesListener): Implemented.
+	(serviceAvailable): Implemented.
+	(serviceRevoked): Implemented.
+	* java/beans/beancontext/BeanContextSupport.java (BCSChild): Added
+	arguments.
+	(createBCSChild): Implemented.
+	(BeanContextSupport): 
+	(addBeanContextMembershipListener): Synchronize.
+	(fireChildrenAdded): Implemented.
+	(fireChildrenRemoved): Implemented.
+	(BeanContextSupport): Use default locale.
+	(isEmpty): Implemented.
+	(isDesignTime): Implemented.
+	(size): Implemented.
+	(toArray): Synchronized.
+	(toArray): Likewise.
+	(iterator): Likewise.
+	(BCSIterator): Implemented.
+	(bcsChildren): Implemented.
+	(validatePendingAdd): Implemented.
+	(validatePendingRemove): Likewise.
+	(childJustAddedHook): Implemented.
+	(childJustRemovedHook): Likewise.
+	(classEquals): Likewise.
+	(toArray): Mark as stub.
+	(setDesignTime): Implemented.
+	(copyChildren): Implemented.
+	(containsKey): Implemented.
+	(contains): Likewise.
+	(containsAll): Likewise.
+	(getResource): Implemented.
+	(getResourceAsStream): Likewise.
+	(removeBeanContextMembershipListener): Likewise.
+	* java/beans/beancontext/BeanContextServiceRevokedEvent.java
+	(serialVersionUID): New field.
+	* java/beans/beancontext/BeanContextServiceAvailableEvent.java
+	(serialVersionUID): New field.
+	* java/beans/beancontext/BeanContext.java (instantiateChild): Javadoc
+	fix.
+
+2006-04-06  Roman Kennke  <kennke@aicas.com>
+
+	PR 26937
+	* javax/swing/MenuSelectionManager.java
+	(setSelectedPath): Search one more item in the loop.
+	
+2006-04-06  Tom Tromey  <tromey@redhat.com>
+
+	* java/awt/image/renderable/RenderableImageProducer.java
+	(image, context, consumers): New fields.
+	(RenderableImageProducer): Implemented.
+	(setRenderContext): Likewise.
+	(addConsumer): Likewise.
+	(isConsumer): Likewise.
+	(removeConsumer): Likewise.
+	(startProduction): Likewise.
+
+2006-04-06  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/Component.java
+	(AccessibleAWTComponent.getBounds): Return the component
+	bounds regardless of its showing state.
+	(AccessibleAWTComponent.getLocation): Return the component
+	location regardless of its showing state.
+	(AccessibleAWTComponent.getSize): Return the component
+	size regardless of its showing state.
+
+2006-04-06  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JRootPane.java
+	(getAccessibleContext): New method. Provides an accessibleContext
+	for JRootPanes.
+
+2006-04-06  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/Toolkit.java
+	(initAccessibility): Use the 'gnu.classpath.home.url' property
+	to determine the system confiuration directory.
+	* java/awt/Component.java
+	(dispatchEvent): Trigger Toolkit dispatching here.
+	(dispatchEventImpl): Moved Toolkit dispatching to dispatchEvent,
+	so it can't be overridden by subclasses and is performed in
+	any case.
+
+2006-04-06  Wolfgang Baer  <WBaer@gmx.de>
+	
+	* javax/naming/Binding.java: Added API docs.
+	* javax/naming/NameClassPair.java: Added API docs.
+	(fullName): New field.
+	(setNameInNamespace): New 1.5 method.
+	(getNameInNamespace): Likewise.
+
+2006-04-06  Wolfgang Baer  <WBaer@gmx.de>
+
+	* javax/naming/CompositeName.java: 
+	(readObject): New deserialization method.
+	(writeObject): New serialization method.
+
+2006-03-29  Nektarios K. Papadopoulos  <npapadop at inaccessnetworks.com>
+
+	* javax/security/auth/x500/X500Principal.java
+	(readAttributeValue) Check for separator after quoted value was
+	failing in all cases.
+
+2006-04-06  Mark Wielaard  <mark@klomp.org>
+
+	* java/lang/Class.java (getClassLoader): Don't do security check
+	when loader is null.
+
+2006-04-06  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/Toolkit.java
+	(getDefaultToolkit): Initialize accessibility after setting
+	up the toolkit.
+	(initAccessibility): New helper method to setup accessibility.
+
+2006-04-06  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/AbstractButton.java
+	(AccessibleAbstractButton.getAccessibleIcon): Implemented stub.
+	(AccessibleAbstractButton.getAccessibleRelationSet): Implemented
+	stub.
+	(AccessibleAbstractButton.getIndexAtPoint): Implemented stub.
+	(AccessibleAbstractButton.getAccessibleIcon): Implemented stub.
+	(AccessibleAbstractButton.getCharacterBounds): Implemented stub.
+	(AccessibleAbstractButton.getCharCount): Implemented stub.
+	(AccessibleAbstractButton.getCaretPosition): Implemented stub.
+	(AccessibleAbstractButton.getCharacterAttribute): Implemented stub.
+	(AccessibleAbstractButton.getSelectionStart): Implemented stub.
+	(AccessibleAbstractButton.getSelectionEnd): Implemented stub.
+	(AccessibleAbstractButton.getSelectedText): Implemented stub.
+	(AccessibleAbstractButton.getTextRectangle): Removed unneeded
+	private method.
+
+2006-04-06  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/Component.java
+	(AccessibleAWTComponent.getAccessibleStateSet): Don't handle opaque
+	state here. This is only done in JComponent.
+	* javax/swing/JComponent.java
+	(AccessibleJComponent.getAccessibleStateSet): Handle opaque flag
+	here.
+	(getNextFocusableComponent): Implemented stub method.
+	(grabFocus): Implemented stub method.
+	(unregisterKeyboardAction): Implemented stub method.
+	(setNextFocusableComponent): Implemented stub method.
+	* javax/swing/CompatibilityFocusTraversalPolicy.java: New file.
+	This is a helper class for providing compatibility with the older
+	Swing focus API.
+
+2006-04-06  Wolfgang Baer  <WBaer@gmx.de>
+
+	Fixes bug #26995
+	* javax/naming/directory/BasicAttribute.java,
+	* javax/naming/directory/BasicAttributes.java: 
+	(readObject): New deserialization method.
+	(writeObject): New serialization method.
+
+2006-04-06  Wolfgang Baer  <WBaer@gmx.de>
+
+	* javax/xml/validation/SchemaFactory.java: Corrected since tag.
+	(getErrorHandler): Made method abstract.
+	(setErrorHanlder): Likewise.
+	* gnu/xml/validation/relaxng/RELAXNGSchemaFactory.java
+	(getErrorHandler): Implement abstract method from superclass.
+	(setErrorHandler): Likewise.
+	(errorHandler): New field.
+	* gnu/xml/validation/xmlschema/XMLSchemaSchemaFactory.java: 	
+	(getErrorHandler): Implement abstract method from superclass.
+	(setErrorHandler): Likewise.
+	(errorHandler): New field.	
+	* javax/xml/XMLConstants.java: Corrected since tag.
+	(XMLConstants): Added private constructor.
+	* javax/xml/datatype/Duration.java: Corrected since tag.
+	(multiply): Made method abstract.
+	* javax/xml/datatype/DatatypeConstants.java: Corrected since tag.
+	(DatatypeConstants): Added private constructor.
+	* javax/xml/xpath/XPathConstants.java: Corrected since tag.
+	(XPathConstants): Added private constructor.
+
+2006-04-05  Tom Tromey  <tromey@redhat.com>
+
+	* javax/security/auth/kerberos/ServicePermission.java: Now final.
+
+2006-04-05  Tom Tromey  <tromey@redhat.com>
+
+	PR libgcj/26625:
+	* lib/Makefile.am (compile-classes): Touch the output file.
+
+2006-04-05  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/AbstractButton.java
+	(AccessibleAbstractButton.getAccessibleStateSet): Removed handling
+	of the focused state. This is already done in AccessibleAWTComponent.
+
+2006-04-05  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JComponent.java
+	(accessibleContext): Fixed API doc for this field.
+	(AccessibleJComponent.AccessibleFocusHandler): Fixed API docs.
+	(AccessibleJComponent.AccessibleFocusHandler.focusGained):
+	Implemented and added API docs.
+	(AccessibleJComponent.AccessibleFocusHandler.focusLost):
+	Implemented and added API docs.
+	(AccessibleJComponent.AccessibleContainerHandler): Fixed API docs.
+	(AccessibleJComponent.AccessibleContainerHandler.componentAdded):
+	Implemented and added API docs.
+	(AccessibleJComponent.AccessibleContainerHandler.componentRemoved):
+	Implemented and added API docs.
+	(AccessibleJComponent.accessibleContainerHandler): Added API docs.
+	(AccessibleJComponent.accessibleFocusHandler): Added API docs.
+	(AccessibleJComponent.addPropertyChangeListener): Added API docs.
+	(AccessibleJComponent.removePropertyChangeListener): Added API docs.
+	(AccessibleJComponent.getAccessibleStateSet): Simply return
+	super here. Added comment about this.
+
+2006-04-05  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JComponent.java
+	(AccessibleJComponent.addPropertyChangeListener): Install
+	ContainerHandler and FocusHandler here.
+	(AccessibleJComponent.removePropertyChangeListener): Uninstall
+	ContainerHandler and FocusHandler here.
+	(AccessibleJComponent.getAccessibleChildrenCount): Replaced
+	by super.getAccessibleChildrenCount().
+	(AccessibleJComponent.getAccessibleChild): Replaced
+	by super.getAccessibleChild().
+	(AccessibleJComponent.getAccessibleStateSet): Implemented by
+	adding OPAQUE to the supported states.
+	(AccessibleJComponent.getAccessibleName): Added titled border
+	and label fallbacks.
+	(AccessibleJComponent.getAccessibleDescription): Added tooltip
+	and label fallbacks.
+	(AccessibleJComponent.getAccessibleRole): Removed TODO.
+	(AccessibleJComponent.getAccessibleKeyBinding): Added comment
+	explaining why return null seems correct here.
+	* javax/swing/JLabel.java
+	(LABEL_PROPERTY): New constant.
+	(setLabelFor): Store label in labeled component's client properties
+	for the AccessibleJComponent to read.
+
+2006-04-05  Tom Tromey  <tromey@redhat.com>
+
+	* java/util/zip/ZipFile.java (available): Defer to super if
+	entry's size is unknown.
+
+2006-04-05  Tom Tromey  <tromey@redhat.com>
+
+	* java/net/MimeTypeMapper.java (MimeTypeMapper): Look for system
+	property with mime.types name.
+	* gnu/classpath/SystemProperties.java: Set
+	gnu.classpath.mime.types.file if not already set.
+	* java/net/URLConnection.java (defaultFactory): New field.
+	(guessContentTypeFromStream): Mark as unimplemented.
+	(getContentHandler): Updated with libgcj's implementation.
+	* gnu/java/net/DefaultContentHandlerFactory.java: New file,
+	from libgcj.
+
+2006-04-05  Bryce McKinlay  <mckinlay@redhat.com>
+
+	PR classpath/27028
+	PR classpath/24752
+	* java/util/AbstractList.java (hasNext): Don't throw
+	ConcurrentModificationException. Update Javadoc.
+	(hasPrevious): Likewise.
+	(nextIndex): Likewise.
+	(previousIndex): Likewise.
+	* java/util/HashMap.java (hasNext): Likewise.
+	* java/util/Hashtable.java (hasNext): Likewise.
+	* java/util/IdentityHashMap.java (hasNext): Likewise.
+	* java/util/LinkedHashMap.java (hasNext): Likewise.
+	* java/util/LinkedList.java (nextIndex): Likewise.
+	(previousIndex): Likewise.
+	(hasNext): Likewise.
+	(hasPrevious): Likewise.
+	* java/util/TreeMap.java (hasNext): Likewise.
+	* java/util/WeakHashMap.java (hasNext): Likewise.
+
+2006-04-05  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/AbstractButton.java
+	(AccessibleAbstractButton.getAccessibleStateSet): Implemented stub.
+	(AccessibleAbstractButton.doAccessibleAction): Implemented stub.
+	(AccessibleAbstractButton.getAccessibleAction): Implemented stub.
+	(AccessibleAbstractButton.getAccessibleActionCount): Implemented stub.
+	(AccessibleAbstractButton.getAccessibleActionDescription):
+	Implemented stub.
+	(AccessibleAbstractButton.getAccessibleText): Implemented stub.
+	(AccessibleAbstractButton.getAccessibleAction): Implemented stub.
+	(AccessibleAbstractButton.getCurrentAccessibleValue): Implemented stub.
+	(AccessibleAbstractButton.setCurrentAccessibleValue): Implemented stub.
+	(AccessibleAbstractButton.getMinimumAccessibleValue): Implemented stub.
+	(AccessibleAbstractButton.getMaximumAccessibleValue): Implemented stub.
+
+2006-04-05  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JComboBox.java
+	(selectWithKeyChar): Implemented stubbed method.
+
+2006-04-05  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/LookAndFeel.java
+	(installProperty): New method. Allows primitive typed properties
+	to be handled like UIResources.
+	* javax/swing/AbstractButton.java
+	(clientBorderPaintedSet): New field.
+	(clientRolloverEnabledSet): New field.
+	(clientIconTextGapSet): New field.
+	(clientContentAreaFilledSet): New field.
+	(setRolloverEnabled): Set the client field to true.
+	(setBorderPainted): Likewise.
+	(setIconTextGap): Likewise.
+	(setContentAreaFilled): Likewise.
+	(setUIProperty): New helper method.
+	* javax/swing/JComponent.java
+	(clientOpaqueSet): New field.
+	(clientAutoscrollsSet): New field.
+	(setAutoscrolls): Set the client field to true.
+	(setOpaque): Likewise.
+	(setUIProperty): New helper method.
+	* javax/swing/JDesktopPane.java
+	(clientDragModeSet): New field.
+	(setDragMode): Set the client field to true.
+	(setUIProperty): New helper method.
+	* javax/swing/JSplitPane.java
+	(clientDividerSizeSet): New field.
+	(clientOneTouchExpandableSet): New field.
+	(setDividerSize): Set the client field to true.
+	(setOneTouchExpandable): Likewise.
+	(setUIProperty): New helper method.
+	* javax/swing/JTable.java
+	(clientRowHeightSet): New field.
+	(setRowHeight): Set the client field to true.
+	(setUIProperty): New helper method.
+	* javax/swing/JTree.java
+	(clientRowHeightSet): New field.
+	(clientScrollsOnExpandSet): New field.
+	(clientShowsRootHandlesSet): New field.
+	(setRowHeight): Set the client field to true.
+	(setShowsRootHandles): Likewise.
+	(setScrollsOnExpand): Likewise.
+	(setUIProperty): New helper method.
+
+2006-04-05  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/Component.java
+	(getFont): Don't request the font from the peer's graphics. The
+	graphics should instead get the font from the Component, which might
+	result in a loop.
+	(getFocusCycleAncestor): Don't special case Window.
+	(nextFocus): Moved implementation from the DefaultKeyboardFocusManager
+	to here. Correctly determine the focus cycle root.
+	(transferFocusBackward): Likewise.
+	(transferFocusUpCycle): Likewise.
+	* java/awt/Container.java
+	(transferFocusDownCycle): Moved implementation from
+	DefaultKeyboardFocusManager to here.
+	* java/awt/DefaultKeyboardFocusManager.java
+	(focusPreviousComponent): Moved implementation to
+	Component.transferFocusBackward().
+	(focusNextComponent): Moved implementation to
+	Component.nextFocus().
+	(upFocusCycle): Moved implementation to
+	Component.transferFocusUpCycle().
+	(downFocusCycle): Moved implementation to
+	Container.transferFocusDownCycle().
+
+2006-04-05  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/awt/image/ComponentSampleModel.java
+	(equals): Implemented,
+	(hashCode): Likewise.
+
+2006-04-05  Jeroen Frijters  <jeroen@frijters.net>
+
+	* java/lang/Class.java
+	(cast): New method.
+
+2006-04-05  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/awt/image/ComponentSampleModel.java
+	(getBankIndices): Return a copy of the array, not a reference to the
+	original,
+	(getBandOffsets): Likewise.
+
+2006-04-05  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/awt/image/ComponentSampleModel.java: Added API docs all over.
+
+2006-04-04  Tom Tromey  <tromey@redhat.com>
+
+	* java/net/MimeTypeMapper.java (MimeTypeMapper): Fixed indices.
+
+2006-04-04  Tom Tromey  <tromey@redhat.com>
+
+	* java/net/MimeTypeMapper.java (mime_types): No longer static.
+	(MimeTypeMapper): Initialize.
+	(fillFromFile): New method.
+	(main): New method.
+	(mime_strings): Updated.
+
+2006-04-04  Tom Tromey  <tromey@redhat.com>
+
+	* lib/gen-classlist.sh.in: Correct handle generated files.
+
+2006-04-04  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* gnu/regexp/CharIndexed.java(setAnchor): New method.
+	* gnu/regexp/CharIndexedInputStream.java(setAnchor): New method.
+	* gnu/regexp/CharIndexedCharSequence.java: New file.
+	* gnu/regexp/CharIndexedCharArray.java: Rewritten as an extention of
+	gnu.regexp.CharIndexedCharSequence.
+	* gnu/regexp/CharIndexedString.java: Likewise.
+	* gnu/regexp/CharIndexedStringBuffer.java: Likewise.
+	* gnu/regexp/RE.java(makeCharIndexed): Make a new CharIndexed
+	using CharIndexedCharSequence. Use setAnchor when the input
+	object is already a CharIndexed.
+	* java/util/regex/Matcher.java(inputCharIndexed): New field
+	to be used as a parameter of the RE#getMatch.
+
+2006-04-04  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/awt/image/SampleModel.java: Reformatted.
+
+2006-04-04  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/awt/image/ComponentSampleModel.java
+	(ComponentSampleModel(int, int, int, int, int[])): Added API 
+	documentation,
+	(ComponentSampleModel(int, int, int, int, int[], int[]): Throw 
+	IllegalArgumentException for DataBuffer.TYPE_UNDEFINED, take copies
+	of the bandOffsets and bankIndices arguments, added API documentation,
+	* java/awt/image/SampleModel.java
+	(SampleModel(int, int, int, int): Throw IllegalArgumentException for
+	unrecognised dataTypes, w * h exceeds Integer.MAX_VALUE, and numBands
+	less than or equal to zero, added API documentation.
+
+2006-04-04  Lillian Angel  <langel@redhat.com>
+
+	* java/util/zip/ZipFile.java
+	(getInputStream): Fixed to return size of ZipEntry
+	minus the total bytes read. This guarantees that the 
+	right value is returned even if some bytes have already
+	been read.
+
+2006-04-04  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* javax/imageio/plugins/jpeg/JPEGImageWriteParam.java (messages):
+	Remove static modifier.
+
+2006-04-04  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/awt/image/ComponentSampleModel.java: Reformatted.
+
+2006-04-03  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* javax/imageio/plugins/jpeg/JPEGImageWriteParam.java: New file.
+	* javax/imageio/plugins/jpeg/JPEGImageReadParam.java: Add
+	retrieval instructions to javadoc header.
+	* javax/imageio/ImageWriteParam.java: Fix javadoc for
+	compressionType field.
+	* lib/Makefile.am (propertydirs): Add javax directory.
+	(propertyfiles): Likewise.
+	* resource/javax/imageio/plugins/jpeg/MessagesBundle.properties:
+	New file.
+
+2006-04-03  Tom Tromey  <tromey@redhat.com>
+
+	PR classpath/26971:
+	* javax/naming/directory/BasicAttribute.java: Added missing @since.
+	(BasicAttributeEnumeration.where): Initialize to 0.
+	(BasicAttributeEnumeration.nextElement): Post-increment 'where'.
+
+2006-04-03  Lillian Angel  <langel@redhat.com>
+
+	PR classpath/24596 and PR classpath/26930
+	* java/util/zip/ZipFile.java
+	(getInputStream): Override available function for 
+	InflaterInputStream instance.
+
+2006-04-03  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* gnu/java/lang/reflect/ClassSignatureParser.java,
+	* gnu/java/lang/reflect/FieldSignatureParser.java,
+	* gnu/java/lang/reflect/GenericSignatureParser.java,
+	* gnu/java/lang/reflect/MethodSignatureParser.java,
+	* gnu/java/lang/reflect/TypeImpl.java,
+	* java/lang/Class.java,
+	* java/lang/reflect/GenericDeclaration.java,
+	* java/lang/reflect/MalformedParameterizedTypeException.java,
+	* java/lang/reflect/TypeVariable.java,
+	* java/util/Arrays.java,
+	* vm/reference/java/lang/VMClass.java,
+	* vm/reference/java/lang/reflect/Constructor.java,
+	* vm/reference/java/lang/reflect/Method.java:
+	Incorporate changes from the generics branch.
+
+2005-10-01  Jeroen Frijters  <jeroen@frijters.net>
+
+	* vm/reference/java/lang/reflect/Constructor.java
+	(getSignature): New method.
+	(getGenericExceptionTypes): New method.
+	(getGenericParameterTypes): New method.
+	* vm/reference/java/lang/reflect/Method.java
+	(getSignature): New method.
+	(getGenericExceptionTypes): New method.
+	(getGenericParameterTypes): New method.
+	(getGenericReturnType): New method.
+
+2005-09-30  Jeroen Frijters  <jeroen@frijters.net>
+
+	* gnu/java/lang/reflect/FieldSignatureParser.java: New file.
+	* gnu/java/lang/reflect/ClassSignatureParser.java,
+	gnu/java/lang/reflect/GenericSignatureParser.java,
+	gnu/java/lang/reflect/MethodSignatureParser.java:
+	Finished implementation.
+
+2005-09-25  Jeroen Frijters  <jeroen@frijters.net>
+
+	* gnu/java/lang/reflect/ClassSignatureParser.java,
+	gnu/java/lang/reflect/GenericSignatureParser.java,
+	gnu/java/lang/reflect/MethodSignatureParser.java: New files.
+	* java/lang/Class.java
+	(getGenericInterfaces, getGenericSuperclass, getTypeParameters):
+	Implemented.
+	* vm/reference/java/lang/VMClass.java
+	(getSimpleName, getDeclaredAnnotations, getCanonicalName,
+	getEnclosingClass, getEnclosingConstructor, getEnclosingMethod,
+	isAnonymousClass, isLocalClass, isMemberClass):
+	Removed generic types from signatures.
+	(getGenericInterfaces, getGenericSuperclass, getTypeParameters):
+	Removed.
+	(getClassSignature): New method.
+	* vm/reference/java/lang/reflect/Constructor.java
+	(getTypeParameters): Implemented.
+	* vm/reference/java/lang/reflect/Method.java
+	(getTypeParameters, getSignature): New methods.
+
+2005-06-09  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* java/lang/Class.java:
+	(asSubclass(Class)): Documented.
+	(getCanonicalName()): Implemented.
+	(getEnclosingClass()): Implemented.
+	(getEnclosingConstructor()): Implemented.
+	(getEnclosingMethod()): Implemented.
+	(getGenericInterfaces()): Implemented.
+	(getGenericSuperclass()): Implemented.
+	(getTypeParameters()): Implemented.
+	(isAnonymousClass()): Implemented.
+	(isLocalClass()): Implemented.
+	(isMemberClass()): Implemented.
+	* vm/reference/java/lang/VMClass.java:
+	(getSuperClass(Class<?>)): Updated return type.
+	(getSimpleName(Class<?>)): Use VM methods directly.
+	(getCanonicalName(Class<?>)): Implemented.
+	(getEnclosingClass(Class<?>)): New native method.
+	(getEnclosingConstructor(Class<?>)): New native method.
+	(getEnclosingMethod(Class<?>)): New native method.
+	(getGenericInterfaces(Class<?>)): New native method.
+	(getGenericSuperclass(Class<?>)): New native method.
+	(getTypeParameters(Class<T>)): New native method.
+	(isAnonymousClass(Class<?>)): New native method.
+	(isLocalClass(Class<?>)): New native method.
+	(isMemberClass(Class<?>)): New native method.
+	* vm/reference/java/lang/reflect/Constructor.java:
+	(getTypeParameters()): Changed to native method.
+
+2005-05-05  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* java/lang/Class.java:
+	(getSimpleName()): Implemented.
+	* vm/reference/java/lang/VMClass.java:
+	(getSimpleName()): Reference implementation.
+
+2005-04-20  Tom Tromey  <tromey@redhat.com>
+
+	* java/util/Arrays.java (hashCode): New methods.
+	(deepHashCode): New method.
+	(deepEquals): Likewise.
+	(toString): New methods.
+	(deepToString): New method.
+
+2005-04-04  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* java/lang/Class.java:
+	(isEnum()): New method implemented.
+	(isSynthetic()): New method implemented.
+	(isAnnotation()): New method implemented.
+	* vm/reference/java/lang/VMClass.java:
+	(isEnum()): New native method.
+	(isSynthetic()): New native method.
+	(isAnnotation()): New native method.
+
+2005-03-21  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* java/lang/Class.java:
+	Implements java.lang.reflect.Type
+
+2006-04-03  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* javax/imageio/plugins/jpeg/JPEGImageReadParam.java: New file.
+
 2006-04-03  Tom Tromey  <tromey@redhat.com>
 
 	* javax/security/auth/kerberos/ServicePermission.java: New file.

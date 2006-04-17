@@ -51,7 +51,7 @@ import java.util.Vector;
  * 
  * @since 1.4
  */
-public class ServicePermission
+public final class ServicePermission
     extends Permission
 {
   // FIXME: Enable this when serialization works.

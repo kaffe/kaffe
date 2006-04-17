@@ -624,9 +624,9 @@ public class Window extends Container implements Accessible
       processEvent(e);
     else 
       {
-	if (e.id == ComponentEvent.COMPONENT_RESIZED
-	    || e.id == ComponentEvent.COMPONENT_MOVED)
-	  {
+	if (peer != null && (e.id == ComponentEvent.COMPONENT_RESIZED
+	    || e.id == ComponentEvent.COMPONENT_MOVED))
+            {
 	    Rectangle bounds = peer.getBounds();
 	    x = bounds.x;
 	    y = bounds.y;

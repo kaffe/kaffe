@@ -108,7 +108,6 @@ Java_gnu_classpath_VMSystemProperties_postInit(JNIEnv *env,
       free(prop);
       prop = nextProperty;
     }
-
   userProperties = NULL;
 }
 

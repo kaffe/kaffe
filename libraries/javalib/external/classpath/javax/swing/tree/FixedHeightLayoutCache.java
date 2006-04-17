@@ -1,4 +1,4 @@
-/* FixedHeightLayoutCache.java --
+/* FixedHeightLayoutCache.java -- Fixed cell height tree layout cache
 Copyright (C) 2002, 2004, 2006,  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -37,215 +37,479 @@ exception statement from your version. */
 
 package javax.swing.tree;
 
-import gnu.classpath.NotImplementedException;
-
 import java.awt.Rectangle;
 import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.Set;
+import java.util.Vector;
 
+import javax.swing.UIManager;
 import javax.swing.event.TreeModelEvent;
 
 /**
- * FixedHeightLayoutCache
+ * The fixed height tree layout. This class assumes that all cells in the tree
+ * have the same fixed height. This may be not the case, for instance, if leaves
+ * and branches have different height, of if the tree rows may have arbitrary
+ * variable height. This class will also work if the NodeDimensions are not
+ * set. If they are set, the size calculations are just forwarded to the set
+ * instance. 
  * 
- * @author Andrew Selkirk
+ * @author Audrius Meskauskas
+ * @author Andrew Selkirk 
  */
 public class FixedHeightLayoutCache
 		extends AbstractLayoutCache
 {
+  /**
+   * The cached node record.
+   */
+  class NodeRecord
+  {
+    NodeRecord(int aRow, int aDepth, Object aNode, Object aParent)
+    {
+      row = aRow;
+      depth = aDepth;
+      parent = aParent;
+      node = aNode;
+      
+      isExpanded = expanded.contains(aNode); 
+    }
+    
+    /**
+     * The row, where the tree node is displayed.
+     */
+    final int row;    
+    
+    /**
+     * The nesting depth
+     */
+    final int depth;
+    
+    /**
+     * The parent of the given node, null for the root node.
+     */
+    final Object parent;
+    
+    /**
+     * This node.
+     */
+    final Object node;
+    
+    /**
+     * True for the expanded nodes. The value is calculated in constructor.
+     * Using this field saves one hashtable access operation.
+     */
+    final boolean isExpanded;
+    
+    /**
+     * The cached bounds of the tree row.
+     */
+    Rectangle bounds;
+    
+    /**
+     * The path from the tree top to the given node (computed under first
+     * demand)
+     */
+    private TreePath path;
+    
+    TreePath getPath()
+    {
+      if (path == null)
+        {
+          LinkedList lpath = new LinkedList();
+          NodeRecord rp = this;
+          while (rp != null)
+            {
+              lpath.addFirst(rp.node);
+              if (rp.parent != null)
+                rp = (NodeRecord) nodes.get(rp.parent);
+              else
+                rp = null;
+            }
+          path = new TreePath(lpath.toArray());
+        }
+      return path;
+    }
+  }
 
   /**
-   * Constructor FixedHeightLayoutCache
+   * The set of all expanded tree nodes.
+   */
+  Set expanded = new HashSet();
+  
+  /**
+   * Maps nodes to the row numbers.
+   */
+  Hashtable nodes = new Hashtable();
+  
+  /**
+   * Maps row numbers to nodes.
+   */
+  Hashtable row2node = new Hashtable();
+  
+  /**
+   * If true, the row map must be recomputed before using.
+   */
+  boolean dirty;
+
+  /**
+   * Creates the unitialised instance. Before using the class, the row height
+   * must be set with the {@link #setRowHeight(int)} and the model must be set
+   * with {@link #setModel(TreeModel)}. The node dimensions may not be set.
    */
   public FixedHeightLayoutCache()
-    throws NotImplementedException
   {
-    // TODO
+    // Nothing to do here.
   } 
 
   /**
-   * getRowCount
+   * Get the total number of rows in the tree. Every displayed node occupies the
+   * single row. The root node row is included if the root node is set as
+   * visible (false by default).
    * 
-   * @return int
+   * @return int the number of the displayed rows.
    */
-  public int getRowCount() 
-    throws NotImplementedException
+  public int getRowCount()
   {
-    return 0; // TODO
-  }  
+    if (dirty) update();
+    return row2node.size();
+  } 
+  
+  /**
+   * Refresh the row map.
+   */
+  private final void update()
+  {
+    nodes.clear();
+    row2node.clear();
+
+    Object root = treeModel.getRoot();
+
+    if (rootVisible)
+      {
+        countRows(root, null, 0);
+      }
+    else
+      {
+        int sc = treeModel.getChildCount(root);
+        for (int i = 0; i < sc; i++)
+          {
+            Object child = treeModel.getChild(root, i);
+            countRows(child, root, 1);
+          }
+      }
+    dirty = false;
+  }
+  
+  /**
+   * Recursively counts all rows in the tree.
+   */
+  private final void countRows(Object node, Object parent, int depth)
+  {
+    Integer n = new Integer(row2node.size());
+    row2node.put(n, node);
+    
+    nodes.put(node, new NodeRecord(n.intValue(), depth, node, parent));
+
+    if (expanded.contains(node) || parent == null)
+      {
+        int sc = treeModel.getChildCount(node);
+        int deeper = depth+1;
+        for (int i = 0; i < sc; i++)
+          {
+            Object child = treeModel.getChild(node, i);
+            countRows(child, node, deeper);
+          }
+      }
+  }
 
   /**
-   * invalidatePathBounds
-   * 
-   * @param value0 TODO
+   * This should invalidate the width of the last path component, but 
+   * following the JDK 1.4 API it is not cached and the method should return
+   * without action.
+   * @param path the path being invalidated, ignored.
    */
-  public void invalidatePathBounds(TreePath value0)
-    throws NotImplementedException
+  public void invalidatePathBounds(TreePath path)
   {
-    // TODO
+    // Following JDK 1.4 API, should return without action.
   } 
 
   /**
-   * invalidateSizes
+   * Mark all cached information as invalid.
    */
   public void invalidateSizes()
-    throws NotImplementedException
   {
-    // TODO
+    dirty = true;
   } 
 
   /**
-   * isExpanded
-   * 
-   * @param value0 TODO
-   * @return boolean
+   * Set the expanded state of the given path. The expansion states must be
+   * always updated when expanding and colapsing the tree nodes. Otherwise 
+   * other methods will not work correctly after the nodes are collapsed or
+   * expanded.
+   *
+   * @param path the tree path, for that the state is being set.
+   * @param isExpanded the expanded state of the given path.
    */
-  public boolean isExpanded(TreePath value0)
-    throws NotImplementedException
+  public void setExpandedState(TreePath path, boolean isExpanded)
   {
-    return false; // TODO
-  } 
-
+    if (isExpanded)
+      expanded.add(path.getLastPathComponent());
+    else
+      expanded.remove(path.getLastPathComponent());
+    
+    dirty = true;
+  }
+  
   /**
-   * getBounds
+   * Get the expanded state for the given tree path.
    * 
-   * @param value0 TODO
-   * @param value1 TODO
-   * @return Rectangle
+   * @return true if the given path is expanded, false otherwise.
    */
-  public Rectangle getBounds(TreePath value0, Rectangle value1)
-    throws NotImplementedException
+  public boolean isExpanded(TreePath path)
   {
-    return null; // TODO
+    return expanded.contains(path.getLastPathComponent());
   } 
 
   /**
-   * getPathForRow
+   * Get bounds for the given tree path.
    * 
-   * @param row TODO
-   * @return TreePath
+   * @param path the tree path
+   * @param rect the rectangle, specifying the area where the path should be
+   *          displayed.
+   * @return Rectangle the bounds of the last line, defined by the given path.
+   */
+  public Rectangle getBounds(TreePath path, Rectangle rect)
+  {
+    if (dirty)
+      update();
+    Object last = path.getLastPathComponent();
+    NodeRecord r = (NodeRecord) nodes.get(last);
+    if (r == null)
+      // This node is not visible.
+      return new Rectangle();
+    else
+      {
+        if (r.bounds == null)
+          {
+            Rectangle dim = getNodeDimensions(last, r.row, r.depth, r.isExpanded,
+                                              rect);
+            r.bounds = dim;
+          }
+        return r.bounds;
+      }
+  } 
+
+  /**
+   * Get the path, the last element of that is displayed in the given row.
+   * 
+   * @param row the row
+   * @return TreePath the path
    */
   public TreePath getPathForRow(int row)
-    throws NotImplementedException
   {
-    //TODO
-    return null;
+    if (dirty)
+      update();
+    Object last = row2node.get(new Integer(row));
+    if (last == null)
+      return null;
+    else
+      {
+        NodeRecord r = (NodeRecord) nodes.get(last);
+        return r.getPath();
+      }
   } 
 
   /**
-   * getRowForPath
+   * Get the row, displaying the last node of the given path.
    * 
-   * @param value0 TODO
-   * @return int
+   * @param path the path
+   * @return int the row number or -1 if the end of the path is not visible.
    */
-  public int getRowForPath(TreePath value0)
-    throws NotImplementedException
+  public int getRowForPath(TreePath path)
   {
-    return 0;
+    if (dirty) update();
+
+    NodeRecord r = (NodeRecord) nodes.get(path.getLastPathComponent());
+    if (r == null)
+      return - 1;
+    else
+      return r.row;
   } 
 
   /**
-   * getPathClosestTo
+   * Get the path, closest to the given point.
    * 
-   * @param value0 TODO
-   * @param value1 TODO
-   * @return TreePath
+   * @param x the point x coordinate
+   * @param y the point y coordinate
+   * @return the tree path, closest to the the given point
    */
-  public TreePath getPathClosestTo(int value0, int value1)
-    throws NotImplementedException
+  public TreePath getPathClosestTo(int x, int y)
   {
-    return null; // TODO
+    if (dirty)
+      update();
+
+    // We do not need to iterate because all rows have the same height.
+    int row = y / rowHeight;
+    if (row < 0)
+      row = 0;
+    if (row > getRowCount())
+      row = getRowCount() - 1;
+    
+    if (row < 0)
+      return null; // Empty tree - nothing to return.
+    
+    Object node = row2node.get(new Integer(row));
+    NodeRecord nr = (NodeRecord) nodes.get(node);
+    return nr.getPath();
   } 
 
   /**
-   * getVisibleChildCount
+   * Get the number of the visible childs for the given tree path. If the
+   * node is not expanded, 0 is returned. Otherwise, the number of children
+   * is obtained from the model as the number of children for the last path
+   * component.
    * 
-   * @param value0 TODO
-   * @return int
+   * @param path the tree path 
+   * @return int the number of the visible childs (for row).
    */
-  public int getVisibleChildCount(TreePath value0)  
-    throws NotImplementedException
+  public int getVisibleChildCount(TreePath path)  
   {
-    return 0; // TODO
+    if (isExpanded(path))
+      return 0; 
+    else
+      return treeModel.getChildCount(path.getLastPathComponent());
   } 
 
   /**
-   * getVisiblePathsFrom
+   * Get the enumeration over all visible pathes that start from the given
+   * parent path.
    * 
-   * @param value0 TODO
-   * @return Enumeration
+   * @param parentPath the parent path
+   * @return the enumeration over pathes
    */
-  public Enumeration getVisiblePathsFrom(TreePath value0)
-    throws NotImplementedException
+  public Enumeration getVisiblePathsFrom(TreePath parentPath)
   {
-    return null; // TODO
+    if (dirty)
+      update();
+    Vector p = new Vector(parentPath.getPathCount());
+    Object node;
+    NodeRecord nr;
+
+    for (int i = 0; i < parentPath.getPathCount(); i++)
+      {
+        node = parentPath.getPathComponent(i);
+        nr = (NodeRecord) nodes.get(node);
+        if (nr.row >= 0)
+          p.add(node);
+      }
+    return p.elements();
   }
 
   /**
-   * setExpandedState
+   * Return the expansion state of the given tree path. The expansion state
+   * must be previously set with the 
+   * {@link #setExpandedState(TreePath, boolean)}
    * 
-   * @param value0 TODO
-   * @param value1 TODO
+   * @param path the path being checked
+   * @return true if the last node of the path is expanded, false otherwise.
    */
-  public void setExpandedState(TreePath value0, boolean value1)
-    throws NotImplementedException
+  public boolean getExpandedState(TreePath path)
   {
-    // TODO
-  } 
-
-  /**
-   * getExpandedState
-   * 
-   * @param value0 TODO
-   * @return boolean
-   */
-  public boolean getExpandedState(TreePath value0)
-    throws NotImplementedException
-  {
-    return false; // TODO
+    return expanded.contains(path.getLastPathComponent());
   }
 
   /**
-   * treeNodesChanged
+   * The listener method, called when the tree nodes are changed.
    * 
-   * @param value0 TODO
+   * @param event the change event
    */
-  public void treeNodesChanged(TreeModelEvent value0)
-    throws NotImplementedException
+  public void treeNodesChanged(TreeModelEvent event)
   {
-    // TODO
+    dirty = true;
   } 
 
   /**
-   * treeNodesInserted
+   * The listener method, called when the tree nodes are inserted.
    * 
-   * @param value0 TODO
+   * @param event the change event
    */
-  public void treeNodesInserted(TreeModelEvent value0)
-    throws NotImplementedException
+  public void treeNodesInserted(TreeModelEvent event)
   {
-    // TODO
+    dirty = true;
   } 
 
   /**
-   * treeNodesRemoved
+   * The listener method, called when the tree nodes are removed.
    * 
-   * @param value0 TODO
+   * @param event the change event
    */
-  public void treeNodesRemoved(TreeModelEvent value0)
-    throws NotImplementedException
+  public void treeNodesRemoved(TreeModelEvent event)
   {
-    // TODO
+    dirty = true;
   } 
 
   /**
-   * treeStructureChanged
+   * Called when the tree structure has been changed. 
    * 
-   * @param value0 TODO
+   * @param event the change event
    */
-  public void treeStructureChanged(TreeModelEvent value0)
-    throws NotImplementedException
+  public void treeStructureChanged(TreeModelEvent event)
   {
-    // TODO
+    dirty = true;
   } 
+  
+  /**
+   * Set the tree model that will provide the data.
+   */
+  public void setModel(TreeModel newModel)
+  {
+    super.setModel(newModel);
+    dirty = true;
+  }
+  
+  /**
+   * Inform the instance if the tree root node is visible. If this method
+   * is not called, it is assumed that the tree root node is not visible.
+   * 
+   * @param visible true if the tree root node is visible, false
+   * otherwise.
+   */
+  public void setRootVisible(boolean visible)
+  {
+    rootVisible = visible;
+    dirty = true;
+  }
 
+  /**
+   * Get the node dimensions. If the NodeDimensions are not set, this method
+   * calculates dimensions assuming the fixed row height.
+   * 
+   * @param value the last node in the path
+   * @param row the node row
+   * @param depth the indentation depth
+   * @param expanded true if this node is expanded, false otherwise
+   * @param bounds the area where the tree is displayed
+   */
+  protected Rectangle getNodeDimensions(Object value, int row, int depth,
+                                        boolean expanded, Rectangle bounds)
+  {
+    if (nodeDimensions != null)
+      return nodeDimensions.getNodeDimensions(value, row, depth, expanded,
+                                              bounds);
+    else
+      {
+        Rectangle r = new Rectangle(bounds);
+
+        int indent = depth * UIManager.getInt("Tree.rightChildIndent");
+
+        r.x = indent;
+        r.y = row * getRowHeight();
+        r.width = bounds.width = r.x;
+        r.height = getRowHeight();
+        return r;
+      }
+  }
 }

@@ -1,7 +1,5 @@
-This is
-../../../../../../kaffe/libraries/javalib/external/classpath/doc/vmintegration.info,
-produced by makeinfo version 4.2 from
-../../../../../../kaffe/libraries/javalib/external/classpath/doc/vmintegration.texinfo.
+This is ../../classpath/doc/vmintegration.info, produced by makeinfo
+version 4.8 from ../../classpath/doc/vmintegration.texinfo.
 
    This file contains important information you will need to know if you
 are going to write an interface between GNU Classpath and a Virtual
@@ -20,7 +18,7 @@ File: vmintegration.info,  Node: Top,  Next: Introduction,  Prev: (dir),  Up: (d
 GNU Classpath Hacker's Guide
 ****************************
 
-   This file contains important information you will need to know if you
+This file contains important information you will need to know if you
 are going to write an interface between GNU Classpath and a Virtual
 Machine.
 
@@ -39,13 +37,13 @@ interface.
 
 File: vmintegration.info,  Node: Introduction,  Next: Initialization,  Prev: Top,  Up: Top
 
-Introduction
-************
+1 Introduction
+**************
 
-   The Classpath Project's ambition to be a 100% clean room
-implementation of the standard Java class libraries cannot be fulfilled
-without some level of integration with the Virtual Machine, the
-underlying machinery that actually runs Java.
+The Classpath Project's ambition to be a 100% clean room implementation
+of the standard Java class libraries cannot be fulfilled without some
+level of integration with the Virtual Machine, the underlying machinery
+that actually runs Java.
 
    There are several VMs out there, here is a small list.
 
@@ -131,12 +129,12 @@ reality.
 
 File: vmintegration.info,  Node: Initialization,  Next: Classpath Hooks,  Prev: Introduction,  Up: Top
 
-Initialization
-**************
+2 Initialization
+****************
 
-   The order of initialization, as far as I can tell, doesn't matter
-just yet.  However, when we move to 1.2 support, it probably will
-matter, so we'll have a note in here at that time.
+The order of initialization, as far as I can tell, doesn't matter just
+yet.  However, when we move to 1.2 support, it probably will matter, so
+we'll have a note in here at that time.
 
    The initialization order is currently documented in the
 `Runtime.java' source file.
@@ -144,10 +142,10 @@ matter, so we'll have a note in here at that time.
 
 File: vmintegration.info,  Node: Classpath Hooks,  Next: VM Hooks,  Prev: Initialization,  Up: Top
 
-Classpath Hooks
-***************
+3 Classpath Hooks
+*****************
 
-   The primary method of interaction between Classpath and the VM is via
+The primary method of interaction between Classpath and the VM is via
 the helper classes, which are named after the relevant core library
 class, but include an additional `VM' prefix.  The library classes from
 Classpath call out to these to get certain VM-specific dirty work done.
@@ -179,13 +177,13 @@ implementation.
 
 File: vmintegration.info,  Node: java.lang,  Next: gnu.classpath,  Prev: Classpath Hooks,  Up: Classpath Hooks
 
-`java.lang'
-===========
+3.1 `java.lang'
+===============
 
-   `java.lang' is the core Java package, being imported automatically
-by all classes.  It includes basic classes as `Object' and `String'.  A
-VM must implement at least some parts of this package in order to
-become operable.
+`java.lang' is the core Java package, being imported automatically by
+all classes.  It includes basic classes as `Object' and `String'.  A VM
+must implement at least some parts of this package in order to become
+operable.
 
 * Menu:
 
@@ -207,10 +205,10 @@ become operable.
 
 File: vmintegration.info,  Node: java.lang.VMClass,  Next: java.lang.VMObject,  Prev: java.lang,  Up: java.lang
 
-`java.lang.VMClass'
--------------------
+3.1.1 `java.lang.VMClass'
+-------------------------
 
-   The core class, `java.lang.Class', and the corresponding VM class,
+The core class, `java.lang.Class', and the corresponding VM class,
 `java.lang.VMClass', provide two main functions within GNU Classpath.
 
   1. For basic VM operation, `java.lang.Class' provides the link between
@@ -307,13 +305,12 @@ support, and then only to the degree required.
 
 File: vmintegration.info,  Node: java.lang.VMObject,  Next: java.lang.VMClassLoader,  Prev: java.lang.VMClass,  Up: java.lang
 
-`java.lang.VMObject'
---------------------
+3.1.2 `java.lang.VMObject'
+--------------------------
 
-   `VMObject' is the bridge between the low level `Object' facilities
-such as making a clone, getting the class of the object and the
-wait/notify semantics.  This is accomplished using the following
-`native' methods.
+`VMObject' is the bridge between the low level `Object' facilities such
+as making a clone, getting the class of the object and the wait/notify
+semantics.  This is accomplished using the following `native' methods.
 
    * `getClass(Object)' - Returns the `Class' instance for the object.
      `Class' objects are produced by the VM, as described in *Note VM
@@ -342,10 +339,10 @@ wait/notify semantics.  This is accomplished using the following
 
 File: vmintegration.info,  Node: java.lang.VMClassLoader,  Next: java.lang.VMSystem,  Prev: java.lang.VMObject,  Up: java.lang
 
-`java.lang.VMClassLoader'
--------------------------
+3.1.3 `java.lang.VMClassLoader'
+-------------------------------
 
-   `VMClassLoader' provides methods for defining and resolving core and
+`VMClassLoader' provides methods for defining and resolving core and
 primitive classes, as well as handling resources, packages and
 assertions.  The class is a mixture of `native' methods and Java-based
 implementations, with some of the latter being _stubs_.
@@ -407,10 +404,10 @@ implementations, with some of the latter being _stubs_.
 
 File: vmintegration.info,  Node: java.lang.VMSystem,  Next: java.lang.VMThrowable,  Prev: java.lang.VMClassLoader,  Up: java.lang
 
-`java.lang.VMSystem'
---------------------
+3.1.4 `java.lang.VMSystem'
+--------------------------
 
-   `VMSystem' handles the default I/O streams, provides access to the
+`VMSystem' handles the default I/O streams, provides access to the
 system clock and environment variables and provides methods for
 `System.arraycopy' and the `identityHashCode' of an `Object'.  It
 consists of `native' methods, but the default implementation also
@@ -475,10 +472,10 @@ provides some helper methods to simplify stream creation.
 
 File: vmintegration.info,  Node: java.lang.VMThrowable,  Next: java.lang.VMCompiler,  Prev: java.lang.VMSystem,  Up: java.lang
 
-`java.lang.VMThrowable'
------------------------
+3.1.5 `java.lang.VMThrowable'
+-----------------------------
 
-   `VMThrowable' is used to hold the VM state of a throwable, created
+`VMThrowable' is used to hold the VM state of a throwable, created
 either when a `Throwable' is created or the `fillInStackTrace()' method
 is called (i.e. when the actual stack trace is needed, as a lot of
 exceptions are never actually used).  The actual class has two `native'
@@ -496,10 +493,10 @@ obtain instances, and the other an instance method, `getStackTrace()'.
 
 File: vmintegration.info,  Node: java.lang.VMCompiler,  Next: java.lang.VMDouble,  Prev: java.lang.VMThrowable,  Up: java.lang
 
-`java.lang.VMCompiler'
-----------------------
+3.1.6 `java.lang.VMCompiler'
+----------------------------
 
-   `VMCompiler' provides an interface for VMs which wish to provide JIT
+`VMCompiler' provides an interface for VMs which wish to provide JIT
 compilation support.  The default implementation is simply a series of
 stubs. The property, `java.compiler', should point to a library
 containing the function `java_lang_Compiler_start()' if such support is
@@ -521,10 +518,10 @@ to be provided.
 
 File: vmintegration.info,  Node: java.lang.VMDouble,  Next: java.lang.VMFloat,  Prev: java.lang.VMCompiler,  Up: java.lang
 
-`java.lang.VMDouble'
---------------------
+3.1.7 `java.lang.VMDouble'
+--------------------------
 
-   `VMDouble' provides native support for the conversion and parsing of
+`VMDouble' provides native support for the conversion and parsing of
 doubles.
 
    * `doubleToLongBits(double)' - Converts the double to the IEEE 754
@@ -555,10 +552,10 @@ implementation optional.
 
 File: vmintegration.info,  Node: java.lang.VMFloat,  Next: java.lang.VMProcess,  Prev: java.lang.VMDouble,  Up: java.lang
 
-`java.lang.VMFloat'
--------------------
+3.1.8 `java.lang.VMFloat'
+-------------------------
 
-   `VMFloat' provides native support for the conversion of floats.
+`VMFloat' provides native support for the conversion of floats.
 
    * `floatToIntBits(float)' - Converts the float to the IEEE 754 bit
      layout, collapsing NaNs to `0x7fc00000'.
@@ -575,10 +572,10 @@ implementation optional.
 
 File: vmintegration.info,  Node: java.lang.VMProcess,  Next: java.lang.VMRuntime,  Prev: java.lang.VMFloat,  Up: java.lang
 
-`java.lang.VMProcess'
----------------------
+3.1.9 `java.lang.VMProcess'
+---------------------------
 
-   `VMProcess' handles the execution of external processes.  In the
+`VMProcess' handles the execution of external processes.  In the
 default implementation, threads are spawned and reaped by
 `ProcessThread'.  A constructor creates a new `VMProcess', which
 extends rather than complements `Process', using an array of arguments,
@@ -604,15 +601,15 @@ optional.  These use the POSIX functions, `fork()', `waitpid()' and
 
 File: vmintegration.info,  Node: java.lang.VMRuntime,  Next: java.lang.VMString,  Prev: java.lang.VMProcess,  Up: java.lang
 
-`java.lang.VMRuntime'
----------------------
+3.1.10 `java.lang.VMRuntime'
+----------------------------
 
-   The `VMRuntime' class provides a series of native methods which
-divulge information about the runtime or invoke certain operations.
-This includes retrieving the amount of available memory, and scheduling
-the garbage collector.  There are two exceptions: the
-`enableShutdownHooks' method, which allows the VM to put in its own
-shutdown hooks when `Runtime.addShutdownHook()' is first invoked, and
+The `VMRuntime' class provides a series of native methods which divulge
+information about the runtime or invoke certain operations.  This
+includes retrieving the amount of available memory, and scheduling the
+garbage collector.  There are two exceptions: the `enableShutdownHooks'
+method, which allows the VM to put in its own shutdown hooks when
+`Runtime.addShutdownHook()' is first invoked, and
 `exec(String[],String[],File)' which spawns an external process.  These
 are Java-based static methods instead.  The first is simply a stub by
 default, while the second simply links to the functionality of
@@ -663,27 +660,27 @@ implementation is used).
 
 File: vmintegration.info,  Node: java.lang.VMString,  Next: java.lang.VMThread,  Prev: java.lang.VMRuntime,  Up: java.lang
 
-`java.lang.VMString'
---------------------
+3.1.11 `java.lang.VMString'
+---------------------------
 
-   `VMString' is responsible for handling interned strings.  If two
-strings are equal (using the `equals()' method), then the results of
-calling the `intern()' method on each of them makes them equal (using
-`==').  Thus, the same string object is always returned by `intern' if
-the two strings are equal.  The default implementation is Java-based
-and implements `intern(String)' by maintaining a `WeakHashMap' which
-links the strings to their `WeakReference'.  A new mapping is created
-for each new string being `intern'ed.  A VM may implement this
-differently by implementing this method, which is `static' and the only
-one in `VMString'.
+`VMString' is responsible for handling interned strings.  If two strings
+are equal (using the `equals()' method), then the results of calling
+the `intern()' method on each of them makes them equal (using `==').
+Thus, the same string object is always returned by `intern' if the two
+strings are equal.  The default implementation is Java-based and
+implements `intern(String)' by maintaining a `WeakHashMap' which links
+the strings to their `WeakReference'.  A new mapping is created for
+each new string being `intern'ed.  A VM may implement this differently
+by implementing this method, which is `static' and the only one in
+`VMString'.
 
 
 File: vmintegration.info,  Node: java.lang.VMThread,  Next: java.lang.VMInstrumentationImpl,  Prev: java.lang.VMString,  Up: java.lang
 
-`java.lang.VMThread'
---------------------
+3.1.12 `java.lang.VMThread'
+---------------------------
 
-   `VMThread' provides the link between Java's threads and the platform
+`VMThread' provides the link between Java's threads and the platform
 threading support.  A `VMThread' is created via a private constructor
 and linked to a `Thread' instance.  This occurs when the `Thread'
 instance is started by the static `create(Thread,long)' method (the
@@ -766,10 +763,10 @@ optional or deprecated functionality.
 
 File: vmintegration.info,  Node: java.lang.VMInstrumentationImpl,  Next: java.lang.VMMath,  Prev: java.lang.VMThread,  Up: java.lang
 
-`java.lang.VMInstrumentationImpl'
----------------------------------
+3.1.13 `java.lang.VMInstrumentationImpl'
+----------------------------------------
 
-   The `java.lang.VMInstrumentationImpl' and
+The `java.lang.VMInstrumentationImpl' and
 `java.lang.InstrumentationImpl' classes provide an implementation of the
 `java.lang.instrument.Instrument' interface. This interface is for java
 1.5 and is only in the generics branch.  A `InstrumentationImpl' object
@@ -815,15 +812,15 @@ implemented by the VM. The implementation should call the
 
 File: vmintegration.info,  Node: java.lang.VMMath,  Prev: java.lang.VMInstrumentationImpl,  Up: java.lang
 
-`java.lang.VMMath'
-------------------
+3.1.14 `java.lang.VMMath'
+-------------------------
 
-   The `VMMath' class provides a series of native methods for some of
-the mathematical functions present in `java.lang.Math'.  Classpath
-provides a default implementation of these which maps the functions to
-those provided by `fdlibm'.  VM implementors are welcome to replace
-this with more efficent implementations, as long as the accuracy
-contract of these methods, specified in `java.lang.Math', is maintained.
+The `VMMath' class provides a series of native methods for some of the
+mathematical functions present in `java.lang.Math'.  Classpath provides
+a default implementation of these which maps the functions to those
+provided by `fdlibm'.  VM implementors are welcome to replace this with
+more efficent implementations, as long as the accuracy contract of
+these methods, specified in `java.lang.Math', is maintained.
 
    * 1.0
         * `sin(double)' - Returns the sine value for the given angle.
@@ -890,13 +887,12 @@ contract of these methods, specified in `java.lang.Math', is maintained.
 
 File: vmintegration.info,  Node: gnu.classpath,  Next: java.util,  Prev: java.lang,  Up: Classpath Hooks
 
-`gnu.classpath'
-===============
+3.2 `gnu.classpath'
+===================
 
-   The `gnu.classpath' package provides Classpath-specific
-functionality, primarily relating to the features in `java.lang'.  At
-present, this includes the context of a class (the stack) and the
-system properties.
+The `gnu.classpath' package provides Classpath-specific functionality,
+primarily relating to the features in `java.lang'.  At present, this
+includes the context of a class (the stack) and the system properties.
 
 * Menu:
 
@@ -907,10 +903,10 @@ system properties.
 
 File: vmintegration.info,  Node: gnu.classpath.VMStackWalker,  Next: gnu.classpath.VMSystemProperties,  Prev: gnu.classpath,  Up: gnu.classpath
 
-`gnu.classpath.VMStackWalker'
------------------------------
+3.2.1 `gnu.classpath.VMStackWalker'
+-----------------------------------
 
-   `VMStackWalker' provides access to the class context or stack.  The
+`VMStackWalker' provides access to the class context or stack.  The
 default implementation consists of a `native' `static' method,
 `getClassContext()', which obtains the class context, and two helper
 methods which obtain the calling class (the 3rd element in the context
@@ -931,10 +927,10 @@ array) and its class loader, respectively.
 
 File: vmintegration.info,  Node: gnu.classpath.VMSystemProperties,  Next: gnu.classpath.Unsafe,  Prev: gnu.classpath.VMStackWalker,  Up: gnu.classpath
 
-`gnu.classpath.VMSystemProperties'
-----------------------------------
+3.2.2 `gnu.classpath.VMSystemProperties'
+----------------------------------------
 
-   `VMSystemProperties' allows the VM to hook into the property creation
+`VMSystemProperties' allows the VM to hook into the property creation
 process, both before and after the system properties are added by GNU
 Classpath.  The default implementation assumes that the VM will add its
 properties first, by making the pre-initialisation method `native', and
@@ -959,13 +955,13 @@ classes should be avoided at this early stage.
 
 File: vmintegration.info,  Node: gnu.classpath.Unsafe,  Prev: gnu.classpath.VMSystemProperties,  Up: gnu.classpath
 
-`gnu.classpath.Unsafe'
-----------------------
+3.2.3 `gnu.classpath.Unsafe'
+----------------------------
 
-   The `Unsafe' class provides access to some low-level unsafe
-operations as required by the addition of the java.util.concurrent
-classes.  These focus on direct memory access to the fields within the
-VM and providing atomic update methods.
+The `Unsafe' class provides access to some low-level unsafe operations
+as required by the addition of the java.util.concurrent classes.  These
+focus on direct memory access to the fields within the VM and providing
+atomic update methods.
 
    * `objectFieldOffset(Field)' - Provides the caller with the memory
      offset of a particular field.
@@ -997,14 +993,14 @@ VM and providing atomic update methods.
 
 File: vmintegration.info,  Node: java.util,  Next: java.io,  Prev: gnu.classpath,  Up: Classpath Hooks
 
-java.util
-=========
+3.3 java.util
+=============
 
-   The `java.util' VM hooks provide links between the mix of
-functionality present in that package, which includes collections, date
-and time handling and parsing.  At present, there is only one hook,
-which connects GNU Classpath to the timezone information provided by
-the underlying platform.
+The `java.util' VM hooks provide links between the mix of functionality
+present in that package, which includes collections, date and time
+handling and parsing.  At present, there is only one hook, which
+connects GNU Classpath to the timezone information provided by the
+underlying platform.
 
 * Menu:
 
@@ -1013,14 +1009,14 @@ the underlying platform.
 
 File: vmintegration.info,  Node: java.util.VMTimeZone,  Prev: java.util,  Up: java.util
 
-`java.util.VMTimeZone'
-----------------------
+3.3.1 `java.util.VMTimeZone'
+----------------------------
 
-   `VMTimeZone' joins `TimeZone' to the platform timezone information
-via the static method, `getDefaultTimeZoneId()'.  The VM hook is
-expected to return a `TimeZone' instance that represents the current
-timezone in use by the platform.  The default implementation provides
-this functionality for POSIX or GNU-like systems, and VMs that want this
+`VMTimeZone' joins `TimeZone' to the platform timezone information via
+the static method, `getDefaultTimeZoneId()'.  The VM hook is expected
+to return a `TimeZone' instance that represents the current timezone in
+use by the platform.  The default implementation provides this
+functionality for POSIX or GNU-like systems, and VMs that want this
 functionality can keep this implementation and implement the native
 method, `getSystemTimeZoneId()'.  This method is only called when
 obtaining the timezone name from the `TZ' environment variable,
@@ -1032,12 +1028,12 @@ implementation.
 
 File: vmintegration.info,  Node: java.io,  Next: java.security,  Prev: java.util,  Up: Classpath Hooks
 
-java.io
-=======
+3.4 java.io
+===========
 
-   The `java.io' package is heavily reliant on access to the I/O
-facilities of the underlying platform.  As far as its VM hooks go, they
-provide two areas of functionality to GNU Classpath, these being
+The `java.io' package is heavily reliant on access to the I/O facilities
+of the underlying platform.  As far as its VM hooks go, they provide two
+areas of functionality to GNU Classpath, these being
 
    * File and directory queries and manipulation
 
@@ -1057,10 +1053,10 @@ provided by *Note java.nio::.
 
 File: vmintegration.info,  Node: java.io.VMFile,  Next: java.io.VMObjectInputStream,  Prev: java.io,  Up: java.io
 
-`java.io.VMFile'
-----------------
+3.4.1 `java.io.VMFile'
+----------------------
 
-   `VMFile' allows GNU Classpath's `File' representations to probe and
+`VMFile' allows GNU Classpath's `File' representations to probe and
 modify the file system using the native functions of the platform.  The
 default implementation (which consists of both a `VMFile' class and the
 native methods) is primarily UNIX-centric, working with POSIX functions
@@ -1131,11 +1127,11 @@ string containing its path, rather than using the object itself.
 
 File: vmintegration.info,  Node: java.io.VMObjectInputStream,  Next: java.io.VMObjectStreamClass,  Prev: java.io.VMFile,  Up: java.io
 
-`java.io.VMObjectInputStream'
------------------------------
+3.4.2 `java.io.VMObjectInputStream'
+-----------------------------------
 
-   This class consists of two methods which provide functionality used
-in deserializing an object.  `currentClassLoader()' provides the first
+This class consists of two methods which provide functionality used in
+deserializing an object.  `currentClassLoader()' provides the first
 user-defined class loader from the class context (*Note
 gnu.classpath.VMStackWalker::,) via a `PrivilegedAction'.
 `allocateObject(Class,Class,Constructor)' is a `native' method (a
@@ -1146,10 +1142,10 @@ class.
 
 File: vmintegration.info,  Node: java.io.VMObjectStreamClass,  Prev: java.io.VMObjectInputStream,  Up: java.io
 
-`java.io.VMObjectStreamClass'
------------------------------
+3.4.3 `java.io.VMObjectStreamClass'
+-----------------------------------
 
-   `VMObjectStreamClass' is a series of `static' `native' methods that
+`VMObjectStreamClass' is a series of `static' `native' methods that
 provide some of the groundwork for `ObjectStreamClass' and
 `ObjectStreamField'.  `hasClassInitializer(Class)' works with the
 former, and checks for the presence of a static initializer.  The
@@ -1165,10 +1161,10 @@ implementation is optional.
 
 File: vmintegration.info,  Node: java.security,  Next: java.net,  Prev: java.io,  Up: Classpath Hooks
 
-java.security
-=============
+3.5 java.security
+=================
 
-   The `java.security' package provides support for Java's security
+The `java.security' package provides support for Java's security
 architecture.  At present, `VMAccessController' represents the sole VM
 hook for this.
 
@@ -1179,14 +1175,14 @@ hook for this.
 
 File: vmintegration.info,  Node: java.security.VMAccessController,  Prev: java.security,  Up: java.security
 
-`java.security.VMAccessController'
-----------------------------------
+3.5.1 `java.security.VMAccessController'
+----------------------------------------
 
-   The `AccessController' is used to perform privileged actions.  Its
-hook class, `VMAccessController', maintains the `AccessControlContext'
-and the default implementation is purely Java-based.  The VM may choose
-to replace this with their own.  The methods in the reference version
-are as follows:
+The `AccessController' is used to perform privileged actions.  Its hook
+class, `VMAccessController', maintains the `AccessControlContext' and
+the default implementation is purely Java-based.  The VM may choose to
+replace this with their own.  The methods in the reference version are
+as follows:
 
    * `pushContext(AccessControlContext)' - Adds a new context to the
      stack for the current thread.  This is called before a privileged
@@ -1206,10 +1202,10 @@ are as follows:
 
 File: vmintegration.info,  Node: java.net,  Next: java.nio,  Prev: java.security,  Up: Classpath Hooks
 
-java.net
-========
+3.6 java.net
+============
 
-   The `java.net' package is heavily reliant on access to the networking
+The `java.net' package is heavily reliant on access to the networking
 facilities of the underlying platform.  The VM hooks provide information
 about the available network interfaces, and access to lookup facilities
 for network addresses.
@@ -1222,12 +1218,12 @@ for network addresses.
 
 File: vmintegration.info,  Node: java.net.VMInetAddress,  Next: java.net.VMNetworkInterface,  Prev: java.net,  Up: java.net
 
-`java.net.VMInetAddress'
-------------------------
+3.6.1 `java.net.VMInetAddress'
+------------------------------
 
-   `VMInetAddress' is a series of `static' `native' methods which
-provide access to the platform's lookup facilities.  All the methods
-are implemented by GNU Classpath, making VM implementation optional, and
+`VMInetAddress' is a series of `static' `native' methods which provide
+access to the platform's lookup facilities.  All the methods are
+implemented by GNU Classpath, making VM implementation optional, and
 are as follows:
 
    * `getLocalHostname()' - Wraps the `gethostname' function, and falls
@@ -1244,22 +1240,22 @@ are as follows:
 
 File: vmintegration.info,  Node: java.net.VMNetworkInterface,  Prev: java.net.VMInetAddress,  Up: java.net
 
-`java.net.VMNetworkInterface'
------------------------------
+3.6.2 `java.net.VMNetworkInterface'
+-----------------------------------
 
-   `VMNetworkInterface' currently consists of a single `static'
-`native' method, `getInterfaces()', which retrieves the network
-interfaces available on the underlying platform as a `Vector'.  The
-current GNU Classpath implementation is a native stub.
+`VMNetworkInterface' currently consists of a single `static' `native'
+method, `getInterfaces()', which retrieves the network interfaces
+available on the underlying platform as a `Vector'.  The current GNU
+Classpath implementation is a native stub.
 
 
 File: vmintegration.info,  Node: java.nio,  Next: java.nio.channels,  Prev: java.net,  Up: Classpath Hooks
 
-java.nio
-========
+3.7 java.nio
+============
 
-   The `java.nio' package is part of the New I/O framework added in
-Java 1.4.  This splits I/O into the concepts of _buffers_, _charsets_,
+The `java.nio' package is part of the New I/O framework added in Java
+1.4.  This splits I/O into the concepts of _buffers_, _charsets_,
 _channels_ and _selectors_, and `java.nio' defines the buffer classes.
 As far as native and VM code is concerned, the new package needs
 support for low-level efficient buffer operations.
@@ -1271,10 +1267,10 @@ support for low-level efficient buffer operations.
 
 File: vmintegration.info,  Node: java.nio.VMDirectByteBuffer,  Prev: java.nio,  Up: java.nio
 
-`java.nio.VMDirectByteBuffer'
------------------------------
+3.7.1 `java.nio.VMDirectByteBuffer'
+-----------------------------------
 
-   A `ByteBuffer' maintains a buffer of bytes, and allows it to be
+A `ByteBuffer' maintains a buffer of bytes, and allows it to be
 manipulated using primitive operations such as `get', `put', `allocate'
 and `free'.  A direct buffer avoids intermediate copying, and uses
 native data which shouldn't be manipulated by a garbage collector.  The
@@ -1307,10 +1303,10 @@ default implementations by GNU Classpath.
 
 File: vmintegration.info,  Node: java.nio.channels,  Next: gnu.java.nio,  Prev: java.nio,  Up: Classpath Hooks
 
-java.nio.channels
-=================
+3.8 java.nio.channels
+=====================
 
-   Channels provide the data for the buffers with the New I/O packages.
+Channels provide the data for the buffers with the New I/O packages.
 For example, a channel may wrap a file or a socket.  The VM hooks, at
 the moment, simply allow the channels to be accessed by `java.io'
 streams.
@@ -1322,12 +1318,12 @@ streams.
 
 File: vmintegration.info,  Node: java.nio.channels.VMChannels,  Prev: java.nio.channels,  Up: java.nio.channels
 
-`java.nio.channels.VMChannels'
-------------------------------
+3.8.1 `java.nio.channels.VMChannels'
+------------------------------------
 
-   `VMChannels' provides the methods that create the channels or
-streams.  The default implementation is in pure Java and simply wraps
-the channels in standard I/O classes from `java.io'.
+`VMChannels' provides the methods that create the channels or streams.
+The default implementation is in pure Java and simply wraps the
+channels in standard I/O classes from `java.io'.
 
    * `createStream(Class,Channel)' - Creates a `FileChannel' which
      wraps an instance of the specified stream class, created by
@@ -1342,10 +1338,10 @@ the channels in standard I/O classes from `java.io'.
 
 File: vmintegration.info,  Node: gnu.java.nio,  Next: java.lang.reflect,  Prev: java.nio.channels,  Up: Classpath Hooks
 
-gnu.java.nio
-============
+3.9 gnu.java.nio
+================
 
-   The `gnu.java.nio' class provides Classpath implementations of the
+The `gnu.java.nio' class provides Classpath implementations of the
 interfaces provided by `java.nio'.  The VM classes provide the native
 support necessary to implement _pipes_ and _selectors_.
 
@@ -1357,10 +1353,10 @@ support necessary to implement _pipes_ and _selectors_.
 
 File: vmintegration.info,  Node: gnu.java.nio.VMPipe,  Next: gnu.java.nio.VMSelector,  Prev: gnu.java.nio,  Up: gnu.java.nio
 
-`gnu.java.nio.VMPipe'
----------------------
+3.9.1 `gnu.java.nio.VMPipe'
+---------------------------
 
-   `VMPipe' provides the native functionality for a uni-directional pipe
+`VMPipe' provides the native functionality for a uni-directional pipe
 between a source and a destination (sink) channel.  It consists of one
 `static' `native' method, `init(PipeImpl,SelectorProvider)', the
 reference implementation of which is currently a native stub.  Ideally,
@@ -1369,10 +1365,10 @@ this should initialise the pipe at the native level.
 
 File: vmintegration.info,  Node: gnu.java.nio.VMSelector,  Prev: gnu.java.nio.VMPipe,  Up: gnu.java.nio
 
-`gnu.java.nio.VMSelector'
--------------------------
+3.9.2 `gnu.java.nio.VMSelector'
+-------------------------------
 
-   A `Selector' selects between multiple `SelectableChannel's based on
+A `Selector' selects between multiple `SelectableChannel's based on
 their readiness and a key set.  The VM hook for the Classpath
 implementation of this is `VMSelector', and this allows the actual
 `select()' operation to be performed.  This is represented by the
@@ -1382,10 +1378,10 @@ default implementation of this is provided.
 
 File: vmintegration.info,  Node: java.lang.reflect,  Next: Classpath Callbacks,  Prev: gnu.java.nio,  Up: Classpath Hooks
 
-`java.lang.reflect'
-===================
+3.10 `java.lang.reflect'
+========================
 
-   `java.lang.reflect' provides the interface to Java's reflection
+`java.lang.reflect' provides the interface to Java's reflection
 facilities.  Via reflection, programmers can obtain type information
 about a particular instance at runtime or dynamically create new
 instances.
@@ -1397,11 +1393,11 @@ instances.
 
 File: vmintegration.info,  Node: java.lang.reflect.VMArray,  Up: java.lang.reflect
 
-`java.lang.reflect.VMArray'
----------------------------
+3.10.1 `java.lang.reflect.VMArray'
+----------------------------------
 
-   The `VMArray' class provides a hook, `createObjectArray', which the
-VM uses to generate a new non-primitive array of a particular class and
+The `VMArray' class provides a hook, `createObjectArray', which the VM
+uses to generate a new non-primitive array of a particular class and
 size.  The default implementation simply passes the job down to the
 standard JNI function, `NewObjectArray'.
 
@@ -1420,10 +1416,10 @@ to package-private methods in Classpath:
 
 File: vmintegration.info,  Node: VM Hooks,  Next: JNI Implementation,  Prev: Classpath Hooks,  Up: Top
 
-VM Hooks
-********
+4 VM Hooks
+**********
 
-   VMs need to do some dirty work; there are some things in the VM that
+VMs need to do some dirty work; there are some things in the VM that
 unfortunately are dependent on the internal structure of various
 classes.  This is a guide to all of the things the VM itself needs to
 know about classes.
@@ -1519,14 +1515,14 @@ These classes are:
 
 File: vmintegration.info,  Node: JNI Implementation,  Next: Miscellaneous VM Requirements,  Prev: VM Hooks,  Up: Top
 
-JNI Implementation
-******************
+5 JNI Implementation
+********************
 
-   Classpath comes with its own implementation of `jni.h'.  This file
-can be customized by the VM in a few ways, by defining macros that
-affect the interpretation of the file.  These macros are all intended
-for use by a VM which uses GNU Classpath and which wants to use a
-single copy of `jni.h' for both internal and external use.
+Classpath comes with its own implementation of `jni.h'.  This file can
+be customized by the VM in a few ways, by defining macros that affect
+the interpretation of the file.  These macros are all intended for use
+by a VM which uses GNU Classpath and which wants to use a single copy
+of `jni.h' for both internal and external use.
 
    * _CLASSPATH_VM_JNI_TYPES_DEFINED Some VMs like to define JNI
      "object" types in a special way.  If this macro is defined, the
@@ -1558,10 +1554,10 @@ single copy of `jni.h' for both internal and external use.
 
 File: vmintegration.info,  Node: Miscellaneous VM Requirements,  Prev: JNI Implementation,  Up: Top
 
-Miscellaneous VM Requirements
-*****************************
+6 Miscellaneous VM Requirements
+*******************************
 
-   Classpath places a few requirements on the VM that uses it.
+Classpath places a few requirements on the VM that uses it.
 
 * Menu:
 
@@ -1572,13 +1568,13 @@ Miscellaneous VM Requirements
 
 File: vmintegration.info,  Node: JNI Version,  Next: VM Threading Model,  Prev: Miscellaneous VM Requirements,  Up: Miscellaneous VM Requirements
 
-JNI Version
-===========
+6.1 JNI Version
+===============
 
-   Classpath currently uses only JNI 1.1, except for one JNI 1.2
-function in the JNI Invocation API: GetEnv().  And GetEnv() is only
-used in the "portable native sync" code, so it's only actually used by
-Jikes RVM and Kaffe.
+Classpath currently uses only JNI 1.1, except for one JNI 1.2 function
+in the JNI Invocation API: GetEnv().  And GetEnv() is only used in the
+"portable native sync" code, so it's only actually used by Jikes RVM
+and Kaffe.
 
    A future direction will probably be to require that all VMs provide
 JNI 1.2.  If this poses problems, please raise them on the classpath
@@ -1587,10 +1583,10 @@ mailing list.
 
 File: vmintegration.info,  Node: VM Threading Model,  Next: Boot Library Path Property,  Prev: JNI Version,  Up: Miscellaneous VM Requirements
 
-VM Threading Model
-==================
+6.2 VM Threading Model
+======================
 
-   Classpath's AWT peers use GTK+.  GTK+ uses GLIB.  Normally, Classpath
+Classpath's AWT peers use GTK+.  GTK+ uses GLIB.  Normally, Classpath
 will initialize GLIB's "gthreads" to use the platform's native
 threading model(1)
 
@@ -1626,10 +1622,10 @@ platforms Classpath currently runs on.
 
 File: vmintegration.info,  Node: Boot Library Path Property,  Prev: VM Threading Model,  Up: Miscellaneous VM Requirements
 
-Boot Library Path Property
-==========================
+6.3 Boot Library Path Property
+==============================
 
-   As of GNU Classpath 0.15 a system property named
+As of GNU Classpath 0.15 a system property named
 `gnu.classpath.boot.library.path' can be set by the VM to specify the
 directories which contain GNU Classpath's native libraries. Usually
 this value is given at configuration time and is then hardcoded in the
@@ -1646,56 +1642,56 @@ if it exists on your platform.
 
 
 Tag Table:
-Node: Top586
-Node: Introduction1320
-Node: Initialization5893
-Node: Classpath Hooks6305
-Node: java.lang7546
-Node: java.lang.VMClass8264
-Node: java.lang.VMObject12525
-Node: java.lang.VMClassLoader14129
-Node: java.lang.VMSystem16972
-Node: java.lang.VMThrowable19590
-Node: java.lang.VMCompiler20601
-Node: java.lang.VMDouble21571
-Node: java.lang.VMFloat22827
-Node: java.lang.VMProcess23514
-Node: java.lang.VMRuntime24887
-Node: java.lang.VMString27438
-Node: java.lang.VMThread28248
-Node: java.lang.VMInstrumentationImpl31724
-Node: java.lang.VMMath34056
-Node: gnu.classpath36593
-Node: gnu.classpath.VMStackWalker37053
-Node: gnu.classpath.VMSystemProperties38110
-Node: gnu.classpath.Unsafe39463
-Node: java.util41243
-Node: java.util.VMTimeZone41701
-Node: java.io42608
-Node: java.io.VMFile43332
-Node: java.io.VMObjectInputStream46194
-Node: java.io.VMObjectStreamClass46866
-Node: java.security47687
-Node: java.security.VMAccessController48023
-Node: java.net49178
-Node: java.net.VMInetAddress49614
-Node: java.net.VMNetworkInterface50398
-Node: java.nio50821
-Node: java.nio.VMDirectByteBuffer51319
-Node: java.nio.channels52758
-Node: java.nio.channels.VMChannels53170
-Node: gnu.java.nio53930
-Node: gnu.java.nio.VMPipe54339
-Node: gnu.java.nio.VMSelector54847
-Node: java.lang.reflect55384
-Node: java.lang.reflect.VMArray55803
-Node: Classpath Callbacks56199
-Node: VM Hooks56684
-Node: JNI Implementation60882
-Node: Miscellaneous VM Requirements62752
-Node: JNI Version63060
-Node: VM Threading Model63615
-Ref: VM Threading Model-Footnote-165226
-Node: Boot Library Path Property65338
+Node: Top496
+Node: Introduction1227
+Node: Initialization5801
+Node: Classpath Hooks6214
+Node: java.lang7456
+Node: java.lang.VMClass8179
+Node: java.lang.VMObject12449
+Node: java.lang.VMClassLoader14062
+Node: java.lang.VMSystem16914
+Node: java.lang.VMThrowable19541
+Node: java.lang.VMCompiler20561
+Node: java.lang.VMDouble21540
+Node: java.lang.VMFloat22805
+Node: java.lang.VMProcess23501
+Node: java.lang.VMRuntime24883
+Node: java.lang.VMString27446
+Node: java.lang.VMThread28266
+Node: java.lang.VMInstrumentationImpl31753
+Node: java.lang.VMMath34096
+Node: gnu.classpath36644
+Node: gnu.classpath.VMStackWalker37109
+Node: gnu.classpath.VMSystemProperties38175
+Node: gnu.classpath.Unsafe39537
+Node: java.util41326
+Node: java.util.VMTimeZone41789
+Node: java.io42705
+Node: java.io.VMFile43434
+Node: java.io.VMObjectInputStream46305
+Node: java.io.VMObjectStreamClass46986
+Node: java.security47816
+Node: java.security.VMAccessController48157
+Node: java.net49321
+Node: java.net.VMInetAddress49762
+Node: java.net.VMNetworkInterface50555
+Node: java.nio50987
+Node: java.nio.VMDirectByteBuffer51490
+Node: java.nio.channels52938
+Node: java.nio.channels.VMChannels53355
+Node: gnu.java.nio54123
+Node: gnu.java.nio.VMPipe54537
+Node: gnu.java.nio.VMSelector55054
+Node: java.lang.reflect55600
+Node: java.lang.reflect.VMArray56026
+Node: Classpath Callbacks56433
+Node: VM Hooks56918
+Node: JNI Implementation61117
+Node: Miscellaneous VM Requirements62988
+Node: JNI Version63297
+Node: VM Threading Model63857
+Ref: VM Threading Model-Footnote-165473
+Node: Boot Library Path Property65585
 
 End Tag Table

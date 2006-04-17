@@ -1535,9 +1535,16 @@ public class Container extends Component
    */
   public void transferFocusDownCycle ()
   {
-    KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager ();
-
-    manager.downFocusCycle (this);
+    if (isFocusCycleRoot())
+      {
+        KeyboardFocusManager fm =
+          KeyboardFocusManager.getCurrentKeyboardFocusManager();
+        fm.setGlobalCurrentFocusCycleRoot(this);
+        FocusTraversalPolicy policy = getFocusTraversalPolicy();
+        Component defaultComponent = policy.getDefaultComponent(this);
+        if (defaultComponent != null)
+          defaultComponent.requestFocus();
+      }
   }
 
   /**

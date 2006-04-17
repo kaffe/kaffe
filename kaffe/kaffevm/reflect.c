@@ -133,7 +133,7 @@ KaffeVM_makeReflectMethod(struct Hjava_lang_Class* clazz, int slot)
 	meth = (Hjava_lang_reflect_Method*)
 	    AllocObject("java/lang/reflect/Method", NULL);
 
-	unhand(meth)->clazz = clazz;
+	unhand(meth)->declaringClass = clazz;
 	unhand(meth)->slot = slot;
 	unhand(meth)->name = checkPtr(utf8Const2Java(mth->name));
 	unhand(meth)->parameterTypes = makeParameters(mth);

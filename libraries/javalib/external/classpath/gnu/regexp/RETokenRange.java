@@ -69,10 +69,10 @@ final class RETokenRange extends REToken {
 	if (c == CharIndexed.OUT_OF_BOUNDS) return false;
 	boolean matches = (c >= lo) && (c <= hi);
 	if (! matches && insens) {
-	  char c1 = Character.toLowerCase(c);
+	  char c1 = toLowerCase(c, unicodeAware);
 	  matches = (c1 >= lo) && (c1 <= hi);
 	  if (!matches) {
-	    c1 = Character.toUpperCase(c);
+	    c1 = toUpperCase(c, unicodeAware);
 	    matches = (c1 >= lo) && (c1 <= hi);
 	  }
 	}

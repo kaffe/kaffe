@@ -38,14 +38,13 @@ exception statement from your version. */
 
 package javax.swing.plaf.basic;
 
-import gnu.classpath.NotImplementedException;
-
 import java.awt.AWTEvent;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.SystemColor;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
 import java.awt.event.ActionEvent;
@@ -205,7 +204,7 @@ public abstract class BasicLookAndFeel extends LookAndFeel
    */
   public BasicLookAndFeel()
   {
-    // TODO
+    // Nothing to do here.
   }
 
   /**
@@ -291,60 +290,138 @@ public abstract class BasicLookAndFeel extends LookAndFeel
 
   /**
    * Populates the <code>defaults</code> table with system color defaults.
+   *
+   * This sets up a couple of default values and passes them to
+   * {@link #loadSystemColors(UIDefaults, String[], boolean)}. If the
+   * look and feel is a native look and feel, these defaults may be overridden
+   * by the corresponding SystemColor constants.
    * 
    * @param defaults  the defaults table (<code>null</code> not permitted).
    */
   protected void initSystemColorDefaults(UIDefaults defaults)
   {
-    Color highLight = new Color(249, 247, 246);
-    Color light = new Color(239, 235, 231);
-    Color shadow = new Color(139, 136, 134);
-    Color darkShadow = new Color(16, 16, 16);
-
-    Object[] uiDefaults;
-    uiDefaults = new Object[] {
-      "activeCaption", new ColorUIResource(0, 0, 128),
-      "activeCaptionBorder", new ColorUIResource(Color.lightGray),
-      "activeCaptionText", new ColorUIResource(Color.white),
-      "control", new ColorUIResource(light),
-      "controlDkShadow", new ColorUIResource(shadow),
-      "controlHighlight", new ColorUIResource(highLight),
-      "controlLtHighlight", new ColorUIResource(highLight),
-      "controlShadow", new ColorUIResource(shadow),
-      "controlText", new ColorUIResource(darkShadow),
-      "desktop", new ColorUIResource(0, 92, 92),
-      "inactiveCaption", new ColorUIResource(Color.gray),
-      "inactiveCaptionBorder", new ColorUIResource(Color.lightGray),
-      "inactiveCaptionText", new ColorUIResource(Color.lightGray),
-      "info", new ColorUIResource(light),
-      "infoText", new ColorUIResource(darkShadow),
-      "menu", new ColorUIResource(light),
-      "menuText", new ColorUIResource(darkShadow),
-      "scrollbar", new ColorUIResource(light),
-      "text", new ColorUIResource(Color.white),
-      "textHighlight", new ColorUIResource(Color.black),
-      "textHighlightText", new ColorUIResource(Color.white),
-      "textInactiveText", new ColorUIResource(Color.gray),
-      "textText", new ColorUIResource(Color.black),
-      "window", new ColorUIResource(light),
-      "windowBorder", new ColorUIResource(Color.black),
-      "windowText", new ColorUIResource(darkShadow)
+    String[] defaultColors = new String[] {
+      "activeCaption", "#000080",
+      "activeCaptionBorder", "#C0C0C0",
+      "activeCaptionText", "#FFFFFF",
+      "control", "#C0C0C0",
+      "controlDkShadow", "#000000",
+      "controlHighlight", "#C0C0C0",
+      "controlLtHighlight", "#FFFFFF",
+      "controlShadow", "#808080",
+      "controlText", "#000000",
+      "desktop", "#005C5C",
+      "inactiveCaption", "#808080",
+      "inactiveCaptionBorder", "#C0C0C0",
+      "inactiveCaptionText", "#C0C0C0",
+      "info", "#FFFFE1",
+      "infoText", "#000000",
+      "menu", "#C0C0C0",
+      "menuText", "#000000",
+      "scrollbar", "#E0E0E0",
+      "text", "#C0C0C0",
+      "textHighlight", "#000080",
+      "textHighlightText", "#FFFFFF",
+      "textInactiveText", "#808080",
+      "textText", "#000000",
+      "window", "#FFFFFF",
+      "windowBorder", "#000000",
+      "windowText", "#000000"
     };
-    defaults.putDefaults(uiDefaults);
+    loadSystemColors(defaults, defaultColors, isNativeLookAndFeel());
   }
 
   /**
-   * Loads the system colors.  This method is not implemented yet.
-   * 
+   * Populates the <code>defaults</code> table with the system colors. If
+   * <code>useNative</code> is <code>true</code>, the table is populated
+   * with the constants in {@link SystemColor}, otherwise the
+   * <code>systemColors</code> parameter is decoded into the defaults table.
+   * The system colors array is made up of pairs, where the first entry is the
+   * name of the system color, and the second entry is a string denoting
+   * an RGB color value like &quot;#C0C0C0&quot;, which is decoded using
+   * {@link Color#decode(String)}.
+   *
    * @param defaults  the defaults table (<code>null</code> not permitted).
-   * @param systemColors TODO
-   * @param useNative TODO
+   * @param systemColors defaults to use when <code>useNative</code> is
+   *        <code>false</code>
+   * @param useNative when <code>true</code>, installs the values of the
+   *        SystemColor constants, when <code>false</code>, install the values
+   *        from <code>systemColors</code> 
    */
   protected void loadSystemColors(UIDefaults defaults, String[] systemColors,
                                   boolean useNative)
-    throws NotImplementedException
   {
-    // TODO
+    if (useNative)
+      {
+        defaults.put("activeCaption",
+                     new ColorUIResource(SystemColor.ACTIVE_CAPTION));
+        defaults.put("activeCaptionBorder",
+                     new ColorUIResource(SystemColor.ACTIVE_CAPTION_BORDER));
+        defaults.put("activeCaptionText",
+                     new ColorUIResource(SystemColor.ACTIVE_CAPTION_TEXT));
+        defaults.put("control",
+                     new ColorUIResource(SystemColor.CONTROL));
+        defaults.put("controlDkShadow",
+                     new ColorUIResource(SystemColor.CONTROL_DK_SHADOW));
+        defaults.put("controlHighlight",
+                     new ColorUIResource(SystemColor.CONTROL_HIGHLIGHT));
+        defaults.put("controlLtHighlight",
+                     new ColorUIResource(SystemColor.CONTROL_LT_HIGHLIGHT));
+        defaults.put("controlShadow",
+                     new ColorUIResource(SystemColor.CONTROL_SHADOW));
+        defaults.put("controlText",
+                     new ColorUIResource(SystemColor.CONTROL_TEXT));
+        defaults.put("desktop",
+                     new ColorUIResource(SystemColor.DESKTOP));
+        defaults.put("inactiveCaption",
+                     new ColorUIResource(SystemColor.INACTIVE_CAPTION));
+        defaults.put("inactiveCaptionBorder",
+                     new ColorUIResource(SystemColor.INACTIVE_CAPTION_BORDER));
+        defaults.put("inactiveCaptionText",
+                     new ColorUIResource(SystemColor.INACTIVE_CAPTION_TEXT));
+        defaults.put("info",
+                     new ColorUIResource(SystemColor.INFO));
+        defaults.put("infoText",
+                     new ColorUIResource(SystemColor.INFO_TEXT));
+        defaults.put("menu",
+                     new ColorUIResource(SystemColor.MENU));
+        defaults.put("menuText",
+                     new ColorUIResource(SystemColor.MENU_TEXT));
+        defaults.put("scrollbar",
+                     new ColorUIResource(SystemColor.SCROLLBAR));
+        defaults.put("text",
+                     new ColorUIResource(SystemColor.TEXT));
+        defaults.put("textHighlight",
+                     new ColorUIResource(SystemColor.TEXT_HIGHLIGHT));
+        defaults.put("textHighlightText",
+                     new ColorUIResource(SystemColor.TEXT_HIGHLIGHT_TEXT));
+        defaults.put("textInactiveText",
+                     new ColorUIResource(SystemColor.TEXT_INACTIVE_TEXT));
+        defaults.put("textText",
+                     new ColorUIResource(SystemColor.TEXT_TEXT));
+        defaults.put("window",
+                     new ColorUIResource(SystemColor.WINDOW));
+        defaults.put("windowBorder",
+                     new ColorUIResource(SystemColor.WINDOW_BORDER));
+        defaults.put("windowText",
+                     new ColorUIResource(SystemColor.WINDOW_TEXT));
+      }
+    else
+      {
+        for (int i = 0; i < systemColors.length; i += 2)
+          {
+            Color color = Color.BLACK;
+            try
+              {
+                color = Color.decode(systemColors[i + 1]);
+              }
+            catch (NumberFormatException e)
+              {
+                e.printStackTrace();
+              }
+            defaults.put(systemColors[i], new ColorUIResource(color));
+          }
+      }
   }
 
   /**

@@ -108,4 +108,9 @@ public interface CharIndexed {
      * Returns the anchor.
      */
     int getAnchor();
+
+    /**
+     * Sets the anchor.
+     */
+    void setAnchor(int anchor);
 }

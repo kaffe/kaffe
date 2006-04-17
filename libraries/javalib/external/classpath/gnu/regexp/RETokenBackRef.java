@@ -64,8 +64,8 @@ final class RETokenBackRef extends REToken {
 	    char c2 = input.charAt(i);
 	    if (c1 != c2) {
 		if (insens) {
-		    if (c1 != Character.toLowerCase(c2) &&
-			c1 != Character.toUpperCase(c2)) {
+		    if (c1 != toLowerCase(c2, unicodeAware) &&
+			c1 != toUpperCase(c2, unicodeAware)) {
 			return null;
 		    }
 		}

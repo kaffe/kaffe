@@ -51,6 +51,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.EventListenerList;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
+import javax.swing.text.DocumentFilter;
 import javax.swing.tree.TreeNode;
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CompoundEdit;
@@ -148,6 +149,11 @@ public abstract class AbstractDocument implements Document, Serializable
    */
   Object documentCV = new Object();
 
+  /** An instance of a DocumentFilter.FilterBypass which allows calling
+   * the insert, remove and replace method without checking for an installed
+   * document filter.
+   */
+  DocumentFilter.FilterBypass bypass;
   
   /**
    * Creates a new <code>AbstractDocument</code> with the specified
@@ -179,6 +185,19 @@ public abstract class AbstractDocument implements Document, Serializable
   {
     content = doc;
     context = ctx;
+  }
+  
+  /** Returns the DocumentFilter.FilterBypass instance for this
+   * document and create it if it does not exist yet.
+   *  
+   * @return This document's DocumentFilter.FilterBypass instance.
+   */
+  private DocumentFilter.FilterBypass getBypass()
+  {
+    if (bypass == null)
+      bypass = new Bypass();
+    
+    return bypass;
   }
 
   /**
@@ -521,6 +540,9 @@ public abstract class AbstractDocument implements Document, Serializable
   /**
    * Inserts a String into this <code>Document</code> at the specified
    * position and assigning the specified attributes to it.
+   * 
+   * <p>If a {@link DocumentFilter} is installed in this document, the
+   * corresponding method of the filter object is called.</p>
    *
    * @param offset the location at which the string should be inserted
    * @param text the content to be inserted
@@ -530,6 +552,15 @@ public abstract class AbstractDocument implements Document, Serializable
    *         location in this <code>Document</code>
    */
   public void insertString(int offset, String text, AttributeSet attributes)
+    throws BadLocationException
+  {
+    if (documentFilter != null)
+      documentFilter.insertString(getBypass(), offset, text, attributes);
+    else
+      insertStringImpl(offset, text, attributes);
+  }
+
+  void insertStringImpl(int offset, String text, AttributeSet attributes)
     throws BadLocationException
   {
     // Just return when no text to insert was given.
@@ -673,6 +704,9 @@ public abstract class AbstractDocument implements Document, Serializable
 
   /**
    * Removes a piece of content from this <code>Document</code>.
+   * 
+   * <p>If a {@link DocumentFilter} is installed in this document, the
+   * corresponding method of the filter object is called.</p>
    *
    * @param offset the start offset of the fragment to be removed
    * @param length the length of the fragment to be removed
@@ -682,6 +716,14 @@ public abstract class AbstractDocument implements Document, Serializable
    *         document
    */
   public void remove(int offset, int length) throws BadLocationException
+  {
+    if (documentFilter != null)
+      documentFilter.remove(getBypass(), offset, length);
+    else
+      removeImpl(offset, length);
+  }
+  
+  void removeImpl(int offset, int length) throws BadLocationException
   {
     DefaultDocumentEvent event =
       new DefaultDocumentEvent(offset, length,
@@ -707,6 +749,9 @@ public abstract class AbstractDocument implements Document, Serializable
   /**
    * Replaces a piece of content in this <code>Document</code> with
    * another piece of content.
+   * 
+   * <p>If a {@link DocumentFilter} is installed in this document, the
+   * corresponding method of the filter object is called.</p>
    *
    * @param offset the start offset of the fragment to be removed
    * @param length the length of the fragment to be removed
@@ -720,11 +765,21 @@ public abstract class AbstractDocument implements Document, Serializable
    * @since 1.4
    */
   public void replace(int offset, int length, String text,
+                      AttributeSet attributes)
+    throws BadLocationException
+  {
+    if (documentFilter != null)
+      documentFilter.replace(getBypass(), offset, length, text, attributes);
+    else
+      replaceImpl(offset, length, text, attributes);
+  }
+  
+  void replaceImpl(int offset, int length, String text,
 		      AttributeSet attributes)
     throws BadLocationException
   {
-    remove(offset, length);
-    insertString(offset, text, attributes);
+    removeImpl(offset, length);
+    insertStringImpl(offset, text, attributes);
   }
 
   /**
@@ -2239,4 +2294,37 @@ public abstract class AbstractDocument implements Document, Serializable
 	      + getStartOffset() + "," + getEndOffset() + "\n");
     }
   }
+  
+  /** A class whose methods delegate to the insert, remove and replace methods
+   * of this document which do not check for an installed DocumentFilter.
+   */
+  class Bypass extends DocumentFilter.FilterBypass
+  {
+
+    public Document getDocument()
+    {
+      return AbstractDocument.this;
+    }
+
+    public void insertString(int offset, String string, AttributeSet attr)
+    throws BadLocationException
+    {
+      AbstractDocument.this.insertStringImpl(offset, string, attr);
+    }
+
+    public void remove(int offset, int length)
+    throws BadLocationException
+    {
+      AbstractDocument.this.removeImpl(offset, length);
+    }
+
+    public void replace(int offset, int length, String string,
+                        AttributeSet attrs)
+    throws BadLocationException
+    {
+      AbstractDocument.this.replaceImpl(offset, length, string, attrs);
+    }
+    
+  }
+  
 }

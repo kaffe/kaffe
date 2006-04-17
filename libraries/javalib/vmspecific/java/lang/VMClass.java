@@ -1,5 +1,5 @@
 /* VMClass.java -- VM Specific Class methods
-   Copyright (C) 2003, 2004 Free Software Foundation
+   Copyright (C) 2003, 2004, 2005 Free Software Foundation
 
 This file is part of GNU Classpath.
 
@@ -37,9 +37,13 @@ exception statement from your version. */
 
 package java.lang;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 
 /*
  * This class is a reference version, mainly for compiling a class library
@@ -49,13 +53,14 @@ import java.lang.reflect.Method;
 
 /**
  *
- * @author Etienne Gagnon <etienne.gagnon@uqam.ca>
- * @author Archie Cobbs <archie@dellroad.org>
- * @author C. Brian Jones <cbj@gnu.org>
+ * @author Etienne Gagnon (etienne.gagnon@uqam.ca)
+ * @author Archie Cobbs (archie@dellroad.org)
+ * @author C. Brian Jones (cbj@gnu.org)
+ * @author Tom Tromey (tromey@cygnus.com)
+ * @author Andrew John Hughes (gnu_andrew@member.fsf.org)
  */
 final class VMClass 
 {
-
   // Only static methods. Cannot be instantiated.
   private VMClass()
   {
@@ -185,11 +190,13 @@ final class VMClass
    * public and final, but not an interface.
    *
    * @param klass the Class object that's calling us
+   * @param ignoreInnerClassesAttrib if set, return the real modifiers, not
+   * the ones specified in the InnerClasses attribute.
    * @return the modifiers of this class
-   * @see Modifer
+   * @see Modifier
    * @since 1.1
    */
-  static native int getModifiers(Class klass, boolean ignoreInnerclassAttributes);
+  static native int getModifiers(Class klass, boolean ignoreInnerClassesAttrib);
 
   /**
    * If this is a nested or inner class, return the class that declared it.
@@ -205,7 +212,7 @@ final class VMClass
    * Like <code>getDeclaredClasses()</code> but without the security checks.
    *
    * @param klass the Class object that's calling us
-   * @param pulicOnly Only public classes should be returned
+   * @param publicOnly Only public classes should be returned
    */
   static native Class[] getDeclaredClasses(Class klass, boolean publicOnly);
 
@@ -213,7 +220,7 @@ final class VMClass
    * Like <code>getDeclaredFields()</code> but without the security checks.
    *
    * @param klass the Class object that's calling us
-   * @param pulicOnly Only public fields should be returned
+   * @param publicOnly Only public fields should be returned
    */
   static native Field[] getDeclaredFields(Class klass, boolean publicOnly);
 
@@ -221,7 +228,7 @@ final class VMClass
    * Like <code>getDeclaredMethods()</code> but without the security checks.
    *
    * @param klass the Class object that's calling us
-   * @param pulicOnly Only public methods should be returned
+   * @param publicOnly Only public methods should be returned
    */
   static native Method[] getDeclaredMethods(Class klass, boolean publicOnly);
 
@@ -230,7 +237,7 @@ final class VMClass
    * the security checks.
    *
    * @param klass the Class object that's calling us
-   * @param pulicOnly Only public constructors should be returned
+   * @param publicOnly Only public constructors should be returned
    */
   static native Constructor[] getDeclaredConstructors(Class klass, boolean publicOnly);
 
@@ -243,19 +250,22 @@ final class VMClass
   static native ClassLoader getClassLoader(Class klass);
 
   /**
-   * VM implementors are free to make this method a noop if 
-   * the default implementation is acceptable.
+   * Load the requested class and record the specified loader as the
+   * initiating class loader.
    *
    * @param name the name of the class to find
+   * @param initialize should the class initializer be run?
+   * @param loader the class loader to use (or null for the bootstrap loader)
    * @return the Class object representing the class or null for noop
    * @throws ClassNotFoundException if the class was not found by the
-   *         classloader
+   *         class loader
    * @throws LinkageError if linking the class fails
    * @throws ExceptionInInitializerError if the class loads, but an exception
    *         occurs during initialization
    */
-  static Class forName(String name) throws ClassNotFoundException
-   { return null; }
+  static native Class forName(String name, boolean initialize,
+                              ClassLoader loader)
+    throws ClassNotFoundException;
 
   /**
    * Return whether this class is an array type.
@@ -267,30 +277,187 @@ final class VMClass
   static native boolean isArray(Class klass);
 
   /**
-   * This method should trigger class initialization (if the
-   * class hasn't already been initialized)
-   * 
-   * @param klass the Class object that's calling us
-   * @throws ExceptionInInitializerError if an exception
-   *         occurs during initialization
-   */
-  static native void initialize(Class klass);
-
-  /**
-   * Load an array class.
-   *
-   * @return the Class object representing the class
-   * @throws ClassNotFoundException if the class was not found by the
-   *         classloader
-   */
-  static native Class loadArrayClass(String name, ClassLoader classloader)
-	throws ClassNotFoundException;
-
-  /**
    * Throw a checked exception without declaring it.
    */
   static native void throwException(Throwable t);
 
+  /**
+   * Returns true if this class is a synthetic class, generated by the
+   * compiler.
+   *
+   * @param klass the Class object that's calling us
+   * @return whether this class is synthetic or not
+   */
+  static native boolean isSynthetic(Class klass);
 
-  static native void checkAccess (Class clazz, Class caller, int memberAccessFlags) throws IllegalAccessException;
+  /**
+   * Returns true if this class represents an annotation.
+   *
+   * @param klass the Class object that's calling us
+   * @return whether this class is an annotation or not
+   */
+  static native boolean isAnnotation(Class klass);
+
+  /**
+   * Returns true if this class was declared as an enum.
+   *
+   * @param klass the Class object that's calling us
+   * @return whether this class is an enumeration or not
+   */
+  static native boolean isEnum(Class klass);
+
+  /**
+   * Returns the simple name for the specified class, as used in the source
+   * code.  For normal classes, this is the content returned by
+   * <code>getName()</code> which follows the last ".".  Anonymous
+   * classes have no name, and so the result of calling this method is
+   * "".  The simple name of an array consists of the simple name of
+   * its component type, followed by "[]".  Thus, an array with the 
+   * component type of an anonymous class has a simple name of simply
+   * "[]".
+   *
+   * @param klass the class whose simple name should be returned. 
+   * @return the simple name for this class.
+   */
+  static String getSimpleName(Class klass)
+  {
+    if (isArray(klass))
+      {
+	return getComponentType(klass).getSimpleName() + "[]";
+      }
+    String fullName = getName(klass);
+    return fullName.substring(fullName.lastIndexOf(".") + 1);
+  }
+
+  /**
+   * <p>
+   * Returns the canonical name of the specified class, as defined by section
+   * 6.7 of the Java language specification.  Each package, top-level class,
+   * top-level interface and primitive type has a canonical name.  A member
+   * class has a canonical name, if its parent class has one.  Likewise,
+   * an array type has a canonical name, if its component type does.
+   * Local or anonymous classes do not have canonical names.
+   * </p>
+   * <p>
+   * The canonical name for top-level classes, top-level interfaces and
+   * primitive types is always the same as the fully-qualified name.
+   * For array types, the canonical name is the canonical name of its
+   * component type with `[]' appended.  
+   * </p>
+   * <p>
+   * The canonical name of a member class always refers to the place where
+   * the class was defined, and is composed of the canonical name of the
+   * defining class and the simple name of the member class, joined by `.'.
+   *  For example, if a <code>Person</code> class has an inner class,
+   * <code>M</code>, then both its fully-qualified name and canonical name
+   * is <code>Person.M</code>.  A subclass, <code>Staff</code>, of
+   * <code>Person</code> refers to the same inner class by the fully-qualified
+   * name of <code>Staff.M</code>, but its canonical name is still
+   * <code>Person.M</code>.
+   * </p>
+   * <p>
+   * Where no canonical name is present, <code>null</code> is returned.
+   * </p>
+   *
+   * @param klass the class whose canonical name should be retrieved.
+   * @return the canonical name of the class, or <code>null</code> if the
+   *         class doesn't have a canonical name.
+   * @since 1.5
+   */
+  static String getCanonicalName(Class klass)
+  {
+    if (isArray(klass))
+      {
+	String componentName = getComponentType(klass).getCanonicalName();
+	if (componentName != null)
+	  return componentName + "[]";
+      }
+    if (isMemberClass(klass))
+      {
+	String memberName = getDeclaringClass(klass).getCanonicalName();
+	if (memberName != null)
+	  return memberName + "." + getSimpleName(klass);
+      }
+    if (isLocalClass(klass) || isAnonymousClass(klass))
+      return null;
+    return getName(klass);
+  }
+
+  /**
+   * Returns the class which immediately encloses the specified class.  If
+   * the class is a top-level class, this method returns <code>null</code>.
+   *
+   * @param klass the class whose enclosing class should be returned.
+   * @return the immediate enclosing class, or <code>null</code> if this is
+   *         a top-level class.
+   * @since 1.5
+   */
+  static native Class getEnclosingClass(Class klass);
+
+  /**
+   * Returns the constructor which immediately encloses the specified class.
+   * If the class is a top-level class, or a local or anonymous class 
+   * immediately enclosed by a type definition, instance initializer
+   * or static initializer, then <code>null</code> is returned.
+   *
+   * @param klass the class whose enclosing constructor should be returned.
+   * @return the immediate enclosing constructor if the specified class is
+   *         declared within a constructor.  Otherwise, <code>null</code>
+   *         is returned.
+   * @since 1.5
+   */
+  static native Constructor getEnclosingConstructor(Class klass);
+
+  /**
+   * Returns the method which immediately encloses the specified class.  If
+   * the class is a top-level class, or a local or anonymous class 
+   * immediately enclosed by a type definition, instance initializer
+   * or static initializer, then <code>null</code> is returned.
+   *
+   * @param klass the class whose enclosing method should be returned.
+   * @return the immediate enclosing method if the specified class is
+   *         declared within a method.  Otherwise, <code>null</code>
+   *         is returned.
+   * @since 1.5
+   */
+  static native Method getEnclosingMethod(Class klass);
+
+  /**
+   * Returns the class signature as specified in Class File Format
+   * chapter in the VM specification, or null if the class is not
+   * generic.
+   *
+   * @param klass the klass to test.
+   * @return a ClassSignature string.
+   * @since 1.5
+   */
+  static native String getClassSignature(Class klass);
+
+  /**
+   * Returns true if the specified class represents an anonymous class.
+   *
+   * @param klass the klass to test.
+   * @return true if the specified class represents an anonymous class.
+   * @since 1.5
+   */
+  static native boolean isAnonymousClass(Class klass);
+
+  /**
+   * Returns true if the specified class represents an local class.
+   *
+   * @param klass the klass to test.
+   * @return true if the specified class represents an local class.
+   * @since 1.5
+   */
+  static native boolean isLocalClass(Class klass);
+
+  /**
+   * Returns true if the specified class represents an member class.
+   *
+   * @param klass the klass to test. 
+   * @return true if the specified class represents an member class.
+   * @since 1.5
+   */
+  static native boolean isMemberClass(Class klass);
+
 } // class VMClass

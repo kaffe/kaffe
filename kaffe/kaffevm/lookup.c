@@ -58,16 +58,29 @@ getMethodSignatureClass(constIndex idx, Hjava_lang_Class* this, bool shouldLoadC
 	call->cname = NULL;
 
 	pool = CLASS_CONSTANTS(this);
+	if (idx >= CLASS_CONST_SIZE(this))
+	  {
+	    postExceptionMessage(einfo, JAVA_LANG(ClassFormatError), "invalid method name index");
+	    return false;
+	  }
+
 	if (pool->tags[idx] != CONSTANT_Methodref &&
 	    pool->tags[idx] != CONSTANT_InterfaceMethodref) {
 DBG(RESERROR,	dprintf("No Methodref found for idx=%d\n", idx);	);
 		/* shouldn't that be ClassFormatError or something? */
 		postExceptionMessage(einfo, JAVA_LANG(NoSuchMethodError),
-			"method name unknown, tag = %d", pool->tags[idx]);
+			"method name unknown, tag = %d",  pool->tags[idx]);
                 return (false);
 	}
 
 	ni = METHODREF_NAMEANDTYPE(idx, pool);
+	if (ni >= CLASS_CONST_SIZE(this))
+	  {
+	    postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
+				 "invalid method name index");
+	    return false;
+	  }
+
 	name = WORD2UTF(pool->data[NAMEANDTYPE_NAME(ni, pool)]);
 	sig = WORD2UTF(pool->data[NAMEANDTYPE_SIGNATURE(ni, pool)]);
 
@@ -157,6 +170,13 @@ getClass(constIndex idx, Hjava_lang_Class* this, errorInfo *einfo)
 	int tag;
 
 	pool = CLASS_CONSTANTS(this);
+
+	if (idx >= CLASS_CONST_SIZE(this))
+	  {
+	    postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
+				 "invalid class name index");
+	    return NULL;
+	  }
 
 	tag = pool->tags[idx];
 

@@ -38,6 +38,9 @@ exception statement from your version. */
 
 package java.net;
 
+import gnu.classpath.NotImplementedException;
+import gnu.classpath.SystemProperties;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -49,6 +52,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * Written using on-line Java Platform 1.2 API Specification, as well
@@ -114,6 +118,12 @@ public abstract class URLConnection
   private static boolean defaultUseCaches = true;
 
   /**
+   * Default internal content handler factory.
+   */
+  private static ContentHandlerFactory defaultFactory
+    = new gnu.java.net.DefaultContentHandlerFactory();
+
+  /**
    * This variable determines whether or not interaction is allowed with
    * the user.  For example, to prompt for a username and password.
    */
@@ -160,6 +170,7 @@ public abstract class URLConnection
    * This is the URL associated with this connection
    */
   protected URL url;
+
   private static SimpleDateFormat[] dateFormats;
   private static boolean dateformats_initialized;
 
@@ -923,8 +934,10 @@ public abstract class URLConnection
    * @exception IOException If an error occurs
    */
   public static String guessContentTypeFromStream(InputStream is)
-    throws IOException
+    throws IOException, NotImplementedException
   {
+    // See /etc/gnome-vfs-mime-magic or /etc/mime-magic for a reasonable
+    // idea of how to handle this.
     return "application/octet-stream";
   }
 
@@ -979,44 +992,66 @@ public abstract class URLConnection
     if (factory != null)
       handler = factory.createContentHandler(contentType);
 
-    // Then try our default class.
-    try
-      {
-	String typeClass = contentType.replace('/', '.');
+    // Now try default factory. Using this factory to instantiate built-in
+    // content handlers is preferable  
+    if (handler == null)
+      handler = defaultFactory.createContentHandler(contentType);
 
-	// Deal with "Content-Type: text/html; charset=ISO-8859-1".
-	int parameterBegin = typeClass.indexOf(';');
-	if (parameterBegin >= 1)
-	  typeClass = typeClass.substring(0, parameterBegin);
+    // User-set factory has not returned a handler. Use the default search 
+    // algorithm.
+    if (handler == null)
+      {
+        // Get the list of packages to check and append our default handler
+        // to it, along with the JDK specified default as a last resort.
+        // Except in very unusual environments the JDK specified one shouldn't
+        // ever be needed (or available).
+        String propVal = SystemProperties.getProperty("java.content.handler.pkgs");
+        propVal = (((propVal == null) ? "" : (propVal + "|"))
+                   + "gnu.java.net.content|sun.net.www.content");
 
-	Class cls = Class.forName("gnu.java.net.content." + typeClass);
-	Object obj = cls.newInstance();
+        // Deal with "Content-Type: text/html; charset=ISO-8859-1".
+        int parameterBegin = contentType.indexOf(';');
+        if (parameterBegin >= 1)
+          contentType = contentType.substring(0, parameterBegin);
+        contentType = contentType.trim();
 
-	if (obj instanceof ContentHandler)
-	  {
-	    handler = (ContentHandler) obj;
-	    return handler;
-	  }
-      }
-    catch (ClassNotFoundException e)
-      {
-	// Ignore.
-      }
-    catch (InstantiationException e)
-      {
-	// Ignore.
-      }
-    catch (IllegalAccessException e)
-      {
-	// Ignore.
+        // Replace the '/' character in the content type with '.' and
+        // all other non-alphabetic, non-numeric characters with '_'.
+        char[] cArray = contentType.toCharArray();
+        for (int i = 0; i < cArray.length; i++)
+          {
+            if (cArray[i] == '/')
+              cArray[i] = '.';
+            else if (! ((cArray[i] >= 'A' && cArray[i] <= 'Z') || 
+                        (cArray[i] >= 'a' && cArray[i] <= 'z') ||
+                        (cArray[i] >= '0' && cArray[i] <= '9')))
+              cArray[i] = '_';
+          }
+        String contentClass = new String(cArray);
+
+        // See if a class of this content type exists in any of the packages.
+        StringTokenizer pkgPrefix = new StringTokenizer(propVal, "|");
+        do
+          {
+            String facName = pkgPrefix.nextToken() + "." + contentClass;
+            try
+              {
+                handler =
+                  (ContentHandler) Class.forName(facName).newInstance();
+              }
+            catch (Exception e)
+              {
+                // Can't instantiate; handler still null, go on to next element.
+              }
+          } while (handler == null && pkgPrefix.hasMoreTokens());
       }
 
     return handler;
   }
   
   // We don't put these in a static initializer, because it creates problems
-  // with initializer co-dependency: SimpleDateFormat's constructors eventually 
-  // depend on URLConnection (via the java.text.*Symbols classes).
+  // with initializer co-dependency: SimpleDateFormat's constructors
+  // eventually depend on URLConnection (via the java.text.*Symbols classes).
   private static synchronized void initializeDateFormats()
   {
     if (dateformats_initialized)

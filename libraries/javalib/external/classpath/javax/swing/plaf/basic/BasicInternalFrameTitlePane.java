@@ -520,22 +520,22 @@ public class BasicInternalFrameTitlePane extends JComponent
   }
 
   /** The action command for the Close action. */
-  protected static final String CLOSE_CMD = "Close";
+  protected static final String CLOSE_CMD;
 
   /** The action command for the Minimize action. */
-  protected static final String ICONIFY_CMD = "Minimize";
+  protected static final String ICONIFY_CMD;
 
   /** The action command for the Maximize action. */
-  protected static final String MAXIMIZE_CMD = "Maximize";
+  protected static final String MAXIMIZE_CMD;
 
   /** The action command for the Move action. */
-  protected static final String MOVE_CMD = "Move";
+  protected static final String MOVE_CMD;
 
   /** The action command for the Restore action. */
-  protected static final String RESTORE_CMD = "Restore";
+  protected static final String RESTORE_CMD;
 
   /** The action command for the Size action. */
-  protected static final String SIZE_CMD = "Size";
+  protected static final String SIZE_CMD;
 
   /** The action associated with closing the JInternalFrame. */
   protected Action closeAction;
@@ -614,6 +614,17 @@ public class BasicInternalFrameTitlePane extends JComponent
    * This is package-private to avoid an accessor method.
    */
   transient JLabel title;
+  
+  static
+    {
+      // not constants in JDK
+      CLOSE_CMD = "Close";
+      ICONIFY_CMD = "Minimize";
+      MAXIMIZE_CMD = "Maximize";
+      MOVE_CMD = "Move";
+      RESTORE_CMD = "Restore";
+      SIZE_CMD = "Size";
+    }
 
   /**
    * Creates a new BasicInternalFrameTitlePane object that is used in the

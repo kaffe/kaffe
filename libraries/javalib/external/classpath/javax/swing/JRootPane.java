@@ -50,6 +50,7 @@ import java.awt.Rectangle;
 import java.io.Serializable;
 
 import javax.accessibility.Accessible;
+import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleRole;
 import javax.swing.plaf.RootPaneUI;
 
@@ -676,5 +677,18 @@ public class JRootPane extends JComponent implements Accessible
   public boolean isOptimizedDrawingEnable()
   {
     return ! glassPane.isVisible();
+  }
+
+  /**
+   * Returns the accessible context for this JRootPane. This will be
+   * an instance of {@link AccessibleJRootPane}.
+   *
+   * @return the accessible context for this JRootPane
+   */
+  public AccessibleContext getAccessibleContext()
+  {
+    if (accessibleContext == null)
+      accessibleContext = new AccessibleJRootPane();
+    return accessibleContext;
   }
 }

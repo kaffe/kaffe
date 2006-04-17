@@ -81,6 +81,7 @@ import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleExtendedComponent;
 import javax.accessibility.AccessibleKeyBinding;
 import javax.accessibility.AccessibleRole;
+import javax.accessibility.AccessibleState;
 import javax.accessibility.AccessibleStateSet;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
@@ -104,7 +105,7 @@ public abstract class JComponent extends Container implements Serializable
   private static final long serialVersionUID = -7908749299918704233L;
 
   /** 
-   * Accessibility support is currently missing.
+   * The accessible context of this <code>JComponent</code>.
    */
   protected AccessibleContext accessibleContext;
 
@@ -117,74 +118,185 @@ public abstract class JComponent extends Container implements Serializable
     implements AccessibleExtendedComponent
   {
     /**
-     * Accessibility support for <code>JComponent</code>'s focus handler.
+     * Receives notification if the focus on the JComponent changes and
+     * fires appropriate PropertyChangeEvents to listeners registered with
+     * the AccessibleJComponent.
      */
     protected class AccessibleFocusHandler 
       implements FocusListener
     {
+      /**
+       * Creates a new AccessibleFocusHandler.
+       */
       protected AccessibleFocusHandler()
       {
-        // TODO: Implement this properly.
+        // Nothing to do here.
       }
+
+      /**
+       * Receives notification when the JComponent gained focus and fires
+       * a PropertyChangeEvent to listeners registered on the
+       * AccessibleJComponent with a property name of
+       * {@link AccessibleContext#ACCESSIBLE_STATE_PROPERTY} and a new value
+       * of {@link AccessibleState#FOCUSED}.
+       */
       public void focusGained(FocusEvent event)
       {
-        // TODO: Implement this properly.
+        AccessibleJComponent.this.firePropertyChange
+          (AccessibleContext.ACCESSIBLE_STATE_PROPERTY, null,
+           AccessibleState.FOCUSED);
       }
+
+      /**
+       * Receives notification when the JComponent lost focus and fires
+       * a PropertyChangeEvent to listeners registered on the
+       * AccessibleJComponent with a property name of
+       * {@link AccessibleContext#ACCESSIBLE_STATE_PROPERTY} and an old value
+       * of {@link AccessibleState#FOCUSED}.
+       */
       public void focusLost(FocusEvent valevent)
       {
-        // TODO: Implement this properly.
+        AccessibleJComponent.this.firePropertyChange
+          (AccessibleContext.ACCESSIBLE_STATE_PROPERTY,
+           AccessibleState.FOCUSED, null);
       }
     }
 
     /**
-     * Accessibility support for <code>JComponent</code>'s container handler.
+     * Receives notification if there are child components are added or removed
+     * from the JComponent and fires appropriate PropertyChangeEvents to
+     * interested listeners on the AccessibleJComponent.
      */
     protected class AccessibleContainerHandler 
       implements ContainerListener
     {
+      /**
+       * Creates a new AccessibleContainerHandler.
+       */
       protected AccessibleContainerHandler()
       {
-        // TODO: Implement this properly.
+        // Nothing to do here.
       }
+
+      /**
+       * Receives notification when a child component is added to the
+       * JComponent and fires a PropertyChangeEvent on listeners registered
+       * with the AccessibleJComponent with a property name of
+       * {@link AccessibleContext#ACCESSIBLE_CHILD_PROPERTY}.
+       *
+       * @param event the container event
+       */
       public void componentAdded(ContainerEvent event)
       {
-        // TODO: Implement this properly.
+        Component c = event.getChild();
+        if (c != null && c instanceof Accessible)
+          {
+            AccessibleContext childCtx = c.getAccessibleContext();
+            AccessibleJComponent.this.firePropertyChange
+              (AccessibleContext.ACCESSIBLE_CHILD_PROPERTY, null, childCtx);
+          }
       }
-      public void componentRemoved(ContainerEvent valevent)
+
+      /**
+       * Receives notification when a child component is removed from the
+       * JComponent and fires a PropertyChangeEvent on listeners registered
+       * with the AccessibleJComponent with a property name of
+       * {@link AccessibleContext#ACCESSIBLE_CHILD_PROPERTY}.
+       *
+       * @param event the container event
+       */
+      public void componentRemoved(ContainerEvent event)
       {
-        // TODO: Implement this properly.
+        Component c = event.getChild();
+        if (c != null && c instanceof Accessible)
+          {
+            AccessibleContext childCtx = c.getAccessibleContext();
+            AccessibleJComponent.this.firePropertyChange
+              (AccessibleContext.ACCESSIBLE_CHILD_PROPERTY, childCtx, null);
+          }
       }
     }
 
     private static final long serialVersionUID = -7047089700479897799L;
-  
+
+    /**
+     * Receives notification when a child component is added to the
+     * JComponent and fires a PropertyChangeEvent on listeners registered
+     * with the AccessibleJComponent.
+     *
+     * @specnote AccessibleAWTContainer has a protected field with the same
+     *           name. Looks like a bug or nasty misdesign to me.
+     */
     protected ContainerListener accessibleContainerHandler;
+
+    /**
+     * Receives notification if the focus on the JComponent changes and
+     * fires appropriate PropertyChangeEvents to listeners registered with
+     * the AccessibleJComponent.
+     *
+     * @specnote AccessibleAWTComponent has a protected field
+     *           accessibleAWTFocusHandler. Looks like a bug or nasty misdesign
+     *           to me.
+     */
     protected FocusListener accessibleFocusHandler;
 
+    /**
+     * Creates a new AccessibleJComponent.
+     */
     protected AccessibleJComponent()
     {
-      // nothing to do here
+      // Nothing to do here.
     }
 
     /**
      * Adds a property change listener to the list of registered listeners.
      *
+     * This sets up the {@link #accessibleContainerHandler} and
+     * {@link #accessibleFocusHandler} fields and calls
+     * <code>super.addPropertyChangeListener(listener)</code>.
+     *
      * @param listener the listener to add
      */
     public void addPropertyChangeListener(PropertyChangeListener listener)
     {
-      // TODO: figure out what is done differently here, if anything...
+      // Tests seem to indicate that this method also sets up the other two
+      // handlers.
+      if (accessibleContainerHandler == null)
+        {
+          accessibleContainerHandler = new AccessibleContainerHandler();
+          addContainerListener(accessibleContainerHandler);
+        }
+      if (accessibleFocusHandler == null)
+        {
+          accessibleFocusHandler = new AccessibleFocusHandler();
+          addFocusListener(accessibleFocusHandler);
+        }
       super.addPropertyChangeListener(listener);
     }
 
     /**
-     * Removes a propery change listener from the list of registered listeners.
+     * Removes a property change listener from the list of registered listeners.
+     *
+     * This uninstalls the {@link #accessibleContainerHandler} and
+     * {@link #accessibleFocusHandler} fields and calls
+     * <code>super.removePropertyChangeListener(listener)</code>.
      *
      * @param listener the listener to remove
      */
     public void removePropertyChangeListener(PropertyChangeListener listener)
     {
-      // TODO: figure out what is done differently here, if anything...
+      // Tests seem to indicate that this method also resets the other two
+      // handlers.
+      if (accessibleContainerHandler != null)
+        {
+          removeContainerListener(accessibleContainerHandler);
+          accessibleContainerHandler = null;
+        }
+      if (accessibleFocusHandler != null)
+        {
+          removeFocusListener(accessibleFocusHandler);
+          accessibleFocusHandler = null;
+        }
       super.removePropertyChangeListener(listener);
     }
 
@@ -195,14 +307,11 @@ public abstract class JComponent extends Container implements Serializable
      */
     public int getAccessibleChildrenCount()
     {
-      int count = 0;
-      Component[] children = getComponents();
-      for (int i = 0; i < children.length; ++i)
-        {
-          if (children[i] instanceof Accessible)
-            count++;
-        }
-      return count;
+      // TODO: The functionality should be performed in the superclass.
+      // Find out why this is overridden. However, it is very well possible
+      // that this is left over from times when there was no such superclass
+      // method.
+      return super.getAccessibleChildrenCount();
     }
 
     /**
@@ -214,18 +323,11 @@ public abstract class JComponent extends Container implements Serializable
      */
     public Accessible getAccessibleChild(int i)
     {
-      int index = 0;
-      Component[] children = getComponents();
-      Accessible found = null;
-      for (int j = 0; index != i; j++)
-        {
-          if (children[j] instanceof Accessible)
-            index++;
-          if (index == i)
-            found = (Accessible) children[index];
-        }
-      // TODO: Figure out what to do when i is not a valid index.
-      return found;
+      // TODO: The functionality should be performed in the superclass.
+      // Find out why this is overridden. However, it is very well possible
+      // that this is left over from times when there was no such superclass
+      // method.
+      return super.getAccessibleChild(i);
     }
 
     /**
@@ -235,9 +337,14 @@ public abstract class JComponent extends Container implements Serializable
      */
     public AccessibleStateSet getAccessibleStateSet()
     {
-      // FIXME: Figure out which states should be set here, and which are
-      // inherited from the super class.
-      return super.getAccessibleStateSet();
+      // Note: While the java.awt.Component has an 'opaque' property, it
+      // seems that it is not added to the accessible state set there, even
+      // if this property is true. However, it is handled for JComponent, so
+      // we add it here.
+      AccessibleStateSet state = super.getAccessibleStateSet();
+      if (isOpaque())
+        state.add(AccessibleState.OPAQUE);
+      return state;
     }
 
     /**
@@ -253,8 +360,33 @@ public abstract class JComponent extends Container implements Serializable
      */
     public String getAccessibleName()
     {
-      // TODO: Figure out what exactly to return here.
-      return super.getAccessibleName();
+      String name = super.getAccessibleName();
+
+      // There are two fallbacks provided by the JComponent in the case the
+      // superclass returns null:
+      // - If the component is inside a titled border, then it inherits the
+      //   name from the border title.
+      // - If the component is not inside a titled border but has a label
+      //   (via JLabel.setLabelFor()), then it gets the name from the label's
+      //   accessible context.
+
+      if (name == null)
+        {
+          name = getTitledBorderText();
+        }
+
+      if (name == null)
+        {
+          Object l = getClientProperty(JLabel.LABEL_PROPERTY);
+          if (l instanceof Accessible)
+            {
+              AccessibleContext labelCtx =
+                ((Accessible) l).getAccessibleContext();
+              name = labelCtx.getAccessibleName();
+            }
+        }
+
+      return name;
     }
 
     /**
@@ -265,8 +397,32 @@ public abstract class JComponent extends Container implements Serializable
      */
     public String getAccessibleDescription()
     {
-      // TODO: Figure out how this differs from the super method.
-      return super.getAccessibleDescription();
+      // There are two fallbacks provided by the JComponent in the case the
+      // superclass returns null:
+      // - If the component has a tooltip, then inherit the description from
+      //   the tooltip.
+      // - If the component is not inside a titled border but has a label
+      //   (via JLabel.setLabelFor()), then it gets the name from the label's
+      //   accessible context.
+      String descr = super.getAccessibleDescription();
+
+      if (descr == null)
+        {
+          descr = getToolTipText();
+        }
+
+      if (descr == null)
+        {
+          Object l = getClientProperty(JLabel.LABEL_PROPERTY);
+          if (l instanceof Accessible)
+            {
+              AccessibleContext labelCtx =
+                ((Accessible) l).getAccessibleContext();
+              descr = labelCtx.getAccessibleName();
+            }
+        }
+
+      return descr;
     }
 
     /**
@@ -278,7 +434,6 @@ public abstract class JComponent extends Container implements Serializable
      */
     public AccessibleRole getAccessibleRole()
     {
-      // TODO: Check if this is correct.
       return AccessibleRole.SWING_COMPONENT;
     }
 
@@ -344,7 +499,8 @@ public abstract class JComponent extends Container implements Serializable
      */
     public AccessibleKeyBinding getAccessibleKeyBinding()
     {
-      // TODO: Implement this properly.
+      // The reference implementation seems to always return null here,
+      // independent of the key bindings of the JComponent. So do we.
       return null;
     }
   }
@@ -609,6 +765,24 @@ public abstract class JComponent extends Container implements Serializable
    * {@link RepaintManager#isCompletelyDirty(JComponent)} method.
    */
   boolean isCompletelyDirty = false;
+
+  /**
+   * Indicates if the opaque property has been set by a client program or by
+   * the UI.
+   *
+   * @see #setUIProperty(String, Object)
+   * @see LookAndFeel#installProperty(JComponent, String, Object)
+   */
+  private boolean clientOpaqueSet = false;
+
+  /**
+   * Indicates if the autoscrolls property has been set by a client program or
+   * by the UI.
+   *
+   * @see #setUIProperty(String, Object)
+   * @see LookAndFeel#installProperty(JComponent, String, Object)
+   */
+  private boolean clientAutoscrollsSet = false;
 
   /**
    * Creates a new <code>JComponent</code> instance.
@@ -1223,7 +1397,12 @@ public abstract class JComponent extends Container implements Serializable
    */
   public Component getNextFocusableComponent()
   {
-    return null;
+    Container focusRoot = this;
+    if (! this.isFocusCycleRoot())
+      focusRoot = getFocusCycleRootAncestor();
+
+    FocusTraversalPolicy policy  = focusRoot.getFocusTraversalPolicy();
+    return policy.getComponentAfter(focusRoot, this);
   }
 
   /**
@@ -1417,7 +1596,7 @@ public abstract class JComponent extends Container implements Serializable
    */
   public void grabFocus()
   {
-    // TODO: Implement this properly.
+    requestFocus();
   }
 
   /**
@@ -2405,7 +2584,20 @@ public abstract class JComponent extends Container implements Serializable
    */
   public void unregisterKeyboardAction(KeyStroke aKeyStroke)
   {
-    // FIXME: Must be implemented.
+    ActionMap am = getActionMap();
+    // This loops through the conditions WHEN_FOCUSED,
+    // WHEN_ANCESTOR_OF_FOCUSED_COMPONENT and WHEN_IN_FOCUSED_WINDOW.
+    for (int cond = 0; cond < 3; cond++)
+      {
+        InputMap im = getInputMap(cond);
+        if (im != null)
+          {
+            Object action = im.get(aKeyStroke);
+            if (action != null && am != null)
+              am.remove(action);
+            im.remove(aKeyStroke);
+          }
+      }
   }
 
 
@@ -2544,6 +2736,7 @@ public abstract class JComponent extends Container implements Serializable
   public void setAutoscrolls(boolean a)
   {
     autoscrolls = a;
+    clientAutoscrollsSet = true;
   }
 
   /**
@@ -2682,7 +2875,29 @@ public abstract class JComponent extends Container implements Serializable
    */
   public void setNextFocusableComponent(Component aComponent)
   {
-    // TODO: Implement this properly.
+    Container focusRoot = this;
+    if (! this.isFocusCycleRoot())
+      focusRoot = getFocusCycleRootAncestor();
+
+    FocusTraversalPolicy policy  = focusRoot.getFocusTraversalPolicy();
+    if (policy instanceof CompatibilityFocusTraversalPolicy)
+      {
+        policy = new CompatibilityFocusTraversalPolicy(policy);
+        focusRoot.setFocusTraversalPolicy(policy);
+      }
+    CompatibilityFocusTraversalPolicy p =
+      (CompatibilityFocusTraversalPolicy) policy;
+
+    Component old = getNextFocusableComponent();
+    if (old != null)
+      {
+        p.removeNextFocusableComponent(this, old);
+      }
+
+    if (aComponent != null)
+      {
+        p.addNextFocusableComponent(this, aComponent);
+      }
   }
 
   /**
@@ -2737,6 +2952,7 @@ public abstract class JComponent extends Container implements Serializable
   {
     boolean oldOpaque = opaque;
     opaque = isOpaque;
+    clientOpaqueSet = true;
     firePropertyChange("opaque", oldOpaque, opaque);
   }
 
@@ -3411,5 +3627,45 @@ public abstract class JComponent extends Container implements Serializable
     km.clearBindingsForComp(changed.getComponent());
     km.registerEntireMap((ComponentInputMap) 
                          getInputMap(WHEN_IN_FOCUSED_WINDOW));
+  }
+
+  /**
+   * Helper method for
+   * {@link LookAndFeel#installProperty(JComponent, String, Object)}.
+   * 
+   * @param propertyName the name of the property
+   * @param value the value of the property
+   *
+   * @throws IllegalArgumentException if the specified property cannot be set
+   *         by this method
+   * @throws ClassCastException if the property value does not match the
+   *         property type
+   * @throws NullPointerException if <code>c</code> or
+   *         <code>propertyValue</code> is <code>null</code>
+   */
+  void setUIProperty(String propertyName, Object value)
+  {
+    if (propertyName.equals("opaque"))
+      {
+        if (! clientOpaqueSet)
+          {
+            setOpaque(((Boolean) value).booleanValue());
+            clientOpaqueSet = false;
+          }
+      }
+    else if (propertyName.equals("autoscrolls"))
+      {
+        if (! clientAutoscrollsSet)
+          {
+            setAutoscrolls(((Boolean) value).booleanValue());
+            clientAutoscrollsSet = false;
+          }
+      }
+    else
+      {
+        throw new IllegalArgumentException
+            ("Unsupported property for LookAndFeel.installProperty(): "
+             + propertyName);
+      }
   }
 }

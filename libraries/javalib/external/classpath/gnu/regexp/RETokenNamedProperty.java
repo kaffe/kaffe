@@ -122,8 +122,8 @@ final class RETokenNamedProperty extends REToken {
     boolean retval = handler.includes(ch);
     if (insens) {
         retval = retval ||
-                 handler.includes(Character.toUpperCase(ch)) ||
-                 handler.includes(Character.toLowerCase(ch));
+                 handler.includes(toUpperCase(ch, unicodeAware)) ||
+                 handler.includes(toLowerCase(ch, unicodeAware));
     }
 
     if (negate) retval = !retval;

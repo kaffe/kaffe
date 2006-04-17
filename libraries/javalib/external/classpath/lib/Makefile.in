@@ -82,7 +82,6 @@ CAIRO_LIBS = @CAIRO_LIBS@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
-CLASSPATH_CONVENIENCE = @CLASSPATH_CONVENIENCE@
 CLASSPATH_INCLUDES = @CLASSPATH_INCLUDES@
 CLASSPATH_MODULE = @CLASSPATH_MODULE@
 COLLECTIONS_PREFIX = @COLLECTIONS_PREFIX@
@@ -276,8 +275,8 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 vm_classes = @vm_classes@
 JAVA_DEPEND = java.dep
-propertydirs := $(shell cd $(top_srcdir)/resource && $(FIND) gnu java org META-INF -type d ! -name CVS -print)
-propertyfiles := $(shell cd $(top_srcdir)/resource && $(FIND) gnu java org -name \*\.properties -print)
+propertydirs := $(shell cd $(top_srcdir)/resource && $(FIND) gnu java javax org META-INF -type d ! -name CVS -print)
+propertyfiles := $(shell cd $(top_srcdir)/resource && $(FIND) gnu java javax org -name \*\.properties -print)
 metafiles := $(shell cd $(top_srcdir)/resource && $(FIND) META-INF -name CVS -prune -o -type f -print)
 iconfiles := $(shell cd $(top_srcdir) && $(FIND) gnu/javax/swing/plaf/gtk/icons -name *.png -type f -print)
 compile_classpath = $(vm_classes):$(top_srcdir):$(top_srcdir)/external/w3c_dom:$(top_srcdir)/external/sax:$(top_srcdir)/external/relaxngDatatype:.:$(USER_CLASSLIB)
@@ -577,6 +576,7 @@ $(JAVA_DEPEND): genclasses
 @FOUND_GCJ_TRUE@	  GCJ='$(GCJ)' \
 @FOUND_GCJ_TRUE@	  compile_classpath='$(top_builddir):$(compile_classpath)' \
 @FOUND_GCJ_TRUE@	  top_srcdir=$(top_srcdir)
+@FOUND_GCJ_TRUE@	touch compile-classes
 @FOUND_GCJ_FALSE@compile-classes: classes $(JAVA_SRCS) Makefile
 @FOUND_GCJ_FALSE@	$(JAVAC)
 @FOUND_GCJ_FALSE@	touch compile-classes

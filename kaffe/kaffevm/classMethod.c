@@ -1019,7 +1019,8 @@ setupClass(Hjava_lang_Class* cl, constIndex c, constIndex s,
 	pool = CLASS_CONSTANTS(cl);
 
 	/* Find the name of the class */
-	if (pool->tags[c] != CONSTANT_Class) {
+	if (c >= CLASS_CONST_SIZE (cl)
+	    || pool->tags[c] != CONSTANT_Class) {
                 postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
 				     "this class constant pool index is bogus");
 		return (NULL);
@@ -1074,10 +1075,6 @@ addSourceFile(Hjava_lang_Class* c, int idx, errorInfo *einfo)
 
 
 /*
- * Add a Java 1.5 signature to the class descriptor.
- */
-
-/*
  * Read in InnerClasses declares for a class
  */
 bool
@@ -1109,15 +1106,17 @@ addInnerClasses(Hjava_lang_Class* c, size_t len UNUSED, classFile* fp,
 	c->inner_classes = ic;
 
 	for (i = 0; i < nr; i++, ic++) {
-		u2 dummy;
+		u2 inner_name_index;
 
 		readu2(&ic->inner_class, fp);
 		readu2(&ic->outer_class, fp);
-		readu2(&dummy, fp);
+		readu2(&inner_name_index, fp);
 		readu2(&ic->inner_class_accflags, fp);
 
+		if (inner_name_index != 0)
+		  c->kFlags |= KFLAG_ANONYMOUS;
+
 		if (c->this_index && ic->inner_class == c->this_index) {
-//		    c->accflags = (ic->inner_class_accflags & ACC_MASK);
 		    c->this_inner_index = i;
 		}
 	}
@@ -1166,7 +1165,8 @@ addMethod(Hjava_lang_Class* c,
 	pool = CLASS_CONSTANTS (c);
 
 	nc = name_index;
-	if (pool->tags[nc] != CONSTANT_Utf8) {
+	if (nc >= CLASS_CONST_SIZE (c)
+	    || pool->tags[nc] != CONSTANT_Utf8) {
 		/* XXX fill in einfo! */
 DBG(RESERROR,	dprintf("addMethod: no method name.\n");		);
 		postExceptionMessage(einfo,
@@ -1175,7 +1175,8 @@ DBG(RESERROR,	dprintf("addMethod: no method name.\n");		);
 		return (NULL);
 	}
 	sc = signature_index;
-	if (pool->tags[sc] != CONSTANT_Utf8) {
+	if (sc >= CLASS_CONST_SIZE (c)
+	    || pool->tags[sc] != CONSTANT_Utf8) {
 		/* XXX fill in einfo! */
 DBG(RESERROR,	dprintf("addMethod: no signature name.\n");	);
 		postExceptionMessage(einfo,
@@ -1239,7 +1240,8 @@ addField(Hjava_lang_Class* c,
 	pool = CLASS_CONSTANTS (c);
 
 	nc = name_index;
-	if (pool->tags[nc] != CONSTANT_Utf8) {
+	if (nc >= CLASS_CONST_SIZE (c)
+	    || pool->tags[nc] != CONSTANT_Utf8) {
 DBG(RESERROR,	dprintf("addField: no field name.\n");			);
 		postExceptionMessage(einfo,
 				     JAVA_LANG(ClassFormatError),
@@ -1263,7 +1265,8 @@ DBG(CLASSFILE,
     );
 
 	sc = signature_index;
-	if (pool->tags[sc] != CONSTANT_Utf8) {
+	if (pool->tags[sc] != CONSTANT_Utf8
+	    || sc >=CLASS_CONST_SIZE(c)) {
 DBG(RESERROR,	dprintf("addField: no signature name.\n");		);
 		postExceptionMessage(einfo,
 				     JAVA_LANG(ClassFormatError),

@@ -43,6 +43,7 @@ abstract class REToken implements Serializable, Cloneable {
   protected REToken next = null;
   protected REToken uncle = null;
   protected int subIndex;
+  protected boolean unicodeAware = true;
 
   public Object clone() {
     try {
@@ -155,6 +156,34 @@ abstract class REToken implements Serializable, Cloneable {
     StringBuffer os = new StringBuffer();
     dump(os);
     return os.toString();
+  }
+
+  /**
+    * Converts the character argument to lowercase.
+    * @param ch the character to be converted.
+    * @param unicodeAware If true, use java.lang.Character#toLowerCase;
+    * otherwise, only US-ASCII charactes can be converted.
+    * @return the lowercase equivalent of the character, if any;
+    * otherwise, the character itself.
+    */
+  public static char toLowerCase(char ch, boolean unicodeAware) {
+    if (unicodeAware) return Character.toLowerCase(ch);
+    if (ch >= 'A' && ch <= 'Z') return (char)(ch + 'a' - 'A');
+    return ch;
+  }
+
+  /**
+    * Converts the character argument to uppercase.
+    * @param ch the character to be converted.
+    * @param unicodeAware If true, use java.lang.Character#toUpperCase;
+    * otherwise, only US-ASCII charactes can be converted.
+    * @return the uppercase equivalent of the character, if any;
+    * otherwise, the character itself.
+    */
+  public static char toUpperCase(char ch, boolean unicodeAware) {
+    if (unicodeAware) return Character.toUpperCase(ch);
+    if (ch >= 'a' && ch <= 'z') return (char)(ch + 'A' - 'a');
+    return ch;
   }
 
 }

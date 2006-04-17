@@ -24,9 +24,10 @@
 #include <native.h>
 #include <jni.h>
 #include "defs.h"
+#include "stringSupport.h"
 
 jint
-java_lang_reflect_Constructor_getModifiers(struct Hjava_lang_reflect_Constructor* this)
+java_lang_reflect_Constructor_getModifiersInternal(struct Hjava_lang_reflect_Constructor* this)
 {
 	Hjava_lang_Class* clazz;
 	jint slot;
@@ -36,5 +37,19 @@ java_lang_reflect_Constructor_getModifiers(struct Hjava_lang_reflect_Constructor
 
 	assert(slot < CLASS_NMETHODS(clazz));
 
-	return (CLASS_METHODS(clazz)[slot].accflags & ACC_MASK);
+	return CLASS_METHODS(clazz)[slot].accflags;
+}
+
+Hjava_lang_String *
+java_lang_reflect_Constructor_getSignature(struct Hjava_lang_reflect_Constructor* this)
+{
+	Hjava_lang_Class* clazz;
+	jint slot;
+
+	clazz = unhand(this)->clazz;
+	slot = unhand(this)->slot;
+
+	assert(slot < CLASS_NMETHODS(clazz));
+
+	return utf8Const2Java(CLASS_METHODS(clazz)[slot].extSignature);
 }

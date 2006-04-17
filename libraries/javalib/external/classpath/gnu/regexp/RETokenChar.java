@@ -44,8 +44,9 @@ final class RETokenChar extends REToken {
 
   RETokenChar(int subIndex, char c, boolean ins) {
     super(subIndex);
+    insens = ins;
     ch = new char [1];
-    ch[0] = (insens = ins) ? Character.toLowerCase(c) : c;
+    ch[0] = c;
   }
 
   int getMinimumLength() {
@@ -70,11 +71,19 @@ final class RETokenChar extends REToken {
 	char c;
 	for (int i=0; i<z; i++) {
 	    c = input.charAt(index+i);
-	    if (( (insens) ? Character.toLowerCase(c) : c ) != ch[i]) {
+	    if (! charEquals(c, ch[i])) {
 		return false;
 	    }
 	}
 	return true;
+    }
+
+    private boolean charEquals(char c1, char c2) {
+	if (c1 == c2) return true;
+	if (! insens) return false;
+	if (toLowerCase(c1, unicodeAware) == c2) return true;
+	if (toUpperCase(c1, unicodeAware) == c2) return true;
+	return false;
     }
 
     boolean returnsFixedLengthMatches() { return true; }

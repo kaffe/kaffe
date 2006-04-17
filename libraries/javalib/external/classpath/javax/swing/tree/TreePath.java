@@ -53,9 +53,10 @@ public class TreePath implements Serializable
   static final long serialVersionUID = 4380036194768077479L;
 
   /**
-   * path
+   * The actual patch. The {@link DefaultTreeSelectionModel#clone()}
+   * assumes that the TreePath is immutable, so it is marked final here.
    */
-  private Object[] path = null;
+  private final Object[] path;
 
 
   /**

@@ -62,8 +62,6 @@ import java.util.Map;
  *    <li>B. Kaliski, <a href="http://www.ietf.org/rfc/rfc2898.txt">RFC 2898:
  *    Password-Based Cryptography Specification, Version 2.0</a></li>
  * </ol>
- *
- * @version $Revision: 1.1 $
  */
 public class PBKDF2 extends BasePRNG implements Cloneable
 {

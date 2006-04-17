@@ -203,8 +203,9 @@ readSignatureAttribute(Hjava_lang_Class* this, u2 idx, Utf8Const **signature, er
   constants* pool;
   
   pool = CLASS_CONSTANTS (this);
-  
-  if (pool->tags[idx] != CONSTANT_Utf8) {
+
+  if (idx >= CLASS_CONST_SIZE (this) ||
+      pool->tags[idx] != CONSTANT_Utf8) {
     postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
 			 "invalid signature index: %d",
 			 idx);
@@ -212,6 +213,36 @@ readSignatureAttribute(Hjava_lang_Class* this, u2 idx, Utf8Const **signature, er
   }
   
   *signature = WORD2UTF (pool->data[idx]);
+  return true;
+}
+
+static bool
+readEnclosingMethodAttribute(classFile *fp, u4 len, Hjava_lang_Class* this, errorInfo *einfo)
+{
+  u2 class_index, method_index;
+
+  if (len != 4)
+    {
+      postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
+			   "invalid attribute size for %s",
+			   CLASS_CNAME(this));
+      return false;
+    }
+
+  readu2(&class_index, fp);
+  readu2(&method_index, fp);  
+
+  if (class_index >= CLASS_CONST_SIZE(this) || method_index >= CLASS_CONST_SIZE(this))
+    {
+      postExceptionMessage(einfo, JAVA_LANG(ClassFormatError),
+			   "invalid constant index for %s",
+			   CLASS_CNAME(this));
+      return false;
+    }
+
+  this->enclosingClassIndex = class_index;
+  this->enclosingMethodIndex = method_index;
+
   return true;
 }
 #endif /* !defined(KAFFEH) */
@@ -306,6 +337,10 @@ readAttributes(classFile* fp, Hjava_lang_Class* this,
 				}
 			}
 #if !defined(KAFFEH)
+			else if (utf8ConstEqual(name, EnclosingMethod_name) && thingType == READATTR_CLASS) {
+			  if (!readEnclosingMethodAttribute(fp, len, (struct Hjava_lang_Class*)thing, einfo))
+			    return false;
+			}
 			else if (utf8ConstEqual(name, Synthetic_name)) {
 			  switch (thingType)
 			    {

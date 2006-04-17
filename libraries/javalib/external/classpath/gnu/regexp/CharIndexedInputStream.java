@@ -171,5 +171,11 @@ class CharIndexedInputStream implements CharIndexed {
 	    "difficult to support getAnchor for an input stream");
     }
 
+    public void setAnchor(int anchor) {
+	throw new UnsupportedOperationException(
+	    "difficult to support setAnchor for an input stream");
+    }
+
+
 }
 

@@ -5,8 +5,8 @@ JAVA_DEPEND = java.dep
 ## this file and restart the make process again
 sinclude $(JAVA_DEPEND)
 
-propertydirs :=  $(shell cd $(top_srcdir)/resource && $(FIND) gnu java org META-INF -type d ! -name CVS -print)
-propertyfiles :=  $(shell cd $(top_srcdir)/resource && $(FIND) gnu java org -name \*\.properties -print)
+propertydirs :=  $(shell cd $(top_srcdir)/resource && $(FIND) gnu java javax org META-INF -type d ! -name CVS -print)
+propertyfiles :=  $(shell cd $(top_srcdir)/resource && $(FIND) gnu java javax org -name \*\.properties -print)
 metafiles :=  $(shell cd $(top_srcdir)/resource && $(FIND) META-INF -name CVS -prune -o -type f -print)
 iconfiles :=  $(shell cd $(top_srcdir) && $(FIND) gnu/javax/swing/plaf/gtk/icons -name *.png -type f -print)
 
@@ -156,6 +156,7 @@ compile-classes: classes $(JAVA_SRCS) Makefile
 	  GCJ='$(GCJ)' \
 	  compile_classpath='$(top_builddir):$(compile_classpath)' \
 	  top_srcdir=$(top_srcdir)
+	touch compile-classes
 else
 compile-classes: classes $(JAVA_SRCS) Makefile
 	$(JAVAC)

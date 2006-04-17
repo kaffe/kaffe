@@ -137,6 +137,7 @@ int main(int argc, char *argv[])
 	InnerClasses_name = utf8ConstNew("InnerClasses", -1);
 	Synthetic_name = utf8ConstNew("Synthetic", -1);
 	Signature_name = utf8ConstNew("Signature", -1);
+	EnclosingMethod_name = utf8ConstNew("EnclosingMethod", -1);
 
 	if (!(init_name && final_name && void_signature &&
 	      constructor_name && Code_name && LineNumberTable_name &&

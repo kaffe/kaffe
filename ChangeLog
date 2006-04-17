@@ -1,3 +1,62 @@
+2006-04-17  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* libraries/javalib/external/classpath: Resynchronized with GNU
+	Classpath.
+
+	* kaffe/kaffevm/access.h
+	(KFLAG_ANONYMOUS): New flag.
+
+	* kaffe/kaffevm/baseClasses.c
+	(EnclosingMethod_name): New attribute name.
+
+	* kaffe/kaffevm/classMethod.c
+	(setupClass, addMethod, addField): Shielded the usage of indexes.
+	(addInnerClasses): Remember anonymous classes.
+
+	* kaffe/kaffevm/classMethod.h
+	(Hjava_lang_Class): New fields enclosingClassIndex,
+	enclosingMethodIndex.
+	
+	* kaffe/kaffevm/constants.h
+	(CONSTANT_ResolvedMethod): New synthetic constant.
+
+	* kaffe/kaffevm/lookup.c
+	(getMethodSignatureClass): Shielded the usage of indexes.
+	(getClass): Likewise.
+	
+	* kaffe/kaffevm/readClass.c
+	(readEnclosingMethodAttribute): New function.
+	(readSignature): Shielded the usage of indexes.
+	
+	* libraries/clib/native/Class.c
+	(forName): Renamed from forName0. Adapted to VM layer.
+	(isSynthetic, isEnum, getEnclosingClass, getEnclosingConstructor,
+	getEnclosingMethod, getClassSignature, isAnonymousClass,
+	isLocalClass, isMemberClass): New functions.
+
+	* libraries/clib/native/Constructor.c,
+	libraries/clib/native/Method.c
+	(getModifiersInternal): Renamed from getModifiers.
+	
+	* libraries/javalib/vmspecific/java/lang/Class.java: Removed.
+
+	* libraries/javalib/vmspecific/java/lang/VMClass.java: Imported
+	new version from GNU Classpath.
+
+	* libraries/javalib/vmspecific/java/lang/reflect/Constructor.java,
+	libraries/javalib/vmspecific/java/lang/reflect/Method.java:
+	Imported from GNU Classpath and adapted to Kaffe's internals.
+
+	* libraries/javalib/vmspecific/java/security/VMSecureRandom.java:
+	Imported from GNU Classpath.
+
+	* test/internal/jit_stub.c: Upgraded to initialize
+	EnclosingMethod_name.
+
+	* test/regression/IndexTest.java,
+	test/regression/ProcessClassInst.java,
+	test/regression/ProcessClassStop.java: Fixed expected message.
+	
 2006-04-17  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/clib/native/java_lang_VMDouble.c:

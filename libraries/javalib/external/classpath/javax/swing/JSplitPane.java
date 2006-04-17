@@ -40,10 +40,12 @@ package javax.swing;
 
 import java.awt.Component;
 import java.awt.Graphics;
+import java.beans.PropertyChangeEvent;
 
 import javax.accessibility.Accessible;
 import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleRole;
+import javax.accessibility.AccessibleState;
 import javax.accessibility.AccessibleStateSet;
 import javax.accessibility.AccessibleValue;
 import javax.swing.plaf.SplitPaneUI;
@@ -56,18 +58,18 @@ import javax.swing.plaf.SplitPaneUI;
  */
 public class JSplitPane extends JComponent implements Accessible
 {
+
   /**
-   * DOCUMENT ME!
+   * Provides the accessibility features for the <code>JSplitPane</code>
+   * component.
    */
-  // FIXME: This inner class is a complete stub and must be implemented
-  // properly.
   protected class AccessibleJSplitPane extends JComponent.AccessibleJComponent
     implements AccessibleValue
   {
   private static final long serialVersionUID = -1788116871416305366L;
   
     /**
-     * Creates a new AccessibleJSplitPane object.
+     * Creates a new <code>AccessibleJSplitPane</code> instance.
      */
     protected AccessibleJSplitPane()
     {
@@ -75,75 +77,101 @@ public class JSplitPane extends JComponent implements Accessible
     }
 
     /**
-     * DOCUMENT ME!
+     * Returns a set containing the current state of the {@link JSplitPane} 
+     * component.
      *
-     * @return DOCUMENT ME!
+     * @return The accessible state set.
      */
     public AccessibleStateSet getAccessibleStateSet()
     {
-      return null;
+      AccessibleStateSet result = super.getAccessibleStateSet();
+      if (getOrientation() == HORIZONTAL_SPLIT)
+        {
+          result.add(AccessibleState.HORIZONTAL);
+        }
+      else if (getOrientation() == VERTICAL_SPLIT)
+        {
+          result.add(AccessibleState.VERTICAL);
+        }
+      return result;
     }
 
     /**
-     * DOCUMENT ME!
+     * Returns the accessible role for the <code>JSplitPane</code> component.
      *
-     * @return DOCUMENT ME!
+     * @return {@link AccessibleRole#SPLIT_PANE}.
      */
     public AccessibleRole getAccessibleRole()
     {
-      return null;
+      return AccessibleRole.SPLIT_PANE;
     }
 
     /**
-     * DOCUMENT ME!
+     * Returns an object that provides access to the current, minimum and 
+     * maximum values for the {@link JSlider}.  Since this class implements 
+     * {@link AccessibleValue}, it returns itself.
      *
-     * @return DOCUMENT ME!
+     * @return The accessible value.
      */
     public AccessibleValue getAccessibleValue()
     {
-      return null;
+      return this;
     }
 
     /**
-     * DOCUMENT ME!
+     * Returns the current divider location for the {@link JSplitPane} 
+     * component, as an {@link Integer}.
      *
-     * @return DOCUMENT ME!
+     * @return The current divider location.
      */
     public Number getCurrentAccessibleValue()
     {
-      return null;
+      return new Integer(getDividerLocation());
     }
 
     /**
-     * DOCUMENT ME!
+     * Sets the divider location for the {@link JSplitPane} component and sends 
+     * a {@link PropertyChangeEvent} (with the property name 
+     * {@link AccessibleContext#ACCESSIBLE_VALUE_PROPERTY}) to all registered
+     * listeners.  If the supplied value is <code>null</code>, this method 
+     * does nothing and returns <code>false</code>.
      *
-     * @param value0 DOCUMENT ME!
+     * @param value  the new slider value (<code>null</code> permitted).
      *
-     * @return DOCUMENT ME!
+     * @return <code>true</code> if the slider value is updated, and 
+     *     <code>false</code> otherwise.
      */
-    public boolean setCurrentAccessibleValue(Number value0)
+    public boolean setCurrentAccessibleValue(Number value)
     {
-      return false;
+      if (value == null)
+        return false;
+      Number oldValue = getCurrentAccessibleValue();
+      setDividerLocation(value.intValue());
+      firePropertyChange(AccessibleContext.ACCESSIBLE_VALUE_PROPERTY, oldValue, 
+                         new Integer(value.intValue()));
+      return true;
     }
 
     /**
-     * DOCUMENT ME!
+     * Returns the minimum divider location for the {@link JSplitPane} 
+     * component, as an {@link Integer}.
      *
-     * @return DOCUMENT ME!
+     * @return The minimum divider location.
      */
     public Number getMinimumAccessibleValue()
     {
-      return null;
+      return new Integer(getMinimumDividerLocation());
     }
 
     /**
-     * DOCUMENT ME!
+     * Returns the maximum divider location for the {@link JSplitPane} 
+     * component, as an {@link Integer}.
      *
-     * @return DOCUMENT ME!
+     * @return The maximum divider location.
      */
     public Number getMaximumAccessibleValue()
     {
-      return null;
+      return new Integer(getMaximumDividerLocation());
     }
   }
 
@@ -221,6 +249,24 @@ public class JSplitPane extends JComponent implements Accessible
 
   /** Determines how extra space should be allocated. */
   private transient double resizeWeight;
+
+  /**
+   * Indicates if the dividerSize property has been set by a client program or
+   * by the UI.
+   *
+   * @see #setUIProperty(String, Object)
+   * @see LookAndFeel#installProperty(JComponent, String, Object)
+   */
+  private boolean clientDividerSizeSet = false;
+
+  /**
+   * Indicates if the oneTouchExpandable property has been set by a client
+   * program or by the UI.
+   *
+   * @see #setUIProperty(String, Object)
+   * @see LookAndFeel#installProperty(JComponent, String, Object)
+   */
+  private boolean clientOneTouchExpandableSet = false;
 
   /**
    * Creates a new JSplitPane object with the given orientation, layout mode,
@@ -672,6 +718,7 @@ public class JSplitPane extends JComponent implements Accessible
    */
   public void setDividerSize(int newSize)
   {
+    clientDividerSizeSet = true;
     if (newSize != dividerSize)
       {
         int oldSize = dividerSize;
@@ -723,6 +770,7 @@ public class JSplitPane extends JComponent implements Accessible
    */
   public void setOneTouchExpandable(boolean newValue)
   {
+    clientOneTouchExpandableSet = true;
     if (newValue != oneTouchExpandable)
       {
         boolean oldValue = oneTouchExpandable;
@@ -821,5 +869,43 @@ public class JSplitPane extends JComponent implements Accessible
   public String getUIClassID()
   {
     return "SplitPaneUI";
+  }
+
+  /**
+   * Helper method for
+   * {@link LookAndFeel#installProperty(JComponent, String, Object)}.
+   * 
+   * @param propertyName the name of the property
+   * @param value the value of the property
+   *
+   * @throws IllegalArgumentException if the specified property cannot be set
+   *         by this method
+   * @throws ClassCastException if the property value does not match the
+   *         property type
+   * @throws NullPointerException if <code>c</code> or
+   *         <code>propertyValue</code> is <code>null</code>
+   */
+  void setUIProperty(String propertyName, Object value)
+  {
+    if (propertyName.equals("dividerSize"))
+      {
+        if (! clientDividerSizeSet)
+          {
+            setDividerSize(((Integer) value).intValue());
+            clientDividerSizeSet = false;
+          }
+      }
+    else if (propertyName.equals("oneTouchExpandable"))
+      {
+        if (! clientOneTouchExpandableSet)
+          {
+            setOneTouchExpandable(((Boolean) value).booleanValue());
+            clientOneTouchExpandableSet = false;
+          }
+      }
+    else
+      {
+        super.setUIProperty(propertyName, value);
+      }
   }
 }

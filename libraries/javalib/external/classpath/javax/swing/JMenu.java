@@ -55,7 +55,6 @@ import javax.accessibility.AccessibleSelection;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.plaf.MenuItemUI;
-import javax.swing.plaf.PanelUI;
 
 /**
  * This class represents a menu that can be added to a menu bar or
@@ -765,7 +764,7 @@ public class JMenu extends JMenuItem implements Accessible, MenuElement
    */
   protected void processKeyEvent(KeyEvent event)
   {
-    // TODO: Implement this properly.
+    MenuSelectionManager.defaultManager().processKeyEvent(event);
   }
 
   /**

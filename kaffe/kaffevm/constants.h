@@ -34,6 +34,7 @@
 #define	CONSTANT_Error			0
 #define CONSTANT_ResolvedString		(16+CONSTANT_String)
 #define CONSTANT_ResolvedClass		(16+CONSTANT_Class)
+#define CONSTANT_ResolvedMethod         (16+CONSTANT_NameAndType)
 
 #define WORDS_TO_LONG(HI, LO) (((uint64)(HI) << 32)|(uint64)(uint32)(LO))
 

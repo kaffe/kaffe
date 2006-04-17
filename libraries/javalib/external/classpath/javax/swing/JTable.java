@@ -1575,6 +1575,15 @@ public class JTable
   private Rectangle rectCache = new Rectangle();
 
   /**
+   * Indicates if the rowHeight property has been set by a client program or by
+   * the UI.
+   *
+   * @see #setUIProperty(String, Object)
+   * @see LookAndFeel#installProperty(JComponent, String, Object)
+   */
+  private boolean clientRowHeightSet = false;
+
+  /**
    * Creates a new <code>JTable</code> instance.
    */
   public JTable ()
@@ -2747,7 +2756,9 @@ public class JTable
   {
     if (r < 1)
       throw new IllegalArgumentException();
-    
+
+    clientRowHeightSet = true;
+
     rowHeight = r;
     revalidate();
     repaint();
@@ -3789,5 +3800,35 @@ public class JTable
   {
     // TODO: Implement functionality of this property (in UI impl).
     return surrendersFocusOnKeystroke;
+  }
+
+  /**
+   * Helper method for
+   * {@link LookAndFeel#installProperty(JComponent, String, Object)}.
+   * 
+   * @param propertyName the name of the property
+   * @param value the value of the property
+   *
+   * @throws IllegalArgumentException if the specified property cannot be set
+   *         by this method
+   * @throws ClassCastException if the property value does not match the
+   *         property type
+   * @throws NullPointerException if <code>c</code> or
+   *         <code>propertyValue</code> is <code>null</code>
+   */
+  void setUIProperty(String propertyName, Object value)
+  {
+    if (propertyName.equals("rowHeight"))
+      {
+        if (! clientRowHeightSet)
+          {
+            setRowHeight(((Integer) value).intValue());
+            clientRowHeightSet = false;
+          }
+      }
+    else
+      {
+        super.setUIProperty(propertyName, value);
+      }
   }
 }

@@ -111,11 +111,18 @@ public class SystemProperties
       defaultProperties.put("java.io.tmpdir",
                             defaultProperties.get("java.tmpdir"));
 
-    VMSystemProperties.postInit(defaultProperties);
+    // FIXME: we need a better way to handle this.
+    // For instance, having a single VM class for each OS might help.
+    if (defaultProperties.get("gnu.classpath.mime.types.file") == null
+        && "Linux".equals(defaultProperties.get("os.name")))
+      defaultProperties.put("gnu.classpath.mime.types.file",
+                            "/etc/mime.types");
 
     // Note that we use clone here and not new.  Some programs assume
     // that the system properties do not have a parent.
     properties = (Properties) defaultProperties.clone();
+
+    VMSystemProperties.postInit(defaultProperties);
   }
 
   public static String getProperty(String name)

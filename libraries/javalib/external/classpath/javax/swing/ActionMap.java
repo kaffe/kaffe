@@ -195,30 +195,4 @@ public class ActionMap
     return null;
   }
 
-  /**
-   * writeObject
-   *
-   * @param stream the stream to write to
-   *
-   * @exception IOException If an error occurs
-   */
-  private void writeObject(ObjectOutputStream stream)
-    throws IOException
-  {
-    // TODO
-  }
-
-  /**
-   * readObject
-   *
-   * @param stream the stream to read from
-   *
-   * @exception ClassNotFoundException If the serialized class cannot be found
-   * @exception IOException If an error occurs
-   */
-  private void readObject(ObjectInputStream stream)
-    throws ClassNotFoundException, IOException
-  {
-    // TODO
-  }
 }

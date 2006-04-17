@@ -42,39 +42,54 @@ import gnu.classpath.NotImplementedException;
 
 import java.awt.image.ImageConsumer;
 import java.awt.image.ImageProducer;
+import java.util.ArrayList;
 
 public class RenderableImageProducer implements ImageProducer, Runnable
 {
+  private RenderableImage image;
+  private RenderContext context;
+  private ArrayList consumers = new ArrayList();
+
   public RenderableImageProducer(RenderableImage image, RenderContext context)
-    throws NotImplementedException
   {
-    throw new Error("not implemented");
+    this.image = image;
+    this.context = context;
   }
 
   public void setRenderContext(RenderContext context)
-    throws NotImplementedException
   {
+    this.context = context;
   }
 
   public void addConsumer(ImageConsumer consumer)
-    throws NotImplementedException
   {
+    synchronized (consumers)
+      {
+        if (! consumers.contains(consumer))
+          consumers.add(consumer);
+      }
   }
 
   public boolean isConsumer(ImageConsumer consumer)
-    throws NotImplementedException
   {
-    return false;
+    synchronized (consumers)
+      {
+        return consumers.contains(consumer);
+      }
   }
 
   public void removeConsumer(ImageConsumer consumer)
-    throws NotImplementedException
   {
+    synchronized (consumers)
+      {
+        consumers.remove(consumer);
+      }
   }
 
   public void startProduction(ImageConsumer consumer)
-    throws NotImplementedException
   {
+    Thread t = new Thread(this, "RenderableImageProducerWorker");
+    t.start();
   }
 
   public void requestTopDownLeftRightResend(ImageConsumer consumer)

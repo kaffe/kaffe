@@ -49,6 +49,7 @@
 /* either jitted or native method was found */
 #define	KFLAG_TRANSLATED	0x08
 #define	KFLAG_VERIFIED		0x10
+#define KFLAG_ANONYMOUS         0x20
 
 typedef enum {
 	ACC_TYPE_CLASS,

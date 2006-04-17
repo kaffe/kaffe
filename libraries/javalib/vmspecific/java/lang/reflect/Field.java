@@ -450,6 +450,21 @@ public int hashCode()
 	return (clazz.getName().hashCode() ^ name.hashCode());
 }
 
+static String getPrettyName(Class cls) {
+        StringBuffer str = new StringBuffer();
+        for (int count = 0;; count++) {
+                if (!cls.isArray()) {
+                        str.append(cls.getName());
+                        for (; count > 0; count--) {
+                                str.append("[]");
+                        }
+                        return (str.toString());
+                }
+                cls = cls.getComponentType();
+        }
+}
+
+
 public String toString()
 {
 	StringBuffer str = new StringBuffer();
@@ -462,7 +477,7 @@ public String toString()
 	}
 
 	// Type
-	str.append(Method.getPrettyName(type));
+	str.append(getPrettyName(type));
 	str.append(' ');
 
 	// Class name

@@ -56,7 +56,6 @@ import javax.swing.event.MenuDragMouseListener;
 import javax.swing.event.MenuKeyEvent;
 import javax.swing.event.MenuKeyListener;
 import javax.swing.plaf.MenuItemUI;
-import javax.swing.plaf.PanelUI;
 
 /**
  * JMenuItem represents element in the menu. It inherits most of
@@ -397,7 +396,15 @@ public class JMenuItem extends AbstractButton implements Accessible,
   public void processKeyEvent(KeyEvent event, MenuElement[] path,
                               MenuSelectionManager manager)
   {
-    // Need to implement.
+    MenuKeyEvent e = new MenuKeyEvent(event.getComponent(), event.getID(),
+                                      event.getWhen(), event.getModifiers(),
+                                      event.getKeyCode(), event.getKeyChar(),
+                                      path, manager);
+    processMenuKeyEvent(e);
+
+    // Consume original key event, if the menu key event has been consumed.
+    if (e.isConsumed())
+      event.consume();
   }
 
   /**
@@ -435,7 +442,20 @@ public class JMenuItem extends AbstractButton implements Accessible,
    */
   public void processMenuKeyEvent(MenuKeyEvent event)
   {
-    // Need to implement.
+    switch (event.getID())
+    {
+      case KeyEvent.KEY_PRESSED:
+        fireMenuKeyPressed(event);
+        break;
+      case KeyEvent.KEY_RELEASED:
+        fireMenuKeyReleased(event);
+        break;
+      case KeyEvent.KEY_TYPED:
+        fireMenuKeyTyped(event);
+        break;
+      default:
+        break;
+    }
   }
 
   /**

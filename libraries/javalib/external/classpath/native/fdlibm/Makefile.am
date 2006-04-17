@@ -58,7 +58,7 @@ libfdlibm_la_SOURCES =  \
 			w_sqrt.c \
 			namespace.h
 
-AM_LDFLAGS = @CLASSPATH_CONVENIENCE@ 
+AM_LDFLAGS = @CLASSPATH_MODULE@ 
 
 # We just want the standard flags for fdlibm since it is an upstream lib
 # and our normal -pedantic -Wall -Werror breaks this lib. So no AM_CFLAGS.

@@ -100,10 +100,12 @@ struct Hjava_lang_Class {
 
 	Utf8Const*		name;
         Utf8Const*              extSignature;
+        constIndex              enclosingClassIndex;
+        constIndex              enclosingMethodIndex;
 	unsigned int		packageLength;
 	char*			sourcefile;	/* source file name if known */
 	accessFlags		accflags;
-        kaffeClassFlags         kFlags;
+        kaffeClassFlags         kFlags;        
 
 	/* If non-NULL, a pointer to the superclass.
 	 * However, if state < CSTATE_DOING_PREPARE, then
@@ -698,6 +700,7 @@ extern Utf8Const* SourceFile_name;	/* "SourceFile" */
 extern Utf8Const* InnerClasses_name;	/* "InnerClasses" */
 extern Utf8Const* Signature_name;       /* "Signature" */
 extern Utf8Const* Synthetic_name;       /* "Synthetic" */
+extern Utf8Const* EnclosingMethod_name;  /* "EnclosingMethod" */
 
 void initialiseSecurity (void);
 

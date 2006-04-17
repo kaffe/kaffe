@@ -384,4 +384,50 @@ public abstract class LookAndFeel
     if (c.getBorder() instanceof UIResource)
       c.setBorder(null);
   }
+
+  /**
+   * This methods installs a UI property if it hasn't already been set by an
+   * application. This method is used by UI delegates that install a default
+   * value for a property with a primitive type but do not want to override
+   * a value that has been set by an application.
+   *
+   * The supported properties depend on the actual type of the component and
+   * are listed in the table below. The supported properties are of course
+   * inherited to subclasses.
+   *
+   * <table>
+   * <tr><th>Type</th><th>Supported properties</th></tr>
+   * <tr><td><code>JComponent</code></td>
+   *     <td><code>opaque, autoscrolls</code></td></tr>
+   * <tr><td><code>AbstractButton</code></td>
+   *     <td><code>borderPainted, rolloverEnabled, iconTextGap,
+   *      contentAreaFilled</code></td></tr>
+   * <tr><td><code>JDesktopPane</code></td>
+   *     <td><code>dragMode</code></td></tr>
+   * <tr><td><code>JSplitPane</code></td>
+   *     <td><code>dividerSize, oneTouchExpandable</code></td></tr>
+   * <tr><td><code>JTable</code></td>
+   *     <td><code>rowHeight</code></td></tr>
+   * <tr><td><code>JTree</code></td>
+   *     <td><code>rowHeight, scrollsOnExpand, showsRootHandles</code></td></tr>
+   * </table>
+   *
+   * @param c the component to install the property to
+   * @param propertyName the name of the property
+   * @param value the value of the property
+   *
+   * @throws IllegalArgumentException if the specified property cannot be set
+   *         by this method
+   * @throws ClassCastException if the property value does not match the
+   *         property type
+   * @throws NullPointerException if <code>c</code> or
+   *         <code>propertyValue</code> is <code>null</code>
+   *
+   * @since 1.5
+   */
+  public static void installProperty(JComponent c, String propertyName,
+                                     Object value)
+  {
+    c.setUIProperty(propertyName, value);
+  }
 }

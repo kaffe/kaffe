@@ -40,6 +40,7 @@ package java.beans.beancontext;
 
 import gnu.classpath.NotImplementedException;
 
+import java.beans.DesignMode;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
@@ -87,27 +88,33 @@ public class BeanContextSupport extends BeanContextChildSupport
   {
     private static final long serialVersionUID = -5815286101609939109L;
 
-    BCSChild()
+    private Object targetChild;
+    private Object peer;
+
+    BCSChild(Object targetChild, Object peer)
     {
+      this.targetChild = targetChild;
+      this.peer = peer;
     }
   }
 
   protected static final class BCSIterator implements Iterator
   {
-    BCSIterator()
+    private Iterator child;
+
+    BCSIterator(Iterator child)
     {
+      this.child = child;
     }
 
     public boolean hasNext ()
-      throws NotImplementedException
     {
-      throw new Error ("Not implemented");
+      return child.hasNext();
     }
 
     public Object next ()
-      throws NotImplementedException
     {
-      throw new Error ("Not implemented");
+      return child.next();
     }
 
     public void remove ()
@@ -164,7 +171,9 @@ public class BeanContextSupport extends BeanContextChildSupport
   public BeanContextSupport (BeanContext peer, Locale lcle, boolean dtime,
                              boolean visible)
   {
-    locale = lcle;
+    super(peer);
+
+    locale = lcle == null ? Locale.getDefault() : lcle;
     designTime = dtime;
     okToUseGui = visible;
 
@@ -176,24 +185,38 @@ public class BeanContextSupport extends BeanContextChildSupport
     if (targetChild == null)
       throw new IllegalArgumentException();
 
-    if (children.containsKey(targetChild))
-      return false;
-
-    // FIXME: The second argument is surely wrong.
-    children.put(targetChild, targetChild);
+    BCSChild child;
+    synchronized (children)
+      {
+        if (children.containsKey(targetChild)
+            || ! validatePendingAdd(targetChild))
+          return false;
+        child = createBCSChild(targetChild, beanContextChildPeer);
+        children.put(targetChild, child);
+      }
+    synchronized (targetChild)
+      {
+        childJustAddedHook(targetChild, child);
+      }
+    fireChildrenAdded(new BeanContextMembershipEvent(this,
+                                                     new Object[] { targetChild }));
     return true;
   }
 
   public boolean addAll (Collection c)
   {
+    // Intentionally throws an exception.
     throw new UnsupportedOperationException();
   }
 
   public void addBeanContextMembershipListener
     (BeanContextMembershipListener listener)
   {
-    if (! bcmListeners.contains(listener))
-      bcmListeners.add(listener);
+    synchronized (bcmListeners)
+      {
+        if (! bcmListeners.contains(listener))
+          bcmListeners.add(listener);
+      }
   }
 
   public boolean avoidingGui ()
@@ -203,9 +226,11 @@ public class BeanContextSupport extends BeanContextChildSupport
   }
 
   protected Iterator bcsChildren ()
-    throws NotImplementedException
   {
-    throw new Error ("Not implemented");
+    synchronized (children)
+      {
+        return new BCSIterator(children.values().iterator());
+      }
   }
 
   protected void bcsPreDeserializationHook (ObjectInputStream ois)
@@ -227,58 +252,67 @@ public class BeanContextSupport extends BeanContextChildSupport
   }
 
   protected void childJustAddedHook (Object child, BeanContextSupport.BCSChild bcsc)
-    throws NotImplementedException
   {
-    throw new Error ("Not implemented");
+    // Do nothing in the base class.
   }
 
   protected void childJustRemovedHook (Object child, BeanContextSupport.BCSChild bcsc)
-    throws NotImplementedException
   {
-    throw new Error ("Not implemented");
+    // Do nothing in the base class.
   }
 
   protected static final boolean classEquals (Class first, Class second)
-    throws NotImplementedException
   {
-    throw new Error ("Not implemented");
+    // Lame function!
+    return (first == second || first.getName().equals(second.getName()));
   }
 
   public void clear ()
   {
-    // This is probably the right thing to do.
+    // This is the right thing to do.
     // The JDK docs are really bad here.
     throw new UnsupportedOperationException();
   }
 
   public boolean contains (Object o)
-    throws NotImplementedException
   {
-    throw new Error ("Not implemented");
+    synchronized (children)
+      {
+        return children.containsKey(o);
+      }
   }
 
   public boolean containsAll (Collection c)
-    throws NotImplementedException
   {
-    throw new Error ("Not implemented");
+    synchronized (children)
+      {
+        Iterator it = c.iterator();
+        while (it.hasNext())
+          if (! children.containsKey(it.next()))
+            return false;
+      }
+    return true;
   }
 
   public boolean containsKey (Object o)
-    throws NotImplementedException
   {
-    throw new Error ("Not implemented");
+    synchronized (children)
+      {
+        return children.containsKey(o);
+      }
   }
 
   protected final Object[] copyChildren ()
-    throws NotImplementedException
   {
-    throw new Error ("Not implemented");
+    synchronized (children)
+      {
+        return children.keySet().toArray();
+      }
   }
 
   protected BeanContextSupport.BCSChild createBCSChild (Object targetChild, Object peer)
-    throws NotImplementedException
   {
-    throw new Error ("Not implemented");
+    return new BCSChild(targetChild, peer);
   }
 
   protected final void deserialize (ObjectInputStream ois, Collection coll)
@@ -294,15 +328,31 @@ public class BeanContextSupport extends BeanContextChildSupport
   }
 
   protected final void fireChildrenAdded (BeanContextMembershipEvent bcme)
-    throws NotImplementedException
   {
-    throw new Error ("Not implemented");
+    synchronized (bcmListeners)
+      {
+        Iterator it = bcmListeners.iterator();
+        while (it.hasNext())
+          {
+            BeanContextMembershipListener l
+              = (BeanContextMembershipListener) it.next();
+            l.childrenAdded(bcme);
+          }
+      }
   }
 
   protected final void fireChildrenRemoved (BeanContextMembershipEvent bcme)
-    throws NotImplementedException
   {
-    throw new Error ("Not implemented");
+    synchronized (bcmListeners)
+      {
+        Iterator it = bcmListeners.iterator();
+        while (it.hasNext())
+          {
+            BeanContextMembershipListener l
+            = (BeanContextMembershipListener) it.next();
+            l.childrenRemoved(bcme);
+          }
+      }
   }
 
   public BeanContext getBeanContextPeer ()
@@ -353,15 +403,21 @@ public class BeanContextSupport extends BeanContextChildSupport
   }
 
   public URL getResource (String name, BeanContextChild bcc)
-    throws NotImplementedException
   {
-    throw new Error ("Not implemented");
+    if (! contains(bcc))
+      throw new IllegalArgumentException("argument not a child");
+    ClassLoader loader = bcc.getClass().getClassLoader();
+    return (loader == null ? ClassLoader.getSystemResource(name)
+            : loader.getResource(name));
   }
 
   public InputStream getResourceAsStream (String name, BeanContextChild bcc)
-    throws NotImplementedException
   {
-    throw new Error ("Not implemented");
+    if (! contains(bcc))
+      throw new IllegalArgumentException("argument not a child");
+    ClassLoader loader = bcc.getClass().getClassLoader();
+    return (loader == null ? ClassLoader.getSystemResourceAsStream(name)
+            : loader.getResourceAsStream(name));
   }
 
   protected void initialize ()
@@ -377,15 +433,16 @@ public class BeanContextSupport extends BeanContextChildSupport
   }
 
   public boolean isDesignTime ()
-    throws NotImplementedException
   {
-    throw new Error ("Not implemented");
+    return designTime;
   }
 
   public boolean isEmpty ()
-    throws NotImplementedException
   {
-    throw new Error ("Not implemented");
+    synchronized (children)
+      {
+        return children.isEmpty();
+      }
   }
 
   public boolean isSerializing ()
@@ -396,7 +453,10 @@ public class BeanContextSupport extends BeanContextChildSupport
 
   public Iterator iterator ()
   {
-    return children.keySet().iterator();
+    synchronized (children)
+      {
+        return children.keySet().iterator();
+      }
   }
 
   public boolean needsGui ()
@@ -439,17 +499,21 @@ public class BeanContextSupport extends BeanContextChildSupport
 
   public boolean removeAll (Collection c)
   {
+    // Intentionally throws an exception.
     throw new UnsupportedOperationException();
   }
 
   public void removeBeanContextMembershipListener (BeanContextMembershipListener bcml)
-    throws NotImplementedException
   {
-    throw new Error ("Not implemented");
+    synchronized (bcmListeners)
+      {
+        bcmListeners.remove(bcml);
+      }
   }
 
   public boolean retainAll (Collection c)
   {
+    // Intentionally throws an exception.
     throw new UnsupportedOperationException();
   }
 
@@ -460,43 +524,58 @@ public class BeanContextSupport extends BeanContextChildSupport
   }
 
   public void setDesignTime (boolean dtime)
-    throws NotImplementedException
   {
-    throw new Error ("Not implemented");
+    boolean save = designTime;
+    designTime = dtime;
+    firePropertyChange(DesignMode.PROPERTYNAME, Boolean.valueOf(save),
+                       Boolean.valueOf(dtime));
   }
 
   public void setLocale (Locale newLocale)
-    throws PropertyVetoException, NotImplementedException
+    throws PropertyVetoException
   {
-    throw new Error ("Not implemented");
+    if (newLocale == null || locale == newLocale)
+      return;
+    fireVetoableChange("locale", locale, newLocale);
+    Locale oldLocale = locale;
+    locale = newLocale;
+    firePropertyChange("locale", oldLocale, newLocale);
   }
 
   public int size ()
-    throws NotImplementedException
   {
-    throw new Error ("Not implemented");
+    synchronized (children)
+      {
+        return children.size();
+      }
   }
 
   public Object[] toArray ()
   {
-    return children.keySet().toArray();
+    synchronized (children)
+      {
+        return children.keySet().toArray();
+      }
   }
 
   public Object[] toArray(Object[] array)
+    throws NotImplementedException
   {
-    return children.keySet().toArray(array);
+    // This implementation is incorrect, I think.
+    synchronized (children)
+      {
+        return children.keySet().toArray(array);
+      }
   }
 
   protected boolean validatePendingAdd (Object targetChild)
-    throws NotImplementedException
   {
-    throw new Error ("Not implemented");
+    return true;
   }
 
   protected boolean validatePendingRemove (Object targetChild)
-    throws NotImplementedException
   {
-    throw new Error ("Not implemented");
+    return true;
   }
 
   public void vetoableChange (PropertyChangeEvent pce)

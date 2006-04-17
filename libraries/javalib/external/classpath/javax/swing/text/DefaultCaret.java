@@ -59,6 +59,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.EventListenerList;
+import javax.swing.text.Position.Bias;
 
 /**
  * The default implementation of the {@link Caret} interface.
@@ -75,6 +76,31 @@ public class DefaultCaret extends Rectangle
    */ 
   static JTextComponent componentWithSelection;
 
+  /** An implementation of NavigationFilter.FilterBypass which delegates
+   * to the corresponding methods of the <code>DefaultCaret</code>. 
+   * 
+   * @author Robert Schuster (robertschuster@fsfe.org)
+   */
+  class Bypass extends NavigationFilter.FilterBypass
+  {
+
+    public Caret getCaret()
+    {
+      return DefaultCaret.this;
+    }
+
+    public void moveDot(int dot, Bias bias)
+    {
+      DefaultCaret.this.moveDotImpl(dot);
+    }
+
+    public void setDot(int dot, Bias bias)
+    {
+      DefaultCaret.this.setDot(dot);
+    }
+    
+  }
+  
   /**
    * Controls the blinking of the caret.
    *
@@ -299,11 +325,28 @@ public class DefaultCaret extends Rectangle
   private BlinkTimerListener blinkListener;
 
   /**
+   * A <code>NavigationFilter.FilterBypass</code> instance which
+   * is provided to the a <code>NavigationFilter</code> to
+   * unconditionally set or move the caret.
+   */
+  NavigationFilter.FilterBypass bypass;
+
+  /**
    * Creates a new <code>DefaultCaret</code> instance.
    */
   public DefaultCaret()
   {
     // Nothing to do here.
+  }
+  
+  /** Returns the caret's <code>NavigationFilter.FilterBypass</code> instance
+   * and creates it if it does not yet exist.
+   * 
+   * @return The caret's <code>NavigationFilter.FilterBypass</code> instance.
+   */
+  private NavigationFilter.FilterBypass getBypass()
+  {
+    return (bypass == null) ? bypass = new Bypass() : bypass;
   }
 
   /**
@@ -946,11 +989,23 @@ public class DefaultCaret extends Rectangle
    * Moves the <code>dot</code> location without touching the
    * <code>mark</code>. This is used when making a selection.
    *
+   * <p>If the underlying text component has a {@link NavigationFilter}
+   * installed the caret will call the corresponding method of that object.</p>
+   * 
    * @param dot the location where to move the dot
    *
    * @see #setDot(int)
    */
   public void moveDot(int dot)
+  {
+    NavigationFilter filter = textComponent.getNavigationFilter();
+    if (filter != null)
+      filter.moveDot(getBypass(), dot, Bias.Forward);
+    else
+      moveDotImpl(dot);
+  }
+  
+  void moveDotImpl(int dot)
   {
     if (dot >= 0)
       {
@@ -970,11 +1025,23 @@ public class DefaultCaret extends Rectangle
    * <code>Document</code>. This also sets the <code>mark</code> to the new
    * location.
    * 
+   * <p>If the underlying text component has a {@link NavigationFilter}
+   * installed the caret will call the corresponding method of that object.</p>
+   * 
    * @param dot
    *          the new position to be set
    * @see #moveDot(int)
    */
   public void setDot(int dot)
+  {
+    NavigationFilter filter = textComponent.getNavigationFilter();
+    if (filter != null)
+      filter.setDot(getBypass(), dot, Bias.Forward);
+    else
+      setDotImpl(dot);
+  }
+  
+  void setDotImpl(int dot)
   {
     if (dot >= 0)
       {        
@@ -1135,4 +1202,5 @@ public class DefaultCaret extends Rectangle
     blinkTimer = new Timer(getBlinkRate(), blinkListener);
     blinkTimer.setRepeats(true);
   }
+  
 }

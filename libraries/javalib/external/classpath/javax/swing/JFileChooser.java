@@ -1530,7 +1530,9 @@ public class JFileChooser extends JComponent implements Accessible
    */
   public AccessibleContext getAccessibleContext()
   {
-    return new AccessibleJFileChooser();
+    if (accessibleContext == null)
+      accessibleContext = new AccessibleJFileChooser();
+    return accessibleContext;
   }
 
   /**

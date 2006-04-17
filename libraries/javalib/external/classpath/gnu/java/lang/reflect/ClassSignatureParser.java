@@ -1,5 +1,6 @@
-/* ObjectReferenceFactoryOperations.java --
-   Copyright (C) 2005 Free Software Foundation, Inc.
+/* ClassSignatureParser.java
+   Copyright (C) 2005
+   Free Software Foundation
 
 This file is part of GNU Classpath.
 
@@ -35,35 +36,57 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
+package gnu.java.lang.reflect;
 
-package org.omg.PortableInterceptor;
+import java.lang.reflect.*;
+import java.util.ArrayList;
 
-import org.omg.CORBA.portable.ValueBase;
-
-/**
- * Defines the operations, applicable to the ObjectReferenceFactory.
- *
- * @since 1.5
- *
- * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
- */
-public interface ObjectReferenceFactoryOperations
-  extends ValueBase
+public class ClassSignatureParser extends GenericSignatureParser
 {
-  /**
-   * Create an object with the given repository and object ids. This interface
-   * does not specify where and how the returned object must be connected and
-   * activated. The derived {@link ObjectReferenceTemplate} interface assumes
-   * the the object must be connected to the POA that is specific to that
-   * template (name can be obtained).
-   * 
-   * If the object with this objectId already exists in the given context, it is
-   * found and returned; the new object is <i>not</i> created.
-   * 
-   * @param repositoryId the repository id of the object being created, defines
-   * the type of the object.
-   * 
-   * @param objectId the byte array, defining the identity of the object.
-   */
-  org.omg.CORBA.Object make_object(String repositoryId, byte[] objectId);
+    private TypeVariable[] typeParameters;
+    private Type superclassType;
+    private Type[] interfaceTypes;
+
+    public ClassSignatureParser(Class c, String signature)
+    {
+        super(c, c.getClassLoader(), signature);
+
+        if (peekChar() == '<')
+        {
+            typeParameters = readFormalTypeParameters();
+        }
+        else
+        {
+            typeParameters = new TypeVariable[0];
+        }
+        // SuperclassSignature
+        superclassType = readClassTypeSignature();
+        ArrayList interfaces = new ArrayList();
+        while (peekChar() == 'L')
+        {
+            // SuperinterfaceSignature
+            interfaces.add(readClassTypeSignature());
+        }
+        interfaceTypes = new Type[interfaces.size()];
+        interfaces.toArray(interfaceTypes);
+        end();
+    }
+
+    public TypeVariable[] getTypeParameters()
+    {
+        TypeImpl.resolve(typeParameters);
+        return typeParameters;
+    }
+
+    public Type getSuperclassType()
+    {
+        superclassType = TypeImpl.resolve(superclassType);
+        return superclassType;
+    }
+
+    public Type[] getInterfaceTypes()
+    {
+        TypeImpl.resolve(interfaceTypes);
+        return interfaceTypes;
+    }
 }

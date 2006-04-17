@@ -18,6 +18,9 @@ New in release 0.91 (UNRELEASED)
   text components with the middle mouse button. Support cursor changes on
   various components when resizing.
 * Updated locale data information to CLDR 1.3.
+* Various bugs in Classpath's SecureRandom implementations have been
+  fixed; that class now respects the "securerandom.source" security
+  property and the "java.security.egd" system property.
 
 Runtime interface changes:
 
@@ -29,6 +32,11 @@ Runtime interface changes:
   now have a new native getModifiersInternal() method.  The public
   getModifiers() method in each case has been rewritten in terms of
   this method.
+* The reference implementation of VMThread has been updated to handle
+  the new Thread.UncaughtExceptionHandler support.
+* A new class, java.security.VMSecureRandom, is now available that is
+  used to generate random numbers for seeding cryptographically-secure
+  pseudo-random number generators.
 
 New in release 0.90 (March 6, 2006)
 

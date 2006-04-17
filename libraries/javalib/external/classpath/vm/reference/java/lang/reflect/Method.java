@@ -1,5 +1,5 @@
 /* java.lang.reflect.Method - reflection of Java methods
-   Copyright (C) 1998, 2001, 2002 Free Software Foundation, Inc.
+   Copyright (C) 1998, 2001, 2002, 2005 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -40,6 +40,8 @@ package java.lang.reflect;
 
 import gnu.java.lang.ClassHelper;
 
+import gnu.java.lang.reflect.MethodSignatureParser;
+
 import java.util.Arrays;
 
 /**
@@ -76,7 +78,7 @@ import java.util.Arrays;
  * @status updated to 1.4
  */
 public final class Method
-extends AccessibleObject implements Member
+extends AccessibleObject implements Member, GenericDeclaration
 {
   Class declaringClass;
   String name;
@@ -279,6 +281,33 @@ extends AccessibleObject implements Member
     return sb.toString();
   }
 
+  public String toGenericString()
+  {
+    // 128 is a reasonable buffer initial size for constructor
+    StringBuffer sb = new StringBuffer(128);
+    Modifier.toString(getModifiers(), sb).append(' ');
+    Constructor.addTypeParameters(sb, getTypeParameters());
+    sb.append(getGenericReturnType()).append(' ');
+    sb.append(getDeclaringClass().getName()).append('.');
+    sb.append(getName()).append('(');
+    Type[] types = getGenericParameterTypes();
+    if (types.length > 0)
+      {
+        sb.append(types[0]);
+        for (int i = 1; i < types.length; i++)
+          sb.append(',').append(types[i]);
+      }
+    sb.append(')');
+    types = getGenericExceptionTypes();
+    if (types.length > 0)
+      {
+        sb.append(" throws ").append(types[0]);
+        for (int i = 1; i < types.length; i++)
+          sb.append(',').append(types[i]);
+      }
+    return sb.toString();
+  }
+
   /**
    * Invoke the method. Arguments are automatically unwrapped and widened,
    * and the result is automatically wrapped, if needed.<p>
@@ -333,4 +362,93 @@ extends AccessibleObject implements Member
   private native Object invokeNative(Object o, Object[] args,
                                      Class declaringClass, int slot)
     throws IllegalAccessException, InvocationTargetException;
+
+  /**
+   * Returns an array of <code>TypeVariable</code> objects that represents
+   * the type variables declared by this constructor, in declaration order.
+   * An array of size zero is returned if this class has no type
+   * variables.
+   *
+   * @return the type variables associated with this class. 
+   * @throws GenericSignatureFormatError if the generic signature does
+   *         not conform to the format specified in the Virtual Machine
+   *         specification, version 3.
+   * @since 1.5
+   */
+  /* FIXME[GENERICS]: Should be TypeVariable<Method>[] */
+  public TypeVariable[] getTypeParameters()
+  {
+    String sig = getSignature();
+    if (sig == null)
+      return new TypeVariable[0];
+    MethodSignatureParser p = new MethodSignatureParser(this, sig);
+    return p.getTypeParameters();
+  }
+
+  /**
+   * Return the String in the Signature attribute for this method. If there
+   * is no Signature attribute, return null.
+   */
+  private native String getSignature();
+
+  /**
+   * Returns an array of <code>Type</code> objects that represents
+   * the exception types declared by this method, in declaration order.
+   * An array of size zero is returned if this method declares no
+   * exceptions.
+   *
+   * @return the exception types declared by this method. 
+   * @throws GenericSignatureFormatError if the generic signature does
+   *         not conform to the format specified in the Virtual Machine
+   *         specification, version 3.
+   * @since 1.5
+   */
+  public Type[] getGenericExceptionTypes()
+  {
+    String sig = getSignature();
+    if (sig == null)
+      return getExceptionTypes();
+    MethodSignatureParser p = new MethodSignatureParser(this, sig);
+    return p.getGenericExceptionTypes();
+  }
+
+  /**
+   * Returns an array of <code>Type</code> objects that represents
+   * the parameter list for this method, in declaration order.
+   * An array of size zero is returned if this method takes no
+   * parameters.
+   *
+   * @return a list of the types of the method's parameters
+   * @throws GenericSignatureFormatError if the generic signature does
+   *         not conform to the format specified in the Virtual Machine
+   *         specification, version 3.
+   * @since 1.5
+   */
+  public Type[] getGenericParameterTypes()
+  {
+    String sig = getSignature();
+    if (sig == null)
+      return getParameterTypes();
+    MethodSignatureParser p = new MethodSignatureParser(this, sig);
+    return p.getGenericParameterTypes();
+  }
+
+  /**
+   * Returns the return type of this method.
+   *
+   * @return the return type of this method
+   * @throws GenericSignatureFormatError if the generic signature does
+   *         not conform to the format specified in the Virtual Machine
+   *         specification, version 3.
+   * @since 1.5
+   */
+  public Type getGenericReturnType()
+  {
+    String sig = getSignature();
+    if (sig == null)
+      return getReturnType();
+    MethodSignatureParser p = new MethodSignatureParser(this, sig);
+    return p.getGenericReturnType();
+  }
 }
+
