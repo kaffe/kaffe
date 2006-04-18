@@ -455,11 +455,11 @@ DBG(INITCLASSPATH,
 		end = strstr(cp, path_separator);
 		if (end != 0) {
 			*end = '\0';
-			addClasspath(cp);
+			KaffeVM_addClasspath(cp);
 			cp = end + strlen(path_separator);
 		}
 		else {
-			addClasspath(cp);
+			KaffeVM_addClasspath(cp);
 			break;
 		}
 	}
@@ -487,10 +487,10 @@ discoverClasspath(const char* home)
 	}
 
 	/* Add '.' and <home>/lib/rt.jar at the beginning */
-	addClasspath(".");
+	KaffeVM_addClasspath(".");
 	buf = KMALLOC(strlen(home) + strlen(KLASSES_JAR) + 6);
 	sprintf(buf, "%s/lib/%s", home, KLASSES_JAR);
-	addClasspath(buf);
+	KaffeVM_addClasspath(buf);
 	KFREE(buf);
 
 	hlen = strlen(home);
@@ -501,7 +501,7 @@ discoverClasspath(const char* home)
 		    || strcmp(&name[len-4], ".jar") == 0)) {
 			buf = KMALLOC(strlen(home) + strlen(name) + 2);
 			sprintf(buf, "%s/%s", home, name);
-			addClasspath(buf);
+			KaffeVM_addClasspath(buf);
 			KFREE(buf);
 		}
 	}
@@ -513,7 +513,7 @@ discoverClasspath(const char* home)
  * Append an entry in the Classpath dynamically.
  */
 int
-addClasspath(const char* cp)
+KaffeVM_addClasspath(const char* cp)
 {
 	return insertClasspath(cp, 0);
 }
@@ -522,7 +522,7 @@ addClasspath(const char* cp)
  * Prepend an entry in the Classpath dynamically.
  */
 int
-prependClasspath(const char* cp)
+KaffeVM_prependClasspath(const char* cp)
 {
 	return insertClasspath(cp, 1);
 }

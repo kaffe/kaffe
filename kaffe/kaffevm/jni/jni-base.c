@@ -27,6 +27,7 @@
 #include "classMethod.h"
 #include "jvmpi_kaffe.h"
 #include "external.h"
+#include "system.h"
 
 /*
  * Keep track of how many VM's are active. Right now
@@ -267,6 +268,19 @@ KaffeJNI_ParseArgs(KaffeVM_Arguments *args, JavaVMOption *options, jint nOptions
   return 1;
 }
 
+static char *
+KaffeJNI_getSystemProperty(const char *key)
+{
+  jvalue retval;
+  Hjava_lang_String *key_string = stringC2Java(key);
+  
+  do_execute_java_class_method(&retval, "gnu/classpath/SystemProperties", NULL, "getProperty", "(Ljava/lang/String;)Ljava/lang/String;", key_string);
+  if (retval.l == NULL)
+    return NULL;
+
+  return stringJava2C(retval.l);
+}
+
 #if defined(ENABLE_JVMPI)
 
 static void
@@ -283,6 +297,25 @@ detectAllActiveThreads(jthread_t jtid, void *param UNUSED)
 }
 
 #endif /* defined(ENABLE_JVMPI) */
+
+static void KaffeJNI_addEndorsedDirs()
+{
+  char *endorsed = KaffeJNI_getSystemProperty("java.endorsed.dirs");
+  char *sep;
+  char *save_endorsed = endorsed;
+
+  if (endorsed == NULL)
+    return;
+
+  while ((sep = strstr(endorsed, path_separator)) != NULL)
+    {
+      *sep = 0;
+      KaffeVM_prependClasspath(endorsed);
+      endorsed = sep+1;
+    }
+
+  gc_free(save_endorsed);
+}
 
 jint
 JNI_CreateJavaVM(JavaVM** vm, void** penv, void* args)
@@ -312,6 +345,8 @@ JNI_CreateJavaVM(JavaVM** vm, void** penv, void* args)
 
   /* Setup the machine */
   initialiseKaffe();
+
+  KaffeJNI_addEndorsedDirs();
 
   /* Return the VM and JNI we're using */
   *vm = KaffeJNI_GetKaffeVM();

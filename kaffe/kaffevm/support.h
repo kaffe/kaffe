@@ -144,8 +144,8 @@ extern void SignalError(const char *, const char *);
 extern void SignalErrorf(const char *, const char *, ...) PRINTFFORMAT(2,3);
 extern void unimp(const char*);
 extern void kprintf(FILE*, const char*, ...) PRINTFFORMAT(2,3);
-extern int addClasspath(const char*);
-extern int prependClasspath(const char*);
+extern int KaffeVM_addClasspath(const char*);
+extern int KaffeVM_prependClasspath(const char*);
 
 void classname2pathname(const char* from, char* to);
 void pathname2classname(const char* from, char* to);
