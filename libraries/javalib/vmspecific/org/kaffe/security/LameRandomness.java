@@ -35,7 +35,7 @@ public class LameRandomness
 	 *
 	 * @see kaffe.security.Randomness#fill()
 	 */
-	public void fill(byte bits[])
+	public void fill(byte bits[], int offset, int length)
 	{
 		new Random().nextBytes(bits);
 	}

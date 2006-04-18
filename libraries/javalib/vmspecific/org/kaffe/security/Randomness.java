@@ -31,7 +31,7 @@ public abstract class Randomness
 	 *
 	 * @param bits The array to fill with random bits.
 	 */
-	public abstract void fill(byte bits[]);
+	public abstract void fill(byte bits[], int offset, int length);
 
 	/**
 	 * @see java.lang.Object#toString()

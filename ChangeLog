@@ -1,5 +1,17 @@
 2006-04-18  Guilhem Lavaux  <guilhem@kaffe.org>
 
+	* libraries/clib/management/Classpath.c: Renamed addClasspath and
+	prependClasspath.
+
+	* libraries/javalib/vmspecific/java/security/VMSecureRandom.java,
+	libraries/javalib/vmspecific/org/kaffe/security/LameRandomness.java,
+	libraries/javalib/vmspecific/org/kaffe/security/Randomness.java,
+	libraries/javalib/vmspecific/org/kaffe/security/UnixRandomness.java,
+	libraries/javalib/vmspecific/org/kaffe/security/provider/SHA1PRNG.java:
+	Make use of /dev/urandom if it is available.
+
+2006-04-18  Guilhem Lavaux  <guilhem@kaffe.org>
+
 	* kaffe/kaffevm/findInJar.c,
 	kaffe/kaffevm/support.h
 	(KaffeVM_addClasspath, KaffeVM_prependClasspath): Renamed to

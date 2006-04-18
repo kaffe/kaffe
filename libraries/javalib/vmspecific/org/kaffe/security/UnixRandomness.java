@@ -53,11 +53,11 @@ public class UnixRandomness
 	 *
 	 * @see kaffe.security.Randomness#fill()
 	 */
-	public synchronized void fill(byte bits[])
+	public synchronized void fill(byte bits[], int offset, int length)
 	{
 		try
 		{
-			this.dis.readFully(bits);
+			this.dis.readFully(bits, offset, length);
 		}
 		catch(IOException e)
 		{

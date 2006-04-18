@@ -41,6 +41,8 @@ package java.security;
 import gnu.classpath.SystemProperties;
 import gnu.java.security.action.GetSecurityPropertyAction;
 
+import org.kaffe.security.Randomness;
+import org.kaffe.security.UnixRandomness;
 import java.net.URL;
 
 /**
@@ -59,6 +61,18 @@ import java.net.URL;
  */
 final class VMSecureRandom
 {
+  static private Randomness randomgen;
+
+  static
+  {
+    try
+      {
+	randomgen = new UnixRandomness();
+      }
+    catch (java.io.IOException e)
+      {	
+      }
+  }
 
   /**
    * Generate a random seed. Implementations are free to generate
@@ -76,6 +90,12 @@ final class VMSecureRandom
       throw new IllegalArgumentException("length must be nonnegative");
     if (offset < 0 || offset + length > buffer.length)
       throw new IndexOutOfBoundsException();
+
+    if (randomgen != null)
+      {
+	randomgen.fill(buffer, offset, length);
+	return length;
+      }
 
     Spinner[] spinners = new Spinner[8];
     int n = 0x1;

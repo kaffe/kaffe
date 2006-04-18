@@ -151,7 +151,7 @@ public class SHA1PRNG
 		 * Fill the seed using the implementation specific source of
 		 * randomness.
 		 */
-		impl.fill(this.seed);
+		impl.fill(this.seed, 0, SEED_SIZE);
 		
 		try
 		{
