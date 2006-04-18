@@ -1,3 +1,9 @@
+2006-04-18  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	*
+	libraries/javalib/external/classpath/gnu/classpath/SystemProperties.java
+	(<clinit>): Use the right parameter for postInit.
+
 2006-04-18  Riccardo Mottola <riccardo@kaffe.org>
 	* kaffe/kaffevm/debug.c
 	moved configure headers to the top

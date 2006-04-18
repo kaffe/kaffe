@@ -122,7 +122,7 @@ public class SystemProperties
     // that the system properties do not have a parent.
     properties = (Properties) defaultProperties.clone();
 
-    VMSystemProperties.postInit(defaultProperties);
+    VMSystemProperties.postInit(properties);
   }
 
   public static String getProperty(String name)
