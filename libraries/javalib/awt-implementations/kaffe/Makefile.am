@@ -40,7 +40,6 @@ java_awt_SRCS = \
 	java/awt/AttributeValue.java \
 	java/awt/AWTError.java \
 	java/awt/AWTEvent.java \
-	java/awt/AWTEventMulticaster.java \
 	java/awt/AWTException.java \
 	java/awt/AWTPermission.java \
 	java/awt/BarMenu.java \
