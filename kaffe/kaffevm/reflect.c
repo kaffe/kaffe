@@ -153,7 +153,7 @@ KaffeVM_makeReflectField(struct Hjava_lang_Class* clazz, int slot)
 	fld = CLASS_FIELDS(clazz) + slot;
 	field = (Hjava_lang_reflect_Field*)
 	    AllocObject("java/lang/reflect/Field", NULL);
-	unhand(field)->clazz = clazz;
+	unhand(field)->declaringClass = clazz;
 	unhand(field)->slot = slot;
 	unhand(field)->type = resolveFieldType(fld, clazz, &info);
 	if (unhand(field)->type == NULL) {

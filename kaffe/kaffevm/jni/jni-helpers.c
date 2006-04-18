@@ -135,7 +135,7 @@ KaffeJNI_FromReflectedField (JNIEnv *env UNUSED, jobject field)
 
   realField = (Hjava_lang_reflect_Field *)field_local;
 
-  id = (jfieldID) &(unhand(realField)->clazz->fields[unhand(realField)->slot]);
+  id = (jfieldID) &(unhand(realField)->declaringClass->fields[unhand(realField)->slot]);
   END_EXCEPTION_HANDLING();
   
   return id;

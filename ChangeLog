@@ -1,5 +1,22 @@
 2006-04-18 Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/reflect.c (KaffeVM_makeReflectField),
+	kaffe/kaffevm/jni/jni-helpers.c (KaffeJNI_FromReflectedField):
+	Updated for new Field implementation.
+
+	* libraries/clib/native/Field.c: Include local native.h.
+	(getFieldAddress) Updated for new Field implementation.
+	(java_lang_reflect_Field_getModifiers) Renamed to ...
+	(java_lang_reflect_Field_getModifiersInternal) ... and updated
+	for new Field implementation.
+	(java_lang_reflect_Field_getSignature) New function.
+
+	* libraries/javalib/vmspecific/java/lang/reflect/Field.java:
+	Merged in from GNU Classpath. Implemented get* and set* methods
+	partially in Java, by merging in Kaffe's own implementation.
+
+2006-04-18 Dalibor Topic  <robilad@kaffe.org>
+
 	* include/native.h: Use local java_lang_String.h.
 
 2006-04-18  Guilhem Lavaux  <guilhem@kaffe.org>

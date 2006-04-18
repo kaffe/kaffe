@@ -3,6 +3,9 @@
  *
  * Copyright (c) 1996,97 T. J. Wilkinson & Associates, London, UK.
  *
+ * Copyright (c) 2006
+ *   Kaffe.org contributors. See ChangeLog for details.
+ *
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
@@ -23,8 +26,9 @@
 #include "baseClasses.h"
 #include "exception.h"
 #include "java_lang_reflect_Field.h"
-#include <native.h>
+#include "native.h"
 #include "defs.h"
+#include "stringSupport.h"
 
 static
 void*
@@ -33,7 +37,7 @@ getFieldAddress(Hjava_lang_reflect_Field* this, struct Hjava_lang_Object* obj)
         Hjava_lang_Class* clas;
         Field* fld;
 
-        clas = (Hjava_lang_Class*)unhand(this)->clazz;
+        clas = (Hjava_lang_Class*)unhand(this)->declaringClass;
         fld = CLASS_FIELDS(clas) + unhand(this)->slot;
 
         if (unhand(this)->slot < CLASS_NSFIELDS(clas)) {
@@ -58,12 +62,12 @@ getFieldAddress(Hjava_lang_reflect_Field* this, struct Hjava_lang_Object* obj)
 
 
 jint 
-java_lang_reflect_Field_getModifiers(struct Hjava_lang_reflect_Field * this)
+java_lang_reflect_Field_getModifiersInternal(struct Hjava_lang_reflect_Field * this)
 {
         Hjava_lang_Class* clas;
         Field* fld;
 
-        clas = (Hjava_lang_Class*) unhand(this)->clazz;
+        clas = (Hjava_lang_Class*) unhand(this)->declaringClass;
         fld = CLASS_FIELDS(clas) + unhand(this)->slot;
 
         return ((jint)(fld->accflags & ACC_MASK));
@@ -177,4 +181,18 @@ void
 java_lang_reflect_Field_setObject0(struct Hjava_lang_reflect_Field * this, struct Hjava_lang_Object* obj, struct Hjava_lang_Object* val)
 {
 	*(jobject*)getFieldAddress(this, obj) = val;
+}
+
+Hjava_lang_String *
+java_lang_reflect_Field_getSignature(struct Hjava_lang_reflect_Field* this)
+{
+	Hjava_lang_Class* clazz;
+	jint slot;
+
+	clazz = unhand(this)->declaringClass;
+	slot = unhand(this)->slot;
+
+	assert(slot < CLASS_NFIELDS(clazz));
+
+	return utf8Const2Java(CLASS_FIELDS(clazz)[slot].extSignature);
 }
