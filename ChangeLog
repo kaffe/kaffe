@@ -1,4 +1,8 @@
 2006-04-18  Riccardo Mottola <riccardo@kaffe.org>
+	* kaffe/kaffevm/debug.c
+	moved configure headers to the top
+
+2006-04-18  Riccardo Mottola <riccardo@kaffe.org>
 	* kaffe/libraries/javalib/awt-implementations/kaffe/java/awt/print/*
 	Removed, so to use classpath versions.
 	

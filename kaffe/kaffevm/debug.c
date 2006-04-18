@@ -19,6 +19,11 @@
  * chosen at run time.
  */
 
+#include "config.h"
+#include "config-std.h"
+#include "config-mem.h"
+#include "config-io.h"
+#include "config-signal.h"
 
 #if defined(HAVE_STDARG_H)
 #include <stdarg.h>
@@ -27,11 +32,6 @@
 #include <stdio.h>
 
 #include "lerrno.h"
-#include "config.h"
-#include "config-std.h"
-#include "config-mem.h"
-#include "config-io.h"
-#include "config-signal.h"
 #include "jni_md.h"
 #include "gtypes.h"
 #include "gc.h"
