@@ -271,33 +271,23 @@ extends AccessibleObject implements Member
   public Object get(Object o)
     throws IllegalAccessException
   {
-    if (type == Double.TYPE) {
-      return (new Double(getDouble0(o)));
-    }
-    else if (type == Float.TYPE) {
-      return (new Float(getFloat0(o)));
-    }
-    else if (type == Long.TYPE) {
-      return (new Long(getLong0(o)));
-    }
-    else if (type == Integer.TYPE) {
-      return (new Integer(getInt0(o)));
-    }
-    else if (type == Short.TYPE) {
-      return (new Short(getShort0(o)));
-    }
-    else if (type == Byte.TYPE) {
-      return (new Byte(getByte0(o)));
-    }
-    else if (type == Character.TYPE) {
-      return (new Character(getChar0(o)));
-    }
-    else if (type == Boolean.TYPE) {
-      return (new Boolean(getBoolean0(o)));
-    }
-    else {
-      return (getObject0(o));
-    }
+    if (type == Double.TYPE)
+      return new Double(getDouble0(o));
+    if (type == Float.TYPE)
+      return new Float(getFloat0(o));
+    if (type == Long.TYPE)
+      return new Long(getLong0(o));
+    if (type == Integer.TYPE)
+      return new Integer(getInt0(o));
+    if (type == Short.TYPE)
+      return new Short(getShort0(o));
+    if (type == Byte.TYPE)
+      return new Byte(getByte0(o));
+    if (type == Character.TYPE)
+      return new Character(getChar0(o));
+    if (type == Boolean.TYPE)
+      return getBoolean0(o) ? Boolean.TRUE : Boolean.FALSE;
+    return getObject0(o);
   }
 
   /**
@@ -320,12 +310,9 @@ extends AccessibleObject implements Member
   public boolean getBoolean(Object o)
     throws IllegalAccessException
   {
-    if (type == Boolean.TYPE) {
-      return (getBoolean0(o));
-    }
-    else {
-      throw new IllegalArgumentException();
-    }
+    if (type == Boolean.TYPE)
+      return getBoolean0(o);
+    throw new IllegalArgumentException();
   }
 
   /**
@@ -348,12 +335,9 @@ extends AccessibleObject implements Member
   public byte getByte(Object o)
     throws IllegalAccessException
   {
-    if (type == Byte.TYPE) {
-      return (getByte0(o));
-    }
-    else {
-      throw new IllegalArgumentException();
-    }
+    if (type == Byte.TYPE)
+      return getByte0(o);
+    throw new IllegalArgumentException();
   }
 
   /**
@@ -374,12 +358,9 @@ extends AccessibleObject implements Member
   public char getChar(Object o)
     throws IllegalAccessException
   {
-    if (type == Character.TYPE) {
-      return (getChar0(o));
-    }
-    else {
-      throw new IllegalArgumentException();
-    }
+    if (type == Character.TYPE)
+      return getChar0(o);
+    throw new IllegalArgumentException();
   }
 
   /**
@@ -402,24 +383,9 @@ extends AccessibleObject implements Member
   public short getShort(Object o)
     throws IllegalAccessException
   {
-    if (type == Short.TYPE) {
-      return (getShort0(o));
-    }
-    else if (type == Integer.TYPE) {
-      return ((short)getInt0(o));
-    }
-    else if (type == Long.TYPE) {
-      return ((short)getLong0(o));
-    }
-    else if (type == Float.TYPE) {
-      return ((short)getFloat0(o));
-    }
-    else if (type == Double.TYPE) {
-      return ((short)getDouble0(o));
-    }
-    else {
-      throw new IllegalArgumentException();
-    }
+    if (type == Short.TYPE)
+      return getShort0(o);
+    return getByte(o);
   }
 
   /**
@@ -442,21 +408,11 @@ extends AccessibleObject implements Member
   public int getInt(Object o)
     throws IllegalAccessException
   {
-    if (type == Integer.TYPE) {
-      return (getInt0(o));
-    }
-    else if (type == Short.TYPE) {
-      return ((int)getShort0(o));
-    }
-    else if (type == Byte.TYPE) {
-      return ((int)getByte0(o));
-    }
-    else if (type == Character.TYPE) {
-      return ((int)getChar0(o));
-    }
-    else {
-      throw new IllegalArgumentException();
-    }
+    if (type == Integer.TYPE)
+      return getInt0(o);
+    if (type == Character.TYPE)
+      return getChar0(o);
+    return getShort(o);
   }
 
   /**
@@ -479,24 +435,9 @@ extends AccessibleObject implements Member
   public long getLong(Object o)
     throws IllegalAccessException
   {
-    if (type == Long.TYPE) {
-      return (getLong0(o));
-    }
-    else if (type == Integer.TYPE) {
-      return ((long)getInt0(o));
-    }
-    else if (type == Short.TYPE) {
-      return ((long)getShort0(o));
-    }
-    else if (type == Byte.TYPE) {
-      return ((long)getByte0(o));
-    }
-    else if (type == Character.TYPE) {
-      return ((long)getChar0(o));
-    }
-    else {
-      throw new IllegalArgumentException();
-    }
+    if (type == Long.TYPE)
+      return getLong0(o);
+    return getInt(o);
   }
 
   /**
@@ -519,27 +460,9 @@ extends AccessibleObject implements Member
   public float getFloat(Object o)
     throws IllegalAccessException
   {
-    if (type == Float.TYPE) {
-      return (getFloat0(o));
-    }
-    else if (type == Long.TYPE) {
-      return ((float)getLong0(o));
-    }
-    else if (type == Integer.TYPE) {
-      return ((float)getInt0(o));
-    }
-    else if (type == Short.TYPE) {
-      return ((float)getShort0(o));
-    }
-    else if (type == Byte.TYPE) {
-      return ((float)getByte0(o));
-    }
-    else if (type == Character.TYPE) {
-      return ((float)getChar0(o));
-    }
-    else {
-      throw new IllegalArgumentException();
-    }
+    if (type == Float.TYPE)
+      return getFloat0(o);
+    return getLong(o);
   }
 
   /**
@@ -563,30 +486,9 @@ extends AccessibleObject implements Member
   public double getDouble(Object o)
     throws IllegalAccessException
   {
-    if (type == Double.TYPE) {
-      return (getDouble0(o));
-    }
-    else if (type == Float.TYPE) {
-      return ((double)getFloat0(o));
-    }
-    else if (type == Long.TYPE) {
-      return ((double)getLong0(o));
-    }
-    else if (type == Integer.TYPE) {
-      return ((double)getInt0(o));
-    }
-    else if (type == Short.TYPE) {
-      return ((double)getShort0(o));
-    }
-    else if (type == Byte.TYPE) {
-      return ((double)getByte0(o));
-    }
-    else if (type == Character.TYPE) {
-      return ((double)getChar0(o));
-    }
-    else {
-      throw new IllegalArgumentException();
-    }
+    if (type == Double.TYPE)
+      return getDouble0(o);
+    return getFloat(o);
   }
 
   /**
@@ -917,146 +819,73 @@ extends AccessibleObject implements Member
   public void setBooleanInternal(Object obj, boolean z) 
     throws IllegalArgumentException, IllegalAccessException 
   {
-    if (type == Boolean.TYPE) {
+    if (type == Boolean.TYPE)
       setBoolean0(obj, z);
-    }
-    else {
+    else
       throw new IllegalArgumentException();
-    }
   }
 
   public void setByteInternal(Object obj, byte b)
     throws IllegalArgumentException, IllegalAccessException
   {
-    if (type == Byte.TYPE) {
+    if (type == Byte.TYPE)
       setByte0(obj, b);
-    }
-    else if (type == Short.TYPE) {
-      setShort0(obj, (short)b);
-    }
-    else if (type == Integer.TYPE) {
-      setInt0(obj, (int)b);
-    }
-    else if (type == Long.TYPE) {
-      setLong0(obj, (long)b);
-    }
-    else if (type == Float.TYPE) {
-      setFloat0(obj, (float)b);
-    }
-    else if (type == Double.TYPE) {
-      setDouble0(obj, (double)b);
-    }
-    else {
-      throw new IllegalArgumentException();
-    }
+    else 
+      setShortInternal(obj, b);
   }
 
   public void setCharInternal(Object obj, char c) 
     throws IllegalArgumentException, IllegalAccessException 
   {
-    if (type == Character.TYPE) {
+    if (type == Character.TYPE)
       setChar0(obj, c);
-    }
-    else if (type == Integer.TYPE) {
-      setInt0(obj, (int)c);
-    }
-    else if (type == Long.TYPE) {
-      setLong0(obj, (long)c);
-    }
-    else if (type == Float.TYPE) {
-      setFloat0(obj, (float)c);
-    }
-    else if (type == Double.TYPE) {
-      setDouble0(obj, (double)c);
-    }
-    else {
-      throw new IllegalArgumentException();
-    }
+    else
+      setIntInternal(obj, c);
   }
 
   public void setDoubleInternal(Object obj, double d) 
     throws IllegalArgumentException, IllegalAccessException 
   {
-    if (type == Double.TYPE) {
+    if (type == Double.TYPE)
       setDouble0(obj, d);
-    }
-    else {
+    else
       throw new IllegalArgumentException();
-    }
   }
 
   public void setFloatInternal(Object obj, float f)
     throws IllegalArgumentException, IllegalAccessException 
   {
-    if (type == Float.TYPE) {
+    if (type == Float.TYPE)
       setFloat0(obj, f);
-    }
-    else if (type == Double.TYPE) {
-      setDouble0(obj, (double)f);
-    }
-    else {
-      throw new IllegalArgumentException();
-    }
+    else
+      setDoubleInternal(obj, f);
   }
 
   public void setIntInternal(Object obj, int i)
     throws IllegalArgumentException, IllegalAccessException 
   {
-    if (type == Integer.TYPE) {
+    if (type == Integer.TYPE)
       setInt0(obj, i);
-    }
-    else if (type == Long.TYPE) {
-      setLong0(obj, (long)i);
-    }
-    else if (type == Float.TYPE) {
-      setFloat0(obj, (float)i);
-    }
-    else if (type == Double.TYPE) {
-      setDouble0(obj, (double)i);
-    }
-    else {
-      throw new IllegalArgumentException();
-    }
+    else
+      setLongInternal(obj, i);
   }
 
   public void setLongInternal(Object obj, long l)
     throws IllegalArgumentException, IllegalAccessException 
   {
-    if (type == Long.TYPE) {
+    if (type == Long.TYPE)
       setLong0(obj, l);
-    }
-    else if (type == Float.TYPE) {
-      setFloat0(obj, (float)l);
-    }
-    else if (type == Double.TYPE) {
-      setDouble0(obj, (double)l);
-    }
-    else {
-      throw new IllegalArgumentException();
-    }
+    else
+      setFloatInternal(obj, l);
   }
 
   public void setShortInternal(Object obj, short s)
     throws IllegalArgumentException, IllegalAccessException
   {
-    if (type == Short.TYPE) {
+    if (type == Short.TYPE)
       setShort0(obj, s);
-    }
-    else if (type == Integer.TYPE) {
-      setInt0(obj, (int)s);
-    }
-    else if (type == Long.TYPE) {
-      setLong0(obj, (long)s);
-    }
-    else if (type == Float.TYPE) {
-      setFloat0(obj, (float)s);
-    }
-    else if (type == Double.TYPE) {
-      setDouble0(obj, (double)s);
-    }
-    else {
-      throw new IllegalArgumentException();
-    }
+    else
+      setIntInternal(obj, s);
   }
 
   private void checkFinal()

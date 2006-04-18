@@ -1,5 +1,15 @@
 2006-04-18 Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/vmspecific/java/lang/reflect/Field.java
+	(get, getBoolean, getByte, getChar, getShort, getInt, getLong,
+	getFloat, getDouble, setBooleanInternal, setByteInternal, 
+	setCharInternal, setDoubleInternal, setFloatInternal,
+	setIntInternal, setLongInternal, setShortInternal): 
+	Cleaned up. Reindented. Reimplemented widening by using
+	the delegation method from java.lang.reflect.Array.
+
+2006-04-18 Dalibor Topic  <robilad@kaffe.org>
+
 	* TODO: Removed merging in of java.lang.reflect, as that's now 
 	completed.
 
