@@ -1,6 +1,12 @@
 2006-04-18  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	*
+	libraries/javalib/external/classpath/gnu/classpath/SystemProperties.java:
+	Reverted to original GNU Classpath's version as it is now working.
+
+2006-04-18  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	*
 	libraries/javalib/external/classpath/gnu/classpath/SystemProperties.java
 	(<clinit>): Use the right parameter for postInit.
 

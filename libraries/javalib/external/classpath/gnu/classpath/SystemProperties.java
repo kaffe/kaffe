@@ -118,11 +118,11 @@ public class SystemProperties
       defaultProperties.put("gnu.classpath.mime.types.file",
                             "/etc/mime.types");
 
+    VMSystemProperties.postInit(defaultProperties);
+
     // Note that we use clone here and not new.  Some programs assume
     // that the system properties do not have a parent.
     properties = (Properties) defaultProperties.clone();
-
-    VMSystemProperties.postInit(properties);
   }
 
   public static String getProperty(String name)
