@@ -1,3 +1,7 @@
+2006-04-18 Dalibor Topic  <robilad@kaffe.org>
+
+	* include/native.h: Use local java_lang_String.h.
+
 2006-04-18  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	*

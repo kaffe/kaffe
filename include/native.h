@@ -58,7 +58,7 @@ typedef struct Hjava_lang_Object {
 #include "Arrays.h"
 
 /* Get the strings */
-#include <java_lang_String.h>
+#include "java_lang_String.h"
 
 /* Some internal machine object conversions to "standard" types. */
 typedef	Hjava_lang_Class	HClass;
