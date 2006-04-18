@@ -1,3 +1,9 @@
+2006-04-18  Riccardo Mottola <riccardo@kaffe.org>
+	* kaffe/libraries/javalib/awt-implementations/kaffe/java/awt/peer/*
+	Removed, so to use classpath versions.
+	/kaffe/libraries/javalib/awt-implementations/kaffe/org/kaffe/awt/DoNothingPeer.java
+	Updated to match new classpath peers.
+    
 2006-04-18  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* libraries/clib/management/Classpath.c: Renamed addClasspath and

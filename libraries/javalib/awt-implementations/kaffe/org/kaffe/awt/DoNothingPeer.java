@@ -201,4 +201,29 @@ public class DoNothingPeer implements LightweightPeer, WindowPeer {
 
   public void toBack() {}
   public void toFront() {}
-}
+  
+  public void layout() {}
+  public boolean isReparentSupported() {
+    return false;
+  }
+  public void setBounds(int a, int b, int c, int d, int e) {}
+  
+  public Rectangle getBounds() {
+    return null;
+  }
+  
+  public void reparent(ContainerPeer cp) {}
+  
+  public void updateAlwaysOnTop() {}
+  
+  public boolean requestWindowFocus() {
+    return false;
+  }
+  
+  public void cancelPendingPaint(int a, int b, int c, int d) {}
+  public boolean isRestackSupported() {
+    return false;
+  }
+
+  public void restack() {}
+ }

@@ -371,7 +371,6 @@ kaffeawt_jar_SRCS = \
 	$(java_awt_im_SRCS) \
 	$(java_awt_image_SRCS) \
 	$(java_awt_image_renderable_SRCS) \
-	$(java_awt_peer_SRCS) \
 	$(java_awt_print_SRCS) \
 	$(org_kaffe_applet_SRCS) \
 	$(org_kaffe_awt_SRCS) \
@@ -668,35 +667,6 @@ java_awt_image_renderable_SRCS = \
 	java/awt/image/renderable/RenderableImageProducer.java \
 	java/awt/image/renderable/RenderContext.java \
 	java/awt/image/renderable/RenderedImageFactory.java
-
-java_awt_peer_SRCS = \
-	java/awt/peer/ButtonPeer.java \
-	java/awt/peer/CanvasPeer.java \
-	java/awt/peer/CheckboxMenuItemPeer.java \
-	java/awt/peer/CheckboxPeer.java \
-	java/awt/peer/ChoicePeer.java \
-	java/awt/peer/ComponentPeer.java \
-	java/awt/peer/ContainerPeer.java \
-	java/awt/peer/DialogPeer.java \
-	java/awt/peer/FileDialogPeer.java \
-	java/awt/peer/FontPeer.java \
-	java/awt/peer/FramePeer.java \
-	java/awt/peer/LabelPeer.java \
-	java/awt/peer/LightweightPeer.java \
-	java/awt/peer/ListPeer.java \
-	java/awt/peer/MenuBarPeer.java \
-	java/awt/peer/MenuComponentPeer.java \
-	java/awt/peer/MenuItemPeer.java \
-	java/awt/peer/MenuPeer.java \
-	java/awt/peer/PanelPeer.java \
-	java/awt/peer/PopupMenuPeer.java \
-	java/awt/peer/RobotPeer.java \
-	java/awt/peer/ScrollbarPeer.java \
-	java/awt/peer/ScrollPanePeer.java \
-	java/awt/peer/TextAreaPeer.java \
-	java/awt/peer/TextComponentPeer.java \
-	java/awt/peer/TextFieldPeer.java \
-	java/awt/peer/WindowPeer.java
 
 java_awt_print_SRCS = \
 	java/awt/print/Book.java \
