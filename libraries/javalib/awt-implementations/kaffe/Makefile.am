@@ -23,7 +23,6 @@ kaffeawt_jar_SRCS = \
 	$(java_awt_im_SRCS) \
 	$(java_awt_image_SRCS) \
 	$(java_awt_image_renderable_SRCS) \
-	$(java_awt_print_SRCS) \
 	$(org_kaffe_applet_SRCS) \
 	$(org_kaffe_awt_SRCS) \
         $(org_kaffe_util_log_SRCS)
@@ -309,17 +308,6 @@ java_awt_image_renderable_SRCS = \
 	java/awt/image/renderable/RenderableImageProducer.java \
 	java/awt/image/renderable/RenderContext.java \
 	java/awt/image/renderable/RenderedImageFactory.java
-java_awt_print_SRCS = \
-	java/awt/print/Book.java \
-	java/awt/print/Pageable.java \
-	java/awt/print/PageFormat.java \
-	java/awt/print/Paper.java \
-	java/awt/print/Printable.java \
-	java/awt/print/PrinterAbortException.java \
-	java/awt/print/PrinterException.java \
-	java/awt/print/PrinterGraphics.java \
-	java/awt/print/PrinterIOException.java \
-	java/awt/print/PrinterJob.java
 org_kaffe_applet_SRCS = \
 	org/kaffe/applet/AppletTag.java \
 	org/kaffe/applet/AppletViewer.java \
