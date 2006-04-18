@@ -53,7 +53,7 @@ exception statement from your version. */
  * Signature: (Ljava/lang/Class;I)Ljava/lang/Object;
  */
 JNIEXPORT jobject JNICALL
-Java_java_lang_reflect_VMArray_createObjectArray
+Java_java_lang_reflect_VMArray_createObjectArray0
   (JNIEnv * env,
    jclass thisClass __attribute__ ((__unused__)),
    jclass arrayType, jint arrayLength)

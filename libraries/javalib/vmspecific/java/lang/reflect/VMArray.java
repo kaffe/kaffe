@@ -60,6 +60,15 @@ class VMArray
    * @throws NegativeArraySizeException if dim is negative
    * @throws OutOfMemoryError if memory allocation fails
    */
-  static native Object createObjectArray(Class type, int dim);
+  static Object createObjectArray(Class type, int dim)
+  {
+    if (dim < 0)
+      throw new NegativeArraySizeException("Can't create an array of " 
+					   + type.getName() 
+					   + " of length "
+					   + dim);
+    return createObjectArray0(type, dim);
+  }
 
+  static native Object createObjectArray0(Class type, int dim);
 }
