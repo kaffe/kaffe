@@ -19,7 +19,7 @@
 
 * Merging work:
   * From GNU Classpath:
-    java.util.zip, java.lang.reflect, java.lang
+    java.util.zip, java.lang
   * gcjwebplugin
   * verifier from gcj (rob gonzalez)
 

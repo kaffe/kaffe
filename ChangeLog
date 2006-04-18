@@ -1,5 +1,10 @@
 2006-04-18 Dalibor Topic  <robilad@kaffe.org>
 
+	* TODO: Removed merging in of java.lang.reflect, as that's now 
+	completed.
+
+2006-04-18 Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/reflect.c (KaffeVM_makeReflectField),
 	kaffe/kaffevm/jni/jni-helpers.c (KaffeJNI_FromReflectedField):
 	Updated for new Field implementation.
