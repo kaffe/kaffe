@@ -74,9 +74,9 @@ public int countComponents() {
 	// DEP - should be in getComponentCount()
 
 	if ( bMenu == null )
-		return nChildren;
+		return ncomponents;
 	
-	return nChildren-1;
+	return ncomponents-1;
 }
 
 void createNative () {
@@ -105,22 +105,22 @@ void createNative () {
 }
 
 public Component getComponent( int index) {
-	if ( children == null )
+	if ( component == null )
 		return null;
 	if ( bMenu == null )
-		return children[index];
+		return component[index];
 	
-	return children[index+1];
+	return component[index+1];
 }
 
 public Component[] getComponents() {
 	if ( bMenu == null )
 		return super.getComponents();
 	
-	Component ca[] = new Component[nChildren-1];
+	Component ca[] = new Component[ncomponents-1];
 	
 	if ( ca.length > 0 )
-		System.arraycopy( children, 1, ca, 0, nChildren-1);
+		System.arraycopy( component, 1, ca, 0, ncomponents-1);
 	
 	return ca;
 }
@@ -172,8 +172,8 @@ public void paint ( Graphics g ) {
 			g.clipRect( deco.x, insets.top, width - (deco.width), height - (deco.height));
 		}
 
-		for ( int i=nChildren-1; i>=n; i-- ) {
-			Component c = children[i];
+		for ( int i=ncomponents-1; i>=n; i-- ) {
+			Component c = component[i];
 
 			if ( (c.flags & IS_VISIBLE) != 0 ) {
 				g.paintChild( c, (flags & IS_IN_UPDATE) != 0);
@@ -284,18 +284,18 @@ public void setMenuBar ( MenuBar mb ) {
 	bMenu = new BarMenu( mb);
 	
 	// add BarMenu to children at position 0 ( without LayoutManager registration )
-	if ( children == null )
-		children= new Component[3];
-	else if ( nChildren == children.length) {
-		Component[] old = children;
-		children = new Component[nChildren*2];
-		System.arraycopy( old, 0, children, 1, nChildren);
+	if ( component == null )
+		component= new Component[3];
+	else if ( ncomponents == component.length) {
+		Component[] old = component;
+		component = new Component[ncomponents*2];
+		System.arraycopy( old, 0, component, 1, ncomponents);
 	}
 	else
-		System.arraycopy( children, 0, children, 1, nChildren);
+		System.arraycopy( component, 0, component, 1, ncomponents);
 	
-	children[0] = bMenu;
-	nChildren++;
+	component[0] = bMenu;
+	ncomponents++;
 	bMenu.parent = this;
 
 	if ( nativeData != null ) {

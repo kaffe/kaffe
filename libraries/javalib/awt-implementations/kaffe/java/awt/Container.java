@@ -25,10 +25,16 @@ import java.io.PrintWriter;
 abstract public class Container
   extends Component
 {
-	final private static long serialVersionUID = 4613797578919906343L;
-	Component[] children;
-	int nChildren;
-	LayoutManager layoutm;
+ /**
+   * Compatible with JDK 1.0+.
+   */
+  private static final long serialVersionUID = 4613797578919906343L;
+
+  /* Serialized fields from the serialization spec. */
+  int ncomponents;
+  Component[] component;
+  LayoutManager layoutMgr;
+  
 	ContainerListener cntrListener;
 	Insets insets = Insets.noInsets;
 
@@ -67,7 +73,7 @@ public void addContainerListener ( ContainerListener newListener ) {
 protected void addImpl(Component child, Object constraints, int index ) {
 
 	synchronized ( treeLock ) {
-		if (index < -1 || index > nChildren) {
+		if (index < -1 || index > ncomponents) {
 			throw new IllegalArgumentException("bad index: " + index);
 		}
 		// This test isn't done because we actually need this functionality
@@ -83,24 +89,24 @@ protected void addImpl(Component child, Object constraints, int index ) {
 			child.parent.remove(child);
 		}
 
-		if ( children == null ) {
-			children= new Component[3];
+		if ( component == null ) {
+			component= new Component[3];
 		}
-		else if ( nChildren == children.length ) {
-			Component[] old = children;
-			children = new Component[ nChildren * 2];
-			System.arraycopy( old, 0, children, 0, nChildren);
+		else if ( ncomponents == component.length ) {
+			Component[] old = component;
+			component = new Component[ ncomponents * 2];
+			System.arraycopy( old, 0, component, 0, ncomponents);
 		}
 		
-		if (index < 0 || nChildren == 0 || index == nChildren) {  // append
-			children[nChildren] = child;
+		if (index < 0 || ncomponents == 0 || index == ncomponents) {  // append
+			component[ncomponents] = child;
 		}
-		else if (index < nChildren) {     // insert at index
-			System.arraycopy( children, index, children, index+1, nChildren - index);
-			children[index] = child;
+		else if (index < ncomponents) {     // insert at index
+			System.arraycopy( component, index, component, index+1, ncomponents - index);
+			component[index] = child;
 		}
 	
-		nChildren++;
+		ncomponents++;
 		child.parent = this;
 
 		if ( (flags & IS_VALID) != 0 )
@@ -134,12 +140,12 @@ protected void addImpl(Component child, Object constraints, int index ) {
 		// Some LayoutManagers track adding/removing components. Since this seems to be
 		// done after a potential addNotify, inform them here
 		// (wouldn't it be nice to have a single LayoutManager interface?)
-		if ( layoutm != null ) {
-			if ( layoutm instanceof LayoutManager2 ) {
-				((LayoutManager2)layoutm).addLayoutComponent( child, constraints);
+		if ( layoutMgr != null ) {
+			if ( layoutMgr instanceof LayoutManager2 ) {
+				((LayoutManager2)layoutMgr).addLayoutComponent( child, constraints);
 			}
 			if (constraints instanceof String) {
-				layoutm.addLayoutComponent( (String)constraints, child);
+				layoutMgr.addLayoutComponent( (String)constraints, child);
 			}
 		}
 	
@@ -152,8 +158,8 @@ protected void addImpl(Component child, Object constraints, int index ) {
 
 public void addNotify() {
 	super.addNotify();
-	for ( int i=0; i<nChildren; i++ ) {
-		children[i].addNotify();
+	for ( int i=0; i<ncomponents; i++ ) {
+		component[i].addNotify();
 	}
 }
 
@@ -166,9 +172,9 @@ Graphics clipSiblings ( Component child, NativeGraphics g ) {
 	xwClip = xClip + g.wClip;
 	yhClip = yClip + g.hClip;
 	
-	for ( i=nChildren-1; (i >= 0) && (children[i] != child) ; i-- );
+	for ( i=ncomponents-1; (i >= 0) && (component[i] != child) ; i-- );
 	for ( i--; i >= 0; i-- ) {
-		c = children[i];
+		c = component[i];
 
 		cxw = c.x + c.width;
 		cyh = c.y + c.height;
@@ -186,7 +192,7 @@ Graphics clipSiblings ( Component child, NativeGraphics g ) {
  * @deprecated, use getComponentCount()
  */
 public int countComponents() {
-	return nChildren;
+	return ncomponents;
 }
 
 public void doLayout() {
@@ -198,8 +204,8 @@ void dump ( String prefix ) {
 
 	super.dump( prefix);
 	
-	for ( int i=0; i<nChildren; i++ ) {
-		children[i].dump( prfx + i + " ");
+	for ( int i=0; i<ncomponents; i++ ) {
+		component[i].dump( prfx + i + " ");
 	}
 }
 
@@ -216,8 +222,8 @@ void emitRepaints ( int ux, int uy, int uw, int uh ) {
 	int uxw = ux + uw;
 	int uyh = uy + uh;
 
-	for ( int i=0; i<nChildren; i++ ) {
-		Component c = children[i];
+	for ( int i=0; i<ncomponents; i++ ) {
+		Component c = component[i];
 		
 		if ( (c.flags & IS_VISIBLE) != 0 ) {
 			int cxw = c.x + c.width;
@@ -246,8 +252,8 @@ void emitRepaints ( int ux, int uy, int uw, int uh ) {
 }
 
 public float getAlignmentX () {
-	if ( layoutm instanceof LayoutManager2 ) {
-		return ((LayoutManager2)layoutm).getLayoutAlignmentX( this);
+	if ( layoutMgr instanceof LayoutManager2 ) {
+		return ((LayoutManager2)layoutMgr).getLayoutAlignmentX( this);
 	}
 	else {
 		return super.getAlignmentX();
@@ -255,8 +261,8 @@ public float getAlignmentX () {
 }
 
 public float getAlignmentY () {
-	if ( layoutm instanceof LayoutManager2 ) {
-		return ((LayoutManager2)layoutm).getLayoutAlignmentY( this);
+	if ( layoutMgr instanceof LayoutManager2 ) {
+		return ((LayoutManager2)layoutMgr).getLayoutAlignmentY( this);
 	}
 	else {
 		return super.getAlignmentY();
@@ -264,7 +270,7 @@ public float getAlignmentY () {
 }
 
 public Component getComponent ( int index ) {
-	return children[index];
+	return component[index];
 }
 
 public Component getComponentAt ( Point pt ) {
@@ -280,10 +286,10 @@ public int getComponentCount() {
 }
 
 public Component[] getComponents () {
-	Component ca[] = new Component[nChildren];
+	Component ca[] = new Component[ncomponents];
 	
-	if ( nChildren > 0 )
-		System.arraycopy( children, 0, ca, 0, nChildren);
+	if ( ncomponents > 0 )
+		System.arraycopy( component, 0, ca, 0, ncomponents);
 	
 	return ca;
 }
@@ -293,12 +299,12 @@ public Insets getInsets () {
 }
 
 public LayoutManager getLayout () {
-	return (layoutm);
+	return (layoutMgr);
 }
 
 public Dimension getMaximumSize () {
-	if (layoutm instanceof LayoutManager2) {
-		return (((LayoutManager2)layoutm).maximumLayoutSize(this));
+	if (layoutMgr instanceof LayoutManager2) {
+		return (((LayoutManager2)layoutMgr).maximumLayoutSize(this));
 	}
 	else {
 		return (super.getMaximumSize());
@@ -314,8 +320,8 @@ public Dimension getPreferredSize () {
 }
 
 boolean hasDirties () {
-	for ( int i=0; i<nChildren; i++ ) {
-		Component c = children[i];
+	for ( int i=0; i<ncomponents; i++ ) {
+		Component c = component[i];
 		
 		if ( (c.flags & IS_DIRTY) != 0 )
 			return true;
@@ -331,8 +337,8 @@ boolean hasDirties () {
 
 public void hide () {
 	if ( (flags & IS_PARENT_SHOWING) != 0){
-		for ( int i=0; i<nChildren; i++ ) {
-			Component c = children[i];
+		for ( int i=0; i<ncomponents; i++ ) {
+			Component c = component[i];
 			
 			c.flags &= ~IS_PARENT_SHOWING;
 			if ( (c.flags & IS_VISIBLE) != 0 )
@@ -359,8 +365,8 @@ public void invalidate () {
 	synchronized ( treeLock ) {
 		if ( (flags & IS_VALID) != 0 ) {
 			// apparently, the JDK does inform the layout *before* invalidation
-			if ( layoutm instanceof LayoutManager2 ) {
-				((LayoutManager2)layoutm).invalidateLayout( this);
+			if ( layoutMgr instanceof LayoutManager2 ) {
+				((LayoutManager2)layoutMgr).invalidateLayout( this);
 			}
 		
 			flags &= ~IS_VALID;
@@ -389,9 +395,9 @@ public void layout() {
 	synchronized ( treeLock ) {
 
     // swing books need layout even without children
-		if ( (layoutm != null) && ((flags & IS_LAYOUTING) == 0) ) {
+		if ( (layoutMgr != null) && ((flags & IS_LAYOUTING) == 0) ) {
 			flags |= IS_LAYOUTING;
-			layoutm.layoutContainer( this);
+			layoutMgr.layoutContainer( this);
 			flags &= ~IS_LAYOUTING;
 		}
 	}
@@ -421,8 +427,8 @@ public Component locate ( int x, int y ) {
 	if ( !isShowing() || (x<0) || (x > this.x+width) || (y<0) || (y > this.y+height) )
 		return null;
 		
-	for ( int i=0; i<nChildren; i++ ) {
-		c = children[i];
+	for ( int i=0; i<ncomponents; i++ ) {
+		c = component[i];
 		if ( c.contains( x - c.x, y - c.y)) {
 			return (c.isShowing() ? c : this);
 		}
@@ -435,8 +441,8 @@ void markRepaints ( int ux, int uy, int uw, int uh ) {
 	int uxw = ux + uw;
 	int uyh = uy + uh;
 
-	for ( int i=0; i<nChildren; i++ ) {
-		Component c = children[i];
+	for ( int i=0; i<ncomponents; i++ ) {
+		Component c = component[i];
 
 		if ( (c.flags & IS_VISIBLE) != 0 ){
 			int cxw = c.x + c.width;
@@ -464,8 +470,8 @@ void markRepaints ( int ux, int uy, int uw, int uh ) {
  * @deprecated, use getMinimumSize()
  */
 public Dimension minimumSize () {
-	if ( layoutm != null ) {
-		return layoutm.minimumLayoutSize( this);
+	if ( layoutMgr != null ) {
+		return layoutMgr.minimumLayoutSize( this);
 	}
 	else {
 		return super.minimumSize();
@@ -478,8 +484,8 @@ public void paint ( Graphics g ) {
 
 	validateTree();
 
-	for ( int i=nChildren-1; i>=0; i-- ) {
-		Component c = children[i];
+	for ( int i=ncomponents-1; i>=0; i-- ) {
+		Component c = component[i];
 
 		if ( (c.flags & IS_VISIBLE) != 0 ) {
 			g.paintChild( c, (flags & IS_IN_UPDATE) != 0);
@@ -503,8 +509,8 @@ protected String paramString() {
  * @deprecated, use getPreferredSize().
  */
 public Dimension preferredSize () {
-	if ( layoutm != null ) {
-		return (layoutm.preferredLayoutSize(this));
+	if ( layoutMgr != null ) {
+		return (layoutMgr.preferredLayoutSize(this));
 	}
 	else {
 		return (super.preferredSize());
@@ -555,8 +561,8 @@ void processPaintEvent ( int id, int ux, int uy, int uw, int uh ) {
 void propagateBgClr ( Color clr ) {
 	bgClr = clr;
 
-	for ( int i=0; i<nChildren; i++ ){
-		Component c = children[i];
+	for ( int i=0; i<ncomponents; i++ ){
+		Component c = component[i];
 		if ( (c.flags & IS_BG_COLORED) == 0 ){
 			c.propagateBgClr( clr);
 		}
@@ -566,8 +572,8 @@ void propagateBgClr ( Color clr ) {
 void propagateFgClr ( Color clr ) {
 	fgClr = clr;
 
-	for ( int i=0; i<nChildren; i++ ){
-		Component c = children[i];
+	for ( int i=0; i<ncomponents; i++ ){
+		Component c = component[i];
 		if ( (c.flags & IS_FG_COLORED) == 0 ){
 			c.propagateFgClr( clr);
 		}
@@ -577,8 +583,8 @@ void propagateFgClr ( Color clr ) {
 void propagateFont ( Font fnt ) {
 	font = fnt;
 
-	for ( int i=0; i<nChildren; i++ ){
-		Component c = children[i];
+	for ( int i=0; i<ncomponents; i++ ){
+		Component c = component[i];
 		if ( (c.flags & IS_FONTIFIED) == 0 ){
 			c.propagateFont( fnt);
 		}
@@ -590,15 +596,15 @@ void propagateParentShowing ( boolean isTemporary ) {
 		return;
 
 	if ( (flags & IS_PARENT_SHOWING) != 0 ) {
-		for ( int i=0; i<nChildren; i++ ){
-			children[i].flags |= IS_PARENT_SHOWING;
-			children[i].propagateParentShowing( isTemporary);
+		for ( int i=0; i<ncomponents; i++ ){
+			component[i].flags |= IS_PARENT_SHOWING;
+			component[i].propagateParentShowing( isTemporary);
 		}
 	}
 	else {
-		for ( int i=0; i<nChildren; i++ ){
-			children[i].flags &= ~IS_PARENT_SHOWING;
-			children[i].propagateParentShowing( isTemporary);
+		for ( int i=0; i<ncomponents; i++ ){
+			component[i].flags &= ~IS_PARENT_SHOWING;
+			component[i].propagateParentShowing( isTemporary);
 		}
 	}
 	
@@ -610,8 +616,8 @@ void propagateParentShowing ( boolean isTemporary ) {
 }
 
 void propagateReshape () {
-	for ( int i=0; i<nChildren; i++ ){
-		children[i].propagateReshape();
+	for ( int i=0; i<ncomponents; i++ ){
+		component[i].propagateReshape();
 	}
 	
 	// notify resident Graphics objects
@@ -622,15 +628,15 @@ void propagateReshape () {
 void propagateTempEnabled ( boolean isEnabled ) {
 	super.propagateTempEnabled ( isEnabled );
 
-	for ( int i=0; i<nChildren; i++ ){
-		children[i].propagateTempEnabled( isEnabled);
+	for ( int i=0; i<ncomponents; i++ ){
+		component[i].propagateTempEnabled( isEnabled);
 	}
 }
 
 public void remove ( Component c ) {
 	// usually children are added/removed in a stack like fashion
-	for ( int i=nChildren-1; i>=0; i-- ){
-		if ( children[i] == c ) {
+	for ( int i=ncomponents-1; i>=0; i-- ){
+		if ( component[i] == c ) {
 			remove(i);
 			break;
 		}
@@ -639,29 +645,29 @@ public void remove ( Component c ) {
 
 public void remove ( int index ) {
 	synchronized ( treeLock ) {
-		int n = nChildren - 1;
+		int n = ncomponents - 1;
 
 		if (index < 0 && index > n) {
 			return;
 		}
 		
-		Component c = children[index];
+		Component c = component[index];
 
 		if ( (c.flags & IS_ADD_NOTIFIED) != 0 ){
 			c.removeNotify();
 		}
 
-		if ( layoutm != null ) {
-			layoutm.removeLayoutComponent( c);
+		if ( layoutMgr != null ) {
+			layoutMgr.removeLayoutComponent( c);
 		}
 
 		// Remove from container
 		c.parent = null;
 		if (index > -1 && index < n) {
-			System.arraycopy(children, index+1, children, index, n-index);
+			System.arraycopy(component, index+1, component, index, n-index);
 		}
-		children[n] = null;
-		nChildren--;
+		component[n] = null;
+		ncomponents--;
 
 		if ( (cntrListener != null) || (eventMask & AWTEvent.CONTAINER_EVENT_MASK) != 0 ){
 			AWTEvent.sendEvent( ContainerEvt.getEvent( this,
@@ -686,18 +692,18 @@ public void removeAll () {
 	// let's try to do some upfront paint solicitation in case we have
 	// a lot of children (note that we have to call remove(idx) since it
 	// might be reimplemented in a derived class)
-	if ( nChildren > 3 ) {
+	if ( ncomponents > 3 ) {
 		int oldFlags = flags;
 		flags &= ~IS_VISIBLE;
 
-		for ( int i = nChildren-1; i >= 0; i-- )
+		for ( int i = ncomponents-1; i >= 0; i-- )
 			remove(i);
 
 		flags = oldFlags;
 		repaint();
 	}
 	else {	
-		for ( int i = nChildren-1; i >= 0; i-- )
+		for ( int i = ncomponents-1; i >= 0; i-- )
 			remove(i);
 	}
 }
@@ -708,16 +714,16 @@ public void removeContainerListener ( ContainerListener listener ) {
 
 public void removeNotify() {
 	// removeNotify children first (symmetric to addNotify)
-	for ( int i=0; i<nChildren; i++ ) {
-		if ( (children[i].flags & IS_ADD_NOTIFIED) != 0 ) {
-			children[i].removeNotify();
+	for ( int i=0; i<ncomponents; i++ ) {
+		if ( (component[i].flags & IS_ADD_NOTIFIED) != 0 ) {
+			component[i].removeNotify();
 		}
 	}
 	super.removeNotify();
 }
 
 public void setLayout ( LayoutManager newLayout ) {
-	layoutm = newLayout;
+	layoutMgr = newLayout;
 	
 	// this doesn't directly cause a doLayout in JDK, it just enables it
 	if ( (flags & IS_VALID) != 0)
@@ -727,8 +733,8 @@ public void setLayout ( LayoutManager newLayout ) {
 public void show () {
 	// we have to propagate first to enable subsequent child drawing by super.show()
 	if ( (flags & IS_PARENT_SHOWING) != 0){
-		for ( int i=0; i<nChildren; i++ ) {
-			Component c = children[i];
+		for ( int i=0; i<ncomponents; i++ ) {
+			Component c = component[i];
 			
 			c.flags |= IS_PARENT_SHOWING;
 			if ( (c.flags & IS_VISIBLE) != 0 )
@@ -762,8 +768,8 @@ public void validate() {
 protected void validateTree () {
 	doLayout();
 	
-	for ( int i=0; i<nChildren; i++ )
-		children[i].validate();
+	for ( int i=0; i<ncomponents; i++ )
+		component[i].validate();
 }
 
 
@@ -812,15 +818,15 @@ protected void validateTree () {
         int currentIndex = getComponentZOrder(comp);
         if (currentIndex < index)
           {
-            System.arraycopy(children, currentIndex + 1, children,
+            System.arraycopy(component, currentIndex + 1, component,
                              currentIndex, index - currentIndex);
           }
         else
           {
-            System.arraycopy(children, index, children, index + 1,
+            System.arraycopy(component, index, component, index + 1,
                              currentIndex - index);
           }
-        children[index] = comp;
+        component[index] = comp;
       }
   }
 
@@ -840,11 +846,11 @@ protected void validateTree () {
   public final int getComponentZOrder(Component comp)
   {
     int index = -1;
-    if (children != null)
+    if (component != null)
       {
-        for (int i = 0; i < children.length; i++)
+        for (int i = 0; i < component.length; i++)
           {
-            if (children[i] == comp)
+            if (component[i] == comp)
               {
                 index = i;
                 break;

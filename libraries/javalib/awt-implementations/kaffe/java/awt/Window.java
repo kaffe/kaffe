@@ -218,7 +218,7 @@ void process ( FocusEvent event ) {
 		// thread which processed the FOCUS_GAINED) to avoid any interference with popup focus
 		// transitions. This is because we might otherwise get a out-of-order focus event:
 		// (popup1-lost -> owner-gained ->post forward , popup2-gained, forward-gained ->popup2-lost)
-		if ( (nChildren > 0) && !Toolkit.eventQueue.hasPendingEvents( null, FocusEvt.FOCUS_GAINED) ) {
+		if ( (ncomponents > 0) && !Toolkit.eventQueue.hasPendingEvents( null, FocusEvt.FOCUS_GAINED) ) {
 			c = ShortcutHandler.focusNext( this);
 			if ( (c != null) && (c != this) ) {
 				AWTEvent.sendEvent( FocusEvt.getEvent( c, FocusEvt.FOCUS_GAINED, false), true);

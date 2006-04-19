@@ -80,8 +80,8 @@ static Component computeMouseTarget ( Container toplevel, int x, int y ) {
 	}
 
 	i = 0;
-	while (i < cntr.nChildren) {
-		c = cntr.children[i];
+	while (i < cntr.ncomponents) {
+		c = cntr.component[i];
 
 		if ( ((c.flags & Component.IS_SHOWING) == Component.IS_SHOWING) &&
 		     (x >= c.x) && (y >= c.y) && (x <= (c.x+c.width)) && (y <= (c.y+c.height)) ) {

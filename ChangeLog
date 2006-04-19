@@ -1,3 +1,12 @@
+2006-04-19  Riccardo Mottola <riccardo@kaffe.org>
+	* libraries/javalib/awt-implementations/kaffe/java/awt/Container.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/Frame.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/MouseEvt.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/ScrollPane.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/ShortcutHandler.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/Window.java:
+	renamed Container fields to match classpath.
+
 2006-04-19  Dalibor Topic  <robilad@kaffe.org>
 
 	* TODO: Added inflate module removal task.

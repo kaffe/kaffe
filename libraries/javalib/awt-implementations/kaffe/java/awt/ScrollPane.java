@@ -65,7 +65,7 @@ class ChildWrapper
   extends Container
 {
 ChildWrapper () {
-	this.layoutm = null;
+	this.layoutMgr = null;
 }
 
 public void doLayout () {
@@ -84,7 +84,7 @@ public ScrollPane ( int policy ) {
 	if (GraphicsEnvironment.isHeadless ())
 		throw new HeadlessException ();
 
-	layoutm = null;
+	layoutMgr = null;
 	int bw = BORDER_WIDTH;
 	
 	if ( (policy >= 0) && (policy <= 2) )
@@ -482,7 +482,7 @@ public void paint ( Graphics g ) {
 }
 
 public void remove ( int idx ) {
-	if (children[idx] == wrapper) {
+	if (component[idx] == wrapper) {
 		wrapper.remove(child);
 	}
  }

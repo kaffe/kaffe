@@ -83,11 +83,11 @@ static Component focusNext( Container co, Component cur ) {
 	int i=-1;
 
 	if ( cur != null ){
-		for ( i=0; (i<co.nChildren) && (co.children[i] != cur); i++ );
+		for ( i=0; (i<co.ncomponents) && (co.component[i] != cur); i++ );
 	}
 	
-	for ( i++; i < co.nChildren; i++ ){
-		c = co.children[i];
+	for ( i++; i < co.ncomponents; i++ ){
+		c = co.component[i];
 		if ( c instanceof Container ) {
 			if ( ((c.flags & Component.IS_NATIVE_LIKE) == 0) || (c instanceof Panel) ){
 				Component cc = focusNext( (Container)c, null);
@@ -124,14 +124,14 @@ static Component focusPrev ( Container w ) {
 
 static Component focusPrev( Container co, Component cur ) {
 	Component c;
-	int i=co.nChildren;
+	int i=co.ncomponents;
 
 	if ( cur != null ){
-		for ( i=co.nChildren-1; (i>=0) && (co.children[i] != cur); i-- );
+		for ( i=co.ncomponents-1; (i>=0) && (co.component[i] != cur); i-- );
 	}
 	
 	for ( i--; i >= 0; i-- ){
-		c = co.children[i];
+		c = co.component[i];
 		if ( c instanceof Container ) {
 			if ( ((c.flags & Component.IS_NATIVE_LIKE) == 0) || (c instanceof Panel) ){
 				Component cc = focusPrev( (Container)c, null);
