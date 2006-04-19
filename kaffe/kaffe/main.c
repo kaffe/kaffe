@@ -5,6 +5,9 @@
  * Copyright (c) 1996-2000
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2006
+ *      Kaffe.org contributors. See ChangeLog for details.
+ *
  * Cross-language profiling changes contributed by
  * the Flux Research Group, Department of Computer Science,
  * University of Utah, http://www.cs.utah.edu/flux/
@@ -69,7 +72,6 @@ static size_t parseSize(char*);
 static int checkException(JNIEnv* env);
 static int main2(JNIEnv* env, char *argv[], int farg, int argc);
 
-#define	KAFFEHOME	"KAFFEHOME"
 #define	CLASSPATH1	"KAFFECLASSPATH"
 #define	LIBRARYPATH1	"KAFFELIBRARYPATH"
 

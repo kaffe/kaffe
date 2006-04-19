@@ -1,3 +1,17 @@
+2006-04-20  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffe/main.c (KAFFEHOME): Removed duplicate definition.
+
+	* kaffe/kaffevm/external.c: Only include system.h once.
+
+	* include/system.h (kaffe_version, kaffe_vm_vendor, kaffe_vendor) 
+	(kaffe_vendor_url_bug, kaffe_vendor_url) 
+	(kaffe_vm_specification_version, kaffe_vm_specification_vendor) 
+	(kaffe_vm_specification_name, kaffe_vm_version, kaffe_vm_name) 
+	(kaffe_specification_version, kaffe_specification_vendor) 
+	(kaffe_specification_name, kaffe_class_version) 
+	(KAFFECLASSPATH): Removed unused defines.
+
 2006-04-19  Riccardo Mottola <riccardo@kaffe.org>
 	* libraries/javalib/awt-implementations/kaffe/java/awt/Container.java,
 	libraries/javalib/awt-implementations/kaffe/java/awt/Frame.java,
