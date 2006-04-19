@@ -1,3 +1,9 @@
+2006-04-19  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/inflate.h (inflate_new): Removed prototype.
+
+	* kaffe/kaffevm/inflate.c (inflate_new): Made static.
+
 2006-04-19  Riccardo Mottola <riccardo@kaffe.org>
 
 	* kaffe/libraries/javalib/awt-implementations/kaffe/java/awt/AWTEventMulticaster.java:

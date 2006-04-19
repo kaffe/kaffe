@@ -519,6 +519,7 @@ inflate_block(inflateInfo* pG, int* e)
 /*
  * Create a new inflater.
  */
+static
 inflateInfo*
 inflate_new(void)
 {
