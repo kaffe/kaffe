@@ -1,5 +1,10 @@
 2006-04-19  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/inflate.h: (inflateInfo) Moved over ...
+	* kaffe/kaffevm/inflate.c: (inflateInfo) ... here.
+
+2006-04-19  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/inflate.h (inflate_free): Removed prototype.
 
 	* kaffe/kaffevm/inflate.c (inflate_free): Made static. 

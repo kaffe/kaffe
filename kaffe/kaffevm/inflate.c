@@ -22,6 +22,9 @@
 #include "gc.h"
 #include "inflate.h"
 
+#include <sys/types.h>
+
+
 #define	WSIZE	0x8000
 
 typedef struct _huft {
@@ -32,6 +35,22 @@ typedef struct _huft {
 		struct _huft* t;/* pointer to next level of table */
 	} v;
 } huft;
+
+typedef struct _inflateInfo {
+	uint8*		slide;
+	unsigned 	hufts;		/* track memory usage */
+	struct _huft*	fixed_tl;
+	struct _huft*	fixed_td;
+	size_t		fixed_bl;
+	size_t		fixed_bd;
+	unsigned	wp;		/* current position in slide */
+	uint32		bb;		/* bit buffer */
+	unsigned	bk;		/* bits in bit buffer */
+	uint8*		inbuf;
+	size_t		insz;
+	uint8*		outbuf;
+	size_t		outsz;
+} inflateInfo;
 
 static int inflate_codes(inflateInfo*, huft*, huft*, size_t, size_t);
 static int inflate_stored(inflateInfo*);
