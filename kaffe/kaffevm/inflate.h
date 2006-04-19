@@ -34,7 +34,6 @@ typedef struct _inflateInfo {
 	size_t		outsz;
 } inflateInfo;
 
-extern int inflate_free(inflateInfo*);
 extern int inflate_oneshot(uint8*, int, uint8*, int);
 
 #endif

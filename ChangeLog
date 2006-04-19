@@ -1,5 +1,12 @@
 2006-04-19  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/inflate.h (inflate_free): Removed prototype.
+
+	* kaffe/kaffevm/inflate.c (inflate_free): Made static. 
+	Moved up in the file so that it's defined before use.
+
+2006-04-19  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/inflate.h (inflate_new): Removed prototype.
 
 	* kaffe/kaffevm/inflate.c (inflate_new): Made static.

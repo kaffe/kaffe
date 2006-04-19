@@ -542,6 +542,23 @@ inflate_new(void)
 	return (info);
 }
 
+static
+int
+inflate_free(inflateInfo* pG)
+{
+  if (pG != 0) {
+    if (pG->fixed_tl != 0) {
+      huft_free(pG->fixed_td);
+      huft_free(pG->fixed_tl);
+      pG->fixed_td = pG->fixed_tl = NULL;
+    }
+    gc_free(pG->slide);
+    gc_free(pG);
+  }
+
+  return 0;
+}
+
 /*
  * We pass in a buffer of deflated data and a place to stored the inflated
  * result.  This does not provide continuous operation and should only be
@@ -607,23 +624,6 @@ inflate(inflateInfo* pG)
   IDBG(dprintf("\n%u bytes in Huffman tables (%d/entry)\n", h * sizeof(huft), sizeof(huft)));
   return 0;
 }
-
-int
-inflate_free(inflateInfo* pG)
-{
-  if (pG != 0) {
-    if (pG->fixed_tl != 0) {
-      huft_free(pG->fixed_td);
-      huft_free(pG->fixed_tl);
-      pG->fixed_td = pG->fixed_tl = NULL;
-    }
-    gc_free(pG->slide);
-    gc_free(pG);
-  }
-
-  return 0;
-}
-
 
 /* If BMAX needs to be larger than 16, then h and x[] should be uint32. */
 #define BMAX 16         /* maximum bit length of any code (16 for explode) */
