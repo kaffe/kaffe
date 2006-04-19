@@ -1,5 +1,9 @@
 2006-04-19  Dalibor Topic  <robilad@kaffe.org>
 
+	* TODO: Added inflate module removal task.
+
+2006-04-19  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/inflate.h: (inflateInfo) Moved over ...
 	* kaffe/kaffevm/inflate.c: (inflateInfo) ... here.
 
