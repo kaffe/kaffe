@@ -16,8 +16,6 @@
 * Integration issues
  * Merge in libffi
  * Add support for using an external gjdoc.
- * Replace inflate_oneshot by uncompress helper function from zlib. 
-   That would allow us to remove the inflate.[ch] files for good.
 
 * Merging work:
   * From GNU Classpath:

@@ -1,5 +1,9 @@
 2006-04-21  Dalibor Topic  <robilad@kaffe.org>
 
+	* TODO: Removed inflate_oneshot task.
+
+2006-04-21  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffeh/Makefile.am (GEN_SRCS): Removed inflate.c
 	Link with zlib and add its includes to CPPFLAGS.
 
