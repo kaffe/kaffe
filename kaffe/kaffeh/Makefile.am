@@ -6,13 +6,21 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
+if COND_SYSTEM_ZLIB
+LINKED_ZIP_LIBS=$(ZIP_LIBS)
+else
+LINKED_ZIP_LIBS=../../external/gcc/zlib/libz.la
+MAYBE_INTERNAL_ZIP_INCLUDES=-I$(srcdir)/../../external/gcc/zlib/
+endif
+
 AM_CPPFLAGS = \
 	-I../kaffevm \
 	-I$(srcdir)/../kaffevm \
 	-DKAFFEH \
 	-I$(top_builddir)/include \
 	-I$(top_builddir)/config \
-	-I$(top_srcdir)/kaffe/kaffevm/jni 
+	-I$(top_srcdir)/kaffe/kaffevm/jni \
+	$(MAYBE_INTERNAL_ZIP_INCLUDES)
 
 bin_PROGRAMS = kaffeh
 
@@ -20,7 +28,6 @@ GEN_SRCS = \
 	constants.c \
 	debug.c \
 	file.c \
-	inflate.c \
 	jar.c \
 	readClass.c \
 	utf8const.c \
@@ -31,7 +38,9 @@ DISTCLEANFILES = $(GEN_SRCS)
 kaffeh_CFLAGS = \
 	$(CFLAGS_PG)
 
-kaffeh_LDADD= $(LTLIBINTL)
+kaffeh_LDADD = \
+	$(LTLIBINTL) \
+	$(LINKED_ZIP_LIBS)
 
 kaffeh_SOURCES = \
 	main.c \

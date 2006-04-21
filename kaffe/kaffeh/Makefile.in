@@ -81,13 +81,16 @@ PROGRAMS = $(bin_PROGRAMS)
 am_kaffeh_OBJECTS = kaffeh-main.$(OBJEXT) kaffeh-mem.$(OBJEXT) \
 	kaffeh-sigs.$(OBJEXT) kaffeh-support.$(OBJEXT)
 am__objects_1 = kaffeh-constants.$(OBJEXT) kaffeh-debug.$(OBJEXT) \
-	kaffeh-file.$(OBJEXT) kaffeh-inflate.$(OBJEXT) \
-	kaffeh-jar.$(OBJEXT) kaffeh-readClass.$(OBJEXT) \
-	kaffeh-utf8const.$(OBJEXT) kaffeh-binreloc.$(OBJEXT)
+	kaffeh-file.$(OBJEXT) kaffeh-jar.$(OBJEXT) \
+	kaffeh-readClass.$(OBJEXT) kaffeh-utf8const.$(OBJEXT) \
+	kaffeh-binreloc.$(OBJEXT)
 nodist_kaffeh_OBJECTS = $(am__objects_1)
 kaffeh_OBJECTS = $(am_kaffeh_OBJECTS) $(nodist_kaffeh_OBJECTS)
 am__DEPENDENCIES_1 =
-kaffeh_DEPENDENCIES = $(am__DEPENDENCIES_1)
+@COND_SYSTEM_ZLIB_FALSE@am__DEPENDENCIES_2 =  \
+@COND_SYSTEM_ZLIB_FALSE@	../../external/gcc/zlib/libz.la
+@COND_SYSTEM_ZLIB_TRUE@am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1)
+kaffeh_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_2)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
 am__depfiles_maybe = depfiles
@@ -376,19 +379,22 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
+@COND_SYSTEM_ZLIB_FALSE@LINKED_ZIP_LIBS = ../../external/gcc/zlib/libz.la
+@COND_SYSTEM_ZLIB_TRUE@LINKED_ZIP_LIBS = $(ZIP_LIBS)
+@COND_SYSTEM_ZLIB_FALSE@MAYBE_INTERNAL_ZIP_INCLUDES = -I$(srcdir)/../../external/gcc/zlib/
 AM_CPPFLAGS = \
 	-I../kaffevm \
 	-I$(srcdir)/../kaffevm \
 	-DKAFFEH \
 	-I$(top_builddir)/include \
 	-I$(top_builddir)/config \
-	-I$(top_srcdir)/kaffe/kaffevm/jni 
+	-I$(top_srcdir)/kaffe/kaffevm/jni \
+	$(MAYBE_INTERNAL_ZIP_INCLUDES)
 
 GEN_SRCS = \
 	constants.c \
 	debug.c \
 	file.c \
-	inflate.c \
 	jar.c \
 	readClass.c \
 	utf8const.c \
@@ -398,7 +404,10 @@ DISTCLEANFILES = $(GEN_SRCS)
 kaffeh_CFLAGS = \
 	$(CFLAGS_PG)
 
-kaffeh_LDADD = $(LTLIBINTL)
+kaffeh_LDADD = \
+	$(LTLIBINTL) \
+	$(LINKED_ZIP_LIBS)
+
 kaffeh_SOURCES = \
 	main.c \
 	mem.c \
@@ -487,7 +496,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kaffeh-constants.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kaffeh-debug.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kaffeh-file.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kaffeh-inflate.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kaffeh-jar.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kaffeh-main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kaffeh-mem.Po@am__quote@
@@ -614,20 +622,6 @@ kaffeh-file.obj: file.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='file.c' object='kaffeh-file.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(kaffeh_CFLAGS) $(CFLAGS) -c -o kaffeh-file.obj `if test -f 'file.c'; then $(CYGPATH_W) 'file.c'; else $(CYGPATH_W) '$(srcdir)/file.c'; fi`
-
-kaffeh-inflate.o: inflate.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(kaffeh_CFLAGS) $(CFLAGS) -MT kaffeh-inflate.o -MD -MP -MF "$(DEPDIR)/kaffeh-inflate.Tpo" -c -o kaffeh-inflate.o `test -f 'inflate.c' || echo '$(srcdir)/'`inflate.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/kaffeh-inflate.Tpo" "$(DEPDIR)/kaffeh-inflate.Po"; else rm -f "$(DEPDIR)/kaffeh-inflate.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='inflate.c' object='kaffeh-inflate.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(kaffeh_CFLAGS) $(CFLAGS) -c -o kaffeh-inflate.o `test -f 'inflate.c' || echo '$(srcdir)/'`inflate.c
-
-kaffeh-inflate.obj: inflate.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(kaffeh_CFLAGS) $(CFLAGS) -MT kaffeh-inflate.obj -MD -MP -MF "$(DEPDIR)/kaffeh-inflate.Tpo" -c -o kaffeh-inflate.obj `if test -f 'inflate.c'; then $(CYGPATH_W) 'inflate.c'; else $(CYGPATH_W) '$(srcdir)/inflate.c'; fi`; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/kaffeh-inflate.Tpo" "$(DEPDIR)/kaffeh-inflate.Po"; else rm -f "$(DEPDIR)/kaffeh-inflate.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='inflate.c' object='kaffeh-inflate.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(kaffeh_CFLAGS) $(CFLAGS) -c -o kaffeh-inflate.obj `if test -f 'inflate.c'; then $(CYGPATH_W) 'inflate.c'; else $(CYGPATH_W) '$(srcdir)/inflate.c'; fi`
 
 kaffeh-jar.o: jar.c
 @am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(kaffeh_CFLAGS) $(CFLAGS) -MT kaffeh-jar.o -MD -MP -MF "$(DEPDIR)/kaffeh-jar.Tpo" -c -o kaffeh-jar.o `test -f 'jar.c' || echo '$(srcdir)/'`jar.c; \

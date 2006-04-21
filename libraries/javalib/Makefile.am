@@ -219,7 +219,6 @@ EXTRA_DIST= \
 	vmspecific/java/io/VMFile.java \
 	vmspecific/java/io/VMObjectInputStream.java \
 	vmspecific/java/io/VMObjectStreamClass.java \
-	vmspecific/java/lang/Class.java \
 	vmspecific/java/lang/Runtime.java \
 	vmspecific/java/lang/String.java \
 	vmspecific/java/lang/VMClass.java \
@@ -246,6 +245,7 @@ EXTRA_DIST= \
 	vmspecific/java/nio/VMDirectByteBuffer.java \
 	vmspecific/java/nio/channels/VMChannels.java \
 	vmspecific/java/security/VMAccessController.java \
+	vmspecific/java/security/VMSecureRandom.java \
 	vmspecific/java/util/VMTimeZone.java \
 	vmspecific/java/util/mime/MimeType.java \
 	vmspecific/java/util/mime/MimeTypeParameterList.java \

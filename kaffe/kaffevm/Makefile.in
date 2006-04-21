@@ -92,6 +92,9 @@ am__DEPENDENCIES_3 = $(am__DEPENDENCIES_1) $(ENGINE_NAME)/libengine.la \
 	$(am__DEPENDENCIES_2) systems/$(THREAD_SYSTEM)/libkthread.la \
 	verifier/libkaffeverifier.la $(GC_NAME)/libkaffegc.la \
 	jni/libkaffejni.la $(top_builddir)/replace/libreplace.la
+@COND_SYSTEM_ZLIB_FALSE@am__DEPENDENCIES_4 =  \
+@COND_SYSTEM_ZLIB_FALSE@	../../external/gcc/zlib/libz.la
+@COND_SYSTEM_ZLIB_TRUE@am__DEPENDENCIES_4 = $(am__DEPENDENCIES_1)
 am_libkaffevm_la_OBJECTS = libkaffevm_la-access.lo \
 	libkaffevm_la-baseClasses.lo libkaffevm_la-classMethod.lo \
 	libkaffevm_la-classPool.lo libkaffevm_la-code-analyse.lo \
@@ -100,17 +103,16 @@ am_libkaffevm_la_OBJECTS = libkaffevm_la-access.lo \
 	libkaffevm_la-external.lo libkaffevm_la-file.lo \
 	libkaffevm_la-findInJar.lo libkaffevm_la-fp.lo \
 	libkaffevm_la-gc.lo libkaffevm_la-hashtab.lo \
-	libkaffevm_la-inflate.lo libkaffevm_la-itypes.lo \
-	libkaffevm_la-jar.lo libkaffevm_la-ksem.lo \
-	libkaffevm_la-locks.lo libkaffevm_la-lookup.lo \
-	libkaffevm_la-object.lo libkaffevm_la-readClass.lo \
-	libkaffevm_la-soft.lo libkaffevm_la-stackTrace.lo \
-	libkaffevm_la-stats.lo libkaffevm_la-string.lo \
-	libkaffevm_la-stringParsing.lo libkaffevm_la-support.lo \
-	libkaffevm_la-javacall.lo libkaffevm_la-thread.lo \
-	libkaffevm_la-utf8const.lo libkaffevm_la-gcFuncs.lo \
-	libkaffevm_la-reflect.lo libkaffevm_la-reference.lo \
-	libkaffevm_la-binreloc.lo
+	libkaffevm_la-itypes.lo libkaffevm_la-jar.lo \
+	libkaffevm_la-ksem.lo libkaffevm_la-locks.lo \
+	libkaffevm_la-lookup.lo libkaffevm_la-object.lo \
+	libkaffevm_la-readClass.lo libkaffevm_la-soft.lo \
+	libkaffevm_la-stackTrace.lo libkaffevm_la-stats.lo \
+	libkaffevm_la-string.lo libkaffevm_la-stringParsing.lo \
+	libkaffevm_la-support.lo libkaffevm_la-javacall.lo \
+	libkaffevm_la-thread.lo libkaffevm_la-utf8const.lo \
+	libkaffevm_la-gcFuncs.lo libkaffevm_la-reflect.lo \
+	libkaffevm_la-reference.lo libkaffevm_la-binreloc.lo
 am__objects_1 = libkaffevm_la-md.lo
 nodist_libkaffevm_la_OBJECTS = $(am__objects_1)
 libkaffevm_la_OBJECTS = $(am_libkaffevm_la_OBJECTS) \
@@ -409,6 +411,9 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
+@COND_SYSTEM_ZLIB_FALSE@LINKED_ZIP_LIBS = ../../external/gcc/zlib/libz.la
+@COND_SYSTEM_ZLIB_TRUE@LINKED_ZIP_LIBS = $(ZIP_LIBS)
+@COND_SYSTEM_ZLIB_FALSE@MAYBE_INTERNAL_ZIP_INCLUDES = -I$(srcdir)/../../external/gcc/zlib/
 SUBDIRS = $(ENGINE_NAME) systems $(GC_NAME) gcj verifier jni
 DIST_SUBDIRS = boehm-gc kaffe-gc intrp jit jit3 systems gcj verifier jni
 EXTRA_DIST = \
@@ -427,7 +432,8 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/kaffe/xprof \
 	-I$(top_builddir)/include \
 	-I$(top_srcdir)/kaffe/kaffevm/verifier \
-	-I$(top_srcdir)/kaffe/kaffevm/jni
+	-I$(top_srcdir)/kaffe/kaffevm/jni \
+	$(MAYBE_INTERNAL_ZIP_INCLUDES)
 
 native_LTLIBRARIES = libkaffevm.la
 @HAVE_GCJ_SUPPORT_FALSE@libgcj = #
@@ -458,7 +464,8 @@ libkaffevm_la_DEPENDENCIES = \
 libkaffevm_la_LIBADD = \
 	$(libkaffevm_la_DEPENDENCIES) \
 	$(VM_LIBS) \
-	$(M_LIBS)
+	$(M_LIBS) \
+	$(LINKED_ZIP_LIBS)
 
 libkaffevm_la_GEN_SRCS = \
 	md.c
@@ -482,7 +489,6 @@ libkaffevm_la_SOURCES = \
 	fp.c \
 	gc.c \
 	hashtab.c \
-	inflate.c \
 	itypes.c \
 	jar.c \
 	ksem.c \
@@ -521,7 +527,6 @@ noinst_HEADERS = \
 	gc.h \
 	gtypes.h \
 	hashtab.h \
-	inflate.h \
 	itypes.h \
 	jar.h \
 	ksem.h \
@@ -632,7 +637,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-gc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-gcFuncs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-hashtab.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-inflate.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-itypes.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-jar.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-javacall.Plo@am__quote@
@@ -778,13 +782,6 @@ libkaffevm_la-hashtab.lo: hashtab.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='hashtab.c' object='libkaffevm_la-hashtab.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-hashtab.lo `test -f 'hashtab.c' || echo '$(srcdir)/'`hashtab.c
-
-libkaffevm_la-inflate.lo: inflate.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-inflate.lo -MD -MP -MF "$(DEPDIR)/libkaffevm_la-inflate.Tpo" -c -o libkaffevm_la-inflate.lo `test -f 'inflate.c' || echo '$(srcdir)/'`inflate.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libkaffevm_la-inflate.Tpo" "$(DEPDIR)/libkaffevm_la-inflate.Plo"; else rm -f "$(DEPDIR)/libkaffevm_la-inflate.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='inflate.c' object='libkaffevm_la-inflate.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-inflate.lo `test -f 'inflate.c' || echo '$(srcdir)/'`inflate.c
 
 libkaffevm_la-itypes.lo: itypes.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-itypes.lo -MD -MP -MF "$(DEPDIR)/libkaffevm_la-itypes.Tpo" -c -o libkaffevm_la-itypes.lo `test -f 'itypes.c' || echo '$(srcdir)/'`itypes.c; \

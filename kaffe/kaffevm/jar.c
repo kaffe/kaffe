@@ -17,11 +17,12 @@
 #include "config-mem.h"
 #include "gtypes.h"
 #include "jsyscall.h"
-#include "inflate.h"
 #include "jar.h"
 #include "gc.h"
 #include "stats.h"
 #include "files.h"
+
+#include <zlib.h>
 
 /* Undefine this to make jar files mutable during the vm lifetime */
 /* #define STATIC_JAR_FILES */
@@ -876,6 +877,69 @@ static int readJarEntries(jarFile *jf)
 	return( retval );
 }
 
+/** 
+ * Inflate a buffer of deflated data.
+ *
+ * The input and output buffers must not be NULL.
+ *
+ * @param input_buffer pointer to deflated data
+ * @param input_length lenght of deflated data
+ * @param output_buffer pointer to storage for inflated data
+ * @param output_length lenght of deflated data
+ */
+
+static
+int
+inflate_oneshot(Bytef* input_buffer, 
+		uInt input_length, 
+		Bytef* output_buffer, 
+		uInt output_length)
+{
+  const int SUCCEDED = 0;
+  const int FAILED = -1;
+
+  int err;
+  z_stream stream;
+
+  assert(input_buffer != NULL);
+  assert(output_buffer != NULL);
+
+  /* Initialize the zlib stream. */
+  stream.next_in = input_buffer;
+  stream.avail_in = input_length;
+  stream.next_out = output_buffer;
+  stream.avail_out = output_length;
+  stream.zalloc = Z_NULL;
+  stream.zfree = Z_NULL;
+  stream.opaque = Z_NULL;
+
+  /* Initalize inflater. Use a mean hack
+   * found in gcj's java-cf-io.c module:
+   * Using a negative MAX_WBITS turns off
+   * header checking which breaks the inflate
+   * invocation otherwise.
+   */
+  err = inflateInit2 (&stream, -MAX_WBITS);
+  if (err != Z_OK)
+    return FAILED;
+
+  /* Inflate the whole buffer. */
+  err = inflate (&stream, Z_NO_FLUSH);
+
+  /* If we only inflated the buffer partially (Z_OK),
+   * or there was an error, return with an error code.
+   */
+  if (err != Z_STREAM_END)
+    return FAILED;
+
+  /* Free the memory for the zlib stream */
+  err = inflateEnd (&stream);
+  if (err != Z_OK)
+    return FAILED;
+
+  return SUCCEDED;
+}
+
 /*
  * Simple function to handle uncompressing the file data.
  */
@@ -904,9 +968,9 @@ static uint8 *inflateJarData(jarFile *jf, jarEntry *je,
 					     KGC_ALLOC_JAR)) )
 		{
 			if( inflate_oneshot(buf,
-					    (int)je->compressedSize,
+					    je->compressedSize,
 					    retval,
-					    (int)je->uncompressedSize) == 0 )
+					    je->uncompressedSize) == 0 )
 			{
 				addToCounter(&jarmem, "vmmem-jar files",
 					     1, GCSIZEOF(retval));

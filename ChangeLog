@@ -1,3 +1,18 @@
+2006-04-21  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffeh/Makefile.am (GEN_SRCS): Removed inflate.c
+	Link with zlib and add its includes to CPPFLAGS.
+
+	* kaffe/kaffevm/Makefile.am: Link with zlib and add its 
+	includes to CPPFLAGS. Removed inflate.c and inflate.h.
+
+	* kaffe/kaffevm/jar.c: Include zlib.h.
+	(inflate_oneshot) New static function.
+	(inflateJarData): Removed unnecessary casts.
+	
+	* kaffe/kaffevm/inflate.c,
+	kaffe/kaffevm/inflate.h: Removed.
+	
 2006-04-20  Dalibor Topic  <robilad@kaffe.org>
 
 	* include/system.h: Added __uclinux__ to Unix like path/line/file

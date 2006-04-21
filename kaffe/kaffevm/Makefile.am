@@ -9,6 +9,13 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
+if COND_SYSTEM_ZLIB
+LINKED_ZIP_LIBS=$(ZIP_LIBS)
+else
+LINKED_ZIP_LIBS=../../external/gcc/zlib/libz.la
+MAYBE_INTERNAL_ZIP_INCLUDES=-I$(srcdir)/../../external/gcc/zlib/
+endif
+
 SUBDIRS = $(ENGINE_NAME) systems $(GC_NAME) gcj verifier jni
 DIST_SUBDIRS = boehm-gc kaffe-gc intrp jit jit3 systems gcj verifier jni
 
@@ -29,7 +36,8 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/kaffe/xprof \
 	-I$(top_builddir)/include \
 	-I$(top_srcdir)/kaffe/kaffevm/verifier \
-	-I$(top_srcdir)/kaffe/kaffevm/jni
+	-I$(top_srcdir)/kaffe/kaffevm/jni \
+	$(MAYBE_INTERNAL_ZIP_INCLUDES)
 
 native_LTLIBRARIES = libkaffevm.la
 
@@ -70,7 +78,8 @@ libkaffevm_la_DEPENDENCIES = \
 libkaffevm_la_LIBADD = \
 	$(libkaffevm_la_DEPENDENCIES) \
 	$(VM_LIBS) \
-	$(M_LIBS)
+	$(M_LIBS) \
+	$(LINKED_ZIP_LIBS)
 
 libkaffevm_la_GEN_SRCS = \
 	md.c
@@ -94,7 +103,6 @@ libkaffevm_la_SOURCES = \
 	fp.c \
 	gc.c \
 	hashtab.c \
-	inflate.c \
 	itypes.c \
 	jar.c \
 	ksem.c \
@@ -133,7 +141,6 @@ noinst_HEADERS = \
 	gc.h \
 	gtypes.h \
 	hashtab.h \
-	inflate.h \
 	itypes.h \
 	jar.h \
 	ksem.h \

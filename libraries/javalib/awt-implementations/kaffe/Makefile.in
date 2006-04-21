@@ -766,7 +766,7 @@ CTAGS:
 
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/java/applet $(distdir)/java/awt $(distdir)/java/awt/color $(distdir)/java/awt/datatransfer $(distdir)/java/awt/event $(distdir)/java/awt/font $(distdir)/java/awt/geom $(distdir)/java/awt/im $(distdir)/java/awt/image $(distdir)/java/awt/image/renderable $(distdir)/java/awt/peer $(distdir)/java/awt/print $(distdir)/org/kaffe/applet $(distdir)/org/kaffe/awt $(distdir)/org/kaffe/util/log
+	$(mkdir_p) $(distdir)/java/applet $(distdir)/java/awt $(distdir)/java/awt/color $(distdir)/java/awt/datatransfer $(distdir)/java/awt/event $(distdir)/java/awt/font $(distdir)/java/awt/geom $(distdir)/java/awt/im $(distdir)/java/awt/image $(distdir)/java/awt/image/renderable $(distdir)/org/kaffe/applet $(distdir)/org/kaffe/awt $(distdir)/org/kaffe/util/log
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
