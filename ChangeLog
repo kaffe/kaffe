@@ -1,5 +1,10 @@
 2006-04-21  Dalibor Topic  <robilad@kaffe.org>
 
+	* config/i386/jit3-i386.def: Added debug output
+	for each defined instruction.
+
+2006-04-21  Dalibor Topic  <robilad@kaffe.org>
+
 	* TODO: Removed inflate_oneshot task.
 
 2006-04-21  Dalibor Topic  <robilad@kaffe.org>

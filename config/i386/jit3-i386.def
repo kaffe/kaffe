@@ -170,11 +170,15 @@ extern bool used_ieee_division;
 
 define_insn(unimplemented, unimplemented)
 {
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	KAFFEVM_ABORT();
 }
 
 define_insn(nop, nop)
 {
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	OUT(0x90);
 	debug(("nop\n"));
 }
@@ -184,6 +188,8 @@ define_insn(nop, nop)
 define_insn(prologue, prologue_xxx)
 {
 	label* l;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	if (profFlag) {
 		debug(("Method: %s\n", globalMethod->name->data));
@@ -361,6 +367,8 @@ define_insn(check_stack_limit, check_stack_limit_xRC)
 	int r = rreg_int(1);
 	label* l = const_label(2);
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	OUT(0x39);
 	OUT(0xC0|(r<<3)|REG_esp);
 	debug(("cmpl esp,%s\n", regname(r)));
@@ -381,6 +389,8 @@ define_insn(check_stack_limit, check_stack_limit_xRC)
 define_insn(exception_prologue, eprologue_xLx)
 {
 	label* l;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	OUT(0x89);
 	OUT(0xC0|(REG_ebp<<3)|REG_ecx);
@@ -441,6 +451,8 @@ define_insn(exception_prologue, eprologue_xLx)
 define_insn(epilogue, epilogue_xxx)
 {	
 	label *el;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	if( (el = KaffeJIT3_getLastEpilogueLabel()) && (el->at == (CODEPC - 4)) )
 	{
@@ -510,6 +522,8 @@ define_insn(spill_int, spill_Rxx)
 	int r = sreg_int(0);
 	int o = const_int(1);
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	OUT(0x89);
 	OUT(0x80|(r<<3)|REG_ebp);
 	LOUT(o);
@@ -520,6 +534,8 @@ define_insn(spill_int, spill_Rxx)
 define_insn(spill_float, fspill_Rxx)
 {
 	int o = const_int(1);
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	(void)sreg_float(0);
 
@@ -533,6 +549,8 @@ define_insn(spill_float, fspill_Rxx)
 define_insn(spill_double, fspilll_Rxx)
 {
 	int o = const_int(1);
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	(void)sreg_double(0);
 
@@ -548,6 +566,8 @@ define_insn(reload_int, reload_Rxx)
 	int r = lreg_int(0);
 	int o = const_int(1);
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	OUT(0x8B);
 	OUT(0x80|(r<<3)|REG_ebp);
 	LOUT(o);
@@ -558,6 +578,8 @@ define_insn(reload_int, reload_Rxx)
 define_insn(reload_float, freload_Rxx)
 {
 	int o = const_int(1);
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	lreg_float(0);
 
@@ -572,6 +594,8 @@ define_insn(reload_double, freloadl_Rxx)
 {
 	int r = lreg_double(0);
 	int o = const_int(1);
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	OUT(0xDD);
 	OUT(0x80|REG_ebp);
@@ -593,6 +617,8 @@ define_insn(move_int_const, move_RxC)
 	int val = const_int(2);
 	int w = wreg_int(0);
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	if (val == 0) {
 		OUT(0x31);
 		OUT(0xC0|(w<<3)|w);
@@ -611,6 +637,8 @@ define_insn(move_label_const, move_RxL)
 	label* l = const_label(2);
 	int w = wreg_int(0);
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	OUT(0xB8|w);
 	l->type |= Llong|Labsolute;
 	l->at = CODEPC;
@@ -624,6 +652,8 @@ define_insn(move_int, move_RxR)
 	int r = rreg_int(2);
 	int w = wreg_int(0);
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	if (r != w) {
 		OUT(0x89);
 		OUT(0xC0|(r<<3)|w);
@@ -634,6 +664,8 @@ define_insn(move_int, move_RxR)
 define_insn(move_float_const, fmove_RxC)
 {
 	jvalue d;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	d.d = const_float(2);
 	wreg_float(0);
@@ -667,6 +699,8 @@ define_insn(move_float, fmove_RxR)
 	int or = rslot_float(2);
 	int ow = wslot_float(0);
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	if (or != ow) {
 		wreg_float(0);
 
@@ -681,6 +715,8 @@ define_insn(move_float, fmove_RxR)
 define_insn(move_double_const, fmovel_RxC)
 {
 	jvalue d;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	d.d = const_double(2);
 	wreg_double(0);
@@ -713,6 +749,8 @@ define_insn(move_double, fmovel_RxR)
 	int or = rslot_double(2);
 	int ow = wslot_double(0);
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	if (or != ow) {
 		wreg_double(0);
 
@@ -731,6 +769,8 @@ define_insn(add_int, add_RRR)
 	int r;
 	int w;
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	check_reg_01();
 
 	r = rreg_int(2);
@@ -747,6 +787,8 @@ define_insn(adc_int, adc_RRR)
 	int r;
 	int w;
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	r = rreg_int(2);
 	w = rwreg_int(0);
 
@@ -759,6 +801,8 @@ define_insn(adc_int, adc_RRR)
 define_insn(add_float, fadd_RRR)
 {
 	int rr, rm;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	/*
 	 * XXX Order is important here...  If we put slot 2 into memory and
@@ -780,6 +824,8 @@ define_insn(add_double, faddl_RRR)
 {
 	int rr, rm;
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	rm = rslot_double(1);	/* Get slot 1 into memory */
 	rr = rreg_double(2);	/* Load slot 2 into the register stack */
 	wreg_double(0);		/* Result will be in register stack */
@@ -795,6 +841,8 @@ define_insn(sub_int, sub_RRR)
 {
 	int r;
 	int w;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	check_reg_01();
 
@@ -812,6 +860,8 @@ define_insn(sbc_int, sbc_RRR)
 	int r;
 	int w;
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	r = rreg_int(2);
 	w = rwreg_int(0);
 
@@ -824,6 +874,8 @@ define_insn(sbc_int, sbc_RRR)
 define_insn(sub_float, fsub_RRR)
 {
 	int rr, rm;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	rm = rslot_float(1);	/* Get slot 1 into memory */
 	rr = rreg_float(2);	/* Load slot 2 into the register stack */
@@ -840,6 +892,8 @@ define_insn(sub_double, fsubl_RRR)
 {
 	int rr, rm;
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	rm = rslot_double(1);	/* Get slot 1 into memory */
 	rr = rreg_double(2);	/* Load slot 2 into the register stack */
 	wreg_double(0);		/* Result will be in register stack */
@@ -853,6 +907,8 @@ define_insn(sub_double, fsubl_RRR)
 
 define_insn(neg_float, negf_RxR)
 {
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	rreg_float(2);
 	wreg_float(0);
 
@@ -864,6 +920,8 @@ define_insn(neg_float, negf_RxR)
 
 define_insn(neg_double, negd_RxR)
 {
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	rreg_double(2);
 	wreg_double(0);
 
@@ -877,6 +935,8 @@ define_insn(mul_int, mul_RRR)
 {
 	int r;
 	int w;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	check_reg_01();
 
@@ -894,6 +954,8 @@ define_insn(mul_float, fmul_RRR)
 {
 	int rr, rm;
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	rm = rslot_float(1);	/* Get slot 1 into memory */
 	rr = rreg_float(2);	/* Load slot 2 into the register stack */
 	wreg_float(0);		/* Result will be in register stack */
@@ -908,6 +970,8 @@ define_insn(mul_float, fmul_RRR)
 define_insn(mul_double, fmull_RRR)
 {
 	int rr, rm;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	rm = rslot_double(1);	/* Get slot 1 into memory */
 	rr = rreg_double(2);	/* Load slot 2 into the register stack */
@@ -925,6 +989,8 @@ define_insn(div_int, div_RRR)
 	int r;
 	int w;
 	label *l1;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	check_reg_01();
 
@@ -986,6 +1052,8 @@ define_insn(div_float, fdiv_RRR)
 {
 	int rr, rm;
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	rm = rslot_float(1);	/* Get slot 1 into memory */
 	rr = rreg_float(2);	/* Load slot 2 into the register stack */
 	wreg_float(0);		/* Result will be in register stack */
@@ -1000,6 +1068,8 @@ define_insn(div_float, fdiv_RRR)
 define_insn(div_double, fdivl_RRR)
 {
 	int rr, rm;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	rm = rslot_double(1);	/* Get slot 1 into memory */
 	rr = rreg_double(2);	/* Load slot 2 into the register stack */
@@ -1017,6 +1087,8 @@ define_insn(rem_int, rem_RRR)
 	int r;
 	int w;
 	label *l1;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	check_reg_01();
 
@@ -1084,6 +1156,8 @@ define_insn(and_int, and_RRR)
 	int r;
 	int w;
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	check_reg_01();
 
 	r = rreg_int(2);
@@ -1099,6 +1173,8 @@ define_insn(or_int, or_RRR)
 {
 	int r;
 	int w;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	check_reg_01();
 
@@ -1116,6 +1192,8 @@ define_insn(xor_int, xor_RRR)
 	int r;
 	int w;
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	check_reg_01();
 
 	r = rreg_int(2);
@@ -1131,6 +1209,8 @@ define_insn(ashr_int, ashr_RRR)
 {
 	int r;
 	int w;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	check_reg_01();
 
@@ -1152,6 +1232,8 @@ define_insn(lshr_int, lshr_RRR)
 	int r;
 	int w;
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	check_reg_01();
 
 	r = rreg_ideal_int(2, REG_ecx);
@@ -1171,6 +1253,8 @@ define_insn(lshl_int, lshl_RRR)
 {
 	int r;
 	int w;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	check_reg_01();
 
@@ -1194,6 +1278,8 @@ define_insn(load_int, load_RxR)
 	int r = rreg_int(2);
 	int w = wreg_int(0);
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	OUT(0x8B);
 	OUT(0x00|(w<<3)|r);
 	if (r == REG_esp) {
@@ -1207,6 +1293,8 @@ define_insn(load_float, fload_RxR)
 {
 	int r;
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	r = rreg_int(2);
 	wreg_float(0);
 
@@ -1219,6 +1307,8 @@ define_insn(load_float, fload_RxR)
 define_insn(load_double, floadl_RxR)
 {
 	int r;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	r = rreg_int(2);
 	wreg_double(0);
@@ -1234,6 +1324,8 @@ define_insn(store_int, store_xRR)
 	int r = rreg_int(2);
 	int w = rreg_int(1);
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	OUT(0x89);
 	OUT(0x00|(r<<3)|w);
 	if (w == REG_esp) {
@@ -1247,6 +1339,8 @@ define_insn(store_float, fstore_RxR)
 {
 	int w;
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	rreg_float(2);
 	w = rreg_int(1);
 	
@@ -1259,6 +1353,8 @@ define_insn(store_float, fstore_RxR)
 define_insn(store_double, fstorel_RxR)
 {
 	int w;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	rreg_double(2);
 	w = rreg_int(1);
@@ -1276,6 +1372,8 @@ define_insn(cmp_int, cmp_xRR)
 	int r1 = rreg_int(1);
 	int r2 = rreg_int(2);
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	OUT(0x39);
 	OUT(0xC0|(r2<<3)|r1);
 
@@ -1287,6 +1385,8 @@ define_insn(cmp_int, cmp_xRR)
 define_insn(cvt_int_float, cvtif_RxR)
 {
 	int r;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	r = rslot_int(2);
 	wreg_float(0);
@@ -1301,6 +1401,8 @@ define_insn(cvt_int_float, cvtif_RxR)
 define_insn(cvt_int_double, cvtid_RxR)
 {
 	int r;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	r = rslot_int(2);
 	wreg_double(0);
@@ -1321,6 +1423,8 @@ define_insn(cvt_long_float, cvtlf_RxR)
 {
 	int r;
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	r = rslot_long(2);
 	wreg_float(0);
 
@@ -1334,6 +1438,8 @@ define_insn(cvt_long_float, cvtlf_RxR)
 define_insn(cvt_long_double, cvtld_RxR)
 {
 	int r;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	r = rslot_long(2);
 	wreg_double(0);
@@ -1351,6 +1457,8 @@ define_insn(cvt_float_double, cvtfd_RxR)
 {
 	int o = rslot_float(2);
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	wreg_double(0);
 
 	OUT(0xD9);
@@ -1363,6 +1471,8 @@ define_insn(cvt_float_double, cvtfd_RxR)
 define_insn(cvt_double_float, cvtdf_RxR)
 {
 	int o;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	o = rslot_double(2);
 	wreg_float(0);
@@ -1380,6 +1490,8 @@ define_insn(build_key, set_word_xxC)
 {
 	jint val = const_int(2);
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	LOUT(val);
 
 	debug((".word %08x\n", val));
@@ -1388,6 +1500,8 @@ define_insn(build_key, set_word_xxC)
 define_insn(build_code_ref, set_wordpc_xxC)
 {
 	label* l = const_label(2);
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	l->type |= Llong|Labsolute;
 	l->at = CODEPC;
@@ -1401,6 +1515,9 @@ define_insn(build_code_ref, set_wordpc_xxC)
 define_insn(set_label, set_label_xxC)
 {
 	label* l = const_label(2);
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	l->to = CODEPC;
 }
 
@@ -1408,6 +1525,8 @@ define_insn(branch, branch_xCC)
 {
 	label* l = const_label(1);
 	int bt = const_int(2);
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	l->type |= Llong|Lrelative;
 	switch (bt) {
@@ -1508,6 +1627,9 @@ define_insn(branch, branch_xCC)
 define_insn(branch_indirect, branch_indirect_xRC)
 {
 	int r = rreg_int(1);
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	assert(const_int(2) == ba);
 
 	OUT(0xFF);
@@ -1519,6 +1641,9 @@ define_insn(branch_indirect, branch_indirect_xRC)
 define_insn(call_ref, call_xCC)
 {
 	label* l = const_label(1);
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	assert(const_int(2) == ba);
 
 #if defined(KAFFE_PROFILER)
@@ -1547,6 +1672,9 @@ define_insn(call_ref, call_xCC)
 define_insn(call, call_xRC)
 {
 	int r = rreg_int(1);
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	assert(const_int(2) == ba);
 
 #if defined(KAFFE_PROFILER)
@@ -1570,6 +1698,9 @@ define_insn(call, call_xRC)
 define_insn(call_indirect_const, call_ind_xCC)
 {
 	int m = const_int(1);
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	assert(const_int(2) == ba);
 
 #if defined(KAFFE_PROFILER)
@@ -1594,6 +1725,8 @@ define_insn(push_int, push_xRC)
 {
 	int r;
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	if (inRegister(1, Rint|Rref)) {
 		r = rreg_int(1);
 
@@ -1614,6 +1747,8 @@ define_insn(push_float, fpush_xRC)
 {
 	int r = rreg_int(1);	/* Move the float into a register */
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	OUT(0x50|r);
 
 	debug(("pushl %s\n", regname(r)));
@@ -1622,6 +1757,8 @@ define_insn(push_float, fpush_xRC)
 define_insn(push_double, fpushl_xRC)
 {
 	int o = rslot_double(1);
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	OUT(0xFF);
 	OUT(0xB0|REG_ebp);
@@ -1641,6 +1778,8 @@ define_insn(popargs, popargs_xxC)
 	int o = const_int(2);
 	o *= 4;
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	OUT(0x81);
 	OUT(0xC0|REG_esp);
 	LOUT(o);
@@ -1650,6 +1789,8 @@ define_insn(popargs, popargs_xxC)
 
 define_insn(return_int, return_Rxx)
 {
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 DBG(REGFORCE,
     dprintf ("return_int()\n");
     );
@@ -1658,6 +1799,8 @@ DBG(REGFORCE,
 
 define_insn(return_long, returnl_Rxx)
 {
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 DBG(REGFORCE,
     dprintf ("return_long()\n");
     );
@@ -1667,6 +1810,8 @@ DBG(REGFORCE,
 
 define_insn(return_float, freturn_Rxx)
 {
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 DBG(REGFORCE,
     dprintf ("return_float()\n");
     );
@@ -1675,6 +1820,8 @@ DBG(REGFORCE,
 
 define_insn(return_double, freturnl_Rxx)
 {
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 DBG(REGFORCE,
     dprintf ("return_double()\n");
     );
@@ -1685,6 +1832,8 @@ define_insn(returnarg_int, returnarg_xxR)
 {
 	int r;
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	r = rreg_int(2);
 	do_move_int(REG_eax, r);
 }
@@ -1694,6 +1843,8 @@ define_insn(returnarg_long, returnargl_xxR)
 	REGSLOT* r;
 	int r1;
 	int r2;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	r = seq_slot(s, 2);
 	r1 = _slowSlotRegister(r, Rint, rread);
@@ -1719,12 +1870,16 @@ define_insn(returnarg_long, returnargl_xxR)
 
 define_insn(returnarg_float, freturnarg_xxR)
 {
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	/* Force value into float register */
 	rreg_float(2);
 }
 
 define_insn(returnarg_double, freturnargl_xxR)
 {
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	/* Force value into double register */
 	rreg_double(2);
 }
@@ -1735,6 +1890,8 @@ define_insn(add_int_const, add_RRC)
 {
 	int rw;
 	int v;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	check_reg_01();
 
@@ -1752,6 +1909,8 @@ define_insn(sub_int_const, sub_RRC)
 {
 	int rw;
 	int v;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	check_reg_01();
 
@@ -1771,6 +1930,8 @@ define_insn(load_offset_int, load_RRC)
 	int r = rreg_int(1);
 	int w = wreg_int(0);
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	assert(r != REG_esp);
 	OUT(0x8B);
 	OUT(0x80|(w<<3)|r);
@@ -1783,6 +1944,8 @@ define_insn(load_byte, loadb_RxR)
 {
 	int r = rreg_int(2);
 	int w = wreg_int(0);
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	OUT(0x0F);
 	OUT(0xBE);
@@ -1799,6 +1962,8 @@ define_insn(load_char, loadc_RxR)
 	int r = rreg_int(2);
 	int w = wreg_int(0);
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	OUT(0x0F);
 	OUT(0xB7);
 	OUT(0x00|(w<<3)|r);
@@ -1813,6 +1978,8 @@ define_insn(load_short, loads_RxR)
 {
 	int r = rreg_int(2);
 	int w = wreg_int(0);
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	OUT(0x0F);
 	OUT(0xBF);
@@ -1830,6 +1997,8 @@ define_insn(store_offset_int, store_xRRC)
 	int r1;
 	int r0;
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	v = const_int(2);
 	r0 = rreg_int(0);
 	r1 = rreg_int(1);
@@ -1846,6 +2015,8 @@ define_insn(store_byte, storeb_xRR)
 {
 	int r;
 	int w;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	/* Can only store accumulators as bytes */
 	r = rreg_subint(2);
@@ -1873,6 +2044,8 @@ define_insn(store_short, stores_xRR)
 	int r = rreg_int(2);
 	int w = rreg_int(1);
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	OUT(0x66);
 	OUT(0x89);
 	OUT(0x00|(r<<3)|w);
@@ -1888,6 +2061,8 @@ define_insn(cmp_int_const, cmp_xRC)
 	int r1 = rreg_int(1);
 	int v = const_int(2);
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	OUT(0x81);
 	OUT(0xF8|r1);
 	LOUT(v);
@@ -1899,6 +2074,8 @@ define_insn(push_int_const, push_xCC)
 {
 	int v = const_int(1);
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	OUT(0x68);
 	LOUT(v);
 
@@ -1909,6 +2086,8 @@ define_insn(lshl_int_const, lshl_RRC)
 {
 	int rw;
 	int v;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	check_reg_01();
 
@@ -1927,6 +2106,8 @@ define_insn(mon_enter, monenter_xxRCC)
 	Method* meth;
 	label* l;
 	int r;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	meth = (Method*)const_int(3);
 	l = const_label(4);
@@ -2019,6 +2200,8 @@ define_insn(mon_exit, monexit_xxRCC)
 	label* l;
 	int r;
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	meth = (Method*)const_int(3);
 	l = const_label(4);
 
@@ -2100,6 +2283,8 @@ define_insn(get_arg_ptr, get_arg_ptr_R)
 {
 	int rw = rwreg_int(0);
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	OUT(0x89);
 	OUT(0xC0|(REG_ebp<<3)|rw);
 	debug(("movl %s,%s\n", regname(REG_ebp), regname(rw)));
@@ -2114,6 +2299,8 @@ define_insn(and_int_const, and_RRC)
 {
         int rw;
         int v;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
         rw = rwreg_int(0);
         v = const_int(2);
@@ -2130,6 +2317,8 @@ define_insn(or_int_const, or_RRC)
         int rw;
         int v;
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
         rw = rwreg_int(0);
         v = const_int(2);
 
@@ -2144,6 +2333,8 @@ define_insn(xor_int_const, xor_RRC)
 {
         int rw;
         int v;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
         rw = rwreg_int(0);
         v = const_int(2);
@@ -2160,6 +2351,8 @@ define_insn(mul_int_const, mul_RRC)
         int rw;
         int v;
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
         rw = rwreg_int(0);
         v = const_int(2);
 
@@ -2174,6 +2367,8 @@ define_insn(lshr_int_const, lshr_RRC)
 {
         int rw;
         int v;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
         rw = rwreg_int(0);
         v = const_int(2);
@@ -2190,6 +2385,8 @@ define_insn(ashr_int_const, ashr_RRC)
         int rw;
         int v;
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
         rw = rwreg_int(0);
         v = const_int(2);
 
@@ -2204,6 +2401,8 @@ define_insn(neg_int, neg_RxR)
 {
         int r;
 	int w;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
         r = rreg_int(2);
         w = wreg_int(0);
@@ -2222,6 +2421,8 @@ define_insn(load_offset_scaled_byte, loadb_RRRC)
 	int v;
 	int r1;
 	int r2;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	r1 = rreg_int(1);
 	r2 = rreg_int(2);
@@ -2246,6 +2447,8 @@ define_insn(load_offset_scaled_int, load_RRRC)
 	int r1;
 	int r2;
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	r1 = rreg_int(1);
 	r2 = rreg_int(2);
 	w = wreg_int(0);
@@ -2267,6 +2470,8 @@ define_insn(load_offset_scaled_char, loadc_RRRC)
 	int v;
 	int r1;
 	int r2;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	r1 = rreg_int(1);
 	r2 = rreg_int(2);
@@ -2290,6 +2495,8 @@ define_insn(store_offset_scaled_byte, storeb_RRRC)
 	int v;
 	int w1;
 	int w2;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	r = rreg_subint(2);
 	/* If we cannot get the register into the subint
@@ -2321,6 +2528,8 @@ define_insn(store_offset_scaled_short, stores_RRRC)
 	int v;
 	int w1;
 	int w2;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	r = rreg_subint(2);
 	/* If we cannot get the register into the subint
@@ -2354,6 +2563,8 @@ define_insn(store_offset_scaled_int, store_RRRC)
 	int w1;
 	int w2;
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	r = rreg_int(2);
 	w1 = rreg_int(0);
 	w2 = rreg_int(1);
@@ -2374,6 +2585,8 @@ define_insn(load_addr_int, load_RxA)
 	int o = const_int(2);
 	int w = wreg_int(0);
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	OUT(0x8B);
 	OUT(0x05|(w<<3));
 	LOUT(o);
@@ -2385,6 +2598,8 @@ define_insn(store_addr_int, store_xRA)
 {
 	int r = rreg_int(1);
 	int o = const_int(2);
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	OUT(0x89);
 	OUT(0x05|(r<<3));
@@ -2398,6 +2613,8 @@ define_insn(store_offset_byte, storeb_xRRC)
 	int v;
 	int r1;
 	int r0;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	/* Can only store accumulators as bytes */
 	r0 = rreg_subint(0);
@@ -2425,6 +2642,8 @@ define_insn(store_offset_short, stores_xRRC)
 	int r1;
 	int r0;
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	v = const_int(2);
 	r1 = rreg_int(1);
 	r0 = rreg_int(0);
@@ -2443,6 +2662,8 @@ define_insn(store_const_offset_int, store_xRCC)
         int v;
         int r;
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
         r = rreg_int(0);
         o = const_int(1);
         v = const_int(2);
@@ -2460,6 +2681,8 @@ define_insn(store_const_offset_byte, storeb_xRCC)
         int o;
         int v;
         int r;
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
         r = rreg_int(0);
         o = const_int(1);
@@ -2480,6 +2703,8 @@ define_insn(store_const_offset_scaled_byte, storeb_RRCC)
 	int r1;
 	int r2;
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 	r1 = rreg_int(0);
 	r2 = rreg_int(1);
 	o = const_int(2);
@@ -2498,6 +2723,8 @@ define_insn(fake_call, fakecall_xCC)
 {
 	label* tol = const_label(2);
 	label* froml = const_label(1);
+
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
 
 	OUT(0x68);
 	froml->type |= Llong|Labsolute;
@@ -2521,6 +2748,8 @@ define_insn(cmp_int_offset, cmp_xRRC)
         int r2 = rreg_int(2);
         int off = const_int(3);
 
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
         OUT(0x3B);
         OUT(0x80|(r1<<3)|r2);
 	LOUT(off);
@@ -2533,6 +2762,8 @@ define_insn(cmp_int_offset, cmp_xRRC)
 void
 kill_readonce_register (SlotData *s)
 {
+	debug(("instr\t%s\n",__PRETTY_FUNCTION__));
+
 DBG(REGFORCE,
     dprintf ("kill_readonce_register(%s)\n", regname(s->regno));
     );
