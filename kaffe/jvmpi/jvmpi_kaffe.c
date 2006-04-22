@@ -271,7 +271,7 @@ void jvmpiFillMethodLoad(JVMPI_Event *ev, Method *xmeth)
   ev->u.compiled_method_load.method_id = xmeth;
   ev->u.compiled_method_load.code_addr = METHOD_NATIVECODE(xmeth);
   ev->u.compiled_method_load.code_size =
-    (uintp)xmeth->c.ncode.ncode_end - (uintp)xmeth->c.ncode.ncode_start;
+    (uintp)xmeth->c.ncode.ncode_end - (uintp)getMethodCodeStart(xmeth);
   
   if( xmeth->lines )
     {

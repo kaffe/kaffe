@@ -648,7 +648,7 @@ installMethodCode(void* ignore UNUSED, Method* meth, nativeCodeInfo* code)
 
 	SET_METHOD_JITCODE(meth, code->code);
 
-	meth->c.ncode.ncode_start = code->mem;
+	setMethodCodeStart(meth, code->mem);
 	meth->c.ncode.ncode_end = (void*)((uintp)code->code + code->codelen);
 	
 #if defined(KAFFE_FEEDBACK)

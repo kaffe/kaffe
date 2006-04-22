@@ -575,7 +575,7 @@ installMethodCode(codeinfo* codeInfo, Method* meth, nativeCodeInfo* code)
 	/* install the jitted code */
 	SET_METHOD_JITCODE(meth, code->code);
 
-	meth->c.ncode.ncode_start = code->mem;
+	setMethodCodeStart(meth, code->mem);
 	meth->c.ncode.ncode_end = (char*)code->code + code->codelen;
 
 	jch = (jitCodeHeader *)code->mem;
@@ -585,7 +585,7 @@ installMethodCode(codeinfo* codeInfo, Method* meth, nativeCodeInfo* code)
 	FLUSH_DCACHE(METHOD_NATIVECODE(meth), meth->c.ncode.ncode_end);
 
 #if defined(MD_REGISTER_JIT_EXCEPTION_INFO)
-	MD_REGISTER_JIT_EXCEPTION_INFO (meth->c.ncode.ncode_start,
+	MD_REGISTER_JIT_EXCEPTION_INFO (getMethodCodeStart(meth),
 					METHOD_NATIVECODE(meth),
 					meth->c.ncode.ncode_end);
 #endif

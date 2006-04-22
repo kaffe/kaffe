@@ -621,7 +621,7 @@ statClass(Hjava_lang_Class *clazz, int *total)
 			/* bytecode or jitted code */
 			if ((m->accflags & ACC_NATIVE) == 0) {
 				if (METHOD_TRANSLATED(m)) {
-					jitmem += SIZE_IFNONZERO(m->c.ncode.ncode_start);
+					jitmem += SIZE_IFNONZERO(getMethodCodeStart(m));
 				} else {
 					bytecodemem += SIZE_IFNONZERO(m->c.bcode.code);
 				}

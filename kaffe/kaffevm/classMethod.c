@@ -50,7 +50,7 @@
 #include "methodcalls.h"
 
 #if 0
-#define	METHOD_TRUE_NCODE(METH)			(METH)->c.ncode.ncode_start
+#define	METHOD_TRUE_NCODE(METH)			getMethodCodeStart(METH)
 #define	METHOD_PRE_COMPILED(METH)		((int16)(METH)->localsz < 0)
 #define	SET_METHOD_PRE_COMPILED(METH, VAL)	((METH)->localsz = -(VAL))
 #endif
@@ -630,7 +630,7 @@ DBG(STATICINIT, dprintf("Initialising %s static %d\n", class->name->data,
 #if defined(TRANSLATOR) && (defined (MD_UNREGISTER_JIT_EXCEPTION_INFO) || defined (JIT3))
 #if defined(MD_UNREGISTER_JIT_EXCEPTION_INFO)
 		if (exc == 0) {
-			MD_UNREGISTER_JIT_EXCEPTION_INFO (meth->c.ncode.ncode_start,
+			MD_UNREGISTER_JIT_EXCEPTION_INFO (getMethodCodeStart(meth),
 							  METHOD_NATIVECODE(meth),
 							  meth->c.ncode.ncode_end);
 		}
@@ -645,7 +645,7 @@ DBG(STATICINIT, dprintf("Initialising %s static %d\n", class->name->data,
 #endif
 		    1) {
 			_SET_METHOD_NATIVECODE(meth, NULL);
-			meth->c.ncode.ncode_start = NULL;
+			setMethodCodeStart(meth, NULL);
 			meth->c.ncode.ncode_end = NULL;
 		}
 	}

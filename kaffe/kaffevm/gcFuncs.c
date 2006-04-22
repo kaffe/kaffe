@@ -122,7 +122,7 @@ DBG(CLASSGC,
 				ncode = METHOD_NATIVECODE(m);
 				if (METHOD_JITTED(m)) {
 #if defined(TRANSLATOR) && defined (MD_UNREGISTER_JIT_EXCEPTION_INFO)
-					MD_UNREGISTER_JIT_EXCEPTION_INFO (m->c.ncode.ncode_start,
+					MD_UNREGISTER_JIT_EXCEPTION_INFO (getMethodCodeStart(m),
 									  ncode,
 									  m->c.ncode.ncode_end);
 #endif

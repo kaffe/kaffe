@@ -1,3 +1,16 @@
+2006-04-23  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/jit3/machine.c (installMethodCode),
+	kaffe/kaffevm/jit/machine.c (installMethodCode) 
+	(installMethodCode),
+	kaffe/kaffevm/gcFuncs.c (destroyClass),
+	kaffe/kaffevm/classPool.c (statClass),
+	kaffe/kaffevm/classMethod.c (METHOD_TRUE_NCODE, processClass) 
+	(processClass),
+	kaffe/jvmpi/jvmpi_kaffe.c (jvmpiFillMethodLoad):
+	Use getMethodCodeStart and setMethodCodeStart instead accessing
+	struct fields directly.
+
 2006-04-22  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/intrp/methodcalls.c (engine_dispatchException): 
