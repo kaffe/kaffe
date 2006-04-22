@@ -1,5 +1,10 @@
 2006-04-22  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/binreloc.c (_br_find_exe_for_symbol): 
+	Mark parameter error as unused when binreloc is enabled.
+
+2006-04-22  Dalibor Topic  <robilad@kaffe.org>
+
 	* THIRDPARTY: Added version information for binreloc.
 
 2006-04-22  Dalibor Topic  <robilad@kaffe.org>

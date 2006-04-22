@@ -173,13 +173,18 @@ _br_find_exe (BrInitError *error)
 #endif /* ENABLE_BINRELOC */
 }
 
+#if defined(ENABLE_BINRELOC)
+#define BINRELOC_UNUSED  UNUSED
+#else /* !defined(ENABLE_BINRELOC) */
+#define BINRELOC_UNUSED  /* */
+#endif /* defined(ENABLE_BINRELOC) */
 
 /** @internal
  * Find the canonical filename of the executable which owns symbol.
  * Returns a filename which must be freed, or NULL on error.
  */
 static char *
-_br_find_exe_for_symbol (const void *symbol, BrInitError *error)
+_br_find_exe_for_symbol (const void *symbol, BrInitError *error BINRELOC_UNUSED)
 {
 #ifndef ENABLE_BINRELOC
 	if (error)
