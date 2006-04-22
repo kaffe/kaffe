@@ -196,7 +196,7 @@ struct SlotData;
 struct _label_;
 struct _sequence;
 struct _errorInfo;
-extern jboolean initInsnSequence(Method *meth, int codesize, int localsz, int stacksz, struct _errorInfo *einfo);
+extern jboolean initInsnSequence(int localsz, int stacksz, struct _errorInfo *einfo);
 extern jboolean finishInsnSequence(void*, nativeCodeInfo*, struct _errorInfo*);
 extern void     installMethodCode(void*, Method*, nativeCodeInfo*);
 #define HAVE_FAKE_CALLS 1

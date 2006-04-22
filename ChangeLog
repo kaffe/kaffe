@@ -1,3 +1,16 @@
+2006-04-22  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/jit/native-wrapper.c (Kaffe_wrapper):
+	Call the right initInsnSequence depending on the jit engine.
+	Call INIT_JIT_MD if necessary.
+
+	* kaffe/kaffevm/jit3/machine.c (initInsnSequence) Removed 
+	unused parameters from prototype. 
+	(translate): Call INIT_JIT_MD if necessary.
+
+	* kaffe/kaffevm/jit3/machine.h: (initInsnSequence) Removed
+        unused parameters from prototype.
+
 2006-04-21  Dalibor Topic  <robilad@kaffe.org>
 
 	* config/i386/jit3-i386.def: Added debug output

@@ -154,6 +154,36 @@ jboolean KaffeJIT3_setupExitWithOOM(struct _errorInfo* einfo)
 }
 
 /*
+ * Init instruction generation.
+ */
+jboolean
+initInsnSequence(int localsz, int stacksz, errorInfo* einfo)
+{
+	/* Clear various counters */
+	tmpslot = 0;
+	maxTemp = 0;
+	maxPush = 0;
+	stackno = localsz + stacksz;
+	npc = 0;
+
+	initSeq();
+	initRegisters();
+	initSlots(stackno);
+
+	/* Before generating code, try to guess how much space we'll need. */
+	codeblock_size = ALLOCCODEBLOCKSZ;
+	codeblock = gc_malloc(codeblock_size + CODEBLOCKREDZONE,
+			      KGC_ALLOC_JIT_CODEBLOCK);
+	if (codeblock == 0) {
+		postOutOfMemory(einfo);
+		return (false);
+	}
+	CODEPC = 0;
+	
+	return (true);
+}
+
+/*
  * Translate a method into native code.
  *
  * Registers are allocated per basic block, using an LRU algorithm.
@@ -312,7 +342,12 @@ DBG(MOREJIT,
 	 * Initialise the translator.
 	 */
 	initFakeCalls();
-	success = initInsnSequence(xmeth, codeperbytecode * METHOD_BYTECODE_LEN(xmeth), xmeth->localsz, xmeth->stacksz, einfo);
+
+	/* Do any machine dependent JIT initialization */
+#if defined(INIT_JIT_MD)
+	INIT_JIT_MD(xmeth);
+#endif
+	success = initInsnSequence(xmeth->localsz, xmeth->stacksz, einfo);
 	if (success == false) {
 		goto done;
 	}
@@ -799,41 +834,6 @@ installMethodCode(void* ignore UNUSED, Method* meth, nativeCodeInfo* code)
 #if defined(LABEL_Lframe)
 	LABEL_Lframe(&meth->framesize, /* unused */ 0, /* unused */ 0);
 #endif
-}
-
-/*
- * Init instruction generation.
- */
-jboolean
-initInsnSequence(Method* meth, int codesize UNUSED, int localsz, int stacksz, errorInfo* einfo)
-{
-	/* Clear various counters */
-	tmpslot = 0;
-	maxTemp = 0;
-	maxPush = 0;
-	stackno = localsz + stacksz;
-	npc = 0;
-
-	/* Do any machine dependent JIT initialization */
-#if defined(INIT_JIT_MD)
-	INIT_JIT_MD(meth);
-#endif
-
-	initSeq();
-	initRegisters();
-	initSlots(stackno);
-
-	/* Before generating code, try to guess how much space we'll need. */
-	codeblock_size = ALLOCCODEBLOCKSZ;
-	codeblock = gc_malloc(codeblock_size + CODEBLOCKREDZONE,
-			      KGC_ALLOC_JIT_CODEBLOCK);
-	if (codeblock == 0) {
-		postOutOfMemory(einfo);
-		return (false);
-	}
-	CODEPC = 0;
-	
-	return (true);
 }
 
 /*

@@ -125,7 +125,18 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 #if defined(HAVE_FAKE_CALLS)
 	initFakeCalls();
 #endif
+
+	/* Do any machine dependent JIT initialization */
+#if defined(INIT_JIT_MD)
+	INIT_JIT_MD(xmeth);
+#endif
+
+#if defined(JIT3)
+	success = initInsnSequence(maxLocal, maxStack, &info);
+#else
 	success = initInsnSequence(xmeth, 0, maxLocal, maxStack, &info);
+#endif /* defined(JIT3) */
+
 	if (!success) {
 		goto done;
 	}
