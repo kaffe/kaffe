@@ -222,7 +222,7 @@ engine_callMethod (callMethodInfo *call)
 
 void engine_dispatchException(uintp framePointer,
 			      uintp handler, 
-			      struct Hjava_lang_Throwable *throwable)
+			      struct Hjava_lang_Throwable *throwable UNUSED)
 {
   vmExcept_setPC((VmExceptHandler *)framePointer, handler);
   vmExcept_jumpToHandler((VmExceptHandler *)framePointer); /* Does not return */
