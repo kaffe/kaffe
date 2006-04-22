@@ -225,7 +225,7 @@ java_lang_VMClassLoader_loadClass(Hjava_lang_String* jStr, jboolean resolve)
 		throwException (throwable);
 	}
 
-	if( (c = utf8ConstNew(name, -1)) )
+	if( (c = utf8ConstFromString(name)) )
 	{
 		clazz = loadClass(c, NULL, &info);
 		if( clazz )

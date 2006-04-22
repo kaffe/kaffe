@@ -180,7 +180,7 @@ Kaffe_FindClass(JNIEnv *env UNUSED, const char* name)
 	classname2pathname (name, pathname);
 
 	/* create a new utf8 constant */
-	utf8 = utf8ConstNew(pathname, -1);
+	utf8 = utf8ConstFromString(pathname);
 
 	/* free the internal form of name */
 	KFREE(pathname);
@@ -607,7 +607,7 @@ Kaffe_GetFieldID(JNIEnv* env, jclass cls, const char* name, const char* sig UNUS
 	BEGIN_EXCEPTION_HANDLING(NULL);
 
 	cls_local = unveil(cls);
-	utf8 = checkPtr(utf8ConstNew(name, -1));
+	utf8 = checkPtr(utf8ConstFromString(name));
 	fld = lookupClassField((Hjava_lang_Class*)cls_local, utf8, false,
 			       &info);
 	utf8ConstRelease(utf8);
@@ -653,7 +653,7 @@ Kaffe_GetStaticFieldID(JNIEnv* env, jclass cls, const char* name, const char* si
 	BEGIN_EXCEPTION_HANDLING(NULL);
 
 	cls_local = unveil(cls);
-	utf8 = checkPtr(utf8ConstNew(name, -1));
+	utf8 = checkPtr(utf8ConstFromString(name));
 	fld = lookupClassField((Hjava_lang_Class*)cls_local, utf8, true, &info);
 	utf8ConstRelease(utf8);
 	if (fld == NULL) {

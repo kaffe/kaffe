@@ -1,5 +1,35 @@
 2006-04-22  Dalibor Topic  <robilad@kaffe.org>
 
+	Replaced utf8ConstNew(*,-1) calls with the helper function
+	utf8ConstFromString.
+
+	* kaffe/kaffevm/utf8const.h,
+	kaffe/kaffevm/utf8const.c (utf8ConstFromString): New function.
+	(utf8ConstNew) Factored out creation of utf8 constants from
+	null-terminated strings into utf8ConstFromString. Changed len
+	parameter type to size_t.
+
+	* kaffe/kaffeh/main.c,
+	kaffe/kaffevm/baseClasses.c,
+	kaffe/kaffevm/classMethod.c,
+	kaffe/kaffevm/itypes.c,
+	kaffe/kaffevm/reference.c,
+	kaffe/kaffevm/string.c,
+	kaffe/kaffevm/support.c,
+	kaffe/kaffevm/gcj/gcj-glue.c,
+	kaffe/kaffevm/jni/jni-string.c,
+	kaffe/kaffevm/jni/jni.c,
+	libraries/clib/management/JIT.c,
+	libraries/clib/native/ClassLoader.c,
+	libraries/clib/net/InetAddressImpl.c,
+	libraries/extensions/microsoft/clib/Delegate.c,
+	test/internal/jitBasic.c,
+	test/internal/jit_stub.c: Replaced use of utf8ConstNew with
+	utf8ConstFromString where a utf8 constant was created from a 
+	null-terminated string. 
+
+2006-04-22  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/jit/native-wrapper.c (Kaffe_wrapper):
 	Call the right initInsnSequence depending on the jit engine.
 	Call INIT_JIT_MD if necessary.

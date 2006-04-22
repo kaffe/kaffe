@@ -49,9 +49,9 @@ Java_org_kaffe_management_JIT_translateMethod(JNIEnv *env UNUSED, jclass _vmclas
 	char* cname = stringJava2C(_cname);
 	char* mname = stringJava2C(_mname);
 	char* signature = stringJava2C(_signature);
-	Utf8Const* u8cname = utf8ConstNew(cname, -1);
-	Utf8Const* u8mname = utf8ConstNew(mname, -1);
-	Utf8Const* u8sig = utf8ConstNew(signature, -1);
+	Utf8Const* u8cname = utf8ConstFromString(cname);
+	Utf8Const* u8mname = utf8ConstFromString(mname);
+	Utf8Const* u8sig = utf8ConstFromString(signature);
 
 	/* 
 	dprintf("translating %s.%s%s\n", cname, mname, signature);

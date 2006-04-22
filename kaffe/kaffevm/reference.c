@@ -97,7 +97,7 @@ void KaffeVM_registerObjectReference(jobject reference, jobject obj, kgc_referen
  
   if (referentOffset == ~((uint32)0))
     {
-      Utf8Const *referent_name = utf8ConstNew("referent", -1);
+      Utf8Const *referent_name = utf8ConstFromString("referent");
       Field *referent_field;
       errorInfo einfo;
 

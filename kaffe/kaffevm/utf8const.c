@@ -87,25 +87,24 @@ static hashtab_t	hashTable = (hashtab_t)1;
 static int		utf8ConstHashValueInternal(const void *v);
 static int		utf8ConstCompare(const void *v1, const void *v2);
 
+Utf8Const *
+utf8ConstFromString(const char *s)
+{
+  size_t len = strlen(s);
+  return utf8ConstNew(s, len);
+}
+
 /*
  * Convert a non-terminated UTF-8 string into an interned Utf8Const.
  * Returns 0 if an malloc failed occurred.
  */
 Utf8Const *
-utf8ConstNew(const char *s, int slen)
+utf8ConstNew(const char *s, size_t len)
 {
-	size_t len;
 	Utf8Const *utf8, *temp;
 	int32 hash;
 	Utf8Const *fake;
 	char buf[200];
-
-	/* Automatic length finder */
-	if (slen < 0) {
-		len = strlen(s);
-	}else{
-		len = (unsigned int) slen;
-	}
 
 #ifdef KAFFE_VMDEBUG
 	assert(utf8ConstIsValidUtf8(s, len));

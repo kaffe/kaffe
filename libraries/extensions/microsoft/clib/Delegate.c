@@ -109,8 +109,8 @@ Java_com_ms_lang_Delegate_getMethod0(JNIEnv* env, jclass delegate, jobject o, js
 	bsig = (jbyte*)(*env)->GetStringUTFChars(env, sig, &scopy);
 	clazz = (Hjava_lang_Class*)(*env)->GetObjectClass(env, o);
 
-	fname = utf8ConstNew(bname, -1);
-	fsig = utf8ConstNew(bsig, -1);
+	fname = utf8ConstFromString(bname);
+	fsig = utf8ConstFromString(bsig);
 
 	m = findMethodLocal(clazz, fname, fsig);
 

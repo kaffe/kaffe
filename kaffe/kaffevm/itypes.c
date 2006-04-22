@@ -55,7 +55,7 @@ initPrimClass(Hjava_lang_Class** class, const char* name, char sig, int len)
 	}
 
 	clazz->vtable = _PRIMITIVE_DTABLE;
-	clazz->name = utf8ConstNew(name, -1);
+	clazz->name = utf8ConstFromString(name);
 	clazz->accflags = ACC_PUBLIC | ACC_FINAL;
 	CLASS_PRIM_SIG(clazz) = sig;
         CLASS_PRIM_NAME(clazz) = utf8ConstNew(&sig, 1);
@@ -75,7 +75,7 @@ initPrimClass(Hjava_lang_Class** class, const char* name, char sig, int len)
 	 */
 	assert(strlen(name) <= 8);
 	sprintf(entryName, ";%s", name);
-	uname = utf8ConstNew(entryName, -1);
+	uname = utf8ConstFromString(entryName);
 	centry = lookupClassEntry(uname, NULL, &info);
 	utf8ConstRelease(uname);
 

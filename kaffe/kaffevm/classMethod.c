@@ -1613,7 +1613,7 @@ loadStaticClass(Hjava_lang_Class** class, const char* name)
 	classEntry* centry;
 	bool refAdded;
 
-	utf8 = utf8ConstNew(name, -1);
+	utf8 = utf8ConstFromString(name);
 	if (!utf8) goto bad;
 	centry = lookupClassEntry(utf8, NULL, &info);
 	if (!centry) goto bad;
@@ -1665,7 +1665,7 @@ lookupClass(const char* name, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
 	Hjava_lang_Class* class;
 	Utf8Const *utf8;
 
-	utf8 = utf8ConstNew(name, -1);
+	utf8 = utf8ConstFromString(name);
 	if (!utf8) {
 		postOutOfMemory(einfo);
 		return NULL;
@@ -2911,7 +2911,7 @@ lookupArray(Hjava_lang_Class* c, errorInfo *einfo)
 			sprintf (sig, "[L%s;", cname);
 		}
 	}
-	arr_name = utf8ConstNew(sig, -1);	/* release before returning */
+	arr_name = utf8ConstFromString(sig);	/* release before returning */
 	KFREE(sig);
 
 	if (!arr_name) {

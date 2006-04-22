@@ -77,7 +77,7 @@ static void initInetLock(void)
 
   if (inetClass == NULL)
     {
-      Utf8Const *name = utf8ConstNew("java/net/InetAddress", -1);
+      Utf8Const *name = utf8ConstFromString("java/net/InetAddress");
       inetClass = loadClass(name, NULL, &einfo);
       utf8ConstRelease(name);
       assert(inetClass != NULL);
@@ -123,7 +123,7 @@ static void initNsLock(void)
 
   if (SysInetClass == NULL)
     {
-      Utf8Const *name = utf8ConstNew("gnu/java/net/SysInetAddressImpl", -1);
+      Utf8Const *name = utf8ConstFromString("gnu/java/net/SysInetAddressImpl");
       SysInetClass = loadClass(name, NULL, &einfo);
       utf8ConstRelease(name);
       assert(SysInetClass != NULL);

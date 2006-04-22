@@ -174,8 +174,7 @@ int testMethod(Hjava_lang_Class *cl, Field *field)
 		Utf8Const *utf;
 		Method *meth;
 		
-		utf = utf8ConstNew(tf.tf_Components[tf.tf_MethodIndex].data,
-				   -1);
+		utf = utf8ConstFromString(tf.tf_Components[tf.tf_MethodIndex].data);
 		meth = findMethodNoSig(cl, utf);
 		if( translate(meth, &einfo) )
 		{

@@ -233,10 +233,10 @@ kenvMakeMethod(neutralMethodInfo* info, Hjava_lang_Class *c, errorInfo *einfo)
 	static 	char buf[1024];
 
         Method *mt = &CLASS_METHODS(c)[CLASS_NMETHODS(c)];
-	mt->name = utf8ConstNew(info->name, -1);
+	mt->name = utf8ConstFromString(info->name);
 
 	classname2pathname(info->signature, buf);
-	signature = utf8ConstNew(buf, -1);
+	signature = utf8ConstFromString(buf);
 
         METHOD_PSIG(mt) = parseSignature(signature, einfo);
 	utf8ConstRelease(signature);
@@ -334,7 +334,7 @@ kenvMakeField(neutralFieldInfo* info, Hjava_lang_Class *c, errorInfo *einfo)
                 fld = &CLASS_FIELDS(c)[info->idx + CLASS_NSFIELDS(c)];
         }
         fld->accflags = info->flags;
-	fld->name = utf8ConstNew(info->name, -1);
+	fld->name = utf8ConstFromString(info->name);
 
 	/* For now, that's true.  However, see
 	 * http://sourceware.cygnus.com/ml/java-discuss/1999-q4/msg00379.html

@@ -67,7 +67,7 @@ Field*  KNI_lookupFieldC(struct Hjava_lang_Class* clazz, const char* fieldName,
   Utf8Const *fieldUTF;
   Field *field;
 
-  checkPtr(fieldUTF = utf8ConstNew(fieldName, -1));
+  checkPtr(fieldUTF = utf8ConstFromString(fieldName));
   field = lookupClassField(clazz, fieldUTF, isStatic, einfo);
   utf8ConstRelease(fieldUTF);
 
@@ -264,7 +264,7 @@ execute_java_constructor_v(const char* cname, Hjava_lang_ClassLoader* loader,
 		}
 	}
 
-	sig = checkPtr(utf8ConstNew(signature, -1));
+	sig = checkPtr(utf8ConstFromString(signature));
 	mb = findMethodLocal(cc, constructor_name, sig);
 	utf8ConstRelease(sig);
 	if (mb == 0) {
@@ -376,12 +376,12 @@ lookupClassMethod(Hjava_lang_Class* cls, const char* name, const char* sig, bool
 	assert(name != NULL);
 	assert(sig != NULL);
 
-	name_utf8 = utf8ConstNew(name, -1);
+	name_utf8 = utf8ConstFromString(name);
 	if (!name_utf8) {
 		postOutOfMemory(einfo);
 		return NULL;
 	}
-	sig_utf8 = utf8ConstNew(sig, -1);
+	sig_utf8 = utf8ConstFromString(sig);
 	if (!sig_utf8) {
 		utf8ConstRelease(name_utf8);
 		postOutOfMemory(einfo);

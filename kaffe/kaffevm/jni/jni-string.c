@@ -101,7 +101,7 @@ KaffeJNI_NewStringUTF(JNIEnv* env UNUSED, const char* data)
     if (!utf8ConstIsValidUtf8(data, len)) {
       str = NULL;
     } else {
-      utf8 = checkPtr(utf8ConstNew(data, (int)len));
+      utf8 = checkPtr(utf8ConstNew(data, len));
       str = utf8Const2Java(utf8);
       utf8ConstRelease(utf8);
       if (!str) {

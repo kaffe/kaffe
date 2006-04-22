@@ -245,7 +245,7 @@ stringJava2Utf8ConstReplace(Hjava_lang_String *str, jchar from, jchar to)
 		throwError(&info);
 	}
 
-	utf8 = utf8ConstNew(utf8buf, -1);
+	utf8 = utf8ConstFromString(utf8buf);
 	KFREE(utf8buf);
 	return (utf8);
 }

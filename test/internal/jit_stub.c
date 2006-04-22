@@ -124,20 +124,20 @@ int main(int argc, char *argv[])
 	initNative();
 	
 	/* Create the initialise and finalize names and signatures. */
-	init_name = utf8ConstNew("<clinit>", -1);
-	final_name = utf8ConstNew("finalize", -1);
-	void_signature = utf8ConstNew("()V", -1);
-	constructor_name = utf8ConstNew("<init>", -1);
-	Code_name = utf8ConstNew("Code", -1);
-	LineNumberTable_name = utf8ConstNew("LineNumberTable", -1);
-	LocalVariableTable_name = utf8ConstNew("LocalVariableTable", -1);
-	ConstantValue_name = utf8ConstNew("ConstantValue", -1);
-	Exceptions_name = utf8ConstNew("Exceptions", -1);
-	SourceFile_name = utf8ConstNew("SourceFile", -1);
-	InnerClasses_name = utf8ConstNew("InnerClasses", -1);
-	Synthetic_name = utf8ConstNew("Synthetic", -1);
-	Signature_name = utf8ConstNew("Signature", -1);
-	EnclosingMethod_name = utf8ConstNew("EnclosingMethod", -1);
+	init_name = utf8ConstFromString("<clinit>");
+	final_name = utf8ConstFromString("finalize");
+	void_signature = utf8ConstFromString("()V");
+	constructor_name = utf8ConstFromString("<init>");
+	Code_name = utf8ConstFromString("Code");
+	LineNumberTable_name = utf8ConstFromString("LineNumberTable");
+	LocalVariableTable_name = utf8ConstFromString("LocalVariableTable");
+	ConstantValue_name = utf8ConstFromString("ConstantValue");
+	Exceptions_name = utf8ConstFromString("Exceptions");
+	SourceFile_name = utf8ConstFromString("SourceFile");
+	InnerClasses_name = utf8ConstFromString("InnerClasses");
+	Synthetic_name = utf8ConstFromString("Synthetic");
+	Signature_name = utf8ConstFromString("Signature");
+	EnclosingMethod_name = utf8ConstFromString("EnclosingMethod");
 
 	if (!(init_name && final_name && void_signature &&
 	      constructor_name && Code_name && LineNumberTable_name &&

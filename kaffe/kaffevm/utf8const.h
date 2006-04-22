@@ -16,9 +16,19 @@
 /* Initialize utf8const support system */
 extern void		  utf8ConstInit(void);
 
+/**
+ * Create a Utf8Const from a string. 
+ *
+ * The returned pointer remains valid until 
+ * Utf8ConstRelease() is called.
+ *
+ * @str UTF-8 encoded, '\0'-terminated string. 
+ */
+extern Utf8Const*	  utf8ConstFromString(const char* str);
+
 /* Create a Utf8Const from a UTF-8 encoded array. The returned pointer
    remains valid until Utf8ConstRelease() is called. */
-extern Utf8Const*	  utf8ConstNew(const char*, int);
+extern Utf8Const*	  utf8ConstNew(const char* str, size_t len);
 
 /* Add a reference to a Utf8Const */
 extern void		  utf8ConstAddRef(Utf8Const*);
