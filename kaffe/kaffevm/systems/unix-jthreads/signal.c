@@ -234,29 +234,39 @@ registerSyncSignalHandler(int sig, void* handler)
  * Restore an asynchronous signal handler.  
  * Only necesary on some platforms which don't provide SIGACTION
  */
+#if defined(HAVE_SIGACTION)
+void
+restoreAsyncSignalHandler(int sig UNUSED, void* handler UNUSED)
+{
+  /* Do nothing. */
+}
+#else /* !defined(HAVE_SIGACTION) */
 void
 restoreAsyncSignalHandler(int sig, void* handler)
 {
-#if !defined(HAVE_SIGACTION)
 	/* XXX need a configure-time test for this. */
 	registerAsyncSignalHandler(sig, handler);
-#endif
 }
-
+#endif /* defined(HAVE_SIGACTION) */
 
 /*
  * Restore a synchronous signal handler.  
  * Only necesary on some platforms.
  */
+#if defined(HAVE_SIGACTION)
+void
+restoreSyncSignalHandler(int sig UNUSED, void* handler UNUSED)
+{
+  /* Do nothing. */
+}
+#else /* !defined(HAVE_SIGACTION) */
 void
 restoreSyncSignalHandler(int sig, void* handler)
 {
-#if !defined(HAVE_SIGACTION)
 	/* XXX need a configure-time test for this. */
 	registerSyncSignalHandler(sig, handler);
-#endif
 }
-
+#endif
 
 /*
  * Register a handler for a terminal (i.e., process-killing) signal.
