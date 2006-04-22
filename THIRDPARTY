@@ -594,9 +594,9 @@ More information on GNU m4 is available at http://www.gnu.org/software/m4/.
 
 * binreloc
 
-Merged in BinReloc from http://www.autopackage.org/docs/binreloc/ . BinReloc 
-provides an easy-to-use API that uses dynamic linker and kernel magic to find 
-out the full path of your aplication or library. 
+Merged in BinReloc 2.0 from http://www.autopackage.org/docs/binreloc/ . 
+BinReloc provides an easy-to-use API that uses dynamic linker and kernel magic 
+to find out the full path of your aplication or library. 
 
 BinReloc is in public domain.
 

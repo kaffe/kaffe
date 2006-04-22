@@ -1,5 +1,9 @@
 2006-04-22  Dalibor Topic  <robilad@kaffe.org>
 
+	* THIRDPARTY: Added version information for binreloc.
+
+2006-04-22  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/constants.c (readConstantPool): Introduced
 	new local variable str to hold utf8 strings from class 
 	file. That fixes a compiler warning.
