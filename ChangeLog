@@ -1,5 +1,17 @@
 2006-04-22  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/systems/unix-pthreads/syscalls.c (jthreadedSendto),
+	kaffe/kaffevm/systems/unix-jthreads/syscalls.c 
+	(jthreadedGetHostByAddr, jthreadedBind, jthreadedSendto),
+	kaffe/kaffevm/systems/unix-jthreads/jthread.c (jthreadedConnect),
+	kaffe/kaffevm/systems/unix-jthreads/jthread.h (jthreadedConnect):
+	Fixed prototypes to match declarations in jsyscalls.h.
+
+	* include/jsyscall.h: Fixed paramters for _sendto to
+	match libc prototype.
+
+2006-04-22  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/binreloc.c (_br_find_exe_for_symbol): 
 	Mark parameter error as unused when binreloc is enabled.
 

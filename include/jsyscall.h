@@ -79,7 +79,7 @@ typedef struct SystemCallInterface {
 		int timeout, ssize_t *);
 	int	(*_sockwrite)(int, const void *, size_t, ssize_t *);
 	int	(*_sendto)(int, const void *, size_t, int, const struct sockaddr *,
-		int, ssize_t *);
+		socklen_t, int *);
 	int	(*_setsockopt)(int, int, int, const void *, int);
 	int	(*_getsockopt)(int, int, int, void *, socklen_t *);
 	int	(*_getsockname)(int, struct sockaddr *, socklen_t *);

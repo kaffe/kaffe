@@ -318,7 +318,7 @@ threadData* jthread_get_data(jthread_t tid);
  */
 int jthreadedOpen(const char* path, int flags, int mode, int*);
 int jthreadedSocket(int af, int type, int proto, int*);
-int jthreadedConnect(int fd, struct sockaddr* addr, int len, int timeout);
+int jthreadedConnect(int fd, struct sockaddr* addr, socklen_t len, int timeout);
 int jthreadedAccept(int fd, struct sockaddr* addr, socklen_t* len, 
 	int timeout, int *);
 int jthreadedRead(int fd, void* buf, size_t len, ssize_t *);

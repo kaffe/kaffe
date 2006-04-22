@@ -76,7 +76,7 @@ jthreadedKill(int pid, int sig)
 }
 
 static int
-jthreadedBind(int fd, struct sockaddr *addr, int namelen)
+jthreadedBind(int fd, struct sockaddr *addr, socklen_t namelen)
 {
 	int rc = 0;
 
@@ -214,7 +214,7 @@ jthreadedRemove(const char *entry)
 
 static int     
 jthreadedSendto(int a, const void* b, size_t c, int d, const struct sockaddr* e,
-		size_t f, ssize_t *out)
+		socklen_t f, int *out)
 {
 	int rc = 0;
 
@@ -306,13 +306,13 @@ jthreadedGetHostByName(const char *host, struct hostent** out)
 }
 
 static int
-jthreadedGetHostByAddr(const char *host, int l, int t, struct hostent** out)
+jthreadedGetHostByAddr(const char *host, size_t l, int t, struct hostent** out)
 {
 	int rc = 0;
 
 	jthread_spinon(0);
 	/* NB: same comment as for jthreadedGetHostByName applies here */
-	*out = gethostbyaddr(host, (unsigned)l, t);
+	*out = gethostbyaddr(host, l, t);
 	if (*out == 0) {
 		rc = h_errno;
 		if (rc == 0) {

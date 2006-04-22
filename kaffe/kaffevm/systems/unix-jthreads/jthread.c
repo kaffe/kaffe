@@ -2861,7 +2861,7 @@ jthreadedOpen(const char* path, int flags, int mode, int *out)
  * Threaded socket connect.
  */
 int
-jthreadedConnect(int fd, struct sockaddr* addr, int len, int timeout)
+jthreadedConnect(int fd, struct sockaddr* addr, socklen_t len, int timeout)
 {
 	int r;
 	jlong deadline = 0;
