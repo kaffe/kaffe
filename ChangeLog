@@ -1,5 +1,11 @@
 2006-04-22  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/constants.c (readConstantPool): Introduced
+	new local variable str to hold utf8 strings from class 
+	file. That fixes a compiler warning.
+
+2006-04-22  Dalibor Topic  <robilad@kaffe.org>
+
 	Replaced utf8ConstNew(*,-1) calls with the helper function
 	utf8ConstFromString.
 

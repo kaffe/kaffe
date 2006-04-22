@@ -71,6 +71,7 @@ readConstantPool(Hjava_lang_Class* this, classFile* fp, errorInfo *einfo)
 	pool[0] = 0;
 	tags[0] = CONSTANT_Unknown;
 	for (i = 1; i < info->size; i++) {
+	        const char * str;
 
 		if (! checkBufSize(fp, 1, className, einfo))
 			goto fail;
@@ -91,13 +92,15 @@ readConstantPool(Hjava_lang_Class* this, classFile* fp, errorInfo *einfo)
 			if (! checkBufSize(fp, len, className, einfo))
 				goto fail;
 
-			if (!utf8ConstIsValidUtf8(fp->cur, len)) {
+			str = (const char *) fp->cur;
+
+			if (!utf8ConstIsValidUtf8(str, len)) {
 				postExceptionMessage(einfo,
 					JAVA_LANG(ClassFormatError), 
 					"Invalid UTF-8 constant");
 				goto fail;
 			}
-			pool[i] = (ConstSlot) utf8ConstNew(fp->cur, len);
+			pool[i] = (ConstSlot) utf8ConstNew(str, len);
 			if (!pool[i]) {
 				postOutOfMemory(einfo);
 				goto fail;
