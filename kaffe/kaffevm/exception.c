@@ -421,7 +421,10 @@ dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseFrame)
 		/*
 		 * if we reach the last jni frame, we're done
 		 */
-		if (lastJniFrame && vmExcept_JNIContains(lastJniFrame, frame->fp)) {
+		if (lastJniFrame 
+		    && vmExcept_JNIContains(lastJniFrame, 
+					    (JNIFrameAddress) frame->fp)) 
+		{
 			thread_data->exceptPtr = lastJniFrame;
 			vmExcept_jumpToHandler(lastJniFrame); /* doesn't return */
 		}
