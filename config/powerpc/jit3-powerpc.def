@@ -1554,7 +1554,7 @@ define_insn(build_code_ref, set_wordpc_xxC)
 	l->from = CODEPC;
 	LOUT(0);
 
-	debug((DBOUT,"build_code_ref (@0x%x to 0x%x)\n", l->at, KaffeJIT3_getLabelName(l)));
+	debug((DBOUT,"build_code_ref (@0x%x to %s)\n", l->at, KaffeJIT3_getLabelName(l)));
 }
 
 /* --------------------------------------------------------------------- */
@@ -1703,7 +1703,7 @@ define_insn(call_ref, call_xCC)
 	l->from = CODEPC;
 	LOUT(ppc_op_b(0) | PPC_OPTION_LK);
 	
-	debug((DBOUT,"call_ref %p\n",l->to));
+	debug((DBOUT,"call_ref %p\n",(void *)l->to));
 }
 
 define_insn(call, call_xRC)

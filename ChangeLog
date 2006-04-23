@@ -1,5 +1,10 @@
 2006-04-23  Dalibor Topic  <robilad@kaffe.org>
 
+	* config/powerpc/jit3-powerpc.def: Fixed small powerpc
+	jitter debug message format warnings.
+
+2006-04-23  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/classMethod.c (getMethodCodeStart) 
 	(setMethodCodeStart): Replace struct _jitCodeHeader
 	by jitCodeHeader, which is then suitably defined in 
