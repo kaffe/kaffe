@@ -127,6 +127,7 @@ Platform Matrix
 ===============
 
 The following platforms have been tested for this release:
+(Please check FAQ/FAQ.platform-status for a more extensive result series)
 
   arch	|   os	   | engine | threads |  gc   | passed
 ======================================================

@@ -1,0 +1,12 @@
+KAFFE PLATFORM NOTES
+--------------------
+
+These are the results on different platforms. Some of these are less common and are not formally tested before a release, but you may check here the results of build and check runs on CVS versions.
+
+Version = CVS-HEAD 2006-04-23
+OS: Darwin 6.8
+Arch: PowerPC
+Compiler: apple cc
+Kaffe engine: intrp, pthreads, kaffe-gc
+Regressions: 149/150
+
