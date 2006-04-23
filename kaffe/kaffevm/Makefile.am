@@ -114,7 +114,6 @@ libkaffevm_la_SOURCES = \
 	stackTrace.c \
 	stats.c \
 	string.c \
-	stringParsing.c \
 	support.c \
 	javacall.c \
 	thread.c \
@@ -153,7 +152,6 @@ noinst_HEADERS = \
 	soft.h \
 	stackTrace.h \
 	stats.h \
-	stringParsing.h \
 	stringSupport.h \
 	support.h \
 	thread.h \

@@ -62,7 +62,12 @@ jitBasic_DEPENDENCIES = $(LIBNATIVE) $(LIBKAFFEVM) $(libxprof)
 STUB = main_stub.c
 JIT_STUB = jit_stub.c
 
-jitBasic_SOURCES = jitBasic.c $(JIT_STUB)
+jitBasic_SOURCES = \
+	jitBasic.c \
+	stringParsing.c \
+	stringParsing.h \
+	$(JIT_STUB)
+
 nodist_jitBasic_SOURCES = $(nodist_GEN_SRCS)
 
 # Order matters here!

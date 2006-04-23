@@ -108,11 +108,11 @@ am_libkaffevm_la_OBJECTS = libkaffevm_la-access.lo \
 	libkaffevm_la-lookup.lo libkaffevm_la-object.lo \
 	libkaffevm_la-readClass.lo libkaffevm_la-soft.lo \
 	libkaffevm_la-stackTrace.lo libkaffevm_la-stats.lo \
-	libkaffevm_la-string.lo libkaffevm_la-stringParsing.lo \
-	libkaffevm_la-support.lo libkaffevm_la-javacall.lo \
-	libkaffevm_la-thread.lo libkaffevm_la-utf8const.lo \
-	libkaffevm_la-gcFuncs.lo libkaffevm_la-reflect.lo \
-	libkaffevm_la-reference.lo libkaffevm_la-binreloc.lo
+	libkaffevm_la-string.lo libkaffevm_la-support.lo \
+	libkaffevm_la-javacall.lo libkaffevm_la-thread.lo \
+	libkaffevm_la-utf8const.lo libkaffevm_la-gcFuncs.lo \
+	libkaffevm_la-reflect.lo libkaffevm_la-reference.lo \
+	libkaffevm_la-binreloc.lo
 am__objects_1 = libkaffevm_la-md.lo
 nodist_libkaffevm_la_OBJECTS = $(am__objects_1)
 libkaffevm_la_OBJECTS = $(am_libkaffevm_la_OBJECTS) \
@@ -500,7 +500,6 @@ libkaffevm_la_SOURCES = \
 	stackTrace.c \
 	stats.c \
 	string.c \
-	stringParsing.c \
 	support.c \
 	javacall.c \
 	thread.c \
@@ -539,7 +538,6 @@ noinst_HEADERS = \
 	soft.h \
 	stackTrace.h \
 	stats.h \
-	stringParsing.h \
 	stringSupport.h \
 	support.h \
 	thread.h \
@@ -652,7 +650,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-stackTrace.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-stats.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-string.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-stringParsing.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-support.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-thread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-utf8const.Plo@am__quote@
@@ -859,13 +856,6 @@ libkaffevm_la-string.lo: string.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='string.c' object='libkaffevm_la-string.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-string.lo `test -f 'string.c' || echo '$(srcdir)/'`string.c
-
-libkaffevm_la-stringParsing.lo: stringParsing.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-stringParsing.lo -MD -MP -MF "$(DEPDIR)/libkaffevm_la-stringParsing.Tpo" -c -o libkaffevm_la-stringParsing.lo `test -f 'stringParsing.c' || echo '$(srcdir)/'`stringParsing.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libkaffevm_la-stringParsing.Tpo" "$(DEPDIR)/libkaffevm_la-stringParsing.Plo"; else rm -f "$(DEPDIR)/libkaffevm_la-stringParsing.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='stringParsing.c' object='libkaffevm_la-stringParsing.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-stringParsing.lo `test -f 'stringParsing.c' || echo '$(srcdir)/'`stringParsing.c
 
 libkaffevm_la-support.lo: support.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-support.lo -MD -MP -MF "$(DEPDIR)/libkaffevm_la-support.Tpo" -c -o libkaffevm_la-support.lo `test -f 'support.c' || echo '$(srcdir)/'`support.c; \

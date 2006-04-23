@@ -77,7 +77,8 @@ mkinstalldirs = $(SHELL) $(top_srcdir)/scripts/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h
 CONFIG_CLEAN_FILES =
 am__objects_1 = jit_stub.$(OBJEXT)
-am_jitBasic_OBJECTS = jitBasic.$(OBJEXT) $(am__objects_1)
+am_jitBasic_OBJECTS = jitBasic.$(OBJEXT) stringParsing.$(OBJEXT) \
+	$(am__objects_1)
 am__objects_2 = version.$(OBJEXT)
 nodist_jitBasic_OBJECTS = $(am__objects_2)
 jitBasic_OBJECTS = $(am_jitBasic_OBJECTS) $(nodist_jitBasic_OBJECTS)
@@ -410,7 +411,12 @@ jitBasic_LDADD = \
 jitBasic_DEPENDENCIES = $(LIBNATIVE) $(LIBKAFFEVM) $(libxprof)
 STUB = main_stub.c
 JIT_STUB = jit_stub.c
-jitBasic_SOURCES = jitBasic.c $(JIT_STUB)
+jitBasic_SOURCES = \
+	jitBasic.c \
+	stringParsing.c \
+	stringParsing.h \
+	$(JIT_STUB)
+
 nodist_jitBasic_SOURCES = $(nodist_GEN_SRCS)
 
 # Order matters here!
@@ -518,6 +524,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jitBasic.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jit_stub.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stringParsing.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/version.Po@am__quote@
 
 .c.o:
