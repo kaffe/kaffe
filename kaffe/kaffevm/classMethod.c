@@ -16,6 +16,7 @@
 #include "config-hacks.h"
 #include "defs.h"
 #include "gtypes.h"
+#include "machine.h"
 #include "slots.h"
 #include "access.h"
 #include "object.h"
@@ -2050,7 +2051,7 @@ getInheritedMethodIndex(Hjava_lang_Class *super, Method *meth)
  * @param method a method
  * @return pointer to start of code
  */
-struct _jitCodeHeader*
+jitCodeHeader*
 getMethodCodeStart(Method * method) 
 {
   return method->c.ncode.ncode_start;
@@ -2063,7 +2064,7 @@ getMethodCodeStart(Method * method)
  * @param start pointer to start of code
  */
 void
-setMethodCodeStart(Method * method, struct _jitCodeHeader* start)
+setMethodCodeStart(Method * method, jitCodeHeader* start)
 {
   method->c.ncode.ncode_start = start;
 }

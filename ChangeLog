@@ -1,5 +1,18 @@
 2006-04-23  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/classMethod.c (getMethodCodeStart) 
+	(setMethodCodeStart): Replace struct _jitCodeHeader
+	by jitCodeHeader, which is then suitably defined in 
+	each engine.
+
+	* kaffe/kaffevm/intrp/machine.h: Define jitCodeHeader type
+	to fix compiler warning.
+
+	* kaffe/kaffevm/classMethod.h: Use jitCodeHeader instead of
+	struct _jitCodeHeader.
+
+2006-04-23  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/jit3/machine.c (installMethodCode),
 	kaffe/kaffevm/jit/machine.c (installMethodCode) 
 	(installMethodCode),

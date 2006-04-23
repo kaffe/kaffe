@@ -11,6 +11,7 @@
 #ifndef __machine_h
 #define	__machine_h
 
+#include "gtypes.h"
 #include "object.h"
 #include "threadData.h"
 
@@ -112,6 +113,9 @@
 
 struct _jmethodID;
 struct _slots;
+
+typedef nativecode jitCodeHeader;
+
 void virtualMachine(struct _jmethodID*, struct _slots*, struct _slots*, threadData*); 
 void setupExceptionHandling(VmExceptHandler* eh, struct _jmethodID* meth, struct Hjava_lang_Object* syncobj, threadData*);
 void cleanupExceptionHandling(VmExceptHandler* eh, threadData*); 

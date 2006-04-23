@@ -13,6 +13,7 @@
 #define __classmethod_h
 
 #include "gtypes.h"
+#include "machine.h"
 #include "access.h"
 #include "object.h"
 #include "md.h"	 /* XXX: need this here so KAFFE_PROFILER is accurately def'd */
@@ -45,7 +46,6 @@ typedef enum {
 struct _classEntry;
 struct _innerClass;
 struct Hjava_lang_String;
-struct _jitCodeHeader;
 
 #include <java_lang_ClassLoader.h>
 #include "reference.h"
@@ -221,7 +221,7 @@ typedef struct Hjava_lang_Class Hjava_lang_Class;
  * @param method a method
  * @return pointer to start of code
  */
-struct _jitCodeHeader* getMethodCodeStart(Method * method);
+jitCodeHeader* getMethodCodeStart(Method * method);
 
 /**
  * Set start of native code of a method
@@ -229,7 +229,7 @@ struct _jitCodeHeader* getMethodCodeStart(Method * method);
  * @param method a method
  * @param start pointer to start of code
  */
-void setMethodCodeStart(Method * method, struct _jitCodeHeader* start);
+void setMethodCodeStart(Method * method, jitCodeHeader* start);
 
 #define	_SET_METHOD_NATIVECODE(M, C)	do {\
 	if ((M)->idx == -1) {\
@@ -320,7 +320,7 @@ typedef struct _jmethodID {
 	nativecode*		ncode;
 	union {
 	  struct {
-		struct _jitCodeHeader*	ncode_start;
+		jitCodeHeader*	ncode_start;
 		nativecode*	ncode_end;
 	  } ncode;
 	  struct {
