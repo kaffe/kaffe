@@ -20,7 +20,6 @@ import java.util.Stack;
 class MouseEvt
   extends MouseEvent
 {
-	int button;
 	static int clicks;
 	static MouseEvt cache;
 	static boolean buttonPressed;

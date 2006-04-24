@@ -1,8 +1,13 @@
 2006-04-24  Riccardo Mottola <riccardo@kaffe.org>
 
-	* libraries/javalib/awt-implementations/kaffe/java/awtAttributeValue.java,
-	libraries/javalib/awt-implementations/kaffe/java/awtBufferCapabilities.java,
-	libraries/javalib/awt-implementations/kaffe/java/awtTransparency.java:
+	* libraries/javalib/awt-implementations/kaffe/java/awt/MouseEvt.java:
+	removed package-protected field "button" so that the MouseEvent field is used.
+
+2006-04-24  Riccardo Mottola <riccardo@kaffe.org>
+
+	* libraries/javalib/awt-implementations/kaffe/java/awt/AttributeValue.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/BufferCapabilities.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/Transparency.java:
 	removed so classpath versions are used.
 
 2006-04-24  Riccardo Mottola <riccardo@kaffe.org>
