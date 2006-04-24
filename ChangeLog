@@ -1,4 +1,10 @@
 2006-04-24  Riccardo Mottola <riccardo@kaffe.org>
+	* awt-implementations/kaffe/java/awt/ActionEvt.java,
+	awt-implementations/kaffe/java/awt/MouseEvt.java,
+	awt-implementations/kaffe/java/awt/event/ActionEvent.java:
+	improved mouse pressed and released events.
+	
+2006-04-24  Riccardo Mottola <riccardo@kaffe.org>
 
 	* libraries/javalib/awt-implementations/kaffe/java/awt/MouseEvt.java:
 	removed package-protected field "button" so that the MouseEvent field is used.

@@ -32,8 +32,8 @@ static synchronized ActionEvt getEvent ( Object source, int id, String cmd, int 
 		
 		e.source = source;
 		e.id = id;
-		e.cmd = cmd;
-		e.mods = mods;
+		e.actionCommand = cmd;
+		e.modifiers = mods;
 		
 		return e;
 	}	

@@ -255,11 +255,11 @@ static synchronized MouseEvt getEvent ( Component source, int id, long when, int
 
 		if ( mods != 0 ) {
 			if ( (mods & BUTTON1_MASK) != 0 )
-				e.button = 1;
+				e.button = BUTTON1;
 			else if ( (mods & BUTTON2_MASK) != 0 )
-				e.button = 2;
+				e.button = BUTTON2;
 			else if ( (mods & BUTTON3_MASK) != 0 )
-				e.button = 3;
+				e.button = BUTTON3;
 		}
 		
 		return e;
