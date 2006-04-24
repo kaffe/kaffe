@@ -188,10 +188,6 @@ java_awt_event_SRCS = \
 	java/awt/event/FocusAdapter.java \
 	java/awt/event/FocusEvent.java \
 	java/awt/event/FocusListener.java \
-	java/awt/event/HierarchyBoundsAdapter.java \
-	java/awt/event/HierarchyBoundsListener.java \
-	java/awt/event/HierarchyEvent.java \
-	java/awt/event/HierarchyListener.java \
 	java/awt/event/InputEvent.java \
 	java/awt/event/InputMethodEvent.java \
 	java/awt/event/InputMethodListener.java \

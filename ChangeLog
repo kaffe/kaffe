@@ -1,4 +1,13 @@
+2006-04-25  Riccardo Mottola <riccardo@kaffe.org>
+
+	* awt-implementations/kaffe/java/awt/event/HierarchyBoundsAdapter.java,
+	awt-implementations/kaffe/java/awt/event/HierarchyBoundsListener.java,
+	awt-implementations/kaffe/java/awt/event/HierarchyEvent.java
+	awt-implementations/kaffe/java/awt/event/HierarchyListener.java:
+	removed, so to use classath
+
 2006-04-24  Riccardo Mottola <riccardo@kaffe.org>
+
 	* awt-implementations/kaffe/java/awt/ActionEvt.java,
 	awt-implementations/kaffe/java/awt/MouseEvt.java,
 	awt-implementations/kaffe/java/awt/event/ActionEvent.java:
