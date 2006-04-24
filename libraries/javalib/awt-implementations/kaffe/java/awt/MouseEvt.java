@@ -47,24 +47,6 @@ MouseEvt ( Component src, int evtId, long time, int modifiers,
 	super( src, evtId, time, modifiers, x, y, clickCount, isPopupTrigger);
 }
 
-static void clickToFocus ( Component newKeyTgt ) {			
-	// The JDK does not automatically set the focus on mouse clicks for lightweights,
-	// (non-lightweights probably will be handled by the native window system), i.e.
-	// if a component explicitly requests the focus in respond to a mouse click, the
-	// focus events will be processed AFTER the mouse event. This is the opposite order
-	// compared to native handling (for toplevels). We try to be compatible with
-	// lightweight behavior
-
-	// note that the JDK allows components which are not isFocusTraversable() to gain
-	// the focus by means of explicit requestFocus() (not very intuitive) OR by means of
-	// mouseclicks (even on components which are not mouse aware, which sounds silly)
-
-/* XXX
-	if ( ((newKeyTgt.flags & Component.IS_NATIVE_LIKE) != 0) && newKeyTgt.isFocusTraversable() )
-		newKeyTgt.requestFocus();	
- */
-}
-
 static Component computeMouseTarget ( Container toplevel, int x, int y ) {
 	Container  cntr;
 	Component  c, tgt;
@@ -185,9 +167,6 @@ protected void dispatch () {
 		  break;
 		
 		case MOUSE_PRESSED:
-			if ( (AWTEvent.mouseTgt != AWTEvent.keyTgt) )  // decide upon focus policy
-				clickToFocus( AWTEvent.mouseTgt);
-			
 			buttonPressed = true;
 			modifiers = updateInputModifier( button, true);
 			
