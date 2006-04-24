@@ -1,5 +1,12 @@
 2006-04-24  Riccardo Mottola <riccardo@kaffe.org>
 
+	* libraries/javalib/awt-implementations/kaffe/java/awtAttributeValue.java,
+	libraries/javalib/awt-implementations/kaffe/java/awtBufferCapabilities.java,
+	libraries/javalib/awt-implementations/kaffe/java/awtTransparency.java:
+	removed so classpath versions are used.
+
+2006-04-24  Riccardo Mottola <riccardo@kaffe.org>
+
 	* libraries/javalib/awt-implementations/kaffe/java/awt/MouseEvt.java:
 	removed an empty method which should not be used anyway
 

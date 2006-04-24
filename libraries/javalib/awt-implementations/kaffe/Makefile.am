@@ -37,7 +37,6 @@ java_awt_SRCS = \
 	java/awt/Adjustable.java \
 	java/awt/AdjustmentEvt.java \
 	java/awt/AlphaComposite.java \
-	java/awt/AttributeValue.java \
 	java/awt/AWTError.java \
 	java/awt/AWTEvent.java \
 	java/awt/AWTException.java \
@@ -45,7 +44,6 @@ java_awt_SRCS = \
 	java/awt/BarMenu.java \
 	java/awt/BasicStroke.java \
 	java/awt/BorderLayout.java \
-	java/awt/BufferCapabilities.java \
 	java/awt/Button.java \
 	java/awt/Canvas.java \
 	java/awt/CardLayout.java \
@@ -153,7 +151,6 @@ java_awt_SRCS = \
 	java/awt/TextField.java \
 	java/awt/TexturePaint.java \
 	java/awt/Toolkit.java \
-	java/awt/Transparency.java \
 	java/awt/WindowEvt.java \
 	java/awt/Window.java \
 	java/awt/WMEvent.java
