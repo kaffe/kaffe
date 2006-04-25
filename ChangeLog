@@ -1,5 +1,10 @@
 2006-04-26  Riccardo Mottola <riccardo@kaffe.org>
 
+	* libraries/javalib/awt-implementations/kaffe/java/awt/Container.java:
+	implemented findComponentAt
+
+2006-04-26  Riccardo Mottola <riccardo@kaffe.org>
+
 	* javalib/awt-implementations/kaffe/java/awt/AWTEvent.java,
 	javalib/awt-implementations/kaffe/java/awt/Defaults.java:
 	implemented a compliant setSource() in AWTEvent.

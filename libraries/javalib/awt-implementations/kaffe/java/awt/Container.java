@@ -273,9 +273,100 @@ public Component getComponent ( int index ) {
 	return component[index];
 }
 
-public Component getComponentAt ( Point pt ) {
-	return getComponentAt( pt.x, pt.y);
-}
+  /**
+   * Returns the component located at the specified point.  This is done
+   * by checking whether or not a child component claims to contain this
+   * point.  The first child component that does is returned.  If no
+   * child component claims the point, the container itself is returned,
+   * unless the point does not exist within this container, in which
+   * case <code>null</code> is returned.
+   *
+   * The top-most child component is returned in the case where components overlap.
+   * This is determined by finding the component closest to (x,y) and contains 
+   * that location. Heavyweight components take precedence of lightweight components.
+   * 
+   * This function does not ignore invisible components. If there is an invisible
+   * component at (x,y), it will be returned.
+   * 
+   * @param p The point to return the component at.
+   * @return The component containing the specified point, or <code>null</code>
+   * if there is no such point.
+   */
+  public Component getComponentAt(Point p)
+  {
+    return getComponentAt (p.x, p.y);
+  }
+
+  /**
+   * Locates the visible child component that contains the specified position. 
+   * The top-most child component is returned in the case where there is overlap
+   * in the components. If the containing child component is a Container,
+   * this method will continue searching for the deepest nested child 
+   * component. Components which are not visible are ignored during the search.
+   * 
+   * findComponentAt differs from getComponentAt, because it recursively 
+   * searches a Container's children.
+   * 
+   * @param x - x coordinate
+   * @param y - y coordinate
+   * @return null if the component does not contain the position. 
+   * If there is no child component at the requested point and the point is 
+   * within the bounds of the container the container itself is returned.
+   * @since 1.2
+   */
+  public Component findComponentAt(int x, int y)
+  {
+    synchronized (getTreeLock ())
+      {
+        if (! contains(x, y))
+          return null;
+
+        for (int i = 0; i < ncomponents; ++i)
+          {
+            // Ignore invisible children...
+            if (!component[i].isVisible())
+              continue;
+
+            int x2 = x - component[i].x;
+            int y2 = y - component[i].y;
+            // We don't do the contains() check right away because
+            // findComponentAt would redundantly do it first thing.
+            if (component[i] instanceof Container)
+              {
+                Container k = (Container) component[i];
+                Component r = k.findComponentAt(x2, y2);
+                if (r != null)
+                  return r;
+              }
+            else if (component[i].contains(x2, y2))
+              return component[i];
+          }
+
+        return this;
+      }
+  }
+  
+  /**
+   * Locates the visible child component that contains the specified position. 
+   * The top-most child component is returned in the case where there is overlap
+   * in the components. If the containing child component is a Container,
+   * this method will continue searching for the deepest nested child 
+   * component. Components which are not visible are ignored during the search.
+   * 
+   * findComponentAt differs from getComponentAt, because it recursively 
+   * searches a Container's children.
+   * 
+   * @param p - the component's location
+   * @return null if the component does not contain the position. 
+   * If there is no child component at the requested point and the point is 
+   * within the bounds of the container the container itself is returned.
+   * @since 1.2
+   */
+  public Component findComponentAt(Point p)
+  {
+    return findComponentAt(p.x, p.y);
+  }
+
 
 public Component getComponentAt ( int x, int y ) {
 	return locate ( x, y);
