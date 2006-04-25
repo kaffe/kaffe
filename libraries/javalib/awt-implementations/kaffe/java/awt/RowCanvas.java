@@ -224,14 +224,14 @@ void rearrange() {
 
 void redirectFocusEvent( FocusEvent e) {
 	if ( parent.focusListener != null ){
-		AWTEvent.setSource( e, parent);
+		e.setSource(parent);
 		parent.process( e);
 	}
 }
 
 void redirectKeyEvent( KeyEvent e) {
 	if ( parent.keyListener != null ){
-		AWTEvent.setSource( e, parent);
+		e.setSource(parent);
 		parent.process( e);
 	}
 }

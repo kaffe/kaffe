@@ -1,3 +1,9 @@
+2006-04-26  Riccardo Mottola <riccardo@kaffe.org>
+
+	* javalib/awt-implementations/kaffe/java/awt/AWTEvent.java,
+	javalib/awt-implementations/kaffe/java/awt/Defaults.java:
+	implemented a compliant setSource() in AWTEvent.
+
 2006-04-25  Riccardo Mottola <riccardo@kaffe.org>
 
 	* awt-implementations/kaffe/java/awt/event/HierarchyBoundsAdapter.java,

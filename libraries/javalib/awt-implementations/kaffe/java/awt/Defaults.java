@@ -20,7 +20,7 @@ package java.awt;
  *
  * @author P.C.Mehlitz
  */
-class Defaults
+public class Defaults
 {
 /**
  * If ConsoleClass is set to the classname of a kaffe.util.log.LogClient, System.out, err
@@ -38,7 +38,7 @@ class Defaults
  * Upper bound (in ms) between mouse button press events which will be
  * considered as a 'click' (will increase the MouseEvent clickCount)
  */
-	static int ClickInterval = 250;
+public static int ClickInterval = 250;
 /**
  * maximum x,y coordinate distance (in pixels) between successive MOUSE_PRESSED
  * events which are still considered to be a click (required for some devices
