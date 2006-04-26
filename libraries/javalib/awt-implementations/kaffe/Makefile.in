@@ -393,10 +393,8 @@ java_awt_SRCS = \
 	java/awt/AWTPermission.java \
 	java/awt/BarMenu.java \
 	java/awt/BasicStroke.java \
-	java/awt/BorderLayout.java \
 	java/awt/Button.java \
 	java/awt/Canvas.java \
-	java/awt/CardLayout.java \
 	java/awt/CheckboxGroup.java \
 	java/awt/Checkbox.java \
 	java/awt/CheckboxMenuItem.java \
@@ -452,8 +450,6 @@ java_awt_SRCS = \
 	java/awt/KeyEventPostProcessor.java \
 	java/awt/KeyEvt.java \
 	java/awt/Label.java \
-	java/awt/LayoutManager2.java \
-	java/awt/LayoutManager.java \
 	java/awt/List.java \
 	java/awt/MediaTracker.java \
 	java/awt/MenuBar.java \

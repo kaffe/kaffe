@@ -1,5 +1,13 @@
 2006-04-26  Riccardo Mottola <riccardo@kaffe.org>
 
+	* libraries/javalib/awt-implementations/kaffe/java/awt/LayoutManager.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/LayoutManager2.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/CardLayout.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/BorderLayout.java:
+	removed, so to use classath
+
+2006-04-26  Riccardo Mottola <riccardo@kaffe.org>
+
 	* libraries/javalib/awt-implementations/kaffe/java/awt/Container.java:
 	implemented findComponentAt
 
