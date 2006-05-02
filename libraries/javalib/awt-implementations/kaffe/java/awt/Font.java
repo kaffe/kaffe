@@ -2,11 +2,13 @@ package java.awt;
 
 import gnu.classpath.Pointer;
 
+import java.awt.geom.AffineTransform;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.peer.FontPeer;
 import java.io.Serializable;
 import java.text.CharacterIterator;
+import java.util.Map;
 
 /**
  * XXX: implement serial form! 
@@ -176,13 +178,21 @@ public static Font getFont ( String key ) {
 	return getFont( key, null);
 }
 
-public static Font getFont ( String key, Font defFont ) {
-	String fSpec;
-
-	if ( (fSpec = System.getProperty( key)) != null )
-		return decode( fSpec);
-
-	return defFont;	
+/**
+* Returns a <code>Font</code> object from the passed property name.
+ *
+ * @param propname The name of the system property.
+ * @param defval Value to use if the property is not found.
+ *
+ * @return The requested font, or <code>default</code> if the property
+ * not exist or is malformed.
+ */
+public static Font getFont(String propname, Font defval)
+{
+    String propval = System.getProperty(propname);
+    if (propval != null)
+        return decode(propval);
+    return defval;
 }
 
 public String getName() {
@@ -226,6 +236,40 @@ public String toString() {
 	return getClass().getName() + "[family=" +getFamily() + ",name=" + name
 	    + ",style=" + s + ",size=" + size + ']';
 }
+
+// TODO all these derive font methods should actually derive a font!
+public Font deriveFont(int style, float size)
+{
+    return this;
+}
+public Font deriveFont(float size)
+{
+    return this;
+}
+public Font deriveFont(int style)
+{
+    return this;
+}
+public Font deriveFont(int style, AffineTransform a)
+{
+    if (a == null)
+        throw new IllegalArgumentException("Affine transformation is null");
+
+    return this;
+}
+public Font deriveFont(AffineTransform a)
+{
+    if (a == null)
+        throw new IllegalArgumentException("Affine transformation is null");
+
+    return this;
+}
+
+public Font deriveFont(Map attributes)
+{
+    return this;
+}
+
 
 /* taken from GNU Classpath */
 public GlyphVector

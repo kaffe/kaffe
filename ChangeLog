@@ -1,5 +1,10 @@
 2006-05-02  Riccardo Mottola <riccardo@kaffe.org>
 
+	* libraries/javalib/awt-implementations/kaffe/java/awt/Font.java:
+	added deriveFont() stubs
+
+2006-05-02  Riccardo Mottola <riccardo@kaffe.org>
+
 	* libraries/javalib/awt-implementations/kaffe/java/awt/Component.java,
 	libraries/javalib/awt-implementations/kaffe/java/awt/Container.java:
 	fixed Containder add() methods.
