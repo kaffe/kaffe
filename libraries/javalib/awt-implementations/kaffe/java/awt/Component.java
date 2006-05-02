@@ -38,6 +38,7 @@ import java.awt.image.ColorModel;
 import java.awt.image.ImageObserver;
 import java.awt.image.ImageProducer;
 import java.awt.peer.ComponentPeer;
+import java.awt.peer.LightweightPeer;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
@@ -113,6 +114,9 @@ abstract public class Component
 	final static int IS_TEMP_HIDDEN = 0x20000;
 	final static int IS_SHOWING = IS_ADD_NOTIFIED | IS_PARENT_SHOWING | IS_VISIBLE;
 	
+  /** The associated native peer. */
+  transient ComponentPeer peer;
+
  /**
    * Describes all registered PropertyChangeListeners.
    *
@@ -547,10 +551,35 @@ public Dimension getMaximumSize() {
 	return Toolkit.singleton.getScreenSize();
 }
 
-// Subclasses that guarantee to always completely paint their contents should override this method and return true. All of the "heavyweight" AWT components are opaque.
-public boolean isOpaque() {
-	return false;
-}
+  /**
+   * Tests if this component is opaque. All "heavyweight" (natively-drawn)
+   * components are opaque. A component is opaque if it draws all pixels in
+   * the bounds; a lightweight component is partially transparent if it lets
+   * pixels underneath show through. Subclasses that guarantee that all pixels
+   * will be drawn should override this.
+   *
+   * @return true if this is opaque
+   * @see #isLightweight()
+   * @since 1.2
+   */
+  public boolean isOpaque()
+  {
+    return ! isLightweight();
+  }
+
+  /**
+   * Return whether the component is lightweight. That means the component has
+   * no native peer, but is displayable. This applies to subclasses of
+   * Component not in this package, such as javax.swing.
+   *
+   * @return true if the component has a lightweight peer
+   * @see #isDisplayable()
+   * @since 1.2
+   */
+  public boolean isLightweight()
+  {
+    return peer instanceof LightweightPeer;
+  }
 
 public Dimension getMinimumSize() {
 	return minimumSize();

@@ -35,40 +35,112 @@ abstract public class Container
   Component[] component;
   LayoutManager layoutMgr;
   
-	ContainerListener cntrListener;
-	Insets insets = Insets.noInsets;
+  /* Anything else is non-serializable, and should be declared "transient". */
+  transient ContainerListener containerListener;
+  
+  // ContainerListener cntrListener;
+  Insets insets = Insets.noInsets;
 
 protected Container () {
 }
 
-public Component add (Component child) {
-	add(child, null, -1);
-	return (child);
-}
+  /**
+   * Adds the specified component to this container at the end of the
+   * component list.
+   *
+   * @param comp The component to add to the container.
+   *
+   * @return The same component that was added.
+   */
+  public Component add(Component comp)
+  {
+    addImpl(comp, null, -1);
+    return comp;
+  }
+  
+    /**
+   * Adds the specified component to the container at the end of the
+   * component list.  This method should not be used. Instead, use
+   * <code>add(Component, Object)</code>.
+   *
+   * @param name The name of the component to be added.
+   * @param comp The component to be added.
+   *
+   * @return The same component that was added.
+   *
+   * @see #add(Component,Object)
+   */
+  public Component add(String name, Component comp)
+  {
+    addImpl(comp, name, -1);
+    return comp;
+  }
 
-public void add(Component child, Object constraints) {
-	// seems to be mapped to add(Component,Object,int) - since this is public
-	// (and can be redefined) we have to do the same <sigh>
-	add(child, constraints, -1);
-}
 
-public void add(Component child, Object constraints, int index) {
-	addImpl(child, constraints, index);
-}
+  /**
+   * Adds the specified component to this container at the end of the
+   * component list.  The layout manager will use the specified constraints
+   * when laying out this component.
+   *
+   * @param comp The component to be added to this container.
+   * @param constraints The layout constraints for this component.
+   */
+  public void add(Component comp, Object constraints)
+  {
+    addImpl(comp, constraints, -1);
+  }
+  
+  /**
+   * Adds the specified component to this container at the specified index
+   * in the component list.  The layout manager will use the specified
+   * constraints when layout out this component.
+   *
+   * @param comp The component to be added.
+   * @param constraints The layout constraints for this component.
+   * @param index The index in the component list to insert this child
+   * at, or -1 to add at the end of the list.
+   *
+   * @throws ArrayIndexOutOfBoundsException If the specified index is invalid.
+   */
+  public void add(Component comp, Object constraints, int index)
+  {
+    addImpl(comp, constraints, index);
+  }
 
-public Component add(Component child, int index) {
-	add(child, null, index);
-	return (child);
-}
+  /**
+   * Adds the specified component to this container at the specified index
+   * in the component list.
+   *
+   * @param comp The component to be added.
+   * @param index The index in the component list to insert this child
+   * at, or -1 to add at the end of the list.
+   *
+   * @return The same component that was added.
+   *
+   * @throws ArrayIndexOutOfBoundsException If the specified index is invalid.
+   */
+  public Component add(Component comp, int index)
+  {
+    addImpl(comp, null, index);
+    return comp;
+  }
 
-public Component add(String name, Component child) {
-	add(child, name, -1);
-	return (child);
-}
+
 
 public void addContainerListener ( ContainerListener newListener ) {
-	cntrListener = AWTEventMulticaster.add( cntrListener, newListener);
+	containerListener = AWTEventMulticaster.add( containerListener, newListener);
 }
+
+  /**
+   * @since 1.4
+   */
+  public synchronized ContainerListener[] getContainerListeners()
+  {
+    return (ContainerListener[])
+      AWTEventMulticaster.getListeners(containerListener,
+                                       ContainerListener.class);
+  }
+
 
 protected void addImpl(Component child, Object constraints, int index ) {
 
@@ -149,7 +221,7 @@ protected void addImpl(Component child, Object constraints, int index ) {
 			}
 		}
 	
-		if ( (cntrListener != null) || (eventMask & AWTEvent.CONTAINER_EVENT_MASK) != 0 ){
+		if ( (containerListener != null) || (eventMask & AWTEvent.CONTAINER_EVENT_MASK) != 0 ){
 			AWTEvent.sendEvent( ContainerEvt.getEvent( this,
 			                       ContainerEvent.COMPONENT_ADDED, child), false);
 		}
@@ -612,18 +684,18 @@ public void printComponents ( Graphics g ) {
 }
 
 void process ( ContainerEvent e ) {
-	if ( (cntrListener != null) || (eventMask & AWTEvent.CONTAINER_EVENT_MASK) != 0)
+	if ( (containerListener != null) || (eventMask & AWTEvent.CONTAINER_EVENT_MASK) != 0)
 		processEvent( e);
 }
 
 public void processContainerEvent ( ContainerEvent event ) {
-	if ( cntrListener != null ) {
+	if ( containerListener != null ) {
 		switch ( event.getID() ) {
 		case ContainerEvent.COMPONENT_ADDED:
-			cntrListener.componentAdded( event);
+			containerListener.componentAdded( event);
 			break;
 		case ContainerEvent.COMPONENT_REMOVED:
-			cntrListener.componentRemoved( event);
+			containerListener.componentRemoved( event);
 			break;
 		}
 	}
@@ -760,7 +832,7 @@ public void remove ( int index ) {
 		component[n] = null;
 		ncomponents--;
 
-		if ( (cntrListener != null) || (eventMask & AWTEvent.CONTAINER_EVENT_MASK) != 0 ){
+		if ( (containerListener != null) || (eventMask & AWTEvent.CONTAINER_EVENT_MASK) != 0 ){
 			AWTEvent.sendEvent( ContainerEvt.getEvent( this,
 			                       ContainerEvent.COMPONENT_REMOVED, c), false);
 		}
@@ -800,7 +872,7 @@ public void removeAll () {
 }
 
 public void removeContainerListener ( ContainerListener listener ) {
-	cntrListener = AWTEventMulticaster.remove( cntrListener, listener);
+	containerListener = AWTEventMulticaster.remove( containerListener, listener);
 }
 
 public void removeNotify() {

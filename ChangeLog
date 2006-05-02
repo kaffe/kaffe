@@ -1,3 +1,9 @@
+2006-05-02  Riccardo Mottola <riccardo@kaffe.org>
+
+	* libraries/javalib/awt-implementations/kaffe/java/awt/Component.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/Container.java:
+	fixed Containder add() methods.
+
 2006-04-26  Riccardo Mottola <riccardo@kaffe.org>
 
 	* libraries/javalib/awt-implementations/kaffe/java/awt/LayoutManager.java,
