@@ -60,9 +60,12 @@ public void paint( Graphics g) {
 	// of a graphics context, so we can't optimize for the case
 	// when the parameter's background matches ours.
 
-	Graphics context = getGraphics();
-	context.clearRect( 0, 0, width, height);
-	context.dispose();
+// This caused problem in several Swing layouts
+// removing it seems to cause no harm though
+
+//	Graphics context = getGraphics();
+//	context.clearRect( 0, 0, width, height);
+//	context.dispose();
 }
 
 void processPaintEvent ( int id, int ux, int uy, int uw, int uh ) {

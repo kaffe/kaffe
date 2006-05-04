@@ -1,5 +1,10 @@
 2006-05-04  Riccardo Mottola <riccardo@kaffe.org>
 
+	* libraries/javalib/awt-implementations/kaffe/java/awt/Canvas.java:
+	commented out paint() implementation
+	
+2006-05-04  Riccardo Mottola <riccardo@kaffe.org>
+
 	* libraries/clib/awt/X/fnt.c:
 	fixed seriously broken charWidth implementation
 	* libraries/javalib/awt-implementations/kaffe/java/awt/Defaults.java:
