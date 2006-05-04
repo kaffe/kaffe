@@ -423,8 +423,8 @@ static {
 	  int res = (ScreenWidth > 1024) ? 100 : 75; 
 		String fntCat = Integer.toString(res) + '-' + res + "-*-*-*-*";
 
-		//FsDefault = "-b&h-lucida-%s-%s-*-*-*-%d-" + fntCat;
-		FsDefault = "-adobe-helvetica-%s-%s-*-*-*-%d-"  + fntCat;
+		FsDefault = "-*-lucida-%s-%s-*-*-*-%d-" + fntCat;
+		//FsDefault = "-adobe-helvetica-%s-%s-*-*-*-%d-"  + fntCat;
 		FsMonospaced = "-adobe-courier-%s-%s-*-*-*-%d-" + fntCat;
 		FsSansSerif = "-adobe-helvetica-%s-%s-*-*-*-%d-" + fntCat;
 		FsSerif = "-adobe-times-%s-%s-*-*-*-%d-" + fntCat;

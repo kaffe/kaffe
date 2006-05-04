@@ -3,6 +3,8 @@
  *
  * Copyright (c) 1998
  *      Transvirtual Technologies, Inc.  All rights reserved.
+ * Copyright (c) 2006
+ *      Kaffe.org developers. See ChangeLog for details.
  *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
@@ -215,11 +217,37 @@ KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetDescent )
   return xfse->max_logical_extent.height-(-xfse->max_logical_extent.y);
 }
 
+// We want to return a width if the font is fixed, else 0
 KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetFixedWidth )
 {
-  XFontSetExtents *xfse=XExtentsOfFontSet(UNVEIL_XOC(xoc));
-  return ( xfse->max_logical_extent.width == xfse->max_ink_extent.width ) ?
-	  xfse->max_logical_extent.width : 0;
+    XFontSet *fontSet;
+    XFontStruct **fontStructList;
+    char **fontNameList;
+    fontSet = UNVEIL_XOC(xoc);
+    Atom atom;
+    unsigned long retValue;
+    char *atomValue;
+    int isFixedWidth;
+
+    // we create an atom to query the font properties
+    atom = XInternAtom( X->dsp, "SPACING", 0);
+
+    // we get the font structure
+    XFontsOfFontSet(fontSet, &fontStructList, &fontNameList);
+
+    isFixedWidth = 0;
+    if (XGetFontProperty(fontStructList[0], atom, &retValue)) {
+        atomValue = XGetAtomName(X->dsp, (Atom)retValue);
+        if (atomValue != NULL) {
+            if (atomValue[0] == 'C' || atomValue[0] == 'M') {
+                // we have a fixed with font
+                XFontSetExtents *xfse=XExtentsOfFontSet(fontSet);
+                return xfse->max_logical_extent.width;
+            }
+        }
+        XFree(atomValue);
+    }
+    return 0;
 }
 
 KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetHeight )

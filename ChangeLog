@@ -1,3 +1,10 @@
+2006-05-04  Riccardo Mottola <riccardo@kaffe.org>
+
+	* libraries/clib/awt/X/fnt.c:
+	fixed seriously broken charWidth implementation
+	* libraries/javalib/awt-implementations/kaffe/java/awt/Defaults.java:
+	changed default char back to Lucida
+
 2006-05-02  Riccardo Mottola <riccardo@kaffe.org>
 
 	* libraries/javalib/awt-implementations/kaffe/java/awt/Font.java:
