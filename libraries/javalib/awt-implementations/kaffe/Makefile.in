@@ -482,7 +482,6 @@ java_awt_SRCS = \
 	java/awt/RootWindow.java \
 	java/awt/RowCanvas.java \
 	java/awt/Scrollbar.java \
-	java/awt/ScrollPaneAdjustable.java \
 	java/awt/ScrollPane.java \
 	java/awt/Shape.java \
 	java/awt/ShortcutConsumer.java \
