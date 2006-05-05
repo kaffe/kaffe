@@ -1,5 +1,10 @@
 2006-05-06  Riccardo Mottola <riccardo@kaffe.org>
 
+	* libraries/javalib/awt-implementations/kaffe/java/awt/FileDialog.java:
+	solved NPE, made left pane display only topmost directory in path
+	
+2006-05-06  Riccardo Mottola <riccardo@kaffe.org>
+
 	* libraries/javalib/awt-implementations/kaffe/java/awt/ScrollPaneAdjustable.java:
 	removed, so to use classath
 

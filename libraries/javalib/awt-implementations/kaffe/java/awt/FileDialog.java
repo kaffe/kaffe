@@ -45,6 +45,7 @@ public class FileDialog
 	File tmpFile;
 	List lDirs = new List();
 	List lFiles = new List();
+	Vector vDirs = new Vector();
 
 public FileDialog( Frame parent) {
 	this( parent, null, LOAD);
@@ -94,10 +95,11 @@ public void actionPerformed( ActionEvent e) {
 		dispose();
 	}
 	else if ( s == lDirs ) {
-		String d = lDirs.getSelectedItem();
-		if ( d == upDir )
-			loadSubs( new File( dir.getParent()) );
-		else
+		String d = (String)vDirs.elementAt(lDirs.getSelectedIndex());
+		if ( d == upDir ) {
+			if ( ! dir.getPath().equals( File.separator) )
+				loadSubs( new File( dir.getParent()) );
+		} else
 			loadSubs( new File( d) );
 	}
 	else if ( s == lFiles ) {
@@ -260,7 +262,7 @@ public void itemStateChanged( ItemEvent e) {
 	String is;
 
 	if ( s == lDirs ) {
-		is = lDirs.getSelectedItem();
+		is = (String)vDirs.elementAt(lDirs.getSelectedIndex());
 		if ( is != upDir ) {
 			dir = new File( is );
 			tFile.setText( dir.getPath() );
@@ -297,7 +299,7 @@ void loadSubs( File dir) {
 	String dn = dir.getPath();
 	boolean up = (dn.length() == 0);
 	String[] all;
-	
+
 	if ( up )
 		dir = new File( File.separator);
 
@@ -305,6 +307,7 @@ void loadSubs( File dir) {
 		
 	lFiles.removeAll();
 	lDirs.removeAll();
+	vDirs.removeAllElements();
 	
 	// fake visibility to disable redraw while filling in new contents
 	lFiles.flags &= ~IS_VISIBLE;
@@ -313,14 +316,19 @@ void loadSubs( File dir) {
 	this.dir = dir;
 	tFile.setText( dir.getPath() );
 
-	if ( ! up)	
+	if (!up) {
 		lDirs.add( upDir);
+		vDirs.add( upDir);
+	}
 		
 	for ( int i=0; i<all.length; i++) {
 		File f = up ? new File( dir + all[i]) : new File( dir + File.separator + all[i]);
 		if ( f.isDirectory() ) {
 			String pn = f.getPath();
-			lDirs.addItem( pn, sortIdx( lDirs.ip.rows, pn) );
+			int idx = sortIdx( lDirs.ip.rows, pn);
+
+			lDirs.addItem( pn.substring(pn.lastIndexOf('/') + 1), idx);
+			vDirs.insertElementAt( pn, idx );
 		}
 		else if ( ! isFiltered( dir, all[i] ) )
 			lFiles.addItem( all[i], sortIdx( lFiles.ip.rows, all[i]) );
