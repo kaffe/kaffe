@@ -30,7 +30,6 @@ public class Label
 
 	int align;
 	String label;
-	boolean hasBorder;
 	FontMetrics fm;
 
 public Label() {
@@ -67,7 +66,6 @@ public boolean isFocusTraversable() {
 
 public void paint( Graphics g) {
 	int sw = fm.stringWidth( label);
-	int db = hasBorder ? BORDER_WIDTH : 0;
 	int y0 = height - (height-fm.getHeight())/2 - fm.getDescent();
 	int x0;
 
@@ -76,20 +74,17 @@ public void paint( Graphics g) {
 		x0 = (width - sw)/2;
 		break;
 	case RIGHT:
-		x0 = width - sw - db;
+		x0 = width - sw;
 		break;
 	case LEFT:
 	default:
-		x0 = db + 1;
+		x0 = 0;
 		break;
 	}
 
 	g.setColor( getBackground() );
 	g.fillRect( 0, 0, width, height);
 
-	if ( hasBorder )
-		kaffePaintBorder( g);
-			
 	if ( Defaults.LabelTxtCarved ) {
 		g.setColor( Color.white);
 		g.drawString( label, x0+1, y0+1 );
@@ -118,11 +113,11 @@ public Dimension preferredSize() {
 	return new Dimension( cx, cy);
 }
 
-public void setAlignment( int align) {
-	if ( align < LEFT || align > RIGHT ) {
+public void setAlignment( int alignP) {
+	if ( alignP < LEFT || alignP > RIGHT ) {
 		throw new IllegalArgumentException();
 	}
-	this.align = align;
+	align = alignP;
 	if ( isShowing() ) {
 		repaint();
 	}
@@ -136,13 +131,12 @@ public void setFont( Font f) {
 	}
 }
 
-public void setText( String label) {
-	if ( label == null ) {
-		label = "";
+public void setText( String labelP) {
+	if ( labelP == null ) {
+		labelP = "";
 	}
-	if ( (this.label == null ) || ! (this.label.equals( label)) ){
-		this.label = label;
-		hasBorder = label.startsWith(" ") && label.endsWith( " ");
+	if ( (label == null ) || ! (label.equals( labelP)) ){
+		label = labelP;
 		if ( (flags & IS_SHOWING) == IS_SHOWING ) {
 			Graphics g = getGraphics();
 			if ( g != null ) {
