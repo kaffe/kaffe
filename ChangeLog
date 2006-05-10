@@ -1,5 +1,10 @@
 2006-05-10  Riccardo Mottola <riccardo@kaffe.org>
 
+	* libraries/javalib/awt-implementations/kaffe/java/awt/Component.java:
+	changed getToolkit
+
+2006-05-10  Riccardo Mottola <riccardo@kaffe.org>
+
 	* libraries/javalib/awt-implementations/kaffe/java/awt/Component.java,
 	libraries/javalib/awt-implementations/kaffe/java/awt/FocusEvt.java,
 	libraries/javalib/awt-implementations/kaffe/java/awt/List.java,

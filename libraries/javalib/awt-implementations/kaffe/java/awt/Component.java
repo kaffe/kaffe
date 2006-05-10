@@ -795,8 +795,24 @@ public DropTarget getDropTarget() {
 	return null;
 }
 
-public Toolkit getToolkit () {
-	return Toolkit.singleton;
+/**
+* Returns the toolkit in use for this component. The toolkit is associated
+ * with the frame this component belongs to.
+ *
+ * @return the toolkit for this component
+ */
+public Toolkit getToolkit()
+{
+    if (peer != null)
+    {
+        Toolkit tk = peer.getToolkit();
+        if (tk != null)
+            return tk;
+    }
+    // Get toolkit for lightweight component.
+    if (parent != null)
+        return parent.getToolkit();
+    return Toolkit.getDefaultToolkit();
 }
 
 Component getToplevel () {
