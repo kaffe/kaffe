@@ -588,7 +588,7 @@ public void mouseDragged( MouseEvent e) {
 	int x = getCol( y, e.getX() );
 	updateSel( x, y, true);
 
-	if ( this.parent.motionListener != null ){
+	if ( this.parent.mouseMotionListener != null ){
 		// unlikely, check motionListener first
 		redirectMotionEvent( e);
 	}
@@ -603,7 +603,7 @@ public void mouseExited( MouseEvent e) {
 }
 
 public void mouseMoved( MouseEvent e) {
-	if ( this.parent.motionListener != null ){
+	if ( this.parent.mouseMotionListener != null ){
 		// unlikely, check listener first
 		redirectMotionEvent( e);
 	}

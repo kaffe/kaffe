@@ -99,7 +99,7 @@ static synchronized FocusEvt getEvent ( Component source, int id, boolean isTemp
 		
 		e.id = id;
 		e.source = source;
-		e.isTemporary = isTemporary;
+		e.temporary = isTemporary;
 
 		return e;
 	}
@@ -121,7 +121,7 @@ static synchronized FocusEvt getEvent ( int srcIdx, int id, boolean isTemporary 
 		
 		e.id = id;
 		e.source = source;
-		e.isTemporary = isTemporary;
+		e.temporary = isTemporary;
 	}
 
 	if ( (Toolkit.flags & Toolkit.NATIVE_DISPATCHER_LOOP) != 0 ) {

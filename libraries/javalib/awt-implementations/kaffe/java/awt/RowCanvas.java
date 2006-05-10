@@ -237,7 +237,7 @@ void redirectKeyEvent( KeyEvent e) {
 }
 
 void redirectMotionEvent( MouseEvent e) {
-	if ( parent.motionListener != null ){
+	if ( parent.mouseMotionListener != null ){
 		e.retarget( parent, x, y);
 		parent.process( e);
 

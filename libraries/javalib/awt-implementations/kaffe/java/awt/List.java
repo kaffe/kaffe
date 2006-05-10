@@ -169,7 +169,7 @@ public void mouseClicked( MouseEvent e) {
 }
 
 public void mouseDragged( MouseEvent e) {
-	if ( this.parent.motionListener != null ){
+	if ( this.parent.mouseMotionListener != null ){
 		// unlikely, check listener first
 		redirectMotionEvent( e);
 	}
@@ -192,7 +192,7 @@ public void mouseMoved( MouseEvent e) {
 		updateFlyOver( row );
 	}
 
-	if ( this.parent.motionListener != null ){
+	if ( this.parent.mouseMotionListener != null ){
 		// unlikely, check listener first
 		redirectMotionEvent( e);
 	}

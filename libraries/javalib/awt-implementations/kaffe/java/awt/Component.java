@@ -24,6 +24,11 @@ import java.awt.event.ComponentListener;
 import java.awt.event.ContainerEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.HierarchyBoundsListener;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
+import java.awt.event.InputMethodEvent;
+import java.awt.event.InputMethodListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -68,11 +73,6 @@ abstract public class Component
 	Color bgClr;
 	Font font;
 	Cursor cursor;
-	ComponentListener cmpListener;
-	KeyListener keyListener;
-	FocusListener focusListener;
-	MouseListener mouseListener;
-	MouseMotionListener motionListener;
 	String name;
 	int eventMask;
 	Locale locale;
@@ -113,6 +113,52 @@ abstract public class Component
 	final static int IS_MOUSE_AWARE = 0x10000;
 	final static int IS_TEMP_HIDDEN = 0x20000;
 	final static int IS_SHOWING = IS_ADD_NOTIFIED | IS_PARENT_SHOWING | IS_VISIBLE;
+
+        // Guess what - listeners are special cased in serialization. See
+        // readObject and writeObject.
+
+        /** Component listener chain. */
+        transient ComponentListener componentListener;
+
+        /** Focus listener chain. */
+        transient FocusListener focusListener;
+
+        /** Key listener chain. */
+        transient KeyListener keyListener;
+
+        /** Mouse listener chain. */
+        transient MouseListener mouseListener;
+
+        /** Mouse motion listener chain. */
+        transient MouseMotionListener mouseMotionListener;
+
+        /**
+            * Mouse wheel listener chain.
+         *
+         * @since 1.4
+         */
+        transient MouseWheelListener mouseWheelListener;
+
+        /**
+            * Input method listener chain.
+         *
+         * @since 1.2
+         */
+        transient InputMethodListener inputMethodListener;
+
+        /**
+            * Hierarcy listener chain.
+         *
+         * @since 1.3
+         */
+        transient HierarchyListener hierarchyListener;
+
+        /**
+            * Hierarcy bounds listener chain.
+         *
+         * @since 1.3
+         */
+        transient HierarchyBoundsListener hierarchyBoundsListener;
 	
   /** The associated native peer. */
   transient ComponentPeer peer;
@@ -244,7 +290,7 @@ public void add ( PopupMenu menu ) {
 }
 
 public void addComponentListener ( ComponentListener newListener ) {
-	cmpListener = AWTEventMulticaster.add( cmpListener, newListener);
+	componentListener = AWTEventMulticaster.add( componentListener, newListener);
 }
 
 public void addFocusListener ( FocusListener newListener ) {
@@ -262,7 +308,7 @@ public void addMouseListener ( MouseListener newListener ) {
 }
 
 public void addMouseMotionListener ( MouseMotionListener newListener ) {
-	motionListener = AWTEventMulticaster.add( motionListener, newListener);
+	mouseMotionListener = AWTEventMulticaster.add( mouseMotionListener, newListener);
 	
 	flags |= IS_MOUSE_AWARE;
 }
@@ -315,7 +361,7 @@ public int checkImage (Image image, int width, int height, ImageObserver obs) {
 void checkMouseAware () {
 	if ( ((eventMask & AWTEvent.DISABLED_MASK) == 0) &&
 	     ((mouseListener != null) ||
-	      (motionListener != null) ||
+	      (mouseMotionListener != null) ||
 	      (eventMask & (AWTEvent.MOUSE_EVENT_MASK|AWTEvent.MOUSE_MOTION_EVENT_MASK)) != 0 ||
 	      (flags & IS_OLD_EVENT) != 0 )) {
 		flags |= IS_MOUSE_AWARE;
@@ -382,14 +428,129 @@ final public void dispatchEvent ( AWTEvent evt ) {
 	dispatchEventImpl( evt);
 }
 
-void dispatchEventImpl ( AWTEvent event ) {
-	// A hidden method that seems to be called automatically by the JDKs
-	// 'final' dispatchEvent() method. We just provide it to get some more
-	// compatibility (in case dispatchEvent is called explicitly), but
-	// we don't route all events through it (since this is a private,
-	// undocumented method)
-	event.dispatch();
+/**
+* Implementation of dispatchEvent. Allows trusted package classes
+ * to dispatch additional events first.  This implementation first
+ * translates <code>e</code> to an AWT 1.0 event and sends the
+ * result to {@link #postEvent}.  If the AWT 1.0 event is not
+ * handled, and events of type <code>e</code> are enabled for this
+ * component, e is passed on to {@link #processEvent}.
+ *
+ * @param e the event to dispatch
+ */
+
+void dispatchEventImpl(AWTEvent e)
+{
+    // This boolean tells us not to process focus events when the focus
+    // opposite component is the same as the focus component.
+    boolean ignoreFocus =
+    (e instanceof FocusEvent &&
+     ((FocusEvent)e).getComponent() == ((FocusEvent)e).getOppositeComponent());
+
+    if (eventTypeEnabled (e.id))
+    {
+        if (e.id != PaintEvent.PAINT && e.id != PaintEvent.UPDATE
+            && !ignoreFocus)
+            processEvent(e);
+
+        // the trick we use to communicate between dispatch and redispatch
+        // is to have KeyboardFocusManager.redispatch synchronize on the
+        // object itself. we then do not redispatch to KeyboardFocusManager
+        // if we are already holding the lock.
+        if (! Thread.holdsLock(e))
+        {
+            switch (e.id)
+            {
+                case WindowEvent.WINDOW_GAINED_FOCUS:
+                case WindowEvent.WINDOW_LOST_FOCUS:
+                case KeyEvent.KEY_PRESSED:
+                case KeyEvent.KEY_RELEASED:
+                case KeyEvent.KEY_TYPED:
+                case FocusEvent.FOCUS_GAINED:
+                case FocusEvent.FOCUS_LOST:
+                    if (KeyboardFocusManager
+                        .getCurrentKeyboardFocusManager()
+                        .dispatchEvent(e))
+                        return;
+                case MouseEvent.MOUSE_PRESSED:
+                    if (isLightweight() && !e.isConsumed())
+                        requestFocus();
+                    break;
+            }
+        }
+    }
+
+    // here we differ from classpath since we have no peers
+    e.dispatch();
 }
+
+
+/**
+* Tells whether or not an event type is enabled.
+ */
+boolean eventTypeEnabled (int type)
+{
+    if (type > AWTEvent.RESERVED_ID_MAX)
+        return true;
+
+    switch (type)
+    {
+        case HierarchyEvent.HIERARCHY_CHANGED:
+            return (hierarchyListener != null
+                    || (eventMask & AWTEvent.HIERARCHY_EVENT_MASK) != 0);
+
+        case HierarchyEvent.ANCESTOR_MOVED:
+        case HierarchyEvent.ANCESTOR_RESIZED:
+            return (hierarchyBoundsListener != null
+                    || (eventMask & AWTEvent.HIERARCHY_BOUNDS_EVENT_MASK) != 0);
+
+        case ComponentEvent.COMPONENT_HIDDEN:
+        case ComponentEvent.COMPONENT_MOVED:
+        case ComponentEvent.COMPONENT_RESIZED:
+        case ComponentEvent.COMPONENT_SHOWN:
+            return (componentListener != null
+                    || (eventMask & AWTEvent.COMPONENT_EVENT_MASK) != 0);
+
+        case KeyEvent.KEY_PRESSED:
+        case KeyEvent.KEY_RELEASED:
+        case KeyEvent.KEY_TYPED:
+            return (keyListener != null
+                    || (eventMask & AWTEvent.KEY_EVENT_MASK) != 0);
+
+        case MouseEvent.MOUSE_CLICKED:
+        case MouseEvent.MOUSE_ENTERED:
+        case MouseEvent.MOUSE_EXITED:
+        case MouseEvent.MOUSE_PRESSED:
+        case MouseEvent.MOUSE_RELEASED:
+            return (mouseListener != null
+                    || (eventMask & AWTEvent.MOUSE_EVENT_MASK) != 0);
+        case MouseEvent.MOUSE_MOVED:
+        case MouseEvent.MOUSE_DRAGGED:
+            return (mouseMotionListener != null
+                    || (eventMask & AWTEvent.MOUSE_MOTION_EVENT_MASK) != 0);
+        case MouseEvent.MOUSE_WHEEL:
+            return (mouseWheelListener != null
+                    || (eventMask & AWTEvent.MOUSE_WHEEL_EVENT_MASK) != 0);
+
+        case FocusEvent.FOCUS_GAINED:
+        case FocusEvent.FOCUS_LOST:
+            return (focusListener != null
+                    || (eventMask & AWTEvent.FOCUS_EVENT_MASK) != 0);
+
+        case InputMethodEvent.INPUT_METHOD_TEXT_CHANGED:
+        case InputMethodEvent.CARET_POSITION_CHANGED:
+            return (inputMethodListener != null
+                    || (eventMask & AWTEvent.INPUT_METHOD_EVENT_MASK) != 0);
+
+        case PaintEvent.PAINT:
+        case PaintEvent.UPDATE:
+            return (eventMask & AWTEvent.PAINT_EVENT_MASK) != 0;
+
+        default:
+            return false;
+    }
+}
+
 
 public void doLayout () {
 	layout();
@@ -717,7 +878,7 @@ public void hide () {
 				parent.invalidate();
 		}
 		
-		if ( (cmpListener != null) || (eventMask & AWTEvent.COMPONENT_EVENT_MASK) != 0 ){
+		if ( (componentListener != null) || (eventMask & AWTEvent.COMPONENT_EVENT_MASK) != 0 ){
 			Toolkit.eventQueue.postEvent( ComponentEvt.getEvent( this,
 			                                  ComponentEvent.COMPONENT_HIDDEN));
 		}
@@ -1136,7 +1297,7 @@ void process ( AdjustmentEvent e ) {
 }
 
 void process ( ComponentEvent e ) {
-	if ( (cmpListener != null) || (eventMask & AWTEvent.COMPONENT_EVENT_MASK) != 0)
+	if ( (componentListener != null) || (eventMask & AWTEvent.COMPONENT_EVENT_MASK) != 0)
 		processEvent( e);
 }
 
@@ -1190,19 +1351,19 @@ protected void processAdjustmentEvent ( AdjustmentEvent e ) {
 
 protected void processComponentEvent ( ComponentEvent event ) {
 
-	if ( cmpListener != null ){
+	if ( componentListener != null ){
 		switch ( event.getID() ) {
 		case ComponentEvent.COMPONENT_RESIZED:
-			cmpListener.componentResized( event);
+			componentListener.componentResized( event);
 			break;
 		case ComponentEvent.COMPONENT_MOVED:
-			cmpListener.componentMoved( event);
+			componentListener.componentMoved( event);
 			break;
 		case ComponentEvent.COMPONENT_SHOWN:
-			cmpListener.componentShown( event);
+			componentListener.componentShown( event);
 			break;
 		case ComponentEvent.COMPONENT_HIDDEN:
-			cmpListener.componentHidden( event);
+			componentListener.componentHidden( event);
 			break;
 		}
 	}
@@ -1334,7 +1495,7 @@ void processMotion ( MouseEvent e ) {
 			return;
 	}
 
-	if ( (motionListener != null) || (eventMask & AWTEvent.MOUSE_MOTION_EVENT_MASK) != 0)
+	if ( (mouseMotionListener != null) || (eventMask & AWTEvent.MOUSE_MOTION_EVENT_MASK) != 0)
 		processEvent( e);
 
 	if ( (flags & IS_OLD_EVENT) != 0 ){
@@ -1379,13 +1540,13 @@ protected void processMouseEvent ( MouseEvent event ) {
 }
 
 protected void processMouseMotionEvent ( MouseEvent event ) {
-	if ( motionListener != null ) {
+	if ( mouseMotionListener != null ) {
 		switch ( event.id ) {
 		case MouseEvent.MOUSE_MOVED:
-			motionListener.mouseMoved( event);
+			mouseMotionListener.mouseMoved( event);
 			return;
 		case MouseEvent.MOUSE_DRAGGED:
-			motionListener.mouseDragged( event);
+			mouseMotionListener.mouseDragged( event);
 			return;
 		}
 	}
@@ -1466,7 +1627,7 @@ public void remove( MenuComponent mc) {
 }
 
 public void removeComponentListener ( ComponentListener client ) {
-	cmpListener = AWTEventMulticaster.remove( cmpListener, client);
+	componentListener = AWTEventMulticaster.remove( componentListener, client);
 }
 
 public void removeFocusListener ( FocusListener listener ) {
@@ -1484,7 +1645,7 @@ public void removeMouseListener ( MouseListener listener ) {
 }
 
 public void removeMouseMotionListener ( MouseMotionListener listener ) {
-	motionListener = AWTEventMulticaster.remove( motionListener, listener);
+	mouseMotionListener = AWTEventMulticaster.remove( mouseMotionListener, listener);
 	
 	checkMouseAware();
 }
@@ -1612,7 +1773,7 @@ public void reshape ( int xNew, int yNew, int wNew, int hNew ) {
 				x = xNew; y = yNew; width = wNew; height = hNew;
 				invalidate();
 				
-				if ( (cmpListener != null) || (eventMask & AWTEvent.COMPONENT_EVENT_MASK) != 0 ){
+				if ( (componentListener != null) || (eventMask & AWTEvent.COMPONENT_EVENT_MASK) != 0 ){
 					Toolkit.eventQueue.postEvent( ComponentEvt.getEvent( this, id));
 				}
 				propagateReshape();
@@ -1627,7 +1788,7 @@ public void reshape ( int xNew, int yNew, int wNew, int hNew ) {
 		x = xNew; y = yNew; width = wNew; height = hNew;
 		invalidate();
 
-		if ( (cmpListener != null) || (eventMask & AWTEvent.COMPONENT_EVENT_MASK) != 0 ){
+		if ( (componentListener != null) || (eventMask & AWTEvent.COMPONENT_EVENT_MASK) != 0 ){
 			Toolkit.eventQueue.postEvent( ComponentEvt.getEvent( this, id));
 		}
 		propagateReshape();
@@ -1811,7 +1972,7 @@ public void show () {
 				parent.invalidate();
 		}
 
-		if ( (cmpListener != null) || (eventMask & AWTEvent.COMPONENT_EVENT_MASK) != 0 ){
+		if ( (componentListener != null) || (eventMask & AWTEvent.COMPONENT_EVENT_MASK) != 0 ){
 			Toolkit.eventQueue.postEvent( ComponentEvt.getEvent( this,
 				                                    ComponentEvent.COMPONENT_SHOWN));
 		}

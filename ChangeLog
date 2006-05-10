@@ -1,3 +1,13 @@
+2006-05-10  Riccardo Mottola <riccardo@kaffe.org>
+
+	* libraries/javalib/awt-implementations/kaffe/java/awt/Component.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/FocusEvt.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/List.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/RowCanvas.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/TextArea.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/event/FocusEvent.java:
+	improved focus event and refactored some fields to match classpath
+
 2006-05-06  Riccardo Mottola <riccardo@kaffe.org>
 
 	* libraries/javalib/awt-implementations/kaffe/java/awt/FileDialog.java:
