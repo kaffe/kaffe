@@ -33,6 +33,8 @@ public class Window
 	static Window dummy = new Window();
 	private static int counter;
 	final private static long serialVersionUID = 4497834738069338734L;
+        /** @since 1.4 */
+        private boolean focusableWindowState = true;
 
 Window () {
 	// windows aren't visible per se, but they are exposed, colored and fontified
@@ -477,6 +479,45 @@ public void setLocationRelativeTo(Component c) {
       }
 
     setLocation(x, y);
+}
+
+/**
+* Returns whether this <code>Window</code> can get the focus or not.
+ *
+ * @since 1.4
+ */
+public final boolean isFocusableWindow ()
+{
+    if (getFocusableWindowState () == false)
+        return false;
+
+    if (this instanceof Dialog
+        || this instanceof Frame)
+        return true;
+
+    // FIXME: Implement more possible cases for returning true.
+
+    return false;
+}
+
+/**
+* Returns the value of the focusableWindowState property.
+ *
+ * @since 1.4
+ */
+public boolean getFocusableWindowState ()
+{
+    return focusableWindowState;
+}
+
+/**
+* Sets the value of the focusableWindowState property.
+ *
+ * @since 1.4
+ */
+public void setFocusableWindowState (boolean focusableWindowState)
+{
+    this.focusableWindowState = focusableWindowState;
 }
 
 }

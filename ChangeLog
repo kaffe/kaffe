@@ -1,3 +1,9 @@
+2006-05-11  Riccardo Mottola <riccardo@kaffe.org>
+
+	* libraries/javalib/awt-implementations/kaffe/java/awt/Component.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/Window.java:
+	updated focus, fields and introduced lightweight handling
+
 2006-05-10  Riccardo Mottola <riccardo@kaffe.org>
 
 	* libraries/javalib/awt-implementations/kaffe/java/awt/Component.java:

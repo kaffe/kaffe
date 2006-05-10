@@ -39,18 +39,29 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.PaintEvent;
 import java.awt.event.TextEvent;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferStrategy;
 import java.awt.image.ColorModel;
 import java.awt.image.ImageObserver;
 import java.awt.image.ImageProducer;
+import java.awt.image.VolatileImage;
 import java.awt.peer.ComponentPeer;
 import java.awt.peer.LightweightPeer;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.Locale;
+import java.util.Set;
+import java.util.Vector;
 import java.awt.dnd.DropTarget;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+
+import javax.accessibility.Accessible;
+import javax.accessibility.AccessibleComponent;
+import javax.accessibility.AccessibleContext;
+import javax.accessibility.AccessibleRole;
+import javax.accessibility.AccessibleState;
+import javax.accessibility.AccessibleStateSet;
 
 import org.kaffe.awt.DoNothingPeer;
 
@@ -63,19 +74,8 @@ abstract public class Component
 {
 	// We're not actually compatible with Sun's serialization format, so don't claim to be:
 	//final private static long serialVersionUID = -7644114512714619750L;
-
-	Container parent;
-	int x;
-	int y;
-	int width;
-	int height;
 	Color fgClr;
 	Color bgClr;
-	Font font;
-	Cursor cursor;
-	String name;
-	int eventMask;
-	Locale locale;
 	PopupMenu popup;
 	Rectangle deco = noDeco;
 	int flags = IS_VISIBLE;
@@ -113,6 +113,282 @@ abstract public class Component
 	final static int IS_MOUSE_AWARE = 0x10000;
 	final static int IS_TEMP_HIDDEN = 0x20000;
 	final static int IS_SHOWING = IS_ADD_NOTIFIED | IS_PARENT_SHOWING | IS_VISIBLE;
+
+        /**
+            * The x position of the component in the parent's coordinate system.
+         *
+         * @see #getLocation()
+         * @serial the x position
+         */
+        int x;
+
+        /**
+            * The y position of the component in the parent's coordinate system.
+         *
+         * @see #getLocation()
+         * @serial the y position
+         */
+        int y;
+
+        /**
+            * The component width.
+         *
+         * @see #getSize()
+         * @serial the width
+         */
+        int width;
+
+        /**
+            * The component height.
+         *
+         * @see #getSize()
+         * @serial the height
+         */
+        int height;
+
+        /**
+            * The foreground color for the component. This may be null.
+         *
+         * @see #getForeground()
+         * @see #setForeground(Color)
+         * @serial the foreground color
+         */
+        Color foreground; // TODO update to use this as field
+
+        /**
+            * The background color for the component. This may be null.
+         *
+         * @see #getBackground()
+         * @see #setBackground(Color)
+         * @serial the background color
+         */
+        Color background; // TODO update to use this as field
+
+        /**
+            * The default font used in the component. This may be null.
+         *
+         * @see #getFont()
+         * @see #setFont(Font)
+         * @serial the font
+         */
+        Font font;
+
+        /**
+            * The font in use by the peer, or null if there is no peer.
+         *
+         * @serial the peer's font
+         */
+        Font peerFont;
+
+        /**
+            * The cursor displayed when the pointer is over this component. This may
+         * be null.
+         *
+         * @see #getCursor()
+         * @see #setCursor(Cursor)
+         */
+        Cursor cursor;
+
+        /**
+            * The locale for the component.
+         *
+         * @see #getLocale()
+         * @see #setLocale(Locale)
+         */
+        Locale locale = Locale.getDefault ();
+
+        /**
+            * True if the object should ignore repaint events (usually because it is
+                                                               * not showing).
+         *
+         * @see #getIgnoreRepaint()
+         * @see #setIgnoreRepaint(boolean)
+         * @serial true to ignore repaints
+         * @since 1.4
+         */
+        boolean ignoreRepaint;
+
+        /**
+            * True when the object is visible (although it is only showing if all
+                                               * ancestors are likewise visible). For component, this defaults to true.
+         *
+         * @see #isVisible()
+         * @see #setVisible(boolean)
+         * @serial true if visible
+         */
+        boolean visible = true;
+
+        /**
+            * True if the object is enabled, meaning it can interact with the user.
+         * For component, this defaults to true.
+         *
+         * @see #isEnabled()
+         * @see #setEnabled(boolean)
+         * @serial true if enabled
+         */
+        boolean enabled = true;
+
+        /**
+            * True if the object is valid. This is set to false any time a size
+         * adjustment means the component need to be layed out again.
+         *
+         * @see #isValid()
+         * @see #validate()
+         * @see #invalidate()
+         * @serial true if layout is valid
+         */
+        boolean valid;
+
+        /**
+            * The DropTarget for drag-and-drop operations.
+         *
+         * @see #getDropTarget()
+         * @see #setDropTarget(DropTarget)
+         * @serial the drop target, or null
+         * @since 1.2
+         */
+        DropTarget dropTarget;
+
+        /**
+            * The list of popup menus for this component.
+         *
+         * @see #add(PopupMenu)
+         * @serial the list of popups
+         */
+        Vector popups;
+
+        /**
+            * The component's name. May be null, in which case a default name is
+         * generated on the first use.
+         *
+         * @see #getName()
+         * @see #setName(String)
+         * @serial the name
+         */
+        String name;
+
+        /**
+            * True once the user has set the name. Note that the user may set the name
+         * to null.
+         *
+         * @see #name
+         * @see #getName()
+         * @see #setName(String)
+         * @serial true if the name has been explicitly set
+         */
+        boolean nameExplicitlySet;
+
+        /**
+            * Indicates if the object can be focused. Defaults to true for components.
+         *
+         * @see #isFocusable()
+         * @see #setFocusable(boolean)
+         * @since 1.4
+         */
+        boolean focusable = true;
+
+        /**
+            * Tracks whether this component's {@link #isFocusTraversable}
+         * method has been overridden.
+         *
+         * @since 1.4
+         */
+        int isFocusTraversableOverridden;
+
+        /**
+            * The focus traversal keys, if not inherited from the parent or
+         * default keyboard focus manager. These sets will contain only
+         * AWTKeyStrokes that represent press and release events to use as
+         * focus control.
+         *
+         * @see #getFocusTraversalKeys(int)
+         * @see #setFocusTraversalKeys(int, Set)
+         * @since 1.4
+         */
+        Set[] focusTraversalKeys;
+
+        /**
+            * True if focus traversal keys are enabled. This defaults to true for
+         * Component. If this is true, keystrokes in focusTraversalKeys are trapped
+         * and processed automatically rather than being passed on to the component.
+         *
+         * @see #getFocusTraversalKeysEnabled()
+         * @see #setFocusTraversalKeysEnabled(boolean)
+         * @since 1.4
+         */
+        boolean focusTraversalKeysEnabled = true;
+
+        /**
+            * Cached information on the minimum size. Should have been transient.
+         *
+         * @serial ignore
+         */
+        Dimension minSize;
+
+        /**
+            * Cached information on the preferred size. Should have been transient.
+         *
+         * @serial ignore
+         */
+        Dimension prefSize;
+
+        /**
+            * Set to true if an event is to be handled by this component, false if
+         * it is to be passed up the hierarcy.
+         *
+         * @see #dispatchEvent(AWTEvent)
+         * @serial true to process event locally
+         */
+        boolean newEventsOnly;
+
+        /**
+            * Set by subclasses to enable event handling of particular events, and
+         * left alone when modifying listeners. For component, this defaults to
+         * enabling only input methods.
+         *
+         * @see #enableInputMethods(boolean)
+         * @see AWTEvent
+         * @serial the mask of events to process
+         */
+        long eventMask = AWTEvent.INPUT_ENABLED_EVENT_MASK;
+
+        /**
+            * Describes all registered PropertyChangeListeners.
+         *
+         * @see #addPropertyChangeListener(PropertyChangeListener)
+         * @see #removePropertyChangeListener(PropertyChangeListener)
+         * @see #firePropertyChange(String, Object, Object)
+         * @serial the property change listeners
+         * @since 1.2
+         */
+        PropertyChangeSupport changeSupport;
+
+        /**
+            * True if the component has been packed (layed out).
+         *
+         * @serial true if this is packed
+         */
+        boolean isPacked;
+
+        /**
+            * The serialization version for this class. Currently at version 4.
+         *
+         * XXX How do we handle prior versions?
+         *
+         * @serial the serialization version
+         */
+        int componentSerializedDataVersion = 4;
+
+        /**
+            * The accessible context associated with this component. This is only set
+         * by subclasses.
+         *
+         * @see #getAccessibleContext()
+         * @serial the accessibility context
+         * @since 1.2
+         */
+        AccessibleContext accessibleContext;
+        
 
         // Guess what - listeners are special cased in serialization. See
         // readObject and writeObject.
@@ -159,20 +435,36 @@ abstract public class Component
          * @since 1.3
          */
         transient HierarchyBoundsListener hierarchyBoundsListener;
-	
-  /** The associated native peer. */
-  transient ComponentPeer peer;
 
- /**
-   * Describes all registered PropertyChangeListeners.
-   *
-   * @see #addPropertyChangeListener(PropertyChangeListener)
-   * @see #removePropertyChangeListener(PropertyChangeListener)
-   * @see #firePropertyChange(String, Object, Object)
-   * @serial the property change listeners
-   * @since 1.2
-   */
-  PropertyChangeSupport changeSupport;
+        /** The parent. */
+        transient Container parent;
+
+        /** The associated native peer. */
+        transient ComponentPeer peer;
+
+        /** The preferred component orientation. */
+        transient ComponentOrientation orientation = ComponentOrientation.UNKNOWN;
+
+        /**
+            * The associated graphics configuration.
+         *
+         * @since 1.4
+         */
+        transient GraphicsConfiguration graphicsConfig;
+
+        /**
+            * The buffer strategy for repainting.
+         *
+         * @since 1.4
+         */
+        transient BufferStrategy bufferStrategy;
+
+        /**
+            * true if requestFocus was called on this component when its
+         * top-level ancestor was not focusable.
+         */
+        private transient FocusEvent pendingFocusRequest = null;
+
 
 static class TreeLock
 {
@@ -328,6 +620,8 @@ public void addNotify () {
 			if ( (((parent.flags & IS_OLD_EVENT) != 0) || props.useOldEvents) ){
 				flags |= (IS_OLD_EVENT | IS_MOUSE_AWARE);
 			}
+                    if (parent.isLightweight())
+                        new HeavyweightInLightweightListener(parent);
 		}
 		else { // Window
 			if ( props.useOldEvents )
@@ -815,10 +1109,10 @@ public Toolkit getToolkit()
     return Toolkit.getDefaultToolkit();
 }
 
-Component getToplevel () {
+Window getToplevel () {
 	Component c;
 	for ( c=this; !(c instanceof Window) && c != null; c= c.parent );
-	return c;
+	return (Window)c;
 }
 
 final public Object getTreeLock() {
@@ -992,28 +1286,60 @@ public boolean isFocusTraversable() {
 	        ((eventMask & AWTEvent.DISABLED_MASK) == 0));
 }
 
-// TODO this is was copied from isFocusTraversable, may be wrong.
-public boolean isFocusable() {
-	return (((flags & (IS_SHOWING|IS_NATIVE_LIKE)) == (IS_SHOWING|IS_NATIVE_LIKE)) && 
-	        ((eventMask & AWTEvent.DISABLED_MASK) == 0));
-}
-
-// TODO this is a stub only
-public void setFocusable(boolean focusable) {
-}
-
-// TODO this is a stub only
-public boolean isFocusOwner() {
-	return true;
+/**
+* Tests if this component can receive focus.
+ *
+ * @return true if this component can receive focus
+ * @since 1.4
+ */
+public boolean isFocusable()
+{
+    return focusable;
 }
 
 /**
- * @deprecated
+* Specify whether this component can receive focus. This method also
+ * sets the {@link #isFocusTraversableOverridden} field to 1, which
+ * appears to be the undocumented way {@link
+     * DefaultFocusTraversalPolicy#accept(Component)} determines whether to
+ * respect the {@link #isFocusable()} method of the component.
+ *
+ * @param focusable the new focusable status
+ * @since 1.4
  */
-public boolean hasFocus() {
-	return isFocusOwner();
+public void setFocusable(boolean focusable)
+{
+    firePropertyChange("focusable", this.focusable, focusable);
+    this.focusable = focusable;
+    this.isFocusTraversableOverridden = 1;
 }
 
+/**
+* Tests if this component is the focus owner. Use {@link
+    * #isFocusOwner ()} instead.
+ *
+ * @return true if this component owns focus
+ * @since 1.2
+ */
+public boolean hasFocus ()
+{
+    KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager ();
+
+    Component focusOwner = manager.getFocusOwner ();
+
+    return this == focusOwner;
+}
+
+/**
+* Tests if this component is the focus owner.
+ *
+ * @return true if this component owns focus
+ * @since 1.4
+ */
+public boolean isFocusOwner()
+{
+    return hasFocus ();
+}
 
 public boolean isShowing () {
 	// compare the costs of this with the standard upward iteration
@@ -1027,6 +1353,27 @@ public boolean isValid () {
 
 public boolean isVisible () {
 	return ((flags & IS_VISIBLE) != 0);
+}
+
+/**
+* Tests if the component is displayable. It must be connected to a native
+ * screen resource.  This reduces to checking that peer is not null.  A
+ * containment  hierarchy is made displayable when a window is packed or
+ * made visible.
+ *
+ * @return true if the component is displayable
+ * @see Container#add(Component)
+ * @see Container#remove(Component)
+ * @see Window#pack()
+ * @see Window#show()
+ * @see Window#dispose()
+ * @since 1.2
+ */
+public boolean isDisplayable()
+{
+    // since we are peerless...
+    return true;
+//    return peer != null;
 }
 
 /**
@@ -1208,12 +1555,35 @@ public void nextFocus() {
 	transferFocus();
 }
 
-public void paint ( Graphics g ) {
-	// nothing to do here, that all has to be donw in subclasses
+/**
+* Paints this component on the screen. The clipping region in the graphics
+ * context will indicate the region that requires painting. This is called
+ * whenever the component first shows, or needs to be repaired because
+ * something was temporarily drawn on top. It is not necessary for
+ * subclasses to call <code>super.paint(g)</code>. Components with no area
+ * are not painted.
+ *
+ * @param g the graphics context for this paint job
+ * @see #update(Graphics)
+ */
+public void paint(Graphics g)
+{
+    // This is a callback method and is meant to be overridden by subclasses
+    // that want to perform custom painting.
 }
 
-public void paintAll ( Graphics g ) {
-	paint( g);
+/**
+* Paints this entire component, including any sub-components.
+ *
+ * @param g the graphics context for this paint job
+ *
+ * @see #paint(Graphics)
+ */
+public void paintAll(Graphics g)
+{
+    if ((flags & IS_VISIBLE) == 0)
+        return;
+    paint(g);
 }
 
 void kaffePaintBorder () {
@@ -1719,33 +2089,187 @@ public void repaint ( long ms, int x, int y, int width, int height ) {
 	}
 }
 
-public void requestFocus () {
-	Component topNew;
+/**
+* Request that this Component be given the keyboard input focus and
+ * that its top-level ancestor become the focused Window.
+ *
+ * For the request to be granted, the Component must be focusable,
+ * displayable and showing and the top-level Window to which it
+ * belongs must be focusable.  If the request is initially denied on
+ * the basis that the top-level Window is not focusable, the request
+ * will be remembered and granted when the Window does become
+ * focused.
+ *
+ * Never assume that this Component is the focus owner until it
+ * receives a FOCUS_GAINED event.
+ *
+ * The behaviour of this method is platform-dependent.
+ * {@link #requestFocusInWindow()} should be used instead.
+ *
+ * @see #requestFocusInWindow ()
+ * @see FocusEvent
+ * @see #addFocusListener (FocusListener)
+ * @see #isFocusable ()
+ * @see #isDisplayable ()
+ * @see KeyboardFocusManager#clearGlobalFocusOwner ()
+ */
+public void requestFocus ()
+{
+    if (isDisplayable ()
+        && isShowing ()
+        && isFocusable ())
+    {
+        synchronized (getTreeLock ())
+    {
+            // Find this Component's top-level ancestor.
+            Container parent = (this instanceof Container) ? (Container) this
+            : getParent();
+            while (parent != null
+                   && !(parent instanceof Window))
+                parent = parent.getParent ();
 
-	if ( AWTEvent.keyTgt == this ){   // nothing to do
-		return;
-	}
+            if (parent == null)
+                return;
 
-	topNew = getToplevel();
-	
-	// there are bad apps out there requesting the focus for Components
-	// which have not even been addNotified yet (hence no parent)
-	if ( topNew == null ) {
-		// most native AWTs will fail here, but with our mechanism, we
-		// can try harder: store request in the hope it will be honored
-		// by a subsequent requestFocus of the toplevel
-		FocusEvt.keyTgtRequest = this;
-	}
-	else {
-		if (topNew != AWTEvent.activeWindow ) {  // this involves a change of active toplevels
-			FocusEvt.keyTgtRequest = this;
-			topNew.requestFocus();
-		}
-		else {                                 // intra toplevel focus change
-			Toolkit.eventQueue.postFocusEvent( FocusEvt.getEvent( this, FocusEvent.FOCUS_GAINED, false));
-		}
-	}
+            Window toplevel = (Window) parent;
+// we can't check for that or  choice windows won't get focus
+//            if (toplevel.isFocusableWindow ())
+//            {
+                //if (peer != null && !isLightweight()) { // we don't have a peer
+                if (!isLightweight()) {
+                    // This call will cause a FOCUS_GAINED event to be
+                    // posted to the system event queue if the native
+                    // windowing system grants the focus request.
+                    //peer.requestFocus ();
+                    if (toplevel != AWTEvent.activeWindow ) {  // this involves a change of active toplevels
+                        FocusEvt.keyTgtRequest = this;
+                        toplevel.requestFocus();
+                    }
+                    else {                                 // intra toplevel focus change
+                        Toolkit.eventQueue.postFocusEvent( FocusEvt.getEvent( this, FocusEvent.FOCUS_GAINED, false));
+                    }
+                } else
+                {
+                    // Either our peer hasn't been created yet or we're a
+                    // lightweight component.  In either case we want to
+                    // post a FOCUS_GAINED event.
+                    EventQueue eq = Toolkit.getDefaultToolkit ().getSystemEventQueue ();
+                    synchronized (eq)
+                    {
+                        KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager ();
+                        Component currentFocusOwner = manager.getGlobalPermanentFocusOwner ();
+                        if (currentFocusOwner != null)
+                        {
+                            eq.postEvent (new FocusEvent(currentFocusOwner, FocusEvent.FOCUS_LOST,
+                                                         false, this));
+                            eq.postEvent (new FocusEvent(this, FocusEvent.FOCUS_GAINED, false,
+                                                         currentFocusOwner));
+                        }
+                        else
+                            eq.postEvent (new FocusEvent(this, FocusEvent.FOCUS_GAINED, false));
+                    }
+                }
+            //}
+            //else
+            //    pendingFocusRequest = new FocusEvent(this, FocusEvent.FOCUS_GAINED);
+    }
+    }
 }
+
+/**
+* Request that this Component be given the keyboard input focus and
+ * that its top-level ancestor become the focused Window.
+ *
+ * For the request to be granted, the Component must be focusable,
+ * displayable and showing and the top-level Window to which it
+ * belongs must be focusable.  If the request is initially denied on
+ * the basis that the top-level Window is not focusable, the request
+ * will be remembered and granted when the Window does become
+ * focused.
+ *
+ * Never assume that this Component is the focus owner until it
+ * receives a FOCUS_GAINED event.
+ *
+ * The behaviour of this method is platform-dependent.
+ * {@link #requestFocusInWindow()} should be used instead.
+ *
+ * If the return value is false, the request is guaranteed to fail.
+ * If the return value is true, the request will succeed unless it
+ * is vetoed or something in the native windowing system intervenes,
+ * preventing this Component's top-level ancestor from becoming
+ * focused.  This method is meant to be called by derived
+ * lightweight Components that want to avoid unnecessary repainting
+ * when they know a given focus transfer need only be temporary.
+ *
+ * @param temporary true if the focus request is temporary
+ * @return true if the request has a chance of success
+ * @see #requestFocusInWindow ()
+ * @see FocusEvent
+ * @see #addFocusListener (FocusListener)
+ * @see #isFocusable ()
+ * @see #isDisplayable ()
+ * @see KeyboardFocusManager#clearGlobalFocusOwner ()
+ * @since 1.4
+ */
+protected boolean requestFocus (boolean temporary)
+{
+    if (isDisplayable ()
+        && isShowing ()
+        && isFocusable ())
+    {
+        synchronized (getTreeLock ())
+    {
+            // Find this Component's top-level ancestor.
+            Container parent = getParent ();
+
+            while (parent != null
+                   && !(parent instanceof Window))
+                parent = parent.getParent ();
+
+            Window toplevel = (Window) parent;
+            if (toplevel.isFocusableWindow ())
+            {
+                if (peer != null && !isLightweight())
+                    // This call will cause a FOCUS_GAINED event to be
+                    // posted to the system event queue if the native
+                    // windowing system grants the focus request.
+                    peer.requestFocus ();
+                else
+                {
+                    // Either our peer hasn't been created yet or we're a
+                    // lightweight component.  In either case we want to
+                    // post a FOCUS_GAINED event.
+                    EventQueue eq = Toolkit.getDefaultToolkit ().getSystemEventQueue ();
+                    synchronized (eq)
+                    {
+                        KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager ();
+                        Component currentFocusOwner = manager.getGlobalPermanentFocusOwner ();
+                        if (currentFocusOwner != null)
+                        {
+                            eq.postEvent (new FocusEvent(currentFocusOwner,
+                                                         FocusEvent.FOCUS_LOST,
+                                                         temporary, this));
+                            eq.postEvent (new FocusEvent(this,
+                                                         FocusEvent.FOCUS_GAINED,
+                                                         temporary,
+                                                         currentFocusOwner));
+                        }
+                        else
+                            eq.postEvent (new FocusEvent(this, FocusEvent.FOCUS_GAINED, temporary));
+                    }
+                }
+            }
+            else
+                // FIXME: need to add a focus listener to our top-level
+                // ancestor, so that we can post this event when it becomes
+                // the focused window.
+                pendingFocusRequest = new FocusEvent(this, FocusEvent.FOCUS_GAINED, temporary);
+    }
+    }
+    // Always return true.
+    return true;
+}
+
 
 /**
  * @deprecated, use setBounds(x,y,w,h)
@@ -1756,6 +2280,10 @@ public void reshape ( int xNew, int yNew, int wNew, int hNew ) {
 	// DEP - this should be in setBounds !! But we have to keep it here
 	// for compatibility reasons (Swing etc.)
 
+    int oldx = this.x;
+    int oldy = this.y;
+    int oldwidth = this.width;
+    int oldheight = this.height;
 	int      x0=0, x1=0, y0=0, y1=0, a, b;
 	boolean  sized = ( (width != wNew) || (height != hNew) );
 	boolean  moved = ( !sized && ((x != xNew) || (y != yNew)) );
@@ -1763,6 +2291,21 @@ public void reshape ( int xNew, int yNew, int wNew, int hNew ) {
 
 	// Don't do anything if we don't change anything.
 	if (sized || moved) {
+
+            // Erase old bounds and repaint new bounds for lightweights.
+            if (isLightweight() && isShowing())
+            {
+                if (parent != null)
+                {
+                    Rectangle oldBounds = new Rectangle(oldx, oldy, oldwidth,
+                                                        oldheight);
+                    Rectangle newBounds = new Rectangle(x, y, width, height);
+                    Rectangle destroyed = oldBounds.union(newBounds);
+                    if (!destroyed.isEmpty())
+                        parent.repaint(0, destroyed.x, destroyed.y, destroyed.width,
+                                       destroyed.height);
+                }
+            }
 
 		if ( parent != null ) {
 			// Strange, but happens (e.g. for Swing InternalFrames): somebody
@@ -1963,50 +2506,84 @@ public void setSize ( int newWidth, int newHeight ) {
 	resize( newWidth, newHeight);
 }
 
-public void setVisible ( boolean b ) {
-	show( b);
+
+/**
+* Makes this component visible or invisible. Note that it wtill might
+ * not show the component, if a parent is invisible.
+ *
+ * @param visible true to make this component visible
+ *
+ * @see #isVisible()
+ *
+ * @since 1.1
+ */
+public void setVisible(boolean visible)
+{
+    // Inspection by subclassing shows that Sun's implementation calls
+    // show(boolean) which then calls show() or hide(). It is the show()
+    // method that is overriden in subclasses like Window.
+    show(visible);
 }
 
-public void show () {
-	// DEP this should be in setVisible !! But we have to keep it here
-	// for compatibility reasons (Swing etc.)
+/**
+* Makes this component visible on the screen.
+ *
+ * @deprecated use {@link #setVisible(boolean)} instead
+ */
+public void show()
+{
+    // We must set visible before showing the peer.  Otherwise the
+    // peer could post paint events before visible is true, in which
+    // case lightweight components are not initially painted --
+    // Container.paint first calls isShowing () before painting itself
+    // and its children.
 
-	if ( (flags & IS_VISIBLE) == 0 ) {
-		flags |= IS_VISIBLE;
-		flags &= ~IS_TEMP_HIDDEN;
+    // this is equivalent to isVisible()
+    if ( (flags & IS_VISIBLE) == 0 ) {
+        flags |= IS_VISIBLE;
+        flags &= ~IS_TEMP_HIDDEN;
 
-	  // if we are a toplevel, the native window manager will take care
-	  // of repainting
-		if ( (parent != null) && ((parent.flags & IS_LAYOUTING) == 0) ) {
-			if ( (flags & (IS_ADD_NOTIFIED | IS_PARENT_SHOWING))
-			       == (IS_ADD_NOTIFIED | IS_PARENT_SHOWING) ){
-			  //parent.repaint( x, y, width, height);
-				repaint();
-			}
-			
-			if ( (parent.flags & IS_VALID) != 0 )
-				parent.invalidate();
-		}
+        // if we are a toplevel, the native window manager will take care
+        // of repainting
+        // Avoid NullPointerExceptions by creating a local reference.
+        ComponentPeer currentPeer=peer;
+        if (currentPeer != null)
+            currentPeer.show();
 
-		if ( (componentListener != null) || (eventMask & AWTEvent.COMPONENT_EVENT_MASK) != 0 ){
-			Toolkit.eventQueue.postEvent( ComponentEvt.getEvent( this,
-				                                    ComponentEvent.COMPONENT_SHOWN));
-		}
+        // The JDK repaints the component before invalidating the parent.
+        // So do we.
+        if (isShowing() && isLightweight())
+            repaint();
+        // Invalidate the parent if we have one. The component itself must
+        // not be invalidated. We also avoid NullPointerException with
+        // a local reference here.
+        Container currentParent = parent;
+        if (currentParent != null)
+            currentParent.invalidate();
 
-		// update any resident graphics objects		
-		if ( linkedGraphs != null )
-			updateLinkedGraphics();
-	}
+        if ( (componentListener != null) || (eventMask & AWTEvent.COMPONENT_EVENT_MASK) != 0 ){
+            Toolkit.eventQueue.postEvent( ComponentEvt.getEvent( this, ComponentEvent.COMPONENT_SHOWN));
+        }
+
+        // update any resident graphics objects		
+        if ( linkedGraphs != null )
+            updateLinkedGraphics();
+    }
 }
 
-public void show ( boolean b ) {
-	// DEP this should map to setVisible but we have to keep it that way because of
-	// compatibility, which in this case requires a double indirection)
-
-	if ( b)
-		show();
-	else
-		hide();
+/**
+* Makes this component visible or invisible.
+ *
+ * @param visible true to make this component visible
+ *
+ * @deprecated use {@link #setVisible(boolean)} instead
+ */
+public void show(boolean visible)
+{
+    if (visible)
+        show();
+    else
+        hide();
 }
 
 /**
@@ -2104,24 +2681,202 @@ synchronized void unlinkGraphics ( NativeGraphics g ) {
 	}
 }
 
-public void update ( Graphics g ) {
-	g.clearRect( 0, 0, width, height);
-	paint( g);
+/**
+* Updates this component. This is called in response to
+ * <code>repaint</code>. This method fills the component with the
+ * background color, then sets the foreground color of the specified
+ * graphics context to the foreground color of this component and calls
+ * the <code>paint()</code> method. The coordinates of the graphics are
+ * relative to this component. Subclasses should call either
+ * <code>super.update(g)</code> or <code>paint(g)</code>.
+ *
+ * @param g the graphics context for this update
+ *
+ * @see #paint(Graphics)
+ * @see #repaint()
+ *
+ * @specnote In contrast to what the spec says, tests show that the exact
+ *           behaviour is to clear the background on lightweight and
+ *           top-level components only. Heavyweight components are not
+ *           affected by this method and only call paint().
+ */
+public void update(Graphics g)
+{
+    // Tests show that the clearing of the background is only done in
+    // two cases:
+    // - If the component is lightweight (yes this is in contrast to the spec).
+    // or
+    // - If the component is a toplevel container.
+    if (isLightweight() || getParent() == null)
+    {
+        Rectangle clip = g.getClipBounds();
+        if (clip == null)
+            g.clearRect(0, 0, width, height);
+        else
+            g.clearRect(clip.x, clip.y, clip.width, clip.height);
+    }
+    paint(g);
 }
 
-// TODO this is only a stub
-public ComponentOrientation getComponentOrientation() {
-	return ComponentOrientation.LEFT_TO_RIGHT;
+/**
+* Sets the text layout orientation of this component. New components default
+ * to UNKNOWN (which behaves like LEFT_TO_RIGHT). This method affects only
+ * the current component, while
+ * {@link #applyComponentOrientation(ComponentOrientation)} affects the
+ * entire hierarchy.
+ *
+ * @param o the new orientation
+ * @throws NullPointerException if o is null
+ * @see #getComponentOrientation()
+ */
+public void setComponentOrientation(ComponentOrientation o)
+{
+    if (o == null)
+        throw new NullPointerException();
+    ComponentOrientation oldOrientation = orientation;
+    orientation = o;
+    firePropertyChange("componentOrientation", oldOrientation, o);
 }
 
-// TODO this is only a stub
-public void applyComponentOrientation(ComponentOrientation orientation) {
+/**
+* Determines the text layout orientation used by this component.
+ *
+ * @return the component orientation
+ * @see #setComponentOrientation(ComponentOrientation)
+ */
+public ComponentOrientation getComponentOrientation()
+{
+    return orientation;
 }
 
-// TODO this is only a stub
-public void addMouseWheelListener(MouseWheelListener l) {
+/**
+* Sets the text layout orientation of this component. New components default
+ * to UNKNOWN (which behaves like LEFT_TO_RIGHT). This method affects the
+ * entire hierarchy, while
+ * {@link #setComponentOrientation(ComponentOrientation)} affects only the
+ * current component.
+ *
+ * @param o the new orientation
+ * @throws NullPointerException if o is null
+ * @see #getComponentOrientation()
+ * @since 1.4
+ */
+public void applyComponentOrientation(ComponentOrientation o)
+{
+    setComponentOrientation(o);
 }
 
+/**
+* Returns the accessibility framework context of this class. Component is
+ * not accessible, so the default implementation returns null. Subclasses
+ * must override this behavior, and return an appropriate subclass of
+ * {@link AccessibleAWTComponent}.
+ *
+ * @return the accessibility context
+ */
+public AccessibleContext getAccessibleContext()
+{
+    return null;
+}
+
+/**
+* Returns an array of all specified listeners registered on this component.
+ *
+ * @return an array of listeners
+ * @see #addMouseMotionListener(MouseMotionListener)
+ * @see #removeMouseMotionListener(MouseMotionListener)
+ * @since 1.4
+ */
+public synchronized MouseMotionListener[] getMouseMotionListeners()
+{
+    return (MouseMotionListener[])
+    AWTEventMulticaster.getListeners(mouseMotionListener,
+                                     MouseMotionListener.class);
+}
+
+/**
+* Adds the specified listener to this component. This is harmless if the
+ * listener is null, but if the listener has already been registered, it
+ * will now be registered twice.
+ *
+ * @param listener the new listener to add
+ * @see MouseEvent
+ * @see MouseWheelEvent
+ * @see #removeMouseWheelListener(MouseWheelListener)
+ * @see #getMouseWheelListeners()
+ * @since 1.4
+ */
+public synchronized void addMouseWheelListener(MouseWheelListener listener)
+{
+    mouseWheelListener = AWTEventMulticaster.add(mouseWheelListener, listener);
+    if (mouseWheelListener != null)
+        enableEvents(AWTEvent.MOUSE_WHEEL_EVENT_MASK);
+}
+
+/**
+* Removes the specified listener from the component. This is harmless if
+ * the listener was not previously registered.
+ *
+ * @param listener the listener to remove
+ * @see MouseEvent
+ * @see MouseWheelEvent
+ * @see #addMouseWheelListener(MouseWheelListener)
+ * @see #getMouseWheelListeners()
+ * @since 1.4
+ */
+public synchronized void removeMouseWheelListener(MouseWheelListener listener)
+{
+    mouseWheelListener = AWTEventMulticaster.remove(mouseWheelListener, listener);
+}
+
+/**
+* Returns an array of all specified listeners registered on this component.
+ *
+ * @return an array of listeners
+ * @see #addMouseWheelListener(MouseWheelListener)
+ * @see #removeMouseWheelListener(MouseWheelListener)
+ * @since 1.4
+ */
+public synchronized MouseWheelListener[] getMouseWheelListeners()
+{
+    return (MouseWheelListener[])
+    AWTEventMulticaster.getListeners(mouseWheelListener,
+                                     MouseWheelListener.class);
+}
+
+/**
+* Adds the specified listener to this component. This is harmless if the
+ * listener is null, but if the listener has already been registered, it
+ * will now be registered twice.
+ *
+ * @param listener the new listener to add
+ * @see InputMethodEvent
+ * @see #removeInputMethodListener(InputMethodListener)
+ * @see #getInputMethodListeners()
+ * @see #getInputMethodRequests()
+ * @since 1.2
+ */
+public synchronized void addInputMethodListener(InputMethodListener listener)
+{
+    inputMethodListener = AWTEventMulticaster.add(inputMethodListener, listener);
+    if (inputMethodListener != null)
+        enableEvents(AWTEvent.INPUT_METHOD_EVENT_MASK);
+}
+
+/**
+* Removes the specified listener from the component. This is harmless if
+ * the listener was not previously registered.
+ *
+ * @param listener the listener to remove
+ * @see InputMethodEvent
+ * @see #addInputMethodListener(InputMethodListener)
+ * @see #getInputMethodRequests()
+ * @since 1.2
+ */
+public synchronized void removeInputMethodListener(InputMethodListener listener)
+{
+    inputMethodListener = AWTEventMulticaster.remove(inputMethodListener, listener);
+}
 
 
 synchronized void updateLinkedGraphics () {
@@ -2207,4 +2962,1135 @@ public void validate () {
    * Dummy lightweight peer singleton.
    */
   private static final DoNothingPeer DUMMY_PEER = new DoNothingPeer ();
+
+// Nested classes.
+
+/**
+* This class fixes the bounds for a Heavyweight component that
+ * is placed inside a Lightweight container. When the lightweight is
+ * moved or resized, setBounds for the lightweight peer does nothing.
+ * Therefore, it was never moved on the screen. This class is
+ * attached to the lightweight, and it adjusts the position and size
+ * of the peer when notified.
+ * This is the same for show and hide.
+ */
+class HeavyweightInLightweightListener
+implements ComponentListener
+{
+
+    /**
+    * Constructor. Adds component listener to lightweight parent.
+     *
+     * @param parent - the lightweight container.
+     */
+    public HeavyweightInLightweightListener(Container parent)
+    {
+        parent.addComponentListener(this);
+    }
+
+    /**
+    * This method is called when the component is resized.
+     *
+     * @param event the <code>ComponentEvent</code> indicating the resize
+     */
+    public void componentResized(ComponentEvent event)
+    {
+        // Nothing to do here, componentMoved will be called.
+    }
+
+    /**
+    * This method is called when the component is moved.
+     *
+     * @param event the <code>ComponentEvent</code> indicating the move
+     */
+    public void componentMoved(ComponentEvent event)
+    {
+        if (peer != null)
+            peer.setBounds(x, y, width, height);
+    }
+
+    /**
+    * This method is called when the component is made visible.
+     *
+     * @param event the <code>ComponentEvent</code> indicating the visibility
+     */
+    public void componentShown(ComponentEvent event)
+    {
+        if (isShowing())
+            peer.show();
+    }
+
+    /**
+    * This method is called when the component is hidden.
+     *
+     * @param event the <code>ComponentEvent</code> indicating the visibility
+     */
+    public void componentHidden(ComponentEvent event)
+    {
+        if (!isShowing())
+            peer.hide();
+    }
+}
+
+/**
+* This class provides accessibility support for subclasses of container.
+ *
+ * @author Eric Blake (ebb9@email.byu.edu)
+ * @since 1.3
+ * @status updated to 1.4
+ */
+protected abstract class AccessibleAWTComponent extends AccessibleContext
+implements Serializable, AccessibleComponent
+{
+    /**
+    * Compatible with JDK 1.3+.
+     */
+    private static final long serialVersionUID = 642321655757800191L;
+
+    /**
+    * Converts show/hide events to PropertyChange events, and is registered
+     * as a component listener on this component.
+     *
+     * @serial the component handler
+     */
+    protected ComponentListener accessibleAWTComponentHandler
+        = new AccessibleAWTComponentHandler();
+
+    /**
+        * Converts focus events to PropertyChange events, and is registered
+     * as a focus listener on this component.
+     *
+     * @serial the focus handler
+     */
+    protected FocusListener accessibleAWTFocusHandler
+        = new AccessibleAWTFocusHandler();
+
+    /**
+        * The default constructor.
+     */
+    protected AccessibleAWTComponent()
+    {
+        Component.this.addComponentListener(accessibleAWTComponentHandler);
+        Component.this.addFocusListener(accessibleAWTFocusHandler);
+    }
+
+    /**
+        * Adds a global property change listener to the accessible component.
+     *
+     * @param l the listener to add
+     * @see #ACCESSIBLE_NAME_PROPERTY
+     * @see #ACCESSIBLE_DESCRIPTION_PROPERTY
+     * @see #ACCESSIBLE_STATE_PROPERTY
+     * @see #ACCESSIBLE_VALUE_PROPERTY
+     * @see #ACCESSIBLE_SELECTION_PROPERTY
+     * @see #ACCESSIBLE_TEXT_PROPERTY
+     * @see #ACCESSIBLE_VISIBLE_DATA_PROPERTY
+     */
+    public void addPropertyChangeListener(PropertyChangeListener l)
+    {
+        Component.this.addPropertyChangeListener(l);
+        super.addPropertyChangeListener(l);
+    }
+
+    /**
+        * Removes a global property change listener from this accessible
+     * component.
+     *
+     * @param l the listener to remove
+     */
+    public void removePropertyChangeListener(PropertyChangeListener l)
+    {
+        Component.this.removePropertyChangeListener(l);
+        super.removePropertyChangeListener(l);
+    }
+
+    /**
+        * Returns the accessible name of this component. It is almost always
+     * wrong to return getName(), since it is not localized. In fact, for
+     * things like buttons, this should be the text of the button, not the
+     * name of the object. The tooltip text might also be appropriate.
+     *
+     * @return the name
+     * @see #setAccessibleName(String)
+     */
+    public String getAccessibleName()
+    {
+        return accessibleName;
+    }
+
+    /**
+        * Returns a brief description of this accessible context. This should
+     * be localized.
+     *
+     * @return a description of this component
+     * @see #setAccessibleDescription(String)
+     */
+    public String getAccessibleDescription()
+    {
+        return accessibleDescription;
+    }
+
+    /**
+        * Returns the role of this component.
+     *
+     * @return the accessible role
+     */
+    public AccessibleRole getAccessibleRole()
+    {
+        return AccessibleRole.AWT_COMPONENT;
+    }
+
+    /**
+        * Returns a state set describing this component's state.
+     *
+     * @return a new state set
+     * @see AccessibleState
+     */
+    public AccessibleStateSet getAccessibleStateSet()
+    {
+        AccessibleStateSet s = new AccessibleStateSet();
+        if (Component.this.isEnabled())
+            s.add(AccessibleState.ENABLED);
+        if (isFocusable())
+            s.add(AccessibleState.FOCUSABLE);
+        if (isFocusOwner())
+            s.add(AccessibleState.FOCUSED);
+        // Note: While the java.awt.Component has an 'opaque' property, it
+        // seems that it is not added to the accessible state set here, even
+        // if this property is true. However, it is handled for
+        // javax.swing.JComponent, so we add it there.
+        if (Component.this.isShowing())
+            s.add(AccessibleState.SHOWING);
+        if (Component.this.isVisible())
+            s.add(AccessibleState.VISIBLE);
+        return s;
+    }
+
+    /**
+        * Returns the parent of this component, if it is accessible.
+     *
+     * @return the accessible parent
+     */
+    public Accessible getAccessibleParent()
+    {
+        if (accessibleParent == null)
+        {
+            Container parent = getParent();
+            accessibleParent = parent instanceof Accessible
+                ? (Accessible) parent : null;
+        }
+        return accessibleParent;
+    }
+
+    /**
+        * Returns the index of this component in its accessible parent.
+     *
+     * @return the index, or -1 if the parent is not accessible
+     * @see #getAccessibleParent()
+     */
+    public int getAccessibleIndexInParent()
+    {
+        if (getAccessibleParent() == null)
+            return -1;
+        AccessibleContext context
+            = ((Component) accessibleParent).getAccessibleContext();
+        if (context == null)
+            return -1;
+        for (int i = context.getAccessibleChildrenCount(); --i >= 0; )
+            if (context.getAccessibleChild(i) == Component.this)
+                return i;
+        return -1;
+    }
+
+    /**
+        * Returns the number of children of this component which implement
+     * Accessible. Subclasses must override this if they can have children.
+     *
+     * @return the number of accessible children, default 0
+     */
+    public int getAccessibleChildrenCount()
+    {
+        return 0;
+    }
+
+    /**
+        * Returns the ith accessible child. Subclasses must override this if
+     * they can have children.
+     *
+     * @return the ith accessible child, or null
+     * @see #getAccessibleChildrenCount()
+     */
+    public Accessible getAccessibleChild(int i)
+    {
+        return null;
+    }
+
+    /**
+        * Returns the locale of this component.
+     *
+     * @return the locale
+     * @throws IllegalComponentStateException if the locale is unknown
+     */
+    public Locale getLocale()
+    {
+        return Component.this.getLocale();
+    }
+
+    /**
+        * Returns this, since it is an accessible component.
+     *
+     * @return the accessible component
+     */
+    public AccessibleComponent getAccessibleComponent()
+    {
+        return this;
+    }
+
+    /**
+        * Gets the background color.
+     *
+     * @return the background color
+     * @see #setBackground(Color)
+     */
+    public Color getBackground()
+    {
+        return Component.this.getBackground();
+    }
+
+    /**
+        * Sets the background color.
+     *
+     * @param c the background color
+     * @see #getBackground()
+     * @see #isOpaque()
+     */
+    public void setBackground(Color c)
+    {
+        Component.this.setBackground(c);
+    }
+
+    /**
+        * Gets the foreground color.
+     *
+     * @return the foreground color
+     * @see #setForeground(Color)
+     */
+    public Color getForeground()
+    {
+        return Component.this.getForeground();
+    }
+
+    /**
+        * Sets the foreground color.
+     *
+     * @param c the foreground color
+     * @see #getForeground()
+     */
+    public void setForeground(Color c)
+    {
+        Component.this.setForeground(c);
+    }
+
+    /**
+        * Gets the cursor.
+     *
+     * @return the cursor
+     * @see #setCursor(Cursor)
+     */
+    public Cursor getCursor()
+    {
+        return Component.this.getCursor();
+    }
+
+    /**
+        * Sets the cursor.
+     *
+     * @param cursor the cursor
+     * @see #getCursor()
+     */
+    public void setCursor(Cursor cursor)
+    {
+        Component.this.setCursor(cursor);
+    }
+
+    /**
+        * Gets the font.
+     *
+     * @return the font
+     * @see #setFont(Font)
+     */
+    public Font getFont()
+    {
+        return Component.this.getFont();
+    }
+
+    /**
+        * Sets the font.
+     *
+     * @param f the font
+     * @see #getFont()
+     */
+    public void setFont(Font f)
+    {
+        Component.this.setFont(f);
+    }
+
+    /**
+        * Gets the font metrics for a font.
+     *
+     * @param f the font to look up
+     * @return its metrics
+     * @throws NullPointerException if f is null
+     * @see #getFont()
+     */
+    public FontMetrics getFontMetrics(Font f)
+    {
+        return Component.this.getFontMetrics(f);
+    }
+
+    /**
+        * Tests if the component is enabled.
+     *
+     * @return true if the component is enabled
+     * @see #setEnabled(boolean)
+     * @see #getAccessibleStateSet()
+     * @see AccessibleState#ENABLED
+     */
+    public boolean isEnabled()
+    {
+        return Component.this.isEnabled();
+    }
+
+    /**
+        * Set whether the component is enabled.
+     *
+     * @param b the new enabled status
+     * @see #isEnabled()
+     */
+    public void setEnabled(boolean b)
+    {
+        Component.this.setEnabled(b);
+    }
+
+    /**
+        * Test whether the component is visible (not necesarily showing).
+     *
+     * @return true if it is visible
+     * @see #setVisible(boolean)
+     * @see #getAccessibleStateSet()
+     * @see AccessibleState#VISIBLE
+     */
+    public boolean isVisible()
+    {
+        return Component.this.isVisible();
+    }
+
+    /**
+        * Sets the visibility of this component.
+     *
+     * @param b the desired visibility
+     * @see #isVisible()
+     */
+    public void setVisible(boolean b)
+    {
+        Component.this.setVisible(b);
+    }
+
+    /**
+        * Tests if the component is showing.
+     *
+     * @return true if this is showing
+     */
+    public boolean isShowing()
+    {
+        return Component.this.isShowing();
+    }
+
+    /**
+        * Tests if the point is contained in this component.
+     *
+     * @param p the point to check
+     * @return true if it is contained
+     * @throws NullPointerException if p is null
+     */
+    public boolean contains(Point p)
+    {
+        return Component.this.contains(p.x, p.y);
+    }
+
+    /**
+        * Returns the location of this object on the screen, or null if it is
+     * not showing.
+     *
+     * @return the location relative to screen coordinates, if showing
+     * @see #getBounds()
+     * @see #getLocation()
+     */
+    public Point getLocationOnScreen()
+    {
+        return Component.this.isShowing() ? Component.this.getLocationOnScreen()
+        : null;
+    }
+
+    /**
+        * Returns the location of this object relative to its parent's coordinate
+     * system, or null if it is not showing.
+     *
+     * @return the location
+     * @see #getBounds()
+     * @see #getLocationOnScreen()
+     */
+    public Point getLocation()
+    {
+        return Component.this.getLocation();
+    }
+
+    /**
+        * Sets the location of this relative to its parent's coordinate system.
+     *
+     * @param p the location
+     * @throws NullPointerException if p is null
+     * @see #getLocation()
+     */
+    public void setLocation(Point p)
+    {
+        Component.this.setLocation(p.x, p.y);
+    }
+
+    /**
+        * Gets the bounds of this component, or null if it is not on screen.
+     *
+     * @return the bounds
+     * @see #contains(Point)
+     * @see #setBounds(Rectangle)
+     */
+    public Rectangle getBounds()
+    {
+        return Component.this.getBounds();
+    }
+
+    /**
+        * Sets the bounds of this component.
+     *
+     * @param r the bounds
+     * @throws NullPointerException if r is null
+     * @see #getBounds()
+     */
+    public void setBounds(Rectangle r)
+    {
+        Component.this.setBounds(r.x, r.y, r.width, r.height);
+    }
+
+    /**
+        * Gets the size of this component, or null if it is not showing.
+     *
+     * @return the size
+     * @see #setSize(Dimension)
+     */
+    public Dimension getSize()
+    {
+        return Component.this.getSize();
+    }
+
+    /**
+        * Sets the size of this component.
+     *
+     * @param d the size
+     * @throws NullPointerException if d is null
+     * @see #getSize()
+     */
+    public void setSize(Dimension d)
+    {
+        Component.this.setSize(d.width, d.height);
+    }
+
+    /**
+        * Returns the Accessible child at a point relative to the coordinate
+     * system of this component, if one exists, or null. Since components
+     * have no children, subclasses must override this to get anything besides
+     * null.
+     *
+     * @param p the point to check
+     * @return the accessible child at that point
+     * @throws NullPointerException if p is null
+     */
+    public Accessible getAccessibleAt(Point p)
+    {
+        return null;
+    }
+
+    /**
+        * Tests whether this component can accept focus.
+     *
+     * @return true if this is focus traversable
+     * @see #getAccessibleStateSet ()
+     * @see AccessibleState#FOCUSABLE
+     * @see AccessibleState#FOCUSED
+     */
+    public boolean isFocusTraversable ()
+    {
+        return Component.this.isFocusTraversable ();
+    }
+
+    /**
+        * Requests focus for this component.
+     *
+     * @see #isFocusTraversable ()
+     */
+    public void requestFocus ()
+    {
+        Component.this.requestFocus ();
+    }
+
+    /**
+        * Adds a focus listener.
+     *
+     * @param l the listener to add
+     */
+    public void addFocusListener(FocusListener l)
+    {
+        Component.this.addFocusListener(l);
+    }
+
+    /**
+        * Removes a focus listener.
+     *
+     * @param l the listener to remove
+     */
+    public void removeFocusListener(FocusListener l)
+    {
+        Component.this.removeFocusListener(l);
+    }
+
+    /**
+        * Converts component changes into property changes.
+     *
+     * @author Eric Blake (ebb9@email.byu.edu)
+     * @since 1.3
+     * @status updated to 1.4
+     */
+    protected class AccessibleAWTComponentHandler implements ComponentListener
+    {
+        /**
+        * Default constructor.
+         */
+        protected AccessibleAWTComponentHandler()
+    {
+            // Nothing to do here.
+    }
+
+        /**
+        * Convert a component hidden to a property change.
+         *
+         * @param e the event to convert
+         */
+        public void componentHidden(ComponentEvent e)
+    {
+            AccessibleAWTComponent.this.firePropertyChange
+            (ACCESSIBLE_STATE_PROPERTY, AccessibleState.VISIBLE, null);
+    }
+
+        /**
+        * Convert a component shown to a property change.
+         *
+         * @param e the event to convert
+         */
+        public void componentShown(ComponentEvent e)
+    {
+            AccessibleAWTComponent.this.firePropertyChange
+            (ACCESSIBLE_STATE_PROPERTY, null, AccessibleState.VISIBLE);
+    }
+
+        /**
+        * Moving a component does not affect properties.
+         *
+         * @param e ignored
+         */
+        public void componentMoved(ComponentEvent e)
+    {
+            // Nothing to do here.
+    }
+
+        /**
+        * Resizing a component does not affect properties.
+         *
+         * @param e ignored
+         */
+        public void componentResized(ComponentEvent e)
+    {
+            // Nothing to do here.
+    }
+    } // class AccessibleAWTComponentHandler
+
+    /**
+        * Converts focus changes into property changes.
+     *
+     * @author Eric Blake (ebb9@email.byu.edu)
+     * @since 1.3
+     * @status updated to 1.4
+     */
+    protected class AccessibleAWTFocusHandler implements FocusListener
+    {
+        /**
+        * Default constructor.
+         */
+        protected AccessibleAWTFocusHandler()
+    {
+            // Nothing to do here.
+    }
+
+        /**
+        * Convert a focus gained to a property change.
+         *
+         * @param e the event to convert
+         */
+        public void focusGained(FocusEvent e)
+    {
+            AccessibleAWTComponent.this.firePropertyChange
+            (ACCESSIBLE_STATE_PROPERTY, null, AccessibleState.FOCUSED);
+    }
+
+        /**
+        * Convert a focus lost to a property change.
+         *
+         * @param e the event to convert
+         */
+        public void focusLost(FocusEvent e)
+    {
+            AccessibleAWTComponent.this.firePropertyChange
+            (ACCESSIBLE_STATE_PROPERTY, AccessibleState.FOCUSED, null);
+    }
+    } // class AccessibleAWTComponentHandler
+} // class AccessibleAWTComponent
+
+/**
+* This class provides support for blitting offscreen surfaces to a
+ * component.
+ *
+ * @see BufferStrategy
+ *
+ * @since 1.4
+ */
+protected class BltBufferStrategy extends BufferStrategy
+{
+    /**
+    * The capabilities of the image buffer.
+     */
+    protected BufferCapabilities caps;
+
+    /**
+    * The back buffers used in this strategy.
+     */
+    protected VolatileImage[] backBuffers;
+
+    /**
+        * Whether or not the image buffer resources are allocated and
+     * ready to be drawn into.
+     */
+    protected boolean validatedContents;
+
+    /**
+        * The width of the back buffers.
+     */
+    protected int width;
+
+    /**
+        * The height of the back buffers.
+     */
+    protected int height;
+
+    /**
+        * The front buffer.
+     */
+    private VolatileImage frontBuffer;
+
+    /**
+        * Creates a blitting buffer strategy.
+     *
+     * @param numBuffers the number of buffers, including the front
+     * buffer
+     * @param caps the capabilities of this strategy
+     */
+    protected BltBufferStrategy(int numBuffers, BufferCapabilities caps)
+    {
+        this.caps = caps;
+        createBackBuffers(numBuffers - 1);
+        width = getWidth();
+        height = getHeight();
+    }
+
+    /**
+        * Initializes the backBuffers field with an array of numBuffers
+     * VolatileImages.
+     *
+     * @param numBuffers the number of backbuffers to create
+     */
+    protected void createBackBuffers(int numBuffers)
+    {
+        GraphicsConfiguration c =
+        GraphicsEnvironment.getLocalGraphicsEnvironment()
+        .getDefaultScreenDevice().getDefaultConfiguration();
+
+        backBuffers = new VolatileImage[numBuffers];
+
+        for (int i = 0; i < numBuffers; i++)
+            backBuffers[i] = c.createCompatibleVolatileImage(width, height);
+    }
+
+    /**
+        * Retrieves the capabilities of this buffer strategy.
+     *
+     * @return the capabilities of this buffer strategy
+     */
+    public BufferCapabilities getCapabilities()
+    {
+        return caps;
+    }
+
+    /**
+        * Retrieves a graphics object that can be used to draw into this
+     * strategy's image buffer.
+     *
+     * @return a graphics object
+     */
+    public Graphics getDrawGraphics()
+    {
+        // Return the backmost buffer's graphics.
+        return backBuffers[0].getGraphics();
+    }
+
+    /**
+        * Bring the contents of the back buffer to the front buffer.
+     */
+    public void show()
+    {
+        GraphicsConfiguration c =
+        GraphicsEnvironment.getLocalGraphicsEnvironment()
+        .getDefaultScreenDevice().getDefaultConfiguration();
+
+        // draw the front buffer.
+        getGraphics().drawImage(backBuffers[backBuffers.length - 1],
+                                width, height, null);
+
+        BufferCapabilities.FlipContents f = getCapabilities().getFlipContents();
+
+        // blit the back buffers.
+        for (int i = backBuffers.length - 1; i > 0 ; i--)
+            backBuffers[i] = backBuffers[i - 1];
+
+        // create new backmost buffer.
+        if (f == BufferCapabilities.FlipContents.UNDEFINED)
+            backBuffers[0] = c.createCompatibleVolatileImage(width, height);
+
+        // create new backmost buffer and clear it to the background
+        // color.
+        if (f == BufferCapabilities.FlipContents.BACKGROUND)
+        {
+            backBuffers[0] = c.createCompatibleVolatileImage(width, height);
+            backBuffers[0].getGraphics().clearRect(0, 0, width, height);
+        }
+
+        // FIXME: set the backmost buffer to the prior contents of the
+        // front buffer.  How do we retrieve the contents of the front
+        // buffer?
+        //
+        //      if (f == BufferCapabilities.FlipContents.PRIOR)
+
+        // set the backmost buffer to a copy of the new front buffer.
+        if (f == BufferCapabilities.FlipContents.COPIED)
+            backBuffers[0] = backBuffers[backBuffers.length - 1];
+    }
+
+    /**
+        * Re-create the image buffer resources if they've been lost.
+     */
+    protected void revalidate()
+    {
+        GraphicsConfiguration c =
+        GraphicsEnvironment.getLocalGraphicsEnvironment()
+        .getDefaultScreenDevice().getDefaultConfiguration();
+
+        for (int i = 0; i < backBuffers.length; i++)
+        {
+            int result = backBuffers[i].validate(c);
+            if (result == VolatileImage.IMAGE_INCOMPATIBLE)
+                backBuffers[i] = c.createCompatibleVolatileImage(width, height);
+        }
+        validatedContents = true;
+    }
+
+    /**
+        * Returns whether or not the image buffer resources have been
+     * lost.
+     *
+     * @return true if the resources have been lost, false otherwise
+     */
+    public boolean contentsLost()
+    {
+        for (int i = 0; i < backBuffers.length; i++)
+        {
+            if (backBuffers[i].contentsLost())
+            {
+                validatedContents = false;
+                return true;
+            }
+        }
+        // we know that the buffer resources are valid now because we
+        // just checked them
+        validatedContents = true;
+        return false;
+    }
+
+    /**
+        * Returns whether or not the image buffer resources have been
+     * restored.
+     *
+     * @return true if the resources have been restored, false
+     * otherwise
+     */
+    public boolean contentsRestored()
+    {
+        GraphicsConfiguration c =
+        GraphicsEnvironment.getLocalGraphicsEnvironment()
+        .getDefaultScreenDevice().getDefaultConfiguration();
+
+        boolean imageRestored = false;
+
+        for (int i = 0; i < backBuffers.length; i++)
+        {
+            int result = backBuffers[i].validate(c);
+            if (result == VolatileImage.IMAGE_RESTORED)
+                imageRestored = true;
+            else if (result == VolatileImage.IMAGE_INCOMPATIBLE)
+                return false;
+        }
+        // we know that the buffer resources are valid now because we
+        // just checked them
+        validatedContents = true;
+        return imageRestored;
+    }
+}
+
+/**
+* This class provides support for flipping component buffers. It
+ * can only be used on Canvases and Windows.
+ *
+ * @since 1.4
+ */
+protected class FlipBufferStrategy extends BufferStrategy
+{
+    /**
+    * The number of buffers.
+     */
+    protected int numBuffers;
+
+    /**
+    * The capabilities of this buffering strategy.
+     */
+    protected BufferCapabilities caps;
+
+    /**
+        * An Image reference to the drawing buffer.
+     */
+    protected Image drawBuffer;
+
+    /**
+        * A VolatileImage reference to the drawing buffer.
+     */
+    protected VolatileImage drawVBuffer;
+
+    /**
+        * Whether or not the image buffer resources are allocated and
+     * ready to be drawn into.
+     */
+    protected boolean validatedContents;
+
+    /**
+        * The width of the back buffer.
+     */
+    private int width;
+
+    /**
+        * The height of the back buffer.
+     */
+    private int height;
+
+    /**
+        * Creates a flipping buffer strategy.  The only supported
+     * strategy for FlipBufferStrategy itself is a double-buffer page
+     * flipping strategy.  It forms the basis for more complex derived
+     * strategies.
+     *
+     * @param numBuffers the number of buffers
+     * @param caps the capabilities of this buffering strategy
+     *
+     * @throws AWTException if the requested
+     * number-of-buffers/capabilities combination is not supported
+     */
+    protected FlipBufferStrategy(int numBuffers, BufferCapabilities caps)
+        throws AWTException
+    {
+        this.caps = caps;
+        width = getWidth();
+        height = getHeight();
+
+        if (numBuffers > 1)
+            createBuffers(numBuffers, caps);
+        else
+        {
+            drawVBuffer = peer.createVolatileImage(width, height);
+            drawBuffer = drawVBuffer;
+        }
+    }
+
+    /**
+        * Creates a multi-buffer flipping strategy.  The number of
+     * buffers must be greater than one and the buffer capabilities
+     * must specify page flipping.
+     *
+     * @param numBuffers the number of flipping buffers; must be
+     * greater than one
+     * @param caps the buffering capabilities; caps.isPageFlipping()
+     * must return true
+     *
+     * @throws IllegalArgumentException if numBuffers is not greater
+     * than one or if the page flipping capability is not requested
+     *
+     * @throws AWTException if the requested flipping strategy is not
+     * supported
+     */
+    protected void createBuffers(int numBuffers, BufferCapabilities caps)
+        throws AWTException
+    {
+        if (numBuffers <= 1)
+            throw new IllegalArgumentException("FlipBufferStrategy.createBuffers:"
+                                               + " numBuffers must be greater than"
+                                               + " one.");
+
+        if (!caps.isPageFlipping())
+            throw new IllegalArgumentException("FlipBufferStrategy.createBuffers:"
+                                               + " flipping must be a specified"
+                                               + " capability.");
+
+        peer.createBuffers(numBuffers, caps);
+    }
+
+    /**
+        * Return a direct reference to the back buffer image.
+     *
+     * @return a direct reference to the back buffer image.
+     */
+    protected Image getBackBuffer()
+    {
+        return peer.getBackBuffer();
+    }
+
+    /**
+        * Perform a flip operation to transfer the contents of the back
+     * buffer to the front buffer.
+     */
+    protected void flip(BufferCapabilities.FlipContents flipAction)
+    {
+        peer.flip(flipAction);
+    }
+
+    /**
+        * Release the back buffer's resources.
+     */
+    protected void destroyBuffers()
+    {
+        peer.destroyBuffers();
+    }
+
+    /**
+        * Retrieves the capabilities of this buffer strategy.
+     *
+     * @return the capabilities of this buffer strategy
+     */
+    public BufferCapabilities getCapabilities()
+    {
+        return caps;
+    }
+
+    /**
+        * Retrieves a graphics object that can be used to draw into this
+     * strategy's image buffer.
+     *
+     * @return a graphics object
+     */
+    public Graphics getDrawGraphics()
+    {
+        return drawVBuffer.getGraphics();
+    }
+
+    /**
+        * Re-create the image buffer resources if they've been lost.
+     */
+    protected void revalidate()
+    {
+        GraphicsConfiguration c =
+        GraphicsEnvironment.getLocalGraphicsEnvironment()
+        .getDefaultScreenDevice().getDefaultConfiguration();
+
+        if (drawVBuffer.validate(c) == VolatileImage.IMAGE_INCOMPATIBLE)
+            drawVBuffer = peer.createVolatileImage(width, height);
+        validatedContents = true;
+    }
+
+    /**
+        * Returns whether or not the image buffer resources have been
+     * lost.
+     *
+     * @return true if the resources have been lost, false otherwise
+     */
+    public boolean contentsLost()
+    {
+        if (drawVBuffer.contentsLost())
+        {
+            validatedContents = false;
+            return true;
+        }
+        // we know that the buffer resources are valid now because we
+        // just checked them
+        validatedContents = true;
+        return false;
+    }
+
+    /**
+        * Returns whether or not the image buffer resources have been
+     * restored.
+     *
+     * @return true if the resources have been restored, false
+     * otherwise
+     */
+    public boolean contentsRestored()
+    {
+        GraphicsConfiguration c =
+        GraphicsEnvironment.getLocalGraphicsEnvironment()
+        .getDefaultScreenDevice().getDefaultConfiguration();
+
+        int result = drawVBuffer.validate(c);
+
+        boolean imageRestored = false;
+
+        if (result == VolatileImage.IMAGE_RESTORED)
+            imageRestored = true;
+        else if (result == VolatileImage.IMAGE_INCOMPATIBLE)
+            return false;
+
+        // we know that the buffer resources are valid now because we
+        // just checked them
+        validatedContents = true;
+        return imageRestored;
+    }
+
+    /**
+        * Bring the contents of the back buffer to the front buffer.
+     */
+    public void show()
+    {
+        flip(caps.getFlipContents());
+    }
+}
+
 }
