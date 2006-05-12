@@ -239,9 +239,9 @@ void repaintItem( Graphics g, int idx) {
 		g.setColor( Defaults.ListFlyOverTxtClr);
 	}
 	else {
-		g.setColor( this.bgClr );
+		g.setColor( this.background );
 		g.fillRect( d, y0, this.width-2*d, rowHeight);
-		g.setColor( this.fgClr );
+		g.setColor( this.foreground );
 	}
 
 	g.drawString( s, x0, y1);

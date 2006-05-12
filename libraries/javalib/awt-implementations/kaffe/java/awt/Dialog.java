@@ -78,7 +78,7 @@ void createNative () {
 	}
 
 	nativeData = Toolkit.wndCreateDialog( owner.nativeData, title, u, v, w, h,
-	                               cursor.type, bgClr.getNativeValue(), ((flags & IS_RESIZABLE) != 0));
+	                               cursor.type, background.getNativeValue(), ((flags & IS_RESIZABLE) != 0));
 }
 
 public void hide () {

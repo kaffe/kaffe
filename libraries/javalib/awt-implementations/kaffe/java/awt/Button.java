@@ -105,7 +105,7 @@ void drawText ( Graphics g) {
 	// If button is disabled then the text as such.
 	if (!isEnabled()) {
 		c1 = null;
-		c2 = bgClr.darker();
+		c2 = background.darker();
 	}
 	else if ( (state & PUSHED) > 0 ){
 		x--; y--;
@@ -114,12 +114,12 @@ void drawText ( Graphics g) {
 	}
 	else {
 		if ( (state & HILIGHTED) > 0 ) {
-			c1 = Defaults.BtnTxtCarved ? bgClr.brighter() : null;
+			c1 = Defaults.BtnTxtCarved ? background.brighter() : null;
 			c2 = Defaults.BtnPointTxtClr;
 		}
 		else {
-			c1 = Defaults.BtnTxtCarved ? bgClr.brighter() : null;
-			c2 = fgClr;
+			c1 = Defaults.BtnTxtCarved ? background.brighter() : null;
+			c2 = foreground;
 		}
 	}
 
@@ -172,7 +172,7 @@ public void paint ( Graphics g) {
 	}
 	else {
 		kaffePaintBorder( g);
-		g.setColor( ((state & HILIGHTED) > 0) ? Defaults.BtnPointClr : bgClr);
+		g.setColor( ((state & HILIGHTED) > 0) ? Defaults.BtnPointClr : background);
 		g.fill3DRect( d, d, width-2*d, height-2*d, ((state & PUSHED) == 0));
 		if ( imgs != null )
 			drawImage( g);

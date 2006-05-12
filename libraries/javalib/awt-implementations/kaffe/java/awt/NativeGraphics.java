@@ -40,8 +40,8 @@ class NativeGraphics
 	Pointer nativeData;
 	int xOffset;
 	int yOffset;
-	Color fgClr;
-	Color bgClr;
+	Color foreground;
+	Color background;
 	Font font;
 	int xClip;
 	int yClip;
@@ -103,7 +103,7 @@ public Graphics create () {
 	NativeGraphics g = getGraphics( this, nativeData, TGT_TYPE_GRAPHICS,
 	                xOffset, yOffset,
 									xClip, yClip, wClip, hClip,
-									fgClr, bgClr, font, false);
+									foreground, background, font, false);
 	if ( xClr != null )
 		g.setXORMode( xClr);
 
@@ -131,7 +131,7 @@ public Graphics create ( int x, int y, int width, int height ) {
 	NativeGraphics g = getGraphics( this, nativeData, TGT_TYPE_GRAPHICS,
 	                x + xOffset, y + yOffset,
 									clx - x, cly - y, clw, clh,
-									fgClr, bgClr, font, false);
+									foreground, background, font, false);
 							
 	if ( xClr != null )
 		g.setXORMode( xClr);
@@ -144,7 +144,7 @@ public Graphics create ( int x, int y, int width, int height ) {
 }
 
 public void dispose () {
-	if ( bgClr == null ) {
+	if ( background == null ) {
 		// We have to provide some protection against double disposes
 		// since it would make the whole cache inconsistent (leads to
 		// simultanous use). We shouldn't store the target here because
@@ -159,8 +159,8 @@ public void dispose () {
 		synchronized ( target ) {
 			xClr = null;
 			font = null;
-			fgClr = null;
-			bgClr = null;
+			foreground = null;
+			background = null;
 
 			target.unlinkGraphics( this);
 			target = null;
@@ -169,8 +169,8 @@ public void dispose () {
 	else {
 		xClr = null;
 		font = null;
-		fgClr = null;
-		bgClr = null;
+		foreground = null;
+		background = null;
 	}
 
 	if ( nativeData != null ) {
@@ -187,7 +187,7 @@ public void dispose () {
 public void draw3DRect ( int x, int y, int width, int height, boolean raised ){
 	// we pass the rgb color value because it might be stored on the native
 	// side as pixel value (requiring an additional color conversion)
-	Toolkit.graDraw3DRect( nativeData, x, y, width, height, raised, fgClr.value);
+	Toolkit.graDraw3DRect( nativeData, x, y, width, height, raised, foreground.value);
 }
 
 public void drawArc ( int x, int y, int width, int height,
@@ -356,7 +356,7 @@ public void drawString ( String str, int x, int y ){
 }
 
 public void fill3DRect ( int x, int y, int width, int height, boolean raised ){
-	Toolkit.graFill3DRect( nativeData, x, y, width, height, raised, fgClr.value);
+	Toolkit.graFill3DRect( nativeData, x, y, width, height, raised, foreground.value);
 }
 
 public void fillArc ( int x, int y, int width, int height, int startAngle, int arcAngle ){
@@ -392,7 +392,7 @@ protected void finalize () throws Throwable {
 }
 
 Color getBackColor () {
-	return bgClr;
+	return background;
 }
 
 public Shape getClip (){
@@ -440,10 +440,10 @@ static NativeGraphics getClippedGraphics ( NativeGraphics g, Component c,
 	if ( (c.flags & Component.IS_ADD_NOTIFIED) == 0 ) return null;
 
 	if ( g == null ) {
-		fg  = c.fgClr;	bg  = c.bgClr;	fnt = c.font;
+		fg  = c.foreground;	bg  = c.background;	fnt = c.font;
 	}
 	else { // otherwise, the silly compiler complains about missing init
-		fg = g.fgClr;   bg = g.bgClr;   fnt = g.font;
+		fg = g.foreground;   bg = g.background;   fnt = g.font;
 	}
 
 	while ( true ) {
@@ -522,7 +522,7 @@ static NativeGraphics getClippedGraphics ( NativeGraphics g, Component c,
 }
 
 public Color getColor() {
-	return fgClr;
+	return foreground;
 }
 
 public Font getFont() {
@@ -563,8 +563,8 @@ static NativeGraphics getGraphics ( Object target, Pointer tgtData, int tgtType,
 	g.hClip = hClip;
 	g.hClipDefault = hClip;
 	g.font     = fnt;
-	g.fgClr    = fg;
-	g.bgClr    = bg;
+	g.foreground    = fg;
+	g.background    = bg;
 
 if ( fg == null ){ Thread.currentThread().dumpStack();}
 
@@ -620,7 +620,7 @@ void paintChild ( Component c, boolean isUpdate ) {
 		NativeGraphics g = getGraphics( this, nativeData, TGT_TYPE_GRAPHICS,
 										                c.x + xOffset, c.y + yOffset,
 																		clx, cly, clw, clh,
-																		c.fgClr, c.bgClr, c.font, false);
+																		c.foreground, c.background, c.font, false);
 		if ( g != null ) {
 			if ( isUpdate )
 				c.update( g);
@@ -635,10 +635,10 @@ void paintChild ( Component c, boolean isUpdate ) {
 }
 
 void setBackColor ( Color clr ){
-	if ( (clr != null) && (clr != bgClr) ) {
-		bgClr = clr;
+	if ( (clr != null) && (clr != background) ) {
+		background = clr;
 		
-		Toolkit.graSetBackColor( nativeData, bgClr.getNativeValue());
+		Toolkit.graSetBackColor( nativeData, background.getNativeValue());
 	}
 }
 
@@ -673,9 +673,9 @@ public void setClip ( int x, int y, int width, int height ) {
 }
 
 public void setColor ( Color clr ){
-	if ( (clr != null) && (clr != fgClr) ) {
-		fgClr = clr;
-		Toolkit.graSetColor( nativeData, fgClr.getNativeValue());
+	if ( (clr != null) && (clr != foreground) ) {
+		foreground = clr;
+		Toolkit.graSetColor( nativeData, foreground.getNativeValue());
 	}
 }
 
@@ -701,18 +701,18 @@ void setGraphics ( Pointer tgtData, int tgtType, int xOffset, int yOffset,
 		font = fnt;
 	}
 	if ( fg != null ) {
-		fgClr = fg;
+		foreground = fg;
 	}
 	if ( bg != null ) {
-		bgClr = bg;
+		background = bg;
 	}
 
 	nativeData = Toolkit.graInitGraphics( nativeData, tgtData, tgtType,
 	                                      xOffset, yOffset,
 	                                      xClip, yClip, wClip, hClip,
 	                                      font.nativeData,
-	                                      fgClr.getNativeValue(),
-	                                      bgClr.getNativeValue(),
+	                                      foreground.getNativeValue(),
+	                                      background.getNativeValue(),
 	                                      blank);
 }
 

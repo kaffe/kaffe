@@ -215,7 +215,7 @@ void propagateReshape () {
 void rearrange() {
 	Graphics g = parent.getGraphics();
 	if ( g != null ) {
-		g.setColor( parent.bgClr );
+		g.setColor( parent.background );
 		g.fillRect( 0, 0, parent.width, parent.height);
 		g.dispose();
 	}

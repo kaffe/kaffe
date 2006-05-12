@@ -188,7 +188,7 @@ public void paint ( Graphics g) {
 	int x0  = dx;
 	int y0  = (height - ext) / 2;
 	
-	g.setColor( bgClr);
+	g.setColor( background );
 	g.fillRect( 0, 0, width, height);
 	
 	drawButton( g, ext, x0, y0);

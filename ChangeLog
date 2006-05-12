@@ -1,3 +1,23 @@
+2006-05-12  Riccardo Mottola <riccardo@kaffe.org>
+
+	* libraries/javalib/awt-implementations/kaffe/java/awt/BarMenu.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/Button.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/Checkbox.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/Component.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/Container.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/Dialog.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/Frame.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/Label.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/List.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/NativeGraphics.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/PopupWindow.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/RowCanvas.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/Scrollbar.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/TextArea.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/TextField.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/Window.java:
+	refactored fgClr and bgClr to foreground and background
+
 2006-05-11  Riccardo Mottola <riccardo@kaffe.org>
 
 	* libraries/javalib/awt-implementations/kaffe/java/awt/Component.java,

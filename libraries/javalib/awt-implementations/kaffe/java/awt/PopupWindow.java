@@ -128,7 +128,7 @@ public void paint( Graphics g) {
 
 	g.setColor( Color.black);
 	g.drawRect( 0, 0, width-1, height-1);
-	g.setColor( bgClr);
+	g.setColor( background);
 	g.fill3DRect( 1, 1, width-2, height-2, true);
 
 	for ( int i=0; i<s; i++) {
@@ -139,7 +139,7 @@ public void paint( Graphics g) {
 
 int paintItem ( MenuItem mi, Graphics g, int y) {
 
-	int ih = mi.paint( g, 1, xOffs, y, width-3, 0, bgClr, fgClr, mi == selection);
+	int ih = mi.paint( g, 1, xOffs, y, width-3, 0, background, foreground, mi == selection);
 
 	// draw the submenu mark
 	if ( mi instanceof Menu) {

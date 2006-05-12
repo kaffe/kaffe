@@ -74,8 +74,6 @@ abstract public class Component
 {
 	// We're not actually compatible with Sun's serialization format, so don't claim to be:
 	//final private static long serialVersionUID = -7644114512714619750L;
-	Color fgClr;
-	Color bgClr;
 	PopupMenu popup;
 	Rectangle deco = noDeco;
 	int flags = IS_VISIBLE;
@@ -526,14 +524,14 @@ static class TreeLock
 // }
 // 
 // private void writeDefaultObject() {
-// 	bgColor = Component.this.bgClr;
+// 	bgColor = Component.this.background;
 // 	changeSupport = null;
 // 	componentSerializedDataVersion = 0;
 // 	cursor = Component.this.cursor;
 // 	enabled = isEnabled();
 // 	eventMask = Component.this.eventMask;
 // 	font = Component.this.font;
-// 	foreground = Component.this.fgClr;
+// 	foreground = Component.this.foreground;
 // 	hasFocus = false;
 // 	height = Component.this.height;
 // 	isPacked = false;
@@ -883,13 +881,13 @@ public float getAlignmentY() {
 }
 
 public Color getBackground () {
-	return bgClr;
+	return background;
 /*
-	if ( bgClr != null )
-		return bgClr;
+	if ( background != null )
+		return background;
 
 	for ( Component c=parent; c != null; c = c.parent ) {
-		if ( c.bgClr != null ) return c.bgClr;
+		if ( c.background != null ) return c.bgClr;
 	}
 	
 	// even though not in the specs, some apps (e.g. swing) rely on the
@@ -959,7 +957,7 @@ public FontMetrics getFontMetrics ( Font font ) {
 }
 
 public Color getForeground () {
-	return fgClr;
+	return foreground;
 }
 
 public Graphics getGraphics () {
@@ -1959,12 +1957,12 @@ protected void processWindowEvent ( WindowEvent e ) {
 
 void propagateBgClr ( Color clr ) {
 	// should be called *only* on Components with unset IS_BG_COLORED
-	bgClr = clr;
+	background = clr;
 }
 
 void propagateFgClr ( Color clr ) {
 	// should be called *only* on Components with unset IS_FG_COLORED
-	fgClr = clr;
+	foreground = clr;
 }
 
 void propagateFont ( Font fnt ) {
@@ -2377,7 +2375,7 @@ public void resize ( int wNew, int hNew ) {
 }
 
 public void setBackground ( Color clr ) {
-	if ( clr == bgClr )
+	if ( clr == background )
 		return;
 
 	if ( clr != null ){
@@ -2386,7 +2384,7 @@ public void setBackground ( Color clr ) {
 	else {
 		flags &= ~IS_BG_COLORED;
 		if ( parent != null )
-			clr = parent.bgClr;
+			clr = parent.background;
 	}
 
 	propagateBgClr( clr);
@@ -2454,7 +2452,7 @@ public void setFont ( Font fnt ) {
 }
 
 public void setForeground ( Color clr ) {
-	if ( clr == fgClr )
+	if ( clr == foreground )
 		return;
 
 	if ( clr != null ){
@@ -2463,7 +2461,7 @@ public void setForeground ( Color clr ) {
 	else {
 		flags &= ~IS_FG_COLORED;
 		if ( parent != null )
-			clr = parent.fgClr;
+			clr = parent.foreground;
 	}
 
 	propagateFgClr( clr);

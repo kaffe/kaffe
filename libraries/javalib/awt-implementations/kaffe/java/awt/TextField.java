@@ -428,7 +428,7 @@ public void paint( Graphics g) {
 	int d = BORDER_WIDTH;
 	kaffePaintBorder( g);
 	
-	g.setColor( bgClr);
+	g.setColor( background);
 	g.fillRect( d, d, width-2*d, height-2*d);
 
 	repaintFrom( 0);
@@ -542,11 +542,11 @@ void repaintRange( TextBuffer tb, int start, int end, boolean invert) {
 		rgr.setColor( Defaults.TextFieldSelTxtClr);
 	}
 	else {
-		rgr.setColor( bgClr );
+		rgr.setColor( background );
 		if ( end == tb.len )
 			x1 = width - db;
 		rgr.fillRect( x0, tCursor.y, x1-x0, tCursor.height+1);
-		rgr.setColor( fgClr);
+		rgr.setColor( foreground);
 	}
 
 	tb.paintFrom( rgr, db + xOffs, 0, height, first, start, end-start);

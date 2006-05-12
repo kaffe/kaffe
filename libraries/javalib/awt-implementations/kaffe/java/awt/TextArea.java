@@ -101,9 +101,9 @@ void blankCursor() {
 	TextBuffer tb;
 
 	if ( rgr != null ) {
-		rgr.setColor( this.bgClr );
+		rgr.setColor( this.background );
 		tCursor.blank( rgr, xOffs, getRowYPos( tCursor.yindex) );
-		rgr.setColor( this.fgClr );
+		rgr.setColor( this.foreground );
 		tb = (TextBuffer)rows.elementAt( tCursor.yindex );
 		tb.paint( rgr, xOffs, tCursor.y, rowHeight, tCursor.index, 1);
 	}
@@ -719,18 +719,18 @@ void repaintLine( Graphics g, int row, int startX, TextBuffer tb) {
 	if ( ss == se ) {
 		x0 = (startX == 0) ? 0 : tb.getPos( startX) + xOffs;
 		w = this.width - x0;
-		g.setColor( this.bgClr );
+		g.setColor( this.background );
 		g.fillRect( x0, y0, w-d, rowHeight);
-		g.setColor( this.fgClr );
+		g.setColor( this.foreground );
 		tb.paint( g, xOffs, y0, rowHeight, startX);
 	}
 	else {
 		if ( ss > startX ) {
 			x0 = tb.getPos( startX) + xOffs;
 			w = tb.getWidth( startX, ss);
-			g.setColor( this.bgClr );
+			g.setColor( this.background );
 			g.fillRect( x0, y0, w, rowHeight);
-			g.setColor( this.fgClr );
+			g.setColor( this.foreground );
 			tb.paint( g, xOffs, y0, rowHeight, startX, ss-startX);
 		}
 		if ( se > startX ) {
@@ -743,10 +743,10 @@ void repaintLine( Graphics g, int row, int startX, TextBuffer tb) {
 		}
 		x0 = tb.getPos( se) + xOffs;
 		w = this.width - x0;
-		g.setColor( this.bgClr );
+		g.setColor( this.background );
 		g.fillRect( x0, y0, w, rowHeight);
 		if ( se < tb.len ) {
-			g.setColor( this.fgClr );
+			g.setColor( this.foreground );
 			tb.paint( g, xOffs, y0, rowHeight, se);
 		}
 	}

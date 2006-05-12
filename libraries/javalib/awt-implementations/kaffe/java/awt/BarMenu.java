@@ -76,7 +76,7 @@ public Graphics getGraphics () {
 	return NativeGraphics.getGraphics( parent, ((Window)parent).nativeData,
 	                                   NativeGraphics.TGT_TYPE_WINDOW,
 	                                   u, v, 0, 0, width, height,
-	                                   parent.fgClr, parent.bgClr, parent.font, false);
+	                                   parent.foreground, parent.background, parent.font, false);
 }
 
 int getX ( Menu m) {
@@ -161,7 +161,7 @@ public void paint ( Graphics g) {
 		Menu m = (Menu)mb.menus.elementAt( i);
 		int mw = m.getWidth() +dx2;
 
-		m.paint( g, x0, Dx, y0, mw, mh, bgClr, fgClr, selection == m);
+		m.paint( g, x0, Dx, y0, mw, mh, background, foreground, selection == m);
 		x0 += mw;
 	}
 }
@@ -178,7 +178,7 @@ void paintMenu ( Graphics g, Menu m) {
 		int mw = cm.getWidth() + dx2;
 
 		if ( m == cm) {
-			cm.paint( g, x0, Dx, y0, mw, mh, bgClr, fgClr, selection == cm);
+			cm.paint( g, x0, Dx, y0, mw, mh, background, foreground, selection == cm);
 			return;
 		}
 		x0 += mw;

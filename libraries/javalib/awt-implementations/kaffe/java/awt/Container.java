@@ -202,9 +202,9 @@ protected void addImpl(Component child, Object constraints, int index ) {
 			child.propagateParentShowing( false);
 		}
 		if ( (child.flags & IS_BG_COLORED) == 0 )
-			child.propagateBgClr( bgClr);
+			child.propagateBgClr( background);
 		if ( (child.flags & IS_FG_COLORED) == 0 )
-			child.propagateFgClr( fgClr);
+			child.propagateFgClr( foreground);
 		if ( (child.flags & IS_FONTIFIED) == 0 )
 			child.propagateFont( font);
 			
@@ -722,7 +722,7 @@ void processPaintEvent ( int id, int ux, int uy, int uw, int uh ) {
 }
 
 void propagateBgClr ( Color clr ) {
-	bgClr = clr;
+	background = clr;
 
 	for ( int i=0; i<ncomponents; i++ ){
 		Component c = component[i];
@@ -733,7 +733,7 @@ void propagateBgClr ( Color clr ) {
 }
 
 void propagateFgClr ( Color clr ) {
-	fgClr = clr;
+	foreground = clr;
 
 	for ( int i=0; i<ncomponents; i++ ){
 		Component c = component[i];

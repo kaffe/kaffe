@@ -90,7 +90,7 @@ public void paint( Graphics g) {
 		g.drawString( label, x0+1, y0+1 );
 	}
 	
-	g.setColor( fgClr);
+	g.setColor( foreground );
 	g.drawString( label, x0, y0);
 }
 

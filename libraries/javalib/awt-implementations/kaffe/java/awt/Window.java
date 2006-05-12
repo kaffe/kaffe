@@ -40,8 +40,8 @@ Window () {
 	// windows aren't visible per se, but they are exposed, colored and fontified
 	flags = (IS_PARENT_SHOWING | IS_BG_COLORED | IS_FG_COLORED | IS_FONTIFIED);
 
-	fgClr = Defaults.WndForeground;
-	bgClr = Defaults.WndBackground;
+	foreground = Defaults.WndForeground;
+	background = Defaults.WndBackground;
 	font  = Defaults.WndFont;
 
 	setLayout(new BorderLayout());
@@ -101,7 +101,7 @@ void cleanUpNative () {
 void createNative () {
 	nativeData = Toolkit.wndCreateWindow( (owner != null) ? owner.nativeData : null,
 	                                x, y, width, height,
-	                                cursor.type, bgClr.getNativeValue());
+	                                cursor.type, background.getNativeValue());
 }
 
 void destroyNative () {
@@ -158,7 +158,7 @@ public Graphics getGraphics () {
 		                                   u, v, insets.left, insets.top,
 		                                   width - deco.width,
 		                                   height - (insets.top + insets.bottom),
-		                                   fgClr, bgClr, font, false);
+		                                   foreground, background, font, false);
 	}
 	else {
 		return null;
@@ -322,9 +322,9 @@ public void reshape ( int xNew, int yNew, int wNew, int hNew ) {
 }
 
 public void setBackground ( Color clr ) {
-	// we can't nullify this (rermember the "bgClr != null" invariant)
+	// we can't nullify this (rermember the "background != null" invariant)
 	if ( clr != null ) {
-		bgClr = clr;
+		background = clr;
 		propagateBgClr( clr);
 
 		if ( isShowing() )
@@ -344,9 +344,9 @@ public void setFont ( Font fnt ) {
 }
 
 public void setForeground ( Color clr ) {
-	// we can't nullify this (rermember the "fgClr != null" invariant)
+	// we can't nullify this (rermember the "foreground != null" invariant)
 	if ( clr != null ) {
-		fgClr = clr;
+		foreground = clr;
 		propagateFgClr( clr);
 
 		if ( isShowing() )

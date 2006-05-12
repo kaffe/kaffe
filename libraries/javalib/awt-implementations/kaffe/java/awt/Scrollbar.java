@@ -167,7 +167,7 @@ public void mouseDragged( MouseEvent e) {
 		return;
 
 	int dx, dy;
-	Color cp = parent.bgClr;
+	Color cp = parent.background;
 
 	if ( ori == VERTICAL ) {
 		int y0 = e.getY() - dragOffs.y;
@@ -278,7 +278,7 @@ public void mousePressed( MouseEvent e) {
 	currentOp = getCurrentOp( e.getX(), e.getY() );
 	
 	if ( (dragGr = getGraphics()) != null )
-		dragGr.setColor( bgClr);
+		dragGr.setColor( background);
 	
 	dragRect.x = slRect.x;
 	dragRect.y = slRect.y;
@@ -327,12 +327,12 @@ public void paint ( Graphics g ) {
 	int x, y, xw, yh;
 
 	if ( slRect.width == 0 ) {
-		g.setColor( parent.bgClr );
+		g.setColor( parent.background );
 		g.fillRect( 0, 0, width, height);
 		return;
 	}
 	
-	g.setColor( bgClr);
+	g.setColor( background);
 
 	if ( ori == HORIZONTAL) {
 		y = height/2 -1;
@@ -509,7 +509,7 @@ void update() {
 		g = getGraphics();
 	
 	if ( g != null ){
-		g.setColor( parent.bgClr);
+		g.setColor( parent.background);
 		g.fillRect( slRect.x, slRect.y, slRect.width, slRect.height);
 
 		updateSliderRect();
@@ -525,7 +525,7 @@ void update() {
 }
 
 public void update ( Graphics g ) {
-	g.setColor( parent.bgClr );
+	g.setColor( parent.background );
 	g.fillRect( 0, 0, width, height);
 	paint( g);
 }
