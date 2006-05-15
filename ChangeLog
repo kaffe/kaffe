@@ -1,3 +1,8 @@
+2006-05-16  Riccardo Mottola <riccardo@kaffe.org>
+
+	* libraries/javalib/awt-implementations/kaffe/java/awt/Component.java:
+	implemented property change methods and other adaptions form classpath.
+
 2006-05-12  Riccardo Mottola <riccardo@kaffe.org>
 
 	* libraries/javalib/awt-implementations/kaffe/java/awt/BarMenu.java,

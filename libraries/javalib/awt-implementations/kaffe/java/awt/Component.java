@@ -49,6 +49,9 @@ import java.awt.peer.LightweightPeer;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Set;
 import java.util.Vector;
@@ -151,7 +154,7 @@ abstract public class Component
          * @see #setForeground(Color)
          * @serial the foreground color
          */
-        Color foreground; // TODO update to use this as field
+        Color foreground;
 
         /**
             * The background color for the component. This may be null.
@@ -160,7 +163,7 @@ abstract public class Component
          * @see #setBackground(Color)
          * @serial the background color
          */
-        Color background; // TODO update to use this as field
+        Color background;
 
         /**
             * The default font used in the component. This may be null.
@@ -919,17 +922,151 @@ ClassProperties getClassProperties () {
 	return ClassAnalyzer.analyzeProcessEvent( getClass(), false);
 }
 
-// TODO this is only a stub
-protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
-}
+  /**
+   * Report a change in a bound property to any registered property listeners.
+   *
+   * @param propertyName the property that changed
+   * @param oldValue the old property value
+   * @param newValue the new property value
+   */
+  protected void firePropertyChange(String propertyName, Object oldValue,
+                                    Object newValue)
+  {
+    if (changeSupport != null)
+      changeSupport.firePropertyChange(propertyName, oldValue, newValue);
+  }
 
-// TODO this is only a stub
-protected void firePropertyChange(String propertyName, boolean oldValue, boolean newValue) {
-}
+  /**
+   * Report a change in a bound property to any registered property listeners.
+   *
+   * @param propertyName the property that changed
+   * @param oldValue the old property value
+   * @param newValue the new property value
+   */
+  protected void firePropertyChange(String propertyName, boolean oldValue,
+                                    boolean newValue)
+  {
+    if (changeSupport != null)
+      changeSupport.firePropertyChange(propertyName, oldValue, newValue);
+  }
 
-// TODO this is only a stub
-protected void firePropertyChange(String propertyName, int oldValue, int newValue) {
-}
+  /**
+   * Report a change in a bound property to any registered property listeners.
+   *
+   * @param propertyName the property that changed
+   * @param oldValue the old property value
+   * @param newValue the new property value
+   */
+  protected void firePropertyChange(String propertyName, int oldValue,
+                                    int newValue)
+  {
+    if (changeSupport != null)
+      changeSupport.firePropertyChange(propertyName, oldValue, newValue);
+  }
+
+  /**
+   * Report a change in a bound property to any registered property listeners.
+   *
+   * @param propertyName the property that changed
+   * @param oldValue the old property value
+   * @param newValue the new property value
+   *
+   * @since 1.5
+   */
+  public void firePropertyChange(String propertyName, byte oldValue,
+                                    byte newValue)
+  {
+    if (changeSupport != null)
+      changeSupport.firePropertyChange(propertyName, new Byte(oldValue),
+                                       new Byte(newValue));
+  }
+
+  /**
+   * Report a change in a bound property to any registered property listeners.
+   *
+   * @param propertyName the property that changed
+   * @param oldValue the old property value
+   * @param newValue the new property value
+   *
+   * @since 1.5
+   */
+  public void firePropertyChange(String propertyName, char oldValue,
+                                    char newValue)
+  {
+    if (changeSupport != null)
+      changeSupport.firePropertyChange(propertyName, new Character(oldValue),
+                                       new Character(newValue));
+  }
+
+  /**
+   * Report a change in a bound property to any registered property listeners.
+   *
+   * @param propertyName the property that changed
+   * @param oldValue the old property value
+   * @param newValue the new property value
+   *
+   * @since 1.5
+   */
+  public void firePropertyChange(String propertyName, short oldValue,
+                                    short newValue)
+  {
+    if (changeSupport != null)
+      changeSupport.firePropertyChange(propertyName, new Short(oldValue),
+                                       new Short(newValue));
+  }
+
+  /**
+   * Report a change in a bound property to any registered property listeners.
+   *
+   * @param propertyName the property that changed
+   * @param oldValue the old property value
+   * @param newValue the new property value
+   *
+   * @since 1.5
+   */
+  public void firePropertyChange(String propertyName, long oldValue,
+                                    long newValue)
+  {
+    if (changeSupport != null)
+      changeSupport.firePropertyChange(propertyName, new Long(oldValue),
+                                       new Long(newValue));
+  }
+
+  /**
+   * Report a change in a bound property to any registered property listeners.
+   *
+   * @param propertyName the property that changed
+   * @param oldValue the old property value
+   * @param newValue the new property value
+   *
+   * @since 1.5
+   */
+  public void firePropertyChange(String propertyName, float oldValue,
+                                    float newValue)
+  {
+    if (changeSupport != null)
+      changeSupport.firePropertyChange(propertyName, new Float(oldValue),
+                                       new Float(newValue));
+  }
+
+
+  /**
+   * Report a change in a bound property to any registered property listeners.
+   *
+   * @param propertyName the property that changed
+   * @param oldValue the old property value
+   * @param newValue the new property value
+   *
+   * @since 1.5
+   */
+  public void firePropertyChange(String propertyName, double oldValue,
+                                 double newValue)
+  {
+    if (changeSupport != null)
+      changeSupport.firePropertyChange(propertyName, new Double(oldValue),
+                                       new Double(newValue));
+  }
+
 
 
 public ColorModel getColorModel() {
@@ -1311,6 +1448,226 @@ public void setFocusable(boolean focusable)
     this.focusable = focusable;
     this.isFocusTraversableOverridden = 1;
 }
+
+  /**
+   * Sets the focus traversal keys for one of the three focus
+   * traversal directions supported by Components:
+   * {@link KeyboardFocusManager#FORWARD_TRAVERSAL_KEYS},
+   * {@link KeyboardFocusManager#BACKWARD_TRAVERSAL_KEYS}, or
+   * {@link KeyboardFocusManager#UP_CYCLE_TRAVERSAL_KEYS}. Normally, the
+   * default values should match the operating system's native
+   * choices. To disable a given traversal, use
+   * <code>Collections.EMPTY_SET</code>. The event dispatcher will
+   * consume PRESSED, RELEASED, and TYPED events for the specified
+   * key, although focus can only transfer on PRESSED or RELEASED.
+   *
+   * <p>The defaults are:
+   * <table>
+   *   <th><td>Identifier</td><td>Meaning</td><td>Default</td></th>
+   *   <tr><td>KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS</td>
+   *     <td>Normal forward traversal</td>
+   *     <td>TAB on KEY_PRESSED, Ctrl-TAB on KEY_PRESSED</td></tr>
+   *   <tr><td>KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS</td>
+   *     <td>Normal backward traversal</td>
+   *     <td>Shift-TAB on KEY_PRESSED, Ctrl-Shift-TAB on KEY_PRESSED</td></tr>
+   *   <tr><td>KeyboardFocusManager.UP_CYCLE_TRAVERSAL_KEYS</td>
+   *     <td>Go up a traversal cycle</td><td>None</td></tr>
+   * </table>
+   *
+   * If keystrokes is null, this component's focus traversal key set
+   * is inherited from one of its ancestors.  If none of its ancestors
+   * has its own set of focus traversal keys, the focus traversal keys
+   * are set to the defaults retrieved from the current
+   * KeyboardFocusManager.  If not null, the set must contain only
+   * AWTKeyStrokes that are not already focus keys and are not
+   * KEY_TYPED events.
+   *
+   * @param id one of FORWARD_TRAVERSAL_KEYS, BACKWARD_TRAVERSAL_KEYS, or
+   *        UP_CYCLE_TRAVERSAL_KEYS
+   * @param keystrokes a set of keys, or null
+   * @throws IllegalArgumentException if id or keystrokes is invalid
+   * @see #getFocusTraversalKeys(int)
+   * @see KeyboardFocusManager#FORWARD_TRAVERSAL_KEYS
+   * @see KeyboardFocusManager#BACKWARD_TRAVERSAL_KEYS
+   * @see KeyboardFocusManager#UP_CYCLE_TRAVERSAL_KEYS
+   * @since 1.4
+   */
+  public void setFocusTraversalKeys(int id, Set keystrokes)
+  {
+    if (keystrokes == null)
+      {
+        Container parent = getParent ();
+
+        while (parent != null)
+          {
+            if (parent.areFocusTraversalKeysSet (id))
+              {
+                keystrokes = parent.getFocusTraversalKeys (id);
+                break;
+              }
+            parent = parent.getParent ();
+          }
+
+        if (keystrokes == null)
+          keystrokes = KeyboardFocusManager.getCurrentKeyboardFocusManager ().
+            getDefaultFocusTraversalKeys (id);
+      }
+
+    Set sa;
+    Set sb;
+    String name;
+    switch (id)
+      {
+      case KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS:
+        sa = getFocusTraversalKeys
+          (KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS);
+        sb = getFocusTraversalKeys
+          (KeyboardFocusManager.UP_CYCLE_TRAVERSAL_KEYS);
+        name = "forwardFocusTraversalKeys";
+        break;
+      case KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS:
+        sa = getFocusTraversalKeys
+          (KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS);
+        sb = getFocusTraversalKeys
+          (KeyboardFocusManager.UP_CYCLE_TRAVERSAL_KEYS);
+        name = "backwardFocusTraversalKeys";
+        break;
+      case KeyboardFocusManager.UP_CYCLE_TRAVERSAL_KEYS:
+        sa = getFocusTraversalKeys
+          (KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS);
+        sb = getFocusTraversalKeys
+          (KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS);
+        name = "upCycleFocusTraversalKeys";
+        break;
+      default:
+        throw new IllegalArgumentException ();
+      }
+
+    int i = keystrokes.size ();
+    Iterator iter = keystrokes.iterator ();
+
+    while (--i >= 0)
+      {
+        Object o = iter.next ();
+        if (!(o instanceof AWTKeyStroke)
+            || sa.contains (o) || sb.contains (o)
+            || ((AWTKeyStroke) o).keyCode == KeyEvent.VK_UNDEFINED)
+          throw new IllegalArgumentException ();
+      }
+
+    if (focusTraversalKeys == null)
+      focusTraversalKeys = new Set[3];
+
+    keystrokes = Collections.unmodifiableSet (new HashSet (keystrokes));
+    firePropertyChange (name, focusTraversalKeys[id], keystrokes);
+
+    focusTraversalKeys[id] = keystrokes;
+  }
+
+  /**
+   * Returns the set of keys for a given focus traversal action, as
+   * defined in <code>setFocusTraversalKeys</code>.  If not set, this
+   * is inherited from the parent component, which may have gotten it
+   * from the KeyboardFocusManager.
+   *
+   * @param id one of FORWARD_TRAVERSAL_KEYS, BACKWARD_TRAVERSAL_KEYS,
+   * or UP_CYCLE_TRAVERSAL_KEYS
+   *
+   * @return set of traversal keys
+   *
+   * @throws IllegalArgumentException if id is invalid
+   * 
+   * @see #setFocusTraversalKeys (int, Set)
+   * @see KeyboardFocusManager#FORWARD_TRAVERSAL_KEYS
+   * @see KeyboardFocusManager#BACKWARD_TRAVERSAL_KEYS
+   * @see KeyboardFocusManager#UP_CYCLE_TRAVERSAL_KEYS
+   * 
+   * @since 1.4
+   */
+  public Set getFocusTraversalKeys (int id)
+  {
+    if (id != KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS &&
+        id != KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS &&
+        id != KeyboardFocusManager.UP_CYCLE_TRAVERSAL_KEYS)
+      throw new IllegalArgumentException();
+
+    Set s = null;
+
+    if (focusTraversalKeys != null)
+      s = focusTraversalKeys[id];
+
+    if (s == null && parent != null)
+      s = parent.getFocusTraversalKeys (id);
+
+    return s == null ? (KeyboardFocusManager.getCurrentKeyboardFocusManager()
+                        .getDefaultFocusTraversalKeys(id)) : s;
+  }
+
+  /**
+   * Tests whether the focus traversal keys for a given action are explicitly
+   * set or inherited.
+   *
+   * @param id one of FORWARD_TRAVERSAL_KEYS, BACKWARD_TRAVERSAL_KEYS,
+   * or UP_CYCLE_TRAVERSAL_KEYS
+   * @return true if that set is explicitly specified
+   * @throws IllegalArgumentException if id is invalid
+   * @see #getFocusTraversalKeys (int)
+   * @see KeyboardFocusManager#FORWARD_TRAVERSAL_KEYS
+   * @see KeyboardFocusManager#BACKWARD_TRAVERSAL_KEYS
+   * @see KeyboardFocusManager#UP_CYCLE_TRAVERSAL_KEYS
+   * @since 1.4
+   */
+  public boolean areFocusTraversalKeysSet (int id)
+  {
+    if (id != KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS &&
+        id != KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS &&
+        id != KeyboardFocusManager.UP_CYCLE_TRAVERSAL_KEYS)
+      throw new IllegalArgumentException ();
+
+    return focusTraversalKeys != null && focusTraversalKeys[id] != null;
+  }
+
+  /**
+   * Enable or disable focus traversal keys on this Component.  If
+   * they are, then the keyboard focus manager consumes and acts on
+   * key press and release events that trigger focus traversal, and
+   * discards the corresponding key typed events.  If focus traversal
+   * keys are disabled, then all key events that would otherwise
+   * trigger focus traversal are sent to this Component.
+   *
+   * @param focusTraversalKeysEnabled the new value of the flag
+   * @see #getFocusTraversalKeysEnabled ()
+   * @see #setFocusTraversalKeys (int, Set)
+   * @see #getFocusTraversalKeys (int)
+   * @since 1.4
+   */
+  public void setFocusTraversalKeysEnabled (boolean focusTraversalKeysEnabled)
+  {
+    firePropertyChange ("focusTraversalKeysEnabled",
+			this.focusTraversalKeysEnabled,
+			focusTraversalKeysEnabled);
+    this.focusTraversalKeysEnabled = focusTraversalKeysEnabled;
+  }
+
+  /**
+   * Check whether or not focus traversal keys are enabled on this
+   * Component.  If they are, then the keyboard focus manager consumes
+   * and acts on key press and release events that trigger focus
+   * traversal, and discards the corresponding key typed events.  If
+   * focus traversal keys are disabled, then all key events that would
+   * otherwise trigger focus traversal are sent to this Component.
+   *
+   * @return true if focus traversal keys are enabled
+   * @see #setFocusTraversalKeysEnabled (boolean)
+   * @see #setFocusTraversalKeys (int, Set)
+   * @see #getFocusTraversalKeys (int)
+   * @since 1.4
+   */
+  public boolean getFocusTraversalKeysEnabled ()
+  {
+    return focusTraversalKeysEnabled;
+  }
+
 
 /**
 * Tests if this component is the focus owner. Use {@link
@@ -2374,20 +2731,20 @@ public void resize ( int wNew, int hNew ) {
 	setBounds( x, y, wNew, hNew);
 }
 
-public void setBackground ( Color clr ) {
-	if ( clr == background )
+public void setBackground ( Color c ) {
+	if ( c == background )
 		return;
 
-	if ( clr != null ){
+	if ( c != null ){
 		flags |= IS_BG_COLORED;
 	}
 	else {
 		flags &= ~IS_BG_COLORED;
 		if ( parent != null )
-			clr = parent.background;
+			c = parent.background;
 	}
 
-	propagateBgClr( clr);
+	propagateBgClr( c);
 
 	// we follow the "Java class libraries" description here (in favor of the Sun class docu), i.e.
 	// clients have to explicitly force a repaint after changing colors. But - since many apps
@@ -2396,6 +2753,9 @@ public void setBackground ( Color clr ) {
 	        == (IS_PARENT_SHOWING | IS_VISIBLE | IS_ADD_NOTIFIED) ) {
 		repaint();
 	}
+    Color previous = background;
+    background = c;
+    firePropertyChange("background", previous, c);
 }
 
 public void setBounds ( Rectangle r ) {
@@ -2429,21 +2789,32 @@ public void setEnabled ( boolean isEnabled ) {
 	checkMouseAware();
 }
 
-public void setFont ( Font fnt ) {
-	if ( fnt == font )
+  /**
+   * Sets the font for this component to the specified font. This is a bound
+   * property.
+   *
+   * @param newFont the new font for this component
+   * 
+   * @see #getFont()
+   */
+public void setFont ( Font newFont ) {
+	if ( newFont == font )
 		return;
 
-	if ( fnt != null ){
+	if ( newFont != null ){
 		flags |= IS_FONTIFIED;
 	}
 	else {
 		flags &= ~IS_FONTIFIED;
 		if ( parent != null )
-			fnt = parent.font;
+			newFont = parent.font;
 	}
 
-	propagateFont( fnt);
+    	Font oldFont = font;
+        font = newFont;
+	propagateFont( font);
 
+    	firePropertyChange("font", oldFont, newFont);
 	// see setBackground for further details about why to repaint just visible native-likes
 	if ( (flags & (IS_PARENT_SHOWING | IS_VISIBLE | IS_ADD_NOTIFIED | IS_NATIVE_LIKE))
 	        == (IS_PARENT_SHOWING | IS_VISIBLE | IS_ADD_NOTIFIED) ) {
@@ -2451,31 +2822,55 @@ public void setFont ( Font fnt ) {
 	}
 }
 
-public void setForeground ( Color clr ) {
-	if ( clr == foreground )
+  /**
+   * Sets this component's foreground color to the specified color. This is a
+   * bound property.
+   *
+   * @param c the new foreground color
+   * @see #getForeground()
+   */
+public void setForeground ( Color c ) {
+	if ( c == foreground )
 		return;
 
-	if ( clr != null ){
+	if ( c != null ){
 		flags |= IS_FG_COLORED;
 	}
 	else {
 		flags &= ~IS_FG_COLORED;
 		if ( parent != null )
-			clr = parent.foreground;
+			c = parent.foreground;
 	}
 
-	propagateFgClr( clr);
+	propagateFgClr( c);
 
 	// see setBackground for further details about why to repaint just visible native-likes
 	if ( (flags & (IS_PARENT_SHOWING | IS_VISIBLE | IS_ADD_NOTIFIED | IS_NATIVE_LIKE))
 	        == (IS_PARENT_SHOWING | IS_VISIBLE | IS_ADD_NOTIFIED) ) {
 		repaint();
 	}
+    Color previous = foreground;
+    foreground = c;
+    firePropertyChange("foreground", previous, c);
 }
 
-public void setLocale(Locale loc) {
-	locale = loc;
-}
+  /**
+   * Sets the locale for this component to the specified locale. This is a
+   * bound property.
+   *
+   * @param newLocale the new locale for this component
+   */
+  public void setLocale(Locale newLocale)
+  {
+    if (locale == newLocale)
+      return;
+
+    Locale oldLocale = locale;
+    locale = newLocale;
+    firePropertyChange("locale", oldLocale, newLocale);
+    // New writing/layout direction or more/less room for localized labels.
+    invalidate();
+  }
 
 public void setLocation ( Point pt ) {
 	setLocation( pt.x, pt.y );
