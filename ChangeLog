@@ -1,3 +1,7 @@
+2006-05-16  Antoine Reilles <tonio@kaffe.org>
+	* kaffe/scripts/jar.in: fix path to fastjar
+	(from Jorg Sonnenberg <joerg@britannica.bec.de>)
+
 2006-05-16  Riccardo Mottola <riccardo@kaffe.org>
 
 	* libraries/javalib/awt-implementations/kaffe/java/awt/Defaults.java:
