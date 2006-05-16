@@ -423,10 +423,10 @@ static {
 	  int res = (ScreenWidth > 1024) ? 100 : 75; 
 		String fntCat = Integer.toString(res) + '-' + res + "-*-*-*-*";
 
-		FsDefault = "-*-lucida-%s-%s-*-*-*-%d-" + fntCat;
-		//FsDefault = "-adobe-helvetica-%s-%s-*-*-*-%d-"  + fntCat;
-		FsMonospaced = "-adobe-courier-%s-%s-*-*-*-%d-" + fntCat;
-		FsSansSerif = "-adobe-helvetica-%s-%s-*-*-*-%d-" + fntCat;
+		//FsDefault = "-*-lucida-%s-%s-*-*-*-%d-" + fntCat;
+		FsDefault = "-*-helvetica-%s-%s-*-*-*-%d-"  + fntCat;
+		FsMonospaced = "-*-courier-%s-%s-*-*-*-%d-" + fntCat;
+		FsSansSerif = "-*-helvetica-%s-%s-*-*-*-%d-" + fntCat;
 		FsSerif = "-adobe-times-%s-%s-*-*-*-%d-" + fntCat;
 		FsDialog = "-misc-fixed-%s-%s-*-*-*-%d-" + fntCat;
 		FsDialogInput = "-b&h-lucidatypewriter-%s-%s-*-*-*-%d-" + fntCat;
