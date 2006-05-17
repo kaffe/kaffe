@@ -27,7 +27,6 @@
 #include	<stdio.h>
 #include	<unistd.h>
 #include	"common.h"
-#include	"org_tritonus_lowlevel_esd_EsdStream.h"
 
 // TODO: remove, replace by debug_flag
 //static int	debug_flag = 0;

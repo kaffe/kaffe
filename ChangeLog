@@ -1,3 +1,10 @@
+2006-05-17  Antoine Reilles <tonio@kaffe.org>
+	    Joerg Sonnenberger  <joerg@britannica.bec.de>
+	* libraries/clib/sound/esd/org_tritonus_lowlevel_esd_EsdRecordingStream.c,
+	libraries/clib/sound/esd/org_tritonus_lowlevel_esd_EsdStream.c:
+	remove include of org_tritonus_lowlevel_esd_EsdRecordingStream.h as it
+	does not exist
+
 2006-05-16  Antoine Reilles <tonio@kaffe.org>
 	* kaffe/scripts/jar.in: fix path to fastjar
 	(from Jorg Sonnenberg <joerg@britannica.bec.de>)

@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include <unistd.h>
 #include "common.h"
-#include "org_tritonus_lowlevel_esd_EsdRecordingStream.h"
 
 
 // static HandleFieldHandler<int>	handler;
