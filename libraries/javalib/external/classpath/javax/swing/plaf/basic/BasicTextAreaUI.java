@@ -1,5 +1,5 @@
 /* BasicTextAreaUI.java -- 
-   Copyright (C) 2004  Free Software Foundation, Inc.
+   Copyright (C) 2004, 2006,  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -45,11 +45,9 @@ import javax.swing.JComponent;
 import javax.swing.JTextArea;
 import javax.swing.UIDefaults;
 import javax.swing.plaf.ComponentUI;
-import javax.swing.text.Document;
 import javax.swing.text.Element;
 import javax.swing.text.PlainView;
 import javax.swing.text.View;
-import javax.swing.text.ViewFactory;
 import javax.swing.text.WrappedPlainView;
 
 public class BasicTextAreaUI extends BasicTextUI

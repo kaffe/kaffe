@@ -1,3 +1,7 @@
+New in release 0.92
+
+* A 'jar' tool is now included.
+
 New in release 0.91 (UNRELEASED)
 
 * Experimental activation (java.rmi.activation) support, including RMI
@@ -16,11 +20,13 @@ New in release 0.91 (UNRELEASED)
 * Free Swing improvements: Support for OceanTheme has been mostly completed
   and turned on as default Metal theme. X11-style Copy and Paste behavior in
   text components with the middle mouse button. Support cursor changes on
-  various components when resizing.
+  various components when resizing. Support for Look and Feel window
+  decorations has been added.
 * Updated locale data information to CLDR 1.3.
 * Various bugs in Classpath's SecureRandom implementations have been
   fixed; that class now respects the "securerandom.source" security
   property and the "java.security.egd" system property.
+* Support for assistive technologies has been added to AWT and Swing.
 
 Runtime interface changes:
 
@@ -37,6 +43,25 @@ Runtime interface changes:
 * A new class, java.security.VMSecureRandom, is now available that is
   used to generate random numbers for seeding cryptographically-secure
   pseudo-random number generators.
+* VMClass and the reference implementations of Method, Constructor and Field
+  now include a number of 1.5 methods imported from the generics branch.
+  These are all optional (in the sense that the methods associated with them
+  merely fail on use if the VM doesn't provide them, rather than the
+  VM failing altogether), but VMs should aim to support them where possible.
+* The implementation of java.lang.instrument has been merged to the main
+  branch from the generics branch.
+* The VM interfaces of the main branch and the generics branch are now
+  consistent with one another.  As a result, the main branch includes an
+  additional environ() function in VMSystem and an additional argument has
+  been added to nativeSpawn() in VMProcess.
+* Annotation support is now available in the main branch, if the VM supports
+  it. The VM should implement VMClass.getDeclaredAnnotations,
+  Constructor.getAnnotation, Constructor.getDeclaredAnnotations,
+  Field.getAnnotation, Field.getDeclaredAnnotations, Method.getAnnotation and
+  Method.getDeclaredAnnotations.
+* java.lang.Package now has a new constructor that takes the defining
+  ClassLoader as an extra argument. If you use a custom version of
+  VMClassLoader, please switch it to use this constructor.
 
 New in release 0.90 (March 6, 2006)
 

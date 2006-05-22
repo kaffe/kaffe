@@ -52,13 +52,14 @@ CONFIG_HEADER = $(top_builddir)/include/config.h
 CONFIG_CLEAN_FILES =
 SOURCES =
 DIST_SOURCES =
-INFO_DEPS = $(srcdir)/hacking.info $(srcdir)/vmintegration.info
+INFO_DEPS = $(srcdir)/hacking.info $(srcdir)/vmintegration.info \
+	$(srcdir)/tools.info
 am__TEXINFO_TEX_DIR = $(srcdir)
-DVIS = hacking.dvi vmintegration.dvi
-PDFS = hacking.pdf vmintegration.pdf
-PSS = hacking.ps vmintegration.ps
-HTMLS = hacking.html vmintegration.html
-TEXINFOS = hacking.texinfo vmintegration.texinfo
+DVIS = hacking.dvi vmintegration.dvi tools.dvi
+PDFS = hacking.pdf vmintegration.pdf tools.pdf
+PSS = hacking.ps vmintegration.ps tools.ps
+HTMLS = hacking.html vmintegration.html tools.html
+TEXINFOS = hacking.texinfo vmintegration.texinfo tools.texinfo
 TEXI2DVI = texi2dvi
 TEXI2PDF = $(TEXI2DVI) --pdf --batch
 MAKEINFOHTML = $(MAKEINFO) --html
@@ -91,6 +92,7 @@ CAIRO_LIBS = @CAIRO_LIBS@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
+CLASSPATH_CONVENIENCE = @CLASSPATH_CONVENIENCE@
 CLASSPATH_INCLUDES = @CLASSPATH_INCLUDES@
 CLASSPATH_MODULE = @CLASSPATH_MODULE@
 COLLECTIONS_PREFIX = @COLLECTIONS_PREFIX@
@@ -113,6 +115,8 @@ CREATE_JNI_HEADERS_FALSE = @CREATE_JNI_HEADERS_FALSE@
 CREATE_JNI_HEADERS_TRUE = @CREATE_JNI_HEADERS_TRUE@
 CREATE_JNI_LIBRARIES_FALSE = @CREATE_JNI_LIBRARIES_FALSE@
 CREATE_JNI_LIBRARIES_TRUE = @CREATE_JNI_LIBRARIES_TRUE@
+CREATE_PLUGIN_FALSE = @CREATE_PLUGIN_FALSE@
+CREATE_PLUGIN_TRUE = @CREATE_PLUGIN_TRUE@
 CREATE_QT_PEER_LIBRARIES_FALSE = @CREATE_QT_PEER_LIBRARIES_FALSE@
 CREATE_QT_PEER_LIBRARIES_TRUE = @CREATE_QT_PEER_LIBRARIES_TRUE@
 CREATE_XMLJ_LIBRARY_FALSE = @CREATE_XMLJ_LIBRARY_FALSE@
@@ -131,6 +135,8 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 ECJ = @ECJ@
 EGREP = @EGREP@
+ENABLE_LOCAL_SOCKETS_FALSE = @ENABLE_LOCAL_SOCKETS_FALSE@
+ENABLE_LOCAL_SOCKETS_TRUE = @ENABLE_LOCAL_SOCKETS_TRUE@
 ERROR_CFLAGS = @ERROR_CFLAGS@
 EXAMPLESDIR = @EXAMPLESDIR@
 EXEEXT = @EXEEXT@
@@ -153,6 +159,8 @@ FREETYPE2_LIBS = @FREETYPE2_LIBS@
 GCJ = @GCJ@
 GCJX = @GCJX@
 GJDOC = @GJDOC@
+GLIB_CFLAGS = @GLIB_CFLAGS@
+GLIB_LIBS = @GLIB_LIBS@
 GTK_CAIRO_ENABLED = @GTK_CAIRO_ENABLED@
 GTK_CAIRO_FALSE = @GTK_CAIRO_FALSE@
 GTK_CAIRO_TRUE = @GTK_CAIRO_TRUE@
@@ -190,6 +198,8 @@ MAINTAINER_MODE_TRUE = @MAINTAINER_MODE_TRUE@
 MAKEINFO = @MAKEINFO@
 MKDIR = @MKDIR@
 MOC = @MOC@
+MOZILLA_CFLAGS = @MOZILLA_CFLAGS@
+MOZILLA_LIBS = @MOZILLA_LIBS@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
@@ -203,6 +213,7 @@ PATH_SEPARATOR = @PATH_SEPARATOR@
 PATH_TO_GLIBJ_ZIP = @PATH_TO_GLIBJ_ZIP@
 PERL = @PERL@
 PKG_CONFIG = @PKG_CONFIG@
+PLUGIN_DIR = @PLUGIN_DIR@
 QT_CFLAGS = @QT_CFLAGS@
 QT_LIBS = @QT_LIBS@
 RANLIB = @RANLIB@
@@ -222,6 +233,7 @@ USER_SPECIFIED_JAVAH_TRUE = @USER_SPECIFIED_JAVAH_TRUE@
 USE_PREBUILT_GLIBJ_ZIP_FALSE = @USE_PREBUILT_GLIBJ_ZIP_FALSE@
 USE_PREBUILT_GLIBJ_ZIP_TRUE = @USE_PREBUILT_GLIBJ_ZIP_TRUE@
 VERSION = @VERSION@
+VM_BINARY = @VM_BINARY@
 WARNING_CFLAGS = @WARNING_CFLAGS@
 XML_CFLAGS = @XML_CFLAGS@
 XML_LIBS = @XML_LIBS@
@@ -285,7 +297,7 @@ target_vendor = @target_vendor@
 vm_classes = @vm_classes@
 SUBDIRS = api
 EXTRA_DIST = README.jaxp
-info_TEXINFOS = hacking.texinfo vmintegration.texinfo
+info_TEXINFOS = hacking.texinfo vmintegration.texinfo tools.texinfo
 all: all-recursive
 
 .SUFFIXES:
@@ -382,6 +394,10 @@ $(srcdir)/vmintegration.info: vmintegration.texinfo
 vmintegration.dvi: vmintegration.texinfo 
 vmintegration.pdf: vmintegration.texinfo 
 vmintegration.html: vmintegration.texinfo 
+$(srcdir)/tools.info: tools.texinfo 
+tools.dvi: tools.texinfo 
+tools.pdf: tools.texinfo 
+tools.html: tools.texinfo 
 .dvi.ps:
 	TEXINPUTS="$(am__TEXINFO_TEX_DIR)$(PATH_SEPARATOR)$$TEXINPUTS" \
 	$(DVIPS) -o $@ $<
@@ -434,7 +450,10 @@ mostlyclean-aminfo:
 	  vmintegration.pgs vmintegration.tmp vmintegration.toc \
 	  vmintegration.tp vmintegration.tps vmintegration.vr \
 	  vmintegration.vrs vmintegration.dvi vmintegration.pdf \
-	  vmintegration.ps vmintegration.html
+	  vmintegration.ps vmintegration.html tools.aux tools.cp \
+	  tools.cps tools.fn tools.fns tools.ky tools.kys tools.log \
+	  tools.pg tools.pgs tools.tmp tools.toc tools.tp tools.tps \
+	  tools.vr tools.vrs tools.dvi tools.pdf tools.ps tools.html
 
 maintainer-clean-aminfo:
 	@list='$(INFO_DEPS)'; for i in $$list; do \
@@ -756,7 +775,7 @@ uninstall-info: uninstall-info-recursive
 %.ps : %.dvi
 	dvips -o $@ $<
 
-docs: hacking.ps vmintegration.ps
+docs: hacking.ps vmintegration.ps tools.ps
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

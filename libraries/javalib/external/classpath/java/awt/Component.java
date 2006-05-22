@@ -3091,6 +3091,8 @@ public abstract class Component
           mouseListener.mouseClicked(e);
         break;
         case MouseEvent.MOUSE_ENTERED:
+ 	  if( isLightweight() )
+ 	    setCursor( getCursor() );
           mouseListener.mouseEntered(e);
         break;
         case MouseEvent.MOUSE_EXITED:
@@ -5050,7 +5052,12 @@ p   * <li>the set of backward traversal keys
                     .dispatchEvent(e))
                     return;
               case MouseEvent.MOUSE_PRESSED:
-                if (isLightweight() && !e.isConsumed())
+                // A mouse click on an enabled lightweight component
+                // which has not yet been marked as consumed by any
+                // other mouse listener results in a focus traversal
+                // to that component.
+                if (isLightweight()
+                    && isEnabled() && !e.isConsumed())
                     requestFocus();
                 break;
               }

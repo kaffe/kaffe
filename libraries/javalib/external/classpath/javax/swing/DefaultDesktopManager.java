@@ -124,8 +124,6 @@ public class DefaultDesktopManager implements DesktopManager, Serializable
   public void closeFrame(JInternalFrame frame)
   {
     Container c = frame.getParent();
-    frame.doDefaultCloseAction();
-
     if (c != null)
       {
 	if (frame.isIcon())

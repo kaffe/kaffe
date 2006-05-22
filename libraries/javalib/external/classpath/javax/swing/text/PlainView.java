@@ -437,6 +437,11 @@ public class PlainView extends View implements TabExpander
    */
   protected void updateDamage(DocumentEvent changes, Shape a, ViewFactory f)
   {
+    // Return early and do no updates if the allocation area is null
+    // (like the RI).
+    if (a == null)
+      return;
+    
     float oldMaxLineLength = maxLineLength; 
     Rectangle alloc = a.getBounds();
     Element el = getElement();

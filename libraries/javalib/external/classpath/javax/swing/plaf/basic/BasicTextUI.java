@@ -61,7 +61,6 @@ import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
-import javax.swing.KeyStroke;
 import javax.swing.LookAndFeel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -69,7 +68,6 @@ import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.plaf.ActionMapUIResource;
-import javax.swing.plaf.InputMapUIResource;
 import javax.swing.plaf.TextUI;
 import javax.swing.plaf.UIResource;
 import javax.swing.text.AbstractDocument;
@@ -442,6 +440,9 @@ public abstract class BasicTextUI extends TextUI
      */
     public void changedUpdate(DocumentEvent ev)
     {
+      // Updates are forwarded to the View even if 'getVisibleEditorRect'
+      // method returns null. This means the View classes have to be
+      // aware of that possibility.
       rootView.changedUpdate(ev, getVisibleEditorRect(),
                              rootView.getViewFactory());
     }
@@ -453,6 +454,9 @@ public abstract class BasicTextUI extends TextUI
      */
     public void insertUpdate(DocumentEvent ev)
     {
+      // Updates are forwarded to the View even if 'getVisibleEditorRect'
+      // method returns null. This means the View classes have to be
+      // aware of that possibility.
       rootView.insertUpdate(ev, getVisibleEditorRect(),
                             rootView.getViewFactory());
     }
@@ -464,6 +468,9 @@ public abstract class BasicTextUI extends TextUI
      */
     public void removeUpdate(DocumentEvent ev)
     {
+      // Updates are forwarded to the View even if 'getVisibleEditorRect'
+      // method returns null. This means the View classes have to be
+      // aware of that possibility.
       rootView.removeUpdate(ev, getVisibleEditorRect(),
                             rootView.getViewFactory());
     }
@@ -824,6 +831,7 @@ public abstract class BasicTextUI extends TextUI
    * this UI.
    */
   protected void uninstallKeyboardActions()
+    throws NotImplementedException
   {
     // FIXME: Uninstall keyboard actions here.
   }
@@ -1016,6 +1024,10 @@ public abstract class BasicTextUI extends TextUI
   public void damageRange(JTextComponent t, int p0, int p1,
                           Position.Bias firstBias, Position.Bias secondBias)
   {
+    // Do nothing if the component cannot be properly displayed.
+    if (t.getWidth() == 0 || t.getHeight() == 0)
+      return;
+    
     try
       {
         // Limit p0 and p1 to sane values to prevent unfriendly
@@ -1139,9 +1151,14 @@ public abstract class BasicTextUI extends TextUI
   public int getNextVisualPositionFrom(JTextComponent t, int pos,
                                        Position.Bias b, int direction,
                                        Position.Bias[] biasRet)
-    throws BadLocationException, NotImplementedException
+    throws BadLocationException
   {
-    return 0; // TODO: Implement me.
+    // A comment in the spec of NavigationFilter.getNextVisualPositionFrom()
+    // suggests that this method should be implemented by forwarding the call
+    // the root view.
+    return rootView.getNextVisualPositionFrom(pos, b,
+                                              getVisibleEditorRect(),
+                                              direction, biasRet);
   }
 
   /**
@@ -1197,7 +1214,10 @@ public abstract class BasicTextUI extends TextUI
   public Rectangle modelToView(JTextComponent t, int pos, Position.Bias bias)
     throws BadLocationException
   {
-    return rootView.modelToView(pos, getVisibleEditorRect(), bias).getBounds();
+    Rectangle r = getVisibleEditorRect();
+    
+    return (r != null) ? rootView.modelToView(pos, r, bias).getBounds()
+                       : null;
   }
 
   /**
@@ -1274,8 +1294,9 @@ public abstract class BasicTextUI extends TextUI
     int width = textComponent.getWidth();
     int height = textComponent.getHeight();
 
+    // Return null if the component has no valid size.
     if (width <= 0 || height <= 0)
-      return new Rectangle(0, 0, 0, 0);
+      return null;
 	
     Insets insets = textComponent.getInsets();
     return new Rectangle(insets.left, insets.top,

@@ -38,7 +38,7 @@ exception statement from your version. */
 
 package java.awt;
 
-import gnu.classpath.NotImplementedException;
+import gnu.java.awt.java2d.AlphaCompositeContext;
 
 import java.awt.image.ColorModel;
 import java.util.LinkedHashMap;
@@ -139,15 +139,25 @@ public final class AlphaComposite implements Composite
       }
     return a;
   }
+
+  /**
+   * Creates a {@link CompositeContext} that can be used to perform
+   * compositing operations according to this AlphaComposite settings.
+   *
+   * @param srcColorModel the color model of the source raster
+   * @param dstColorModel the color model of the destination raster
+   * @param hints the rendering hints to use
+   *
+   * @return a {@link CompositeContext} that can be used to perform
+   *         compositing operations according to this AlphaComposite settings
+   */
   public CompositeContext createContext(ColorModel srcColorModel,
                                         ColorModel dstColorModel,
                                         RenderingHints hints)
-    throws NotImplementedException
   {
-    // XXX Implement. Sun uses undocumented implementation class
-    // sun.java2d.SunCompositeContext.
-    throw new Error("not implemented");
+    return new AlphaCompositeContext(this, srcColorModel, dstColorModel);
   }
+
   public float getAlpha()
   {
     return alpha;

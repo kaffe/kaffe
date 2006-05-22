@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package javax.swing.plaf.basic;
 
+import gnu.classpath.NotImplementedException;
+
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Component;
@@ -1047,6 +1049,7 @@ public class BasicSplitPaneUI extends SplitPaneUI
    * This method installs the keyboard actions for the JSplitPane.
    */
   protected void installKeyboardActions()
+    throws NotImplementedException
   {
     // FIXME: implement.
   }
@@ -1055,6 +1058,7 @@ public class BasicSplitPaneUI extends SplitPaneUI
    * This method reverses the work done in installKeyboardActions.
    */
   protected void uninstallKeyboardActions()
+    throws NotImplementedException
   {
     // FIXME: implement.
   }

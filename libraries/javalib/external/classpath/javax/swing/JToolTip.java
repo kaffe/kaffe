@@ -127,7 +127,7 @@ public class JToolTip extends JComponent implements Accessible
    * Returns the object that provides accessibility features for this
    * <code>JToolTip</code> component.
    *
-   * @return The accessible context (an instance of {@link AccessibleJToolTip}.
+   * @return The accessible context (an instance of {@link AccessibleJToolTip}).
    */
   public AccessibleContext getAccessibleContext()
   {

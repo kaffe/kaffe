@@ -115,31 +115,38 @@ public class VariableHeightLayoutCache
     private TreePath path;
     
     /**
-     * Get the path for this node. The derived class is returned,
-     * making check for the last child of some parent easier.
+     * Get the path for this node. The derived class is returned, making check
+     * for the last child of some parent easier.
      */
     TreePath getPath()
     {
-      boolean lastChild = false;
-      if (parent!=null)
-        {
-          int nc = treeModel.getChildCount(parent);
-          if (nc > 0)
-            {
-              int n = treeModel.getIndexOfChild(parent, node);
-              if (n == nc-1)
-                lastChild = true;
-            }
-        }
       if (path == null)
         {
+          boolean lastChild = false;
+          if (parent != null)
+            {
+              int nc = treeModel.getChildCount(parent);
+              if (nc > 0)
+                {
+                  int n = treeModel.getIndexOfChild(parent, node);
+                  if (n == nc - 1)
+                    lastChild = true;
+                }
+            }
+
           LinkedList lpath = new LinkedList();
           NodeRecord rp = this;
           while (rp != null)
             {
               lpath.addFirst(rp.node);
               if (rp.parent != null)
-                rp = (NodeRecord) nodes.get(rp.parent);
+                {
+                  Object parent = rp.parent;
+                  rp = (NodeRecord) nodes.get(parent);
+                  // Add the root node, even if it is not visible.
+                  if (rp == null)
+                    lpath.addFirst(parent);
+                }
               else
                 rp = null;
             }
@@ -157,8 +164,7 @@ public class VariableHeightLayoutCache
       // not known. To work around this, it is assumed near infinitely large.
       if (bounds==null)
         bounds = getNodeDimensions(node, row, depth, isExpanded, 
-                                   new Rectangle(Integer.MAX_VALUE/2,
-                                                 Integer.MAX_VALUE/2));
+                                   new Rectangle());
       return bounds;      
     }
   }
@@ -238,7 +244,7 @@ public class VariableHeightLayoutCache
         for (int i = 0; i < sc; i++)
           {
             Object child = treeModel.getChild(root, i);
-            countRows(child, root, 1);
+            countRows(child, root, 0);
           }
       }
     dirty = false;
@@ -255,8 +261,8 @@ public class VariableHeightLayoutCache
     NodeRecord nr = new NodeRecord(n.intValue(), depth, node, parent);
     nodes.put(node, nr);
      
-    // For expanded nodes and for the root node.
-    if (expanded.contains(node) || parent == null)
+    // For expanded nodes
+    if (expanded.contains(node))
       {
         int sc = treeModel.getChildCount(node);
         int deeper = depth+1;
@@ -326,6 +332,8 @@ public class VariableHeightLayoutCache
    */
   public Rectangle getBounds(TreePath path, Rectangle rect)
   {
+    if (path == null)
+      return null;
     if (dirty)
       update();
     Object last = path.getLastPathComponent();
@@ -377,6 +385,8 @@ public class VariableHeightLayoutCache
    */
   public int getRowForPath(TreePath path)
   {
+    if (path == null)
+      return -1;
     if (dirty) update();
 
     NodeRecord r = (NodeRecord) nodes.get(path.getLastPathComponent());
@@ -545,6 +555,8 @@ public class VariableHeightLayoutCache
   public void setModel(TreeModel newModel)
   {
     treeModel = newModel;
+    // The root node is expanded by default.
+    expanded.add(treeModel.getRoot());
     dirty = true;
   }
   

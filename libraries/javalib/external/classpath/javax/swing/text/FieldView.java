@@ -138,6 +138,10 @@ public class FieldView extends PlainView
    */
   protected Shape adjustAllocation(Shape shape)
   {
+    // Return null when the original allocation is null (like the RI).
+    if (shape == null)
+      return null;
+    
     Rectangle rectIn = shape.getBounds();
     // vertical adjustment
     int height = (int) getPreferredSpan(Y_AXIS);

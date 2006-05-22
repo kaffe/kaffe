@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package javax.swing.plaf.basic;
 
+import gnu.classpath.NotImplementedException;
+
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
@@ -218,6 +220,7 @@ public class BasicMenuUI extends BasicMenuItemUI
    *
    */
   protected void installKeyboardActions()
+    throws NotImplementedException
   {
     // FIXME: Need to implement
   }
@@ -262,6 +265,7 @@ public class BasicMenuUI extends BasicMenuItemUI
    * Basic look and feel's defaults.
    */
   protected void uninstallKeyboardActions()
+    throws NotImplementedException
   {
     // FIXME: Need to implement
   }

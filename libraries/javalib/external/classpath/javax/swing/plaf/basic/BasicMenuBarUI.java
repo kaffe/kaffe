@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package javax.swing.plaf.basic;
 
+import gnu.classpath.NotImplementedException;
+
 import java.awt.Dimension;
 import java.awt.event.ContainerEvent;
 import java.awt.event.ContainerListener;
@@ -176,6 +178,7 @@ public class BasicMenuBarUI extends MenuBarUI
    * This method installs the keyboard actions for the JMenuBar.
    */
   protected void installKeyboardActions()
+    throws NotImplementedException
   {
     // FIXME: implement
   }
@@ -223,6 +226,7 @@ public class BasicMenuBarUI extends MenuBarUI
    * This method reverses the work done in installKeyboardActions.
    */
   protected void uninstallKeyboardActions()
+    throws NotImplementedException
   {
     // FIXME: implement. 
   }

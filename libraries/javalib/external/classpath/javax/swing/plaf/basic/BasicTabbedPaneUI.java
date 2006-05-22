@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package javax.swing.plaf.basic;
 
+import gnu.classpath.NotImplementedException;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -1734,6 +1736,7 @@ public class BasicTabbedPaneUI extends TabbedPaneUI implements SwingConstants
    * This method installs keyboard actions for the JTabbedPane.
    */
   protected void installKeyboardActions()
+    throws NotImplementedException
   {
     // FIXME: Implement.
   }
@@ -1742,6 +1745,7 @@ public class BasicTabbedPaneUI extends TabbedPaneUI implements SwingConstants
    * This method uninstalls keyboard actions for the JTabbedPane.
    */
   protected void uninstallKeyboardActions()
+    throws NotImplementedException
   {
     // FIXME: Implement.
   }
@@ -1950,6 +1954,8 @@ public class BasicTabbedPaneUI extends TabbedPaneUI implements SwingConstants
         return;
       }
 
+    int ascent = metrics.getAscent();
+
     int mnemIndex = tabPane.getDisplayedMnemonicIndexAt(tabIndex);
     if (tabPane.isEnabled() && tabPane.isEnabledAt(tabIndex))
       {
@@ -1966,10 +1972,9 @@ public class BasicTabbedPaneUI extends TabbedPaneUI implements SwingConstants
         if (mnemIndex != -1)
           BasicGraphicsUtils.drawStringUnderlineCharAt(g, title, mnemIndex,
                                                        textRect.x,
-                                                       textRect.y
-                                                       + metrics.getAscent());
+                                                       textRect.y + ascent);
         else
-          g.drawString(title, textRect.x, textRect.y + metrics.getAscent());
+          g.drawString(title, textRect.x, textRect.y + ascent);
       }
     else
       {
@@ -1977,17 +1982,19 @@ public class BasicTabbedPaneUI extends TabbedPaneUI implements SwingConstants
         g.setColor(bg.brighter());
         if (mnemIndex != -1)
           BasicGraphicsUtils.drawStringUnderlineCharAt(g, title, mnemIndex,
-                                                       textRect.x, textRect.y);
+                                                       textRect.x, textRect.y
+                                                       + ascent);
         else
-          g.drawString(title, textRect.x, textRect.y);
+          g.drawString(title, textRect.x, textRect.y + ascent);
 
         g.setColor(bg.darker());
         if (mnemIndex != -1)
           BasicGraphicsUtils.drawStringUnderlineCharAt(g, title, mnemIndex,
                                                        textRect.x + 1,
-                                                       textRect.y + 1);
+                                                       textRect.y + 1
+                                                       + ascent);
         else
-          g.drawString(title, textRect.x + 1, textRect.y + 1);
+          g.drawString(title, textRect.x + 1, textRect.y + 1 + ascent);
       }
   }
 
@@ -2552,10 +2559,23 @@ public class BasicTabbedPaneUI extends TabbedPaneUI implements SwingConstants
    */
   protected int lastTabInRun(int tabCount, int run)
   {
-    if (tabRuns[run] == 0)
-      return tabCount - 1;
+    int lastTab;
+    if (runCount == 1)
+      lastTab = tabCount - 1;
     else
-      return tabRuns[run] - 1;
+      {
+        int nextRun;
+        if (run == runCount - 1)
+          nextRun = 0;
+        else
+          nextRun = run + 1;
+
+        if (tabRuns[nextRun] == 0)
+          lastTab = tabCount - 1;
+        else
+          lastTab = tabRuns[nextRun] - 1;
+      }
+    return lastTab;
   }
 
   /**

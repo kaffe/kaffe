@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package javax.swing.plaf.basic;
 
+import gnu.classpath.NotImplementedException;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -292,6 +294,7 @@ public class BasicComboPopup extends JPopupMenu implements ComboPopup
    * This method uninstalls keyboard actions installed by the UI.
    */
   protected void uninstallKeyboardActions()
+    throws NotImplementedException
   {
     // FIXME: Need to implement
   }
@@ -559,6 +562,7 @@ public class BasicComboPopup extends JPopupMenu implements ComboPopup
    * DOCUMENT ME!
    */
   protected void installKeyboardActions()
+    throws NotImplementedException
   {
     // FIXME: Need to implement
   }

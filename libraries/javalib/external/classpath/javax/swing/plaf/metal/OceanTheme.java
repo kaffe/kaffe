@@ -43,6 +43,7 @@ import java.util.Arrays;
 
 import javax.swing.UIDefaults;
 import javax.swing.plaf.ColorUIResource;
+import javax.swing.plaf.BorderUIResource.LineBorderUIResource;
 
 /**
  * A modern theme for the Metal Look &amp; Feel.
@@ -263,6 +264,10 @@ public class OceanTheme extends DefaultMetalTheme
     defaults.put("Table.gridColor", SECONDARY1);
     defaults.put("ToolBar.borderColor", c3);
     defaults.put("Tree.selectionBorderColor", PRIMARY1);
+
+    // Borders.
+    defaults.put("Table.focusCellHighlightBorder",
+                 new LineBorderUIResource(getPrimary1()));
 
     // Insets.
     defaults.put("TabbedPane.contentBorderInsets", new Insets(4, 2, 3, 3));

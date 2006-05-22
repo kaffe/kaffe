@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package javax.swing.plaf.basic;
 
+import gnu.classpath.NotImplementedException;
+
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -1025,6 +1027,7 @@ public class BasicListUI extends ListUI
    * Uninstalls keyboard actions for this UI in the {@link JList}.
    */
   protected void uninstallKeyboardActions()
+    throws NotImplementedException
   {
     // TODO: Implement this properly.
   }

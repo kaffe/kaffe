@@ -67,7 +67,7 @@ import javax.swing.plaf.basic.BasicLookAndFeel;
  * }</pre>
  */
 public class MetalLookAndFeel extends BasicLookAndFeel
-{	   
+{          
   private static final long serialVersionUID = 6680646159193457980L;
   
   /** The current theme. */
@@ -888,11 +888,9 @@ public class MetalLookAndFeel extends BasicLookAndFeel
       "CheckBox.font", new FontUIResource("Dialog", Font.BOLD, 12),
       "CheckBox.foreground", getControlTextColor(),
       "CheckBox.icon",
-      new UIDefaults.ProxyLazyValue
-          ("javax.swing.plaf.metal.MetalCheckBoxIcon"),
+      new UIDefaults.ProxyLazyValue("javax.swing.plaf.metal.MetalCheckBoxIcon"),
       "CheckBox.checkIcon",
-      new UIDefaults.ProxyLazyValue
-      ("javax.swing.plaf.metal.MetalCheckBoxIcon"),
+      new UIDefaults.ProxyLazyValue("javax.swing.plaf.metal.MetalCheckBoxIcon"),
       "Checkbox.select", getControlShadow(),
 
       "CheckBoxMenuItem.acceleratorFont", new FontUIResource("Dialog", Font.PLAIN, 10),
@@ -964,7 +962,7 @@ public class MetalLookAndFeel extends BasicLookAndFeel
       "FileChooser.detailsViewIcon", 
           MetalIconFactory.getFileChooserDetailViewIcon(),
       "FileChooser.fileNameLabelMnemonic", new Integer(78),
-      "FileChooser.filesOfTypeLabelMnemonic",new Integer(84),
+      "FileChooser.filesOfTypeLabelMnemonic", new Integer(84),
       "FileChooser.lookInLabelMnemonic", new Integer(73),
       "FileView.computerIcon", MetalIconFactory.getTreeComputerIcon(),
       "FileView.directoryIcon", MetalIconFactory.getTreeFolderIcon(),
@@ -1204,7 +1202,7 @@ public class MetalLookAndFeel extends BasicLookAndFeel
       "Table.focusCellForeground", getControlTextColor(),
       "Table.foreground", getControlTextColor(),
       "Table.focusCellHighlightBorder",
-      new BorderUIResource.LineBorderUIResource(getControlShadow()),
+      new BorderUIResource.LineBorderUIResource(getFocusColor()),
       "Table.focusCellBackground", getWindowBackground(),
       "Table.gridColor", getControlDarkShadow(),
       "Table.selectionBackground", new ColorUIResource(204, 204, 255),

@@ -1,0 +1,616 @@
+NAME
+	keytool - manage private keys and public certificates
+
+SYNOPSIS
+	keytool [COMMAND]...
+
+DESCRIPTION
+	A Java-based tool for managing both Key Entries as well as Trusted
+	Certificates.
+
+	Multiple COMMANDs may be specified at once, each complete with its own
+	options.  keytool will parse all the arguments, before processing, and
+	executing, each COMMAND.  If an exception occurs while executing one
+	COMMAND keytool will abort.
+
+	A COMMAND can be one of the followings:
+
+	-genkey [OPTION]...
+		Generate a new Key Entry, eventually creating a new key store.
+
+	-import [OPTION]...
+		Add, to a key store, Key Entries (private keys and certificate
+                chains authenticating the public keys) and Trusted Certificates
+                (3rd party certificates which can be used as Trust anchors when
+                building chains-of-trust).
+
+	-selfcert [OPTION]...
+		Generate a new self-signed Trusted Certificate.
+
+	-identitydb [OPTION]...
+		NOT IMPLEMENTED YET.
+		Import a JDK 1.1 style Identity Database.
+
+	-certreq [OPTION]...
+		Issue a Certificate Signing Request (CSR) which can be then sent
+                to a Certification Authority (CA) to issue a certificate signed
+                (by the CA) and authenticating the Subject of the request.
+
+	-export [OPTION]...
+		Export a Certificate from a key store.
+
+	-list [OPTION]...
+		Print one or all Certificates in a key store to STDOUT.
+
+	-printcert [OPTION]...
+		Print a human-readable form of a Certificate in a designated
+                file to STDOUT.
+
+	-keyclone [OPTION]...
+		Clone a Key Entry in a key store.
+
+	-storepasswd [OPTION]...
+		Change the password protecting a key store.
+
+	-keypasswd [OPTION]...
+		Change the password protecting a Key Entry in a key store.
+
+	-delete [OPTION]...
+		Delete a Key Entry or a Trusted Certificate from a key store.
+
+	-help	Display this text.
+
+OPTIONS COMMON TO MORE THAN ONE COMMAND
+	The following OPTIONs are used in more than one COMMAND.  They are
+	described here to reduce redundancy.
+	
+	-alias ALIAS
+		Every entry, be it a Key Entry or a Trusted Certificate, in a
+		key store is uniquely identified by a user-defined Alias string.
+		Use this option to specify the Alias to use when referring to an
+		entry in the key store.  Unless specified otherwise, a default
+		value of "mykey" (all lower case, without the enclosing quotes)
+		shall be used when this option is omitted from the command line.
+
+	-keyalg ALGORITHM
+		Use this option to specify the canonical name of the key-pair
+		generation algorithm.  The default value for this option is
+		"DSS" (a synonym for the Digital Signature Algorithm also known
+		as DSA).
+
+	-keysize SIZE
+		Use this option to specify the number of bits of the shared
+		modulus (for both the public and private keys) to use when
+		generating new keys.  A default value of 1024 will be used if
+		this option is omitted from the command line.
+
+	-validity DAY_COUNT
+		Use this option to specify the number of days a newly generated
+		certificate will be valid for.  The default value is 90 (days)
+		if this option is omitted from the command line.
+
+	-storetype STORE_TYPE
+		Use this option to specify the type of the key store to use.
+		The default value, if this option is omitted, is that of the
+		property "keystore.type" in the security properties file, which
+		is obtained by invoking the static method call getDefaultType()
+		in java.security.KeyStore.
+
+	-storepass PASSWORD
+		Use this option to specify the password protecting the key
+		store.  If this option is omitted from the command line, you
+		will be prompted to provide a password.
+
+	-keystore URL
+		Use this option to specify the location of the key store to use.
+		The default value is a file URL referencing the file named
+		".keystore" (all lower case and without the enclosing quotes)
+		located in the path returned by the call to
+		java.lang.System#getProperty(String) using "user.home" as
+		argument.
+
+		If a URL was specified, but was found to be malformed --e.g.
+		missing protocol element-- the tool will attempt to use the URL
+		value as a file-name (with absolute or relative path-name) of a
+		key store --as if the protocol was "file:".
+
+	-provider PROVIDER_CLASS_NAME
+		A fully qualified class name of a Security Provider to add to
+		the current list of Security Providers already installed in the
+		JVM in-use.  If a provider class is specified with this option,
+		and was successfully added to the runtime --i.e. it was not
+		already installed-- then the tool will attempt to remove this
+		Security Provider before exiting.
+
+	-file FILE_NAME
+		Use this option to designate a file to use with a command.  When
+		specified with this option, the value is expected to be the
+		fully qualified path of a file accessible by the File System.
+		Depending on the command, the file may be used as input or as
+		output.  When this option is omitted from the command line,
+		STDIN will be used instead, as the source of input, and STDOUT
+		will be used instead as the output destination.
+
+	-v	Unless specified otherwise, use this option to enable more
+		verbose output.
+
+X.500 DISTINGUISHED NAME
+	A Distinguished Name (or DN) MUST be supplied with some of the COMMANDs
+	using a -dname option.  The syntax of a valid value for this option MUST
+	follow RFC-2253 specifications.  Namely the following components (with
+	their accepted meaning) will be recognized.  Note that the component
+	name is case-insensitive:
+
+	CN	The Common Name; e.g. "host.domain.com"
+	OU	The Organizational Unit; e.g. "IT Department"
+	O	The Organization Name; e.g. "The Sample Company"
+	L	The Locality Name; e.g. "Sydney"
+	ST	The State Name; e.g. "New South Wales"
+	C	The 2-letter Country identifier; e.g. "AU"
+
+	When specified with a -dname option, each pair of component/value will
+	be separated from the other with a comma.  Each component and value pair
+	MUST be separated by an equal sign.  For example, the following is
+	a valid DN value:
+
+	CN=host.domain.com, O=The Sample Company, L=Sydney, ST=NSW, C=AU
+
+	If the Distinguished Name is required, and no valid default value can be
+	used, the tool will prompt you to enter the information through the
+	console.
+
+-genkey COMMAND
+	Generate a new key-pair (both private and public keys), and save these
+	credentials in the key store as a Key Entry, associated with the
+	designated (if was specified in the -alias option) or default (if the
+	-alias option is omitted) Alias.
+
+	The private key material will be protected with a user-defined password
+	(see -keypass option).  The public key on the other hand will be part
+	of a self-signed X.509 certificate, which will form a 1-element chain
+	and will be saved in the key store.
+
+	-alias ALIAS
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-keyalg ALGORITHM
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-keysize KEY_SIZE
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-sigalg ALGORITHM
+		The canonical name of the digital signature algorithm to use for
+		signing certificates.  If this option is omitted, a default
+		value will be chosen based on the type of the key-pair; i.e. the
+		algorithm that ends up being used by the -keyalg option.  If the
+		key-pair generation algorithm is "DSA", the value for the
+		signature algorithm will be "SHA1withDSA".  If on the other hand
+		the key-pair generation algorithm is "RSA", then the tool will
+		use "MD5withRSA" as the signature algorithm.
+
+	-dname NAME
+		This a mandatory value for the command.  If no value is
+		specified --i.e. the -dname option is omitted-- the tool will
+		prompt you to enter a Distinguished Name to use as both the
+		Owner and Issuer of the generated self-signed certificate.
+
+		(see X.500 DISTINGUISHED NAME)
+
+	-keypass PASSWORD
+		Use this option to specify the password which the tool will use
+		to protect the newly created Key Entry.
+
+		If this option is omitted, you will be prompted to provide a
+		password.
+
+	-validity DAY_COUNT
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-storetype STORE_TYPE
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-keystore URL
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-storepass PASSWORD
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-provider PROVIDER_CLASS_NAME
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-v	(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+-import COMMAND
+	Read an X.509 certificate, or a PKCS#7 Certificate Reply from a
+	designated input source and incorporate the certificates into the key
+	store.
+
+	If the Alias does not already exist in the key store, the tool treats
+	the certificate read from the input source as a new Trusted Certificate.
+	It then attempts to discover a chain-of-trust, starting from that
+	certificate and ending at another Trusted Certificate, already stored in
+	the key store.  If the -trustcacerts option is present, an additional
+	key store, of type "JKS" named "cacerts", and assumed to be present in
+	${JAVA_HOME}/lib/security will also be consulted if found --${JAVA_HOME}
+	refers to the location of an installed Java Runtime Environment (JRE).
+	If no chain-of-trust can be established, and unless the -noprompt option
+	has been specified, the certificate is printed to STDOUT and the user is
+	prompted for a confirmation.
+
+	If Alias exists in the key store, the tool will treat the certificate(s)
+	read from the input source as a Certificate Reply, which can be a chain
+	of certificates, that eventually would replace the chain of certificates
+	associated with the Key Entry of that Alias.  The substitution of the
+	certificates only occurs if a chain-of-trust can be established between
+	the bottom certificate of the chain read from the input file and the
+	Trusted Certificates already present in the key store.  Again, if the
+	-trustcacerts option is specified, additional Trusted Certificates in
+	the same "cacerts" key store will be considered.  If no chain-of-trust
+	can be established, the operation will abort.
+
+	-alias ALIAS
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-file FILE_NAME
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-keypass PASSWORD
+		Use this option to specify the password which the tool will use
+		to protect the Key Entry associated with the designated Alias,
+		when replacing this Alias' chain of certificates with that found
+		in the certificate reply.
+
+		If this option is omitted, and the chain-of-trust for the
+		certificate reply has been established, the tool will first
+		attempt to unlock the Key Entry using the same password
+		protecting the key store.  If this fails, you will then be
+		prompted to provide a password.
+
+	-noprompt
+		Use this option to prevent the tool from prompting the user.
+
+	-trustcacerts
+		Use this option to indicate to the tool that a key store, of
+		type "JKS", named "cacerts", and usually located in lib/security
+		in an installed Java Runtime Environment should be considered
+		when trying to establish chain-of-trusts.
+
+	-storetype STORE_TYPE
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-keystore URL
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-storepass PASSWORD
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-provider PROVIDER_CLASS_NAME
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-v	(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+-selfcert COMMAND
+	Generate a self-signed X.509 version 1 certificate.  The newly generated
+	certificate will form a chain of one element which will replace the
+	previous chain associated with the designated Alias (if -alias option
+	was specified), or the default Alias (if -alias option was omitted).
+
+	-alias ALIAS
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-sigalg ALGORITHM
+		The canonical name of the digital signature algorithm to use for
+		signing the certificate.  If this option is omitted, a default
+		value will be chosen based on the type of the private key
+		associated with the designated Alias.  If the private key is a
+		"DSA" one, the value for the signature algorithm will be
+		"SHA1withDSA".  If on the other hand the private key is an "RSA"
+		one, then the tool will use "MD5withRSA" as the signature
+		algorithm.
+
+	-dname NAME
+		Use this option to specify the Distinguished Name of the newly
+		generated self-signed certificate.  If this option is omitted,
+		the existing Distinguished Name of the base certificate in the
+		chain associated with the designated Alias will be used instead.
+
+		(see X.500 DISTINGUISHED NAME)
+
+	-validity DAY_COUNT
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-keypass PASSWORD
+		Use this option to specify the password which the tool will use
+		to unlock the Key Entry associated with the designated Alias.
+
+		If this option is omitted, the tool will first attempt to unlock
+		the Key Entry using the same password protecting the key store.
+		If this fails, you will then be prompted to provide a password.
+
+	-storetype STORE_TYPE
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-keystore URL
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-storepass PASSWORD
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-provider PROVIDER_CLASS_NAME
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-v	(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+-identitydb COMMAND
+	NOT IMPLEMENTED YET.
+
+	Import a JDK 1.1 style Identity Database.
+
+	-file FILE_NAME
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-storetype STORE_TYPE
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-keystore URL
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-storepass PASSWORD
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-provider PROVIDER_CLASS_NAME
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-v	(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+-certreq COMMAND
+	Generate a PKCS#10 Certificate Signing Request (CSR) and writes it to
+	a designated output destination.  The contents of the destination
+	should look something like the following:
+	
+	-----BEGIN NEW CERTIFICATE REQUEST-----
+	MIICYTCCAiECAQAwXzEUMBIGA1UEAwwLcnNuQGdudS5vcmcxGzAZBgNVBAoMElUg
+	Q29tcGFueTEPMA0GA1UEBwwGU3lkbmV5MQwwCgYDVQQIDANOU1cxCzAJBgNVBACC
+	...
+	FCTlKlok8KwGuIVwNVOfQLRX+O5kAhQ/a4RTZme2L8PnpvgRwrf7Eg8D6w==
+	-----END NEW CERTIFICATE REQUEST-----
+
+	IMPORTANT: Some documentation (e.g. RSA examples) claims that the
+	Attributes field, in the CSR is OPTIONAL while RFC-2986 implies the
+	opposite.  This implementation considers this field, by default, as
+	OPTIONAL, unless the option -attributes is specified on the command
+	line.
+	
+	-alias ALIAS
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-sigalg ALGORITHM
+		The canonical name of the digital signature algorithm to use for
+		signing the certificate.  If this option is omitted, a default
+		value will be chosen based on the type of the private key
+		associated with the designated Alias.  If the private key is a
+		"DSA" one, the value for the signature algorithm will be
+		"SHA1withDSA".  If on the other hand the private key is an "RSA"
+		one, then the tool will use "MD5withRSA" as the signature
+		algorithm.
+
+	-file FILE_NAME
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-keypass PASSWORD
+		Use this option to specify the password which the tool will use
+		to unlock the Key Entry associated with the designated Alias.
+
+		If this option is omitted, the tool will first attempt to unlock
+		the Key Entry using the same password protecting the key store.
+		If this fails, you will then be prompted to provide a password.
+
+	-storetype STORE_TYPE
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-keystore URL
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-storepass PASSWORD
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-provider PROVIDER_CLASS_NAME
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-v	(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-attributes
+		Use this option to force the tool to encode a NULL DER value in
+		the CSR as the value of the Attributes field.
+
+-export COMMAND
+	Export a certificate stored in the key store to a designated output
+	destination, either in binary format (if the -v option is specified),
+	or in RFC-1421 compliant encoding (if the -rfc option is specified
+	instead).
+
+	-alias ALIAS
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-file FILE_NAME
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-storetype STORE_TYPE
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-keystore URL
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-storepass PASSWORD
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-provider PROVIDER_CLASS_NAME
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-rfc	Use RFC-1421 specifications when encoding the output.
+
+	-v	Output the certificate in binary DER encoding.  This is the
+		default output format of the command if neither -rfc nor -v
+		options were detected on the command line.  If both this option
+		and the -rfc option are detected on the command line, the tool
+		will opt for the RFC-1421 style encoding.
+
+-list COMMAND
+	Print one or all of the key store entries to STDOUT.  Usually this
+	command will only print a fingerprint of the certificate, unless either
+	the -rfc or the -v option is specified.
+
+	-alias ALIAS
+		If this option is omitted, the tool will print ALL the entries
+		found in the key store.
+
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-storetype STORE_TYPE
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-keystore URL
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-storepass PASSWORD
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-provider PROVIDER_CLASS_NAME
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-rfc	Use RFC-1421 specifications when encoding the output.
+
+	-v	Output the certificate in human-readable format. If both this
+		option and the -rfc option are detected on the command line,
+		the tool will opt for the human-readable form and will not
+		abort the command.
+
+-printcert COMMAND
+	Read a certificate from a designated input source and print it to STDOUT
+	in a human-readable form.
+
+	-file FILE_NAME
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-v	(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+-keyclone COMMAND
+	Clone an existing Key Entry and store it under a new (different) Alias
+	protecting, its private key material with possibly a new password.
+
+	-alias ALIAS
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-dest ALIAS
+		Use this option to specify the new Alias which will be used to
+		identify the cloned copy of the Key Entry.
+
+	-keypass PASSWORD
+		Use this option to specify the password which the tool will use
+		to unlock the Key Entry associated with the designated Alias.
+
+		If this option is omitted, the tool will first attempt to unlock
+		the Key Entry using the same password protecting the key store.
+		If this fails, you will then be prompted to provide a password.
+
+	-new PASSWORD
+		Use this option to specify the password protecting the private
+		key material of the newly cloned copy of the Key Entry.
+
+	-storetype STORE_TYPE
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-keystore URL
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-storepass PASSWORD
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-provider PROVIDER_CLASS_NAME
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-v	(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+-storepasswd COMMAND
+	Change the password protecting a key store.
+
+	-new PASSWORD
+		The new, and different, password which will be used to protect
+		the designated key store.
+
+	-storetype STORE_TYPE
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-keystore URL
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-storepass PASSWORD
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-provider PROVIDER_CLASS_NAME
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-v	(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+-keypasswd COMMAND
+	Change the password protecting the private key material of a designated
+	Key Entry.
+
+	-alias ALIAS
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-keypass PASSWORD
+		Use this option to specify the password which the tool will use
+		to unlock the Key Entry associated with the designated Alias.
+
+		If this option is omitted, the tool will first attempt to unlock
+		the Key Entry using the same password protecting the key store.
+		If this fails, you will then be prompted to provide a password.
+
+	-new PASSWORD
+		The new, and different, password which will be used to protect
+		the private key material of the designated Key Entry.
+
+	-storetype STORE_TYPE
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-keystore URL
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-storepass PASSWORD
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-provider PROVIDER_CLASS_NAME
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-v	(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+-delete COMMAND
+	Delete a designated key store entry.
+	
+	-alias ALIAS
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-storetype STORE_TYPE
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-keystore URL
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-storepass PASSWORD
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-provider PROVIDER_CLASS_NAME
+		(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+	-v	(see OPTIONS COMMON TO MORE THAN ONE COMMAND)
+
+REPORTING BUGS
+	Please report bugs at http://www.gnu.org/software/classpath/bugs.html
+
+COPYRIGHT
+	Copyright (C) 2006 Free Software Foundation, Inc.
+	This is free software; see the source for copying conditions.  There is
+	NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR
+	PURPOSE.

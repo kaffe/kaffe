@@ -158,7 +158,7 @@ public class ViewportLayout implements LayoutManager, Serializable
     // the viewport require inputs in view space.
 
     Rectangle portBounds = port.getViewRect();
-    Dimension viewPref = view.getPreferredSize();
+    Dimension viewPref = new Dimension(view.getPreferredSize());
 
     Point portLowerRight = new Point(portBounds.x + portBounds.width,
                                      portBounds.y + portBounds.height);
@@ -182,14 +182,10 @@ public class ViewportLayout implements LayoutManager, Serializable
           }
       }
 
-    // The scroll pane manages the view size itself.
-    if (! (port.getParent() instanceof JScrollPane) )
-      {
-        if (viewPref.width < portBounds.width)
-          viewPref.width = portBounds.width;
-        if (viewPref.height < portBounds.height)
-          viewPref.height = portBounds.height;
-      }
+     if (viewPref.width < portBounds.width)
+       viewPref.width = portBounds.width;
+     if (viewPref.height < portBounds.height)
+       viewPref.height = portBounds.height;
 
     // If the view is larger than the port, the port is top and right
     // aligned.

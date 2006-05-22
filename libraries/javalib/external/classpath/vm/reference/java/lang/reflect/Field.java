@@ -206,7 +206,7 @@ extends AccessibleObject implements Member
   public String toString()
   {
     // 64 is a reasonable buffer initial size for field
-    StringBuffer sb = new StringBuffer(64);
+    StringBuilder sb = new StringBuilder(64);
     Modifier.toString(getModifiers(), sb).append(' ');
     sb.append(ClassHelper.getUserName(getType())).append(' ');
     sb.append(getDeclaringClass().getName()).append('.');
@@ -216,7 +216,7 @@ extends AccessibleObject implements Member
  
   public String toGenericString()
   {
-    StringBuffer sb = new StringBuffer(64);
+    StringBuilder sb = new StringBuilder(64);
     Modifier.toString(getModifiers(), sb).append(' ');
     sb.append(getGenericType()).append(' ');
     sb.append(getDeclaringClass().getName()).append('.');

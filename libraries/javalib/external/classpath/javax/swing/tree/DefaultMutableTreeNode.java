@@ -154,6 +154,8 @@ public class DefaultMutableTreeNode
   /**
    * Adds a new child node to this node and sets this node as the parent of
    * the child node.  The child node must not be an ancestor of this node.
+   * If the tree uses the {@link DefaultTreeModel}, you must subsequently
+   * call {@link DefaultTreeModel#reload(TreeNode)}.
    *
    * @param child the child node (<code>null</code> not permitted).
    *

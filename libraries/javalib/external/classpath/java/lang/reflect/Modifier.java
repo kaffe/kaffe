@@ -308,7 +308,19 @@ public class Modifier
    */
   public static String toString(int mod)
   {
-    return toString(mod, new StringBuffer()).toString();
+    return toString(mod, new StringBuilder()).toString();
+  }
+
+  /**
+   * Package helper method that can take a StringBuilder.
+   * @param mod the modifier
+   * @param r the StringBuilder to which the String representation is appended
+   * @return r, with information appended
+   */
+  static StringBuilder toString(int mod, StringBuilder r)
+  {
+    r.append(toString(mod, new StringBuffer()));
+    return r;
   }
 
   /**

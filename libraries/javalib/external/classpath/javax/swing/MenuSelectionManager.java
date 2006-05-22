@@ -365,53 +365,35 @@ public class MenuSelectionManager
 	return;
       }
 
-    int i;
-    int minSize = path.length; // size of the smaller path. 
+    int minSize = path.length; // size of the smaller path.
+    int currentSize = selectedPath.size();
+    int firstDiff = 0;
 
-    if (path.length > selectedPath.size())
+    // Search first item that is different in the current and new path.
+    for (int i = 0; i < minSize; i++)
       {
-	minSize = selectedPath.size();
-
-	// if new selected path contains more elements then current
-	// selection then first add all elements at 
-	// the indexes > selectedPath.size 
-	for (i = selectedPath.size(); i < path.length; i++)
-	  {
-	    selectedPath.add(path[i]);
-	    path[i].menuSelectionChanged(true);
-	  }
+        if (i < currentSize && (MenuElement) selectedPath.get(i) == path[i])
+          firstDiff++;
+        else
+          break;
       }
 
-    else if (path.length < selectedPath.size())
+    // Remove items from selection and send notification.
+    for (int i = currentSize - 1; i >= firstDiff; i--)
       {
-	// if new selected path contains less elements then current 
-	// selection then first remove all elements from the selection
-	// at the indexes > path.length
-	for (i = selectedPath.size() - 1; i >= path.length; i--)
-	  {
-	    ((MenuElement) selectedPath.get(i)).menuSelectionChanged(false);
-	    selectedPath.remove(i);
-	  }
-
-	minSize = path.length;
+        MenuElement el = (MenuElement) selectedPath.get(i);
+        selectedPath.remove(i);
+        el.menuSelectionChanged(false);
       }
 
-    // Now compare elements in new and current selection path at the 
-    // same location and adjust selection until 
-    // same menu elements will be encountered at the
-    // same index in both current and new selection path.
-    MenuElement oldSelectedItem;
-
-    for (i = minSize - 1; i >= 0; i--)
+    // Add new items to selection and send notification.
+    for (int i = firstDiff; i < minSize; i++)
       {
-	oldSelectedItem = (MenuElement) selectedPath.get(i);
-
-	if ((i + 1) < path.length && path[i + 1].equals(oldSelectedItem))
-	  break;
-
-	oldSelectedItem.menuSelectionChanged(false);
-	path[i].menuSelectionChanged(true);
-	selectedPath.setElementAt(path[i], i);
+        if (path[i] != null)
+          {
+            selectedPath.add(path[i]);
+            path[i].menuSelectionChanged(true);
+          }
       }
 
     fireStateChanged();

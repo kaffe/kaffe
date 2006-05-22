@@ -19,12 +19,14 @@
 
 * Merging work:
   * From GNU Classpath:
-    java.util.zip, java.lang
+    java.util.zip, java.lang.String
+  * Update to latest VMProcess interface (needs K* cleanup instead of using 
+  POSIX functions directly)
   * gcjwebplugin
   * verifier from gcj (rob gonzalez)
 
 * Build system: (dalibor)
   * Non-recursive build, single Makefile.am for kaffe.
 
-* Pending patches (dalibor)
-  amd64 jit from Eric Anholt
+* Pending patches 
+  amd64 jit from Eric Anholt (guilhem)

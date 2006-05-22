@@ -119,6 +119,11 @@ public class IppRequest
 {
 
   /**
+   * The printer-poll timeout. 
+   */
+  private static final int timeout = 1000;
+
+  /**
    * Helper class used to write the attributes of a request
    * into the supplied data output stream in the correct way.
    * 
@@ -838,7 +843,12 @@ public class IppRequest
              
     out.flush();
     stream.flush();  
-    
+  
+    // Set the connection timeout, for if the printer is offline.
+    // FIXME: The print services polling should probably be done in its
+    // own thread.
+    connection.setConnectTimeout( timeout );
+
     int responseCode = responseCode = connection.getResponseCode();
     
     if (responseCode == HttpURLConnection.HTTP_OK)

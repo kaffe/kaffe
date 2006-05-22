@@ -1,5 +1,5 @@
 /* RenderableImageProducer.java -- 
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2006 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -38,11 +38,15 @@ exception statement from your version. */
 
 package java.awt.image.renderable;
 
-import gnu.classpath.NotImplementedException;
-
+import java.awt.image.ColorModel;
+import java.awt.image.DataBuffer;
 import java.awt.image.ImageConsumer;
 import java.awt.image.ImageProducer;
+import java.awt.image.Raster;
+import java.awt.image.RenderedImage;
+import java.awt.image.SampleModel;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class RenderableImageProducer implements ImageProducer, Runnable
 {
@@ -88,17 +92,75 @@ public class RenderableImageProducer implements ImageProducer, Runnable
 
   public void startProduction(ImageConsumer consumer)
   {
+    addConsumer(consumer);
     Thread t = new Thread(this, "RenderableImageProducerWorker");
     t.start();
   }
 
   public void requestTopDownLeftRightResend(ImageConsumer consumer)
-    throws NotImplementedException
   {
+    // Do nothing.  The contract says we can ignore this call, so we do.
   }
 
   public void run()
-    throws NotImplementedException
   {
+    // This isn't ideal but it avoids fail-fast problems.
+    // Alternatively, we could clone 'consumers' here.
+    synchronized (consumers)
+      {
+        RenderedImage newImage;
+        if (context == null)
+          newImage = image.createDefaultRendering();
+        else
+          newImage = image.createRendering(context);
+        Raster newData = newImage.getData();
+        ColorModel colorModel = newImage.getColorModel();
+        if (colorModel == null)
+          colorModel = ColorModel.getRGBdefault();
+        SampleModel sampleModel = newData.getSampleModel();
+        DataBuffer dataBuffer = newData.getDataBuffer();
+        int width = newData.getWidth();
+        int height = newData.getHeight();
+
+        // Initialize the consumers.
+        Iterator it = consumers.iterator();
+        while (it.hasNext())
+          {
+            ImageConsumer target = (ImageConsumer) it.next();
+            target.setHints(ImageConsumer.COMPLETESCANLINES
+                            | ImageConsumer.SINGLEFRAME
+                            | ImageConsumer.SINGLEPASS
+                            | ImageConsumer.TOPDOWNLEFTRIGHT);
+            target.setDimensions(width, height);
+          }
+
+        // Work in scan-line order.
+        int[] newLine = new int[width];
+        int[] bands = new int[sampleModel.getNumBands()];
+        for (int y = 0; y < height; ++y)
+          {
+            for (int x = 0; x < width; ++x)
+              {
+                sampleModel.getPixel(x, y, bands, dataBuffer);
+                newLine[x] = colorModel.getDataElement(bands, 0);
+              }
+
+            // Tell the consumers about the new scan line.
+            it = consumers.iterator();
+            while (it.hasNext())
+              {
+                ImageConsumer target = (ImageConsumer) it.next();
+                target.setPixels(0, y, width, 1, colorModel, newLine, 0, width);
+              }
+          }
+
+        // Tell the consumers that we're done.
+        it = consumers.iterator();
+        while (it.hasNext())
+          {
+            ImageConsumer target = (ImageConsumer) it.next();
+            target.imageComplete(ImageConsumer.STATICIMAGEDONE);
+          }
+      }
   }
 } // class RenderableImageProducer

@@ -39,6 +39,8 @@ exception statement from your version. */
 
 package java.net;
 
+import gnu.java.net.IndexListParser;
+
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.File;
@@ -53,6 +55,7 @@ import java.security.PermissionCollection;
 import java.security.PrivilegedAction;
 import java.security.SecureClassLoader;
 import java.security.cert.Certificate;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -315,27 +318,29 @@ public class URLClassLoader extends SecureClassLoader
 	  
 	  jarfile =
 	    ((JarURLConnection) baseJarURL.openConnection()).getJarFile();
-	  
+          
 	  Manifest manifest;
 	  Attributes attributes;
 	  String classPathString;
 
-	  if ((manifest = jarfile.getManifest()) != null
+          this.classPath = new Vector();
+          
+          ArrayList indexListHeaders = new IndexListParser(jarfile, baseJarURL, baseURL).getHeaders();
+          if (indexListHeaders.size() > 0)
+            this.classPath.addAll(indexListHeaders);
+          else if ((manifest = jarfile.getManifest()) != null
 	      && (attributes = manifest.getMainAttributes()) != null
 	      && ((classPathString 
 		   = attributes.getValue(Attributes.Name.CLASS_PATH)) 
 		  != null))
-	    {
-	      this.classPath = new Vector();
-	      
+	    {	      
 	      StringTokenizer st = new StringTokenizer(classPathString, " ");
 	      while (st.hasMoreElements ()) 
 		{  
 		  String e = st.nextToken ();
 		  try
 		    {
-		      URL url = new URL(baseURL, e);
-		      this.classPath.add(url);
+		      this.classPath.add(new URL(baseURL, e));
 		    } 
 		  catch (java.net.MalformedURLException xx)
 		    {

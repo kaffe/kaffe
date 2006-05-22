@@ -110,8 +110,9 @@ public class JarFile extends ZipFile
    * The security provider to use for signature verification.
    * We need a known fallback to be able to read any signed jar file
    * (which might contain the user selected security provider).
+   * This is package-private to avoid accessor methods for inner classes.
    */
-  private static final Gnu provider = new Gnu();
+  static final Gnu provider = new Gnu();
 
   // Signature OIDs.
   private static final OID MD2_OID = new OID("1.2.840.113549.2.2");

@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package javax.swing.plaf.basic;
 
+import gnu.classpath.NotImplementedException;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -604,6 +606,7 @@ public class BasicToolBarUI extends ToolBarUI implements SwingConstants
    * by the look and feel.
    */
   protected void installKeyboardActions()
+    throws NotImplementedException
   {
     // FIXME: implement.
   }
@@ -900,6 +903,7 @@ public class BasicToolBarUI extends ToolBarUI implements SwingConstants
    * This method uninstalls keyboard actions installed by the UI.
    */
   protected void uninstallKeyboardActions()
+    throws NotImplementedException
   {
     // FIXME: implement.
   }

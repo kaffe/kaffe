@@ -38,14 +38,15 @@ exception statement from your version. */
 
 package javax.swing.tree;
 
-import gnu.classpath.NotImplementedException;
-
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.EventListener;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.DefaultListSelectionModel;
@@ -61,6 +62,7 @@ import javax.swing.event.TreeSelectionListener;
  * expansion events.
  * 
  * @author Andrew Selkirk
+ * @author Audrius Meskauskas
  */
 public class DefaultTreeSelectionModel
     implements Cloneable, Serializable, TreeSelectionModel
@@ -119,7 +121,7 @@ public class DefaultTreeSelectionModel
   /**
    * The row of the last added path according to the RowMapper.
    */
-  protected int leadRow;
+  protected int leadRow = -1;
 
   /**
    * Constructs a new DefaultTreeSelectionModel.
@@ -145,19 +147,33 @@ public class DefaultTreeSelectionModel
     
     // Clone the selection and the list selection model.
     cloned.selection = (TreePath[]) selection.clone();
-    cloned.listSelectionModel = 
-      (DefaultListSelectionModel) listSelectionModel.clone();
+    if (listSelectionModel!=null)
+      cloned.listSelectionModel = 
+        (DefaultListSelectionModel) listSelectionModel.clone();
     return cloned;
   }
 
   /**
    * Returns a string that shows this object's properties.
+   * The returned string lists the selected tree rows, if any.
    * 
    * @return a string that shows this object's properties
    */
-  public String toString() throws NotImplementedException
+  public String toString() 
   {
-    return null; // TODO
+    if (isSelectionEmpty())
+      return "[selection empty]";
+    else
+      {
+        StringBuffer b = new StringBuffer("selected rows: [");
+        for (int i = 0; i < selection.length; i++)
+          {
+            b.append(getRow(selection[i]));
+            b.append(' ');
+          }
+        b.append(", lead "+getLeadSelectionRow());
+        return b.toString();
+      }
   }
 
   /**
@@ -221,6 +237,7 @@ public class DefaultTreeSelectionModel
   public void setSelectionMode(int mode)
   {
     selectionMode = mode;
+    insureRowContinuity();
   }
 
   /**
@@ -245,7 +262,60 @@ public class DefaultTreeSelectionModel
    */
   public void setSelectionPath(TreePath path)
   {
+    // The most frequently only one cell in the tree is selected.
+    TreePath[] ose = selection;
     selection = new TreePath[] { path };
+    TreePath oldLead = leadPath;
+    leadIndex = 0;
+    leadRow = getRow(path);
+    leadPath = path;
+
+    TreeSelectionEvent event;
+
+    if (ose != null && ose.length > 0)
+      {
+        // The first item in the path list is the selected path.
+        // The remaining items are unselected pathes.
+        TreePath[] changed = new TreePath[ose.length + 1];
+        boolean[] news = new boolean[changed.length];
+        news[0] = true;
+        changed[0] = path;
+        System.arraycopy(ose, 0, changed, 1, ose.length);
+        event = new TreeSelectionEvent(this, changed, news, oldLead, path);
+      }
+    else
+      {
+        event = new TreeSelectionEvent(this, path, true, oldLead, path);
+      }
+    fireValueChanged(event);
+  }
+  
+  /**
+   * Get the number of the tree row for the given path.
+   * 
+   * @param path the tree path
+   * @return the tree row for this path or -1 if the path is not visible.
+   */
+  int getRow(TreePath path)
+  {
+    RowMapper mapper = getRowMapper();
+
+    if (mapper instanceof AbstractLayoutCache)
+      {
+        // The absolute majority of cases, unless the TreeUI is very
+        // seriously rewritten
+        AbstractLayoutCache ama = (AbstractLayoutCache) mapper;
+        return ama.getRowForPath(path);
+      }
+    else
+      {
+        // Generic non optimized implementation.
+        int[] rows = mapper.getRowsForPaths(new TreePath[] { path });
+        if (rows.length == 0)
+          return - 1;
+        else
+          return rows[0];
+      }
   }
 
   /**
@@ -256,11 +326,11 @@ public class DefaultTreeSelectionModel
    * @param paths the paths to set as selection
    */
   public void setSelectionPaths(TreePath[] paths)
-      throws NotImplementedException
   {
     // Must be called, as defined in JDK API 1.4.
     insureUniqueness();
-    // TODO
+    clearSelection();
+    addSelectionPaths(paths);
   }
 
   /**
@@ -268,13 +338,17 @@ public class DefaultTreeSelectionModel
    * is already selected and doesn't add the same path twice. If this changes
    * the selection the registered TreeSelectionListeners are notified.
    * 
+   * The lead path is changed to the added path. This also happen if the 
+   * passed path was already selected before.
+   * 
    * @param path the path to add to the selection
    */
   public void addSelectionPath(TreePath path)
   {
     if (! isPathSelected(path))
       {
-        if (isSelectionEmpty())
+        if (selectionMode == SINGLE_TREE_SELECTION || isSelectionEmpty()
+            || ! canPathBeAdded(path))
           setSelectionPath(path);
         else
           {
@@ -284,9 +358,16 @@ public class DefaultTreeSelectionModel
             selection = new TreePath[temp.length];
             System.arraycopy(temp, 0, selection, 0, temp.length);
           }
+      }
+    
+     if (path!=leadPath)
+       {
+        TreePath oldLead = leadPath;
         leadPath = path;
-        fireValueChanged(new TreeSelectionEvent(this, path, true, leadPath,
-                                                path));
+        leadRow = getRow(path);
+        leadIndex = selection.length - 1;
+        fireValueChanged(new TreeSelectionEvent(this, path, true, oldLead,
+                                                leadPath));
       }
   }
 
@@ -301,7 +382,7 @@ public class DefaultTreeSelectionModel
   {
     // Must be called, as defined in JDK API 1.4.
     insureUniqueness();
-    
+
     if (paths != null)
       {
         TreePath v0 = null;
@@ -320,11 +401,16 @@ public class DefaultTreeSelectionModel
                     selection = new TreePath[temp.length];
                     System.arraycopy(temp, 0, selection, 0, temp.length);
                   }
+               TreePath oldLead = leadPath;                
                 leadPath = paths[paths.length - 1];
+                leadRow = getRow(leadPath);
+                leadIndex = selection.length - 1;
+
                 fireValueChanged(new TreeSelectionEvent(this, v0, true,
-                                                        leadPath, paths[0]));
+                                                        oldLead, leadPath));
               }
           }
+        insureRowContinuity();
       }
   }
 
@@ -336,6 +422,9 @@ public class DefaultTreeSelectionModel
    */
   public void removeSelectionPath(TreePath path)
   {
+    if (isSelectionEmpty())
+      return;
+    
     int index = - 1;
     if (isPathSelected(path))
       {
@@ -353,9 +442,15 @@ public class DefaultTreeSelectionModel
                                                             - index - 1);
         selection = new TreePath[temp.length];
         System.arraycopy(temp, 0, selection, 0, temp.length);
+        
+        // If the removed path was the lead path, set the lead path to null.
+        TreePath oldLead = leadPath;
+        if (path!=null && leadPath!=null && path.equals(leadPath))
+          leadPath = null;
 
-        fireValueChanged(new TreeSelectionEvent(this, path, false, leadPath,
-                                                path));
+        fireValueChanged(new TreeSelectionEvent(this, path, false, oldLead,
+                                                leadPath));
+        insureRowContinuity();
       }
   }
 
@@ -367,10 +462,13 @@ public class DefaultTreeSelectionModel
    */
   public void removeSelectionPaths(TreePath[] paths)
   {
+    if (isSelectionEmpty())
+      return;
     if (paths != null)
       {
         int index = - 1;
         TreePath v0 = null;
+        TreePath oldLead = leadPath;
         for (int i = 0; i < paths.length; i++)
           {
             v0 = paths[i];
@@ -383,6 +481,8 @@ public class DefaultTreeSelectionModel
                         index = x;
                         break;
                       }
+                    if (leadPath != null && leadPath.equals(v0))
+                      leadPath = null;
                   }
                 TreePath[] temp = new TreePath[selection.length - 1];
                 System.arraycopy(selection, 0, temp, 0, index);
@@ -392,9 +492,10 @@ public class DefaultTreeSelectionModel
                 System.arraycopy(temp, 0, selection, 0, temp.length);
 
                 fireValueChanged(new TreeSelectionEvent(this, v0, false,
-                                                        leadPath, paths[0]));
+                                                        oldLead, leadPath));
               }
           }
+        insureRowContinuity();
       }
   }
 
@@ -467,12 +568,23 @@ public class DefaultTreeSelectionModel
   }
 
   /**
-   * Removes all paths from the selection.
+   * Removes all paths from the selection. Fire the unselection event.
    */
   public void clearSelection()
   {
-    leadPath = null;
-    selection = null;
+    if (! isSelectionEmpty())
+      {
+        TreeSelectionEvent event = new TreeSelectionEvent(
+          this, selection, new boolean[selection.length], leadPath, null);
+        leadPath = null;
+        selection = null;
+        fireValueChanged(event);
+      }
+    else
+      {
+        leadPath = null;
+        selection = null;
+      }
   }
 
   /**
@@ -588,18 +700,43 @@ public class DefaultTreeSelectionModel
    * @param row the index of the row to check
    * @return <code>true</code> if the row is in this selection,
    *         <code>false</code> otherwise
+   * @throws NullPointerException if the row mapper is not set (can only happen
+   *           if the user has plugged in the custom incorrect TreeUI
+   *           implementation.
    */
-  public boolean isRowSelected(int row) throws NotImplementedException
+  public boolean isRowSelected(int row)
   {
-    return false; // TODO
+    // Return false if nothing is selected.
+    if (isSelectionEmpty())
+      return false;
+
+    RowMapper mapper = getRowMapper();
+
+    if (mapper instanceof AbstractLayoutCache)
+      {
+        // The absolute majority of cases, unless the TreeUI is very
+        // seriously rewritten
+        AbstractLayoutCache ama = (AbstractLayoutCache) mapper;
+        TreePath path = ama.getPathForRow(row);
+        return isPathSelected(path);
+      }
+    else
+      {
+        // Generic non optimized implementation.
+        int[] rows = mapper.getRowsForPaths(selection);
+        for (int i = 0; i < rows.length; i++)
+          if (rows[i] == row)
+            return true;
+        return false;
+      }
   }
 
   /**
    * Updates the mappings from TreePaths to row indices.
    */
-  public void resetRowSelection() throws NotImplementedException
+  public void resetRowSelection()
   {
-    // TODO
+    // Nothing to do here.
   }
 
   /**
@@ -609,10 +746,7 @@ public class DefaultTreeSelectionModel
    */
   public int getLeadSelectionRow()
   {
-    if ((rowMapper == null) || (leadPath == null))
-      return - 1;
-    else
-      return rowMapper.getRowsForPaths(new TreePath[] { leadPath })[0];
+    return leadRow;
   }
 
   /**
@@ -665,23 +799,93 @@ public class DefaultTreeSelectionModel
    * has more than one path, the selection is reset to the contain only the
    * first path.
    */
-  protected void insureRowContinuity() throws NotImplementedException
+  protected void insureRowContinuity()
   {
-    // TODO
+    if (selection == null || selection.length < 2)
+      return;
+    else if (selectionMode == CONTIGUOUS_TREE_SELECTION)
+      {
+        if (rowMapper == null)
+          // This is the best we can do without the row mapper:
+          selectOne();
+        else
+          {
+            int[] rows = rowMapper.getRowsForPaths(selection);
+            Arrays.sort(rows);
+            int i;
+            for (i = 1; i < rows.length; i++)
+              {
+                if (rows[i - 1] != rows[i] - 1)
+                  // Break if no longer continuous.
+                  break;
+              }
+
+            if (i < rows.length)
+              {
+                TreePath[] ns = new TreePath[i];
+                for (int j = 0; j < ns.length; j++)
+                  ns[i] = getPath(j);
+                setSelectionPaths(ns);
+              }
+          }
+      }
+    else if (selectionMode == SINGLE_TREE_SELECTION)
+      selectOne();
+  }
+  
+  /**
+   * Keep only one (normally last or leading) path in the selection.
+   */
+  private void selectOne()
+  {
+    if (leadIndex > 0 && leadIndex < selection.length)
+      setSelectionPath(selection[leadIndex]);
+    else
+      setSelectionPath(selection[selection.length -1]);
+  }
+  
+  /**
+   * Get path for the given row that must be in the current selection.
+   */
+  private TreePath getPath(int row)
+  {
+    if (rowMapper instanceof AbstractLayoutCache)
+      return ((AbstractLayoutCache) rowMapper).getPathForRow(row);
+    else
+      {
+        int[] rows = rowMapper.getRowsForPaths(selection);
+        for (int i = 0; i < rows.length; i++)
+          if (rows[i] == row)
+            return selection[i];
+      }
+    throw new InternalError(row + " not in selection");
   }
 
   /**
-   * Returns <code>true</code> if the paths are contiguous or we have no
-   * RowMapper assigned.
+   * Returns <code>true</code> if the paths are contiguous (take subsequent
+   * rows in the diplayed tree view. The method returns <code>true</code> if
+   * we have no RowMapper assigned.
    * 
    * @param paths the paths to check for continuity
    * @return <code>true</code> if the paths are contiguous or we have no
    *         RowMapper assigned
    */
   protected boolean arePathsContiguous(TreePath[] paths)
-      throws NotImplementedException
   {
-    return false; // STUB
+    if (rowMapper == null || paths.length < 2)
+      return true;
+
+    int[] rows = rowMapper.getRowsForPaths(paths);
+    
+    // The patches may not be sorted.
+    Arrays.sort(rows);
+
+    for (int i = 1; i < rows.length; i++)
+      {
+        if (rows[i-1] != rows[i] - 1)
+          return false;
+      }
+    return true;
   }
 
   /**
@@ -699,9 +903,32 @@ public class DefaultTreeSelectionModel
    *         selectionMode
    */
   protected boolean canPathsBeAdded(TreePath[] paths)
-      throws NotImplementedException
   {
-    return false; // STUB
+    if (rowMapper == null || isSelectionEmpty()
+        || selectionMode == DISCONTIGUOUS_TREE_SELECTION)
+      return true;
+   
+    TreePath [] all = new TreePath[paths.length + selection.length];
+    System.arraycopy(paths, 0, all, 0, paths.length);
+    System.arraycopy(selection, 0, all, paths.length, selection.length);
+
+    return arePathsContiguous(all);
+  }
+  
+  /**
+   * Checks if the single path can be added to selection.
+   */
+  private boolean canPathBeAdded(TreePath path)
+  {
+    if (rowMapper == null || isSelectionEmpty()
+        || selectionMode == DISCONTIGUOUS_TREE_SELECTION)
+      return true;
+
+    TreePath[] all = new TreePath[selection.length + 1];
+    System.arraycopy(selection, 0, all, 0, selection.length);
+    all[all.length - 1] = path;
+
+    return arePathsContiguous(all);
   }
 
   /**
@@ -713,29 +940,74 @@ public class DefaultTreeSelectionModel
    *         selectionMode
    */
   protected boolean canPathsBeRemoved(TreePath[] paths)
-      throws NotImplementedException
   {
-    return false; // STUB
+    if (rowMapper == null || isSelectionEmpty()
+        || selectionMode == DISCONTIGUOUS_TREE_SELECTION)
+      return true;
+    
+    HashSet set = new HashSet();
+    for (int i = 0; i < selection.length; i++)
+      set.add(selection[i]);
+    
+    for (int i = 0; i < paths.length; i++)
+      set.remove(paths[i]);
+    
+    TreePath[] remaining = new TreePath[set.size()];
+    Iterator iter = set.iterator();
+    
+    for (int i = 0; i < remaining.length; i++)
+      remaining[i] = (TreePath) iter.next();
+    
+    return arePathsContiguous(remaining);
   }
 
   /**
-   * notifyPathChange
+   * Notify the installed listeners that the given patches have changed. This
+   * method will call listeners if invoked, but it is not called from the
+   * implementation of this class.
    * 
-   * @param value0 TODO
-   * @param value1 TODO
+   * @param vPathes the vector of the changed patches
+   * @param oldLeadSelection the old selection index
    */
-  protected void notifyPathChange(Vector value0, TreePath value1)
-      throws NotImplementedException
+  protected void notifyPathChange(Vector vPathes, TreePath oldLeadSelection)
   {
-    // STUB
+    TreePath[] pathes = new TreePath[vPathes.size()];
+    for (int i = 0; i < pathes.length; i++)
+      pathes[i] = (TreePath) vPathes.get(i);
+
+    boolean[] news = new boolean[pathes.length];
+    for (int i = 0; i < news.length; i++)
+      news[i] = isPathSelected(pathes[i]);
+
+    TreeSelectionEvent event = new TreeSelectionEvent(this, pathes, news,
+                                                      oldLeadSelection,
+                                                      leadPath);
+    fireValueChanged(event);
   }
 
   /**
-   * Updates the lead index instance field.
+   * Updates the lead selection row number after changing the lead selection
+   * path.
    */
-  protected void updateLeadIndex() throws NotImplementedException
+  protected void updateLeadIndex()
   {
-    // STUB
+    if (isSelectionEmpty())
+      {
+        leadRow = leadIndex = - 1;
+      }
+    else
+      {
+        leadRow = getRow(leadPath);
+        for (int i = 0; i < selection.length; i++)
+          {
+            if (selection[i].equals(leadPath))
+              {
+                leadIndex = i;
+                break;
+              }
+          }
+        leadIndex = leadRow;
+      }
   }
 
   /**

@@ -1113,12 +1113,15 @@ public abstract class DomNode
       {
         DomDocument doc = (nodeType == DOCUMENT_NODE) ?
           (DomDocument) node : node.owner;
+        boolean building = doc.building;
+        doc.building = true; // Permit certain structural rules
         for (DomNode ctx = first; ctx != null; ctx = ctx.next)
           {
             DomNode newChild = (DomNode) ctx.cloneNode(deep);
             newChild.setOwner(doc);
             node.appendChild(newChild);
           }
+        doc.building = building;
       }
     if (nodeType == ENTITY_REFERENCE_NODE)
       {

@@ -1,0 +1,1001 @@
+This is ../../classpath/doc/tools.info, produced by makeinfo version
+4.8 from ../../classpath/doc/tools.texinfo.
+
+   This file documents the Tools included in a standard distribution of
+the GNU Classpath project deliverables.
+
+   Copyright (C) 2006 Free Software Foundation, Inc.
+
+INFO-DIR-SECTION GNU Libraries
+START-INFO-DIR-ENTRY
+* Classpath Tools: (tools).       GNU Classpath Tools Guide
+END-INFO-DIR-ENTRY
+
+
+File: tools.info,  Node: Top,  Next: Security Tools,  Prev: (dir),  Up: (dir)
+
+GNU Classpath Tools Guide
+*************************
+
+This document contains important information you need to know in order
+to use the tools included in the GNU Classpath project deliverables.
+
+   The Tools aim at providing a free replacement, similar in their
+behavior, to their counter-parts found in the Reference Implementation
+(RI) of the Java Software Development Kit (SDK).
+
+* Menu:
+
+* Security Tools::             Work securely with Java applications
+* I18N Issues::                How to add support for non-English languages
+
+ --- The Detailed Node Listing ---
+
+Security Tools
+
+* jarsigner Tool::             Sign and verify .JAR files
+* keytool Tool::               Manage private keys and public certificates
+
+I18N Issues
+
+* Language Resources::         Where resources are located
+* Message Formats::            How messages are internationalized
+
+
+File: tools.info,  Node: Security Tools,  Next: I18N Issues,  Prev: Top,  Up: Top
+
+1 Security Tools
+****************
+
+Two Security Tools are available with GNU Classpath: jarsugner and
+keytool.
+
+* Menu:
+
+* jarsigner Tool::             Sign and verify .JAR files
+* keytool Tool::               Manage private keys and public certificates
+
+   If while using these tools you think you found a bug, then please
+report it at classpath-bugs
+(http://www.gnu.org/software/classpath/bugs.html).
+
+
+File: tools.info,  Node: jarsigner Tool,  Next: keytool Tool,  Prev: Security Tools,  Up: Security Tools
+
+1.1 The `jarsigner' Tool
+========================
+
+SYNOPSIS
+     `jarsigner [OPTION]... FILE ALIAS'
+     `jarsigner -verify [OPTION]... FILE'
+
+DESCRIPTION
+     When the first form is used, the tool signs the designated JAR
+     file.
+
+     The second form, on the other hand, is used to verify a previously
+     signed JAR file.
+
+     `FILE' is the .JAR file to process; i.e. to sign if the first
+     syntax form is used, or to verify if the second syntax form is
+     used instead.
+
+     `ALIAS' must be a known Alias of a Key Entry in the designated key
+     store. The private key material associated with this Alias is then
+     used for signing the designated .JAR file.
+
+SIGNING OPTIONS
+
+    -keystore URL
+          Use this option to specify the location of the key store to
+          use. The default value is a file URL referencing the file
+          named `.keystore' located in the path returned by the call to
+          `java.lang.System#getProperty(String)' using `user.home' as
+          argument.
+
+          If a URL was specified, but was found to be malformed -e.g.
+          missing protocol element- the tool will attempt to use the
+          URL value as a file-name (with absolute or relative
+          path-name) of a key store -as if the protocol was `file:'.
+
+    -storetype STORE_TYPE
+          Use this option to specify the type of the key store to use.
+          The default value, if this option is omitted, is that of the
+          property `keystore.type' in the security properties file,
+          which is obtained by invoking the static method call
+          `getDefaultType()' in `java.security.KeyStore'.
+
+    -storepass PASSWORD
+          Use this option to specify the password which will be used to
+          unlock the key store. If this option is missing, the User
+          will be prompted to provide a password.
+
+    -keypass PASSWORD
+          Use this option to specify the password which the tool will
+          use to unlock the Key Entry associated with the designated
+          Alias.
+
+          If this option is omitted, the tool will first attempt to
+          unlock the Key Entry using the same password protecting the
+          key store. If this fails, you will then be prompted to
+          provide a password.
+
+    -sigfile NAME
+          Use this option to designate a literal that will be used to
+          construct file names for both the `.SF' and `.DSA' signature
+          files. These files  will be generated, by the tool, and
+          placed in the `META-INF' directory of the signed JAR.
+          Permissible characters for `NAME' must be in the range
+          "a-zA-Z0-9_-".  All characters will be converted to
+          upper-case ones.
+
+          If this option is missing, the first eight characters of the
+          `ALIAS' argument will be used. When this is the case, any
+          character in `ALIAS' that is outside the permissible range of
+          characters will be replaced by an underscore.
+
+    -signedjar FILE_NAME
+          Use this option to specify the file name of the signed JAR.
+          If this option is omitted, then the signed JAR will be named
+          the same as `FILE'; i.e. the input JAR file will be replaced
+          with the signed copy.
+
+
+VERIFICATION OPTIONS
+
+    -verify
+          Use this option to indicate that the tool is to be used for
+          verification purposes.
+
+    -certs
+          This option is used in conjunction with the `-verbose'
+          option. When present, along with the `-verbose' option, the
+          tool will print more detailed information about the
+          certificates of the signer(s) being processed.
+
+
+COMMON OPTIONS
+
+    -verbose
+          Use this option to force the tool to generate more verbose
+          messages, during its processing.
+
+    -internalsf
+          When present, the tool will include -which otherwise it does
+          not- the `.SF' file in the `.DSA' generated file.
+
+    -sectionsonly
+          When present, the tool will include in the `.SF' generated
+          file -which otherwise it does not- a header containing a hash
+          of the whole manifest file.  When that header is included,
+          the tool can quickly check, during verification, if the hash
+          (in the header) matches or not the manifest file.
+
+    -provider PROVIDER_CLASS_NAME
+          A fully qualified class name of a Security Provider to add to
+          the current list of Security Providers already installed in
+          the JVM in-use. If a provider class is specified with this
+          option, and was successfully added to the runtime -i.e. it
+          was not already installed- then the tool will attempt to
+          remove this Security Provider before exiting.
+
+    -help
+          Prints a help text similar to this one.
+
+
+
+File: tools.info,  Node: keytool Tool,  Prev: jarsigner Tool,  Up: Security Tools
+
+1.2 The `keytool' Tool
+======================
+
+SYNOPSIS
+     `keytool [COMMAND]...'
+
+DESCRIPTION
+     A Java-based tool for managing both Key Entries as well as Trusted
+     Certificates.
+
+     Multiple `COMMAND's may be specified at once, each complete with
+     its own options. keytool will parse all the arguments, before
+     processing, and executing, each `COMMAND'. If an exception occurs
+     while executing one `COMMAND' keytool will abort.
+
+     A `COMMAND' can be one of the followings:
+
+    -genkey [OPTION]...
+          Generate a new Key Entry, eventually creating a new key store.
+
+    -import [OPTION]...
+          Add, to a key store, Key Entries (private keys and
+          certificate chains authenticating the public keys) and
+          Trusted Certificates (3rd party certificates which can be
+          used as Trust Anchors when building chains-of-trust).
+
+    -selfcert [OPTION]...
+          Generate a new self-signed Trusted Certificate.
+
+    -identitydb [OPTION]...
+          NOT IMPLEMENTED YET.
+          Import a JDK 1.1 style Identity Database.
+
+    -certreq [OPTION]...
+          Issue a Certificate Signing Request (CSR) which can be then
+          sent to a Certification Authority (CA) to issue a certificate
+          signed (by the CA) and authenticating the Subject of the
+          request.
+
+    -export [OPTION]...
+          Export a certificate from a key store.
+
+    -list [OPTION]...
+          Print one or all certificates in a key store to `STDOUT'.
+
+    -printcert [OPTION]...
+          Print a human-readable form of a certificate, in a designated
+          file, to `STDOUT'.
+
+    -keyclone [OPTION]...
+          Clone a Key Entry in a key store.
+
+    -storepasswd [OPTION]...
+          Change the password protecting a key store.
+
+    -keypasswd [OPTION]...
+          Change the password protecting a Key Entry in a key store.
+
+    -delete [OPTION]...
+          Delete a Key Entry or a Trusted Certificate from a key store.
+
+    -help
+          Prints a help text similar to this one.
+
+
+OPTIONS COMMON TO MORE THAN ONE COMMAND
+     The following `OPTION's are used in more than one `COMMAND'. They
+     are described here to reduce redundancy.
+
+    -alias ALIAS
+          Every entry, be it a Key Entry or a Trusted Certificate, in a
+          key store is uniquely identified by a user-defined Alias
+          string. Use this option to specify the Alias to use when
+          referring to an entry in the key store. Unless specified
+          otherwise, a default value of `mykey' shall be used when this
+          option is omitted from the command line.
+
+    -keyalg ALGORITHM
+          Use this option to specify the canonical name of the key-pair
+          generation algorithm. The default value for this option is
+          `DSS' (a synonym for the Digital Signature Algorithm also
+          known as DSA).
+
+    -keysize SIZE
+          Use this option to specify the number of bits of the shared
+          modulus (for both the public and private keys) to use when
+          generating new keys. A default value of `1024' will be used
+          if this option is omitted from the command line.
+
+    -validity DAY_COUNT
+          Use this option to specify the number of days a newly
+          generated certificate will be valid for. The default value is
+          `90' (days) if this option is omitted from the command line.
+
+    -storetype STORE_TYPE
+          Use this option to specify the type of the key store to use.
+          The default value, if this option is omitted, is that of the
+          property `keystore.type' in the security properties file,
+          which is obtained by invoking the static method call
+          `getDefaultType()' in `java.security.KeyStore'.
+
+    -storepass PASSWORD
+          Use this option to specify the password protecting the key
+          store. If this option is omitted from the command line, you
+          will be prompted to provide a password.
+
+    -keystore URL
+          Use this option to specify the location of the key store to
+          use. The default value is a file URL referencing the file
+          named `.keystore' located in the path returned by the call to
+          `java.lang.System#getProperty(String)' using `user.home' as
+          argument.
+
+          If a URL was specified, but was found to be malformed -e.g.
+          missing protocol element- the tool will attempt to use the
+          URL value as a file-name (with absolute or relative
+          path-name) of a key store -as if the protocol was `file:'.
+
+    -provider PROVIDER_CLASS_NAME
+          A fully qualified class name of a Security Provider to add to
+          the current list of Security Providers already installed in
+          the JVM in-use. If a provider class is specified with this
+          option, and was successfully added to the runtime -i.e. it
+          was not already installed- then the tool will attempt to
+          removed this Security Provider before exiting.
+
+    -file FILE_NAME
+          Use this option to designate a file to use with a command.
+          When specified with this option, the value is expected to be
+          the fully qualified path of a file accessible by the File
+          System. Depending on the command, the file may be used as
+          input or as output. When this option is omitted from the
+          command line, `STDIN' will be used instead, as the source of
+          input, and `STDOUT' will be used instead as the output
+          destination.
+
+    -v
+          Unless specified otherwise, use this option to enable more
+          verbose output.
+
+
+X.500 DISTINGUISHED NAME
+     A Distinguished Name (or DN) MUST be supplied with some of the
+     `COMMAND's using a `-dname' option. The syntax of a valid value
+     for this option MUST follow RFC-2253 specifications. Namely the
+     following components (with their accepted meaning) will be
+     recognized. Note that the component name is case-insensitive:
+
+    CN
+          The Common Name; e.g. `host.domain.com'
+
+    OU
+          The Organizational Unit; e.g. `IT Department'
+
+    O
+          The Organization Name; e.g. `The Sample Company'
+
+    L
+          The Locality Name; e.g. `Sydney'
+
+    ST
+          The State Name; e.g. `New South Wales'
+
+    C
+          The 2-letter Country identifier; e.g. `AU'
+
+     When specified with a `-dname' option, each pair of
+     component/value will be separated from the other with a comma.
+     Each component and value pair MUST be separated by an equal sign.
+     For example, the following is a valid DN value:
+     CN=host.domain.com, O=The Sample Company, L=Sydney, ST=NSW, C=AU
+
+     If the Distinguished Name is required, and no valid default value
+     can be used, the tool will prompt you to enter the information
+     through the console.
+
+-genkey COMMAND
+     Generate a new key-pair (both private and public keys), and save
+     these credentials in the key store as a Key Entry, associated with
+     the designated (if was specified in the `-alias' option) or
+     default (if the `-alias' option is omitted) Alias.
+
+     The private key material will be protected with a user-defined
+     password (see `-keypass' option). The public key on the other hand
+     will be part of a self-signed X.509 certificate, which will form a
+     1-element chain and will be saved in the key store.
+
+    -alias ALIAS
+          For more details *note ALIAS: alias.
+
+    -keyalg ALGORITHM
+          For more details *note ALGORITHM: keyalg.
+
+    -keysize KEY_SIZE
+          For more details *note KEY_SIZE: keysize.
+
+    -sigalg ALGORITHM
+          The canonical name of the digital signature algorithm to use
+          for signing certificates. If this option is omitted, a
+          default value will be chosen based on the type of the
+          key-pair; i.e. the algorithm that ends up being used by the
+          -keyalg option. If the key-pair generation algorithm is
+          `DSA', the value for the signature algorithm will be
+          `SHA1withDSA'. If on the other hand the key-pair generation
+          algorithm is `RSA', then the tool will use `MD5withRSA' as
+          the signature algorithm.
+
+    -dname NAME
+          This a mandatory value for the command. If no value is
+          specified -i.e. the `-dname' option is omitted- the tool will
+          prompt you to enter a Distinguished Name to use as both the
+          Owner and Issuer of the generated self-signed certificate.
+
+          For more details *note X.500 DISTINGUISHED NAME: dn.
+
+    -keypass PASSWORD
+          Use this option to specify the password which the tool will
+          use to protect the newly created Key Entry.
+
+          If this option is omitted, you will be prompted to provide a
+          password.
+
+    -validity DAY_COUNT
+          For more details *note DAY_COUNT: validity.
+
+    -storetype STORE_TYPE
+          For more details *note STORE_TYPE: storetype.
+
+    -keystore URL
+          For more details *note URL: keystore.
+
+    -storepass PASSWORD
+          For more details *note PASSWORD: storepass.
+
+    -provider PROVIDER_CLASS_NAME
+          For more details *note PROVIDER_CLASS_NAME: provider.
+
+    -v
+          For more details *note verbose::.
+
+
+-import COMMAND
+     Read an X.509 certificate, or a PKCS#7 Certificate Reply from a
+     designated input source and incorporate the certificates into the
+     key store.
+
+     If the Alias does not already exist in the key store, the tool
+     treats the certificate read from the input source as a new Trusted
+     Certificate. It then attempts to discover a chain-of-trust,
+     starting from that certificate and ending at another Trusted
+     Certificate, already stored in the key store. If the
+     `-trustcacerts' option is present, an additional key store, of
+     type `JKS' named `cacerts', and assumed to be present in
+     `${JAVA_HOME}/lib/security' will also be consulted if found
+     -`${JAVA_HOME}' refers to the location of an installed Java
+     Runtime Environment (JRE). If no chain-of-trust can be
+     established, and unless the `-noprompt' option has been specified,
+     the certificate is printed to `STDOUT' and the user is prompted
+     for a confirmation.
+
+     If Alias exists in the key store, the tool will treat the
+     certificate(s) read from the input source as a Certificate Reply,
+     which can be a chain of certificates, that eventually would
+     replace the chain of certificates associated with the Key Entry of
+     that Alias. The substitution of the certificates only occurs if a
+     chain-of-trust can be established between the bottom certificate
+     of the chain read from the input file and the Trusted Certificates
+     already present in the key store. Again, if the `-trustcacerts'
+     option is specified, additional Trusted Certificates in the same
+     `cacerts' key store will be considered. If no chain-of-trust can
+     be established, the operation will abort.
+
+    -alias ALIAS
+          For more details *note ALIAS: alias.
+
+    -file FILE_NAME
+          For more details *note FILE_NAME: file.
+
+    -keypass PASSWORD
+          Use this option to specify the password which the tool will
+          use to protect the Key Entry associated with the designated
+          Alias, when replacing this Alias' chain of certificates with
+          that found in the certificate reply.
+
+          If this option is omitted, and the chain-of-trust for the
+          certificate reply has been established, the tool will first
+          attempt to unlock the Key Entry using the same password
+          protecting the key store. If this fails, you will then be
+          prompted to provide a password.
+
+    -noprompt
+          Use this option to prevent the tool from prompting the user.
+
+    -trustcacerts
+          Use this option to indicate to the tool that a key store, of
+          type `JKS', named `cacerts', and usually located in
+          `lib/security' in an installed Java Runtime Environment
+          should be considered when trying to establish chain-of-trusts.
+
+    -storetype STORE_TYPE
+          For more details *note STORE_TYPE: storetype.
+
+    -keystore URL
+          For more details *note URL: keystore.
+
+    -storepass PASSWORD
+          For more details *note PASSWORD: storepass.
+
+    -provider PROVIDER_CLASS_NAME
+          For more details *note PROVIDER_CLASS_NAME: provider.
+
+    -v
+          For more details *note verbose::.
+
+
+-selfcert COMMAND
+     Generate a self-signed X.509 version 1 certificate. The newly
+     generated certificate will form a chain of one element which will
+     replace the previous chain associated with the designated Alias
+     (if `-alias' option was specified), or the default Alias (if
+     `-alias' option was omitted).
+
+    -alias ALIAS
+          For more details *note ALIAS: alias.
+
+    -sigalg ALGORITHM
+          The canonical name of the digital signature algorithm to use
+          for signing the certificate. If this option is omitted, a
+          default value will be chosen based on the type of the private
+          key associated with the designated Alias. If the private key
+          is a `DSA' one, the value for the signature algorithm will be
+          `SHA1withDSA'. If on the other hand the private key is an
+          `RSA' one, then the tool will use `MD5withRSA' as the
+          signature algorithm.
+
+    -dname NAME
+          Use this option to specify the Distinguished Name of the
+          newly generated self-signed certificate. If this option is
+          omitted, the existing Distinguished Name of the base
+          certificate in the chain associated with the designated Alias
+          will be used instead.
+
+          For more details *note X.500 DISTINGUISHED NAME: dn.
+
+    -validity DAY_COUNT
+          For more details *note DAY_COUNT: validity.
+
+    -keypass PASSWORD
+          Use this option to specify the password which the tool will
+          use to unlock the Key Entry associated with the designated
+          Alias.
+
+          If this option is omitted, the tool will first attempt to
+          unlock the Key Entry using the same password protecting the
+          key store. If this fails, you will then be prompted to
+          provide a password.
+
+    -storetype STORE_TYPE
+          For more details *note STORE_TYPE: storetype.
+
+    -keystore URL
+          For more details *note URL: keystore.
+
+    -storepass PASSWORD
+          For more details *note PASSWORD: storepass.
+
+    -provider PROVIDER_CLASS_NAME
+          For more details *note PROVIDER_CLASS_NAME: provider.
+
+    -v
+          For more details *note verbose::.
+
+
+-identitydb COMMAND
+     NOT IMPLEMENTED YET.
+
+     Import a JDK 1.1 style Identity Database.
+
+    -file FILE_NAME
+          For more details *note FILE_NAME: file.
+
+    -storetype STORE_TYPE
+          For more details *note STORE_TYPE: storetype.
+
+    -keystore URL
+          For more details *note URL: keystore.
+
+    -storepass PASSWORD
+          For more details *note PASSWORD: storepass.
+
+    -provider PROVIDER_CLASS_NAME
+          For more details *note PROVIDER_CLASS_NAME: provider.
+
+    -v
+          For more details *note verbose::.
+
+
+-certreq COMMAND
+     Generate a PKCS#10 Certificate Signing Request (CSR) and writes it
+     to a designated output destination. The contents of the
+     destination should look something like the following:
+
+          -----BEGIN NEW CERTIFICATE REQUEST-----
+          MI...QAwXzEUMBIGA1UEAwwLcnNuQGdudS5vcmcxGzAZBgNVBAoMElUg
+          Q2...A0GA1UEBwwGU3lkbmV5MQwwCgYDVQQIDANOU1cxCzAJBgNVBACC
+          ...
+          FC...IVwNVOfQLRX+O5kAhQ/a4RTZme2L8PnpvgRwrf7Eg8D6w==
+          -----END NEW CERTIFICATE REQUEST-----
+
+     IMPORTANT: Some documentation (e.g. RSA examples) claims that the
+     `Attributes' field, in the CSR is `OPTIONAL' while RFC-2986
+     implies the opposite. This implementation considers this field, by
+     default, as `OPTIONAL', unless the option `-attributes' is
+     specified on the command line.
+
+    -alias ALIAS
+          For more details *note ALIAS: alias.
+
+    -sigalg ALGORITHM
+          The canonical name of the digital signature algorithm to use
+          for signing the certificate. If this option is omitted, a
+          default value will be chosen based on the type of the private
+          key associated with the designated Alias. If the private key
+          is a `DSA' one, the value for the signature algorithm will be
+          `SHA1withDSA'. If on the other hand the private key is an
+          `RSA' one, then the tool will use `MD5withRSA' as the
+          signature algorithm.
+
+    -file FILE_NAME
+          For more details *note FILE_NAME: file.
+
+    -keypass PASSWORD
+          Use this option to specify the password which the tool will
+          use to unlock the Key Entry associated with the designated
+          Alias.
+
+          If this option is omitted, the tool will first attempt to
+          unlock the Key Entry using the same password protecting the
+          key store. If this fails, you will then be prompted to
+          provide a password.
+
+    -storetype STORE_TYPE
+          For more details *note STORE_TYPE: storetype.
+
+    -keystore URL
+          For more details *note URL: keystore.
+
+    -storepass PASSWORD
+          For more details *note PASSWORD: storepass.
+
+    -provider PROVIDER_CLASS_NAME
+          For more details *note PROVIDER_CLASS_NAME: provider.
+
+    -v
+          For more details *note verbose::.
+
+    -attributes
+          Use this option to force the tool to encode a `NULL' DER
+          value in the CSR as the value of the `Attributes' field.
+
+
+-export COMMAND
+     Export a certificate stored in the key store to a designated
+     output destination, either in binary format (if the `-v' option is
+     specified), or in RFC-1421 compliant encoding (if the `-rfc'
+     option is specified instead).
+
+    -alias ALIAS
+          For more details *note ALIAS: alias.
+
+    -file FILE_NAME
+          For more details *note FILE_NAME: file.
+
+    -storetype STORE_TYPE
+          For more details *note STORE_TYPE: storetype.
+
+    -keystore URL
+          For more details *note URL: keystore.
+
+    -storepass PASSWORD
+          For more details *note PASSWORD: storepass.
+
+    -provider PROVIDER_CLASS_NAME
+          For more details *note PROVIDER_CLASS_NAME: provider.
+
+    -rfc
+          Use RFC-1421 specifications when encoding the output.
+
+    -v
+          Output the certificate in binary DER encoding. This is the
+          default output format of the command if neither `-rfc' nor
+          `-v' options were detected on the command line. If both this
+          option and the `-rfc' option are detected on the command
+          line, the tool will opt for the RFC-1421 style encoding.
+
+
+-list COMMAND
+     Print one or all of the key store entries to `STDOUT'. Usually
+     this command will only print a fingerprint of the certificate,
+     unless either the `-rfc' or the `-v' option is specified.
+
+    -alias ALIAS
+          If this option is omitted, the tool will print ALL the
+          entries found in the key store.
+
+          For more details *note ALIAS: alias.
+
+    -storetype STORE_TYPE
+          For more details *note STORE_TYPE: storetype.
+
+    -keystore URL
+          For more details *note URL: keystore.
+
+    -storepass PASSWORD
+          For more details *note PASSWORD: storepass.
+
+    -provider PROVIDER_CLASS_NAME
+          For more details *note PROVIDER_CLASS_NAME: provider.
+
+    -rfc
+          Use RFC-1421 specifications when encoding the output.
+
+    -v
+          Output the certificate in human-readable format. If both this
+          option and the `-rfc' option are detected on the command
+          line, the tool will opt for the human-readable form and will
+          not abort the command.
+
+
+-printcert COMMAND
+     Read a certificate from a designated input source and print it to
+     `STDOUT' in a human-readable form.
+
+    -file FILE_NAME
+          For more details *note FILE_NAME: file.
+
+    -v
+          For more details *note verbose::.
+
+
+-keyclone COMMAND
+     Clone an existing Key Entry and store it under a new (different)
+     Alias protecting, its private key material with possibly a new
+     password.
+
+    -alias ALIAS
+          For more details *note ALIAS: alias.
+
+    -dest ALIAS
+          Use this option to specify the new Alias which will be used
+          to identify the cloned copy of the Key Entry.
+
+    -keypass PASSWORD
+          Use this option to specify the password which the tool will
+          use to unlock the Key Entry associated with the designated
+          Alias.
+
+          If this option is omitted, the tool will first attempt to
+          unlock the Key Entry using the same password protecting the
+          key store. If this fails, you will then be prompted to
+          provide a password.
+
+    -new PASSWORD
+          Use this option to specify the password protecting the
+          private key material of the newly cloned copy of the Key
+          Entry.
+
+    -storetype STORE_TYPE
+          For more details *note STORE_TYPE: storetype.
+
+    -keystore URL
+          For more details *note URL: keystore.
+
+    -storepass PASSWORD
+          For more details *note PASSWORD: storepass.
+
+    -provider PROVIDER_CLASS_NAME
+          For more details *note PROVIDER_CLASS_NAME: provider.
+
+    -v
+          For more details *note verbose::.
+
+
+-storepasswd COMMAND
+     Change the password protecting a key store.
+
+    -new PASSWORD
+          The new, and different, password which will be used to
+          protect the designated key store.
+
+    -storetype STORE_TYPE
+          For more details *note STORE_TYPE: storetype.
+
+    -keystore URL
+          For more details *note URL: keystore.
+
+    -storepass PASSWORD
+          For more details *note PASSWORD: storepass.
+
+    -provider PROVIDER_CLASS_NAME
+          For more details *note PROVIDER_CLASS_NAME: provider.
+
+    -v
+          For more details *note verbose::.
+
+
+-keypasswd COMMAND
+     Change the password protecting the private key material of a
+     designated Key Entry.
+
+    -alias ALIAS
+          For more details *note ALIAS: alias.
+
+    -keypass PASSWORD
+          Use this option to specify the password which the tool will
+          use to unlock the Key Entry associated with the designated
+          Alias.
+
+          If this option is omitted, the tool will first attempt to
+          unlock the Key Entry using the same password protecting the
+          key store. If this fails, you will then be prompted to
+          provide a password.
+
+    -new PASSWORD
+          The new, and different, password which will be used to
+          protect the private key material of the designated Key Entry.
+
+    -storetype STORE_TYPE
+          For more details *note STORE_TYPE: storetype.
+
+    -keystore URL
+          For more details *note URL: keystore.
+
+    -storepass PASSWORD
+          For more details *note PASSWORD: storepass.
+
+    -provider PROVIDER_CLASS_NAME
+          For more details *note PROVIDER_CLASS_NAME: provider.
+
+    -v
+          For more details *note verbose::.
+
+
+-delete COMMAND
+     Delete a designated key store entry.
+
+    -alias ALIAS
+          For more details *note ALIAS: alias.
+
+    -storetype STORE_TYPE
+          For more details *note STORE_TYPE: storetype.
+
+    -keystore URL
+          For more details *note URL: keystore.
+
+    -storepass PASSWORD
+          For more details *note PASSWORD: storepass.
+
+    -provider PROVIDER_CLASS_NAME
+          For more details *note PROVIDER_CLASS_NAME: provider.
+
+    -v
+          For more details *note verbose::.
+
+
+
+File: tools.info,  Node: I18N Issues,  Prev: Security Tools,  Up: Top
+
+2 I18N Issues
+*************
+
+Some tools -*note Security Tools::- allow using other than the English
+language when prompting the User for input, and outputing messages.
+This chapter describes the elements used to offer this support and how
+they can be adapted for use with specific languages.
+
+* Menu:
+
+* Language Resources::         Where resources are located
+* Message Formats::            How messages are internationalized
+
+
+File: tools.info,  Node: Language Resources,  Next: Message Formats,  Prev: I18N Issues,  Up: I18N Issues
+
+2.1 Language-Specific Resources
+===============================
+
+The Tools use Java `ResourceBundle's to store messages, and message
+templates they use at runtime to generate the message text itself,
+depending on the locale in use at the time.
+
+   The Resource Bundles these tools use are essentially Java Properties
+files consisting of a set of Name/Value pairs. The Name is the Propery
+Name and the Value is a substitution string that is used when the code
+references the associated Name. For example the following is a line in
+a Resource Bundle used by the `keytool' Tool:
+
+     Command.23=A correct key password MUST be provided
+
+   When the tool needs to signal a mandatory but missing key password,
+it would reference the property named `Command.23' and the message "`A
+correct key password MUST be provided'" will be used instead. This
+indirect referencing of "resources" permits replacing, as late as
+possible, the English strings with strings in other languages, provided
+of course Resource Bundles in those languages are provided.
+
+   For the GNU Classpath Tools described in this Guide, the Resource
+Bundles are files named `MessageBundle[_ll[_CC[_VV]]].properties' where:
+
+LL
+     Is the 2-letter code for the Language,
+
+CC
+     Is the 2-letter code for the Region, and
+
+VV
+     Is the 2-letter code for the Variant of the language.
+
+   The complete list of language codes can be found at Code for the
+representation of names of languages
+(http://ftp.ics.uci.edu/pub/ietf/http/related/iso639.txt). A similar
+list for the region codes can be found at ISO 3166 Codes (Countries)
+(http://userpage.chemie.fu-berlin.de/diverse/doc/ISO_3166.html).
+
+   The location of the Resource Bundles for the GNU Classpath Tools is
+specific to each tool. The next table shows where these files are found
+in a standard GNU Classpath distribution:
+
+`jarsigner'
+     `gnu/classpath/tools/jarsigner'
+
+`keytool'
+     `gnu/classpath/tools/keytool'
+
+   The collection of Resource Bundles in a location act as an inverted
+tree with a parent-child relationship. For example suppose in the
+`gnu/classpath/tools/keytool' there are 3 message bundles named:
+
+  1. `MessageBundle.properties'
+
+  2. `MessageBundle_fr.properties'
+
+  3. `MessageBundle_fr_FR.properties'
+
+   In the above example, bundle #1 will act as the parent of bundle #2,
+which in turn will act as the parent for bundle #3. This ordering is
+used by the Java runtime to choose which file to load based on the set
+Locale. For example if the Locale is `fr_CH',
+`MessageBundle_fr.properties' will be used because (a)
+`MessageBundle_fr_CH.properties' does not exist, but (b)
+`MessageBundle_fr.properties' is the parent for the required bundle,
+and it exists. As another example, suppose the Locale was set to
+`en_AU'; then the tool will end up using `MessageBundle.properties'
+because (a) `MessageBundle_en_AU.properties' does not exist, (b)
+`MessageBundle_en.properties' which is the parent for the required
+bundle does not exist, but (c) `MessageBundle.properties' exists and is
+the root of the hierarchy.
+
+   You can see from the examples above that `MessageBundle.properties'
+is the safety net that the Java runtime falls back to when failing to
+find a specific bunlde and its parent(s). This file is always provided
+with the Tool. In time, more localized versions will be included to
+cater for other languages.
+
+   In the meantime, if you are willing to contribute localized versions
+of these resources, grab the `MessageBundle.properties' for a specific
+tool; translate it; save it with the appropriate language and region
+suffix and mail it to `classpath@gnu.org'.
+
+
+File: tools.info,  Node: Message Formats,  Prev: Language Resources,  Up: I18N Issues
+
+2.2 Message Formats
+===================
+
+If you open any of the `MessageBundle.properties' described in the
+previous section, you may see properties that look like so:
+
+     Command.67=Issuer: {0}
+     Command.68=Serial number: {0,number}
+     Command.69=Valid from: {0,date,full} - {0,time,full}
+     Command.70=\ \ \ \ \ until: {0,date,full} - {0,time,full}
+
+   These are Message Formats used by the tools to customize a text
+string that will then be used either as a prompt for User input or as
+output.
+
+   If you are translating a `MessageBundle.properties' be careful not
+to alter text between curly braces.
+
+
+
+Tag Table:
+Node: Top413
+Node: Security Tools1355
+Node: jarsigner Tool1844
+Node: keytool Tool6761
+Ref: alias9042
+Ref: keyalg9456
+Ref: keysize9713
+Ref: validity10000
+Ref: storetype10232
+Ref: storepass10590
+Ref: keystore10804
+Ref: provider11394
+Ref: file11833
+Ref: verbose12356
+Ref: dn12460
+Node: I18N Issues30484
+Node: Language Resources30985
+Node: Message Formats34710
+
+End Tag Table

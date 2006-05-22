@@ -223,7 +223,7 @@ public final class Constructor
   public String toString()
   {
     // 128 is a reasonable buffer initial size for constructor
-    StringBuffer sb = new StringBuffer(128);
+    StringBuilder sb = new StringBuilder(128);
     Modifier.toString(getModifiers(), sb).append(' ');
     sb.append(getDeclaringClass().getName()).append('(');
     Class[] c = getParameterTypes();
@@ -245,7 +245,7 @@ public final class Constructor
   }
 
   /* FIXME[GENERICS]: Add X extends GenericDeclaration and TypeVariable<X> */
-  static void addTypeParameters(StringBuffer sb, TypeVariable[] typeArgs)
+  static void addTypeParameters(StringBuilder sb, TypeVariable[] typeArgs)
   {
     if (typeArgs.length == 0)
       return;
@@ -261,7 +261,7 @@ public final class Constructor
 
   public String toGenericString()
   {
-    StringBuffer sb = new StringBuffer(128);
+    StringBuilder sb = new StringBuilder(128);
     Modifier.toString(getModifiers(), sb).append(' ');
     addTypeParameters(sb, getTypeParameters());
     sb.append(getDeclaringClass().getName()).append('(');

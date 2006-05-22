@@ -1,5 +1,5 @@
 /* Toolkit.java -- AWT Toolkit superclass
-   Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005
+   Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006
    Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -531,11 +531,20 @@ public abstract class Toolkit
   {
     if (toolkit != null)
       return toolkit;
-    String toolkit_name = System.getProperty("awt.toolkit",
-                                             default_toolkit_name);
+    String toolkit_name = SystemProperties.getProperty("awt.toolkit",
+                                                       default_toolkit_name);
     try
       {
-        Class cls = Class.forName(toolkit_name);
+        ClassLoader cl;
+        cl = (ClassLoader) AccessController.doPrivileged
+        (new PrivilegedAction()
+          {
+            public Object run()
+              {
+                return ClassLoader.getSystemClassLoader();
+              }
+          });
+        Class cls = cl.loadClass(toolkit_name);
         Object obj = cls.newInstance();
         if (!(obj instanceof Toolkit))
           throw new AWTError(toolkit_name + " is not a subclass of " +

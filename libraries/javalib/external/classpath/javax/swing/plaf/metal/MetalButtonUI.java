@@ -121,7 +121,8 @@ public class MetalButtonUI
    * 
    * @return A new instance of <code>MetalButtonUI</code>.
    */
-  public static ComponentUI createUI(JComponent c) {
+  public static ComponentUI createUI(JComponent c) 
+  {
     return new MetalButtonUI();
   }
 
@@ -187,7 +188,8 @@ public class MetalButtonUI
    * @param iconRect  the icon bounds.
    */
   protected void paintFocus(Graphics g, AbstractButton b, Rectangle viewRect,
-          Rectangle textRect, Rectangle iconRect) {
+          Rectangle textRect, Rectangle iconRect) 
+  {
     if (b.isEnabled() && b.hasFocus() && b.isFocusPainted())
     {
       Color savedColor = g.getColor();

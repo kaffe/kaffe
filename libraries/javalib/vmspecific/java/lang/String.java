@@ -1005,7 +1005,104 @@ final native public static synchronized void unintern0(String str);
       }
     return result.toString();
   }
-  
+
+  /**
+   * Get the code point at the specified index.  This is like #charAt(int),
+   * but if the character is the start of a surrogate pair, and the
+   * following character completes the pair, then the corresponding
+   * supplementary code point is returned.
+   * @param index the index of the codepoint to get, starting at 0
+   * @return the codepoint at the specified index
+   * @throws IndexOutOfBoundsException if index is negative or &gt;= length()
+   * @since 1.5
+   */
+  public synchronized int codePointAt(int index)
+  {
+    // Use the CharSequence overload as we get better range checking
+    // this way.
+    return Character.codePointAt(this, index);
+  }
+
+  /**
+   * Get the code point before the specified index.  This is like
+   * #codePointAt(int), but checks the characters at <code>index-1</code> and
+   * <code>index-2</code> to see if they form a supplementary code point.
+   * @param index the index just past the codepoint to get, starting at 0
+   * @return the codepoint at the specified index
+   * @throws IndexOutOfBoundsException if index is negative or &gt;= length()
+   *         (while unspecified, this is a StringIndexOutOfBoundsException)
+   * @since 1.5
+   */
+  public synchronized int codePointBefore(int index)
+  {
+    // Use the CharSequence overload as we get better range checking
+    // this way.
+    return Character.codePointBefore(this, index);
+  }
+
+  /**
+   * Compares the given CharSequence to this String. This is true if
+   * the CharSequence has the same content as this String at this
+   * moment.
+   *
+   * @param seq the CharSequence to compare to
+   * @return true if CharSequence has the same character sequence
+   * @throws NullPointerException if the given CharSequence is null
+   * @since 1.5
+   */
+  public boolean contentEquals(CharSequence seq)
+  {
+    if (seq.length() != count)
+      return false;
+    for (int i = 0; i < count; ++i)
+      if (value[offset + i] != seq.charAt(i))
+        return false;
+    return true;
+  }
+
+  /**
+   * Return the number of code points between two indices in the
+   * <code>String</code>.  An unpaired surrogate counts as a
+   * code point for this purpose.  Characters outside the indicated
+   * range are not examined, even if the range ends in the middle of a
+   * surrogate pair.
+   *
+   * @param start the starting index
+   * @param end one past the ending index
+   * @return the number of code points
+   * @since 1.5
+   */
+  public synchronized int codePointCount(int start, int end)
+  {
+    if (start < 0 || end >= count || start > end)
+      throw new StringIndexOutOfBoundsException();
+
+    start += offset;
+    end += offset;
+    int count = 0;
+    while (start < end)
+      {
+        char base = value[start];
+        if (base < Character.MIN_HIGH_SURROGATE
+            || base > Character.MAX_HIGH_SURROGATE
+            || start == end
+            || start == count
+            || value[start + 1] < Character.MIN_LOW_SURROGATE
+            || value[start + 1] > Character.MAX_LOW_SURROGATE)
+          {
+            // Nothing.
+          }
+        else
+          {
+            // Surrogate pair.
+            ++start;
+          }
+        ++start;
+        ++count;
+      }
+    return count;
+  }
+
   /**
    * Return the index into this String that is offset from the given index by 
    * <code>codePointOffset</code> code points.

@@ -44,6 +44,7 @@ import java.awt.Rectangle;
 import java.util.Enumeration;
 
 import javax.swing.event.TreeModelEvent;
+import javax.swing.tree.VariableHeightLayoutCache.NodeRecord;
 
 /**
  * class AbstractLayoutCache
@@ -66,19 +67,21 @@ public abstract class AbstractLayoutCache
       // Do nothing here.
     }
 
-    /**
-     * getNodeDimensions
-     * 
-     * @param value0 TODO
-     * @param value1 TODO
-     * @param value2 TODO
-     * @param value3 TODO
-     * @param value4 TODO
-     * @return Rectangle
-     */
-    public abstract Rectangle getNodeDimensions(Object value0, int value1,
-                                                int value2, boolean value3,
-                                                Rectangle value4);
+   /**
+    * Get the node dimensions. The NodeDimensions property must be set (unless
+    * the method is overridden, like if {@link FixedHeightLayoutCache}. If the
+    * method is not overridden and the property is not set, the InternalError is
+    * thrown.
+    * 
+    * @param value the last node in the path
+    * @param row the node row
+    * @param depth the indentation depth
+    * @param expanded true if this node is expanded, false otherwise
+    * @param bounds the area where the tree is displayed
+    */
+    public abstract Rectangle getNodeDimensions(Object value, int row,
+                                                int depth, boolean expanded,
+                                                Rectangle bounds);
   }
 
   /**
@@ -204,6 +207,7 @@ public abstract class AbstractLayoutCache
   public void setRowHeight(int height)
   {
     rowHeight = height;
+    invalidateSizes();
   }
 
   /**
@@ -237,29 +241,51 @@ public abstract class AbstractLayoutCache
   }
 
   /**
-   * getPreferredHeight
-   * 
-   * @return int
+   * Get the sum of heights for all rows. This class provides a general not
+   * optimized implementation that is overridded in derived classes 
+   * ({@link VariableHeightLayoutCache}, {@link FixedHeightLayoutCache}) for
+   * the better performance.
    */
-  public int getPreferredHeight() 
-    throws NotImplementedException
+  public int getPreferredHeight()
   {
-    return 0; // TODO
+    int height = 0;
+    int n = getRowCount();
+    Rectangle r = new Rectangle();
+    for (int i = 0; i < n; i++)
+      {
+        TreePath path = getPathForRow(i);
+        height += getBounds(path, r).height;
+      }
+    return height;
   }
 
   /**
-   * getPreferredWidth
+   * Get the maximal width. This class provides a general not
+   * optimized implementation that is overridded in derived classes 
+   * ({@link VariableHeightLayoutCache}, {@link FixedHeightLayoutCache}) for
+   * the better performance.
    * 
-   * @param value0 TODO
-   * 
-   * @return int
+   * @param rect the rectangle that is used during the method work
    */
-  public int getPreferredWidth(Rectangle value0) 
-    throws NotImplementedException
+  public int getPreferredWidth(Rectangle rect)
   {
-    return 0; // TODO
+    int maximalWidth = 0;
+    Rectangle r = new Rectangle();
+    int n = getRowCount();
+    for (int i = 0; i < n; i++)
+      {
+        TreePath path = getPathForRow(i);
+        r.setBounds(0,0,0,0);        
+        r = getBounds(path, r);
+        if (r.x + r.width > maximalWidth)
+          maximalWidth = r.x + r.width;
+        // Invalidate the cached value as this may be the very early call
+        // before the heigth is properly set (the vertical coordinate may
+        // not be correct).
+        invalidatePathBounds(path);
+      }
+    return maximalWidth;
   }
-
   /**
    * isExpanded
    * 
@@ -409,13 +435,14 @@ public abstract class AbstractLayoutCache
   }
 
   /**
-   * isFixedRowHeight
+   * Returns true if this layout supposes that all rows have the fixed
+   * height.
    * 
-   * @return boolean
+   * @return boolean true if all rows in the tree must have the fixed
+   * height (false by default).
    */
   protected boolean isFixedRowHeight()
-    throws NotImplementedException
   {
-    return false; // TODO
+    return false; 
   }
 }

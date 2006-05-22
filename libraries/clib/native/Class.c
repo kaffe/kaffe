@@ -526,18 +526,6 @@ java_lang_VMClass_throwException (struct Hjava_lang_Throwable *throwable)
 	throwExternalException(throwable);
 }
 
-jboolean
-java_lang_VMClass_isSynthetic (struct Hjava_lang_Class* klass)
-{
-  return (klass->accflags & ACC_SYNTHETIC) != 0;
-}
-
-jboolean
-java_lang_VMClass_isEnum(struct Hjava_lang_Class* klass)
-{
-  return (klass->accflags & ACC_ENUM) != 0;
-}
-
 struct Hjava_lang_Class*
 java_lang_VMClass_getEnclosingClass(struct Hjava_lang_Class* klass)
 {

@@ -1,5 +1,5 @@
 /* JSplitPane.java -- 
-   Copyright (C) 2004  Free Software Foundation, Inc.
+   Copyright (C) 2004, 2006,  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -399,9 +399,11 @@ public class JSplitPane extends JComponent implements Accessible
   }
 
   /**
-   * DOCUMENT ME!
+   * Returns the object that provides accessibility features for this
+   * <code>JSplitPane</code> component.
    *
-   * @return DOCUMENT ME!
+   * @return The accessible context (an instance of 
+   *     {@link AccessibleJSplitPane}).
    */
   public AccessibleContext getAccessibleContext()
   {
@@ -587,14 +589,27 @@ public class JSplitPane extends JComponent implements Accessible
   }
 
   /**
-   * This method returns a String that describes this JSplitPane. The string
-   * is primarily used for debugging purposes.
+   * Returns an implementation-dependent string describing the attributes of
+   * this <code>JSplitPane</code>.
    *
-   * @return A String used for debugging purposes.
+   * @return A string describing the attributes of this <code>JSplitPane</code>
+   *         (never <code>null</code>).
    */
   protected String paramString()
   {
-    return "JSplitPane";
+    // FIXME: the next line can be restored once PR27208 is fixed
+    String superParamStr = ""; //super.paramString();
+    StringBuffer sb = new StringBuffer();
+    sb.append(",continuousLayout=").append(isContinuousLayout());
+    sb.append(",dividerSize=").append(getDividerSize());
+    sb.append(",lastDividerLocation=").append(getLastDividerLocation());
+    sb.append(",oneTouchExpandable=").append(isOneTouchExpandable());
+    sb.append(",orientation=");
+    if (orientation == HORIZONTAL_SPLIT)
+      sb.append("HORIZONTAL_SPLIT");
+    else
+      sb.append("VERTICAL_SPLIT");
+    return superParamStr + sb.toString();
   }
 
   /**
@@ -698,16 +713,23 @@ public class JSplitPane extends JComponent implements Accessible
 
   /**
    * This method sets the location of the divider.
-   *
-   * @param location The location of the divider.
+   * 
+   * @param location The location of the divider. The negative value forces to
+   *          compute the new location from the preferred sizes of the split
+   *          pane components.
    */
   public void setDividerLocation(int location)
   {
     if (ui != null && location != getDividerLocation())
       {
-        int oldLocation = getDividerLocation();
-        ((SplitPaneUI) ui).setDividerLocation(this, location);
-        firePropertyChange(DIVIDER_LOCATION_PROPERTY, oldLocation, location);
+        int oldLocation = getDividerLocation();        
+        if (location < 0)
+          ((SplitPaneUI) ui).resetToPreferredSizes(this);
+        else
+            ((SplitPaneUI) ui).setDividerLocation(this, location);
+        
+        firePropertyChange(DIVIDER_LOCATION_PROPERTY, oldLocation, 
+                           getDividerLocation());
       }
   }
 
@@ -781,11 +803,15 @@ public class JSplitPane extends JComponent implements Accessible
   }
 
   /**
-   * This method sets the orientation of the JSplitPane.
+   * Sets the orientation for the <code>JSplitPane</code> and sends a 
+   * {@link PropertyChangeEvent} (with the property name 
+   * {@link #ORIENTATION_PROPERTY}) to all registered listeners.
    *
-   * @param orientation The orientation of the JSplitPane.
+   * @param orientation  the orientation (either {@link #HORIZONTAL_SPLIT}
+   * or {@link #VERTICAL_SPLIT}).
    *
-   * @throws IllegalArgumentException DOCUMENT ME!
+   * @throws IllegalArgumentException if <code>orientation</code> is not one of
+   *     the listed values.
    */
   public void setOrientation(int orientation)
   {
@@ -812,7 +838,14 @@ public class JSplitPane extends JComponent implements Accessible
    */
   public void setResizeWeight(double value)
   {
-    resizeWeight = value;
+    if (value < 0.0 || value > 1.0)
+      throw new IllegalArgumentException("Value outside permitted range.");
+    if (this.resizeWeight != value)
+      { 
+        double old = resizeWeight;
+        resizeWeight = value;
+        firePropertyChange(RESIZE_WEIGHT_PROPERTY, old, value);
+      }
   }
 
   /**

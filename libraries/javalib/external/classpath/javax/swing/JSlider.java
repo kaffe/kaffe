@@ -1068,15 +1068,35 @@ public class JSlider extends JComponent implements SwingConstants, Accessible,
   }
 
   /**
-   * Returns a string describing the attributes of this slider, for debugging
-   * purposes.  According to the specification, this method is implementation 
-   * specific, we just return "JSlider" at present.
+   * Returns an implementation-dependent string describing the attributes of
+   * this <code>JSlider</code>.
    *
-   * @return Returns a string describing the attributes of this slider.
+   * @return A string describing the attributes of this <code>JSlider</code>
+   *         (never <code>null</code>).
    */
   protected String paramString()
   {
-    return "JSlider";
+    String superParamStr = super.paramString();
+    StringBuffer sb = new StringBuffer();
+    sb.append(",isInverted=").append(getInverted());
+    sb.append(",majorTickSpacing=").append(getMajorTickSpacing());
+    sb.append(",minorTickSpacing=").append(getMinorTickSpacing());
+    sb.append(",orientation=");
+    if (orientation == HORIZONTAL)
+      sb.append("HORIZONTAL");
+    else
+      sb.append("VERTICAL");
+    sb.append(",paintLabels=").append(getPaintLabels());
+    sb.append(",paintTicks=").append(getPaintTicks());
+    sb.append(",paintTrack=").append(getPaintTrack());
+    sb.append(",snapToTicks=").append(getSnapToTicks());
+    
+    // the following is output by the reference implementation.  We don't
+    // strictly need to replicate this. Perhaps it has some meaning, but
+    // I couldn't determine it yet...
+    sb.append(",snapToValue=true");
+
+    return superParamStr + sb.toString();
   }
 
   /**

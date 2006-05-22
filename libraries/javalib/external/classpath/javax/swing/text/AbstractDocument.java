@@ -543,6 +543,10 @@ public abstract class AbstractDocument implements Document, Serializable
    * 
    * <p>If a {@link DocumentFilter} is installed in this document, the
    * corresponding method of the filter object is called.</p>
+   * 
+   * <p>The method has no effect when <code>text</code> is <code>null</code>
+   * or has a length of zero.</p>
+   * 
    *
    * @param offset the location at which the string should be inserted
    * @param text the content to be inserted
@@ -554,6 +558,10 @@ public abstract class AbstractDocument implements Document, Serializable
   public void insertString(int offset, String text, AttributeSet attributes)
     throws BadLocationException
   {
+    // Bail out if we have a bogus insertion (Behavior observed in RI).
+    if (text == null || text.length() == 0)
+      return;
+    
     if (documentFilter != null)
       documentFilter.insertString(getBypass(), offset, text, attributes);
     else
@@ -706,8 +714,14 @@ public abstract class AbstractDocument implements Document, Serializable
    * Removes a piece of content from this <code>Document</code>.
    * 
    * <p>If a {@link DocumentFilter} is installed in this document, the
-   * corresponding method of the filter object is called.</p>
-   *
+   * corresponding method of the filter object is called. The
+   * <code>DocumentFilter</code> is called even if <code>length</code>
+   * is zero. This is different from {@link #replace}.</p>
+   * 
+   * <p>Note: When <code>length</code> is zero or below the call is not
+   * forwarded to the underlying {@link AbstractDocument.Content} instance
+   * of this document and no exception is thrown.</p>
+   * 
    * @param offset the start offset of the fragment to be removed
    * @param length the length of the fragment to be removed
    *
@@ -725,6 +739,10 @@ public abstract class AbstractDocument implements Document, Serializable
   
   void removeImpl(int offset, int length) throws BadLocationException
   {
+    // Prevent some unneccessary method invocation (observed in the RI). 
+    if (length <= 0)
+      return;
+    
     DefaultDocumentEvent event =
       new DefaultDocumentEvent(offset, length,
 			       DocumentEvent.EventType.REMOVE);
@@ -752,6 +770,10 @@ public abstract class AbstractDocument implements Document, Serializable
    * 
    * <p>If a {@link DocumentFilter} is installed in this document, the
    * corresponding method of the filter object is called.</p>
+   * 
+   * <p>The method has no effect if <code>length</code> is zero (and
+   * only zero) and, at the same time, <code>text</code> is
+   * <code>null</code> or has zero length.</p>
    *
    * @param offset the start offset of the fragment to be removed
    * @param length the length of the fragment to be removed
@@ -768,6 +790,11 @@ public abstract class AbstractDocument implements Document, Serializable
                       AttributeSet attributes)
     throws BadLocationException
   {
+    // Bail out if we have a bogus replacement (Behavior observed in RI).
+    if (length == 0 
+        && (text == null || text.length() == 0))
+      return;
+    
     if (documentFilter != null)
       documentFilter.replace(getBypass(), offset, length, text, attributes);
     else

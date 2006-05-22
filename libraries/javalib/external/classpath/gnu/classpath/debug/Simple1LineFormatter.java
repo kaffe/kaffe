@@ -91,20 +91,27 @@ public class Simple1LineFormatter
     extends Formatter
 {
   private static final String DAT_PATTERN = "yyyy-MM-dd HH:mm:ss.SSSS Z ";
-  private static final DateFormat DAT_FORMAT = new SimpleDateFormat(DAT_PATTERN);
   private static final String THREAD_PATTERN = " #########0;-#########0";
-  private static final NumberFormat THREAD_FORMAT = new DecimalFormat(THREAD_PATTERN);
   private static final String SPACES_32 = "                                ";
   private static final String SPACES_6 = "      ";
   private static final String LS = SystemProperties.getProperty("line.separator");
+
+  private DateFormat dateFormat;
+  private NumberFormat threadFormat;
 
   // default 0-arguments constructor
 
   public String format(LogRecord record)
   {
-    StringBuffer sb = new StringBuffer(180)
-        .append(DAT_FORMAT.format(new Date(record.getMillis())))
-        .append(THREAD_FORMAT.format(record.getThreadID()))
+    if (dateFormat == null)
+      dateFormat = new SimpleDateFormat(DAT_PATTERN);
+
+    if (threadFormat == null)
+      threadFormat = new DecimalFormat(THREAD_PATTERN);
+
+    StringBuilder sb = new StringBuilder(180)
+        .append(dateFormat.format(new Date(record.getMillis())))
+        .append(threadFormat.format(record.getThreadID()))
         .append(" ");
     String s = record.getSourceClassName();
     if (s == null)

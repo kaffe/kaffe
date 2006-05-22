@@ -289,6 +289,7 @@ public class GapContent
    */
   public GapContent(int size)
   {
+    size = Math.max(size, 2);
     buffer = (char[]) allocateArray(size);
     gapStart = 1;
     gapEnd = size;
@@ -351,7 +352,7 @@ public class GapContent
       throw new BadLocationException("The where argument cannot be smaller"
                                      + " than the zero", where);
 
-    if (where >= length)
+    if (where > length)
       throw new BadLocationException("The where argument cannot be greater"
           + " than the content length", where);
 
@@ -375,14 +376,11 @@ public class GapContent
   {
     // check arguments
     int length = length();
-
-    if (where >= length)
-      throw new BadLocationException("the where argument cannot be greater"
-          + " than the content length", where);
-    if ((where + nitems) > length)
+    
+    if ((where + nitems) >= length)
       throw new BadLocationException("where + nitems cannot be greater"
           + " than the content length", where + nitems);
-
+    
     String removedText = getString(where, nitems);
     replace(where, nitems, null, 0);
 
@@ -439,6 +437,8 @@ public class GapContent
   {
     // check arguments
     int length = length();
+    if (where < 0)
+      throw new BadLocationException("the where argument may not be below zero", where);
     if (where >= length)
       throw new BadLocationException("the where argument cannot be greater"
           + " than the content length", where);
@@ -643,12 +643,8 @@ public class GapContent
       {
         System.arraycopy(addItems, 0, buffer, gapStart, addSize);
         
-        // Position objects having their mark at the end of the gap
-        // (results in an offset equal to gapStart) should be moved down
-        // because the size of the gap will decrease by addSize and the
-        // offsets will increase by the same amount and the latter should
-        // not happen.
-        setPositionsInRange(gapEnd, 0, gapStart);
+        
+        resetMarksAtZero();
         
         gapStart += addSize;
       }

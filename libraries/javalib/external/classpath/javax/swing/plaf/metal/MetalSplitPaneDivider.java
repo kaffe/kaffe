@@ -42,7 +42,6 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.awt.Point;
 
@@ -159,8 +158,8 @@ class MetalSplitPaneDivider extends BasicSplitPaneDivider
               if ((c1 instanceof BasicArrowButton)
                   && (c2 instanceof BasicArrowButton))
                 {
-                  lb = ((BasicArrowButton) c1);
-                  rb = ((BasicArrowButton) c2);
+                  lb = (BasicArrowButton) c1;
+                  rb = (BasicArrowButton) c2;
                 }
             }
           if (rb != null && lb != null)

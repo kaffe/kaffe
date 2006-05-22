@@ -40,12 +40,13 @@ package javax.swing.text.html;
 
 import gnu.classpath.NotImplementedException;
 
+import gnu.javax.swing.text.html.CharacterAttributeTranslator;
+import java.lang.NumberFormatException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Stack;
 import java.util.Vector;
-
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.text.AbstractDocument;
@@ -646,12 +647,16 @@ public class HTMLDocument extends DefaultStyledDocument
       {
         // Put the old attribute set on the stack.
         pushCharacterStyle();
-        
-        // And create the new one by adding the attributes in <code>a</code>.
-        if (a != null)
-          charAttr.addAttribute(t, a.copyAttributes());          
+
+	// Translate tag.. return if succesful.
+	if(CharacterAttributeTranslator.translateTag(charAttr, t, a))
+	  return;
+
+        // Just add the attributes in <code>a</code>.
+ 	if (a != null)
+ 	  charAttr.addAttribute(t, a.copyAttributes());          
       }
-      
+
       /**
        * Called when an end tag is seen for one of the types of tags associated
        * with this Action.
@@ -1131,7 +1136,7 @@ public class HTMLDocument extends DefaultStyledDocument
      */
     protected void pushCharacterStyle()
     {
-      charAttrStack.push(charAttr);
+      charAttrStack.push(charAttr.copyAttributes());
     }
     
     /**

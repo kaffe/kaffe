@@ -56,7 +56,6 @@ import javax.swing.plaf.DesktopPaneUI;
  */
 public class JDesktopPane extends JLayeredPane implements Accessible
 {
-  /** DOCUMENT ME! */
   private static final long serialVersionUID = 766333777224038726L;
 
   /**
@@ -94,15 +93,15 @@ public class JDesktopPane extends JLayeredPane implements Accessible
   private boolean clientDragModeSet = false;
 
   /**
-   * AccessibleJDesktopPane
+   * Provides the accessibility features for the <code>JDesktopPane</code>
+   * component.
    */
   protected class AccessibleJDesktopPane extends AccessibleJComponent
   {
-    /** DOCUMENT ME! */
     private static final long serialVersionUID = 6079388927946077570L;
 
     /**
-     * Constructor AccessibleJDesktopPane
+     * Creates a new <code>AccessibleJDesktopPane</code> instance.
      */
     protected AccessibleJDesktopPane()
     {
@@ -110,9 +109,9 @@ public class JDesktopPane extends JLayeredPane implements Accessible
     }
 
     /**
-     * getAccessibleRole
+     * Returns the accessible role for the <code>JSlider</code> component.
      *
-     * @return AccessibleRole
+     * @return {@link AccessibleRole#DESKTOP_PANE}.
      */
     public AccessibleRole getAccessibleRole()
     {
@@ -298,13 +297,22 @@ public class JDesktopPane extends JLayeredPane implements Accessible
   }
 
   /**
-   * This method returns a String that describes the JDesktopPane.
+   * Returns an implementation-dependent string describing the attributes of
+   * this <code>JDesktopPane</code>.
    *
-   * @return A String that describes the JDesktopPane.
+   * @return A string describing the attributes of this <code>JDesktopPane</code>
+   *         (never <code>null</code>).
    */
   protected String paramString()
   {
-    return "JDesktopPane";
+    String superParamStr = super.paramString();
+    StringBuffer sb = new StringBuffer();
+    sb.append(",isOptimizedDrawingPossible=");
+    sb.append(isOptimizedDrawingEnabled());
+    sb.append(",desktopManager=");
+    if (desktopManager != null)
+      sb.append(desktopManager);
+    return superParamStr + sb.toString();
   }
 
   /**
@@ -330,9 +338,11 @@ public class JDesktopPane extends JLayeredPane implements Accessible
   }
 
   /**
-   * getAccessibleContext
+   * Returns the object that provides accessibility features for this
+   * <code>JDesktopPane</code> component.
    *
-   * @return AccessibleContext
+   * @return The accessible context (an instance of 
+   *     {@link AccessibleJDesktopPane}).
    */
   public AccessibleContext getAccessibleContext()
   {

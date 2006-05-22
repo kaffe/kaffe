@@ -172,6 +172,7 @@ implementation.
 * java.nio.channels::
 * gnu.java.nio::
 * java.lang.reflect::
+* gnu.java.lang::
 * Classpath Callbacks::
 
 
@@ -199,7 +200,6 @@ operable.
 * java.lang.VMRuntime::
 * java.lang.VMString::
 * java.lang.VMThread::
-* java.lang.VMInstrumentationImpl::
 * java.lang.VMMath::
 
 
@@ -257,10 +257,12 @@ support, and then only to the degree required.
         * `getClassLoader(Class)' - Returns the `ClassLoader' instance
           which is responsible for the specified class.
 
-        * `forName(String)' - The VM should create a `Class' instance
-          corresponding to the named class.  As noted in *Note VM
-          Hooks::, the internal content of the instance is the
-          responsibility of the VM.
+        * `forName(String, boolean, ClassLoader)' - The VM should
+          create a `Class' instance corresponding to the named class.
+          As noted in *Note VM Hooks::, the internal content of the
+          instance is the responsibility of the VM.  The supplied class
+          loader is recorded as that which loaded the class, and the
+          boolean specifies whether or not to run the class initializer.
 
         * `isArray(Class)' - Another property test, corresponding to a
           class file flag.
@@ -301,6 +303,45 @@ support, and then only to the degree required.
         * `getDeclaringClass(Class)' - Returns the class that declared
           an inner or member class, or `null' if the instance refers to
           a top-level class.
+
+   * 1.5
+        * `isSynthetic(Class)' - Returns true if the flags for this
+          class mark it as synthetic.
+
+        * `isAnnotation(Class)' - Returns true if the flags for this
+          class mark it as an annotation.
+
+        * `isEnum(Class)' - Returns true if the flags for this class
+          mark it as an enumeration.
+
+        * `getSimpleName(Class)' - Returns the simple name of the class.
+          A default implementation is provided, but a more efficient
+          version may instead be provided by the VM.
+
+        * `getCanonicalName(Class)' - Returns the canonical name of the
+          class.  A default implementation is provided, but a more
+          efficient version may instead be provided by the VM.
+
+        * `getEnclosingClass(Class)' - Returns the immediately enclosing
+          class (null for a top-level class).
+
+        * `getEnclosingConstructor(Class)' - Returns the constructor
+          which immediately encloses the supplied class.
+
+        * `getEnclosingMethod(Class)' - Returns the method which
+          immediately encloses the supplied class.
+
+        * `getClassSignature(Class)' - Returns the generic signature of
+          the class or null if there isn't one.
+
+        * `isAnonymousClass(Class)' - Returns true if the class is an
+          anonymous class.
+
+        * `isLocalClass(Class)' - Returns true if the class is an local
+          class.
+
+        * `isMemberClass(Class)' - Returns true if the class is an
+          member class.
 
 
 File: vmintegration.info,  Node: java.lang.VMObject,  Next: java.lang.VMClassLoader,  Prev: java.lang.VMClass,  Up: java.lang
@@ -435,6 +476,9 @@ provides some helper methods to simplify stream creation.
 
         * `getenv(String)' - Returns the value of the specified
           environment variable.
+
+        * `getenv()' - Returns a list of `name=value' pairs which
+          correspond to the environment variables.
 
    * Java Methods
         * `makeStandardInputStream()' - Helps provide the functionality
@@ -586,11 +630,14 @@ are provided for all three by Classpath, making VM implementation
 optional.  These use the POSIX functions, `fork()', `waitpid()' and
 `kill()'.
 
-   * `nativeSpawn(String[],String[],File)' - The VM should create a new
-     process which uses the specified command-line arguments,
-     environment variables and working directory.  Unlike the other two
-     methods, this method is linked to an instance, and must call
-     `setProcessInfo()' with the results before returning.
+   * `nativeSpawn(String[],String[],File,boolean)' - The VM should
+     create a new process which uses the specified command-line
+     arguments, environment variables and working directory.  Unlike
+     the other two methods, this method is linked to an instance, and
+     must call `setProcessInfo()' with the results before returning.
+     The boolean argument maps to the `redirectErrorStream' property of
+     `java.lang.ProcessBuilder'.  When true, the output and error
+     streams are merged.
 
    * `nativeReap()' - This is called to perform a reap of any zombie
      processes, and should not block, instead returning a boolean as to
@@ -675,7 +722,7 @@ by implementing this method, which is `static' and the only one in
 `VMString'.
 
 
-File: vmintegration.info,  Node: java.lang.VMThread,  Next: java.lang.VMInstrumentationImpl,  Prev: java.lang.VMString,  Up: java.lang
+File: vmintegration.info,  Node: java.lang.VMThread,  Next: java.lang.VMMath,  Prev: java.lang.VMString,  Up: java.lang
 
 3.1.12 `java.lang.VMThread'
 ---------------------------
@@ -761,58 +808,9 @@ optional or deprecated functionality.
           result.
 
 
-File: vmintegration.info,  Node: java.lang.VMInstrumentationImpl,  Next: java.lang.VMMath,  Prev: java.lang.VMThread,  Up: java.lang
+File: vmintegration.info,  Node: java.lang.VMMath,  Prev: java.lang.VMThread,  Up: java.lang
 
-3.1.13 `java.lang.VMInstrumentationImpl'
-----------------------------------------
-
-The `java.lang.VMInstrumentationImpl' and
-`java.lang.InstrumentationImpl' classes provide an implementation of the
-`java.lang.instrument.Instrument' interface. This interface is for java
-1.5 and is only in the generics branch.  A `InstrumentationImpl' object
-should be created by the VM when agents are given in the command line
-(see the `java.lang.instrument' package documentation). The VM has to
-set the static field `VMClassLoader.instrumenter' to this object. The
-VM should implement the static native methods of the
-`VMInstrumentationImpl' class.
-
-   * `isRedefineClassesSupported()' - Returns true if the JVM supports
-     class redefinition.
-
-   * `redefineClasses()' - Gives a set of classes with new bytecodes.
-     The VM must redefine the classes by reading the new bytecodes.
-
-   * `getAllLoadedClass()' - Returns an array of all loaded classes.
-
-   * `getInitiatedClass()' - Returns an array of all classes loaded by
-     a specific class loader.
-
-   * `getObjectSize()' - Gives the size of an object.
-
-   Instrumentation allows to modify the bytecode of a class before it
-gets read by the VM. In GNU Classpath, the `ClassLoader.defineClass'
-method calls the `VMClassLoader.defineClassWithTransformers' method
-which first checks if `VMClassLoader.instrumenter' is `null'. If it's
-the case, it directly calls `VMClassLoader.defineClass'. If it's not
-the case, the method calls at first the
-`InstrumentationImpl.callTransformers' method, which calls each
-transformer registered to the `InstrumentationImpl' object and returns
-a new bytecode array. Then, it calls the `VMClassLoader.defineClass'
-method with this new bytecode array.
-
-   The second use of instrumentation is to redefine a class after it
-has been loaded by the VM. This is done in the Java application by
-calling the `Instrumentation.redefineClasses' method of the standard
-interface on a `Instrumentation' object. The
-`InstrumentationImpl.redefineClasses' method calls the
-`VMInstrumentationImpl.redefineClasses' native method which must be
-implemented by the VM. The implementation should call the
-`InstrumentationImpl.callTransformers' method.
-
-
-File: vmintegration.info,  Node: java.lang.VMMath,  Prev: java.lang.VMInstrumentationImpl,  Up: java.lang
-
-3.1.14 `java.lang.VMMath'
+3.1.13 `java.lang.VMMath'
 -------------------------
 
 The `VMMath' class provides a series of native methods for some of the
@@ -1165,15 +1163,15 @@ File: vmintegration.info,  Node: java.security,  Next: java.net,  Prev: java.io,
 =================
 
 The `java.security' package provides support for Java's security
-architecture.  At present, `VMAccessController' represents the sole VM
-hook for this.
+architecture.
 
 * Menu:
 
 * java.security.VMAccessController::
+* java.security.VMSecureRandom::
 
 
-File: vmintegration.info,  Node: java.security.VMAccessController,  Prev: java.security,  Up: java.security
+File: vmintegration.info,  Node: java.security.VMAccessController,  Next: java.security.VMSecureRandom,  Prev: java.security,  Up: java.security
 
 3.5.1 `java.security.VMAccessController'
 ----------------------------------------
@@ -1198,6 +1196,26 @@ as follows:
    * `getStack()' - Provides access to the call stack as a pair of
      arrays of classes and method names.  The actual implementation
      returns an empty array, indicating that there are no permissions.
+
+
+File: vmintegration.info,  Node: java.security.VMSecureRandom,  Prev: java.security.VMAccessController,  Up: java.security
+
+3.5.2 `java.security.VMSecureRandom'
+------------------------------------
+
+The `VMSecureRandom' class is used to provide access to
+cryptographically secure random numbers.  The default implementation of
+the class runs eight threads that increment counters in a tight loop,
+and XORs each counter to produce one byte of seed data. This is not
+very efficient, and is not guaranteed to be random (the thread
+scheduler is probably deterministic, after all). VM implementors should
+provide a version of this class, which implements the method
+`generateSeed(byte[],int,int)', so that it fills the buffer using a
+random seed from a system facility, such as a system entropy gathering
+device or hardware random number generator.  The parameters are the
+usual set of buffer, offset and length and the method returns the
+number of bytes actually generated, which may be less than that
+requested.
 
 
 File: vmintegration.info,  Node: java.net,  Next: java.nio,  Prev: java.security,  Up: Classpath Hooks
@@ -1376,7 +1394,7 @@ implementation of this is `VMSelector', and this allows the actual
 default implementation of this is provided.
 
 
-File: vmintegration.info,  Node: java.lang.reflect,  Next: Classpath Callbacks,  Prev: gnu.java.nio,  Up: Classpath Hooks
+File: vmintegration.info,  Node: java.lang.reflect,  Next: gnu.java.lang,  Prev: gnu.java.nio,  Up: Classpath Hooks
 
 3.10 `java.lang.reflect'
 ========================
@@ -1402,7 +1420,69 @@ size.  The default implementation simply passes the job down to the
 standard JNI function, `NewObjectArray'.
 
 
-File: vmintegration.info,  Node: Classpath Callbacks,  Prev: java.lang.reflect,  Up: Classpath Hooks
+File: vmintegration.info,  Node: gnu.java.lang,  Next: Classpath Callbacks,  Prev: java.lang.reflect,  Up: Classpath Hooks
+
+3.11 `gnu.java.lang'
+====================
+
+`gnu.java.lang' provides VM interfaces for the GNU implementations of
+features in java.lang.  Currently, this includes the implementation of
+instrumentation.
+
+* Menu:
+
+* gnu.java.lang.VMInstrumentationImpl::
+
+
+File: vmintegration.info,  Node: gnu.java.lang.VMInstrumentationImpl,  Up: gnu.java.lang
+
+3.11.1 `gnu.java.lang.VMInstrumentationImpl'
+--------------------------------------------
+
+The `gnu.java.lang.VMInstrumentationImpl' and
+`gnu.java.lang.InstrumentationImpl' classes provide an implementation
+of the `java.lang.instrument.Instrument' interface.  A
+`InstrumentationImpl' object should be created by the VM when agents
+are given in the command line (see the `java.lang.instrument' package
+documentation). The VM has to set the static field
+`VMClassLoader.instrumenter' to this object. The VM should implement the
+static native methods of the `VMInstrumentationImpl' class.
+
+   * `isRedefineClassesSupported()' - Returns true if the JVM supports
+     class redefinition.
+
+   * `redefineClasses()' - Gives a set of classes with new bytecodes.
+     The VM must redefine the classes by reading the new bytecodes.
+
+   * `getAllLoadedClass()' - Returns an array of all loaded classes.
+
+   * `getInitiatedClass()' - Returns an array of all classes loaded by
+     a specific class loader.
+
+   * `getObjectSize()' - Gives the size of an object.
+
+   Instrumentation allows to modify the bytecode of a class before it
+gets read by the VM. In GNU Classpath, the `ClassLoader.defineClass'
+method calls the `VMClassLoader.defineClassWithTransformers' method
+which first checks if `VMClassLoader.instrumenter' is `null'. If it's
+the case, it directly calls `VMClassLoader.defineClass'. If it's not
+the case, the method calls at first the
+`InstrumentationImpl.callTransformers' method, which calls each
+transformer registered to the `InstrumentationImpl' object and returns
+a new bytecode array. Then, it calls the `VMClassLoader.defineClass'
+method with this new bytecode array.
+
+   The second use of instrumentation is to redefine a class after it
+has been loaded by the VM. This is done in the Java application by
+calling the `Instrumentation.redefineClasses' method of the standard
+interface on a `Instrumentation' object. The
+`InstrumentationImpl.redefineClasses' method calls the
+`VMInstrumentationImpl.redefineClasses' native method which must be
+implemented by the VM. The implementation should call the
+`InstrumentationImpl.callTransformers' method.
+
+
+File: vmintegration.info,  Node: Classpath Callbacks,  Prev: gnu.java.lang,  Up: Classpath Hooks
 
    Some of the classes you implement for the VM will need to call back
 to package-private methods in Classpath:
@@ -1646,52 +1726,54 @@ Node: Top496
 Node: Introduction1227
 Node: Initialization5801
 Node: Classpath Hooks6214
-Node: java.lang7456
-Node: java.lang.VMClass8179
-Node: java.lang.VMObject12449
-Node: java.lang.VMClassLoader14062
-Node: java.lang.VMSystem16914
-Node: java.lang.VMThrowable19541
-Node: java.lang.VMCompiler20561
-Node: java.lang.VMDouble21540
-Node: java.lang.VMFloat22805
-Node: java.lang.VMProcess23501
-Node: java.lang.VMRuntime24883
-Node: java.lang.VMString27446
-Node: java.lang.VMThread28266
-Node: java.lang.VMInstrumentationImpl31753
-Node: java.lang.VMMath34096
-Node: gnu.classpath36644
-Node: gnu.classpath.VMStackWalker37109
-Node: gnu.classpath.VMSystemProperties38175
-Node: gnu.classpath.Unsafe39537
-Node: java.util41326
-Node: java.util.VMTimeZone41789
-Node: java.io42705
-Node: java.io.VMFile43434
-Node: java.io.VMObjectInputStream46305
-Node: java.io.VMObjectStreamClass46986
-Node: java.security47816
-Node: java.security.VMAccessController48157
-Node: java.net49321
-Node: java.net.VMInetAddress49762
-Node: java.net.VMNetworkInterface50555
-Node: java.nio50987
-Node: java.nio.VMDirectByteBuffer51490
-Node: java.nio.channels52938
-Node: java.nio.channels.VMChannels53355
-Node: gnu.java.nio54123
-Node: gnu.java.nio.VMPipe54537
-Node: gnu.java.nio.VMSelector55054
-Node: java.lang.reflect55600
-Node: java.lang.reflect.VMArray56026
-Node: Classpath Callbacks56433
-Node: VM Hooks56918
-Node: JNI Implementation61117
-Node: Miscellaneous VM Requirements62988
-Node: JNI Version63297
-Node: VM Threading Model63857
-Ref: VM Threading Model-Footnote-165473
-Node: Boot Library Path Property65585
+Node: java.lang7474
+Node: java.lang.VMClass8161
+Node: java.lang.VMObject14113
+Node: java.lang.VMClassLoader15726
+Node: java.lang.VMSystem18578
+Node: java.lang.VMThrowable21323
+Node: java.lang.VMCompiler22343
+Node: java.lang.VMDouble23322
+Node: java.lang.VMFloat24587
+Node: java.lang.VMProcess25283
+Node: java.lang.VMRuntime26836
+Node: java.lang.VMString29399
+Node: java.lang.VMThread30219
+Node: java.lang.VMMath33691
+Node: gnu.classpath36226
+Node: gnu.classpath.VMStackWalker36691
+Node: gnu.classpath.VMSystemProperties37757
+Node: gnu.classpath.Unsafe39119
+Node: java.util40908
+Node: java.util.VMTimeZone41371
+Node: java.io42287
+Node: java.io.VMFile43016
+Node: java.io.VMObjectInputStream45887
+Node: java.io.VMObjectStreamClass46568
+Node: java.security47398
+Node: java.security.VMAccessController47700
+Node: java.security.VMSecureRandom48901
+Node: java.net49913
+Node: java.net.VMInetAddress50354
+Node: java.net.VMNetworkInterface51147
+Node: java.nio51579
+Node: java.nio.VMDirectByteBuffer52082
+Node: java.nio.channels53530
+Node: java.nio.channels.VMChannels53947
+Node: gnu.java.nio54715
+Node: gnu.java.nio.VMPipe55129
+Node: gnu.java.nio.VMSelector55646
+Node: java.lang.reflect56192
+Node: java.lang.reflect.VMArray56612
+Node: gnu.java.lang57019
+Node: gnu.java.lang.VMInstrumentationImpl57397
+Node: Classpath Callbacks59645
+Node: VM Hooks60126
+Node: JNI Implementation64325
+Node: Miscellaneous VM Requirements66196
+Node: JNI Version66505
+Node: VM Threading Model67065
+Ref: VM Threading Model-Footnote-168681
+Node: Boot Library Path Property68793
 
 End Tag Table

@@ -76,4 +76,15 @@ JNIEXPORT void * JNICALL JCL_GetRawData (JNIEnv * env, jobject rawdata);
 #define DBG(x)
 #endif
 
+/* Some O/S's don't declare 'environ' */
+#if HAVE_CRT_EXTERNS_H
+/* Darwin does not have a variable named environ
+   but has a function which you can get the environ
+   variable with.  */
+#include <crt_externs.h>
+#define environ (*_NSGetEnviron())
+#else
+extern char **environ;
+#endif /* HAVE_CRT_EXTERNS_H */
+
 #endif

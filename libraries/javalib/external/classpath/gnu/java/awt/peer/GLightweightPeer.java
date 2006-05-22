@@ -82,7 +82,7 @@ import java.awt.peer.LightweightPeer;
  * Lightweight components are painted directly onto their parent
  * containers through an Image object provided by the toolkit.
  */
-public class GLightweightPeer extends MouseAdapter
+public class GLightweightPeer 
   implements LightweightPeer, ContainerPeer
 {
   private Component comp;
@@ -92,7 +92,6 @@ public class GLightweightPeer extends MouseAdapter
   public GLightweightPeer(Component comp)
   {
     this.comp = comp;
-    comp.addMouseListener(this);
   }
 
   // -------- java.awt.peer.ContainerPeer implementation:
@@ -362,11 +361,5 @@ public class GLightweightPeer extends MouseAdapter
   public void layout()
   {
     
-  }
-
-  /** MouseListener for cursor changes. */
-  public void mouseEntered(MouseEvent event)
-  {
-    setCursor(comp.getCursor());
   }
 }

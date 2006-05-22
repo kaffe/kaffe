@@ -642,7 +642,7 @@ public final class Whirlpool extends BaseHash
   public boolean selfTest()
   {
     if (valid == null)
-      valid = new Boolean(DIGEST0.equals(Util.toString(new Whirlpool().digest())));
+      valid = Boolean.valueOf(DIGEST0.equals(Util.toString(new Whirlpool().digest())));
 
     return valid.booleanValue();
   }

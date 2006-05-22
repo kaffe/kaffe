@@ -66,7 +66,7 @@ public class ThreadGroup implements UncaughtExceptionHandler
   static boolean had_uncaught_exception;
 
   /** The parent thread group. */
-  private final ThreadGroup parent;
+  final ThreadGroup parent;
 
   /** The group name, non-null. */
   final String name;

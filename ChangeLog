@@ -1,3 +1,32 @@
+2006-05-22  Dalibor Topic  <robilad@kaffe.org>
+
+	* TODO: Updated after the last Classpath merge.
+
+	* libraries/clib/native/Class.c,
+	libraries/clib/native/gnu_classpath_VMSystemProperties.c,
+	libraries/clib/native/java_lang_VMSystem.c,
+	libraries/clib/target/generic/target_generic_network.h:
+	Updated for changes in GNU Classpath.
+
+	* libraries/javalib/external/classpath/ : Resynced with GNU Classpath
+	from 2006-05-15.
+
+	* libraries/javalib/vmspecific/java/lang/String.java:
+	Added missing methods from GNU Classpath.
+
+	* libraries/javalib/vmspecific/gnu/classpath/VMSystemProperties.java,
+	libraries/javalib/vmspecific/java/lang/VMClass.java,
+	libraries/javalib/vmspecific/java/lang/VMClassLoader.java,
+	libraries/javalib/vmspecific/java/lang/VMSystem.java,
+	libraries/javalib/vmspecific/java/lang/reflect/Constructor.java,
+	libraries/javalib/vmspecific/java/lang/reflect/Field.java,
+	libraries/javalib/vmspecific/java/lang/reflect/Method.java:
+	Updated to reflect VM interface changes in GNU Classpath.
+
+	* test/regression/ProcessClassInst.java,
+	test/regression/ProcessClassStop.java:
+	Updated expected output.
+	
 2006-05-17  Antoine Reilles <tonio@kaffe.org>
 	    Joerg Sonnenberger  <joerg@britannica.bec.de>
 	* libraries/clib/sound/esd/org_tritonus_lowlevel_esd_EsdRecordingStream.c,

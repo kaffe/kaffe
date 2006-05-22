@@ -1191,6 +1191,7 @@ public abstract class JTextComponent extends JComponent
     catch (BadLocationException e)
       {
         // This can never happen.
+        throw (InternalError) new InternalError().initCause(e);
       }
   }
 
@@ -1364,7 +1365,7 @@ public abstract class JTextComponent extends JComponent
   {
     if (editable == newValue)
       return;
-
+    
     boolean oldValue = editable;
     editable = newValue;
     firePropertyChange("editable", oldValue, newValue);
@@ -1724,17 +1725,20 @@ public abstract class JTextComponent extends JComponent
 
   public void copy()
   {
+    if (isEnabled())
     doTransferAction("copy", TransferHandler.getCopyAction());
   }
 
   public void cut()
   {
-    doTransferAction("cut", TransferHandler.getCutAction());
+    if (editable && isEnabled())
+      doTransferAction("cut", TransferHandler.getCutAction());
   }
 
   public void paste()
   {
-    doTransferAction("paste", TransferHandler.getPasteAction());
+    if (editable && isEnabled())
+      doTransferAction("paste", TransferHandler.getPasteAction());
   }
 
   private void doTransferAction(String name, Action action)

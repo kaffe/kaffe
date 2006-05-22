@@ -125,6 +125,7 @@ public class DomHTMLParser
       {
         document = new DomHTMLDocument();
         document.setCheckWellformedness(false);
+        document.setCheckingCharacters(false);
         
         cursor = document;
         

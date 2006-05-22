@@ -1,5 +1,5 @@
 /* Class.java -- Representation of a Java class.
-   Copyright (C) 1998, 1999, 2000, 2002, 2003, 2004, 2005
+   Copyright (C) 1998, 1999, 2000, 2002, 2003, 2004, 2005, 2006
    Free Software Foundation
 
 This file is part of GNU Classpath.
@@ -44,7 +44,9 @@ import gnu.java.lang.reflect.ClassSignatureParser;
 import java.io.InputStream;
 import java.io.ObjectStreamClass;
 import java.io.Serializable;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericDeclaration;
@@ -100,12 +102,29 @@ import java.util.HashSet;
  * @see ClassLoader
  */
 public final class Class 
-  implements Serializable, Type, GenericDeclaration
+  implements Serializable, Type, AnnotatedElement, GenericDeclaration
 {
   /**
    * Compatible with JDK 1.0+.
    */
   private static final long serialVersionUID = 3206093459760846163L;
+
+  /**
+   * Flag indicating a synthetic member.
+   * Note that this duplicates a constant in Modifier.
+   */
+  private static final int SYNTHETIC = 0x1000;
+
+  /**
+   * Flag indiciating an annotation class.
+   */
+  private static final int ANNOTATION = 0x2000;
+
+  /**
+   * Flag indicating an enum constant or an enum class.
+   * Note that this duplicates a constant in Modifier.
+   */
+  private static final int ENUM = 0x4000;
 
   /** The class signers. */
   private Object[] signers = null;
@@ -640,17 +659,16 @@ public final class Class
     
     public boolean equals(Object o)
     {
-      if(o instanceof MethodKey)
+      if (o instanceof MethodKey)
 	{
-	  MethodKey m = (MethodKey)o;
-	  if(m.name.equals(name) && m.params.length == params.length && m.returnType == returnType)
+	  MethodKey m = (MethodKey) o;
+	  if (m.name.equals(name) && m.params.length == params.length
+              && m.returnType == returnType)
 	    {
-	      for(int i = 0; i < params.length; i++)
+	      for (int i = 0; i < params.length; i++)
 		{
-		  if(m.params[i] != params[i])
-		    {
-		      return false;
-		    }
+		  if (m.params[i] != params[i])
+		    return false;
 		}
 	      return true;
 	    }
@@ -1260,7 +1278,7 @@ public final class Class
     return c.defaultAssertionStatus;
   }
 
-  /*
+  /**
    * <p>
    * Casts this class to represent a subclass of the specified class.
    * This method is useful for `narrowing' the type of a class so that
@@ -1369,6 +1387,46 @@ public final class Class
   }
 
   /**
+   * Returns the enumeration constants of this class, or
+   * null if this class is not an <code>Enum</code>.
+   *
+   * @return an array of <code>Enum</code> constants
+   *         associated with this class, or null if this
+   *         class is not an <code>enum</code>.
+   * @since 1.5
+   */
+  /* FIXME[GENERICS]: T[] getEnumConstants() */
+  public Object[] getEnumConstants()
+  {
+    if (isEnum())
+      {
+	try
+	  {
+	    return (Object[])
+	      getMethod("values", new Class[0]).invoke(null, new Object[0]);
+	  }
+	catch (NoSuchMethodException exception)
+	  {
+	    throw new Error("Enum lacks values() method");
+	  }
+	catch (IllegalAccessException exception)
+	  {
+	    throw new Error("Unable to access Enum class");
+	  }
+	catch (InvocationTargetException exception)
+	  {
+	    throw new
+	      RuntimeException("The values method threw an exception",
+			       exception);
+	  }
+      }
+    else
+      {
+	return null;
+      }
+  }
+
+  /**
    * Returns true if this class is an <code>Enum</code>.
    *
    * @return true if this is an enumeration class.
@@ -1376,7 +1434,8 @@ public final class Class
    */
   public boolean isEnum()
   {
-    return VMClass.isEnum(this);
+    int mod = VMClass.getModifiers (this, true);
+    return (mod & ENUM) != 0;
   }
 
   /**
@@ -1388,7 +1447,8 @@ public final class Class
    */
   public boolean isSynthetic()
   {
-    return VMClass.isSynthetic(this);
+    int mod = VMClass.getModifiers (this, true);
+    return (mod & SYNTHETIC) != 0;
   }
 
   /**
@@ -1399,7 +1459,8 @@ public final class Class
    */
   public boolean isAnnotation()
   {
-    return VMClass.isAnnotation(this);
+    int mod = VMClass.getModifiers (this, true);
+    return (mod & ANNOTATION) != 0;
   }
 
   /**
@@ -1418,6 +1479,50 @@ public final class Class
   public String getSimpleName()
   {
     return VMClass.getSimpleName(this);
+  }
+
+  /**
+   * Returns this class' annotation for the specified annotation type,
+   * or <code>null</code> if no such annotation exists.
+   *
+   * @param annotationClass the type of annotation to look for.
+   * @return this class' annotation for the specified type, or
+   *         <code>null</code> if no such annotation exists.
+   * @since 1.5
+   */
+  /* FIXME[GENERICS]: <T extends Annotation> T getAnnotation(Class <T>) */
+  public Annotation getAnnotation(Class annotationClass)
+  {
+    Annotation foundAnnotation = null;
+    Annotation[] annotations = getAnnotations();
+    for (int i = 0; i < annotations.length; i++)
+      if (annotations[i].annotationType() == annotationClass)
+	foundAnnotation = annotations[i];
+    return foundAnnotation;
+  }
+
+  /**
+   * Returns all annotations associated with this class.  If there are
+   * no annotations associated with this class, then a zero-length array
+   * will be returned.  The returned array may be modified by the client
+   * code, but this will have no effect on the annotation content of this
+   * class, and hence no effect on the return value of this method for
+   * future callers.
+   *
+   * @return this class' annotations.
+   * @since 1.5
+   */
+  public Annotation[] getAnnotations()
+  {
+    HashSet set = new HashSet();
+    set.addAll(Arrays.asList(getDeclaredAnnotations()));
+    Class[] interfaces = getInterfaces();
+    for (int i = 0; i < interfaces.length; i++)
+      set.addAll(Arrays.asList(interfaces[i].getAnnotations()));
+    Class superClass = getSuperclass();
+    if (superClass != null)
+      set.addAll(Arrays.asList(superClass.getAnnotations()));
+    return (Annotation[]) set.toArray(new Annotation[set.size()]);
   }
 
   /**
@@ -1457,6 +1562,22 @@ public final class Class
   public String getCanonicalName()
   {
     return VMClass.getCanonicalName(this);
+  }
+
+  /**
+   * Returns all annotations directly defined by this class.  If there are
+   * no annotations associated with this class, then a zero-length array
+   * will be returned.  The returned array may be modified by the client
+   * code, but this will have no effect on the annotation content of this
+   * class, and hence no effect on the return value of this method for
+   * future callers.
+   *
+   * @return the annotations directly defined by this class.
+   * @since 1.5
+   */
+  public Annotation[] getDeclaredAnnotations()
+  {
+    return VMClass.getDeclaredAnnotations(this);
   }
 
   /**
@@ -1619,6 +1740,22 @@ public final class Class
 
     ClassSignatureParser p = new ClassSignatureParser(this, sig);
     return p.getTypeParameters();
+  }
+
+  /**
+   * Returns true if an annotation for the specified type is associated
+   * with this class.  This is primarily a short-hand for using marker
+   * annotations.
+   *
+   * @param annotationClass the type of annotation to look for.
+   * @return true if an annotation exists for the specified type.
+   * @since 1.5
+   */
+  /* FIXME[GENERICS]: Should be Class<? extends Annotation> */
+  public boolean isAnnotationPresent(Class
+				     annotationClass)
+  {
+    return getAnnotation(annotationClass) != null;
   }
 
   /**

@@ -172,6 +172,7 @@ class VMSystemProperties
 
       final String SUN_BOOT_CLASS_PATH = getSunBootClassPath();
       properties.setProperty("sun.boot.class.path", SUN_BOOT_CLASS_PATH);
+      properties.setProperty("java.boot.class.path", SUN_BOOT_CLASS_PATH);
 
 
       // use en_US locale by default unless something is set.

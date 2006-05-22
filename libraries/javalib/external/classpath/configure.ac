@@ -6,7 +6,7 @@ dnl -----------------------------------------------------------
 dnl define([AC_CACHE_LOAD], )dnl
 dnl define([AC_CACHE_SAVE], )dnl
 
-AC_INIT([GNU Classpath],[0.91-pre],[classpath@gnu.org],[classpath])
+AC_INIT([GNU Classpath],[0.92-pre],[classpath@gnu.org],[classpath])
 AC_CONFIG_SRCDIR(java/lang/System.java)
 
 AC_CANONICAL_TARGET
@@ -32,6 +32,9 @@ esac
 
 CLASSPATH_MODULE="${cp_module} -version-info ${LIBVERSION} -no-undefined"
 AC_SUBST(CLASSPATH_MODULE)
+
+CLASSPATH_CONVENIENCE="-no-undefined"
+AC_SUBST(CLASSPATH_CONVENIENCE)
 
 AC_PREREQ(2.59)
 AM_INIT_AUTOMAKE([1.9.0 gnu std-options tar-ustar])
@@ -192,12 +195,24 @@ AC_ARG_ENABLE([qt-peer],
               [COMPILE_QT_PEER=no])
 AM_CONDITIONAL(CREATE_QT_PEER_LIBRARIES, test "x${COMPILE_QT_PEER}" = xyes)
 
+dnl -----------------------------------------------------------
+dnl Plugin (enabled by default)
+dnl -----------------------------------------------------------
+AC_ARG_ENABLE([plugin],
+              [AS_HELP_STRING(--disable-plugin,compile gcjwebplugin (disabled by --disable-plugin) [default=yes])],
+              [case "${enableval}" in
+                yes) COMPILE_PLUGIN=yes ;;
+                no) COMPILE_PLUGIN=no ;;
+                *) COMPILE_PLUGIN=yes ;;
+              esac],
+              [COMPILE_PLUGIN=yes])
+AM_CONDITIONAL(CREATE_PLUGIN, test "x${COMPILE_PLUGIN}" = xyes)
 
 dnl -----------------------------------------------------------
 dnl Sets the native libraries installation dir
 dnl -----------------------------------------------------------
 AC_ARG_WITH([native-libdir],
-	    [AS_HELP_STRING(--with-native-libdir,sets the installation directore for native libraries [default='${libdir}/${PACKAGE}'])],
+	    [AS_HELP_STRING(--with-native-libdir,sets the installation directory for native libraries [default='${libdir}/${PACKAGE}'])],
 	    [
 	     nativeexeclibdir=${withval}
 	    ],
@@ -220,6 +235,20 @@ AC_ARG_WITH([glibj-dir],
 	    ])
 
 AC_SUBST(glibjdir)
+
+dnl -----------------------------------------------------------
+dnl Sets the VM name for use in tool wrapper scripts
+dnl -----------------------------------------------------------
+AC_ARG_WITH([vm],
+	    [AS_HELP_STRING(--with-vm,sets the VM binary name [default='${prefix}/bin/jamvm'])],
+	    [
+	     VM_BINARY=${withval}
+	    ],
+	    [
+	     VM_BINARY='${prefix}/bin/jamvm'
+	    ])
+
+AC_SUBST(VM_BINARY)
 
 dnl -----------------------------------------------------------
 dnl Regenerate headers at build time (disabled by default)
@@ -438,6 +467,19 @@ if test "x${COMPILE_JNI}" = xyes; then
     AC_SUBST(QT_CFLAGS)
     AC_SUBST(QT_LIBS)
   fi
+
+  dnl Check for plugin support headers and libraries.
+  if test "x${COMPILE_PLUGIN}" = xyes; then
+    PKG_CHECK_MODULES(MOZILLA, mozilla-plugin)
+    PKG_CHECK_MODULES(GLIB, glib-2.0)
+
+    AC_SUBST(MOZILLA_CFLAGS)
+    AC_SUBST(MOZILLA_LIBS)
+    AC_SUBST(GLIB_CFLAGS)
+    AC_SUBST(GLIB_LIBS)
+
+    AC_SUBST(PLUGIN_DIR, $HOME/.mozilla/plugins/)
+  fi
 fi
 
 CLASSPATH_WITH_JAVAH
@@ -612,6 +654,30 @@ AC_SUBST(PATH_TO_GLIBJ_ZIP)
 
 
 dnl -----------------------------------------------------------
+dnl Check if local socket support should be included.
+dnl -----------------------------------------------------------
+AC_ARG_ENABLE([local-sockets],
+              [AS_HELP_STRING(--enable-local-sockets,enables local (AF_LOCAL) socket API [default: no])],
+              [case "${enableval}" in
+                yes)
+                  ENABLE_LOCAL_SOCKETS=yes
+                  ;;
+                *)
+                  ENABLE_LOCAL_SOCKETS=no
+                  ;;
+               esac],
+              [])
+if test "x$ENABLE_LOCAL_SOCKETS" = "xyes"
+then
+  AC_CHECK_HEADER([sys/un.h])
+  AC_CHECK_FUNCS([read write bind listen accept shutdown], [],
+                 AC_MSG_ERROR([networking support not available]))
+  AC_DEFINE(ENABLE_LOCAL_SOCKETS, [1], [Define to enable support for local sockets.])
+fi
+AM_CONDITIONAL(ENABLE_LOCAL_SOCKETS, test "x$ENABLE_LOCAL_SOCKETS" = "xyes")
+
+
+dnl -----------------------------------------------------------
 dnl output files
 dnl -----------------------------------------------------------
 AC_CONFIG_FILES([Makefile
@@ -638,6 +704,7 @@ native/jni/qt-peer/Makefile
 native/jni/xmlj/Makefile
 native/jni/midi-alsa/Makefile
 native/jni/midi-dssi/Makefile
+native/plugin/Makefile
 native/target/Makefile
 native/target/Linux/Makefile
 native/target/generic/Makefile
@@ -647,10 +714,15 @@ scripts/classpath.spec
 lib/Makefile
 lib/gen-classlist.sh
 lib/copy-vmresources.sh
+tools/appletviewer
 tools/Makefile
-tools/jarsigner.sh
+tools/jarsigner
+tools/keytool
 examples/Makefile
 examples/Makefile.jawt])
 AC_CONFIG_COMMANDS([gen-classlist],[chmod 755 lib/gen-classlist.sh])
 AC_CONFIG_COMMANDS([copy-vmresources],[chmod 755 lib/copy-vmresources.sh])
+AC_CONFIG_COMMANDS([appletviewer],[chmod 755 tools/appletviewer])
+AC_CONFIG_COMMANDS([jarsigner],[chmod 755 tools/jarsigner])
+AC_CONFIG_COMMANDS([keytool],[chmod 755 tools/keytool])
 AC_OUTPUT

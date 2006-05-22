@@ -185,6 +185,7 @@ public abstract class DSSKey implements Key, DSAKey
       {
         String ls = SystemProperties.getProperty("line.separator");
         str = new StringBuilder().append(ls)
+        .append("defaultFormat=").append(defaultFormat).append(",").append(ls)
         .append("p=0x").append(p.toString(16)).append(",").append(ls)
         .append("q=0x").append(q.toString(16)).append(",").append(ls)
         .append("g=0x").append(g.toString(16))

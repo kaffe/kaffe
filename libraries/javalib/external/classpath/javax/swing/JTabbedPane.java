@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package javax.swing;
 
+import gnu.classpath.NotImplementedException;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Point;
@@ -102,6 +104,7 @@ public class JTabbedPane extends JComponent implements Serializable,
      * @param e the change event describing the change
      */
     public void stateChanged(ChangeEvent e)
+      throws NotImplementedException
     {
       // Implement this properly.
     }
@@ -113,6 +116,7 @@ public class JTabbedPane extends JComponent implements Serializable,
      * @return the accessible role of the <code>JTabbedPane</code>
      */
     public AccessibleRole getAccessibleRole()
+      throws NotImplementedException
     {
       return null;
     }
@@ -125,6 +129,7 @@ public class JTabbedPane extends JComponent implements Serializable,
      *         <code>JTabbedPane</code>
      */
     public int getAccessibleChildrenCount()
+      throws NotImplementedException
     {
       return 0;
     }
@@ -153,6 +158,7 @@ public class JTabbedPane extends JComponent implements Serializable,
      * @return the current selection state of the <code>JTabbedPane</code>
      */
     public AccessibleSelection getAccessibleSelection()
+      throws NotImplementedException
     {
       return null;
     }
@@ -169,6 +175,7 @@ public class JTabbedPane extends JComponent implements Serializable,
      *         this location
      */
     public Accessible getAccessibleAt(Point p)
+      throws NotImplementedException
     {
       return null;
     }
@@ -183,6 +190,7 @@ public class JTabbedPane extends JComponent implements Serializable,
      *         <code>JTabbedPane</code>
      */
     public int getAccessibleSelectionCount()
+      throws NotImplementedException
     {
       return 0;
     }
@@ -195,6 +203,7 @@ public class JTabbedPane extends JComponent implements Serializable,
      * @return DOCUMENT ME!
      */
     public Accessible getAccessibleSelection(int i)
+      throws NotImplementedException
     {
       return null;
     }
@@ -207,6 +216,7 @@ public class JTabbedPane extends JComponent implements Serializable,
      * @return DOCUMENT ME!
      */
     public boolean isAccessibleChildSelected(int i)
+      throws NotImplementedException
     {
       return false;
     }
@@ -217,6 +227,7 @@ public class JTabbedPane extends JComponent implements Serializable,
      * @param i DOCUMENT ME!
      */
     public void addAccessibleSelection(int i)
+      throws NotImplementedException
     {
       // TODO: Implement this properly.
     }
@@ -227,6 +238,7 @@ public class JTabbedPane extends JComponent implements Serializable,
      * @param i DOCUMENT ME!
      */
     public void removeAccessibleSelection(int i)
+      throws NotImplementedException
     {
       // TODO: Implement this properly.
     }
@@ -235,6 +247,7 @@ public class JTabbedPane extends JComponent implements Serializable,
      * DOCUMENT ME!
      */
     public void clearAccessibleSelection()
+      throws NotImplementedException
     {
       // TODO: Implement this properly.
     }
@@ -243,6 +256,7 @@ public class JTabbedPane extends JComponent implements Serializable,
      * DOCUMENT ME!
      */
     public void selectAllAccessibleSelection()
+      throws NotImplementedException
     {
       // TODO: Implement this properly.
     }
@@ -595,12 +609,14 @@ public class JTabbedPane extends JComponent implements Serializable,
     }
 
     public AccessibleStateSet getAccessibleStateSet()
+      throws NotImplementedException
     {
       // FIXME: Implement this properly.
       return null;
     }
 
     public int getAccessibleIndexInParent()
+      throws NotImplementedException
     {
       // FIXME: Implement this properly.
       return 0;

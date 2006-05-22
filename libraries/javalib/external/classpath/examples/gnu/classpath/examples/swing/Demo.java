@@ -151,6 +151,12 @@ public class Demo
     examples.add(new JMenuItem(new PopupAction("Theme Editor",
                                        MetalThemeEditor.createDemoFactory())));
 
+    examples.add(new JMenuItem(new PopupAction("DocumentFilter",
+                                     DocumentFilterDemo.createDemoFactory())));
+
+    examples.add(new JMenuItem(new PopupAction("NavigationFilter",
+                                               NavigationFilterDemo.createDemoFactory())));
+    
     final JMenuItem vmMenu;
     
     help.add(new JMenuItem("just play with the widgets"));

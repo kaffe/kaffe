@@ -1,5 +1,5 @@
 /* AbstractButton.java -- Provides basic button functionality.
-   Copyright (C) 2002, 2004 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2004, 2006, Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -39,10 +39,12 @@ package javax.swing;
 
 import gnu.classpath.NotImplementedException;
 
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.ItemSelectable;
+import java.awt.LayoutManager;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Shape;
@@ -272,7 +274,7 @@ public abstract class AbstractButton extends JComponent
   protected ChangeListener changeListener;
 
   /**
-   * The time in miliseconds in which clicks get coalesced into a single
+   * The time in milliseconds in which clicks get coalesced into a single
    * <code>ActionEvent</code>.
    */
   long multiClickThreshhold;
@@ -443,7 +445,7 @@ public abstract class AbstractButton extends JComponent
      * {@link AccessibleState#FOCUSED}, {@link AccessibleState#PRESSED} and
      * {@link AccessibleState#CHECKED}.
      *
-     * @return the curren state of this accessible object
+     * @return the current state of this accessible object
      */
     public AccessibleStateSet getAccessibleStateSet()
     {
@@ -649,8 +651,8 @@ public abstract class AbstractButton extends JComponent
      * Returns the minimum accessible value for the AccessibleAbstractButton,
      * which is <code>0</code>.
      *
-     * @return the maxinimum accessible value for the AccessibleAbstractButton,
-     *         which is <code>1</code>
+     * @return the minimimum accessible value for the AccessibleAbstractButton,
+     *         which is <code>0</code>
      */
     public Number getMinimumAccessibleValue()
     {
@@ -2369,6 +2371,45 @@ public abstract class AbstractButton extends JComponent
       throw new IllegalArgumentException();
 
     multiClickThreshhold = threshhold;
+  }
+
+  /**
+   * Adds the specified component to this AbstractButton. This overrides the
+   * default in order to install an {@link OverlayLayout} layout manager
+   * before adding the component. The layout manager is only installed if
+   * no other layout manager has been installed before.
+   *
+   * @param comp the component to be added
+   * @param constraints constraints for the layout manager
+   * @param index the index at which the component is added
+   *
+   * @since 1.5
+   */
+  protected void addImpl(Component comp, Object constraints, int index)
+  {
+    // We use a client property here, so that no extra memory is used in
+    // the common case with no layout manager.
+    if (getClientProperty("AbstractButton.customLayoutSet") == null)
+      setLayout(new OverlayLayout(this));
+    super.addImpl(comp, constraints, index);
+  }
+
+  /**
+   * Sets a layout manager on this AbstractButton. This is overridden in order
+   * to detect if the application sets a custom layout manager. If no custom
+   * layout manager is set, {@link #addImpl(Component, Object, int)} installs
+   * an OverlayLayout before adding a component.
+   *
+   * @param layout the layout manager to install
+   *
+   * @since 1.5
+   */
+  public void setLayout(LayoutManager layout)
+  {
+    // We use a client property here, so that no extra memory is used in
+    // the common case with no layout manager.
+    putClientProperty("AbstractButton.customLayoutSet", Boolean.TRUE);
+    super.setLayout(layout);
   }
 
   /**

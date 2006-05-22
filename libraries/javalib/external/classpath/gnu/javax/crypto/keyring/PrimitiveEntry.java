@@ -69,10 +69,9 @@ public abstract class PrimitiveEntry extends Entry
     if (!this.properties.containsKey("alias")
         || this.properties.get("alias").length() == 0)
       {
-        throw new IllegalArgumentException(
-                                           "primitive entries MUST have an alias");
+        throw new IllegalArgumentException("primitive entries MUST have an alias");
       }
-    this.properties.put("creation-date", String.valueOf(creationDate.getTime()));
+    this.properties.put("creation-date", String.valueOf(this.creationDate.getTime()));
   }
 
   protected PrimitiveEntry(int type)

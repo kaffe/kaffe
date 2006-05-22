@@ -191,7 +191,7 @@ public class MetalBorders
             {
               // The normal border. This is used when the button is not
               // pressed or the button is not armed.
-              if (! (bmodel.isPressed() && bmodel.isArmed()) )
+              if (! (bmodel.isPressed() && bmodel.isArmed()))
                 {
                   // draw light border
                   g.setColor(light);
@@ -568,12 +568,12 @@ public class MetalBorders
     {
       boolean enabledTextBorder;
       if (c instanceof JTextComponent)
-	{
-	  JTextComponent tc = (JTextComponent) c;
-	  enabledTextBorder = tc.isEnabled() && tc.isEditable();
-	}
+        {
+          JTextComponent tc = (JTextComponent) c;
+          enabledTextBorder = tc.isEnabled() && tc.isEditable();
+        }
       else
-	enabledTextBorder = false;
+        enabledTextBorder = false;
 
       if (enabledTextBorder)
         super.paintBorder(c, g, x, y, w, h);
@@ -829,35 +829,36 @@ public class MetalBorders
     {
       Color dark = MetalLookAndFeel.getPrimaryControlDarkShadow();
       Color light = MetalLookAndFeel.getPrimaryControlHighlight();
-      if (c instanceof JMenu) {
-        JMenu menu = (JMenu) c;
-        if (menu.isSelected())
+      if (c instanceof JMenu) 
         {
-          g.setColor(dark);
-          g.drawLine(x, y, x, y + h);
-          g.drawLine(x, y, x + w, y);
-          g.drawLine(x + w - 2, y + 1, x + w - 2, y + h);
-          g.setColor(light);
-          g.drawLine(x + w - 1, y + 1, x + w - 1, y + h);
+          JMenu menu = (JMenu) c;
+          if (menu.isSelected())
+            {
+              g.setColor(dark);
+              g.drawLine(x, y, x, y + h);
+              g.drawLine(x, y, x + w, y);
+              g.drawLine(x + w - 2, y + 1, x + w - 2, y + h);
+              g.setColor(light);
+              g.drawLine(x + w - 1, y + 1, x + w - 1, y + h);
+            }
         }
-      }
       else if (c instanceof JMenuItem)
-      {
-        JMenuItem item = (JMenuItem) c;
-        if (item.isArmed()) 
-          {
-            g.setColor(dark);
-            g.drawLine(x, y, x + w, y);
-            g.setColor(light);
-            g.drawLine(x, y + h - 1, x + w, y + h - 1);
-          }
-        else
-          {
-            // Normally we draw a light line on the left.
-            g.setColor(light);
-            g.drawLine(x, y, x, y + h);
-          }
-      }
+        {
+          JMenuItem item = (JMenuItem) c;
+          if (item.isArmed()) 
+            {
+              g.setColor(dark);
+              g.drawLine(x, y, x + w, y);
+              g.setColor(light);
+              g.drawLine(x, y + h - 1, x + w, y + h - 1);
+            }
+          else
+            {
+              // Normally we draw a light line on the left.
+              g.setColor(light);
+              g.drawLine(x, y, x, y + h);
+            }
+        }
     }
     
     /**
@@ -1469,8 +1470,8 @@ public class MetalBorders
       {
         Border outer = new ButtonBorder();
         Border inner = getMarginBorder();
-        buttonBorder = new BorderUIResource.CompoundBorderUIResource
-            (outer, inner);
+        buttonBorder = new BorderUIResource.CompoundBorderUIResource(outer, 
+            inner);
       }
     return buttonBorder;
   }
@@ -1488,8 +1489,8 @@ public class MetalBorders
       {
         Border outer = new ToggleButtonBorder();
         Border inner = getMarginBorder();
-        toggleButtonBorder = new BorderUIResource.CompoundBorderUIResource
-            (outer, inner);
+        toggleButtonBorder = new BorderUIResource.CompoundBorderUIResource(
+            outer, inner);
       }
     return toggleButtonBorder;
   }

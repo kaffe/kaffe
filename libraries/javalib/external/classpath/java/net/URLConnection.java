@@ -173,6 +173,11 @@ public abstract class URLConnection
 
   private static SimpleDateFormat[] dateFormats;
   private static boolean dateformats_initialized;
+  
+  /**
+   * The timeout period.
+   */
+  private int timeout;
 
   /* Cached ParsePosition, used when parsing dates. */
   private ParsePosition position;
@@ -209,6 +214,38 @@ public abstract class URLConnection
   public URL getURL()
   {
     return url;
+  }
+
+  /**
+   * Returns the connection timeout speed, in milliseconds, or zero if the timeout
+   * is infinite or not set.
+   *
+   * @return The timeout.
+   *
+   * @since 1.5
+   */
+  public int getConnectTimeout()
+  {
+    return timeout;
+  }
+
+  /**
+   * Set the connection timeout speed, in milliseconds, or zero if the timeout
+   * is to be considered infinite. Note that in certain socket 
+   * implementations/platforms this method may not have any effect.
+   *
+   * Throws an <code>IllegalArgumentException</code> if timeout < 0.
+   *
+   * @param timeout - The timeout, in milliseconds.
+   *
+   * @since 1.5
+   */
+  public void setConnectTimeout(int timeout)
+    throws IllegalArgumentException
+  {
+    if( timeout < 0 )
+      throw new IllegalArgumentException("Timeout must be 0 or positive.");
+    this.timeout = timeout;
   }
 
   /**

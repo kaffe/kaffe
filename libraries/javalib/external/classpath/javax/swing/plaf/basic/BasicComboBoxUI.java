@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package javax.swing.plaf.basic;
 
+import gnu.classpath.NotImplementedException;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -972,6 +974,7 @@ public class BasicComboBoxUI extends ComboBoxUI
    * by the look and feel.
    */
   protected void installKeyboardActions()
+    throws NotImplementedException
   {
     // FIXME: Need to implement.
   }
@@ -981,6 +984,7 @@ public class BasicComboBoxUI extends ComboBoxUI
    * installed by in {@link #installListeners}.
    */
   protected void uninstallKeyboardActions()
+    throws NotImplementedException
   {
     // FIXME: Need to implement.
   }

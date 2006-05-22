@@ -280,15 +280,17 @@ public class JInternalFrame extends JComponent implements Accessible,
       updateUI();
     }
 
-    /**
-     * DOCUMENT ME!
-     *
-     * @return DOCUMENT ME!
-     */
+  /**
+   * Returns the object that provides accessibility features for this
+   * <code>JDesktopIcon</code> component.
+   *
+   * @return The accessible context (an instance of 
+   *         {@link AccessibleJDesktopIcon}).
+   */
     public AccessibleContext getAccessibleContext()
     {
       if (accessibleContext == null)
-	accessibleContext = new AccessibleJDesktopIcon();
+        accessibleContext = new AccessibleJDesktopIcon();
       return accessibleContext;
     }
 
@@ -773,10 +775,16 @@ public class JInternalFrame extends JComponent implements Accessible,
   }
 
   /**
-   * This method returns the default action taken when this JInternalFrame is
-   * closed.
+   * Returns a code for the default action taken when this 
+   * <code>JInternalFrame</code> is closed.
    *
-   * @return The default action taken when this JInternalFrame is closed.
+   * @return The action code (usually one of 
+   *     {@link WindowConstants#DO_NOTHING_ON_CLOSE}, 
+   *     {@link WindowConstants#HIDE_ON_CLOSE}, or 
+   *     {@link WindowConstants#DISPOSE_ON_CLOSE}).
+   * 
+   * @see #setDefaultCloseOperation(int)
+   * @see #doDefaultCloseAction()
    */
   public int getDefaultCloseOperation()
   {
@@ -1202,13 +1210,15 @@ public class JInternalFrame extends JComponent implements Accessible,
   }
 
   /**
-   * This method returns a String describing this JInternalFrame.
+   * An implementation dependent string describing the current state of this 
+   * <code>JInternalFrame</code> instance.
    *
-   * @return A String describing this JInternalFrame.
+   * @return A string describing the current state of this 
+   *     <code>JInternalFrame</code> instance.
    */
   protected String paramString()
   {
-    return super.paramString();
+    return super.paramString() + ",title=" + getTitle();
   }
 
   /**
@@ -1322,12 +1332,17 @@ public class JInternalFrame extends JComponent implements Accessible,
   }
 
   /**
-   * This method sets the action taken when this JInternalFrame is closed.
+   * Sets a code for the action to be taken when this 
+   * <code>JInternalFrame</code> is closed.  Note that no validation is 
+   * performed on the <code>operation</code> code, any integer will be 
+   * accepted (nevertheless, you should pass in one of the listed values).
    *
-   * @param operation One of DO_NOTHING_ON_CLOSE, HIDE_ON_CLOSE or
-   *        DISPOSE_ON_CLOSE.
-   *
-   * @throws Error If the given operation is not one of the allowed modes.
+   * @param operation  one of {@link WindowConstants#DO_NOTHING_ON_CLOSE}, 
+   *   {@link WindowConstants#HIDE_ON_CLOSE} or 
+   *   {@link WindowConstants#DISPOSE_ON_CLOSE}.
+   *   
+   * @see #getDefaultCloseOperation()
+   * @see #doDefaultCloseAction()
    */
   public void setDefaultCloseOperation(int operation)
   {

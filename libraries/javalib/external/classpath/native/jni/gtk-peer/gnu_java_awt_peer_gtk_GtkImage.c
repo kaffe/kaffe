@@ -154,6 +154,8 @@ Java_gnu_java_awt_peer_gtk_GtkImage_getPixels(JNIEnv *env, jobject obj)
   jint *result_array_iter, *dst;
   int i,j;
 
+  gdk_threads_enter ();
+
   pixbuf = cp_gtk_image_get_pixbuf (env, obj);
   width =  gdk_pixbuf_get_width (pixbuf);
   height = gdk_pixbuf_get_height (pixbuf);
@@ -195,6 +197,7 @@ Java_gnu_java_awt_peer_gtk_GtkImage_getPixels(JNIEnv *env, jobject obj)
 
   (*env)->ReleaseIntArrayElements (env, result_array, result_array_iter, 0);
     
+  gdk_threads_leave ();
   return result_array;
 }
 
@@ -527,6 +530,7 @@ GdkPixbuf *cp_gtk_image_get_pixbuf (JNIEnv *env, jobject obj)
 
   /* Get a pixmap */
   pixmap = (GdkPixmap *)getData (env, obj);
+
   pixbuf = gdk_pixbuf_get_from_drawable (NULL,
 					 pixmap,
 					 gdk_drawable_get_colormap( pixmap ),

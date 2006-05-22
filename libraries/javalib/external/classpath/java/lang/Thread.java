@@ -347,8 +347,8 @@ public class Thread implements Runnable
 	if (group == null)
 	    group = current.group;
       }
-    else if (sm != null)
-	sm.checkAccess(group);
+    if (sm != null)
+      sm.checkAccess(group);
 
     this.group = group;
     // Use toString hack to detect null.
@@ -457,6 +457,19 @@ public class Thread implements Runnable
   /**
    * Originally intended to destroy this thread, this method was never
    * implemented by Sun, and is hence a no-op.
+   *
+   * @deprecated This method was originally intended to simply destroy
+   *             the thread without performing any form of cleanup operation.
+   *             However, it was never implemented.  It is now deprecated
+   *             for the same reason as <code>suspend()</code>,
+   *             <code>stop()</code> and <code>resume()</code>; namely,
+   *             it is prone to deadlocks.  If a thread is destroyed while
+   *             it still maintains a lock on a resource, then this resource
+   *             will remain locked and any attempts by other threads to
+   *             access the resource will result in a deadlock.  Thus, even
+   *             an implemented version of this method would be still be
+   *             deprecated, due to its unsafe nature.
+   * @throws NoSuchMethodError as this method was never implemented.
    */
   public void destroy()
   {

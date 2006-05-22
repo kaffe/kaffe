@@ -258,7 +258,7 @@ extends AccessibleObject implements Member, GenericDeclaration
   public String toString()
   {
     // 128 is a reasonable buffer initial size for constructor
-    StringBuffer sb = new StringBuffer(128);
+    StringBuilder sb = new StringBuilder(128);
     Modifier.toString(getModifiers(), sb).append(' ');
     sb.append(ClassHelper.getUserName(getReturnType())).append(' ');
     sb.append(getDeclaringClass().getName()).append('.');
@@ -284,7 +284,7 @@ extends AccessibleObject implements Member, GenericDeclaration
   public String toGenericString()
   {
     // 128 is a reasonable buffer initial size for constructor
-    StringBuffer sb = new StringBuffer(128);
+    StringBuilder sb = new StringBuilder(128);
     Modifier.toString(getModifiers(), sb).append(' ');
     Constructor.addTypeParameters(sb, getTypeParameters());
     sb.append(getGenericReturnType()).append(' ');

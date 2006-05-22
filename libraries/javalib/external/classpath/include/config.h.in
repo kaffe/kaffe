@@ -6,6 +6,9 @@
 /* Define to 1 if you want native library runtime debugging code enabled */
 #undef DEBUG
 
+/* Define to enable support for local sockets. */
+#undef ENABLE_LOCAL_SOCKETS
+
 /* defined if cairo support was built in */
 #undef GTK_CAIRO
 
@@ -146,6 +149,9 @@
 
 /* Define to 1 if you have the `setsockopt' function. */
 #undef HAVE_SETSOCKOPT
+
+/* Define to 1 if you have the `shutdown' function. */
+#undef HAVE_SHUTDOWN
 
 /* Define to 1 if you have the `socket' function. */
 #undef HAVE_SOCKET

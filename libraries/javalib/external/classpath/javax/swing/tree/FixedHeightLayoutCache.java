@@ -37,6 +37,8 @@ exception statement from your version. */
 
 package javax.swing.tree;
 
+import gnu.javax.swing.tree.GnuPath;
+
 import java.awt.Rectangle;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -45,22 +47,21 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.swing.UIManager;
 import javax.swing.event.TreeModelEvent;
+
 
 /**
  * The fixed height tree layout. This class assumes that all cells in the tree
  * have the same fixed height. This may be not the case, for instance, if leaves
  * and branches have different height, of if the tree rows may have arbitrary
  * variable height. This class will also work if the NodeDimensions are not
- * set. If they are set, the size calculations are just forwarded to the set
- * instance. 
+ * set.  
  * 
  * @author Audrius Meskauskas
  * @author Andrew Selkirk 
  */
 public class FixedHeightLayoutCache
-		extends AbstractLayoutCache
+		extends VariableHeightLayoutCache
 {
   /**
    * The cached node record.
@@ -114,26 +115,61 @@ public class FixedHeightLayoutCache
      */
     private TreePath path;
     
+    /**
+     * Get the path for this node. The derived class is returned,
+     * making check for the last child of some parent easier.
+     */
     TreePath getPath()
     {
       if (path == null)
         {
+          boolean lastChild = false;
+          if (parent != null)
+            {
+              int nc = treeModel.getChildCount(parent);
+              if (nc > 0)
+                {
+                  int n = treeModel.getIndexOfChild(parent, node);
+                  if (n == nc - 1)
+                    lastChild = true;
+                }
+            }
+
           LinkedList lpath = new LinkedList();
           NodeRecord rp = this;
           while (rp != null)
             {
               lpath.addFirst(rp.node);
               if (rp.parent != null)
-                rp = (NodeRecord) nodes.get(rp.parent);
+                {
+                  Object parent = rp.parent;
+                  rp = (NodeRecord) nodes.get(parent);
+                  // Add the root node, even if it is not visible.
+                  if (rp == null)
+                    lpath.addFirst(parent);
+                }
               else
                 rp = null;
             }
-          path = new TreePath(lpath.toArray());
+          path = new GnuPath(lpath.toArray(), lastChild);
         }
       return path;
     }
+    
+    /**
+     * Get the rectangle bounds (compute, if required).
+     */
+    Rectangle getBounds()
+    {
+      // This method may be called in the context when the tree rectangle is
+      // not known. To work around this, it is assumed near infinitely large.
+      if (bounds==null)
+        bounds = getNodeDimensions(node, row, depth, isExpanded, 
+                                   new Rectangle());
+      return bounds;      
+    }
   }
-
+  
   /**
    * The set of all expanded tree nodes.
    */
@@ -153,6 +189,16 @@ public class FixedHeightLayoutCache
    * If true, the row map must be recomputed before using.
    */
   boolean dirty;
+  
+  /**
+   * The cumulative height of all rows.
+   */
+  int totalHeight;
+  
+  /**
+   * The maximal width.
+   */
+  int maximalWidth;
 
   /**
    * Creates the unitialised instance. Before using the class, the row height
@@ -184,6 +230,8 @@ public class FixedHeightLayoutCache
   {
     nodes.clear();
     row2node.clear();
+    
+    totalHeight = maximalWidth = 0;
 
     Object root = treeModel.getRoot();
 
@@ -197,7 +245,7 @@ public class FixedHeightLayoutCache
         for (int i = 0; i < sc; i++)
           {
             Object child = treeModel.getChild(root, i);
-            countRows(child, root, 1);
+            countRows(child, root, 0);
           }
       }
     dirty = false;
@@ -211,9 +259,11 @@ public class FixedHeightLayoutCache
     Integer n = new Integer(row2node.size());
     row2node.put(n, node);
     
-    nodes.put(node, new NodeRecord(n.intValue(), depth, node, parent));
-
-    if (expanded.contains(node) || parent == null)
+    NodeRecord nr = new NodeRecord(n.intValue(), depth, node, parent);
+    nodes.put(node, nr);
+     
+    // For expanded nodes and for the root node.
+    if (expanded.contains(node))
       {
         int sc = treeModel.getChildCount(node);
         int deeper = depth+1;
@@ -226,14 +276,15 @@ public class FixedHeightLayoutCache
   }
 
   /**
-   * This should invalidate the width of the last path component, but 
-   * following the JDK 1.4 API it is not cached and the method should return
-   * without action.
-   * @param path the path being invalidated, ignored.
+   * Discard the bound information for the given path.
+   * 
+   * @param path the path, for that the bound information must be recomputed.
    */
   public void invalidatePathBounds(TreePath path)
   {
-    // Following JDK 1.4 API, should return without action.
+    NodeRecord r = (NodeRecord) nodes.get(path.getLastPathComponent());
+    if (r!=null)
+      r.bounds = null;
   } 
 
   /**
@@ -277,29 +328,34 @@ public class FixedHeightLayoutCache
    * Get bounds for the given tree path.
    * 
    * @param path the tree path
-   * @param rect the rectangle, specifying the area where the path should be
-   *          displayed.
+   * @param rect the rectangle that will be reused to return the result.
    * @return Rectangle the bounds of the last line, defined by the given path.
    */
   public Rectangle getBounds(TreePath path, Rectangle rect)
   {
+    if (path == null)
+      return null;
     if (dirty)
       update();
     Object last = path.getLastPathComponent();
     NodeRecord r = (NodeRecord) nodes.get(last);
     if (r == null)
-      // This node is not visible.
-      return new Rectangle();
+    // This node is not visible.
+      {
+        rect.x = rect.y = rect.width = rect.height = 0;
+      }
     else
       {
         if (r.bounds == null)
           {
-            Rectangle dim = getNodeDimensions(last, r.row, r.depth, r.isExpanded,
-                                              rect);
+            Rectangle dim = getNodeDimensions(last, r.row, r.depth,
+                                              r.isExpanded, rect);
             r.bounds = dim;
           }
-        return r.bounds;
+
+        rect.setRect(r.bounds);
       }
+    return rect;
   } 
 
   /**
@@ -330,6 +386,9 @@ public class FixedHeightLayoutCache
    */
   public int getRowForPath(TreePath path)
   {
+    if (path == null)
+      return -1;
+    
     if (dirty) update();
 
     NodeRecord r = (NodeRecord) nodes.get(path.getLastPathComponent());
@@ -351,28 +410,59 @@ public class FixedHeightLayoutCache
     if (dirty)
       update();
 
-    // We do not need to iterate because all rows have the same height.
-    int row = y / rowHeight;
-    if (row < 0)
-      row = 0;
-    if (row > getRowCount())
-      row = getRowCount() - 1;
+    // As the rows have arbitrary height, we need to iterate.
+    NodeRecord best = null;
+    NodeRecord r;
+    Enumeration en = nodes.elements();
     
-    if (row < 0)
-      return null; // Empty tree - nothing to return.
-    
-    Object node = row2node.get(new Integer(row));
-    NodeRecord nr = (NodeRecord) nodes.get(node);
-    return nr.getPath();
+    int dist = Integer.MAX_VALUE;
+
+    while (en.hasMoreElements() && dist > 0)
+      {
+        r = (NodeRecord) en.nextElement();
+        if (best == null)
+          {
+            best = r;
+            dist = distance(r.getBounds(), x, y);
+          }
+        else
+          {
+            int rr = distance(r.getBounds(), x, y);
+            if (rr < dist)
+              {
+                best = r;
+                dist = rr;
+              }
+          }
+      }
+
+    if (best == null)
+      return null;
+    else
+      return best.getPath();
   } 
+  
+  /**
+   * Get the closest distance from this point till the given rectangle. Only
+   * vertical distance is taken into consideration.
+   */
+  int distance(Rectangle r, int x, int y)
+  {
+    if (y < r.y)
+      return r.y - y;
+    else if (y > r.y + r.height)
+      return y - (r.y + r.height);
+    else
+      return 0;
+  }
 
   /**
-   * Get the number of the visible childs for the given tree path. If the
-   * node is not expanded, 0 is returned. Otherwise, the number of children
-   * is obtained from the model as the number of children for the last path
+   * Get the number of the visible childs for the given tree path. If the node
+   * is not expanded, 0 is returned. Otherwise, the number of children is
+   * obtained from the model as the number of children for the last path
    * component.
    * 
-   * @param path the tree path 
+   * @param path the tree path
    * @return int the number of the visible childs (for row).
    */
   public int getVisibleChildCount(TreePath path)  
@@ -466,7 +556,9 @@ public class FixedHeightLayoutCache
    */
   public void setModel(TreeModel newModel)
   {
-    super.setModel(newModel);
+    treeModel = newModel;
+    // The root node is expanded by default.
+    expanded.add(treeModel.getRoot());
     dirty = true;
   }
   
@@ -484,32 +576,53 @@ public class FixedHeightLayoutCache
   }
 
   /**
-   * Get the node dimensions. If the NodeDimensions are not set, this method
-   * calculates dimensions assuming the fixed row height.
-   * 
-   * @param value the last node in the path
-   * @param row the node row
-   * @param depth the indentation depth
-   * @param expanded true if this node is expanded, false otherwise
-   * @param bounds the area where the tree is displayed
+   * Get the sum of heights for all rows.
    */
-  protected Rectangle getNodeDimensions(Object value, int row, int depth,
-                                        boolean expanded, Rectangle bounds)
+  public int getPreferredHeight()
   {
-    if (nodeDimensions != null)
-      return nodeDimensions.getNodeDimensions(value, row, depth, expanded,
-                                              bounds);
-    else
+    if (dirty)
+      update();
+    totalHeight = 0;
+    Enumeration en = nodes.elements();
+    while (en.hasMoreElements())
       {
-        Rectangle r = new Rectangle(bounds);
-
-        int indent = depth * UIManager.getInt("Tree.rightChildIndent");
-
-        r.x = indent;
-        r.y = row * getRowHeight();
-        r.width = bounds.width = r.x;
-        r.height = getRowHeight();
-        return r;
+        NodeRecord nr = (NodeRecord) en.nextElement();
+        Rectangle r = nr.getBounds();
+        totalHeight += r.height;
       }
+    return totalHeight;
   }
+
+  /**
+   * Get the maximal width.
+   */
+  public int getPreferredWidth(Rectangle value)
+  {
+    if (dirty)
+      update();
+    
+    maximalWidth = 0;
+    Enumeration en = nodes.elements();
+    while (en.hasMoreElements())
+      {
+        NodeRecord nr = (NodeRecord) en.nextElement();
+        Rectangle r = nr.getBounds();
+        if (r.x + r.width > maximalWidth)
+          maximalWidth = r.x + r.width;
+      }
+    return maximalWidth;
+  }
+  
+  /**
+   * Returns true if this layout supposes that all rows have the fixed
+   * height.
+   * 
+   * @return boolean true if all rows in the tree must have the fixed
+   * height (true by default).
+   */
+  protected boolean isFixedRowHeight()
+  {
+    return true; 
+  }
+  
 }

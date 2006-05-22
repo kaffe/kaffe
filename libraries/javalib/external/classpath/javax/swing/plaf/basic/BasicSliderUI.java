@@ -63,7 +63,9 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 
 import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
 import javax.swing.BoundedRangeModel;
+import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JSlider;
@@ -74,6 +76,7 @@ import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.MouseInputAdapter;
+import javax.swing.plaf.ActionMapUIResource;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.SliderUI;
 
@@ -871,9 +874,11 @@ public class BasicSliderUI extends SliderUI
    *        installed.
    */
   protected void installKeyboardActions(JSlider slider)
-    throws NotImplementedException
   {
-    // FIXME: implement.
+    InputMap keyMap = getInputMap(JComponent.WHEN_FOCUSED);
+    SwingUtilities.replaceUIInputMap(slider, JComponent.WHEN_FOCUSED, keyMap);
+    ActionMap map = getActionMap();
+    SwingUtilities.replaceUIActionMap(slider, map);
   }
 
   /**
@@ -884,9 +889,9 @@ public class BasicSliderUI extends SliderUI
    *        uninstalled.
    */
   protected void uninstallKeyboardActions(JSlider slider)
-    throws NotImplementedException
   {
-    // FIXME: implement.
+    SwingUtilities.replaceUIActionMap(slider, null);
+    SwingUtilities.replaceUIInputMap(slider, JComponent.WHEN_FOCUSED, null);
   }
 
   /* XXX: This is all after experimentation with SUN's implementation.
@@ -2073,18 +2078,22 @@ public class BasicSliderUI extends SliderUI
   }
 
   /**
-   * This method is used to move the thumb one  block in the direction
-   * specified. If the slider  snaps to ticks, this method is responsible for
-   * snapping it to a tick after the thumb  has been moved.
+   * Moves the thumb one block in the direction specified (a block is 1/10th
+   * of the slider range).   If the slider snaps to ticks, this method is 
+   * responsible for snapping it to a tick after the thumb has been moved.
    *
-   * @param direction The direction to move in.
+   * @param direction  the direction (positive values increment the thumb 
+   *   position by one block, zero/negative values decrement the thumb position
+   *   by one block).
    */
   public void scrollByBlock(int direction)
   {
-    // The direction is -1 for backwards and 1 for forwards.
-    int unit = direction * (slider.getMaximum() - slider.getMinimum()) / 10;
-
-    int moveTo = slider.getValue() + unit;
+    int unit = (slider.getMaximum() - slider.getMinimum()) / 10;
+    int moveTo = slider.getValue();
+    if (direction > 0)
+      moveTo += unit;
+    else
+      moveTo -= unit;
 
     if (slider.getSnapToTicks())
       moveTo = findClosestTick(moveTo);
@@ -2093,16 +2102,21 @@ public class BasicSliderUI extends SliderUI
   }
 
   /**
-   * This method is used to move the thumb one unit in the direction
-   * specified. If the slider snaps to ticks, this method is responsible for
-   * snapping it to a tick after the thumb has been moved.
+   * Moves the thumb one unit in the specified direction. If the slider snaps 
+   * to ticks, this method is responsible for snapping it to a tick after the 
+   * thumb has been moved.
    *
-   * @param direction The direction to move in.
+   * @param direction  the direction (positive values increment the thumb 
+   *   position by one, zero/negative values decrement the thumb position by
+   *   one).
    */
   public void scrollByUnit(int direction)
   {
-    // The direction is -1 for backwards and 1 for forwards.
-    int moveTo = slider.getValue() + direction;
+    int moveTo = slider.getValue();
+    if (direction > 0)
+      moveTo++;
+    else
+      moveTo--;
 
     if (slider.getSnapToTicks())
       moveTo = findClosestTick(moveTo);
@@ -2315,5 +2329,124 @@ public class BasicSliderUI extends SliderUI
       return value + major;
     else
       return value + minor;
+  }
+  
+  InputMap getInputMap(int condition) 
+  {
+    if (condition == JComponent.WHEN_FOCUSED)
+      return (InputMap) UIManager.get("Slider.focusInputMap");
+    return null;
+  }
+
+  /**
+   * Returns the action map for the {@link JSlider}.  All sliders share
+   * a single action map which is created the first time this method is 
+   * called, then stored in the UIDefaults table for subsequent access.
+   * 
+   * @return The shared action map.
+   */
+  ActionMap getActionMap() 
+  {
+    ActionMap map = (ActionMap) UIManager.get("Slider.actionMap");
+
+    if (map == null) // first time here
+      {
+        map = createActionMap();
+        if (map != null)
+          UIManager.put("Slider.actionMap", map);
+      }
+    return map;
+  }
+
+  /**
+   * Creates the action map shared by all {@link JSlider} instances.
+   * This method is called once by {@link #getActionMap()} when it 
+   * finds no action map in the UIDefaults table...after the map is 
+   * created, it gets added to the defaults table so that subsequent 
+   * calls to {@link #getActionMap()} will return the same shared 
+   * instance.
+   * 
+   * @return The action map.
+   */
+  ActionMap createActionMap()
+  {
+    ActionMap map = new ActionMapUIResource();
+    map.put("positiveUnitIncrement", 
+            new AbstractAction("positiveUnitIncrement") {
+              public void actionPerformed(ActionEvent event)
+              {
+                JSlider slider = (JSlider) event.getSource();
+                BasicSliderUI ui = (BasicSliderUI) slider.getUI();
+                if (slider.getInverted())
+                  ui.scrollByUnit(BasicSliderUI.NEGATIVE_SCROLL);
+                else
+                  ui.scrollByUnit(BasicSliderUI.POSITIVE_SCROLL);
+              }
+            }
+    );
+    map.put("negativeUnitIncrement", 
+            new AbstractAction("negativeUnitIncrement") {
+              public void actionPerformed(ActionEvent event)
+              {
+                JSlider slider = (JSlider) event.getSource();
+                BasicSliderUI ui = (BasicSliderUI) slider.getUI();
+                if (slider.getInverted())
+                  ui.scrollByUnit(BasicSliderUI.POSITIVE_SCROLL);
+                else
+                  ui.scrollByUnit(BasicSliderUI.NEGATIVE_SCROLL);
+              }
+            }
+    );
+    map.put("positiveBlockIncrement", 
+            new AbstractAction("positiveBlockIncrement") {
+              public void actionPerformed(ActionEvent event)
+              {
+                JSlider slider = (JSlider) event.getSource();
+                BasicSliderUI ui = (BasicSliderUI) slider.getUI();
+                if (slider.getInverted())
+                  ui.scrollByBlock(BasicSliderUI.NEGATIVE_SCROLL);
+                else
+                  ui.scrollByBlock(BasicSliderUI.POSITIVE_SCROLL);
+              }
+            }
+    );
+    map.put("negativeBlockIncrement", 
+            new AbstractAction("negativeBlockIncrement") {
+              public void actionPerformed(ActionEvent event)
+              {
+                JSlider slider = (JSlider) event.getSource();
+                BasicSliderUI ui = (BasicSliderUI) slider.getUI();
+                if (slider.getInverted())
+                  ui.scrollByBlock(BasicSliderUI.POSITIVE_SCROLL);
+                else
+                  ui.scrollByBlock(BasicSliderUI.NEGATIVE_SCROLL);
+              }
+            }
+    );
+    map.put("minScroll", 
+            new AbstractAction("minScroll") {
+              public void actionPerformed(ActionEvent event)
+              {
+                JSlider slider = (JSlider) event.getSource();
+                if (slider.getInverted())
+                  slider.setValue(slider.getMaximum());
+                else
+                  slider.setValue(slider.getMinimum());   
+              }
+            }
+    );
+    map.put("maxScroll", 
+            new AbstractAction("maxScroll") {
+              public void actionPerformed(ActionEvent event)
+              {
+                JSlider slider = (JSlider) event.getSource();
+                if (slider.getInverted())
+                  slider.setValue(slider.getMinimum());
+                else
+                  slider.setValue(slider.getMaximum());                  
+              }
+            }
+    );
+    return map;
   }
 }

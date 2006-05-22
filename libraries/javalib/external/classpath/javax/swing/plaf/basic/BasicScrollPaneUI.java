@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package javax.swing.plaf.basic;
 
+import gnu.classpath.NotImplementedException;
+
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -484,6 +486,7 @@ public class BasicScrollPaneUI extends ScrollPaneUI
    * @param sp the scrollpane to install keyboard actions on
    */
   protected void installKeyboardActions(JScrollPane sp)
+    throws NotImplementedException
   {
     // TODO: Is this only a hook method or should we actually do something
     // here? If the latter, than figure out what and implement this.
@@ -579,6 +582,7 @@ public class BasicScrollPaneUI extends ScrollPaneUI
    * @param sp the scrollpane to uninstall keyboard actions from
    */
   protected void uninstallKeyboardActions(JScrollPane sp)
+    throws NotImplementedException
   {
     // TODO: Is this only a hook method or should we actually do something
     // here? If the latter, than figure out what and implement this.

@@ -398,7 +398,11 @@ public class ProgressMonitor
          if (( now - timestamp ) > millisToDecideToPopup )
          {
            first = false;
-           long expected = ( now - timestamp ) * ( max - min ) / ( progress - min );
+
+
+           long expected = ( progress - min == 0 ) ? 
+	     ( now - timestamp ) * ( max - min ) : 
+	     ( now - timestamp ) * ( max - min ) / ( progress - min );
 
            if ( expected > millisToPopup )
            {

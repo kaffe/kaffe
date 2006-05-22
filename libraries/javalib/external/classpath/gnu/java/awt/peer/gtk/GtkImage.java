@@ -583,6 +583,9 @@ public class GtkImage extends Image
 	srcHeight = height - srcY;
       }
 
+    if ( this.width <= 0 || this.height <= 0 )
+      return true;
+
     if ( srcWidth <= 0 || srcHeight <= 0 || dstWidth <= 0 || dstHeight <= 0)
       return true;
 
@@ -615,6 +618,9 @@ public class GtkImage extends Image
   {
     if (addObserver(observer))
       return false;
+
+    if ( this.width <= 0 || this.height <= 0 )
+      return true;
 
     synchronized(GdkPixbufDecoder.pixbufLock)
       {

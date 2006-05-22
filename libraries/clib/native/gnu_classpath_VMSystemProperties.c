@@ -118,7 +118,7 @@ Java_gnu_classpath_VMSystemProperties_getLocale (JNIEnv *env,
   const char *locale;
 
 #if defined(HAVE_LC_MESSAGES)
-  locale = setlocale (LC_MESSAGES, "");
+  locale = setlocale (LC_MESSAGES, NULL);
 #else
   locale = "";
 #endif
