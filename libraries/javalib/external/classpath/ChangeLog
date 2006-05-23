@@ -1,3 +1,149 @@
+2006-05-23  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* examples/gnu/classpath/examples/swing/TableDemo.java:
+	(SliderCell): New inner class. (setCustomEditors,
+	setInformativeHeaders): New fields. (createContent):
+	Rewritten.
+	* javax/swing/DefaultCellEditor.java 
+	(JComboBoxDelegate.shouldSelectCell): New method.
+	* javax/swing/JTable.java (editCellAt): Call shouldSelectCell.
+	* javax/swing/plaf/basic/BasicTableUI.java
+	(MouseInputHandler.mouseClicked): Start editing on a single
+	click if the cell editor is not a default cell editor.
+
+2006-05-23  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* javax/swing/naming/CompositeName.java,
+	javax/swing/naming/CompoundName.java:
+	Documented.
+
+2006-05-23  Archie Cobbs  <archie@dellroad.org>
+
+	* vm/reference/java/lang/VMClassLoader.java: fix static initializer
+	ordering problem.
+
+2006-05-23  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/tree/AbstractLayoutCache.java: Coding style fixes,
+	* javax/swing/tree/DefaultMutableTreeNode.java: Likewise,
+	* javax/swing/tree/DefaultTreeCellRenderer.java: Likewise,
+	* javax/swing/tree/DefaultTreeModel.java: Likewise,
+	* javax/swing/tree/DefaultTreeSelectionModel.java: Likewise,
+	* javax/swing/tree/ExpandVetoException.java: Likewise,
+	* javax/swing/tree/FixedHeightLayoutCache.java: Likewise,
+	* javax/swing/tree/RowMapper.java: Likewise,
+	* javax/swing/tree/TreeNode.java: Likewise,
+	* javax/swing/tree/TreeSelectionModel.java: Likewise,
+	* javax/swing/tree/VariableHeightLayoutCache.java: Likewise.
+
+2006-05-23  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/tree/DefaultTreeCellRenderer.java
+	(DefaultTreeCellRenderer): Changed key for 
+	setBackgroundNonSelectionColor(),
+	plus API docs all over.
+
+2006-05-23  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+	
+	PR 27680
+	* javax/swing/JTable.java (booleanInvertingEditor): New field.
+	(defaultEditorsByColumnClass, defaultRenderersByColumnClass):
+	Initialise in constructor. (columnMoved): Cancel editing.
+	(createDefaultEditors): Rewritten. (editCellAt):
+	Just invert the value if this is a boolean cell. 
+	(initialiseLocalVars): Do not initialise renderer and editor tables.
+	(setUI): Create editors and renderers here.
+
+2006-05-23  Robert Schuster  <robertschuster@fsfe.org>
+
+	* examples/gnu/classpath/examples/awt/Demo.java:
+	(MainWindow.MainWindow): Added ResolutionWindow and FullscreenWindow
+	instance as subframe.
+	(ResolutionWindow): New inner class.
+	(FullscreenWindow): New inner class.
+
+2006-05-23  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+	
+	PR 27680
+	* javax/swing/JTable.java (BooleanCellRenderer, IconCellRenderer):
+	Set horizontal alignment to centered.
+
+2006-05-22  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/accessibility/AccessibleContext.java
+	(getAccessibleComponent): Fixed typo in docs,
+	* javax/swing/JLabel.java:
+	(AccessibleJLabel.getAccessibleName): Check for explicit 
+	accessibleName,
+	* javax/swing/JTableHeader.java
+	(AccessibleJTableHeaderEntry.columnIndex): New field,
+	(AccessibleJTableHeaderEntry.parent): New field,
+	(AccessibleJTableHeaderEntry.table): New field,
+	(AccessibleJTableHeaderEntry.AccessibleJTableHeaderEntry()): 
+	Implemented,
+	(AccessibleJTableHeaderEntry.getAccessibleColumnHeaderRenderer): New 
+	utility method,
+	(AccessibleJTableHeaderEntry.addFocusListener): Implemented,
+	(AccessibleJTableHeaderEntry.addPropertyChangeListener): Implemented,
+	(AccessibleJTableHeaderEntry.contains): Implemented,
+	(AccessibleJTableHeaderEntry.getAccessibleAction): Implemented,
+	(AccessibleJTableHeaderEntry.getAccessibleAt): Implemented,
+	(AccessibleJTableHeaderEntry.getAccessibleChild): Implemented,
+	(AccessibleJTableHeaderEntry.getAccessibleChildrenCount): Implemented,
+	(AccessibleJTableHeaderEntry.getAccessibleComponent): Implemented,
+	(AccessibleJTableHeaderEntry.getAccessibleContext): Implemented,
+	(AccessibleJTableHeaderEntry.getAccessibleDescription): Implemented,
+	(AccessibleJTableHeaderEntry.getAccessibleIndexInParent): Implemented,
+	(AccessibleJTableHeaderEntry.getAccessibleName): Implemented,
+	(AccessibleJTableHeaderEntry.getAccessibleRole): Implemented,
+	(AccessibleJTableHeaderEntry.getAccessibleSelection): Implemented,
+	(AccessibleJTableHeaderEntry.getAccessibleStateSet): Implemented,
+	(AccessibleJTableHeaderEntry.getAccessibleText): Implemented,
+	(AccessibleJTableHeaderEntry.getAccessibleValue): Implemented,
+	(AccessibleJTableHeaderEntry.getBackground): Implemented,
+	(AccessibleJTableHeaderEntry.getBounds): Implemented,
+	(AccessibleJTableHeaderEntry.getCursor): Implemented,
+	(AccessibleJTableHeaderEntry.getFont): Implemented,
+	(AccessibleJTableHeaderEntry.getFontMetrics): Implemented,
+	(AccessibleJTableHeaderEntry.getForeground): Implemented,
+	(AccessibleJTableHeaderEntry.getLocation): Implemented,
+	(AccessibleJTableHeaderEntry.getLocationOnScreen): Implemented,
+	(AccessibleJTableHeaderEntry.getSize): Implemented,
+	(AccessibleJTableHeaderEntry.isEnabled): Implemented,
+	(AccessibleJTableHeaderEntry.isFocusTraversable): Implemented,
+	(AccessibleJTableHeaderEntry.isShowing): Implemented,
+	(AccessibleJTableHeaderEntry.isVisible): Implemented,
+	(AccessibleJTableHeaderEntry.removeFocusListener): Implemented,
+	(AccessibleJTableHeaderEntry.removePropertyChangeListener): 
+	Implemented,
+	(AccessibleJTableHeaderEntry.requestFocus): Implemented,
+	(AccessibleJTableHeaderEntry.setAccessibleDescription): Implemented,
+	(AccessibleJTableHeaderEntry.setAccessibleName): Implemented,
+	(AccessibleJTableHeaderEntry.setBackground): Implemented,
+	(AccessibleJTableHeaderEntry.setBounds): Implemented,
+	(AccessibleJTableHeaderEntry.setCursor): Implemented,
+	(AccessibleJTableHeaderEntry.setEnabled): Implemented,
+	(AccessibleJTableHeaderEntry.setFont): Implemented,
+	(AccessibleJTableHeaderEntry.setForeground): Implemented,
+	(AccessibleJTableHeaderEntry.setLocation): Implemented,
+	(AccessibleJTableHeaderEntry.setSize): Implemented,
+	(AccessibleJTableHeaderEntry.setVisible): Implemented,
+	(AccessibleJTableHeader.getAccessibleRole): Implemented,
+	(AccessibleJTableHeader.getAccessibleChildrenCount): Implemented,
+	(AccessibleJTableHeader.getAccessibleChild): Implemented,
+	(AccessibleJTableHeader.getAccessibleAt): Implemented.
+
+2006-05-22  Tom Tromey  <tromey@redhat.com>
+
+	* NEWS: Updated.
+
+2006-05-22  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/JLabel.java
+	(AccessibleJLabel.getAccessibleName): New method (override),
+	(setLabelFor): Fire 'labelFor' property change event before other
+	events.
+
 2006-05-22  David Gilbert  <david.gilbert@object-refinery.com>
 
 	* javax/swing/JLabel.java

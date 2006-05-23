@@ -2,8 +2,11 @@ New in release 0.92 (UNRELEASED)
 
 * A Mozilla plugin, 'gcjwebplugin', is now included.  It introduces a
   dependency on the Mozilla plugin support headers and libraries.
-* An 'appletviewer' tool is now included.
-* A 'jar' tool is now included.
+* Several new tools are now included:
+  * appletviewer
+  * jar
+  * native2ascii
+  * serialver
 
 New in release 0.91 (May 15, 2006)
 

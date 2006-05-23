@@ -228,8 +228,6 @@ public class BasicTableUI extends TableUI
               if (e.getClickCount() < ce.getClickCountToStart())
                 return;
             }
-          else if (e.getClickCount() < 2)
-            return;
           table.editCellAt(row, col);
         }
     }

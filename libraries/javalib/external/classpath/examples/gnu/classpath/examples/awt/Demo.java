@@ -154,6 +154,8 @@ class Demo
       addSubWindow ("RandomTests", new TestWindow (this));
       addSubWindow ("RoundRect", new RoundRectWindow ());
       addSubWindow ("Animation", new AnimationWindow ());
+      addSubWindow ("Resolution", new ResolutionWindow ());
+      addSubWindow ("Fullscreen", new FullscreenWindow ());
 
       Panel sp = new Panel();
       PrettyPanel p = new PrettyPanel();
@@ -742,6 +744,99 @@ class Demo
       
       Toolkit t = Toolkit.getDefaultToolkit();
       t.beep();
+    }
+  }
+  
+  static class ResolutionWindow extends SubFrame
+  {
+    GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+    
+    public void init ()
+    {
+      initted = true;
+      
+      setTitle("Change Screen Resolution");
+      final List list = new List();
+      DisplayMode[] modes = gd.getDisplayModes();
+      
+      for (int i=0;i<modes.length;i++ )
+        list.add(modes[i].getWidth()  + "x"
+                 + modes[i].getHeight()
+                 + ((modes[i].getBitDepth() != DisplayMode.BIT_DEPTH_MULTI)
+                   ? "x" + modes[i].getBitDepth() + "bpp"
+                   : "")
+                 + ((modes[i].getRefreshRate() != DisplayMode.REFRESH_RATE_UNKNOWN)
+                   ? "@" + modes[i].getRefreshRate() + "Hz"
+                   : ""));
+      
+      ActionListener al = new ActionListener()
+      {
+        public void actionPerformed(ActionEvent ae)
+        {
+          int i = list.getSelectedIndex();
+          gd.setDisplayMode(gd.getDisplayModes()[i]);
+        }
+      };
+      
+      Button b = new Button("Switch");
+      Button c = new Button("Close");
+      
+      list.addActionListener(al);
+      b.addActionListener(al);
+      
+      c.addActionListener(new ActionListener () {
+        public void actionPerformed (ActionEvent e) {
+          dispose();
+        }
+      });
+      
+      setLayout(new GridLayout(3, 1, 5, 5));
+      add(list);
+      add(b);
+      add(c);
+      
+      pack();
+    }
+  }
+
+  static class FullscreenWindow extends SubFrame
+  {
+    GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+    
+    public void init ()
+    {
+      initted = true;
+      
+      setTitle("Fullscreen Exclusive Mode");
+
+      ActionListener al = new ActionListener()
+      {
+        public void actionPerformed(ActionEvent ae)
+        {
+          if (gd.getFullScreenWindow() == FullscreenWindow.this)
+            gd.setFullScreenWindow(null);
+          else
+            gd.setFullScreenWindow(FullscreenWindow.this);
+        }
+      };
+      
+      Button b = new Button("Toggle Fullscreen");
+      Button c = new Button("Close");
+      
+      b.addActionListener(al);
+      
+      c.addActionListener(new ActionListener () {
+        public void actionPerformed (ActionEvent e) {
+          gd.setFullScreenWindow(null);
+          dispose();
+        }
+      });
+      
+      setLayout(new GridLayout(3, 1, 5, 5));
+      add(b);
+      add(c);
+      
+      pack();
     }
   }
 
