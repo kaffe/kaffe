@@ -35,6 +35,13 @@
    obligated to do so.  If you do not wish to do so, delete this
    exception statement from your version. */
 
+#include <pango/pango.h>
+#include <pango/pangoft2.h>
+#include <pango/pangofc-font.h>
+#include <freetype/ftglyph.h>
+#include <freetype/ftoutln.h>
+#include <freetype/fttypes.h>
+#include <freetype/tttables.h>
 #include "gdkfont.h"
 #include "gnu_java_awt_peer_gtk_GdkFontPeer.h"
 
@@ -465,3 +472,64 @@ Java_gnu_java_awt_peer_gtk_GdkFontPeer_setFont
 }
 
 
+JNIEXPORT jbyteArray JNICALL 
+Java_gnu_java_awt_peer_gtk_GdkFontPeer_getTrueTypeTable 
+  (JNIEnv *env, jobject self, jbyte n, jbyte a, jbyte m, jbyte e)
+{
+  struct peerfont *pfont = NULL;
+  FT_Face face;
+  FT_ULong length = 0;
+  FT_ULong tag;
+  int error;
+  FT_Byte *buffer;
+  jbyteArray result_array;
+  jbyte *rbuf;
+
+  pfont = (struct peerfont *)NSA_GET_FONT_PTR (env, self);
+  if(pfont == NULL)
+    return NULL;
+
+  gdk_threads_enter ();
+  face = pango_fc_font_lock_face ((PangoFcFont *)pfont->font);
+  tag = FT_MAKE_TAG( n, a, m, e );
+
+  /* Get the length of the table requested */
+  error = FT_Load_Sfnt_Table( face, tag, 0, NULL, &length );
+  if ( error ) 
+    {
+      pango_fc_font_unlock_face ((PangoFcFont *)pfont->font);
+      gdk_threads_leave ();
+      return NULL;
+    }
+
+  buffer = (FT_Byte *)g_malloc0( length );
+  if ( buffer == NULL ) 
+    {
+      pango_fc_font_unlock_face ((PangoFcFont *)pfont->font);
+      gdk_threads_leave ();
+      return NULL;
+    }
+  /* get the table data */
+  error = FT_Load_Sfnt_Table( face, tag, 0, buffer, &length );
+  if ( error ) 
+    {
+      pango_fc_font_unlock_face ((PangoFcFont *)pfont->font);
+      g_free(buffer);
+      gdk_threads_leave ();
+      return NULL;
+    }
+
+  /* copy to a jbytearray */
+  result_array = (*env)->NewByteArray (env, length);
+
+  rbuf = (*env)->GetByteArrayElements (env, result_array, NULL);
+  memcpy(rbuf, buffer, length);
+  (*env)->ReleaseByteArrayElements (env, result_array, rbuf, 0);
+
+  g_free(buffer);
+  pango_fc_font_unlock_face ((PangoFcFont *)pfont->font);
+  gdk_threads_leave ();
+
+  /* done */
+  return result_array;
+}

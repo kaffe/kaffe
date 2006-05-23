@@ -379,6 +379,8 @@ public class SelectorImpl extends AbstractSelector
       result = new DatagramChannelSelectionKey (ch, this);
     else if (ch instanceof ServerSocketChannelImpl)
       result = new ServerSocketChannelSelectionKey (ch, this);
+    else if (ch instanceof gnu.java.nio.SocketChannelImpl)
+      result = new gnu.java.nio.SocketChannelSelectionKeyImpl((gnu.java.nio.SocketChannelImpl)ch, this);
     else
       throw new InternalError ("No known channel type");
 

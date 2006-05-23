@@ -562,10 +562,10 @@ public abstract class AbstractDocument implements Document, Serializable
     if (text == null || text.length() == 0)
       return;
     
-    if (documentFilter != null)
-      documentFilter.insertString(getBypass(), offset, text, attributes);
-    else
+    if (documentFilter == null)
       insertStringImpl(offset, text, attributes);
+    else
+      documentFilter.insertString(getBypass(), offset, text, attributes);
   }
 
   void insertStringImpl(int offset, String text, AttributeSet attributes)
@@ -731,10 +731,10 @@ public abstract class AbstractDocument implements Document, Serializable
    */
   public void remove(int offset, int length) throws BadLocationException
   {
-    if (documentFilter != null)
-      documentFilter.remove(getBypass(), offset, length);
-    else
+    if (documentFilter == null)
       removeImpl(offset, length);
+    else
+      documentFilter.remove(getBypass(), offset, length);
   }
   
   void removeImpl(int offset, int length) throws BadLocationException
@@ -795,10 +795,20 @@ public abstract class AbstractDocument implements Document, Serializable
         && (text == null || text.length() == 0))
       return;
     
-    if (documentFilter != null)
-      documentFilter.replace(getBypass(), offset, length, text, attributes);
+    if (documentFilter == null)
+      {
+        // It is important to call the methods which again do the checks
+        // of the arguments and the DocumentFilter because subclasses may
+        // have overridden these methods and provide crucial behavior
+        // which would be skipped if we call the non-checking variants.
+        // An example for this is PlainDocument where insertString can
+        // provide a filtering of newlines.
+        remove(offset, length);
+        insertString(offset, text, attributes);
+      }
     else
-      replaceImpl(offset, length, text, attributes);
+      documentFilter.replace(getBypass(), offset, length, text, attributes);
+    
   }
   
   void replaceImpl(int offset, int length, String text,

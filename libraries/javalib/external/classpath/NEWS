@@ -1,8 +1,11 @@
-New in release 0.92
+New in release 0.92 (UNRELEASED)
 
+* A Mozilla plugin, 'gcjwebplugin', is now included.  It introduces a
+  dependency on the Mozilla plugin support headers and libraries.
+* An 'appletviewer' tool is now included.
 * A 'jar' tool is now included.
 
-New in release 0.91 (UNRELEASED)
+New in release 0.91 (May 15, 2006)
 
 * Experimental activation (java.rmi.activation) support, including RMI
   activation daemon and persistent naming service tools.
@@ -62,6 +65,9 @@ Runtime interface changes:
 * java.lang.Package now has a new constructor that takes the defining
   ClassLoader as an extra argument. If you use a custom version of
   VMClassLoader, please switch it to use this constructor.
+* The reference implementation of VMClassLoader.getBootPackages() now
+  reads the META-INF/INDEX.LIST resource using the java.boot.class.path
+  system property.
 
 New in release 0.90 (March 6, 2006)
 

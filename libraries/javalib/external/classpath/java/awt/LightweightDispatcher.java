@@ -67,6 +67,13 @@ class LightweightDispatcher
    * as well as the MOUSE_RELEASED event following the dragging.
    */
   private Component dragTarget;
+  
+  /**
+   * Stores the button number which started the drag operation. This is needed
+   * because we want to handle only one drag operation and only the button that
+   * started the dragging should be able to stop it (by a button release).
+   */
+  private int dragButton;
 
   /**
    * The last mouse event target. If the target changes, additional
@@ -121,15 +128,41 @@ class LightweightDispatcher
   /**
    * Handles all mouse events that are targetted at toplevel containers
    * (Window instances) and dispatches them to the correct lightweight child.
-   *
+   * 
    * @param ev the mouse event
    * @return whether or not we found a lightweight that handled the event.
    */
   private boolean handleMouseEvent(MouseEvent ev)
   {
     Window window = (Window) ev.getSource();
-    Component target = window.findComponentAt(ev.getX(), ev.getY());
-    target = findTarget(target);
+    // Find the target for the mouse event. We first seach the deepest
+    // component at the specified location. The we go up to its parent and
+    // try to find a neighbor of the deepest component that is suitable as
+    // mouse event target (it must be showing, at that location and have either
+    // a MouseListener or MouseMotionListener installed). If no such component
+    // is found, then we walk up the container hierarchy and find the next
+    // container that has a MouseListener or MouseMotionListener installed.
+    Component deepest = window.findComponentAt(ev.getX(), ev.getY());
+    if (deepest == null)
+      return false;
+    Container parent = deepest.getParent();
+    Point loc = ev.getPoint();
+    loc = AWTUtilities.convertPoint(window, loc.x, loc.y, parent);
+    Component target = null;
+    if (parent != null)
+      {
+        target = findTarget(deepest.getParent(), loc);
+        while (target == null && parent != null)
+          {
+            if (parent.getMouseListeners().length > 0
+                || parent.getMouseMotionListeners().length > 0)
+              {
+                target = parent;
+              }
+            else
+              parent = parent.getParent();
+          }
+      }
     if (target == null || target.isLightweight())
       {
         // Dispatch additional MOUSE_EXITED and MOUSE_ENTERED if event target
@@ -146,7 +179,16 @@ class LightweightDispatcher
                                  ev.getClickCount(), ev.isPopupTrigger());
                 lastTarget.dispatchEvent(mouseExited);
               }
-            if (target != null)
+            
+            // If a target exists dispatch the MOUSE_ENTERED event only if
+            // there is currently no component from which a drag operation
+            // started (dragTarget == null) or the target is that component
+            // (dragTarget == target)
+            // That way a user can click and hold on a button (putting it into
+            // the armed state), move the cursor above other buttons without
+            // affecting their rollover state and get back to the initial
+            // button.
+            if (target != null && (dragTarget == null || dragTarget == target))
               {
                 Point p = AWTUtilities.convertPoint(window, ev.getX(), ev.getY(),
                                                     target);
@@ -161,12 +203,30 @@ class LightweightDispatcher
         switch (ev.getID())
         {
           case MouseEvent.MOUSE_PRESSED:
-            dragTarget = target;
+            // Handle the start of a drag operation or discard the event if
+            // one is already in progress. This prevents focus changes with the
+            // other mouse buttons when one is used for dragging.
+            if (dragTarget == null)
+              {
+                lastTarget = dragTarget = target;
+                
+                // Save the button that started the drag operation.
+                dragButton = ev.getButton();
+              }
+            else
+              return false;
+            
             break;
           case MouseEvent.MOUSE_RELEASED:
-            if (dragTarget != null)
-              target = dragTarget;
-            dragTarget = null;
+            // Stop the drag operation only when the button that started
+            // it was released.
+            if (dragTarget != null && dragButton == ev.getButton())
+              {
+                target = dragTarget;
+                dragTarget = null;
+              }
+            
+            lastTarget = target;
             break;
           case MouseEvent.MOUSE_CLICKED:
             // When we receive a MOUSE_CLICKED, we set the target to the
@@ -174,17 +234,23 @@ class LightweightDispatcher
             // This is necessary for the case when the MOUSE_RELEASED has
             // caused the original target (like an internal component) go
             // away.
+            // This line is the reason why it is not possible to move the
+            // 'lastTarget = target' assignment before the switch-statement.
             target = lastTarget;
             break;
           case MouseEvent.MOUSE_DRAGGED:
+            // We consider only dragTarget for redispatching the event still
+            // we have to act in a way that the newly found target component
+            // was handled.
+            lastTarget = target;
             target = dragTarget;
             break;
           default:
-            // Do nothing in other cases.
+            // Only declare current target as the old value in all other
+            // cases.
+            lastTarget = target;
             break;
         }
-
-        lastTarget = target;
 
         if (target != null)
           {
@@ -195,6 +261,7 @@ class LightweightDispatcher
             ev.translatePoint(dx, dy);
             ev.setSource(target);
             target.dispatchEvent(ev);
+            
             // We reset the event, so that the normal event dispatching is not
             // influenced by this modified event.
             ev.setSource(window);
@@ -209,19 +276,36 @@ class LightweightDispatcher
 
   /**
    * Finds the actual target for a mouseevent, starting at <code>c</code>.
-   * This searches upwards the component hierarchy until it finds a component
-   * that has a mouselistener attached.
+   * This searches through the children of the container and finds the first
+   * one which is showing, at the location from the mouse event and has
+   * a MouseListener or MouseMotionListener attached. If no such child component
+   * is found, null is returned.
    *
-   * @param c the component to start searching from
+   * @param c the container to search through
+   * @param loc the mouse event point
    *
-   * @return the actual receiver of the mouse event
+   * @return the actual receiver of the mouse event, or null, if no such
+   *         component has been found
    */
-  private Component findTarget(Component c)
+  private Component findTarget(Container c, Point loc)
   {
-    Component target = c;
-    while (target != null && target.getMouseListeners().length == 0)
+    Component[] children = c.getComponents();
+    Component target = null;
+    if (c != null)
       {
-        target = target.getParent();
+        Point childLoc;
+        for (int i = 0; i < children.length; i++)
+          {
+            Component child = children[i];
+            childLoc = AWTUtilities.convertPoint(c, loc.x, loc.y, child);
+            if (child.isShowing() && child.contains(childLoc)
+                && (child.getMouseListeners().length > 0 
+                    || child.getMouseMotionListeners().length > 0))
+              {
+                target = child;
+                break;
+              }
+          }
       }
     return target;
   }

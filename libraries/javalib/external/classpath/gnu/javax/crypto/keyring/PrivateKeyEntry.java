@@ -42,12 +42,10 @@ import gnu.java.security.key.IKeyPairCodec;
 import gnu.java.security.key.KeyPairCodecFactory;
 import gnu.java.security.key.dss.DSSPrivateKey;
 import gnu.java.security.key.rsa.GnuRSAPrivateKey;
-
 import gnu.javax.crypto.key.GnuSecretKey;
 import gnu.javax.crypto.key.dh.GnuDHPrivateKey;
 
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.security.Key;
 import java.security.KeyFactory;
@@ -56,11 +54,11 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Date;
 
 /**
- * <p>An immutable class representing a private or secret key entry.</p>
+ * An immutable class representing a private or secret key entry.
  */
-public final class PrivateKeyEntry extends PrimitiveEntry
+public final class PrivateKeyEntry
+    extends PrimitiveEntry
 {
-
   // Constants and variables
   // -------------------------------------------------------------------------
 
@@ -73,7 +71,7 @@ public final class PrivateKeyEntry extends PrimitiveEntry
   // -------------------------------------------------------------------------
 
   /**
-   * <p>Creates a new key entry.</p>
+   * Creates a new key entry.
    *
    * @param key The key.
    * @param creationDate The entry creation date.
@@ -85,13 +83,11 @@ public final class PrivateKeyEntry extends PrimitiveEntry
     super(TYPE, creationDate, properties);
 
     if (key == null)
-      {
-        throw new IllegalArgumentException("no private key");
-      }
-    if (!(key instanceof PrivateKey) && !(key instanceof GnuSecretKey))
-      {
-        throw new IllegalArgumentException("not a private or secret key");
-      }
+      throw new IllegalArgumentException("no private key");
+
+    if (! (key instanceof PrivateKey) && ! (key instanceof GnuSecretKey))
+      throw new IllegalArgumentException("not a private or secret key");
+
     this.key = key;
   }
 
@@ -109,9 +105,8 @@ public final class PrivateKeyEntry extends PrimitiveEntry
     entry.defaultDecode(in);
     String type = entry.properties.get("type");
     if (type == null)
-      {
-        throw new MalformedKeyringException("no key type");
-      }
+      throw new MalformedKeyringException("no key type");
+
     if (type.equalsIgnoreCase("RAW-DSS"))
       {
         IKeyPairCodec coder = KeyPairCodecFactory.getInstance("dss");
@@ -128,42 +123,38 @@ public final class PrivateKeyEntry extends PrimitiveEntry
         entry.key = coder.decodePrivateKey(entry.payload);
       }
     else if (type.equalsIgnoreCase("RAW"))
-      {
-        entry.key = new GnuSecretKey(entry.payload, null);
-      }
+      entry.key = new GnuSecretKey(entry.payload, null);
     else if (type.equalsIgnoreCase("PKCS8"))
       {
         try
           {
             KeyFactory kf = KeyFactory.getInstance("RSA");
-            entry.key = kf.generatePrivate(new PKCS8EncodedKeySpec(
-                                                                   entry.payload));
+            PKCS8EncodedKeySpec ks = new PKCS8EncodedKeySpec(entry.payload);
+            entry.key = kf.generatePrivate(ks);
           }
-        catch (Exception x)
+        catch (Exception ignored)
           {
           }
+
         if (entry.key == null)
           {
             try
               {
                 KeyFactory kf = KeyFactory.getInstance("DSA");
-                entry.key = kf.generatePrivate(new PKCS8EncodedKeySpec(
-                                                                       entry.payload));
+                PKCS8EncodedKeySpec ks = new PKCS8EncodedKeySpec(entry.payload);
+                entry.key = kf.generatePrivate(ks);
               }
-            catch (Exception x)
+            catch (Exception ignored)
               {
               }
+
             if (entry.key == null)
-              {
-                throw new MalformedKeyringException(
-                                                    "could not decode PKCS#8 key");
-              }
+              throw new MalformedKeyringException("could not decode PKCS#8 key");
           }
       }
     else
-      {
-        throw new MalformedKeyringException("unsupported key type " + type);
-      }
+      throw new MalformedKeyringException("unsupported key type " + type);
+
     return entry;
   }
 
@@ -171,7 +162,7 @@ public final class PrivateKeyEntry extends PrimitiveEntry
   // -------------------------------------------------------------------------
 
   /**
-   * <p>Returns this entry's key.</p>
+   * Returns this entry's key.
    *
    * @return The key.
    */
@@ -212,8 +203,12 @@ public final class PrivateKeyEntry extends PrimitiveEntry
         payload = key.getEncoded();
       }
     else
-      {
-        throw new IllegalArgumentException("unsupported private key");
-      }
+      throw new IllegalArgumentException("unsupported private key");
+  }
+
+  public String toString()
+  {
+    return "PrivateKeyEntry{key="
+        + (key == null ? "-" : key.getClass().getName()) + "}";
   }
 }

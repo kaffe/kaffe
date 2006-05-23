@@ -41,16 +41,23 @@ package gnu.javax.crypto.keyring;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 /**
  * An immutable class representing a single entry in a keyring.
  */
 public abstract class Entry
 {
-
   // Fields.
   // ------------------------------------------------------------------------
 
+  private static final Logger log = Logger.getLogger(Entry.class.getName());
+  private static final String[] TYPES = new String[]
+  {
+    "Encrypted", "PasswordEncrypted", "Authenticated", "PasswordAuthenticated",
+    "Compressed", "Certificate", "PublicKey", "PrivateKey", "CertPath",
+    "BinaryData"
+  };
   /** This entry's type identifier. */
   protected int type;
 
@@ -145,6 +152,17 @@ public abstract class Entry
     out.write(payload);
   }
 
+  public String toString()
+  {
+    
+    return new StringBuilder("Entry{")
+        .append("type=").append(TYPES[type])
+        .append(", properties=").append(properties)
+        .append(", payload=")
+        .append(payload == null? "-" : "byte[" + payload.length + "]")
+        .append("}").toString();
+  }
+
   /**
    * Generic decoding method, which simply decodes the properties field
    * and reads the payload field.
@@ -161,6 +179,7 @@ public abstract class Entry
       {
         throw new IOException("corrupt length");
       }
+    log.finest("About to instantiate new payload byte array for " + this);
     payload = new byte[len];
     in.readFully(payload);
   }

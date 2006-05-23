@@ -38,8 +38,6 @@ exception statement from your version. */
 
 package javax.swing.plaf.basic;
 
-import gnu.classpath.NotImplementedException;
-
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -831,9 +829,9 @@ public abstract class BasicTextUI extends TextUI
    * this UI.
    */
   protected void uninstallKeyboardActions()
-    throws NotImplementedException
   {
-    // FIXME: Uninstall keyboard actions here.
+    SwingUtilities.replaceUIInputMap(textComponent, JComponent.WHEN_FOCUSED, null);
+    SwingUtilities.replaceUIActionMap(textComponent, null);
   }
 
   /**

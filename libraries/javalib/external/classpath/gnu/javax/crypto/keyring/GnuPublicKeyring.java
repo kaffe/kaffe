@@ -78,7 +78,6 @@ public class GnuPublicKeyring extends BaseKeyring implements IPublicKeyring
   public boolean containsCertificate(String alias)
   {
     log.entering(this.getClass().getName(), "containsCertificate", alias);
-
     boolean result = false;
     if (containsAlias(alias))
       for (Iterator it = get(alias).iterator(); it.hasNext();)
@@ -87,7 +86,6 @@ public class GnuPublicKeyring extends BaseKeyring implements IPublicKeyring
             result = true;
             break;
           }
-
     log.exiting(this.getClass().getName(), "containsCertificate",
                 Boolean.valueOf(result));
     return result;
@@ -96,7 +94,6 @@ public class GnuPublicKeyring extends BaseKeyring implements IPublicKeyring
   public Certificate getCertificate(String alias)
   {
     log.entering(this.getClass().getName(), "getCertificate", alias);
-
     Certificate result = null;
     if (containsAlias(alias))
       for (Iterator it = get(alias).iterator(); it.hasNext();)
@@ -108,7 +105,6 @@ public class GnuPublicKeyring extends BaseKeyring implements IPublicKeyring
               break;
             }
         }
-
     log.exiting(this.getClass().getName(), "getCertificate", result);
     return result;
   }
@@ -117,7 +113,6 @@ public class GnuPublicKeyring extends BaseKeyring implements IPublicKeyring
   {
     log.entering(this.getClass().getName(), "putCertificate",
                  new Object[] { alias, cert });
-
     if (! containsCertificate(alias))
       {
         Properties p = new Properties();
@@ -132,9 +127,7 @@ public class GnuPublicKeyring extends BaseKeyring implements IPublicKeyring
 
   protected void load(InputStream in, char[] password) throws IOException
   {
-    log.entering(this.getClass().getName(), "load",
-                 new Object[] { in, String.valueOf(password) });
-
+    log.entering(this.getClass().getName(), "load");
     if (in.read() != USAGE)
       throw new MalformedKeyringException("incompatible keyring usage");
 
@@ -143,18 +136,14 @@ public class GnuPublicKeyring extends BaseKeyring implements IPublicKeyring
 
     DataInputStream dis = new DataInputStream(in);
     keyring = PasswordAuthenticatedEntry.decode(dis, password);
-
     log.exiting(this.getClass().getName(), "load");
   }
 
   protected void store(OutputStream out, char[] password) throws IOException
   {
-    log.entering(this.getClass().getName(), "store",
-                 new Object[] { out, String.valueOf(password) });
-
+    log.entering(this.getClass().getName(), "store");
     out.write(USAGE);
     keyring.encode(new DataOutputStream(out), password);
-
     log.exiting(this.getClass().getName(), "store");
   }
 }

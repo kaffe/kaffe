@@ -46,5 +46,6 @@ public abstract class Action
   {
   }
 
-  public abstract void run(Main parameters) throws IOException;
+  public abstract void run(Main parameters)
+    throws IOException;
 }

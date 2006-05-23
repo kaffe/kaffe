@@ -37,7 +37,6 @@ exception statement from your version. */
 
 package gnu.javax.imageio.jpeg;
 
-// TODO: Clear copyright of this file.
 /**
  * This class implements the Zig Zag Algorithm on any array with
  * the same amount of rows and columns. It takes a matrix and in turn builds an

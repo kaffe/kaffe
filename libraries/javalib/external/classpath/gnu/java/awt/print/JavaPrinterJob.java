@@ -38,30 +38,28 @@ exception statement from your version. */
 
 package gnu.java.awt.print;
 
-import java.util.Locale;
 import java.awt.HeadlessException;
+import java.awt.print.PageFormat;
 import java.awt.print.Pageable;
 import java.awt.print.Printable;
-import java.awt.print.PrinterGraphics;
-import java.awt.print.Book;
-import java.awt.print.PageFormat;
-import java.awt.print.Paper;
-import java.awt.print.PrinterJob;
-import java.awt.print.PrinterAbortException;
 import java.awt.print.PrinterException;
-import javax.print.PrintService;
-import javax.print.PrintServiceLookup;
+import java.awt.print.PrinterJob;
+import java.util.Locale;
+
+import javax.print.CancelablePrintJob;
 import javax.print.DocFlavor;
 import javax.print.DocPrintJob;
 import javax.print.PrintException;
-import javax.print.StreamPrintServiceFactory;
+import javax.print.PrintService;
+import javax.print.PrintServiceLookup;
 import javax.print.ServiceUI;
-import javax.print.attribute.IntegerSyntax;
-import javax.print.attribute.TextSyntax;
-import javax.print.attribute.PrintRequestAttributeSet;
 import javax.print.attribute.HashPrintRequestAttributeSet;
+import javax.print.attribute.IntegerSyntax;
+import javax.print.attribute.PrintRequestAttributeSet;
+import javax.print.attribute.TextSyntax;
 import javax.print.attribute.standard.Copies;
 import javax.print.attribute.standard.JobName;
+import javax.print.attribute.standard.OrientationRequested;
 import javax.print.attribute.standard.RequestingUserName;
 
 /**
@@ -101,6 +99,16 @@ public class JavaPrinterJob extends PrinterJob
    */
   private PageFormat pageFormat;
 
+  /**
+   * A pageable, or null
+   */
+  private Pageable pageable = null;
+
+  /**
+   * Cancelled or not
+   */
+  private boolean cancelled = false;
+
   static
   {
     // lookup all services without any constraints
@@ -121,6 +129,21 @@ public class JavaPrinterJob extends PrinterJob
     setCopies(1);
     setJobName("Java Printing");
     pageFormat = new PageFormat(); // default page format.
+  }
+
+  private void getPageAttributes()
+  {
+    OrientationRequested orientation = (OrientationRequested)
+      attributes.get( OrientationRequested.LANDSCAPE.getCategory() );
+    if( orientation == null)
+      return;
+
+    if( orientation.equals(OrientationRequested.PORTRAIT) )
+      pageFormat.setOrientation(PageFormat.PORTRAIT);
+    else if( orientation.equals(OrientationRequested.LANDSCAPE) )
+      pageFormat.setOrientation(PageFormat.LANDSCAPE);
+    else if( orientation.equals(OrientationRequested.REVERSE_LANDSCAPE) )
+	pageFormat.setOrientation(PageFormat.REVERSE_LANDSCAPE);
   }
 
   /**
@@ -178,6 +201,17 @@ public class JavaPrinterJob extends PrinterJob
    */
   public void cancel()
   {
+    try
+      {
+	if(printJob != null && (printJob instanceof CancelablePrintJob))
+	  {
+	    ((CancelablePrintJob)printJob).cancel();
+	    cancelled = true;
+	  }
+      }
+    catch(PrintException pe)
+      {
+      }
   }
 
   /**
@@ -188,7 +222,7 @@ public class JavaPrinterJob extends PrinterJob
    */
   public boolean isCancelled()
   {
-    return false;
+    return cancelled;
   }
 
   /**
@@ -223,12 +257,15 @@ public class JavaPrinterJob extends PrinterJob
    */
   public void print() throws PrinterException
   {
-    if( printable == null )
+    if( printable == null && pageable == null ) // nothing to print?
       return;
-    JavaPrinterGraphics pg = new JavaPrinterGraphics( this, pageFormat );
 
+    PostScriptGraphics2D pg = new PostScriptGraphics2D( this );
+    SpooledDocument doc = pg.spoolPostScript( printable, pageFormat, 
+					      pageable );
+
+    cancelled = false;
     printJob = printer.createPrintJob();
-    SpooledDocument doc = pg.spoolPostScript( printable );
     try
       {
 	printJob.print(doc, attributes);
@@ -239,6 +276,8 @@ public class JavaPrinterJob extends PrinterJob
 	p.initCause(pe);
 	throw p;
       }
+    // no printjob active.
+    printJob = null;
   }
 
   /**
@@ -277,6 +316,8 @@ public class JavaPrinterJob extends PrinterJob
       (null, 50, 50, services, null, 
        DocFlavor.INPUT_STREAM.POSTSCRIPT, attributes);
 
+    getPageAttributes();
+
     if( chosenPrinter != null )
       {
 	try
@@ -299,7 +340,9 @@ public class JavaPrinterJob extends PrinterJob
    */
   public void setPageable(Pageable pageable)
   {
-    // FIXME
+    if( pageable == null )
+      throw new NullPointerException("Pageable cannot be null.");
+    this.pageable = pageable;
   }
 
   /**
@@ -323,7 +366,7 @@ public class JavaPrinterJob extends PrinterJob
   public void setPrintable(Printable printable, PageFormat page_format)
   {
     this.printable = printable;
-    // FIXME
+    this.pageFormat = page_format;
   }
 
   /**

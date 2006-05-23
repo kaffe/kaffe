@@ -132,39 +132,40 @@ public class PasswordEncryptedEntry extends MaskableEnvelopeEntry implements
   public void decrypt(char[] password) throws IllegalArgumentException,
       WrongPaddingException
   {
-    log.entering(this.getClass().getName(), "decrypt", String.valueOf(password));
-    long tt = - System.currentTimeMillis();
-
-    if (!isMasked() || payload == null)
-      return;
-
-    IMode mode = getMode(password, IMode.DECRYPTION);
-    IPad padding = PadFactory.getInstance("PKCS7");
-    padding.init(mode.currentBlockSize());
-    byte[] buf = new byte[payload.length];
-    int count = 0;
-    for (int i = 0; i < payload.length; i++)
+    log.entering(this.getClass().getName(), "decrypt");
+    if (isMasked() && payload != null)
       {
-        mode.update(payload, count, buf, count);
-        count += mode.currentBlockSize();
-      }
-    int padlen = padding.unpad(buf, 0, buf.length);
-    ByteArrayInputStream baos = new ByteArrayInputStream(buf, 0,
-                                                         buf.length - padlen);
-    DataInputStream in = new DataInputStream(baos);
-    try
-      {
-        decodeEnvelope(in);
-      }
-    catch (IOException ioe)
-      {
-        throw new IllegalArgumentException("decryption failed");
-      }
-    setMasked(false);
-    payload = null;
+        long tt = - System.currentTimeMillis();
+        IMode mode = getMode(password, IMode.DECRYPTION);
+        IPad padding = PadFactory.getInstance("PKCS7");
+        padding.init(mode.currentBlockSize());
+        byte[] buf = new byte[payload.length];
+        int count = 0;
+        while (count + mode.currentBlockSize() <= payload.length)
+          {
+            mode.update(payload, count, buf, count);
+            count += mode.currentBlockSize();
+          }
+        int padlen = padding.unpad(buf, 0, buf.length);
 
-    tt += System.currentTimeMillis();
-    log.finer("Decrypted in " + tt + "ms.");
+        setMasked(false);
+
+        ByteArrayInputStream baos = new ByteArrayInputStream(buf, 0,
+                                                             buf.length - padlen);
+        DataInputStream in = new DataInputStream(baos);
+        try
+          {
+            decodeEnvelope(in);
+          }
+        catch (IOException ioe)
+          {
+            throw new IllegalArgumentException("decryption failed");
+          }
+        tt += System.currentTimeMillis();
+        log.finer("Decrypted in " + tt + "ms.");
+      }
+    else
+      log.finer("Skip decryption; " + (isMasked() ? "null payload" : "unmasked"));
     log.exiting(this.getClass().getName(), "decrypt");
   }
 
@@ -208,6 +209,8 @@ public class PasswordEncryptedEntry extends MaskableEnvelopeEntry implements
       }
     mode.update(lastBlock, 0, payload, count);
 
+    setMasked(true);
+
     tt += System.currentTimeMillis();
     log.finer("Encrypted in " + tt + "ms.");
     log.exiting(this.getClass().getName(), "encrypt");
@@ -223,6 +226,7 @@ public class PasswordEncryptedEntry extends MaskableEnvelopeEntry implements
   {
     if (payload == null)
       {
+        log.fine("Null payload: " + this);
         throw new IllegalStateException("not encrypted");
       }
   }

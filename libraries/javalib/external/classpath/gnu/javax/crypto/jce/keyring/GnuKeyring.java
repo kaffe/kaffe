@@ -90,30 +90,44 @@ public class GnuKeyring
 
   public Enumeration engineAliases()
   {
+    log.entering(this.getClass().getName(), "engineAliases");
     ensureLoaded();
     Enumeration result;
     if (privateKR == null)
       result = Collections.enumeration(Collections.EMPTY_SET);
-      else
-        {
-          Set aliases = new HashSet();
-          for (Enumeration e = privateKR.aliases(); e.hasMoreElements();)
-            {
-              String alias = (String) e.nextElement();
-              if (alias != null)
-                aliases.add(alias);
-            }
-
-          for (Enumeration e = publicKR.aliases(); e.hasMoreElements();)
-            {
-              String alias = (String) e.nextElement();
-              if (alias != null)
-                aliases.add(alias);
-            }
-
-          result = Collections.enumeration(aliases);
-        }
-
+    else
+      {
+        Set aliases = new HashSet();
+        for (Enumeration e = privateKR.aliases(); e.hasMoreElements();)
+          {
+            String alias = (String) e.nextElement();
+            if (alias != null)
+              {
+                alias = alias.trim();
+                if (alias.length() > 0)
+                  {
+                    log.finest("Adding alias (from private keyring): " + alias);
+                    aliases.add(alias);
+                  }
+              }
+          }
+        for (Enumeration e = publicKR.aliases(); e.hasMoreElements();)
+          {
+            String alias = (String) e.nextElement();
+            if (alias != null)
+              {
+                alias = alias.trim();
+                if (alias.length() > 0)
+                  {
+                    log.finest("Adding alias (from public keyring): " + alias);
+                    aliases.add(alias);
+                  }
+              }
+          }
+        log.finest("Will enumerate: " + aliases);
+        result = Collections.enumeration(aliases);
+      }
+    log.exiting(this.getClass().getName(), "engineAliases");
     return result;
   }
 
@@ -181,13 +195,23 @@ public class GnuKeyring
   }
 
   public void engineSetCertificateEntry(String alias, Certificate cert)
+      throws KeyStoreException
   {
     log.entering(this.getClass().getName(), "engineSetCertificateEntry",
                  new Object[] { alias, cert });
-
     ensureLoaded();
-    publicKR.putCertificate(alias, cert);
+    if (privateKR.containsAlias(alias))
+      throw new KeyStoreException("Alias [" + alias
+                                  + "] already exists and DOES NOT identify a "
+                                  + "Trusted Certificate Entry");
+    if (publicKR.containsCertificate(alias))
+      {
+        log.fine("Public keyring already contains Alias [" + alias
+                 + "]. Will remove it");
+        publicKR.remove(alias);
+      }
 
+    publicKR.putCertificate(alias, cert);
     log.exiting(this.getClass().getName(), "engineSetCertificateEntry");
   }
 
@@ -218,9 +242,7 @@ public class GnuKeyring
   public Key engineGetKey(String alias, char[] password)
       throws UnrecoverableKeyException
   {
-    log.entering(this.getClass().getName(), "engineGetKey",
-                 String.valueOf(password));
-
+    log.entering(this.getClass().getName(), "engineGetKey", alias);
     ensureLoaded();
     Key result = null;
     if (password == null)
@@ -231,7 +253,8 @@ public class GnuKeyring
     else if (privateKR.containsPrivateKey(alias))
       result = privateKR.getPrivateKey(alias, password); 
 
-    log.exiting(this.getClass().getName(), "engineGetKey", result);
+    log.exiting(this.getClass().getName(), "engineGetKey",
+                result == null ? "null" : result.getClass().getName());
     return result;
   }
 
@@ -240,20 +263,28 @@ public class GnuKeyring
       throws KeyStoreException
   {
     log.entering(this.getClass().getName(), "engineSetKeyEntry",
-                 new Object[] { alias, key, password, chain });
+                 new Object[] { alias, key.getClass().getName(), chain });
     ensureLoaded();
+    if (publicKR.containsAlias(alias))
+      throw new KeyStoreException("Alias [" + alias
+                                  + "] already exists and DOES NOT identify a "
+                                  + "Key Entry");
     if (key instanceof PublicKey)
-      privateKR.putPublicKey(alias, (PublicKey) key);
+      {
+        privateKR.remove(alias);
+        PublicKey pk = (PublicKey) key;
+        privateKR.putPublicKey(alias, pk);
+      }
     else
       {
         if (! (key instanceof PrivateKey) && ! (key instanceof SecretKey))
           throw new KeyStoreException("cannot store keys of type "
                                       + key.getClass().getName());
+        privateKR.remove(alias);
         privateKR.putCertPath(alias, chain);
         log.finest("About to put private key in keyring...");
         privateKR.putPrivateKey(alias, key, password);
       }
-
     log.exiting(this.getClass().getName(), "engineSetKeyEntry");
   }
 
@@ -292,7 +323,7 @@ public class GnuKeyring
 
   public void engineLoad(InputStream in, char[] password) throws IOException
   {
-    log.entering(this.getClass().getName(), "engineLoad", String.valueOf(password));
+    log.entering(this.getClass().getName(), "engineLoad");
     if (in != null)
       {
         if (! in.markSupported())
@@ -305,14 +336,12 @@ public class GnuKeyring
       createNewKeyrings();
 
     loaded = true;
-
     log.exiting(this.getClass().getName(), "engineLoad");
   }
 
   public void engineStore(OutputStream out, char[] password) throws IOException
   {
-    log.entering(this.getClass().getName(), "engineStore", String.valueOf(password));
-
+    log.entering(this.getClass().getName(), "engineStore");
     ensureLoaded();
     HashMap attr = new HashMap();
     attr.put(IKeyring.KEYRING_DATA_OUT, out);
@@ -320,14 +349,18 @@ public class GnuKeyring
 
     privateKR.store(attr);
     publicKR.store(attr);
-
     log.exiting(this.getClass().getName(), "engineStore");
   }
 
   public int engineSize()
   {
-    ensureLoaded();
-    return privateKR.size() + publicKR.size();
+    log.entering(this.getClass().getName(), "engineSize");
+    int result = 0;
+    for (Enumeration e = engineAliases(); e.hasMoreElements(); result++)
+      e.nextElement();
+
+    log.exiting(this.getClass().getName(), "engineSize", Integer.valueOf(result));
+    return result;
   }
 
   /**

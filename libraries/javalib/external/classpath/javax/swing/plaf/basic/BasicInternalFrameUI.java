@@ -1,5 +1,5 @@
 /* BasicInternalFrameUI.java --
-   Copyright (C) 2004, 2005 Free Software Foundation, Inc.
+   Copyright (C) 2004, 2005, 2006 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -57,6 +57,7 @@ import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyVetoException;
 
 import javax.swing.DefaultDesktopManager;
 import javax.swing.DesktopManager;
@@ -168,10 +169,9 @@ public class BasicInternalFrameUI extends InternalFrameUI
     implements SwingConstants
   {
     /**
-     * If true, the cursor is being already shown in the alternative "resize"
-     * shape. 
+     * The current shape of the cursor. 
      */
-    transient boolean showingResizeCursor;
+    transient int showingCursor;
     
     /** FIXME: Use for something. */
     protected final int RESIZE_NONE = 0;
@@ -187,7 +187,7 @@ public class BasicInternalFrameUI extends InternalFrameUI
 
     /** Cache rectangle that can be reused. */
     private transient Rectangle cacheRect = new Rectangle();
-
+    
     /**
      * This method is called when the mouse is clicked.
      *
@@ -195,6 +195,20 @@ public class BasicInternalFrameUI extends InternalFrameUI
      */
     public void mouseClicked(MouseEvent e)
     {
+      // Do minimization/maximization when double-clicking in the title pane.
+      if (e.getSource() == titlePane && e.getClickCount() == 2)
+        try
+          {
+            if (frame.isMaximizable() && ! frame.isMaximum())
+              frame.setMaximum(true);
+            else if (frame.isMaximum())
+              frame.setMaximum(false);
+          }
+        catch (PropertyVetoException pve)
+          {
+            // We do nothing if the attempt has been vetoed.
+          }
+        
       // There is nothing to do when the mouse is clicked
       // on the border.
     }
@@ -223,34 +237,34 @@ public class BasicInternalFrameUI extends InternalFrameUI
         {
           switch (direction)
             {
-            case NORTH:
+            case Cursor.N_RESIZE_CURSOR:
               cacheRect.setBounds(b.x, Math.min(b.y + y, b.y + b.height
                                                          - min.height),
                                   b.width, b.height - y);
               break;
-            case NORTH_EAST:
+            case Cursor.NE_RESIZE_CURSOR:
               cacheRect.setBounds(b.x, Math.min(b.y + y, b.y + b.height
-                                                         - min.height), x,
+                                                         - min.height), x + 1,
                                   b.height - y);
               break;
-            case EAST:
-              cacheRect.setBounds(b.x, b.y, x, b.height);
+            case Cursor.E_RESIZE_CURSOR:
+              cacheRect.setBounds(b.x, b.y, x + 1, b.height);
               break;
-            case SOUTH_EAST:
-              cacheRect.setBounds(b.x, b.y, x, y);
+            case Cursor.SE_RESIZE_CURSOR:
+              cacheRect.setBounds(b.x, b.y, x + 1, y + 1);
               break;
-            case SOUTH:
-              cacheRect.setBounds(b.x, b.y, b.width, y);
+            case Cursor.S_RESIZE_CURSOR:
+              cacheRect.setBounds(b.x, b.y, b.width, y + 1);
               break;
-            case SOUTH_WEST:
+            case Cursor.SW_RESIZE_CURSOR:
               cacheRect.setBounds(Math.min(b.x + x, b.x + b.width - min.width),
-                                  b.y, b.width - x, y);
+                                  b.y, b.width - x, y + 1);
               break;
-            case WEST:
+            case Cursor.W_RESIZE_CURSOR:
               cacheRect.setBounds(Math.min(b.x + x, b.x + b.width - min.width),
                                   b.y, b.width - x, b.height);
               break;
-            case NORTH_WEST:
+            case Cursor.NW_RESIZE_CURSOR:
               cacheRect.setBounds(
                                   Math.min(b.x + x, b.x + b.width - min.width),
                                   Math.min(b.y + y, b.y + b.height - min.height),
@@ -260,6 +274,7 @@ public class BasicInternalFrameUI extends InternalFrameUI
           dm.resizeFrame(frame, cacheRect.x, cacheRect.y,
                          Math.max(min.width, cacheRect.width),
                          Math.max(min.height, cacheRect.height));
+          setCursor(e);
         }
       else if (e.getSource() == titlePane)
         {
@@ -277,11 +292,10 @@ public class BasicInternalFrameUI extends InternalFrameUI
      */
     public void mouseExited(MouseEvent e)
     {
-      // Reset the cursor shape.
-      if (showingResizeCursor)
+      if (showingCursor != Cursor.DEFAULT_CURSOR)
         {
           frame.setCursor(Cursor.getDefaultCursor());
-          showingResizeCursor = false;
+          showingCursor = Cursor.DEFAULT_CURSOR;
         }
     }
 
@@ -293,53 +307,36 @@ public class BasicInternalFrameUI extends InternalFrameUI
     public void mouseMoved(MouseEvent e)
     {
       // Turn off the resize cursor if we are in the frame header.
-      if (showingResizeCursor && e.getSource() != frame)
+      if (showingCursor != Cursor.DEFAULT_CURSOR && e.getSource() != frame)
         {
           frame.setCursor(Cursor.getDefaultCursor());
-          showingResizeCursor = false;
+          showingCursor = Cursor.DEFAULT_CURSOR;
         }
       else if (e.getSource()==frame && frame.isResizable())
         {
-          int cursor;
-          switch (sectionOfClick(e.getX(), e.getY()))
-            {
-            case NORTH:
-              cursor = Cursor.N_RESIZE_CURSOR;
-              break;
-            case NORTH_EAST:
-              cursor = Cursor.NE_RESIZE_CURSOR;
-              break;
-            case EAST:
-              cursor = Cursor.E_RESIZE_CURSOR;
-              break;
-            case SOUTH_EAST:
-              cursor = Cursor.SE_RESIZE_CURSOR;
-              break;
-            case SOUTH:
-              cursor = Cursor.S_RESIZE_CURSOR;
-              break;
-            case SOUTH_WEST:
-              cursor = Cursor.SW_RESIZE_CURSOR;
-              break;
-            case WEST:
-              cursor = Cursor.W_RESIZE_CURSOR;
-              break;
-            case NORTH_WEST:
-              cursor = Cursor.NW_RESIZE_CURSOR;
-              break;
-            default:
-              cursor = Cursor.DEFAULT_CURSOR;
-            }
-
+          setCursor(e);
+        }
+    }
+    
+    /**
+     * Set the mouse cursor, how applicable.
+     * 
+     * @param e the current mouse event.
+     */
+    void setCursor(MouseEvent e)
+    {
+      int cursor = sectionOfClick(e.getX(), e.getY());
+      if (cursor != showingCursor)
+        {
           Cursor resize = Cursor.getPredefinedCursor(cursor);
           frame.setCursor(resize);
-          showingResizeCursor = true;
+          showingCursor = cursor;
         }
     }
 
     /**
      * This method is called when the mouse is pressed.
-     *
+     * 
      * @param e The MouseEvent.
      */
     public void mousePressed(MouseEvent e)
@@ -383,6 +380,8 @@ public class BasicInternalFrameUI extends InternalFrameUI
           dm.endDraggingFrame(frame);
           frame.putClientProperty("bufferedDragging", null);
         }
+      
+      setCursor(e);
     }
 
     /**
@@ -392,30 +391,31 @@ public class BasicInternalFrameUI extends InternalFrameUI
      * @param x The x coordinate of the MouseEvent.
      * @param y The y coordinate of the MouseEvent.
      *
-     * @return The direction of the resize (a SwingConstant direction).
+     * @return The cursor constant, determining the resizing direction.
      */
     private int sectionOfClick(int x, int y)
     {
-      Insets insets = frame.getInsets();
       Rectangle b = frame.getBounds();
-      if (x < insets.left && y < insets.top)
-        return NORTH_WEST;
-      else if (x > b.width - insets.right && y < insets.top)
-        return NORTH_EAST;
-      else if (x > b.width - insets.right && y > b.height - insets.bottom)
-        return SOUTH_EAST;
-      else if (x < insets.left && y > b.height - insets.bottom)
-        return SOUTH_WEST;
-      else if (y < insets.top)
-        return NORTH;
-      else if (x < insets.left)
-        return WEST;
-      else if (y > b.height - insets.bottom)
-        return SOUTH;
-      else if (x > b.width - insets.right)
-        return EAST;
+      int corner = InternalFrameBorder.cornerSize;
+      
+      if (x < corner && y < corner)
+        return Cursor.NW_RESIZE_CURSOR;
+      else if (x > b.width - corner && y < corner)
+        return Cursor.NE_RESIZE_CURSOR;
+      else if (x > b.width - corner && y > b.height - corner)
+        return Cursor.SE_RESIZE_CURSOR;
+      else if (x < corner && y > b.height - corner)
+        return Cursor.SW_RESIZE_CURSOR;
+      else if (y < corner)
+        return Cursor.N_RESIZE_CURSOR;
+      else if (x < corner)
+        return Cursor.W_RESIZE_CURSOR;
+      else if (y > b.height - corner)
+        return Cursor.S_RESIZE_CURSOR;
+      else if (x > b.width - corner)
+        return Cursor.E_RESIZE_CURSOR;
 
-      return -1;
+      return Cursor.DEFAULT_CURSOR;
     }
   }
 
@@ -992,14 +992,18 @@ public class BasicInternalFrameUI extends InternalFrameUI
   /**
    * This helper class is the border for the JInternalFrame.
    */
-  private class InternalFrameBorder extends AbstractBorder implements
+  class InternalFrameBorder extends AbstractBorder implements
       UIResource
   {
-    /** The width of the border. */
-    private static final int bSize = 5;
+    /** 
+     * The width of the border. 
+     */
+    static final int bSize = 5;
 
-    /** The size of the corners. */
-    private static final int offset = 10;
+    /**
+     * The size of the corners (also used by the mouse listener).
+     */
+    static final int cornerSize = 10;
 
     /**
      * This method returns whether the border is opaque.
@@ -1069,10 +1073,12 @@ public class BasicInternalFrameUI extends InternalFrameUI
       g.fillRect(0, y3, b.width, bSize);
       g.fillRect(x3, 0, bSize, b.height);
 
-      g.fill3DRect(0, offset, bSize, b.height - 2 * offset, false);
-      g.fill3DRect(offset, 0, b.width - 2 * offset, bSize, false);
-      g.fill3DRect(offset, b.height - bSize, b.width - 2 * offset, bSize, false);
-      g.fill3DRect(b.width - bSize, offset, bSize, b.height - 2 * offset, false);
+      g.fill3DRect(0, cornerSize, bSize, b.height - 2 * cornerSize, false);
+      g.fill3DRect(cornerSize, 0, b.width - 2 * cornerSize, bSize, false);
+      g.fill3DRect(cornerSize, b.height - bSize, b.width - 2 * cornerSize, 
+                   bSize, false);
+      g.fill3DRect(b.width - bSize, cornerSize, bSize, 
+                   b.height - 2 * cornerSize, false);
 
       g.translate(-x, -y);
       g.setColor(saved);

@@ -1,5 +1,5 @@
 /* OID.java -- numeric representation of an object identifier
-   Copyright (C) 2003, 2004, 2005  Free Software Foundation, Inc.
+   Copyright (C) 2003, 2004, 2005, 2006  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -211,7 +211,6 @@ public class OID implements Cloneable, Comparable, java.io.Serializable
   /**
    * Construct a new OID from the given DER bytes.
    *
-   * @param root The root OID.
    * @param encoded The encoded relative OID.
    * @param relative The relative flag.
    */

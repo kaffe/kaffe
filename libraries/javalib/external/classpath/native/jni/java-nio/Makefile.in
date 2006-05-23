@@ -65,7 +65,7 @@ libjavanio_la_DEPENDENCIES =  \
 	$(top_builddir)/native/jni/classpath/jcl.lo \
 	$(am__DEPENDENCIES_1)
 am_libjavanio_la_OBJECTS = gnu_java_nio_VMPipe.lo \
-	gnu_java_nio_VMSelector.lo \
+	gnu_java_nio_VMChannel.lo gnu_java_nio_VMSelector.lo \
 	gnu_java_nio_channels_FileChannelImpl.lo \
 	gnu_java_nio_charset_iconv_IconvDecoder.lo \
 	gnu_java_nio_charset_iconv_IconvEncoder.lo \
@@ -309,6 +309,7 @@ target_vendor = @target_vendor@
 vm_classes = @vm_classes@
 nativeexeclib_LTLIBRARIES = libjavanio.la
 libjavanio_la_SOURCES = gnu_java_nio_VMPipe.c \
+			gnu_java_nio_VMChannel.c \
 			gnu_java_nio_VMSelector.c \
 			gnu_java_nio_channels_FileChannelImpl.c \
 			gnu_java_nio_charset_iconv_IconvDecoder.c \
@@ -391,6 +392,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnu_java_nio_VMChannel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnu_java_nio_VMPipe.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnu_java_nio_VMSelector.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnu_java_nio_channels_FileChannelImpl.Plo@am__quote@

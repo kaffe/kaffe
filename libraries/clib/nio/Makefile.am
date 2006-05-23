@@ -29,6 +29,7 @@ libjavanio_la_SOURCES = \
 	gnu_java_nio_charset_iconv_IconvDecoder.c \
 	gnu_java_nio_charset_iconv_IconvEncoder.c \
 	gnu_java_nio_channels_FileChannelImpl.c \
+	gnu_java_nio_VMChannel.c \
 	gnu_java_nio_VMSelector.c \
 	gnu_java_nio_VMPipe.c 
 

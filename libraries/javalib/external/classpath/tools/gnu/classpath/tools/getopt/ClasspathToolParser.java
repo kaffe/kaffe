@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package gnu.classpath.tools.getopt;
 
+import java.text.MessageFormat;
+
 import gnu.classpath.Configuration;
 
 /**
@@ -50,13 +52,13 @@ public class ClasspathToolParser
 {
   private static String getVersionString(String programName)
   {
-    return (programName + " (GNU Classpath) "
-            + Configuration.CLASSPATH_VERSION
-            + "\n\n"
-            + "Copyright 2006 Free Software Foundation, Inc.\n"
-            + "This is free software; see the source for copying conditions.  There is NO\n"
-            + "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.");
-
+    String fmt = (Messages.getString("ClasspathToolParser.VersionFormat")); //$NON-NLS-1$
+    return MessageFormat.format(fmt, 
+                                new Object[]
+                                  {
+                                    programName,
+                                    Configuration.CLASSPATH_VERSION
+                                  });
   }
 
   public ClasspathToolParser(String programName)

@@ -38,8 +38,6 @@ exception statement from your version. */
 
 package javax.swing.plaf.basic;
 
-import gnu.classpath.NotImplementedException;
-
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -66,12 +64,14 @@ import javax.swing.CellRendererPane;
 import javax.swing.ComboBoxEditor;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
+import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 import javax.swing.LookAndFeel;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
@@ -974,19 +974,23 @@ public class BasicComboBoxUI extends ComboBoxUI
    * by the look and feel.
    */
   protected void installKeyboardActions()
-    throws NotImplementedException
   {
-    // FIXME: Need to implement.
+    SwingUtilities.replaceUIInputMap(comboBox,
+                                     JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT,
+                                     (InputMap) UIManager.get("ComboBox.ancestorInputMap"));
+    
+    // Install any action maps here.
   }
-
+  
   /**
    * Uninstalls the keyboard actions for the {@link JComboBox} there were
    * installed by in {@link #installListeners}.
    */
   protected void uninstallKeyboardActions()
-    throws NotImplementedException
   {
-    // FIXME: Need to implement.
+    SwingUtilities.replaceUIInputMap(comboBox,
+                                     JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, null);
+    // Uninstall any action maps here.
   }
 
   /**

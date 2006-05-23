@@ -50,6 +50,7 @@ import java.awt.event.KeyEvent;
 import javax.accessibility.Accessible;
 import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleExtendedComponent;
+import javax.accessibility.AccessibleRole;
 import javax.accessibility.AccessibleText;
 import javax.swing.plaf.LabelUI;
 import javax.swing.text.AttributeSet;
@@ -62,12 +63,24 @@ public class JLabel extends JComponent implements Accessible, SwingConstants
 {
 
   /**
-   * Accessibility support for JLabel.
+   * Provides the accessibility features for the <code>JLabel</code>
+   * component.
    */
   protected class AccessibleJLabel
     extends JComponent.AccessibleJComponent
     implements AccessibleText, AccessibleExtendedComponent
   {
+    
+    /**
+     * Returns the accessible role for the <code>JLabel</code> component.
+     *
+     * @return {@link AccessibleRole#LABEL}.
+     */
+    public AccessibleRole getAccessibleRole()
+    {
+      return AccessibleRole.LABEL;
+    }
+    
     /**
      * Returns the selected text. This is null since JLabels
      * are not selectable.

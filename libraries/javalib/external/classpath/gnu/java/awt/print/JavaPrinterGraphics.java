@@ -37,34 +37,32 @@ exception statement from your version. */
 
 package gnu.java.awt.print;
 
-import java.awt.print.PrinterGraphics;
-import java.awt.print.Printable;
-import java.awt.print.PrinterJob;
-import java.awt.print.Paper;
-import java.awt.print.PageFormat;
-import java.awt.print.PrinterException;
-import java.awt.geom.AffineTransform;
+import gnu.java.awt.peer.gtk.GtkImage;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.Shape;
 import java.awt.Rectangle;
-import java.text.AttributedCharacterIterator;
-import java.awt.image.BufferedImage;
+import java.awt.Shape;
+import java.awt.geom.AffineTransform;
 import java.awt.image.ImageObserver;
 import java.awt.image.PixelGrabber;
-import java.io.File;
-import java.io.IOException;
-import java.io.Writer;
-import java.io.PrintWriter;
-import java.io.FileWriter;
-import java.io.OutputStreamWriter;
-import java.io.FileOutputStream;
+import java.awt.print.PageFormat;
+import java.awt.print.Pageable;
+import java.awt.print.Paper;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterGraphics;
+import java.awt.print.PrinterJob;
 import java.io.BufferedWriter;
-
-import gnu.java.awt.peer.gtk.GtkImage;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.text.AttributedCharacterIterator;
 
 /**
  * Graphics context to draw to PostScript.
@@ -85,11 +83,6 @@ public class JavaPrinterGraphics extends Graphics implements PrinterGraphics
   private PrinterJob printerJob;
 
   /**
-   * The paper format.
-   */
-  PageFormat pageFormat;
-  
-  /**
    * Rendering resolution
    */
   private static final double DPI = 72.0;
@@ -104,66 +97,96 @@ public class JavaPrinterGraphics extends Graphics implements PrinterGraphics
    */
   private Image image;
 
-  public JavaPrinterGraphics( PrinterJob printerJob, PageFormat pageFormat )
+  public JavaPrinterGraphics( PrinterJob printerJob )
   {
     this.printerJob = printerJob;
-    this.pageFormat = pageFormat;
-
-    // Create a really big image and draw to that.
-    xSize = (int)(DPI*pageFormat.getWidth()/72.0);
-    ySize = (int)(DPI*pageFormat.getHeight()/72.0);
-
-    // FIXME: This should at least be BufferedImage. Fix once we have a working B.I.
-    // Graphics2D should also be supported of course.
-    image = new GtkImage(xSize, ySize);
-
-    initImage();
   }
 
   /**
-   * The only method worthy of mention here.
+   * Spool a document to PostScript.
+   * If Pageable is non-null, it will print that, otherwise it will use
+   * the supplied printable and pageFormat.
    */
-  public SpooledDocument spoolPostScript(Printable p)
+  public SpooledDocument spoolPostScript(Printable printable, 
+					 PageFormat pageFormat,
+					 Pageable pageable)
     throws PrinterException
-   {
-     try 
-       {
-	 // spool to a temporary file
-	 File temp = File.createTempFile("cpspool", ".ps");
-	 temp.deleteOnExit();
-
-	 PrintWriter out = new PrintWriter
-	   (new BufferedWriter
+  {
+    try 
+      {
+	// spool to a temporary file
+	File temp = File.createTempFile("cpspool", ".ps");
+	temp.deleteOnExit();
+	
+	PrintWriter out = new PrintWriter
+	  (new BufferedWriter
 	    (new OutputStreamWriter
 	     (new FileOutputStream(temp), "ISO8859_1"), 1000000));
 
-	 writePSHeader(out);
-	 int status;
-	 int index = 0;
-	 while(p.print(this, pageFormat, index++) == Printable.PAGE_EXISTS)
-	   {
-	     g.dispose();
-	     g = null;
-	     writePage( out );
-	     initImage();
-	   }
-
+	writePSHeader(out);
+	
+	if(pageable != null)
+	  {
+	    for(int index = 0; index < pageable.getNumberOfPages(); index++)
+	      spoolPage(out, pageable.getPrintable(index),
+			pageable.getPageFormat(index), index);
+	  }
+	else
+	  {
+	    int index = 0;
+	    while(spoolPage(out, printable, pageFormat, index++) ==
+		  Printable.PAGE_EXISTS);
+	  }
 	 out.println("%%Trailer");
-	 out.println("grestore % restore original stuff");
 	 out.println("%%EOF");
 	 out.close();
 	 return new SpooledDocument( temp );
        } 
-     catch (IOException e) 
-       {
-	 PrinterException pe = new PrinterException();
-	 pe.initCause(e);
-	 throw pe;
-       }
-   }
+    catch (IOException e) 
+      {
+	PrinterException pe = new PrinterException();
+	pe.initCause(e);
+	throw pe;
+      }
+  }
 
-  private void initImage()
+  /**
+   * Spools a single page, returns NO_SUCH_PAGE unsuccessful,
+   * PAGE_EXISTS if it was.
+   */
+  public int spoolPage(PrintWriter out,
+		       Printable printable, 
+		       PageFormat pageFormat, 
+		       int index) throws IOException, PrinterException
   {
+    initImage( pageFormat );
+    if(printable.print(this, pageFormat, index) == Printable.NO_SUCH_PAGE)
+      return Printable.NO_SUCH_PAGE;
+    g.dispose();
+    g = null;
+    writePage( out, pageFormat );
+    return Printable.PAGE_EXISTS;
+  }
+  
+  private void initImage(PageFormat pageFormat)
+  {
+    // Create a really big image and draw to that.
+    xSize = (int)(DPI*pageFormat.getWidth()/72.0);
+    ySize = (int)(DPI*pageFormat.getHeight()/72.0);
+    
+    // Swap X and Y sizes if it's a Landscape page.
+    if( pageFormat.getOrientation() != PageFormat.PORTRAIT )
+      {
+	int t = xSize;
+	xSize = ySize;
+	ySize = t;
+      }
+
+    // FIXME: This should at least be BufferedImage. 
+    // Fix once we have a working B.I.
+    // Graphics2D should also be supported of course.
+    image = new GtkImage(xSize, ySize);
+
     g = image.getGraphics();
     setColor(Color.white);
     fillRect(0, 0, xSize, ySize);
@@ -172,21 +195,11 @@ public class JavaPrinterGraphics extends Graphics implements PrinterGraphics
 
   private void writePSHeader(PrintWriter out)
   {
-    Paper p = pageFormat.getPaper();
     out.println("%!PS-Adobe-3.0");      
     out.println("%%Title: "+printerJob.getJobName());
     out.println("%%Creator: GNU Classpath ");
     out.println("%%DocumentData: Clean8Bit");
-    out.println("%%Orientation: "+ ((pageFormat.getOrientation() == 
-				     PageFormat.PORTRAIT) ?
-				    "Portrait" : "Landscape"));
-    
-    // invert the Y axis so that we get screen-like coordinates instead.
-    AffineTransform pageTransform = new AffineTransform();
-    pageTransform.translate(0.0, p.getHeight());
-    pageTransform.scale(1.0,-1.0);
-    concatCTM(out, pageTransform);
-    
+
     out.println("%%DocumentNeededResources: font Times-Roman Helvetica Courier");
     //    out.println("%%Pages: "+);  // FIXME # pages.
     out.println("%%EndComments");
@@ -199,26 +212,54 @@ public class JavaPrinterGraphics extends Graphics implements PrinterGraphics
     // E.g. "A4" "Letter"
     //    out.println("%%BeginFeature: *PageSize A4");
     
-    // 595x842; 612x792 respectively
-    out.println("<< /PageSize [" +p.getWidth() + " "+p.getHeight()+ "] >> setpagedevice");
     out.println("%%EndFeature");
 
     out.println("%%EndSetup");
     
     //    out.println("%%Page: 1 1");
-    out.println("%%BeginPageSetup");
-    
-    out.println("gsave % first save");
   }
 
-  private void writePage(PrintWriter out)
+  private void writePage(PrintWriter out, PageFormat pageFormat)
   {
-    out.println("% writePage()");
+    out.println("%%BeginPageSetup");
+
+    Paper p = pageFormat.getPaper();
+    double pWidth = p.getWidth();
+    double pHeight = p.getHeight();
+
+    if( pageFormat.getOrientation() == PageFormat.PORTRAIT )
+      out.println( "%%Orientation: Portrait" );
+    else
+      {
+	out.println( "%%Orientation: Landscape" );
+	double t = pWidth;
+	pWidth = pHeight;
+	pHeight = t;
+      }
+      
+    out.println("gsave % first save");
+    
+    // 595x842; 612x792 respectively
+    out.println("<< /PageSize [" +pWidth + " "+pHeight+ "] >> setpagedevice");
+
+    // invert the Y axis so that we get screen-like coordinates instead.
+    AffineTransform pageTransform = new AffineTransform();
+    if( pageFormat.getOrientation() == PageFormat.REVERSE_LANDSCAPE )
+      {
+	pageTransform.translate(pWidth, pHeight);
+	pageTransform.scale(-1.0, -1.0);
+      }
+    concatCTM(out, pageTransform);
+    out.println("%%EndPageSetup");
+
     out.println("gsave");
+
+
+    // Draw the image
     out.println(xSize+" "+ySize+" 8 [1 0 0 -1 0 "+ySize+" ]"); 
     out.println("{currentfile 3 string readhexstring pop} bind");
     out.println("false 3 colorimage");
-       int[] pixels = new int[xSize * ySize];
+    int[] pixels = new int[xSize * ySize];
     PixelGrabber pg = new PixelGrabber(image, 0, 0, xSize, ySize, pixels, 0, xSize);
 
     try {
@@ -316,38 +357,38 @@ public class JavaPrinterGraphics extends Graphics implements PrinterGraphics
   public boolean drawImage(Image img, int x, int y, Color bgcolor, 
 			   ImageObserver observer)
   {
-    return drawImage(img, x, y, bgcolor, observer);
+    return g.drawImage(img, x, y, bgcolor, observer);
   }
 
   public boolean drawImage(Image img, int x, int y, ImageObserver observer)
   {
-    return drawImage(img, x, y, observer);
+    return g.drawImage(img, x, y, observer);
   }
 
   public boolean drawImage(Image img, int x, int y, int width, int height, 
 			   Color bgcolor, ImageObserver observer)
   {
-    return drawImage(img, x, y, width, height, bgcolor, observer);
+    return g.drawImage(img, x, y, width, height, bgcolor, observer);
   }
 
   public boolean drawImage(Image img, int x, int y, int width, int height, 
 			   ImageObserver observer)
   {
-    return drawImage(img, x, y, width, height, observer);
+    return g.drawImage(img, x, y, width, height, observer);
   }
 
   public boolean drawImage(Image img, int dx1, int dy1, int dx2, int dy2, 
 			   int sx1, int sy1, int sx2, int sy2, Color bgcolor, 
 			   ImageObserver observer)
   {
-    return drawImage(img, dx1,  dy1,  dx2,  dy2,  
+    return g.drawImage(img, dx1,  dy1,  dx2,  dy2,  
 		     sx1,  sy1,  sx2,  sy2, bgcolor, observer);
   }
 
   public boolean drawImage(Image img, int dx1, int dy1, int dx2, int dy2, 
 			   int sx1, int sy1, int sx2, int sy2, ImageObserver observer)
   {
-    return drawImage(img, dx1,  dy1,  dx2,  dy2,  
+    return g.drawImage(img, dx1,  dy1,  dx2,  dy2,  
 		     sx1,  sy1,  sx2,  sy2, observer);
   }
 

@@ -48,7 +48,6 @@ import java.util.List;
  */
 public abstract class MaskableEnvelopeEntry extends EnvelopeEntry
 {
-
   // Fields.
   // ------------------------------------------------------------------------
 
@@ -137,12 +136,19 @@ public abstract class MaskableEnvelopeEntry extends EnvelopeEntry
     return super.remove(entry);
   }
 
-  public void remove(String alias)
+  public boolean remove(String alias)
   {
     if (isMasked())
-      {
-        throw new IllegalStateException("masked envelope");
-      }
-    super.remove(alias);
+      throw new IllegalStateException("masked envelope");
+
+    return super.remove(alias);
+  }
+
+  public String toString()
+  {
+    return new StringBuilder("MaskableEnvelope{")
+        .append(super.toString())
+        .append(", masked=").append(masked)
+        .append("}").toString();
   }
 }

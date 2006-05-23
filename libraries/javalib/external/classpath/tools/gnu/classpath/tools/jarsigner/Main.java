@@ -42,10 +42,10 @@ import gnu.classpath.SystemProperties;
 import gnu.classpath.tools.common.CallbackUtil;
 import gnu.classpath.tools.common.ProviderUtil;
 import gnu.classpath.tools.getopt.ClasspathToolParser;
+import gnu.classpath.tools.getopt.FileArgumentCallback;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.OptionGroup;
-import gnu.classpath.tools.getopt.Parser;
 import gnu.java.security.OID;
 import gnu.java.security.Registry;
 import gnu.javax.security.auth.callback.ConsoleCallbackHandler;
@@ -65,6 +65,7 @@ import java.security.Security;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.jar.Attributes.Name;
 import java.util.logging.Logger;
@@ -85,7 +86,8 @@ import javax.security.auth.callback.UnsupportedCallbackException;
  */
 public class Main
 {
-  private static final Logger log = Logger.getLogger(Main.class.getName());
+  protected static final Logger log = Logger.getLogger(Main.class.getName());
+  static final String KEYTOOL_TOOL = "jarsigner"; //$NON-NLS-1$
   private static final Locale EN_US_LOCALE = new Locale("en", "US"); //$NON-NLS-1$ //$NON-NLS-2$
   static final String DIGEST = "SHA1-Digest"; //$NON-NLS-1$
   static final String DIGEST_MANIFEST = "SHA1-Digest-Manifest"; //$NON-NLS-1$
@@ -106,8 +108,8 @@ public class Main
   protected boolean internalSF;
   protected boolean sectionsOnly;
   protected String providerClassName;
-  private String jarFileName;
-  private String alias;
+  protected String jarFileName;
+  protected String alias;
 
   protected Provider provider;
   private boolean providerInstalled;
@@ -119,7 +121,8 @@ public class Main
   /** The callback handler to use when needing to interact with user. */
   private CallbackHandler handler;
   /** The command line parser. */
-  private Parser cmdLineParser;
+  private ToolParser cmdLineParser;
+  protected ArrayList fileAndAlias = new ArrayList();;
 
   private Main()
   {
@@ -138,12 +141,6 @@ public class Main
         tool.start();
         result = 0;
       }
-    catch (OptionException x)
-    {
-      System.err.println(x.getMessage()); //$NON-NLS-1$
-      if (tool.cmdLineParser != null)
-        tool.cmdLineParser.printHelp();
-    }
     catch (SecurityException x)
       {
         log.throwing(Main.class.getName(), "main", x); //$NON-NLS-1$
@@ -176,23 +173,9 @@ public class Main
   {
     log.entering(this.getClass().getName(), "processArgs", args); //$NON-NLS-1$
 
-    cmdLineParser = getParser();
-    if (args == null || args.length == 0)
-      throw new OptionException(Messages.getString("Main.133")); //$NON-NLS-1$
-
-    String[] fileAndAlias = cmdLineParser.parse(args);
-    if (fileAndAlias.length < 1)
-      throw new OptionException(Messages.getString("Main.133")); //$NON-NLS-1$
-
-    jarFileName = fileAndAlias[0];
-    if (! verify) // must have an ALIAS. use "mykey" if undefined
-      if (fileAndAlias.length < 2)
-        {
-          log.finer("Missing ALIAS argument. Will use [mykey] instead"); //$NON-NLS-1$
-          alias = "mykey"; //$NON-NLS-1$
-        }
-      else
-        alias = fileAndAlias[1];
+    cmdLineParser = new ToolParser();
+    cmdLineParser.initializeParser();
+    cmdLineParser.parse(args, new ToolParserCallback());
 
     setupCommonParams();
     if (verify)
@@ -227,145 +210,6 @@ public class Main
       }
 
     log.exiting(this.getClass().getName(), "processArgs"); //$NON-NLS-1$
-  }
-
-  private Parser getParser()
-  {
-    log.entering(this.getClass().getName(), "getParser"); //$NON-NLS-1$
-
-    Parser result = new ClasspathToolParser("jarsigner", true); //$NON-NLS-1$
-    result.setHeader(Messages.getString("Main.2")); //$NON-NLS-1$
-    result.setFooter(Messages.getString("Main.1")); //$NON-NLS-1$
-
-    OptionGroup signGroup = new OptionGroup(Messages.getString("Main.0")); //$NON-NLS-1$
-
-    signGroup.add(new Option("keystore", //$NON-NLS-1$
-                             Messages.getString("Main.101"), //$NON-NLS-1$
-                             Messages.getString("Main.102")) //$NON-NLS-1$
-    {
-      public void parsed(String argument) throws OptionException
-      {
-        ksURL = argument;
-      }
-    });
-
-    signGroup.add(new Option("storetype", //$NON-NLS-1$
-                             Messages.getString("Main.104"), //$NON-NLS-1$
-                             Messages.getString("Main.105")) //$NON-NLS-1$
-    {
-      public void parsed(String argument) throws OptionException
-      {
-        ksType = argument;
-      }
-    });
-
-    signGroup.add(new Option("storepass", //$NON-NLS-1$
-                             Messages.getString("Main.107"), //$NON-NLS-1$
-                             Messages.getString("Main.108")) //$NON-NLS-1$
-    {
-      public void parsed(String argument) throws OptionException
-      {
-        ksPassword = argument;
-      }
-    });
-
-    signGroup.add(new Option("keypass", //$NON-NLS-1$
-                             Messages.getString("Main.110"), //$NON-NLS-1$
-                             Messages.getString("Main.111")) //$NON-NLS-1$
-    {
-      public void parsed(String argument) throws OptionException
-      {
-        password = argument;
-      }
-    });
-
-    signGroup.add(new Option("sigfile", //$NON-NLS-1$
-                             Messages.getString("Main.113"), //$NON-NLS-1$
-                             Messages.getString("Main.114")) //$NON-NLS-1$
-    {
-      public void parsed(String argument) throws OptionException
-      {
-        sigFileName = argument;
-      }
-    });
-
-    signGroup.add(new Option("signedjar", //$NON-NLS-1$
-                             Messages.getString("Main.116"), //$NON-NLS-1$
-                             Messages.getString("Main.117")) //$NON-NLS-1$
-    {
-      public void parsed(String argument) throws OptionException
-      {
-        signedJarFileName = argument;
-      }
-    });
-
-    result.add(signGroup);
-
-    OptionGroup verifyGroup = new OptionGroup(Messages.getString("Main.118")); //$NON-NLS-1$
-
-    verifyGroup.add(new Option("verify", //$NON-NLS-1$
-                               Messages.getString("Main.120")) //$NON-NLS-1$
-    {
-      public void parsed(String argument) throws OptionException
-      {
-        verify = true;
-      }
-    });
-
-    verifyGroup.add(new Option("certs", //$NON-NLS-1$
-                               Messages.getString("Main.122")) //$NON-NLS-1$
-    {
-      public void parsed(String argument) throws OptionException
-      {
-        certs = true;
-      }
-    });
-
-    result.add(verifyGroup);
-
-    OptionGroup commonGroup = new OptionGroup(Messages.getString("Main.123")); //$NON-NLS-1$
-
-    commonGroup.add(new Option("verbose", //$NON-NLS-1$
-                               Messages.getString("Main.125")) //$NON-NLS-1$
-    {
-      public void parsed(String argument) throws OptionException
-      {
-        verbose = true;
-      }
-    });
-
-    commonGroup.add(new Option("internalsf", //$NON-NLS-1$
-                               Messages.getString("Main.127")) //$NON-NLS-1$
-    {
-      public void parsed(String argument) throws OptionException
-      {
-        internalSF = true;
-      }
-    });
-
-    commonGroup.add(new Option("sectionsonly", //$NON-NLS-1$
-        Messages.getString("Main.129")) //$NON-NLS-1$
-    {
-      public void parsed(String argument) throws OptionException
-      {
-        sectionsOnly = true;
-      }
-    });
-
-    commonGroup.add(new Option("provider", //$NON-NLS-1$
-                               Messages.getString("Main.131"), //$NON-NLS-1$
-                               Messages.getString("Main.132")) //$NON-NLS-1$
-    {
-      public void parsed(String argument) throws OptionException
-      {
-        providerClassName = argument;
-      }
-    });
-
-    result.add(commonGroup);
-
-    log.exiting(this.getClass().getName(), "getParser", result); //$NON-NLS-1$
-    return result;
   }
 
   /**
@@ -675,5 +519,156 @@ public class Main
       handler = CallbackUtil.getConsoleHandler();
 
     return handler;
+  }
+
+  private class ToolParserCallback
+      extends FileArgumentCallback
+  {
+    public void notifyFile(String fileArgument)
+    {
+      fileAndAlias.add(fileArgument);
+    }
+  }
+
+  private class ToolParser
+      extends ClasspathToolParser
+  {
+    public ToolParser()
+    {
+      super(KEYTOOL_TOOL, true);
+    }
+
+    protected void validate() throws OptionException
+    {
+      if (fileAndAlias.size() < 1)
+        throw new OptionException(Messages.getString("Main.133")); //$NON-NLS-1$
+
+      jarFileName = (String) fileAndAlias.get(0);
+      if (! verify) // must have an ALIAS. use "mykey" if undefined
+        if (fileAndAlias.size() < 2)
+          {
+            log.finer("Missing ALIAS argument. Will use [mykey] instead"); //$NON-NLS-1$
+            alias = "mykey"; //$NON-NLS-1$
+          }
+        else
+          alias = (String) fileAndAlias.get(1);
+    }
+
+    public void initializeParser()
+    {
+      setHeader(Messages.getString("Main.2")); //$NON-NLS-1$
+      setFooter(Messages.getString("Main.1")); //$NON-NLS-1$
+      OptionGroup signGroup = new OptionGroup(Messages.getString("Main.0")); //$NON-NLS-1$
+      signGroup.add(new Option("keystore", //$NON-NLS-1$
+                               Messages.getString("Main.101"), //$NON-NLS-1$
+                               Messages.getString("Main.102")) //$NON-NLS-1$
+      {
+        public void parsed(String argument) throws OptionException
+        {
+          ksURL = argument;
+        }
+      });
+      signGroup.add(new Option("storetype", //$NON-NLS-1$
+                               Messages.getString("Main.104"), //$NON-NLS-1$
+                               Messages.getString("Main.105")) //$NON-NLS-1$
+      {
+        public void parsed(String argument) throws OptionException
+        {
+          ksType = argument;
+        }
+      });
+      signGroup.add(new Option("storepass", //$NON-NLS-1$
+                               Messages.getString("Main.107"), //$NON-NLS-1$
+                               Messages.getString("Main.108")) //$NON-NLS-1$
+      {
+        public void parsed(String argument) throws OptionException
+        {
+          ksPassword = argument;
+        }
+      });
+      signGroup.add(new Option("keypass", //$NON-NLS-1$
+                               Messages.getString("Main.110"), //$NON-NLS-1$
+                               Messages.getString("Main.111")) //$NON-NLS-1$
+      {
+        public void parsed(String argument) throws OptionException
+        {
+          password = argument;
+        }
+      });
+      signGroup.add(new Option("sigfile", //$NON-NLS-1$
+                               Messages.getString("Main.113"), //$NON-NLS-1$
+                               Messages.getString("Main.114")) //$NON-NLS-1$
+      {
+        public void parsed(String argument) throws OptionException
+        {
+          sigFileName = argument;
+        }
+      });
+      signGroup.add(new Option("signedjar", //$NON-NLS-1$
+                               Messages.getString("Main.116"), //$NON-NLS-1$
+                               Messages.getString("Main.117")) //$NON-NLS-1$
+      {
+        public void parsed(String argument) throws OptionException
+        {
+          signedJarFileName = argument;
+        }
+      });
+      add(signGroup);
+
+      OptionGroup verifyGroup = new OptionGroup(Messages.getString("Main.118")); //$NON-NLS-1$
+      verifyGroup.add(new Option("verify", //$NON-NLS-1$
+                                 Messages.getString("Main.120")) //$NON-NLS-1$
+      {
+        public void parsed(String argument) throws OptionException
+        {
+          verify = true;
+        }
+      });
+      verifyGroup.add(new Option("certs", //$NON-NLS-1$
+                                 Messages.getString("Main.122")) //$NON-NLS-1$
+      {
+        public void parsed(String argument) throws OptionException
+        {
+          certs = true;
+        }
+      });
+      add(verifyGroup);
+
+      OptionGroup commonGroup = new OptionGroup(Messages.getString("Main.123")); //$NON-NLS-1$
+      commonGroup.add(new Option("verbose", //$NON-NLS-1$
+                                 Messages.getString("Main.125")) //$NON-NLS-1$
+      {
+        public void parsed(String argument) throws OptionException
+        {
+          verbose = true;
+        }
+      });
+      commonGroup.add(new Option("internalsf", //$NON-NLS-1$
+                                 Messages.getString("Main.127")) //$NON-NLS-1$
+      {
+        public void parsed(String argument) throws OptionException
+        {
+          internalSF = true;
+        }
+      });
+      commonGroup.add(new Option("sectionsonly", //$NON-NLS-1$
+                                 Messages.getString("Main.129")) //$NON-NLS-1$
+      {
+        public void parsed(String argument) throws OptionException
+        {
+          sectionsOnly = true;
+        }
+      });
+      commonGroup.add(new Option("provider", //$NON-NLS-1$
+                                 Messages.getString("Main.131"), //$NON-NLS-1$
+                                 Messages.getString("Main.132")) //$NON-NLS-1$
+      {
+        public void parsed(String argument) throws OptionException
+        {
+          providerClassName = argument;
+        }
+      });
+      add(commonGroup);
+    }
   }
 }

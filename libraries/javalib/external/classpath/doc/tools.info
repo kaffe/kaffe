@@ -1,5 +1,5 @@
 This is ../../classpath/doc/tools.info, produced by makeinfo version
-4.8 from ../../classpath/doc/tools.texinfo.
+4.7 from ../../classpath/doc/tools.texinfo.
 
    This file documents the Tools included in a standard distribution of
 the GNU Classpath project deliverables.
@@ -893,7 +893,7 @@ possible, the English strings with strings in other languages, provided
 of course Resource Bundles in those languages are provided.
 
    For the GNU Classpath Tools described in this Guide, the Resource
-Bundles are files named `MessageBundle[_ll[_CC[_VV]]].properties' where:
+Bundles are files named `messages[_ll[_CC[_VV]]].properties' where:
 
 LL
      Is the 2-letter code for the Language,
@@ -924,36 +924,35 @@ in a standard GNU Classpath distribution:
 tree with a parent-child relationship. For example suppose in the
 `gnu/classpath/tools/keytool' there are 3 message bundles named:
 
-  1. `MessageBundle.properties'
+  1. `messages.properties'
 
-  2. `MessageBundle_fr.properties'
+  2. `messages_fr.properties'
 
-  3. `MessageBundle_fr_FR.properties'
+  3. `messages_fr_FR.properties'
 
    In the above example, bundle #1 will act as the parent of bundle #2,
 which in turn will act as the parent for bundle #3. This ordering is
 used by the Java runtime to choose which file to load based on the set
-Locale. For example if the Locale is `fr_CH',
-`MessageBundle_fr.properties' will be used because (a)
-`MessageBundle_fr_CH.properties' does not exist, but (b)
-`MessageBundle_fr.properties' is the parent for the required bundle,
+Locale. For example if the Locale is `fr_CH', `messages_fr.properties'
+will be used because (a) `messages_fr_CH.properties' does not exist,
+but (b) `messages_fr.properties' is the parent for the required bundle,
 and it exists. As another example, suppose the Locale was set to
-`en_AU'; then the tool will end up using `MessageBundle.properties'
-because (a) `MessageBundle_en_AU.properties' does not exist, (b)
-`MessageBundle_en.properties' which is the parent for the required
-bundle does not exist, but (c) `MessageBundle.properties' exists and is
-the root of the hierarchy.
+`en_AU'; then the tool will end up using `messages.properties' because
+(a) `messages_en_AU.properties' does not exist, (b)
+`messages_en.properties' which is the parent for the required bundle
+does not exist, but (c) `messages.properties' exists and is the root of
+the hierarchy.
 
-   You can see from the examples above that `MessageBundle.properties'
-is the safety net that the Java runtime falls back to when failing to
-find a specific bunlde and its parent(s). This file is always provided
-with the Tool. In time, more localized versions will be included to
-cater for other languages.
+   You can see from the examples above that `messages.properties' is
+the safety net that the Java runtime falls back to when failing to find
+a specific bunlde and its parent(s). This file is always provided with
+the Tool. In time, more localized versions will be included to cater
+for other languages.
 
    In the meantime, if you are willing to contribute localized versions
-of these resources, grab the `MessageBundle.properties' for a specific
-tool; translate it; save it with the appropriate language and region
-suffix and mail it to `classpath@gnu.org'.
+of these resources, grab the `messages.properties' for a specific tool;
+translate it; save it with the appropriate language and region suffix
+and mail it to `classpath@gnu.org'.
 
 
 File: tools.info,  Node: Message Formats,  Prev: Language Resources,  Up: I18N Issues
@@ -961,8 +960,8 @@ File: tools.info,  Node: Message Formats,  Prev: Language Resources,  Up: I18N I
 2.2 Message Formats
 ===================
 
-If you open any of the `MessageBundle.properties' described in the
-previous section, you may see properties that look like so:
+If you open any of the `messages.properties' described in the previous
+section, you may see properties that look like so:
 
      Command.67=Issuer: {0}
      Command.68=Serial number: {0,number}
@@ -973,8 +972,8 @@ previous section, you may see properties that look like so:
 string that will then be used either as a prompt for User input or as
 output.
 
-   If you are translating a `MessageBundle.properties' be careful not
-to alter text between curly braces.
+   If you are translating a `messages.properties' be careful not to
+alter text between curly braces.
 
 
 
@@ -996,6 +995,6 @@ Ref: verbose12356
 Ref: dn12460
 Node: I18N Issues30484
 Node: Language Resources30985
-Node: Message Formats34710
+Node: Message Formats34645
 
 End Tag Table

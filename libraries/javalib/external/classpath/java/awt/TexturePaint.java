@@ -45,35 +45,74 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 
-/** STUB CLASS ONLY */
+/**
+ * This class provides a way to fill a Shape with a texture that is
+ * specified by a BufferedImage.
+ */
 public class TexturePaint implements Paint
 {
   private final BufferedImage texture;
   private final Rectangle2D anchor;
+  
+  /**
+   * Constructor.
+   * 
+   * @param texture - the texture
+   * @param anchor - the shape
+   */
   public TexturePaint(BufferedImage texture, Rectangle2D anchor)
   {
     this.texture = texture;
     this.anchor = anchor;
   }
+
+  /**
+   * Gets the texture image.
+   * 
+   * @return the texture
+   */
   public BufferedImage getImage()
   {
     return texture;
   }
+
+  /**
+   * Gets the shape anchor.
+   * 
+   * @return the shape anchor
+   */
   public Rectangle2D getAnchorRect()
   {
     return anchor;
   }
+
+  /**
+   * Creates the context used to paint the texture.
+   * 
+   * @param cm - the ColorModel that receives the Paint data. Used only as a hint.
+   * @param deviceBounds - the device space being rendered.
+   * @param userBounds - the user space being rendered
+   * @param xform - the AffineTransform from user space into device space
+   * @param hints - a RenderingHints object that is used to specify how the 
+   * pattern is rendered
+   * @return the paint context used to paint the texture
+   */
   public PaintContext createContext(ColorModel cm, Rectangle deviceBounds,
                                     Rectangle2D userBounds,
-                                    AffineTransform xform,
-                                    RenderingHints hints)
-    throws NotImplementedException
+                                    AffineTransform xform, RenderingHints hints)
+      throws NotImplementedException
   {
-    throw new Error("not implemented");
+    // FIXME: Not implemented.
+    return null;
   }
+
+  /**
+   * Returns the transparency mode.
+   * 
+   * @return the transparency mode.
+   */
   public int getTransparency()
-    throws NotImplementedException
   {
-    throw new Error("not implemented");
+    return texture.getTransparency();
   }
 } // class TexturePaint

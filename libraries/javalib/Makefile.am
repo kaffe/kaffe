@@ -209,11 +209,13 @@ EXTRA_DIST= \
 	vmspecific/gnu/inet/util/SaslOutputStream.java \
 	vmspecific/gnu/inet/util/SaslPlain.java \
 	vmspecific/gnu/inet/util/TraceLevel.java \
+	vmspecific/gnu/java/lang/VMInstrumentationImpl.java \
 	vmspecific/gnu/java/net/DNSJavaInetAddressImpl.java \
 	vmspecific/gnu/java/net/InetAddressImpl.java \
 	vmspecific/gnu/java/net/PlainDatagramSocketImpl.java \
 	vmspecific/gnu/java/net/PlainSocketImpl.java \
 	vmspecific/gnu/java/net/SysInetAddressImpl.java \
+	vmspecific/gnu/java/nio/VMChannel.java \
 	vmspecific/gnu/java/nio/VMPipe.java \
 	vmspecific/gnu/java/nio/VMSelector.java \
 	vmspecific/java/io/VMFile.java \

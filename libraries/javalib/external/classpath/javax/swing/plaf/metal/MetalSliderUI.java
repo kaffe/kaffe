@@ -192,10 +192,13 @@ public class MetalSliderUI extends BasicSliderUI
    */
   public void paintThumb(Graphics g) 
   {
+    Color save = g.getColor();
+    g.setColor(thumbColor);
     if (slider.getOrientation() == JSlider.HORIZONTAL)
       horizThumbIcon.paintIcon(slider, g, thumbRect.x, thumbRect.y);
     else
       vertThumbIcon.paintIcon(slider, g, thumbRect.x, thumbRect.y);
+    g.setColor(save);
   }
   
   /**
@@ -323,7 +326,8 @@ public class MetalSliderUI extends BasicSliderUI
    */
   public void paintFocus(Graphics g)
   {
-    // do nothing as focus is shown by different color on thumb control
+    thumbColor = getFocusColor();
+    paintThumb(g);
   }
   
   /**

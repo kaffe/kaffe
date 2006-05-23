@@ -54,6 +54,9 @@ Suggested Software
 	For building the Cairo GdkGraphics2D backend you need at least
 	Cairo 0.5.0.
 
+	For building gcjwebplugin you'll need the Mozilla plugin
+	support headers and libraries.
+
 	For building the Qt AWT peer JNI native libraries you have to
 	specify --enable-qt-peer and need the following library:
 

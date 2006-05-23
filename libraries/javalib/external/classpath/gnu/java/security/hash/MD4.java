@@ -44,7 +44,7 @@ import gnu.java.security.util.Util;
 /**
  * <p>An implementation of Ron Rivest's MD4 message digest algorithm.</p>
  *
- * <p>MD4 was the precursor to the stronger {@link gnu.crypto.hash.MD5}
+ * <p>MD4 was the precursor to the stronger {@link gnu.java.security.hash.MD5}
  * algorithm, and while not considered cryptograpically secure itself, MD4 is
  * in use in various applications. It is slightly faster than MD5.</p>
  *

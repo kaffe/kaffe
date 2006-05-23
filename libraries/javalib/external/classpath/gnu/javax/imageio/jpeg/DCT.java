@@ -37,7 +37,6 @@ exception statement from your version. */
 
 package gnu.javax.imageio.jpeg;
 
-// TODO: Clear copyright of this file.
 /**
  * Discrete Cosine Transformations.
  */

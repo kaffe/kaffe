@@ -57,5 +57,6 @@ public abstract class FileArgumentCallback
    * 
    * @param fileArgument the file name
    */
-  public abstract void notifyFile(String fileArgument);
+  public abstract void notifyFile(String fileArgument)
+    throws OptionException;
 }

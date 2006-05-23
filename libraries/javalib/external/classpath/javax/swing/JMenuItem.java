@@ -673,7 +673,7 @@ public class JMenuItem extends AbstractButton implements Accessible,
   }
 
   /**
-   * Returns a string describing the attributes for the <code>JToolTip</code>
+   * Returns a string describing the attributes for the <code>JMenuItem</code>
    * component, for use in debugging.  The return value is guaranteed to be 
    * non-<code>null</code>, but the format of the string may vary between
    * implementations.

@@ -1046,12 +1046,11 @@ public class Window extends Container implements Accessible
   /**
    * @since 1.2
    *
-   * @deprecated
+   * @deprecated replaced by Component.applyComponentOrientation.
    */
   public void applyResourceBundle(ResourceBundle rb)
-    throws NotImplementedException
   {
-    throw new Error ("Not implemented");
+    applyComponentOrientation(ComponentOrientation.getOrientation(rb));
   }
 
   /**

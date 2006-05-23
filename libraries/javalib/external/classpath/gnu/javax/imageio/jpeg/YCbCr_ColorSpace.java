@@ -39,15 +39,6 @@ package gnu.javax.imageio.jpeg;
 
 import java.awt.color.ColorSpace;
 
-/**
- * <p>Title: Symphony Image Object</p>
- * <p>Description: Creates and manages image formats</p>
- * <p>Copyright: Copyright (c) 2003</p>
- * <p>Company: Symphony</p>
- * @author not attributable
- * @version 1.0
- */
-
 public class YCbCr_ColorSpace extends ColorSpace {
   public YCbCr_ColorSpace() {
     super(ColorSpace.TYPE_YCbCr, 3);

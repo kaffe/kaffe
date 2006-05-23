@@ -17,6 +17,7 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkFontPeer_setFont (JNIEnv *e
 JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkFontPeer_getFontMetrics (JNIEnv *env, jobject, jdoubleArray);
 JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GdkFontPeer_getTextMetrics (JNIEnv *env, jobject, jstring, jdoubleArray);
 JNIEXPORT jobject JNICALL Java_gnu_java_awt_peer_gtk_GdkFontPeer_getGlyphVector (JNIEnv *env, jobject, jstring, jobject, jobject);
+JNIEXPORT jbyteArray JNICALL Java_gnu_java_awt_peer_gtk_GdkFontPeer_getTrueTypeTable (JNIEnv *env, jobject, jbyte, jbyte, jbyte, jbyte);
 
 #ifdef __cplusplus
 }

@@ -41,7 +41,8 @@ package gnu.java.net;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.jar.JarFile;
 
 /**
@@ -63,10 +64,13 @@ import java.util.jar.JarFile;
  */
 public class IndexListParser
 {
-  String filePath = "META-INF/INDEX.LIST";
-  String versInfo = "JarIndex-Version: ";
+  public static final String JAR_INDEX_FILE = "META-INF/INDEX.LIST";
+  public static final String JAR_INDEX_VERSION_KEY = "JarIndex-Version: ";
+
   double versionNumber;
-  ArrayList headers = new ArrayList();
+  // Map each jar to the prefixes defined for the jar.
+  // This is intentionally kept in insertion order.
+  LinkedHashMap prefixes = new LinkedHashMap();
   
   /**
    * Parses the given jarfile's INDEX.LIST file if it exists.
@@ -80,35 +84,46 @@ public class IndexListParser
     try
     {
     // Parse INDEX.LIST if it exists
-    if (jarfile.getEntry(filePath) != null)
+    if (jarfile.getEntry(JAR_INDEX_FILE) != null)
       {
         BufferedReader br = new BufferedReader(new InputStreamReader(new URL(baseJarURL,
-                                                                             filePath).openStream()));
+                                                                             JAR_INDEX_FILE).openStream()));
         
         // Must start with version info
         String line = br.readLine();
-        if (!line.startsWith(versInfo))
+        if (!line.startsWith(JAR_INDEX_VERSION_KEY))
           return;
-        versionNumber = Double.parseDouble(line.substring(versInfo.length()).trim());
+        versionNumber = Double.parseDouble(line.substring(JAR_INDEX_VERSION_KEY.length()).trim());
         
         // Blank line must be next
         line = br.readLine();
-        if (!line.equals(""))
+        if (! "".equals(line))
           {
             clearAll();
             return;
           }
         
-        // May contain sections
-        line = br.readLine();
-        while (line != null)
+        // May contain sections.
+        while ((line = br.readLine()) != null)
           {
-            headers.add(new URL(baseURL, line));
+            URL jarURL = new URL(baseURL, line);
+            HashSet values = new HashSet();
             
-            // Skip all names in the section
-            while (! (line = br.readLine()).equals(""));
-            line = br.readLine();
+            // Read the names in the section.
+            while ((line = br.readLine()) != null)
+              {
+                // Stop at section boundary.
+                if ("".equals(line))
+                  break;
+                values.add(line.trim());
+              }
+            prefixes.put(jarURL, values);
+            // Might have seen an early EOF.
+            if (line == null)
+              break;
           }
+
+        br.close();
       }
     // else INDEX.LIST does not exist
     }
@@ -124,7 +139,7 @@ public class IndexListParser
   void clearAll()
   {
     versionNumber = 0;
-    headers.clear();
+    prefixes = null;
   }
   
   /**
@@ -134,7 +149,7 @@ public class IndexListParser
    */
   public String getVersionInfo()
   {
-    return versInfo + getVersionNumber();
+    return JAR_INDEX_VERSION_KEY + getVersionNumber();
   }
   
   /**
@@ -148,12 +163,15 @@ public class IndexListParser
   }
   
   /**
-   * Gets the array list of all the headers found in the file.
+   * Gets the map of all the headers found in the file.
+   * The keys in the map are URLs of jars.  The values in the map
+   * are Sets of package prefixes (and top-level file names), as
+   * specifed in INDEX.LIST.
    * 
-   * @return an array list of all the headers.
+   * @return an map of all the headers, or null if no INDEX.LIST was found
    */
-  public ArrayList getHeaders()
+  public LinkedHashMap getHeaders()
   {
-    return headers;
+    return prefixes;
   }
 }

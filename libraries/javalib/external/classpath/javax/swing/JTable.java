@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package javax.swing;
 
+import gnu.classpath.NotImplementedException;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -163,6 +165,7 @@ public class JTable
        * @return the accessible row for the table cell
        */
       public AccessibleRole getAccessibleRole()
+        throws NotImplementedException
       {
         // TODO: What is the role of the table cell?
         return AccessibleRole.UNKNOWN;
@@ -174,6 +177,7 @@ public class JTable
        * @return the accessible state set of this accessible table cell
        */
       public AccessibleStateSet getAccessibleStateSet()
+        throws NotImplementedException
       {
         // TODO: What state shoiuld be returned here?
         return new AccessibleStateSet();
@@ -617,45 +621,47 @@ public class JTable
     }
 
     public Accessible getAccessibleSelection(int i)
+      throws NotImplementedException
     {
       // TODO Auto-generated method stub
       return null;
     }
 
     public boolean isAccessibleChildSelected(int i)
+      throws NotImplementedException
     {
       // TODO Auto-generated method stub
       return false;
     }
 
     public void addAccessibleSelection(int i)
+      throws NotImplementedException
     {
-      // TODO Auto-generated method stub
-      
+      // TODO Auto-generated method stub    
     }
 
     public void removeAccessibleSelection(int i)
+      throws NotImplementedException
     {
-      // TODO Auto-generated method stub
-      
+      // TODO Auto-generated method stub    
     }
 
     public void clearAccessibleSelection()
+      throws NotImplementedException
     {
       // TODO Auto-generated method stub
-      
     }
 
     public void selectAllAccessibleSelection()
+      throws NotImplementedException
     {
       // TODO Auto-generated method stub
-      
     }
 
     public void valueChanged(ListSelectionEvent event)
+      throws NotImplementedException
     {
-      // TODO Auto-generated method stub
-      
+      // TODO Auto-generated method stub 
     }
 
     /**
@@ -685,6 +691,7 @@ public class JTable
      * @param event the table model event
      */
     public void tableRowsInserted(TableModelEvent event)
+      throws NotImplementedException
     {
       // TODO: What to do here, if anything? This might be a hook method for
       // subclasses...
@@ -697,51 +704,52 @@ public class JTable
      * @param event the table model event
      */
     public void tableRowsDeleted(TableModelEvent event)
+      throws NotImplementedException
     {
       // TODO: What to do here, if anything? This might be a hook method for
       // subclasses...
     }
 
     public void columnAdded(TableColumnModelEvent event)
+      throws NotImplementedException
     {
-      // TODO Auto-generated method stub
-      
+      // TODO Auto-generated method stub    
     }
 
     public void columnMarginChanged(ChangeEvent event)
+      throws NotImplementedException
     {
       // TODO Auto-generated method stub
-      
     }
 
     public void columnMoved(TableColumnModelEvent event)
+      throws NotImplementedException
     {
       // TODO Auto-generated method stub
-      
     }
 
     public void columnRemoved(TableColumnModelEvent event)
+      throws NotImplementedException
     {
       // TODO Auto-generated method stub
-      
     }
 
     public void columnSelectionChanged(ListSelectionEvent event)
+      throws NotImplementedException
     {
       // TODO Auto-generated method stub
-      
     }
 
     public void editingCanceled(ChangeEvent event)
+      throws NotImplementedException
     {
       // TODO Auto-generated method stub
-      
     }
 
     public void editingStopped(ChangeEvent event)
+      throws NotImplementedException
     {
       // TODO Auto-generated method stub
-      
     }
 
     /**
@@ -785,150 +793,170 @@ public class JTable
     }
 
     public int getAccessibleRow(int index)
+      throws NotImplementedException
     {
       // TODO Auto-generated method stub
       return 0;
     }
 
     public int getAccessibleColumn(int index)
+      throws NotImplementedException
     {
       // TODO Auto-generated method stub
       return 0;
     }
 
     public int getAccessibleIndex(int r, int c)
+      throws NotImplementedException
     {
       // TODO Auto-generated method stub
       return 0;
     }
 
     public Accessible getAccessibleCaption()
+      throws NotImplementedException
     {
       // TODO Auto-generated method stub
       return null;
     }
 
     public void setAccessibleCaption(Accessible caption)
+      throws NotImplementedException
     {
       // TODO Auto-generated method stub
-      
     }
 
     public Accessible getAccessibleSummary()
+      throws NotImplementedException
     {
       // TODO Auto-generated method stub
       return null;
     }
 
     public void setAccessibleSummary(Accessible summary)
+      throws NotImplementedException
     {
       // TODO Auto-generated method stub
-      
     }
 
     public int getAccessibleRowCount()
+      throws NotImplementedException
     {
       // TODO Auto-generated method stub
       return 0;
     }
 
     public int getAccessibleColumnCount()
+      throws NotImplementedException
     {
       // TODO Auto-generated method stub
       return 0;
     }
 
     public Accessible getAccessibleAt(int r, int c)
+      throws NotImplementedException
     {
       // TODO Auto-generated method stub
       return null;
     }
 
     public int getAccessibleRowExtentAt(int r, int c)
+      throws NotImplementedException
     {
       // TODO Auto-generated method stub
       return 0;
     }
 
     public int getAccessibleColumnExtentAt(int r, int c)
+      throws NotImplementedException
     {
       // TODO Auto-generated method stub
       return 0;
     }
 
     public AccessibleTable getAccessibleRowHeader()
+      throws NotImplementedException
     {
       // TODO Auto-generated method stub
       return null;
     }
 
     public void setAccessibleRowHeader(AccessibleTable header)
+      throws NotImplementedException
     {
-      // TODO Auto-generated method stub
-      
+      // TODO Auto-generated method stub    
     }
 
     public AccessibleTable getAccessibleColumnHeader()
+      throws NotImplementedException
     {
       // TODO Auto-generated method stub
       return null;
     }
 
     public void setAccessibleColumnHeader(AccessibleTable header)
+      throws NotImplementedException
     {
-      // TODO Auto-generated method stub
-      
+      // TODO Auto-generated method stub    
     }
 
     public Accessible getAccessibleRowDescription(int r)
+      throws NotImplementedException
     {
       // TODO Auto-generated method stub
       return null;
     }
 
     public void setAccessibleRowDescription(int r, Accessible description)
+      throws NotImplementedException
     {
-      // TODO Auto-generated method stub
-      
+      // TODO Auto-generated method stub    
     }
 
     public Accessible getAccessibleColumnDescription(int c)
+      throws NotImplementedException
     {
       // TODO Auto-generated method stub
       return null;
     }
 
     public void setAccessibleColumnDescription(int c, Accessible description)
+      throws NotImplementedException
     {
       // TODO Auto-generated method stub
       
     }
 
     public boolean isAccessibleSelected(int r, int c)
+      throws NotImplementedException
     {
       // TODO Auto-generated method stub
       return false;
     }
 
     public boolean isAccessibleRowSelected(int r)
+      throws NotImplementedException
     {
       // TODO Auto-generated method stub
       return false;
     }
 
     public boolean isAccessibleColumnSelected(int c)
+      throws NotImplementedException
     {
       // TODO Auto-generated method stub
       return false;
     }
 
     public int[] getSelectedAccessibleRows()
+      throws NotImplementedException
     {
       // TODO Auto-generated method stub
       return null;
     }
 
     public int[] getSelectedAccessibleColumns()
+      throws NotImplementedException
     {
       // TODO Auto-generated method stub
       return null;
@@ -1272,17 +1300,6 @@ public class JTable
       {
         setBorder(BorderFactory.createLineBorder(getGridColor(), 2));
       }
-    
-      /**
-       * With not this method overridden, the scroll pane scrolls to the
-       * top left cornec (untranslated position of the caret) after the first
-       * keystroke. 
-       */
-      public void scrollRectToVisible(Rectangle r)
-      {
-        // Do nothing here. If the editing session starts outside the visible
-        // bounds, the editCellAt will scroll.
-      }
     }    
   
 
@@ -1588,6 +1605,21 @@ public class JTable
   private boolean clientRowHeightSet = false;
 
   /**
+   * Stores the sizes and positions of each row, when using non-uniform row
+   * heights. Initially the height of all rows is equal and stored in
+   * {link #rowHeight}. However, when an application calls
+   * {@link #setRowHeight(int,int)}, the table switches to non-uniform
+   * row height mode which stores the row heights in the SizeSequence
+   * object instead.
+   *
+   * @see #setRowHeight(int)
+   * @see #getRowHeight()
+   * @see #getRowHeight(int)
+   * @see #setRowHeight(int, int)
+   */
+  private SizeSequence rowHeights;
+
+  /**
    * Creates a new <code>JTable</code> instance.
    */
   public JTable ()
@@ -1727,7 +1759,7 @@ public class JTable
     createDefaultEditors();
 
     this.autoResizeMode = AUTO_RESIZE_SUBSEQUENT_COLUMNS;
-    this.rowHeight = 16;
+    setRowHeight(16);
     this.rowMargin = 1;
     this.rowSelectionAllowed = true;
     // this.accessibleContext = new AccessibleJTable();
@@ -1958,7 +1990,13 @@ public class JTable
     // changed and the flag autoCreateColumnsFromModel is set
     if ((event == null || (event.getFirstRow() == TableModelEvent.HEADER_ROW))
 	&& autoCreateColumnsFromModel)
-      createDefaultColumnsFromModel();
+      {
+        rowHeights = null;
+        if (getAutoCreateColumnsFromModel())
+          createDefaultColumnsFromModel();
+        resizeAndRepaint();
+        return;
+      }
 
     // If the structure changes, we need to revalidate, since that might
     // affect the size parameters of the JTable. Otherwise we only need
@@ -1975,6 +2013,8 @@ public class JTable
             if (last < 0)
               last = getRowCount() - 1;
             selectionModel.insertIndexInterval(first, last - first + 1, true);
+            if (rowHeights != null)
+              rowHeights.insertEntries(first, last - first + 1, rowHeight);
           }
         revalidate();
       }
@@ -1990,6 +2030,8 @@ public class JTable
             if (last < 0)
               last = getRowCount() - 1;
             selectionModel.removeIndexInterval(first, last);
+            if (rowHeights != null)
+              rowHeights.removeEntries(first, last - first + 1);
           }
         if (dataModel.getRowCount() == 0)
           clearSelection();
@@ -2004,14 +2046,14 @@ public class JTable
    */
   public void valueChanged (ListSelectionEvent event)
   {
-    // Does not make sense for the table with the single row.
-    if (getRowCount() < 2)
-      return;
-    
-    int y_gap = rowMargin;
-    int y0 = (getRowHeight() + y_gap) * (event.getFirstIndex());
-    int yn = (getRowHeight() + y_gap) * (event.getLastIndex()+1);
-    repaint(0, y0, getWidth(), yn-y0);
+    // Repaint the changed region.
+    int first = Math.max(0, Math.min(getRowCount() - 1, event.getFirstIndex()));
+    int last = Math.max(0, Math.min(getRowCount() - 1, event.getLastIndex()));
+    Rectangle rect1 = getCellRect(first, 0, false);
+    Rectangle rect2 = getCellRect(last, getColumnCount() - 1, false);
+    SwingUtilities.computeUnion(rect2.x, rect2.y, rect2.width, rect2.height,
+                                rect1);
+    repaint(rect1);
   }
 
  /**
@@ -2053,10 +2095,16 @@ public class JTable
     if (point != null)
       {
         int nrows = getRowCount();
-        int height = getRowHeight() + getRowMargin();
+        int r;
         int y = point.y;
+        if (rowHeights == null)
+          {
+            int height = getRowHeight();
+            r = y / height;
+          }
+        else
+          r = rowHeights.getIndex(y);
 
-        int r = y / height;
         if (r < 0 || r >= nrows)
           return -1;
         else
@@ -2086,27 +2134,70 @@ public class JTable
                                int column,
                                boolean includeSpacing)
   {
-    int height = getRowHeight(row);
-    int width = columnModel.getColumn(column).getWidth();
-    int x_gap = columnModel.getColumnMargin();
-    int y_gap = rowMargin;
+    Rectangle cellRect = new Rectangle(0, 0, 0, 0);
 
-    column = Math.max(0, Math.min(column, getColumnCount() - 1));
-    row = Math.max(0, Math.min(row, getRowCount() - 1));
+    // Check for valid range vertically.
+    if (row >= getRowCount())
+      {
+        cellRect.height = getHeight();
+      }
+    else if (row >= 0)
+      {
+        cellRect.height = getRowHeight(row);
+        if (rowHeights == null)
+          cellRect.y = row * cellRect.height;
+        else
+          cellRect.y = rowHeights.getPosition(row);
 
-    int x = 0;
-    int y = (height + y_gap) * row;
+        if (! includeSpacing)
+          {
+            // The rounding here is important.
+            int rMargin = getRowMargin();
+            cellRect.y += rMargin / 2;
+            cellRect.height -= rMargin;
+          }
+      }
+    // else row < 0, y = height = 0
 
-    for (int i = 0; i < column; ++i)
-      x += columnModel.getColumn(i).getWidth();
-    
-    Rectangle rect = new Rectangle();
-
-    if (includeSpacing)
-      rect.setBounds(x, y, width, height +y_gap);
+    // Check for valid range horizontally.
+    if (column < 0)
+      {
+        if (! getComponentOrientation().isLeftToRight())
+          {
+            cellRect.x = getWidth();
+          }
+      }
+    else if (column >= getColumnCount())
+      {
+        if (getComponentOrientation().isLeftToRight())
+          {
+            cellRect.x = getWidth();
+          }
+      }
     else
-      rect.setBounds(x, y, width - x_gap, height);
-    return rect;
+      {
+        TableColumnModel tcm = getColumnModel();
+        if (getComponentOrientation().isLeftToRight())
+          {
+            for (int i = 0; i < column; i++)
+              cellRect.x += tcm.getColumn(i).getWidth();
+          }
+        else
+          {
+            for (int i = tcm.getColumnCount() - 1; i > column; i--)
+              cellRect.x += tcm.getColumn(i).getWidth();
+          }
+        cellRect.width = tcm.getColumn(column).getWidth();
+        if (! includeSpacing)
+          {
+            // The rounding here is important.
+            int cMargin = tcm.getColumnMargin();
+            cellRect.x += cMargin / 2;
+            cellRect.width -= cMargin;
+          }
+      }
+
+    return cellRect;
   }
 
   public void clearSelection()
@@ -2354,7 +2445,6 @@ public class JTable
                                    int row,
                                    int column)
   {
-
     boolean rowSelAllowed = getRowSelectionAllowed();
     boolean colSelAllowed = getColumnSelectionAllowed();
     boolean isSel = false;
@@ -2418,9 +2508,10 @@ public class JTable
    */
   public int getRowHeight(int row)
   {
-    // FIXME: return the height of the specified row
-    // which may be different from the general rowHeight
-    return rowHeight;
+    int rh = rowHeight;
+    if (rowHeights != null)
+      rh = rowHeights.getSize(row);
+    return rh;
   }
 
 
@@ -2780,9 +2871,14 @@ public class JTable
   }
 
   /**
-   * Set the value of the {@link #rowHeight} property.
+   * Sets the height for all rows in the table. If you want to change the
+   * height of a single row instead, use {@link #setRowHeight(int, int)}.
    *
-   * @param r The new value of the rowHeight property
+   * @param r the height to set for all rows
+   *
+   * @see #getRowHeight()
+   * @see #setRowHeight(int, int)
+   * @see #getRowHeight(int)
    */ 
   public void setRowHeight(int r)
   {
@@ -2792,21 +2888,24 @@ public class JTable
     clientRowHeightSet = true;
 
     rowHeight = r;
+    rowHeights = null;
     revalidate();
     repaint();
   }
   
   /**
-   * Sets the value of the rowHeight property for the specified
-   * row.
+   * Sets the height of a single row in the table.
    * 
-   * @param rh is the new rowHeight
-   * @param row is the row to change the rowHeight of
+   * @param rh the new row height
+   * @param row the row to change the height of
    */
   public void setRowHeight(int row, int rh)
   {
-     setRowHeight(rh);
-     // FIXME: not implemented
+    if (rowHeights == null)
+      {
+        rowHeights = new SizeSequence(getRowCount(), rowHeight);
+      }
+    rowHeights.setSize(row, rh);
   }
   
   /**
@@ -2877,6 +2976,10 @@ public class JTable
 
         // Add table as TableModelListener to new model.
         dataModel.addTableModelListener(this);
+
+        // Notify the tableChanged method.
+        tableChanged(new TableModelEvent(dataModel,
+                                         TableModelEvent.HEADER_ROW));
 
         // Automatically create columns.
         if (autoCreateColumnsFromModel)
@@ -3210,7 +3313,7 @@ public class JTable
   public void doLayout()
   {
     TableColumn resizingColumn = null;
-
+    
     int ncols = getColumnCount();
     if (ncols < 1)
       return;
@@ -3236,7 +3339,7 @@ public class JTable
       {
         TableColumn col;
         TableColumn [] cols;
-
+        
         switch (getAutoResizeMode())
           {
           case AUTO_RESIZE_LAST_COLUMN:
@@ -3298,19 +3401,43 @@ public class JTable
         TableColumn [] cols = new TableColumn[ncols];
         for (int i = 0; i < ncols; ++i)
           cols[i] = columnModel.getColumn(i);
-        distributeSpill(cols, spill);        
+        distributeSpill(cols, spill);
       }
     
     if (editorComp!=null)
       moveToCellBeingEdited(editorComp);
     
-    // Repaint fixes the invalid view after the first keystroke if the cell
-    // editing is started immediately after the program start or cell
-    // resizing. 
-    repaint();
-    if (tableHeader!=null)
-      tableHeader.repaint();
+    int leftBoundary = getLeftResizingBoundary();
+    int width = getWidth() - leftBoundary;
+    repaint(leftBoundary, 0, width, getHeight());
+    if (tableHeader != null)
+      tableHeader.repaint(leftBoundary, 0, width, tableHeader.getHeight());
   }
+  
+  /**
+   * Get the left boundary of the rectangle which changes during the column
+   * resizing.
+   */
+  int getLeftResizingBoundary()
+  {
+    if (tableHeader == null || getAutoResizeMode() == AUTO_RESIZE_ALL_COLUMNS)
+      return 0;
+    else
+      {
+        TableColumn resizingColumn = tableHeader.getResizingColumn();
+        if (resizingColumn == null)
+          return 0;
+
+        int rc = convertColumnIndexToView(resizingColumn.getModelIndex());
+        int p = 0;
+
+        for (int i = 0; i < rc; i++)
+          p += columnModel.getColumn(i).getWidth();
+        
+        return p;
+      }
+  }
+  
   
   /**
    * @deprecated Replaced by <code>doLayout()</code>
@@ -3866,4 +3993,5 @@ public class JTable
         super.setUIProperty(propertyName, value);
       }
   }
+
 }

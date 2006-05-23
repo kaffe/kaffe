@@ -42,6 +42,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.zip.ZipEntry;
@@ -50,6 +51,22 @@ import java.util.zip.ZipInputStream;
 public class Lister
     extends Action
 {
+  private WorkSet allItems;
+
+  private long readUntilEnd(InputStream is) throws IOException
+  {
+    byte[] buffer = new byte[5 * 1024];
+    long result = 0;
+    while (true)
+      {
+        int r = is.read(buffer);
+        if (r == -1)
+          break;
+        result += r;
+      }
+    return result;
+  }
+
   private void listJar(ZipInputStream zis, boolean verbose) throws IOException
   {
     MessageFormat format = null;
@@ -60,11 +77,15 @@ public class Lister
         ZipEntry entry = zis.getNextEntry();
         if (entry == null)
           break;
+        if (! allItems.contains(entry.getName()))
+          continue;
         if (verbose)
           {
+            // Read the stream; entry.getSize() is unreliable.
+            // (Also, we're just going to read it anyway.)
+            long size = readUntilEnd(zis);
             // No easy way to right-justify the size using
             // MessageFormat -- how odd.
-            long size = entry.getSize();
             String s = "     " + size;
             int index = Math.min(s.length() - 5, 5);
             System.out.print(s.substring(index));
@@ -79,6 +100,7 @@ public class Lister
 
   public void run(Main parameters) throws IOException
   {
+    allItems = new WorkSet(parameters.entries);
     File file = parameters.archiveFile;
     ZipInputStream zis;
     if (file == null || "-".equals(file.getName()))

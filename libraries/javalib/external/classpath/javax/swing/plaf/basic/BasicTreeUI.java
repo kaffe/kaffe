@@ -38,6 +38,7 @@
 
 package javax.swing.plaf.basic;
 
+import gnu.classpath.NotImplementedException;
 import gnu.javax.swing.tree.GnuPath;
 
 import java.awt.Color;
@@ -98,7 +99,6 @@ import javax.swing.plaf.ActionMapUIResource;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.InputMapUIResource;
 import javax.swing.plaf.TreeUI;
-import javax.swing.plaf.metal.MetalIconFactory;
 import javax.swing.tree.AbstractLayoutCache;
 import javax.swing.tree.DefaultTreeCellEditor;
 import javax.swing.tree.DefaultTreeCellRenderer;
@@ -252,6 +252,9 @@ public class BasicTreeUI
 
   /** The max height of the nodes in the tree. */
   int maxHeight = 0;
+  
+  /** The hash color. */
+  Color hashColor;
 
   /** Listeners */
   PropertyChangeListener propertyChangeListener;
@@ -337,7 +340,7 @@ public class BasicTreeUI
    */
   protected Color getHashColor()
   {
-    return UIManager.getColor("Tree.hash");
+    return hashColor;
   }
 
   /**
@@ -347,8 +350,7 @@ public class BasicTreeUI
    */
   protected void setHashColor(Color color)
   {
-    // FIXME: Putting something in the UIDefaults map is certainly wrong.
-    UIManager.put("Tree.hash", color);
+    hashColor = color;
   }
 
   /**
@@ -820,6 +822,7 @@ public class BasicTreeUI
    * default/listeners have been installed.
    */
   protected void prepareForUIInstall()
+  throws NotImplementedException
   {
     // TODO: Implement this properly.
   }
@@ -829,6 +832,7 @@ public class BasicTreeUI
    * installed.
    */
   protected void completeUIInstall()
+  throws NotImplementedException
   {
     // TODO: Implement this properly.
   }
@@ -838,6 +842,7 @@ public class BasicTreeUI
    * uninstalled.
    */
   protected void completeUIUninstall()
+  throws NotImplementedException
   {
     // TODO: Implement this properly.
   }
@@ -1803,7 +1808,9 @@ public class BasicTreeUI
    *         the event.
    */
   protected boolean isToggleEvent(MouseEvent event)
+  throws NotImplementedException
   {
+    // FIXME: Not implemented.
     return true;
   }
 
@@ -1986,6 +1993,7 @@ public class BasicTreeUI
      * @param e the event that occurs when moving the component
      */
     public void componentMoved(ComponentEvent e)
+    throws NotImplementedException
     {
       // TODO: What should be done here, if anything?
     }
@@ -1995,6 +2003,7 @@ public class BasicTreeUI
      * the bounds
      */
     protected void startTimer()
+    throws NotImplementedException
     {
       // TODO: Implement this properly.
     }
@@ -2005,7 +2014,9 @@ public class BasicTreeUI
      * @return JScrollPane housing the JTree, or null if one isn't found.
      */
     protected JScrollPane getScrollPane()
+    throws NotImplementedException
     {
+      // FIXME: Not implemented.
       return null;
     }
 
@@ -2016,6 +2027,7 @@ public class BasicTreeUI
      * @param ae is the action performed
      */
     public void actionPerformed(ActionEvent ae)
+    throws NotImplementedException
     {
       // TODO: Implement this properly.
     }
@@ -2140,6 +2152,7 @@ public class BasicTreeUI
      * @param e the key typed
      */
     public void keyTyped(KeyEvent e)
+    throws NotImplementedException
     {
       // TODO: What should be done here, if anything?
     }
@@ -2150,6 +2163,7 @@ public class BasicTreeUI
      * @param e the key pressed
      */
     public void keyPressed(KeyEvent e)
+    throws NotImplementedException
     {
       // TODO: What should be done here, if anything?
     }
@@ -2160,6 +2174,7 @@ public class BasicTreeUI
      * @param e the key released
      */
     public void keyReleased(KeyEvent e)
+    throws NotImplementedException
     {
       // TODO: What should be done here, if anything?
     }
@@ -2289,6 +2304,7 @@ public class BasicTreeUI
      * @param e is the mouse event that occured
      */
     public void mouseDragged(MouseEvent e)
+    throws NotImplementedException
     {
       // TODO: What should be done here, if anything?
     }
@@ -2300,6 +2316,7 @@ public class BasicTreeUI
      * @param e the mouse event that occured
      */
     public void mouseMoved(MouseEvent e)
+    throws NotImplementedException
     {
       // TODO: What should be done here, if anything?
     }
@@ -2310,6 +2327,7 @@ public class BasicTreeUI
      * @param e is the mouse event that occured
      */
     public void mouseReleased(MouseEvent e)
+    throws NotImplementedException
     {
       // TODO: What should be done here, if anything?
     }
@@ -2350,6 +2368,7 @@ public class BasicTreeUI
      * @param e mouse event that occured
      */
     public void mouseClicked(MouseEvent e)
+    throws NotImplementedException
     {
       // TODO: What should be done here, if anything?
     }
@@ -2360,6 +2379,7 @@ public class BasicTreeUI
      * @param e mouse event that occured
      */
     public void mousePressed(MouseEvent e)
+    throws NotImplementedException
     {
       // TODO: What should be done here, if anything?
     }
@@ -2370,6 +2390,7 @@ public class BasicTreeUI
      * @param e mouse event that occured
      */
     public void mouseReleased(MouseEvent e)
+    throws NotImplementedException
     {
       // TODO: What should be done here, if anything?
     }
@@ -2380,6 +2401,7 @@ public class BasicTreeUI
      * @param e mouse event that occured
      */
     public void mouseEntered(MouseEvent e)
+    throws NotImplementedException
     {
       // TODO: What should be done here, if anything?
     }
@@ -2390,6 +2412,7 @@ public class BasicTreeUI
      * @param e mouse event that occured
      */
     public void mouseExited(MouseEvent e)
+    throws NotImplementedException
     {
       // TODO: What should be done here, if anything?
     }
@@ -2403,6 +2426,7 @@ public class BasicTreeUI
      * @param e mouse event that occured
      */
     public void mouseDragged(MouseEvent e)
+    throws NotImplementedException
     {
       // TODO: What should be done here, if anything?
     }
@@ -2414,6 +2438,7 @@ public class BasicTreeUI
      * @param e mouse event that occured
      */
     public void mouseMoved(MouseEvent e)
+    throws NotImplementedException
     {
       // TODO: What should be done here, if anything?
     }
@@ -2422,6 +2447,7 @@ public class BasicTreeUI
      * Removes event from the source
      */
     protected void removeFromSource()
+    throws NotImplementedException
     {
       // TODO: Implement this properly.
     }
@@ -2487,7 +2513,7 @@ public class BasicTreeUI
      */
     protected int getRowX(int row, int depth)
     {
-      return depth * totalChildIndent;
+      return BasicTreeUI.this.getRowX(row, depth);
     }
   }// NodeDimensionsHandler
 
@@ -2558,6 +2584,7 @@ public class BasicTreeUI
      *          the property that has changed.
      */
     public void propertyChange(PropertyChangeEvent event)
+    throws NotImplementedException
     {
       // TODO: What should be done here, if anything?
     }
@@ -2574,6 +2601,7 @@ public class BasicTreeUI
      * Constructor
      */
     public TreeCancelEditingAction(String name)
+    throws NotImplementedException
     {
       // TODO: Implement this properly.
     }
@@ -2584,6 +2612,7 @@ public class BasicTreeUI
      * @param e event that occured
      */
     public void actionPerformed(ActionEvent e)
+    throws NotImplementedException
     {
       // TODO: Implement this properly.
     }
@@ -2594,6 +2623,7 @@ public class BasicTreeUI
      * @return true if the action is enabled, false otherwise
      */
     public boolean isEnabled()
+    throws NotImplementedException
     {
       // TODO: Implement this properly.
       return false;
@@ -2664,6 +2694,7 @@ public class BasicTreeUI
      * @param name is the name of the direction
      */
     public TreeHomeAction(int direction, String name)
+    throws NotImplementedException
     {
       // TODO: Implement this properly
     }
@@ -2674,6 +2705,7 @@ public class BasicTreeUI
      * @param e is the event that occured
      */
     public void actionPerformed(ActionEvent e)
+    throws NotImplementedException
     {
       // TODO: Implement this properly
     }
@@ -2684,6 +2716,7 @@ public class BasicTreeUI
      * @return true if the action is enabled.
      */
     public boolean isEnabled()
+    throws NotImplementedException
     {
       // TODO: Implement this properly
       return false;
@@ -2708,6 +2741,7 @@ public class BasicTreeUI
      * @param name is the name of the direction
      */
     public TreeIncrementAction(int direction, String name)
+    throws NotImplementedException
     {
       // TODO: Implement this properly
     }
@@ -2797,6 +2831,7 @@ public class BasicTreeUI
      * @return true if the action is enabled.
      */
     public boolean isEnabled()
+    throws NotImplementedException
     {
       // TODO: Implement this properly
       return false;
@@ -2913,6 +2948,7 @@ public class BasicTreeUI
      * @param e is the event that occured
      */
     public void actionPerformed(ActionEvent e)
+    throws NotImplementedException
     {
       // TODO: Implement this properly.
     }
@@ -2923,7 +2959,9 @@ public class BasicTreeUI
      * @return true if the action is enabled.
      */
     public boolean isEnabled()
+    throws NotImplementedException
     {
+      // FIXME: Not implemented.
       return false;
     }
   }// TreePageAction
@@ -2995,6 +3033,7 @@ public class BasicTreeUI
      * @param e the event that occured
      */
     public void actionPerformed(ActionEvent e)
+    throws NotImplementedException
     {
       // TODO: Implement this properly.
     }
@@ -3005,7 +3044,9 @@ public class BasicTreeUI
      * @return true if the action is enabled, false otherwise
      */
     public boolean isEnabled()
+    throws NotImplementedException
     {
+      // FIXME: Not implemented.
       return false;
     }
   } // TreeToggleAction
@@ -3089,6 +3130,7 @@ public class BasicTreeUI
      * @return true if the action is enabled, false otherwise
      */
     public boolean isEnabled()
+    throws NotImplementedException
     {
       // TODO: Implement this properly
       return false;
@@ -3443,6 +3485,7 @@ public class BasicTreeUI
    * Prepares for the UI to uninstall.
    */
   protected void prepareForUIUninstall()
+  throws NotImplementedException
   {
     // TODO: Implement this properly.
   }
@@ -3483,5 +3526,15 @@ public class BasicTreeUI
     tree.repaint(bounds);
     editingComponent = null;
     tree.requestFocus();
+  }
+  
+  /**
+   * Returns the amount to indent the given row
+   * 
+   * @return amount to indent the given row.
+   */
+  protected int getRowX(int row, int depth)
+  {
+    return depth * totalChildIndent;
   }
 } // BasicTreeUI

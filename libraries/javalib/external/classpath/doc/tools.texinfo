@@ -721,7 +721,7 @@ Command.23=A correct key password MUST be provided
 
 When the tool needs to signal a mandatory but missing key password, it would reference the property named @code{Command.23} and the message "@kbd{A correct key password MUST be provided}" will be used instead. This indirect referencing of "resources" permits replacing, as late as possible, the English strings with strings in other languages, provided of course @i{Resource Bundles} in those languages are provided.
 
-For the GNU Classpath Tools described in this Guide, the @i{Resource Bundles} are files named @file{MessageBundle[_ll[_CC[_VV]]].properties} where:
+For the GNU Classpath Tools described in this Guide, the @i{Resource Bundles} are files named @file{messages[_ll[_CC[_VV]]].properties} where:
 
 @ftable @var
 @item ll
@@ -746,16 +746,16 @@ The location of the @i{Resource Bundles} for the GNU Classpath Tools is specific
 The collection of @i{Resource Bundles} in a location act as an inverted tree with a parent-child relationship. For example suppose in the @file{gnu/classpath/tools/keytool} there are 3 message bundles named:
 
 @enumerate
-@item @code{MessageBundle.properties}
-@item @code{MessageBundle_fr.properties}
-@item @code{MessageBundle_fr_FR.properties}
+@item @code{messages.properties}
+@item @code{messages_fr.properties}
+@item @code{messages_fr_FR.properties}
 @end enumerate
 
-In the above example, bundle #1 will act as the parent of bundle #2, which in turn will act as the parent for bundle #3. This ordering is used by the Java runtime to choose which file to load based on the set Locale. For example if the Locale is @code{fr_CH}, @code{MessageBundle_fr.properties} will be used because (a) @code{MessageBundle_fr_CH.properties} does not exist, but (b) @code{MessageBundle_fr.properties} is the parent for the required bundle, and it exists. As another example, suppose the Locale was set to @code{en_AU}; then the tool will end up using @code{MessageBundle.properties} because (a) @code{MessageBundle_en_AU.properties} does not exist, (b) @code{MessageBundle_en.properties} which is the parent for the required bundle does not exist, but (c) @code{MessageBundle.properties} exists and is the root of the hierarchy.
+In the above example, bundle #1 will act as the parent of bundle #2, which in turn will act as the parent for bundle #3. This ordering is used by the Java runtime to choose which file to load based on the set Locale. For example if the Locale is @code{fr_CH}, @code{messages_fr.properties} will be used because (a) @code{messages_fr_CH.properties} does not exist, but (b) @code{messages_fr.properties} is the parent for the required bundle, and it exists. As another example, suppose the Locale was set to @code{en_AU}; then the tool will end up using @code{messages.properties} because (a) @code{messages_en_AU.properties} does not exist, (b) @code{messages_en.properties} which is the parent for the required bundle does not exist, but (c) @code{messages.properties} exists and is the root of the hierarchy.
 
-You can see from the examples above that @file{MessageBundle.properties} is the safety net that the Java runtime falls back to when failing to find a specific bunlde and its parent(s). This file is always provided with the Tool. In time, more localized versions will be included to cater for other languages.
+You can see from the examples above that @file{messages.properties} is the safety net that the Java runtime falls back to when failing to find a specific bunlde and its parent(s). This file is always provided with the Tool. In time, more localized versions will be included to cater for other languages.
 
-In the meantime, if you are willing to contribute localized versions of these resources, grab the @file{MessageBundle.properties} for a specific tool; translate it; save it with the appropriate language and region suffix and mail it to @code{classpath@@gnu.org}.
+In the meantime, if you are willing to contribute localized versions of these resources, grab the @file{messages.properties} for a specific tool; translate it; save it with the appropriate language and region suffix and mail it to @code{classpath@@gnu.org}.
 
 @comment ----------------------------------------------------------------------
 
@@ -763,7 +763,7 @@ In the meantime, if you are willing to contribute localized versions of these re
 @comment node-name, next, previous, up
 @section Message Formats
 
-If you open any of the @file{MessageBundle.properties} described in the previous section, you may see properties that look like so:
+If you open any of the @file{messages.properties} described in the previous section, you may see properties that look like so:
 
 @example
 Command.67=Issuer: @{0@}
@@ -774,7 +774,7 @@ Command.70=\ \ \ \ \ until: @{0,date,full@} - @{0,time,full@}
 
 These are @i{Message Formats} used by the tools to customize a text string that will then be used either as a prompt for User input or as output.
 
-If you are translating a @file{MessageBundle.properties} be careful not to alter text between curly braces.
+If you are translating a @file{messages.properties} be careful not to alter text between curly braces.
 
 @comment ----------------------------------------------------------------------
 

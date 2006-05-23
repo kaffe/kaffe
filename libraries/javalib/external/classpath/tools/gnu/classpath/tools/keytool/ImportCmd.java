@@ -39,6 +39,11 @@ exception statement from your version. */
 package gnu.classpath.tools.keytool;
 
 import gnu.classpath.SystemProperties;
+import gnu.classpath.tools.getopt.ClasspathToolParser;
+import gnu.classpath.tools.getopt.Option;
+import gnu.classpath.tools.getopt.OptionException;
+import gnu.classpath.tools.getopt.OptionGroup;
+import gnu.classpath.tools.getopt.Parser;
 import gnu.java.security.x509.X509CertPath;
 
 import java.io.FileInputStream;
@@ -181,15 +186,15 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 class ImportCmd extends Command
 {
   private static final Logger log = Logger.getLogger(ImportCmd.class.getName());
-  private String _alias;
-  private String _certFileName;
-  private String _password;
-  private boolean noPrompt;
-  private boolean trustCACerts;
-  private String _ksType;
-  private String _ksURL;
-  private String _ksPassword;
-  private String _providerClassName;
+  protected String _alias;
+  protected String _certFileName;
+  protected String _password;
+  protected boolean noPrompt;
+  protected boolean trustCACerts;
+  protected String _ksType;
+  protected String _ksURL;
+  protected String _ksPassword;
+  protected String _providerClassName;
   private CertificateFactory x509Factory;
   private boolean imported;
 
@@ -259,44 +264,6 @@ class ImportCmd extends Command
 
   // life-cycle methods -------------------------------------------------------
 
-  int processArgs(String[] args, int i)
-  {
-    int limit = args.length;
-    String opt;
-    while (++i < limit)
-      {
-        opt = args[i];
-        log.finest("args[" + i + "]=" + opt); //$NON-NLS-1$ //$NON-NLS-2$
-        if (opt == null || opt.length() == 0)
-          continue;
-
-        if ("-alias".equals(opt)) // -alias ALIAS //$NON-NLS-1$
-          _alias = args[++i];
-        else if ("-file".equals(opt)) // -file FILE_NAME //$NON-NLS-1$
-          _certFileName = args[++i];
-        else if ("-keypass".equals(opt)) // -keypass PASSWORD //$NON-NLS-1$
-          _password = args[++i];
-        else if ("-noprompt".equals(opt)) //$NON-NLS-1$
-          noPrompt = true;
-        else if ("-trustcacerts".equals(opt)) //$NON-NLS-1$
-          trustCACerts = true;
-        else if ("-storetype".equals(opt)) // -storetype STORE_TYPE //$NON-NLS-1$
-          _ksType = args[++i];
-        else if ("-keystore".equals(opt)) // -keystore URL //$NON-NLS-1$
-          _ksURL = args[++i];
-        else if ("-storepass".equals(opt)) // -storepass PASSWORD //$NON-NLS-1$
-          _ksPassword = args[++i];
-        else if ("-provider".equals(opt)) // -provider PROVIDER_CLASS_NAME //$NON-NLS-1$
-          _providerClassName = args[++i];
-        else if ("-v".equals(opt)) //$NON-NLS-1$
-          verbose = true;
-        else
-          break;
-      }
-
-    return i;
-  }
-
   void setup() throws Exception
   {
     setInputStreamParam(_certFileName);
@@ -307,12 +274,10 @@ class ImportCmd extends Command
     log.finer("-import handler will use the following options:"); //$NON-NLS-1$
     log.finer("  -alias=" + alias); //$NON-NLS-1$
     log.finer("  -file=" + _certFileName); //$NON-NLS-1$
-    log.finer("  -keypass=" + _password); //$NON-NLS-1$
     log.finer("  -noprompt=" + noPrompt); //$NON-NLS-1$
     log.finer("  -trustcacerts=" + trustCACerts); //$NON-NLS-1$
     log.finer("  -storetype=" + storeType); //$NON-NLS-1$
     log.finer("  -keystore=" + storeURL); //$NON-NLS-1$
-    log.finer("  -storepass=" + String.valueOf(storePasswordChars)); //$NON-NLS-1$
     log.finer("  -provider=" + provider); //$NON-NLS-1$
     log.finer("  -v=" + verbose); //$NON-NLS-1$
   }
@@ -338,6 +303,107 @@ class ImportCmd extends Command
   }
 
   // own methods --------------------------------------------------------------
+
+  Parser getParser()
+  {
+    log.entering(this.getClass().getName(), "getParser"); //$NON-NLS-1$
+
+    Parser result = new ClasspathToolParser(Main.IMPORT_CMD, true);
+    result.setHeader(Messages.getString("ImportCmd.27")); //$NON-NLS-1$
+    result.setFooter(Messages.getString("ImportCmd.26")); //$NON-NLS-1$
+    OptionGroup options = new OptionGroup(Messages.getString("ImportCmd.25")); //$NON-NLS-1$
+    options.add(new Option(Main.ALIAS_OPT,
+                           Messages.getString("ImportCmd.24"), //$NON-NLS-1$
+                           Messages.getString("ImportCmd.23")) //$NON-NLS-1$
+    {
+      public void parsed(String argument) throws OptionException
+      {
+        _alias = argument;
+      }
+    });
+    options.add(new Option(Main.FILE_OPT,
+                           Messages.getString("ImportCmd.22"), //$NON-NLS-1$
+                           Messages.getString("ImportCmd.21")) //$NON-NLS-1$
+    {
+      public void parsed(String argument) throws OptionException
+      {
+        _certFileName = argument;
+      }
+    });
+    options.add(new Option(Main.KEYPASS_OPT,
+                           Messages.getString("ImportCmd.20"), //$NON-NLS-1$
+                           Messages.getString("ImportCmd.19")) //$NON-NLS-1$
+    {
+      public void parsed(String argument) throws OptionException
+      {
+        _password = argument;
+      }
+    });
+    options.add(new Option("noprompt", //$NON-NLS-1$
+                           Messages.getString("ImportCmd.18")) //$NON-NLS-1$
+    {
+      public void parsed(String argument) throws OptionException
+      {
+        noPrompt = true;
+      }
+    });
+    options.add(new Option("trustcacerts", //$NON-NLS-1$
+                           Messages.getString("ImportCmd.17")) //$NON-NLS-1$
+    {
+      public void parsed(String argument) throws OptionException
+      {
+        trustCACerts = true;
+      }
+    });
+    options.add(new Option(Main.STORETYPE_OPT,
+                           Messages.getString("ImportCmd.16"), //$NON-NLS-1$
+                           Messages.getString("ImportCmd.15")) //$NON-NLS-1$
+    {
+      public void parsed(String argument) throws OptionException
+      {
+        _ksType = argument;
+      }
+    });
+    options.add(new Option(Main.KEYSTORE_OPT,
+                           Messages.getString("ImportCmd.14"), //$NON-NLS-1$
+                           Messages.getString("ImportCmd.13")) //$NON-NLS-1$
+    {
+      public void parsed(String argument) throws OptionException
+      {
+        _ksURL = argument;
+      }
+    });
+    options.add(new Option(Main.STOREPASS_OPT,
+                           Messages.getString("ImportCmd.12"), //$NON-NLS-1$
+                           Messages.getString("ImportCmd.11")) //$NON-NLS-1$
+    {
+      public void parsed(String argument) throws OptionException
+      {
+        _ksPassword = argument;
+      }
+    });
+    options.add(new Option(Main.PROVIDER_OPT,
+                           Messages.getString("ImportCmd.10"), //$NON-NLS-1$
+                           Messages.getString("ImportCmd.9")) //$NON-NLS-1$
+    {
+      public void parsed(String argument) throws OptionException
+      {
+        _providerClassName = argument;
+      }
+    });
+    options.add(new Option(Main.VERBOSE_OPT,
+                           Messages.getString("ImportCmd.8")) //$NON-NLS-1$
+    {
+      public void parsed(String argument) throws OptionException
+      {
+        verbose = true;
+      }
+    });
+    result.add(options);
+
+    log.exiting(this.getClass().getName(), "getParser", result); //$NON-NLS-1$
+    return result;
+  }
 
   /**
    * When importing a new trusted certificate, <i>alias</i> MUST NOT yet exist
@@ -607,7 +673,7 @@ class ImportCmd extends Command
     log.entering(this.getClass().getName(), "orderChain"); //$NON-NLS-1$
 
     LinkedList result = new LinkedList();
-    
+    // FIXME: really order it!
 
     log.entering(this.getClass().getName(), "orderChain", result); //$NON-NLS-1$
     return result;
@@ -715,7 +781,7 @@ class ImportCmd extends Command
     try
       {
         KeyStore cacerts = KeyStore.getInstance("jks"); //$NON-NLS-1$
-        String cacertsPath = SystemProperties.getProperty("java.home");
+        String cacertsPath = SystemProperties.getProperty("java.home"); //$NON-NLS-1$
         String fs = SystemProperties.getProperty("file.separator"); //$NON-NLS-1$
         cacertsPath = new StringBuilder(cacertsPath).append(fs)
             .append("lib").append(fs) //$NON-NLS-1$

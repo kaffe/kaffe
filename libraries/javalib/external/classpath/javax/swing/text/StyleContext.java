@@ -413,7 +413,7 @@ public class StyleContext
   /**
    * These attribute keys are handled specially in serialization.
    */
-  private static HashSet staticAttributeKeys = new HashSet();
+  private static Hashtable staticAttributeKeys = new Hashtable();
 
   EventListenerList listenerList;
   Hashtable styleTable;
@@ -708,44 +708,107 @@ public class StyleContext
       }	
   }
 
-
-  // FIXME: there's some sort of quasi-serialization stuff in here which I
-  // have left incomplete; I'm not sure I understand the intent properly.
-
+  /**
+   * Gets the object previously registered with registerStaticAttributeKey.
+   * 
+   * @param key - the key that was registered.
+   * @return the object previously registered with registerStaticAttributeKey.
+   */
   public static Object getStaticAttribute(Object key)
-    throws NotImplementedException
   {
-    throw new InternalError("not implemented");
+    if (key == null)
+      return null;
+    return staticAttributeKeys.get(key);
   }
   
+  /**
+   * Returns the String that key will be registered with
+   * registerStaticAttributeKey.
+   * 
+   * @param key - the key that will be registered.
+   * @return the string the key will be registered with.
+   */
   public static Object getStaticAttributeKey(Object key)
-    throws NotImplementedException
   {
-    throw new InternalError("not implemented");
+    return key.getClass().getName() + "." + key.toString();
   }
 
+  /**
+   * Reads a set of attributes from the given object input stream. This will
+   * attempt to restore keys that were static objects by considering only the
+   * keys that have were registered with registerStaticAttributeKey. The
+   * attributes retrieved will be placed into the given set.
+   * 
+   * @param in - the stream to read from
+   * @param a - the set of attributes
+   * @throws ClassNotFoundException - may be encountered when reading from
+   *           stream
+   * @throws IOException - any I/O error
+   */
   public static void readAttributeSet(ObjectInputStream in, MutableAttributeSet a)
-    throws ClassNotFoundException, IOException, NotImplementedException
+    throws ClassNotFoundException, IOException
   {
-    throw new InternalError("not implemented");
+    if (in == null || a == null)
+      return;
+    
+    Object key = in.readObject();
+    Object val = in.readObject();
+    while (key != null && val != null)
+      {
+        Object staticKey = staticAttributeKeys.get(key);
+        Object staticVal = staticAttributeKeys.get(val);
+        
+        if (staticKey != null)
+          key = staticKey;
+        if (staticVal != null)
+          val = staticVal;
+        
+        a.addAttribute(key, val);
+        key = in.readObject();
+        val = in.readObject();
+      }
   }
   
+  /**
+   * TODO: DOCUMENT ME!
+   * 
+   * @param out - stream to write to
+   * @param a - the attribute set
+   * @throws IOException - any I/O error
+   */
   public static void writeAttributeSet(ObjectOutputStream out, AttributeSet a)
     throws IOException, NotImplementedException
   {
-    throw new InternalError("not implemented");
+    // FIXME: Not implemented
   }
 
+  /**
+   * Handles reading in the attributes. 
+   * @see #readAttributeSet(ObjectInputStream, MutableAttributeSet)
+   * 
+   * @param in - the stream to read from
+   * @param a - the set of attributes
+   * @throws ClassNotFoundException - may be encountered when reading from stream
+   * @throws IOException - any I/O error
+   */
   public void readAttributes(ObjectInputStream in, MutableAttributeSet a)
-    throws ClassNotFoundException, IOException, NotImplementedException 
+    throws ClassNotFoundException, IOException
   {
-    throw new InternalError("not implemented");
+    readAttributeSet(in, a);
   }
 
+  /**
+   * Handles writing of the given attributes.
+   * @see #writeAttributeSet(ObjectOutputStream, AttributeSet)
+   * 
+   * @param out - stream to write to
+   * @param a - the attribute set
+   * @throws IOException - any I/O error
+   */
   public void writeAttributes(ObjectOutputStream out, AttributeSet a)
-    throws IOException, NotImplementedException
+    throws IOException
   {
-    throw new InternalError("not implemented");
+    writeAttributeSet(out, a);
   }
 
   /**
@@ -760,6 +823,8 @@ public class StyleContext
    */
   public static void registerStaticAttributeKey(Object key)
   {
-    staticAttributeKeys.add(key);
+    if (key != null)
+      staticAttributeKeys.put(key.getClass().getName() + "." + key.toString(),
+                              key);
   }
 }

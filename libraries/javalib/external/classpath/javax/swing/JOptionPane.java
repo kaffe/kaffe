@@ -38,14 +38,20 @@ exception statement from your version. */
 
 package javax.swing;
 
+import java.awt.AWTEvent;
+import java.awt.ActiveEvent;
 import java.awt.Component;
+import java.awt.Container;
+import java.awt.EventQueue;
 import java.awt.Frame;
+import java.awt.MenuComponent;
+import java.awt.Toolkit;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseMotionAdapter;
 
 import javax.accessibility.Accessible;
 import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleRole;
-import javax.swing.event.InternalFrameAdapter;
-import javax.swing.event.InternalFrameEvent;
 import javax.swing.plaf.OptionPaneUI;
 
 /**
@@ -1528,31 +1534,64 @@ public class JOptionPane extends JComponent implements Accessible
    */
   private static void startModal(JInternalFrame f)
   {
-    synchronized (f)
-    {
-      final JInternalFrame tmp = f;
-      tmp.toFront();
+    // We need to add an additional glasspane-like component directly
+    // below the frame, which intercepts all mouse events that are not
+    // directed at the frame itself.
+    JPanel modalInterceptor = new JPanel();
+    modalInterceptor.setOpaque(false);
+    JLayeredPane lp = JLayeredPane.getLayeredPaneAbove(f);
+    lp.setLayer(modalInterceptor, JLayeredPane.MODAL_LAYER.intValue());
+    modalInterceptor.setBounds(0, 0, lp.getWidth(), lp.getHeight());
+    modalInterceptor.addMouseListener(new MouseAdapter(){});
+    modalInterceptor.addMouseMotionListener(new MouseMotionAdapter(){});
+    lp.add(modalInterceptor);
+    f.toFront();
 
-      f.addInternalFrameListener(new InternalFrameAdapter()
-                                 {
-                                   public void internalFrameClosed(InternalFrameEvent e)
-                                   {
-                                     synchronized (tmp)
-                                     {
-                                       tmp.removeInternalFrameListener(this);
-                                       tmp.notifyAll();
-                                     }
-                                   }
-                                 });
-      try
-        {
-          while (! f.isClosed())
-            f.wait();
-        }
-      catch (InterruptedException ignored)
-        {
-          // Ignore this Exception.
-        }
-    }
+    // We need to explicitly dispatch events when we are blocking the event
+    // dispatch thread.
+    EventQueue queue = Toolkit.getDefaultToolkit().getSystemEventQueue();
+    try
+      {
+        while (! f.isClosed())
+          {
+            if (EventQueue.isDispatchThread())
+              {
+                // The getNextEventMethod() issues wait() when no
+                // event is available, so we don't need do explicitly wait().
+                AWTEvent ev = queue.getNextEvent();
+                // This mimics EventQueue.dispatchEvent(). We can't use
+                // EventQueue.dispatchEvent() directly, because it is
+                // protected, unfortunately.
+                if (ev instanceof ActiveEvent)
+                  ((ActiveEvent) ev).dispatch();
+                else if (ev.getSource() instanceof Component)
+                  ((Component) ev.getSource()).dispatchEvent(ev);
+                else if (ev.getSource() instanceof MenuComponent)
+                  ((MenuComponent) ev.getSource()).dispatchEvent(ev);
+                // Other events are ignored as per spec in
+                // EventQueue.dispatchEvent
+              }
+            else
+              {
+                // Give other threads a chance to become active.
+                Thread.yield();
+              }
+          }
+      }
+    catch (InterruptedException ex)
+      {
+        // If we get interrupted, then leave the modal state.
+      }
+    finally
+      {
+        // Clean up the modal interceptor.
+        lp.remove(modalInterceptor);
+
+        // Remove the internal frame from its parent, so it is no longer
+        // lurking around and clogging memory.
+        Container parent = f.getParent();
+        if (parent != null)
+          parent.remove(f);
+      }
   }
 }

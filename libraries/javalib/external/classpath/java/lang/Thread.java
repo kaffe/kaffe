@@ -38,6 +38,7 @@ exception statement from your version. */
 
 package java.lang;
 
+import gnu.classpath.VMStackWalker;
 import gnu.java.util.WeakIdentityHashMap;
 import java.security.Permission;
 import java.util.Map;
@@ -131,7 +132,8 @@ public class Thread implements Runnable
 
   /** The context classloader for this Thread. */
   private ClassLoader contextClassLoader;
-  
+  private boolean contextClassLoaderIsSystemClassLoader;
+
   /** This thread's ID.  */
   private final long threadId;
 
@@ -248,7 +250,7 @@ public class Thread implements Runnable
    */
   public Thread(ThreadGroup group, Runnable target)
   {
-    this(group, target, "Thread-" + ++numAnonymousThreadsCreated, 0);
+    this(group, target, createAnonymousThreadName(), 0);
   }
 
   /**
@@ -364,6 +366,8 @@ public class Thread implements Runnable
     priority = current.priority;
     daemon = current.daemon;
     contextClassLoader = current.contextClassLoader;
+    contextClassLoaderIsSystemClassLoader =
+        current.contextClassLoaderIsSystemClassLoader;
 
     group.addThread(this);
     InheritableThreadLocal.newChildThread(this);
@@ -373,6 +377,9 @@ public class Thread implements Runnable
    * Used by the VM to create thread objects for threads started outside
    * of Java. Note: caller is responsible for adding the thread to
    * a group and InheritableThreadLocal.
+   * Note: This constructor should not call any methods that could result
+   * in a call to Thread.currentThread(), because that makes life harder
+   * for the VM.
    *
    * @param vmThread the native thread
    * @param name the thread name or null to use the default naming scheme
@@ -384,16 +391,32 @@ public class Thread implements Runnable
     this.vmThread = vmThread;
     this.runnable = null;
     if (name == null)
-	name = "Thread-" + ++numAnonymousThreadsCreated;
+	name = createAnonymousThreadName();
     this.name = name;
     this.priority = priority;
     this.daemon = daemon;
-    this.contextClassLoader = ClassLoader.getSystemClassLoader();
+    // By default the context class loader is the system class loader,
+    // we set a flag to signal this because we don't want to call
+    // ClassLoader.getSystemClassLoader() at this point, because on
+    // VMs that lazily create the system class loader that might result
+    // in running user code (when a custom system class loader is specified)
+    // and that user code could call Thread.currentThread().
+    // ClassLoader.getSystemClassLoader() can also return null, if the system
+    // is currently in the process of constructing the system class loader
+    // (and, as above, the constructiong sequence calls Thread.currenThread()).
+    contextClassLoaderIsSystemClassLoader = true;
     synchronized (Thread.class)
       {
 	this.threadId = nextThreadId++;
       }
+  }
 
+  /**
+   * Generate a name for an anonymous thread.
+   */
+  private static synchronized String createAnonymousThreadName()
+  {
+    return "Thread-" + ++numAnonymousThreadsCreated;
   }
 
   /**
@@ -746,12 +769,18 @@ public class Thread implements Runnable
    */
   public synchronized ClassLoader getContextClassLoader()
   {
-    // Bypass System.getSecurityManager, for bootstrap efficiency.
+    ClassLoader loader = contextClassLoaderIsSystemClassLoader ?
+        ClassLoader.getSystemClassLoader() : contextClassLoader;
+    // Check if we may get the classloader
     SecurityManager sm = SecurityManager.current;
-    if (sm != null)
-      // XXX Don't check this if the caller's class loader is an ancestor.
-      sm.checkPermission(new RuntimePermission("getClassLoader"));
-    return contextClassLoader;
+    if (loader != null && sm != null)
+      {
+        // Get the calling classloader
+	ClassLoader cl = VMStackWalker.getCallingClassLoader();
+        if (cl != null && !cl.isAncestorOf(loader))
+          sm.checkPermission(new RuntimePermission("getClassLoader"));
+      }
+    return loader;
   }
 
   /**
@@ -772,6 +801,7 @@ public class Thread implements Runnable
     if (sm != null)
       sm.checkPermission(new RuntimePermission("setContextClassLoader"));
     this.contextClassLoader = classloader;
+    contextClassLoaderIsSystemClassLoader = false;
   }
 
   /**

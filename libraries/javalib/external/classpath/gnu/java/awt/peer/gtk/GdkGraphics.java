@@ -39,6 +39,7 @@ exception statement from your version. */
 package gnu.java.awt.peer.gtk;
 
 import gnu.classpath.Configuration;
+import gnu.java.awt.AWTUtilities;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -160,7 +161,7 @@ public class GdkGraphics extends Graphics
     if (component != null && ! component.isRealized ())
       return;
 
-    clip = clip.intersection (new Rectangle (x, y, width, height));
+    computeIntersection(x, y, width, height, clip);
     setClipRectangle (clip.x, clip.y, clip.width, clip.height);
   }
 
@@ -493,4 +494,26 @@ public class GdkGraphics extends Graphics
     component = g.component;
     nativeCopyState(g);
   }
+
+  private Rectangle computeIntersection(int x, int y, int w, int h,
+                                        Rectangle rect)
+  {
+    int x2 = (int) rect.x;
+    int y2 = (int) rect.y;
+    int w2 = (int) rect.width;
+    int h2 = (int) rect.height;
+
+    int dx = (x > x2) ? x : x2;
+    int dy = (y > y2) ? y : y2;
+    int dw = (x + w < x2 + w2) ? (x + w - dx) : (x2 + w2 - dx);
+    int dh = (y + h < y2 + h2) ? (y + h - dy) : (y2 + h2 - dy);
+
+    if (dw >= 0 && dh >= 0)
+      rect.setBounds(dx, dy, dw, dh);
+    else
+      rect.setBounds(0, 0, 0, 0);
+
+    return rect;
+  }
+
 }

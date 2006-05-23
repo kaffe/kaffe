@@ -184,7 +184,6 @@ public abstract class Option
    */
   public String getDescription()
   {
-    // FIXME: localization.
     return description;
   }
 
