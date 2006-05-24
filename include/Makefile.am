@@ -4,7 +4,7 @@
 #	Transvirtual Technologies, Inc.  All rights reserved.
 # Copyright (c) 2003
 #	Mark Wielaard <mark@klomp.org>
-# Copyright (c) 2004
+# Copyright (c) 2004, 2006
 #	Kaffe.org contributors. All rights reserved.
 #
 # See the file "license.terms" for information on usage and redistribution 
@@ -229,11 +229,10 @@ stamp-h0all: stamp-kaffeh $(KLASSES_JAR)
 	@echo timestamp > $@
 
 
-.PHONY: rebuild-jni-hdrs
-rebuild-jni-hdrs: stamp-kaffeh $(KLASSES_JAR)
+stamp-h1all: stamp-kaffeh $(KLASSES_JAR)
 ## Then, generate each header file,
 ## but if it does not change, do not touch it
-	@set -e; for f in $(HDRS); do \
+	@set -e; for f in $(JNI_DERIVED_HDRS); do \
 	  class=`echo $$f | sed -e 's%.*/%%g' -e 's%\.h$$%%' -e 's%_%/%g'`; \
 	  echo "$(KAFFEH) -jni -classpath $(top_builddir)/libraries/javalib/gmp-math/lib:$(KLASSES_JAR):$(top_builddir)/libraries/javalib/lib:$(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip -o $$f $$class"; \
 	  $(KAFFEH) -jni -classpath $(top_builddir)/libraries/javalib/gmp-math/lib:$(KLASSES_JAR):$(top_builddir)/libraries/javalib/lib:$(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip -o stamp-h1$$f $$class; \
@@ -244,7 +243,7 @@ rebuild-jni-hdrs: stamp-kaffeh $(KLASSES_JAR)
 	    rm -f $$f; mv stamp-h1$$f $$f; \
 	  fi; \
 	done
-
+	@echo timestamp > $@
 
 #
 # jni headers of the core libraries
@@ -253,10 +252,6 @@ $(JNI_DERIVED_HDRS): stamp-h1all
 	@if test -f $@; then :; else \
 	  rm -f stamp-h1all; $(MAKE) JNI_DERIVED_HDRS=$@ stamp-h1all; \
 	fi
-
-stamp-h1all: HDRS = $(JNI_DERIVED_HDRS)
-stamp-h1all: rebuild-jni-hdrs
-	@echo timestamp > $@
 
 CLEANFILES = \
 	$(DERIVED_HDRS) \

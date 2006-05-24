@@ -1,5 +1,14 @@
 2006-05-24  Dalibor Topic  <robilad@kaffe.org>
 
+	* include/Makefile.am (stamp-h1all): Merged with
+	rebuild-jni-hdrs. Use JNI_DERIVED_HDRS instead of
+	HDRS.
+
+	Reported by:  Riccardo Mottola <riccardo@kaffe.org>
+
+
+2006-05-24  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
 	(TMSG_SHORT, TMSG_LONG, CHECK_CURRENT_THREAD): Don't
 	attempt to print pthread_t since it can be a pointer to 
