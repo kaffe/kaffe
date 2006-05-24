@@ -1,5 +1,12 @@
 2006-05-24  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c
+	(TMSG_SHORT, TMSG_LONG, CHECK_CURRENT_THREAD): Don't
+	attempt to print pthread_t since it can be a pointer to 
+	a struct, or something else on some platforms.
+
+2006-05-24  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/kaffe-gc/gc-mem.c (gc_block_alloc):
 	Use %zu format for printing size_t value to fix
 	compiler warning on powerpc-darwin.

@@ -4,7 +4,7 @@
  * Copyright (c) 1998
  *      Transvirtual Technologies, Inc.  All rights reserved.
  *
- * Copyright (c) 2005
+ * Copyright (c) 2005, 2006
  *      Kaffe.org contributors.  See ChangeLog for details. 
  *      All rights reserved.
  *
@@ -68,19 +68,19 @@ static char stat_susp[]  = { ' ', 's', ' ', 'r', ' ', ' ', ' ', ' ', ' ', ' ', '
 static char stat_block[] = { ' ', 'T', 'm', ' ', 'c', ' ', ' ', ' ', 't', ' ', ' ' };
 
 #define TMSG_SHORT(_msg,_nt)     \
-   dprintf(_msg" %p [tid:%4lx, java:%p]\n", \
-    _nt, _nt->tid, _nt->data.jlThread)
+   dprintf(_msg" %p [java:%p]\n", \
+    _nt, _nt->data.jlThread)
 
 #define TMSG_LONG(_msg,_nt)      \
-   dprintf(_msg" %p [tid:%4lx, java:%p], stack [%p..%p..%p], state: %c%c%c\n",         \
-        _nt, _nt->tid, _nt->data.jlThread, _nt->stackMin, _nt->stackCur, _nt->stackMax,  \
+   dprintf(_msg" %p [java:%p], stack [%p..%p..%p], state: %c%c%c\n",         \
+        _nt, _nt->data.jlThread, _nt->stackMin, _nt->stackCur, _nt->stackMax,  \
         stat_act[_nt->active], stat_susp[_nt->suspendState], stat_block[_nt->blockState])
 
 #define CHECK_CURRENT_THREAD(_nt)                                          \
   if ( ((uintp) &_nt < (uintp) _nt->stackMin) ||           \
        ((uintp) &_nt > (uintp) _nt->stackMax) ) {          \
-    printf( "?? inconsistent current thread: %x [tid: %d, java: %x]\n",    \
-                    _nt, _nt->tid, _nt->data.jlThread);                                   \
+    printf( "?? inconsistent current thread: %x [java: %x]\n",    \
+                    _nt, _nt->data.jlThread);                                   \
     tDump();                                                               \
   }
 
