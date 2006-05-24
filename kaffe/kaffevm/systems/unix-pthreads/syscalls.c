@@ -320,7 +320,7 @@ jthreadedRemove(const char *entry)
 
 static int     
 jthreadedSendto(int a, const void* b, size_t c, int d, const struct sockaddr* e,
-		socklen_t f, int *out)
+		socklen_t f, ssize_t *out)
 {
 	int rc = 0;
 
