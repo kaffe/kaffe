@@ -1156,7 +1156,7 @@ gc_block_alloc(size_t size)
 			  gc_pgbits;
 		gc_num_blocks = MAX(gc_num_blocks, min_nb);
 		DBG(GCSYSALLOC,
-		    dprintf("growing block array from %d to %d elements\n",
+		    dprintf("growing block array from %d to %zu elements\n",
 			    onb, gc_num_blocks));
 
 		KTHREAD(spinon)(NULL);

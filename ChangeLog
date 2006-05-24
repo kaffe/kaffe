@@ -1,5 +1,11 @@
 2006-05-24  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/kaffe-gc/gc-mem.c (gc_block_alloc):
+	Use %zu format for printing size_t value to fix
+	compiler warning on powerpc-darwin.
+ 
+2006-05-24  Dalibor Topic  <robilad@kaffe.org>
+
 	Small warning fix for powerpc-darwin.
 
 	* include/jsyscall.h (_sendto) Modified prototype to match
