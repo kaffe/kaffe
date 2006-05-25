@@ -245,29 +245,29 @@ retry:
 				       class->superclass, 
 				       (void **)&(class->superclass));
 			if( !(class->accflags & ACC_INTERFACE) &&
-			    (class->superclass->accflags & ACC_INTERFACE)) {
+			    (getSuperclass(class)->accflags & ACC_INTERFACE)) {
 				postExceptionMessage(
 					einfo,
 					JAVA_LANG(
 						IncompatibleClassChangeError),
 					"Super class, %s, is an interface.",
-					class->superclass->name->data);
+					getSuperclass(class)->name->data);
 				success = false;
 				goto done;
 			}
 			/* that's pretty much obsolete. */
-			assert(class->superclass->state >= CSTATE_DOING_LINK);
+			assert(getSuperclass(class)->state >= CSTATE_DOING_LINK);
 			classMappingLoaded(ce, class);
 			/* Copy initial field size and gc layout.
 			 * Later, as this class's fields are resolved, they
 			 * are added to the superclass's layout.
 			 */
-			CLASS_FSIZE(class) = CLASS_FSIZE(class->superclass);
-			class->gc_layout = class->superclass->gc_layout;
+			CLASS_FSIZE(class) = CLASS_FSIZE(getSuperclass(class));
+			class->gc_layout = getSuperclass(class)->gc_layout;
 		}
 		if( class->superclass )
 		{
-			assert(class->superclass->state >= CSTATE_DOING_LINK);
+			assert(getSuperclass(class)->state >= CSTATE_DOING_LINK);
 		}
 		
 	}
@@ -527,7 +527,7 @@ retry:
 					       einfo);
 			lockClass(class);
 			if (success == false) {
-				if (class->superclass->state == CSTATE_FAILED)
+				if (getSuperclass(class)->state == CSTATE_FAILED)
 					SET_CLASS_STATE(CSTATE_FAILED);
 				goto done;
 			}
@@ -821,7 +821,7 @@ resolveInterfaces(Hjava_lang_Class *class, errorInfo *einfo)
 			success = false;
 			goto done;
 		}
-		j += class->superclass->total_interface_len;
+		j += getSuperclass(class)->total_interface_len;
 	}
 	for (i = 0; i < class->interface_len; i++) {
 		uintp iface = (uintp)class->interfaces[i];
@@ -2079,7 +2079,7 @@ buildDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
 	Hjava_lang_Class *cc;
 
 	if (class->superclass != NULL) {
-		class->msize = class->superclass->msize;
+		class->msize = getSuperclass(class)->msize;
 	}
 	else {
 		class->msize = 0;

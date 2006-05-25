@@ -110,7 +110,7 @@ struct Hjava_lang_Class {
 	/* If non-NULL, a pointer to the superclass.
 	 * However, if state < CSTATE_DOING_PREPARE, then
 	 * (int) superclass is a constant pool index. */
-	struct Hjava_lang_Class* superclass;
+	void*                   superclass;
 
 	struct _constants	constants;
 
@@ -703,5 +703,17 @@ extern Utf8Const* Synthetic_name;       /* "Synthetic" */
 extern Utf8Const* EnclosingMethod_name;  /* "EnclosingMethod" */
 
 void initialiseSecurity (void);
+
+/**
+ * get super class for a given class.
+ *
+ * @param class the class
+ *
+ * @return superclass of class
+ */
+static inline struct Hjava_lang_Class* getSuperclass(struct Hjava_lang_Class* class)
+{
+  return class->superclass;
+}
 
 #endif

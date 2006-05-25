@@ -1,3 +1,16 @@
+2006-05-25  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/classMethod.h (Hjava_lang_Class):
+	Changed type of superclass to void * to fix compiler
+	warning with gcc 4.1.0.
+	(getSuperclass) New inline function.
+
+	* kaffe/kaffevm/classMethod.c (processClass, resolveInterfaces,
+	buildDispatchTable),
+	kaffe/kaffevm/gcFuncs.c (destroyClass),
+	kaffe/kaffevm/verifier/verify2.c (verify2):
+	use getSuperclass.
+
 2006-05-24  Dalibor Topic  <robilad@kaffe.org>
 
 	* include/Makefile.am (stamp-h1all): Merged with

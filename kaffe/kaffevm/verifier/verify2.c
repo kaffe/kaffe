@@ -330,7 +330,7 @@ verify2(Hjava_lang_Class* class, errorInfo *einfo)
 					     "class \"%s\" does not have a superclass",
 					     CLASS_CNAME(class));
 			return(false);
-		} else if (CLASS_IS_FINAL(class->superclass)) {
+		} else if (CLASS_IS_FINAL(getSuperclass(class))) {
 			/*********************************************************
 			 * 2a: check that final classes are not inherited from
 			 *********************************************************/
@@ -338,7 +338,7 @@ verify2(Hjava_lang_Class* class, errorInfo *einfo)
 			postExceptionMessage(einfo, JAVA_LANG(VerifyError),
 					     "class \"%s\" cannot inherit from final class \"%s\"",
 					     CLASS_CNAME(class),
-					     CLASS_CNAME(class->superclass));
+					     CLASS_CNAME(getSuperclass(class)));
 			return(false);
 		} else if (CLASS_IS_INTERFACE(class)) {
 		        /* we separate this from the rest of the method checking because the only requirement
@@ -432,7 +432,7 @@ verify2(Hjava_lang_Class* class, errorInfo *einfo)
 									postExceptionMessage(einfo, JAVA_LANG(VerifyError),
 											     "final method \"%s\" declared in class \"%s\" is overriden in class \"%s\"",
 											     METHOD_NAMED(method),
-											     CLASS_CNAME(class->superclass),
+											     CLASS_CNAME(getSuperclass(class)),
 											     CLASS_CNAME(class));
 									return(false);
 								}

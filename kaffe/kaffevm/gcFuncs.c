@@ -239,7 +239,7 @@ DBG(CLASSGC,
 	  KGC_rmRef(collector, clazz->itable2dtable);
 	}
 	if (clazz->gc_layout != NULL && clazz->superclass != NULL &&
-	    clazz->superclass->gc_layout != clazz->gc_layout)
+	    getSuperclass(clazz)->gc_layout != clazz->gc_layout)
 	  KFREE(clazz->gc_layout);
 
 	KFREE(clazz->sourcefile);
