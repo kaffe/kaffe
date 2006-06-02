@@ -17,11 +17,9 @@ tools_jar_SRCS = \
 	gnu/classpath/tools/javap/GnuByteCodeJavap.java \
 	gnu/classpath/tools/javap/Javap.java \
 	gnu/classpath/tools/javap/JavapMain.java \
-	gnu/classpath/tools/native2ascii/Native2ASCII.java \
 	gnu/classpath/tools/rmi/rmic/RMIC.java \
 	gnu/classpath/tools/rmi/rmic/RMICException.java \
-	gnu/classpath/tools/rmi/rmic/Variables.java \
-	gnu/classpath/tools/serialver/SerialVer.java
+	gnu/classpath/tools/rmi/rmic/Variables.java 
 		 
 
 ## Do not delete the previous blank line; update-class-list depends on it
