@@ -1,3 +1,11 @@
+2006-06-04  Dalibor Topic  <topic@amy.domain.wg>
+
+	* configure.ac (CLASSPATH_INCLUDES): Added 
+	--disable-plugin and pass through correct --with-vm to
+	classpath's configure.
+
+	Reported by:  Alan Eliasen  <eliasen@mindspring.com>
+
 2006-06-02  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/scripts/native2ascii.in,
