@@ -38,25 +38,20 @@ exception statement from your version.  */
 
 package gnu.javax.crypto.keyring;
 
+import gnu.java.security.Registry;
+import gnu.javax.crypto.mac.IMac;
+import gnu.javax.crypto.mac.MacFactory;
+import gnu.javax.crypto.mac.MacOutputStream;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-
 import java.security.InvalidKeyException;
-
 import java.util.Arrays;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.HashMap;
-import java.util.List;
-
-import gnu.java.security.Registry;
-import gnu.javax.crypto.mac.IMac;
-import gnu.javax.crypto.mac.MacFactory;
-import gnu.javax.crypto.mac.MacInputStream;
-import gnu.javax.crypto.mac.MacOutputStream;
+import java.util.Iterator;
 
 public final class AuthenticatedEntry extends MaskableEnvelopeEntry implements
     Registry

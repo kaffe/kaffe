@@ -168,10 +168,17 @@ abstract class Command
   private int providerNdx = -2;
   /** The callback handler to use when needing to interact with user. */
   private CallbackHandler handler;
+  /** The shutdown hook. */
+  private ShutdownHook shutdownThread;
 
   // Constructor(s) -----------------------------------------------------------
 
-  // default 0-arguments constructor
+  protected Command()
+  {
+    super();
+    shutdownThread = new ShutdownHook();
+    Runtime.getRuntime().addShutdownHook(shutdownThread);
+  }
 
   // Methods ------------------------------------------------------------------
 
@@ -201,6 +208,8 @@ abstract class Command
     finally
       {
         teardown();
+        if (shutdownThread != null)
+          Runtime.getRuntime().removeShutdownHook(shutdownThread);
       }
   }
 
@@ -1156,5 +1165,16 @@ abstract class Command
       handler = CallbackUtil.getConsoleHandler();
 
     return handler;
+  }
+
+  // Inner class(es) ==========================================================
+
+  private class ShutdownHook
+      extends Thread
+  {
+    public void run()
+    {
+      teardown();
+    }
   }
 }

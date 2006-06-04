@@ -78,37 +78,17 @@ import javax.imageio.spi.IIORegistry;
    this class.  If getPeer() ever goes away, we can implement a hash table
    that will keep up with every window's peer, but for now this is faster. */
 
-/**
- * This class accesses a system property called
- * <tt>gnu.java.awt.peer.gtk.Graphics</tt>.  If the property is defined and
- * equal to "Graphics2D", the cairo-based GdkGraphics2D will be used in
- * drawing contexts. Any other value will cause the older GdkGraphics
- * object to be used.
- */
 public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
 {
   Hashtable containers = new Hashtable();
   static EventQueue q;
-  static boolean useGraphics2dSet;
-  static boolean useGraphics2d;
   static Thread mainThread;
-
-  public static boolean useGraphics2D()
-  {
-    if (useGraphics2dSet)
-      return useGraphics2d;
-    useGraphics2d = System.getProperty("gnu.java.awt.peer.gtk.Graphics", 
-                                       "Graphics").equals("Graphics2D");
-    useGraphics2dSet = true;
-    return useGraphics2d;
-  }
 
   static native void gtkInit(int portableNativeSync);
 
   static
   {
-    if (Configuration.INIT_LOAD_LIBRARY)
-      System.loadLibrary("gtkpeer");
+    System.loadLibrary("gtkpeer");
 
     int portableNativeSync;     
     String portNatSyncProp = 
@@ -179,10 +159,7 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
     Image image;
     try
       {
-	if (useGraphics2D())
-	  image = GdkPixbufDecoder.createBufferedImage(filename);
-	else
-	  image = new GtkImage(filename);
+	image = CairoSurface.getBufferedImage( new GtkImage( filename ) );
       }
     catch (IllegalArgumentException iae)
       {
@@ -196,10 +173,7 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
     Image image;
     try
       {
-	if (useGraphics2D())
-	  image = GdkPixbufDecoder.createBufferedImage(url);
-	else
-	  image = new GtkImage(url);
+	image = CairoSurface.getBufferedImage( new GtkImage( url ) );
       }
     catch (IllegalArgumentException iae)
       {
@@ -213,10 +187,7 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
     Image image;
     try
       {
-	if (useGraphics2D())
-	  image = GdkPixbufDecoder.createBufferedImage(producer);
-	else
-	  image = new GtkImage(producer);
+	image = CairoSurface.getBufferedImage( new GtkImage( producer ) );
       }
     catch (IllegalArgumentException iae)
       {
@@ -231,16 +202,9 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
     Image image;
     try
       {
-	if (useGraphics2D())
-	  image = GdkPixbufDecoder.createBufferedImage(imagedata,
-						       imageoffset, 
-						       imagelength);
-	else
-	  {
-	    byte[] datacopy = new byte[imagelength];
-	    System.arraycopy(imagedata, imageoffset, datacopy, 0, imagelength);
-	    return new GtkImage(datacopy);
-	  }
+	byte[] data = new byte[ imagelength ];
+	System.arraycopy(imagedata, imageoffset, data, 0, imagelength);
+	image = CairoSurface.getBufferedImage( new GtkImage( data ) );
       }
     catch (IllegalArgumentException iae)
       {
@@ -257,7 +221,7 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
    */  
   public ImageProducer createImageProducer(URL url)
   {
-    return new GdkPixbufDecoder(url);  
+    return createImage( url ).getSource();
   }
 
   /**

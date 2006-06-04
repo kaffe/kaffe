@@ -1,5 +1,5 @@
-/* appletviewer.c -- a native appletviewer wrapper for VMs that
-   support the JNI invocation interface
+/* toolwrapper.c -- a native tool wrapper for VMs that support the JNI
+   invocation interface
    Copyright (C) 2006  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -37,7 +37,6 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 #include <jni.h>
-#include <glib.h>
 #include <string.h>
 #include <stdlib.h>
 #include "config.h"
@@ -93,41 +92,27 @@ main (int argc, const char** argv)
 
 	      if (vm_args.options == NULL)
 		{
-		  g_printerr ("appletviewer: realloc failed.\n");
+		  fprintf (stderr, TOOLNAME ": realloc failed.\n");
 		  goto destroy;
 		}
 
 	      if (strlen (argv[i]) == 2)
 		{
-		  g_printerr ("appletviewer: the -J option must not be followed by a space.\n");
+		  fprintf (stderr, TOOLNAME ": the -J option must not be followed by a space.\n");
 		  goto destroy;
 		}
 	      else
-		vm_args.options[vm_args.nOptions++].optionString = g_strdup (argv[i] + 2);
-	    }
-	  else if (!strncmp (argv[i], "--version", 9)
-		   && argv[i][9] == '\0')
-	    {
-	      g_print ("appletviewer (GCJ Applet Viewer) " PACKAGE_VERSION "\n");
-	      exit (0);
-	    }
-	  else if (!strncmp (argv[i], "-debug", 6)
-		   && argv[i][6] == '\0')
-	    {
-	      /* FIXME: Ignore for now.  The debug option will be
-		 unsupported until we have the ability to debug
-		 bytecode.  For now, just strip it out of the argument
-		 list. */
+		vm_args.options[vm_args.nOptions++].optionString = strdup (argv[i] + 2);
 	    }
 	  else
 	    {
 	      non_vm_argv = (char**) realloc (non_vm_argv, (non_vm_argc + 1) * sizeof (char*));
 	      if (non_vm_argv == NULL)
 		{
-		  g_printerr ("appletviewer: realloc failed.\n");
+		  fprintf (stderr, TOOLNAME ": realloc failed.\n");
 		  goto destroy;
 		}
-	      non_vm_argv[non_vm_argc++] = g_strdup (argv[i]);
+	      non_vm_argv[non_vm_argc++] = strdup (argv[i]);
 	    }
 	}
     }
@@ -139,18 +124,18 @@ main (int argc, const char** argv)
 
       if (vm_args.options == NULL)
 	{
-	  g_printerr ("appletviewer: realloc failed.\n");
+	  fprintf (stderr, TOOLNAME ": realloc failed.\n");
 	  goto destroy;
 	}
 
-      vm_args.options[vm_args.nOptions++].optionString = "-Djava.class.path=" "@datadir@/@PACKAGE@/tools.zip";
+      vm_args.options[vm_args.nOptions++].optionString = "-Djava.class.path=" DATA_DIR "/" PACKAGE "/tools.zip";
     }
 
   /* Terminate vm_args.options with a NULL element. */
   vm_args.options = (JavaVMOption*) realloc (vm_args.options, (vm_args.nOptions + 1) * sizeof (JavaVMOption));
   if (vm_args.options == NULL)
     {
-      g_printerr ("appletviewer: realloc failed.\n");
+      fprintf (stderr, TOOLNAME ": realloc failed.\n");
       goto destroy;
     }
   vm_args.options[vm_args.nOptions].optionString = NULL;
@@ -159,7 +144,7 @@ main (int argc, const char** argv)
   non_vm_argv = (char**) realloc (non_vm_argv, (non_vm_argc + 1) * sizeof (char*));
   if (non_vm_argv == NULL)
     {
-      g_printerr ("appletviewer: realloc failed.\n");
+      fprintf (stderr, TOOLNAME ": realloc failed.\n");
       goto destroy;
     }
   non_vm_argv[non_vm_argc] = NULL;
@@ -171,7 +156,7 @@ main (int argc, const char** argv)
 
   if (result < 0)
     {
-      g_printerr ("appletviewer: couldn't create virtual machine\n");
+      fprintf (stderr, TOOLNAME ": couldn't create virtual machine\n");
       goto destroy;
     }
 
@@ -180,14 +165,14 @@ main (int argc, const char** argv)
   string_class_id = (*env)->FindClass (env, "java/lang/String");
   if (string_class_id == NULL)
     {
-      g_printerr ("appletviewer: FindClass failed.\n");
+      fprintf (stderr, TOOLNAME ": FindClass failed.\n");
       goto destroy;
     }
 
   args_array = (*env)->NewObjectArray (env, non_vm_argc, string_class_id, NULL);
   if (args_array == NULL)
     {
-      g_printerr ("appletviewer: NewObjectArray failed.\n");
+      fprintf (stderr, TOOLNAME ": NewObjectArray failed.\n");
       goto destroy;
     }
 
@@ -196,17 +181,17 @@ main (int argc, const char** argv)
       str = (*env)->NewStringUTF (env, non_vm_argv[i]);
       if (str == NULL)
 	{
-	  g_printerr ("appletviewer: NewStringUTF failed.\n");
+	  fprintf (stderr, TOOLNAME ": NewStringUTF failed.\n");
 	  goto destroy;
 	}
 
       (*env)->SetObjectArrayElement (env, args_array, i, str);
     }
 
-  class_id = (*env)->FindClass (env, "gnu/classpath/tools/appletviewer/Main");
+  class_id = (*env)->FindClass (env, "gnu/classpath/tools/" TOOLNAME "/Main");
   if (class_id == NULL)
     {
-      g_printerr ("appletviewer: FindClass failed.\n");
+      fprintf (stderr, TOOLNAME ": FindClass failed.\n");
       goto destroy;
     }
 
@@ -214,7 +199,7 @@ main (int argc, const char** argv)
 
   if (method_id == NULL)
     {
-      g_printerr ("appletviewer: GetStaticMethodID failed.\n");
+      fprintf (stderr, TOOLNAME ": GetStaticMethodID failed.\n");
       goto destroy;
     }
 

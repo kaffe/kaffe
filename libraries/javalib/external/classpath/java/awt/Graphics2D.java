@@ -62,7 +62,7 @@ import java.util.Map;
  *     <code>Graphics2D</code> (*);</li> 
  * <li>a {@link BufferedImage} - see 
  *     {@link BufferedImage#createGraphics()} (*);</li>
- * <li>a {@link PrinterJob} - in the 
+ * <li>a {@link java.awt.print.PrinterJob} - in the 
  *     {@link Printable#print(Graphics, PageFormat, int)} method, the incoming
  *     {@link Graphics} should always be an instance of <code>Graphics2D</code>
  *     (*).</li>

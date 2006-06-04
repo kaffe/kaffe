@@ -61,7 +61,7 @@ public final class SimpleList extends AbstractList
   /**
    * Create a singleton list.
    *
-   * @param e1 The first element.
+   * @param element The first element.
    */
   public SimpleList(final Object element)
   {

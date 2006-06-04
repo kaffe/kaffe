@@ -38,7 +38,7 @@ exception statement from your version. */
 
 package java.awt;
 
-import gnu.classpath.NotImplementedException;
+import gnu.java.awt.java2d.TexturePaintContext;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
@@ -100,10 +100,10 @@ public class TexturePaint implements Paint
   public PaintContext createContext(ColorModel cm, Rectangle deviceBounds,
                                     Rectangle2D userBounds,
                                     AffineTransform xform, RenderingHints hints)
-      throws NotImplementedException
   {
-    // FIXME: Not implemented.
-    return null;
+    // TODO: Maybe add some hook for providing alternative/accelerated
+    // implementations of this.
+    return new TexturePaintContext(this, deviceBounds, userBounds, xform);
   }
 
   /**

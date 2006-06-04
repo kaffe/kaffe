@@ -48,10 +48,12 @@ import java.util.Date;
 import javax.swing.AbstractCellEditor;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
@@ -93,12 +95,11 @@ public class TableDemo extends JPanel
   {
     
     /**
-     * Return true if the cell is editable. 
-     * Icons are not editable, other cells are editable.
+     * All cells are editable in our table.
      */
     public boolean isCellEditable(int row, int column)
     {
-      return column!=1;
+      return true;
     }
     
     /**
@@ -245,6 +246,25 @@ public class TableDemo extends JPanel
   Object[][] values;
   
   /**
+   * The icons that appear in the icon column.
+   */ 
+  Icon[] icons = new Icon[]
+    {                            
+      MetalIconFactory.getTreeComputerIcon(),
+      MetalIconFactory.getTreeHardDriveIcon(),
+      MetalIconFactory.getTreeFolderIcon(),
+    };
+    
+  /**
+   * The choices in the combo boxes
+   */
+  String [] sides = new String[]
+    {
+      "north", "south", "east", "west"                           
+    };
+  
+  
+  /**
    * Create the table demo with the given titel.
    */
   public TableDemo()
@@ -263,19 +283,6 @@ public class TableDemo extends JPanel
   {
     setLayout(new BorderLayout());
     values = new Object[rows][];
-    
-    // The icons that appear in the icon column.
-    Icon[] icons = new Icon[]
-      {                            
-        MetalIconFactory.getTreeComputerIcon(),
-        MetalIconFactory.getTreeHardDriveIcon(),
-        MetalIconFactory.getTreeFolderIcon(),
-      };
-    
-    String [] sides = new String[]
-      {
-        "north", "south", "east", "west"                           
-      };
     
     for (int i = 0; i < values.length; i++)
       {
@@ -311,7 +318,7 @@ public class TableDemo extends JPanel
         cm.addColumn(column);            
       }
     
-    setCustomEditors(sides);
+    setCustomEditors();
     setInformativeHeaders();
 
     // Create the table, place it into scroll pane and place
@@ -322,6 +329,9 @@ public class TableDemo extends JPanel
     scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     scroll.getViewport().add(table);
     add(scroll, BorderLayout.CENTER);
+    
+    // Increase the row height to make the icons and sliders look better.
+    table.setRowHeight(table.getRowHeight()+2);
   }
   
   /**
@@ -341,12 +351,16 @@ public class TableDemo extends JPanel
   /**
    * Set the custom editors for combo boxes. This method also sets one
    * custom renderer.
-   * 
-   * @param sides the array of the possible choices for the combo boxes.
    */
-  void setCustomEditors(String[] sides)
+  void setCustomEditors()
   {
-    TableColumnModel cm = table.getColumnModel();    
+    TableColumnModel cm = table.getColumnModel();
+    
+    // Set combo-box based editor for icons (note that no custom
+    // renderer is needed for JComboBox to work with icons.
+    JComboBox combo0 = new JComboBox(icons);
+    cm.getColumn(1).setCellEditor(new DefaultCellEditor(combo0));
+    
     // Set the simple combo box editor for the third column:
     JComboBox combo1 = new JComboBox(sides);
     cm.getColumn(2).setCellEditor(new DefaultCellEditor(combo1));

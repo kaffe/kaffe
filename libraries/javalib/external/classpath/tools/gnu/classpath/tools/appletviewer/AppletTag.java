@@ -451,15 +451,19 @@ class AppletTag
         else
           {
             String dirname = documentbase.getFile();
-            
-            // Determine dirname for file by stripping everything
-            // past the last file separator.
-            dirname = dirname.substring(0,
-                                        dirname.lastIndexOf(File.separatorChar) + 1);
-            
-            fullcodebase = new URL(documentbase.getProtocol(),
-                                   documentbase.getHost(),
-                                   documentbase.getPort(), dirname);
+            if (dirname.indexOf(".") < 0)
+              fullcodebase = new URL(documentbase + File.separator);
+            else
+              {
+                // Determine dirname for file by stripping everything
+                // past the last file separator.
+                dirname = dirname.substring(0,
+                                            dirname.lastIndexOf(File.separatorChar) + 1);
+
+                fullcodebase = new URL(documentbase.getProtocol(),
+                                       documentbase.getHost(),
+                                       documentbase.getPort(), dirname);
+              }
           }
       }
     else

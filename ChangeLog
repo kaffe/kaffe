@@ -1,4 +1,14 @@
-2006-06-04  Dalibor Topic  <topic@amy.domain.wg>
+2006-06-04  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/clib/net/java_net_VMURLConnection.c,
+	libraries/javalib/vmspecific/java/net/VMURLConnection.java:
+	New files, merged in from GNU Classpath.
+
+	* libraries/clib/net/Makefile.am: Added java_net_VMURLConnection.c.
+
+	* libraries/javalib/external/classpath: Resynced with GNU Classpath.
+
+2006-06-04  Dalibor Topic  <robilad@kaffe.org>
 
 	* configure.ac (CLASSPATH_INCLUDES): Added 
 	--disable-plugin and pass through correct --with-vm to

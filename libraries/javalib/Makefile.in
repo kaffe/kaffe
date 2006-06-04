@@ -569,6 +569,7 @@ EXTRA_DIST = \
 	vmspecific/java/net/InetAddress.java \
 	vmspecific/java/net/VMInetAddress.java \
 	vmspecific/java/net/VMNetworkInterface.java \
+	vmspecific/java/net/VMURLConnection.java \
 	vmspecific/java/nio/VMDirectByteBuffer.java \
 	vmspecific/java/nio/channels/VMChannels.java \
 	vmspecific/java/security/VMAccessController.java \

@@ -38,7 +38,6 @@ exception statement from your version. */
 
 package java.net;
 
-import gnu.classpath.NotImplementedException;
 import gnu.classpath.SystemProperties;
 
 import java.io.IOException;
@@ -971,11 +970,12 @@ public abstract class URLConnection
    * @exception IOException If an error occurs
    */
   public static String guessContentTypeFromStream(InputStream is)
-    throws IOException, NotImplementedException
+    throws IOException
   {
-    // See /etc/gnome-vfs-mime-magic or /etc/mime-magic for a reasonable
-    // idea of how to handle this.
-    return "application/octet-stream";
+    String result = VMURLConnection.guessContentTypeFromStream(is);
+    if (result == null)
+      return "application/octet-stream";
+    return result;
   }
 
   /**

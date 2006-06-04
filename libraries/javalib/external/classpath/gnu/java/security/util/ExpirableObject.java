@@ -51,7 +51,7 @@ import javax.security.auth.Destroyable;
  * once a timeout elapses, will automatically call the {@link
  * Destroyable#destroy()} method.
  *
- * <p>Concrete subclasses must implement the {@link doDestroy()} method
+ * <p>Concrete subclasses must implement the {@link #doDestroy()} method
  * instead of {@link Destroyable#destroy()}; the behavior of that method
  * should match exactly the behavior desired of <code>destroy()</code>.
  *
@@ -111,7 +111,7 @@ public abstract class ExpirableObject implements Destroyable
   // -------------------------------------------------------------------------
 
   /**
-   * Destroys this object. This method calls {@link doDestroy}, then, if
+   * Destroys this object. This method calls {@link #doDestroy}, then, if
    * no exception is thrown, cancels the task that would destroy this object
    * when the timeout is reached.
    *

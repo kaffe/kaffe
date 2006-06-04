@@ -75,10 +75,8 @@ public class GdkPixbufDecoder extends gnu.java.awt.image.ImageDecoder
 {
   static 
   {
-    if (Configuration.INIT_LOAD_LIBRARY)
-      {
-        System.loadLibrary("gtkpeer");
-      }
+    System.loadLibrary("gtkpeer");
+
     initStaticState ();
   }
   
@@ -504,19 +502,19 @@ public class GdkPixbufDecoder extends gnu.java.awt.image.ImageDecoder
       int width = ras.getWidth();
       int height = ras.getHeight();
       ColorModel model = image.getColorModel();
-      int[] pixels = GdkGraphics2D.findSimpleIntegerArray (image.getColorModel(), ras);
+      int[] pixels = CairoGraphics2D.findSimpleIntegerArray (image.getColorModel(), ras);
       
       if (pixels == null)
         {
-          BufferedImage img = new BufferedImage(width, height, 
-                                                (model != null && model.hasAlpha() ? 
-                                                 BufferedImage.TYPE_INT_ARGB
-                                                 : BufferedImage.TYPE_INT_RGB));
+	  BufferedImage img;
+	  if(model != null && model.hasAlpha())
+	    img = CairoSurface.getBufferedImage(width, height);
+	  img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
           int[] pix = new int[4];
           for (int y = 0; y < height; ++y)
             for (int x = 0; x < width; ++x)
               img.setRGB(x, y, model.getRGB(ras.getPixel(x, y, pix)));
-          pixels = GdkGraphics2D.findSimpleIntegerArray (img.getColorModel(), 
+          pixels = CairoGraphics2D.findSimpleIntegerArray (img.getColorModel(), 
                                                          img.getRaster());
           model = img.getColorModel();
         }
@@ -586,9 +584,10 @@ public class GdkPixbufDecoder extends gnu.java.awt.image.ImageDecoder
       
       if (bufferedImage == null)
         {
-          bufferedImage = new BufferedImage (width, height, (model != null && model.hasAlpha() ? 
-                                                             BufferedImage.TYPE_INT_ARGB
-                                                             : BufferedImage.TYPE_INT_RGB));
+	  if(model != null && model.hasAlpha())
+	    bufferedImage = new BufferedImage (width, height, BufferedImage.TYPE_INT_ARGB);
+	  else
+	    bufferedImage = new BufferedImage (width, height, BufferedImage.TYPE_INT_RGB);
         }
 
       int pixels2[];
@@ -682,43 +681,4 @@ public class GdkPixbufDecoder extends gnu.java.awt.image.ImageDecoder
       return getBufferedImage ();
     }
   }
-
-  // remaining helper class and static method is a convenience for the Gtk
-  // peers, for loading a BufferedImage in off a disk file without going
-  // through the whole imageio system. 
-
-  public static BufferedImage createBufferedImage (String filename)
-  {
-    GdkPixbufReader r = new GdkPixbufReader (getReaderSpi(), 
-                                             "png", // reader auto-detects, doesn't matter
-                                             new GdkPixbufDecoder (filename));
-    return r.getBufferedImage ();
-  }
-
-  public static BufferedImage createBufferedImage (URL u)
-  {
-    GdkPixbufReader r = new GdkPixbufReader (getReaderSpi(), 
-                                             "png", // reader auto-detects, doesn't matter
-                                             new GdkPixbufDecoder (u));
-    return r.getBufferedImage ();
-  }
-
-  public static BufferedImage createBufferedImage (byte[] imagedata, int imageoffset,
-                                                   int imagelength)
-  {
-    GdkPixbufReader r = new GdkPixbufReader (getReaderSpi(), 
-                                             "png", // reader auto-detects, doesn't matter
-                                             new GdkPixbufDecoder (imagedata,
-                                                                   imageoffset,
-                                                                   imagelength));
-    return r.getBufferedImage ();
-  }
-  
-  public static BufferedImage createBufferedImage (ImageProducer producer)
-  {
-    GdkPixbufReader r = new GdkPixbufReader (getReaderSpi(), "png" /* ignored */, null);
-    producer.startProduction(r);
-    return r.getBufferedImage ();
-  }
-
 }

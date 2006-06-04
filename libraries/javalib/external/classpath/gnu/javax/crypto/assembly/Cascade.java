@@ -60,7 +60,7 @@ import java.util.Set;
  * of identical ciphers).</p>
  *
  * <p>The term "block ciphers" used above refers to implementations of
- * {@link gnu.crypto.mode.IMode}, including the {@link gnu.crypto.mode.ECB}
+ * {@link gnu.javax.crypto.mode.IMode}, including the {@link gnu.javax.crypto.mode.ECB}
  * mode which basically exposes a symmetric-key block cipher algorithm as a
  * <i>Mode</i> of Operations.</p>
  *

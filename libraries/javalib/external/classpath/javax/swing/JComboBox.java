@@ -675,7 +675,7 @@ public class JComboBox extends JComponent implements ItemSelectable,
       }
     else
       throw new RuntimeException("Unable to remove the items because the data "
-                                 +"model it is not an instance of "
+                                 + "model it is not an instance of "
                                  + "MutableComboBoxModel.");
   }
 
@@ -848,7 +848,7 @@ public class JComboBox extends JComponent implements ItemSelectable,
   {
     PopupMenuListener[] listeners = getPopupMenuListeners();
     PopupMenuEvent e = new PopupMenuEvent(this);
-    for(int i = 0; i < listeners.length; i++)
+    for (int i = 0; i < listeners.length; i++)
       listeners[i].popupMenuCanceled(e);
   }
 
@@ -862,7 +862,7 @@ public class JComboBox extends JComponent implements ItemSelectable,
   {
     PopupMenuListener[] listeners = getPopupMenuListeners();
     PopupMenuEvent e = new PopupMenuEvent(this);
-    for(int i = 0; i < listeners.length; i++)
+    for (int i = 0; i < listeners.length; i++)
       listeners[i].popupMenuWillBecomeInvisible(e);
   }
 
@@ -876,7 +876,7 @@ public class JComboBox extends JComponent implements ItemSelectable,
   {
     PopupMenuListener[] listeners = getPopupMenuListeners();
     PopupMenuEvent e = new PopupMenuEvent(this);
-    for(int i = 0; i < listeners.length; i++)
+    for (int i = 0; i < listeners.length; i++)
       listeners[i].popupMenuWillBecomeVisible(e);
   }
 

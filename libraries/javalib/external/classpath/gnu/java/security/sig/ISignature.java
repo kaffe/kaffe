@@ -71,9 +71,9 @@ public interface ISignature extends Cloneable
 
   /**
    * Property name of an optional {@link java.security.SecureRandom},
-   * {@link java.util.Random}, or {@link gnu.crypto.prng.IRandom} instance to
+   * {@link java.util.Random}, or {@link gnu.java.security.prng.IRandom} instance to
    * use. The default is to use a classloader singleton from
-   * {@link gnu.crypto.util.PRNG}.
+   * {@link gnu.java.security.util.PRNG}.
    */
   public static final String SOURCE_OF_RANDOMNESS = "gnu.crypto.sig.prng";
 

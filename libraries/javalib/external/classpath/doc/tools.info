@@ -1,7 +1,5 @@
-This is
-../../../../../../kaffe/libraries/javalib/external/classpath/doc/tools.info,
-produced by makeinfo version 4.8 from
-../../../../../../kaffe/libraries/javalib/external/classpath/doc/tools.texinfo.
+This is ../../classpath/doc/tools.info, produced by makeinfo version
+4.8 from ../../classpath/doc/tools.texinfo.
 
    This file documents the Tools included in a standard distribution of
 the GNU Classpath project deliverables.
@@ -980,23 +978,23 @@ alter text between curly braces.
 
 
 Tag Table:
-Node: Top503
-Node: Security Tools1445
-Node: jarsigner Tool1934
-Node: keytool Tool6851
-Ref: alias9132
-Ref: keyalg9546
-Ref: keysize9803
-Ref: validity10090
-Ref: storetype10322
-Ref: storepass10680
-Ref: keystore10894
-Ref: provider11484
-Ref: file11923
-Ref: verbose12446
-Ref: dn12550
-Node: I18N Issues30574
-Node: Language Resources31075
-Node: Message Formats34735
+Node: Top413
+Node: Security Tools1355
+Node: jarsigner Tool1844
+Node: keytool Tool6761
+Ref: alias9042
+Ref: keyalg9456
+Ref: keysize9713
+Ref: validity10000
+Ref: storetype10232
+Ref: storepass10590
+Ref: keystore10804
+Ref: provider11394
+Ref: file11833
+Ref: verbose12356
+Ref: dn12460
+Node: I18N Issues30484
+Node: Language Resources30985
+Node: Message Formats34645
 
 End Tag Table

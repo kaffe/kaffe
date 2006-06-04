@@ -43,7 +43,7 @@ import java.util.Iterator;
 
 /**
  * <p>Package-private interface exposing mandatory methods to be implemented by
- * concrete {@link gnu.crypto.cipher.BaseCipher} sub-classes.</p>
+ * concrete {@link gnu.javax.crypto.cipher.BaseCipher} sub-classes.</p>
  */
 interface IBlockCipherSpi extends Cloneable
 {

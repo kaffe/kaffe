@@ -38,8 +38,6 @@ exception statement from your version.  */
 
 package gnu.javax.crypto.cipher;
 
-import gnu.java.security.util.Util;
-
 import java.security.InvalidKeyException;
 import java.util.Arrays;
 import java.util.Iterator;

@@ -1,4 +1,4 @@
-/* GtkVolatileImage.java -- a hardware-accelerated image buffer
+/* GtkVolatileImage.java -- wraps an X pixmap
    Copyright (C) 2005  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -38,6 +38,7 @@ exception statement from your version. */
 package gnu.java.awt.peer.gtk;
 
 import java.awt.ImageCapabilities;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.image.BufferedImage;
@@ -46,27 +47,101 @@ import java.awt.image.VolatileImage;
 
 public class GtkVolatileImage extends VolatileImage
 {
-  private int width;
-  private int height;
+  int width, height;
   private ImageCapabilities caps;
 
-  public GtkVolatileImage(int width, int height)
-  {
-    this(width, height, null);
-  }
+  /**
+   * Don't touch, accessed from native code.
+   */
+  private long nativePointer;
 
-  public GtkVolatileImage(int width, int height, ImageCapabilities caps)
+  /**
+   * Offscreen image we draw to.
+   */
+  CairoSurface offScreen;
+
+  private boolean needsUpdate = false;
+
+  native long init(GtkComponentPeer component, int width, int height);
+
+  native void destroy();
+
+  native int[] getPixels();
+  
+  native void update(GtkImage image);
+
+  public GtkVolatileImage(GtkComponentPeer component, 
+			  int width, int height, ImageCapabilities caps)
   {
     this.width = width;
     this.height = height;
     this.caps = caps;
+    nativePointer = init( component, width, height );
+    offScreen = new CairoSurface( width, height );
   }
 
-  // FIXME: should return a buffered image snapshot of the accelerated
-  // visual
+  public GtkVolatileImage(int width, int height, ImageCapabilities caps)
+  {
+    this(null, width, height, caps);
+  }
+
+  public GtkVolatileImage(int width, int height)
+  {
+    this(null, width, height, null);
+  }
+
+  public void finalize()
+  {
+    dispose();
+  }
+
+  public void dispose()
+  {
+    destroy();
+  }
+
+  void invalidate()
+  {
+    needsUpdate = true;
+  }
+
   public BufferedImage getSnapshot()
   {
-    return null;
+    CairoSurface cs = new CairoSurface( width, height );
+    cs.setPixels( getPixels() );
+    return CairoSurface.getBufferedImage( cs );
+  }
+
+  public Graphics getGraphics()
+  {
+    return createGraphics();
+  }
+
+  public Graphics2D createGraphics()
+  {
+    invalidate();
+    return offScreen.getGraphics();
+  }
+
+  public int validate(GraphicsConfiguration gc)
+  {
+    if( needsUpdate )
+      {
+	update( offScreen.getSharedGtkImage() );
+	needsUpdate = false;
+	return VolatileImage.IMAGE_RESTORED;
+      }
+    return VolatileImage.IMAGE_OK;
+  }
+
+  public boolean contentsLost()
+  {
+    return needsUpdate;
+  }
+
+  public ImageCapabilities getCapabilities()
+  {
+    return caps;
   }
 
   public int getWidth()
@@ -79,40 +154,18 @@ public class GtkVolatileImage extends VolatileImage
     return height;
   }
 
-  // FIXME: should return a graphics wrapper around this image's
-  // visual
-  public Graphics2D createGraphics()
-  {
-    return null;
-  }
-
-  public int validate(GraphicsConfiguration gc)
-  {
-    return VolatileImage.IMAGE_OK;
-  }
-
-  public boolean contentsLost()
-  {
-    return false;
-  }
-
-  public ImageCapabilities getCapabilities()
-  {
-    return caps;
-  }
-
-  public synchronized Object getProperty (String name, ImageObserver observer)
-  {
-    return null;
-  }
-
-  public synchronized int getWidth (ImageObserver observer)
+  public int getWidth(java.awt.image.ImageObserver observer)
   {
     return width;
   }
   
-  public synchronized int getHeight (ImageObserver observer)
+  public int getHeight(java.awt.image.ImageObserver observer)
   {
     return height;
+  }
+
+  public Object getProperty(String name, ImageObserver observer)
+  {
+    return null;
   }
 }

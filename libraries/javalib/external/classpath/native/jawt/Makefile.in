@@ -60,10 +60,10 @@ am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
 am__installdirs = "$(DESTDIR)$(nativeexeclibdir)"
 nativeexeclibLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(nativeexeclib_LTLIBRARIES)
-libjawtgnu_la_DEPENDENCIES =  \
+libjawt_la_DEPENDENCIES =  \
 	$(top_builddir)/native/jni/gtk-peer/libgtkpeer.la
-am_libjawtgnu_la_OBJECTS = jawt.lo
-libjawtgnu_la_OBJECTS = $(am_libjawtgnu_la_OBJECTS)
+am_libjawt_la_OBJECTS = jawt.lo
+libjawt_la_OBJECTS = $(am_libjawt_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -75,8 +75,8 @@ LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(libjawtgnu_la_SOURCES)
-DIST_SOURCES = $(libjawtgnu_la_SOURCES)
+SOURCES = $(libjawt_la_SOURCES)
+DIST_SOURCES = $(libjawt_la_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -91,8 +91,6 @@ AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
 BUILD_CLASS_FILES_FALSE = @BUILD_CLASS_FILES_FALSE@
 BUILD_CLASS_FILES_TRUE = @BUILD_CLASS_FILES_TRUE@
-CAIRO_CFLAGS = @CAIRO_CFLAGS@
-CAIRO_LIBS = @CAIRO_LIBS@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -123,6 +121,8 @@ CREATE_PLUGIN_FALSE = @CREATE_PLUGIN_FALSE@
 CREATE_PLUGIN_TRUE = @CREATE_PLUGIN_TRUE@
 CREATE_QT_PEER_LIBRARIES_FALSE = @CREATE_QT_PEER_LIBRARIES_FALSE@
 CREATE_QT_PEER_LIBRARIES_TRUE = @CREATE_QT_PEER_LIBRARIES_TRUE@
+CREATE_WRAPPERS_FALSE = @CREATE_WRAPPERS_FALSE@
+CREATE_WRAPPERS_TRUE = @CREATE_WRAPPERS_TRUE@
 CREATE_XMLJ_LIBRARY_FALSE = @CREATE_XMLJ_LIBRARY_FALSE@
 CREATE_XMLJ_LIBRARY_TRUE = @CREATE_XMLJ_LIBRARY_TRUE@
 CXX = @CXX@
@@ -148,6 +148,8 @@ F77 = @F77@
 FASTJAR = @FASTJAR@
 FFLAGS = @FFLAGS@
 FIND = @FIND@
+FOUND_CACAO_FALSE = @FOUND_CACAO_FALSE@
+FOUND_CACAO_TRUE = @FOUND_CACAO_TRUE@
 FOUND_ECJ_FALSE = @FOUND_ECJ_FALSE@
 FOUND_ECJ_TRUE = @FOUND_ECJ_TRUE@
 FOUND_GCJX_FALSE = @FOUND_GCJX_FALSE@
@@ -165,9 +167,6 @@ GCJX = @GCJX@
 GJDOC = @GJDOC@
 GLIB_CFLAGS = @GLIB_CFLAGS@
 GLIB_LIBS = @GLIB_LIBS@
-GTK_CAIRO_ENABLED = @GTK_CAIRO_ENABLED@
-GTK_CAIRO_FALSE = @GTK_CAIRO_FALSE@
-GTK_CAIRO_TRUE = @GTK_CAIRO_TRUE@
 GTK_CFLAGS = @GTK_CFLAGS@
 GTK_LIBS = @GTK_LIBS@
 INIT_LOAD_LIBRARY = @INIT_LOAD_LIBRARY@
@@ -189,6 +188,7 @@ KJC = @KJC@
 LDFLAGS = @LDFLAGS@
 LIBDEBUG = @LIBDEBUG@
 LIBICONV = @LIBICONV@
+LIBMAGIC = @LIBMAGIC@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
@@ -243,6 +243,7 @@ XML_CFLAGS = @XML_CFLAGS@
 XML_LIBS = @XML_LIBS@
 XSLT_CFLAGS = @XSLT_CFLAGS@
 XSLT_LIBS = @XSLT_LIBS@
+XTEST_LIBS = @XTEST_LIBS@
 X_CFLAGS = @X_CFLAGS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_LIBS = @X_LIBS@
@@ -299,20 +300,16 @@ target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
 vm_classes = @vm_classes@
-nativeexeclib_LTLIBRARIES = libjawtgnu.la
-libjawtgnu_la_SOURCES = jawt.c
-libjawtgnu_la_LIBADD = $(top_builddir)/native/jni/gtk-peer/libgtkpeer.la
-# FIXME: libtool doesn't allow overriding SONAME, but we need to set
-# it to libjawt.so for binary compatibility.
-#
-# libjawtgnu_la_LDFLAGS = -Wl,-soname -Wl,libjawt.so
-AM_LDFLAGS = @CLASSPATH_MODULE@ @GTK_LIBS@ @CAIRO_LIBS@ @PANGOFT2_LIBS@ @X_LIBS@ -lXtst
+nativeexeclib_LTLIBRARIES = libjawt.la
+libjawt_la_SOURCES = jawt.c
+libjawt_la_LIBADD = $(top_builddir)/native/jni/gtk-peer/libgtkpeer.la
+AM_LDFLAGS = @CLASSPATH_MODULE@ @GTK_LIBS@ @PANGOFT2_LIBS@ @X_LIBS@ -lXtst
 AM_CPPFLAGS = @CLASSPATH_INCLUDES@
 
 # Just the WARNING_CFLAGS. We cannot use the strict flags since the gtk
 # headers contain broken prototypes (by design, see gtkitemfactory.h).
 AM_CFLAGS = @WARNING_CFLAGS@ @ERROR_CFLAGS@ \
-            @GTK_CFLAGS@ @CAIRO_CFLAGS@ @PANGOFT2_CFLAGS@
+            @GTK_CFLAGS@ @PANGOFT2_CFLAGS@
 
 all: all-am
 
@@ -374,8 +371,8 @@ clean-nativeexeclibLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-libjawtgnu.la: $(libjawtgnu_la_OBJECTS) $(libjawtgnu_la_DEPENDENCIES) 
-	$(LINK) -rpath $(nativeexeclibdir) $(libjawtgnu_la_LDFLAGS) $(libjawtgnu_la_OBJECTS) $(libjawtgnu_la_LIBADD) $(LIBS)
+libjawt.la: $(libjawt_la_OBJECTS) $(libjawt_la_DEPENDENCIES) 
+	$(LINK) -rpath $(nativeexeclibdir) $(libjawt_la_LDFLAGS) $(libjawt_la_OBJECTS) $(libjawt_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

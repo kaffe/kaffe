@@ -38,21 +38,6 @@ exception statement from your version.  */
 
 package gnu.javax.crypto.keyring;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-
-import java.security.InvalidKeyException;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.HashMap;
-import java.util.List;
-
 import gnu.java.security.Registry;
 import gnu.javax.crypto.cipher.CipherFactory;
 import gnu.javax.crypto.cipher.IBlockCipher;
@@ -61,6 +46,15 @@ import gnu.javax.crypto.mode.ModeFactory;
 import gnu.javax.crypto.pad.IPad;
 import gnu.javax.crypto.pad.PadFactory;
 import gnu.javax.crypto.pad.WrongPaddingException;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.util.HashMap;
+import java.util.Iterator;
 
 public class EncryptedEntry extends MaskableEnvelopeEntry implements Registry
 {

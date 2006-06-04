@@ -44,20 +44,4 @@ prefix=@prefix@
 tools_dir=@datadir@/@PACKAGE@
 tools_cp=${tools_dir}/tools.zip
 
-# find the java executable...
-if [ -z "${JAVA}" ] ; then
-  if [ -n "${JAVA_HOME}" ] ; then
-    if [ -x "${JAVA_HOME}/jre/sh/java" ] ; then
-      JAVA="${JAVA_HOME}/jre/sh/java"
-    else
-      JAVA="${JAVA_HOME}/bin/java"
-    fi
-  else
-    JAVA=`which java 2> /dev/null `
-    if [ -z "${JAVA}" ] ; then
-        JAVA=java
-    fi
-  fi
-fi
-
-exec "${JAVA}" -Xbootclasspath/p:"${tools_cp}" gnu.classpath.tools.jarsigner.Main $@
+exec @VM_BINARY@ -Xbootclasspath/p:"${tools_cp}" gnu.classpath.tools.jarsigner.Main $@

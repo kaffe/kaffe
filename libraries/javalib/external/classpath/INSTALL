@@ -46,13 +46,10 @@ Suggested Software
 	are required unless --disable-gtk-peer is used as an argument to
 	configure.
 
-        - GTK+ 2.4.x (or higher)
+        - GTK+ 2.8.x (or higher)
         - gdk-pixbuf
 
 	- XTest Extension (libXtst) for GdkRobot support in java.awt.
-
-	For building the Cairo GdkGraphics2D backend you need at least
-	Cairo 0.5.0.
 
 	For building gcjwebplugin you'll need the Mozilla plugin
 	support headers and libraries.
@@ -116,7 +113,6 @@ gives a complete list.
   --enable-java           compile Java source default=yes
   --enable-jni            compile JNI source default=yes
   --enable-gtk-peer       compile GTK native peers default=yes
-  --enable-gtk-cairo      compile cairo based Graphics2D default=no
   --enable-qt-peer        compile Qt4 native peers default=no
   --enable-default-toolkit
                           fully qualified class name of default AWT toolkit

@@ -38,8 +38,6 @@ exception statement from your version. */
 
 package javax.swing.table;
 
-import gnu.classpath.NotImplementedException;
-
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -98,6 +96,21 @@ public class JTableHeader extends JComponent
       }
       
       /**
+       * Returns the column header renderer.
+       * 
+       * @return The column header renderer.
+       */
+      Component getColumnHeaderRenderer()
+      {
+        TableColumn tc = parent.getColumnModel().getColumn(columnIndex);
+        TableCellRenderer r = tc.getHeaderRenderer();
+        if (r == null)
+          r = parent.getDefaultRenderer();
+        return r.getTableCellRendererComponent(table, tc.headerValue, 
+            false, false, -1, columnIndex);
+      }
+      
+      /**
        * Returns the accessible context for the column header renderer, or 
        * <code>null</code>.
        * 
@@ -105,16 +118,10 @@ public class JTableHeader extends JComponent
        */
       AccessibleContext getAccessibleColumnHeaderRenderer()
       {
-        AccessibleContext ac = null;
-        TableColumn tc = parent.getColumnModel().getColumn(columnIndex);
-        TableCellRenderer r = tc.getHeaderRenderer();
-        if (r == null)
-          r = parent.getDefaultRenderer();
-        Component c = r.getTableCellRendererComponent(table, tc.headerValue, 
-            false, false, -1, columnIndex);
+        Component c = getColumnHeaderRenderer();
         if (c instanceof Accessible)
-          ac = c.getAccessibleContext();
-        return ac;
+          return c.getAccessibleContext();
+        return null;
       }
       
       /**
@@ -361,10 +368,11 @@ public class JTableHeader extends JComponent
       }
       
       public Locale getLocale()
-        throws NotImplementedException
       {
-        // FIXME
-        throw new Error("not implemented");
+        Component c = getColumnHeaderRenderer();
+        if (c != null)
+          return c.getLocale();
+        return null;
       }
       
       public Point getLocation()

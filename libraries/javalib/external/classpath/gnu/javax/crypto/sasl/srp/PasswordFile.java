@@ -39,7 +39,6 @@ exception statement from your version.  */
 package gnu.javax.crypto.sasl.srp;
 
 import gnu.java.security.Registry;
-import gnu.java.security.hash.IMessageDigest;
 import gnu.java.security.util.Util;
 import gnu.javax.crypto.key.srp6.SRPAlgorithm;
 import gnu.javax.crypto.sasl.NoSuchUserException;
@@ -50,9 +49,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;

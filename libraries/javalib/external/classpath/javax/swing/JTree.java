@@ -1142,9 +1142,9 @@ public class JTree extends JComponent implements Scrollable, Accessible
 
     public boolean isLeaf()
     {
-      return (childValue == null || !(childValue instanceof Hashtable
-          || childValue instanceof Vector || childValue.getClass()
-          .isArray()));
+      return childValue == null || !(childValue instanceof Hashtable
+          || childValue instanceof Vector 
+          || childValue.getClass().isArray());
     }
 
     public static void createChildren(DefaultMutableTreeNode parent,
@@ -2316,7 +2316,7 @@ public class JTree extends JComponent implements Scrollable, Accessible
             selectionModel.addSelectionPath(path);
           }
         
-        if (oldValue!=null)
+        if (oldValue != null)
           repaint(getPathBounds(oldValue));
         
         firePropertyChange(LEAD_SELECTION_PATH_PROPERTY, oldValue, path);

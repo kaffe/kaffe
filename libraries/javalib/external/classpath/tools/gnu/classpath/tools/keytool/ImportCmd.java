@@ -52,6 +52,7 @@ import java.security.Key;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.Principal;
 import java.security.PublicKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertPathValidator;
@@ -62,11 +63,14 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.PKIXCertPathValidatorResult;
 import java.security.cert.PKIXParameters;
+import java.security.cert.TrustAnchor;
+import java.security.cert.X509Certificate;
 import java.security.interfaces.DSAParams;
 import java.security.interfaces.DSAPublicKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.ListIterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -144,7 +148,7 @@ import javax.security.auth.callback.UnsupportedCallbackException;
  *      should be considered when trying to establish chain-of-trusts.
  *      <p></dd>
  *      
- *      <dt>-storetype STORE_TYP}</dt>
+ *      <dt>-storetype STORE_TYPE</dt>
  *      <dd>Use this option to specify the type of the key store to use. The
  *      default value, if this option is omitted, is that of the property
  *      <code>keystore.type</code> in the security properties file, which is
@@ -186,6 +190,12 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 class ImportCmd extends Command
 {
   private static final Logger log = Logger.getLogger(ImportCmd.class.getName());
+  private static final String GKR = "gkr"; //$NON-NLS-1$
+  private static final String JKS = "jks"; //$NON-NLS-1$
+  private static final String LIB = "lib"; //$NON-NLS-1$
+  private static final String SECURITY = "security"; //$NON-NLS-1$
+  private static final String CACERTS = "cacerts"; //$NON-NLS-1$
+  private static final String CACERTS_GKR = CACERTS + "." + GKR; //$NON-NLS-1$
   protected String _alias;
   protected String _certFileName;
   protected String _password;
@@ -197,6 +207,20 @@ class ImportCmd extends Command
   protected String _providerClassName;
   private CertificateFactory x509Factory;
   private boolean imported;
+  /**
+   * Pathname to a GKR-type cacerts file to use when trustCACerts is true. This
+   * is usually a file named "cacerts.gkr" located in lib/security in the folder
+   * specified by the system-property "gnu.classpath.home".
+   */
+  private String gkrCaCertsPathName;
+  /**
+   * Pathname to a JKS-type cacerts file to use when trustCACerts is true. This
+   * is usually a file named "cacerts" located in lib/security in the folder
+   * specified by the system-property "java.home".
+   */
+  private String jksCaCertsPathName;
+  /** Alias self-signed certificate.  used when importing certificate replies. */
+  private X509Certificate selfSignedCertificate;
 
   // default 0-arguments constructor
 
@@ -288,6 +312,20 @@ class ImportCmd extends Command
   {
     log.entering(this.getClass().getName(), "start"); //$NON-NLS-1$
 
+    if (trustCACerts)
+      {
+        String fs = SystemProperties.getProperty("file.separator"); //$NON-NLS-1$
+        String classpathHome = SystemProperties.getProperty("gnu.classpath.home"); //$NON-NLS-1$
+        gkrCaCertsPathName = new StringBuilder(classpathHome).append(fs)
+            .append(LIB).append(fs)
+            .append(SECURITY).append(fs)
+            .append(CACERTS_GKR).toString();
+        String javaHome = SystemProperties.getProperty("java.home"); //$NON-NLS-1$
+        jksCaCertsPathName = new StringBuilder(javaHome).append(fs)
+            .append(LIB).append(fs)
+            .append(SECURITY).append(fs)
+            .append(CACERTS).toString();
+      }
     x509Factory = CertificateFactory.getInstance("X.509"); //$NON-NLS-1$
     // the alias will tell us whether we're dealing with
     // a new trusted certificate or a certificate reply
@@ -608,8 +646,8 @@ class ImportCmd extends Command
     if (chain == null)
       throw new IllegalArgumentException(Messages.getFormattedString("ImportCmd.37", //$NON-NLS-1$
                                                                      alias));
-    Certificate anchor = chain[0];
-    PublicKey anchorPublicKey = anchor.getPublicKey();
+    selfSignedCertificate = (X509Certificate) chain[0];
+    PublicKey anchorPublicKey = selfSignedCertificate.getPublicKey();
     PublicKey certPublicKey = certificate.getPublicKey();
     boolean sameKey;
     if (anchorPublicKey instanceof DSAPublicKey)
@@ -664,17 +702,54 @@ class ImportCmd extends Command
   }
 
   /**
-   * @param chain
+   * Given a collection of certificates returned as a certificate-reply, this
+   * method sorts the certificates in the collection so that the <i>Issuer</i>
+   * of the certificate at position <code>i</code> is the <i>Subject</i> of
+   * the certificate at position <code>i + 1</code>.
+   * <p>
+   * This method uses <code>selfSignedCertificate</code> to discover the first
+   * certificate in the chain. The <i>Trust Anchor</i> of the chain; i.e. the
+   * self-signed CA certificate, if it exsits, will be discovered/established
+   * later by an appropriate <i>Certificate Path Validator</i>.
+   * <p>
+   * An exception is thrown if (a) no initial certificate is found in the
+   * designated collection which can be used as the start of the chain, or (b)
+   * if a chain can not be constructed using all the certificates in the
+   * designated collection.
+   * 
+   * @param chain a collection of certificates, not necessarily ordered, but
+   *          assumed to include a CA certificate authenticating our alias
+   *          public key, which is the subject of the alias self-signed
+   *          certificate.
    * @return the input collection, ordered with own certificate first, and CA's
    *         self-signed certificate last.
    */
   private LinkedList orderChain(Collection chain)
   {
     log.entering(this.getClass().getName(), "orderChain"); //$NON-NLS-1$
-
+    LinkedList in = new LinkedList(chain);
+    int initialCount = in.size();
     LinkedList result = new LinkedList();
-    // FIXME: really order it!
-
+    Principal issuer = selfSignedCertificate.getIssuerDN();
+    ListIterator it;
+    outer: while (in.size() > 0)
+      {
+        for (it = in.listIterator(); it.hasNext();)
+          {
+            X509Certificate certificate = (X509Certificate) it.next();
+            if (issuer.equals(certificate.getSubjectDN()))
+              {
+                it.remove();
+                result.addLast(certificate);
+                issuer = certificate.getIssuerDN();
+                continue outer;
+              }
+          }
+        throw new IllegalArgumentException(
+            Messages.getFormattedString(Messages.getString("ImportCmd.7"), //$NON-NLS-1$
+                                        new Object[] { Integer.valueOf(result.size()),
+                                                       Integer.valueOf(initialCount) }));
+      }
     log.entering(this.getClass().getName(), "orderChain", result); //$NON-NLS-1$
     return result;
   }
@@ -712,13 +787,19 @@ class ImportCmd extends Command
       CertificateEncodingException
   {
     log.entering(this.getClass().getName(), "findTrustAndUpdate"); //$NON-NLS-1$
-
-    X509CertPath certPath = new X509CertPath(reply);
     CertPathValidator validator = CertPathValidator.getInstance("PKIX"); //$NON-NLS-1$
+    X509CertPath certPath = new X509CertPath(reply);
     PKIXCertPathValidatorResult cpvr = findTrustInStore(certPath, validator);
-    if (cpvr == null && trustCACerts)
-      cpvr = findTrustInCACerts(certPath, validator);
-
+    if (cpvr == null && trustCACerts) // try cacerts.gkr - a GKR key store
+      {
+        PKIXParameters params = getCertPathParameters(GKR, gkrCaCertsPathName);
+        cpvr = validate(validator, certPath, params);
+        if (cpvr == null) // try cacerts - a JKS key store
+          {
+            params = getCertPathParameters(JKS, jksCaCertsPathName);
+            cpvr = validate(validator, certPath, params);
+          }
+      }
     boolean result = false;
     if (cpvr == null)
       {
@@ -737,12 +818,12 @@ class ImportCmd extends Command
       }
     else
       {
-        log.fine("Found a chain-of-trust anchored by " + cpvr.getTrustAnchor()); //$NON-NLS-1$
-        Certificate trustedCert = cpvr.getTrustAnchor().getTrustedCert();
+        TrustAnchor anchor = cpvr.getTrustAnchor();
+        log.fine("Found a chain-of-trust anchored by " + anchor); //$NON-NLS-1$
+        Certificate trustedCert = anchor.getTrustedCert();
         reply.addLast(trustedCert);
         result = true;
       }
-
     log.entering(this.getClass().getName(), "findTrustAndUpdate", //$NON-NLS-1$
                  Boolean.valueOf(result));
     return result;
@@ -771,33 +852,32 @@ class ImportCmd extends Command
     return result;
   }
 
-  private PKIXCertPathValidatorResult findTrustInCACerts(X509CertPath certPath,
-                                                         CertPathValidator validator)
+  /**
+   * Return an instance of {@link PKIXParameters} constructed using a key store
+   * of the designated type and located at the designated path.
+   * 
+   * @param type the type of the key-store to load.
+   * @param pathName the local File System fully qualified path name to the key
+   *          store.
+   * @return an instance of <code>CertPathParameters</code> to use for
+   *         validating certificates and certificate replies.
+   */
+  private PKIXParameters getCertPathParameters(String type, String pathName)
   {
-    log.entering(this.getClass().getName(), "findTrustInCACerts"); //$NON-NLS-1$
-
+    log.entering(this.getClass().getName(), "getCertPathParameters", //$NON-NLS-1$
+                 new Object[] { type, pathName });
     FileInputStream stream = null;
-    PKIXCertPathValidatorResult result = null;
+    PKIXParameters result = null;
     try
       {
-        KeyStore cacerts = KeyStore.getInstance("jks"); //$NON-NLS-1$
-        String cacertsPath = SystemProperties.getProperty("java.home"); //$NON-NLS-1$
-        String fs = SystemProperties.getProperty("file.separator"); //$NON-NLS-1$
-        cacertsPath = new StringBuilder(cacertsPath).append(fs)
-            .append("lib").append(fs) //$NON-NLS-1$
-            .append("security").append(fs) //$NON-NLS-1$
-            .append("cacerts").toString(); //$NON-NLS-1$
-        stream = new FileInputStream(cacertsPath);
+        KeyStore cacerts = KeyStore.getInstance(type);
+        stream = new FileInputStream(pathName);
         cacerts.load(stream, "changeit".toCharArray()); //$NON-NLS-1$
-        PKIXParameters params = new PKIXParameters(cacerts);
-        result = (PKIXCertPathValidatorResult) validator.validate(certPath,
-                                                                  params);
+        result = new PKIXParameters(cacerts);
       }
     catch (Exception x)
       {
-        log.log(Level.FINE,
-                "Exception in findTrustInCACerts(). Ignore + Return NULL", //$NON-NLS-1$
-                x);
+        log.log(Level.FINE, "Exception in getCertPathParameters(). Ignore", x); //$NON-NLS-1$
       }
     finally
       {
@@ -810,8 +890,27 @@ class ImportCmd extends Command
             {
             }
       }
+    log.exiting(this.getClass().getName(), "getCertPathParameters", result); //$NON-NLS-1$
+    return result;
+  }
 
-    log.exiting(this.getClass().getName(), "findTrustInCACerts", result); //$NON-NLS-1$
+  private PKIXCertPathValidatorResult validate(CertPathValidator validator,
+                                               X509CertPath certPath,
+                                               PKIXParameters params)
+  {
+    log.entering(this.getClass().getName(), "validate"); //$NON-NLS-1$
+    PKIXCertPathValidatorResult result = null;
+    if (params != null)
+      try
+        {
+          result = (PKIXCertPathValidatorResult) validator.validate(certPath,
+                                                                    params);
+        }
+      catch (Exception x)
+        {
+          log.log(Level.FINE, "Exception in validate(). Ignore", x); //$NON-NLS-1$
+        }
+    log.exiting(this.getClass().getName(), "validate", result); //$NON-NLS-1$
     return result;
   }
 }

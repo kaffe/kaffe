@@ -154,7 +154,7 @@ public class GnuDHPrivateKey extends GnuDHKey implements DHPrivateKey
    * @return the byte sequence encoding this key according to the designated
    * format.
    * @exception IllegalArgumentException if the format is not supported.
-   * @see gnu.crypto.key.dh.DHKeyPairRawCodec
+   * @see DHKeyPairRawCodec
    */
   public byte[] getEncoded(int format)
   {

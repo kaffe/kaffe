@@ -1,3 +1,1051 @@
+2006-06-04  Raif S. Naffah  <raif@swiftdsl.com.au>
+
+	* gnu/javax/crypto/sasl/SaslUtil.java: Remove unused import.
+	* gnu/javax/crypto/sasl/srp/SRPRegistry.java (PASSWORD_DB): Fix javadoc @link.
+	* gnu/javax/crypto/sasl/srp/PasswordFile.java: Removed unused import.
+	* gnu/javax/crypto/prng/CSPRNG.java (FILE_SOURCES): Fix javadoc @see.
+	(getSystemInstance): Fix javadoc @link.
+	(counter): Increased visibility.
+	* gnu/javax/crypto/pad/TLS1.java: Remove unused import.
+	* gnu/javax/crypto/pad/IPad.java: Fix javadoc @link.
+	* gnu/javax/crypto/pad/PKCS1_V1_5.java (PKCS1_V1_5): Likewise.
+	* gnu/javax/crypto/pad/PKCS7.java (PKCS7): Likewise.
+	* gnu/javax/crypto/pad/TBC.java (TBC): Likewise.
+	* gnu/javax/crypto/mode/CTR.java: Remove unused import.
+	* gnu/javax/crypto/mode/BaseMode.java (defaultBlockSize): Fix javadoc @see.
+	* gnu/javax/crypto/key/dh/GnuDHPrivateKey.java (getEncoded): Fix javadoc @see.
+	* gnu/javax/crypto/jce/spec/TMMHParameterSpec.java: Fix javadoc @link.
+	* gnu/javax/crypto/keyring/AuthenticatedEntry.java: Remove unused imports.
+	* gnu/javax/crypto/keyring/CertificateEntry.java: Likewise.
+	* gnu/javax/crypto/keyring/CertPathEntry.java: Likewise.
+	* gnu/javax/crypto/keyring/EncryptedEntry.java: Likewise.
+	* gnu/javax/crypto/keyring/PublicKeyEntry.java: Likewise.
+	* gnu/javax/crypto/mac/OMAC.java: Likewise.
+	* gnu/javax/crypto/jce/key/AnubisSecretKeyFactoryImpl.java: Likewise.
+	* gnu/javax/crypto/jce/key/BlowfishSecretKeyFactoryImpl.java: Likewise.
+	* gnu/javax/crypto/jce/key/Cast5SecretKeyFactoryImpl.java: Likewise.
+	* gnu/javax/crypto/jce/key/KhazadSecretKeyFactoryImpl.java: Likewise.
+	* gnu/javax/crypto/jce/key/RijndaelSecretKeyFactoryImpl.java: Likewise.
+	* gnu/javax/crypto/jce/key/SerpentSecretKeyFactoryImpl.java: Likewise.
+	* gnu/javax/crypto/jce/key/SquareSecretKeyFactoryImpl.java: Likewise.
+	* gnu/javax/crypto/jce/key/TwofishSecretKeyFactoryImpl.java: Likewise.
+	* gnu/javax/crypto/jce/mac/OMacImpl.java: Likewise.
+	* gnu/javax/crypto/jce/prng/CSPRNGSpi.java: Likewise.
+	* gnu/javax/crypto/cipher/IBlockCipherSpi.java: Fix javadoc @link.
+	* gnu/javax/crypto/jce/cipher/CipherAdapter.java (CipherAdapter): Likewise.
+	* gnu/javax/crypto/cipher/BaseCipher.java: Remove unused import.
+	* gnu/javax/crypto/assembly/Cascade.java: Fix javadoc @link.
+	* gnu/javax/crypto/assembly/Direction.java: Likewise.
+	* gnu/javax/crypto/assembly/Transformer.java: Likewise.
+
+2006-06-04  Raif S. Naffah  <raif@swiftdsl.com.au>
+
+	* gnu/java/security/PolicyFile.java: Updated copyright year.
+	(logger): Increased visibility.
+	* gnu/java/security/x509/Util.java: Updated copyright year.
+	(hexDump): Fix javadoc @link.
+	* gnu/java/security/x509/ext/GeneralNames.java: Updated copyright year.
+	Removed unused import.
+	* gnu/java/security/sig/rsa/RSAPSSSignatureRawCodec.java: Fix javadoc @link.
+	* gnu/java/security/sig/ISignature.java (SOURCE_OF_RANDOMNESS): Likewise.
+	* gnu/java/security/util/ExpirableObject.java: Likewise.
+	(destroy): Likewise.
+	* gnu/java/security/util/SimpleList.java (SimpleList): Likewise.
+	* gnu/java/security/provider/PKIXCertPathValidatorImpl.java:
+	Updated copyright year.
+	(checkCRL): Fix javadoc @param.
+
+2006-06-03  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* java/lang/annotation/IncompleteAnnotationException.java:
+	Documented.
+
+2004-08-07  Tom Tromey  <tromey@redhat.com>
+
+	* java/lang/annotation/IncompleteAnnotationException.java: New
+	file.
+
+2006-06-02  Sven de Marothy  <sven@physto.se>
+
+	* gnu/java/awt/peer/gtk/CairoGraphics2D.java
+	(cairoPreserveClip, cairoResetClip): New methods.
+	(setClip, clip): Reimplement.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_CairoGraphics2D.c
+	* include/gnu_java_awt_peer_gtk_CairoGraphics2D.h
+	(cairoPreserveClip, cairoResetClip): New methods.
+	
+2006-06-02  Sven de Marothy  <sven@physto.se>
+
+	* gnu/java/awt/peer/gtk/VolatileImageGraphics.java
+	* include/gnu_java_awt_peer_gtk_GtkVolatileImage.h
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkVolatileImage.c
+	New files.
+	* gnu/java/awt/peer/gtk/ComponentGraphics.java
+	(drawImage): Overloads for VolatileImage drawing.
+	(drawVolatile): New method.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_ComponentGraphics.c
+	* include/gnu_java_awt_peer_gtk_ComponentGraphics.h
+	(drawVolatile): New method.
+	* gnu/java/awt/peer/gtk/GtkVolatileImage.java
+	Unstub implementation.
+	* include/Makefile.am
+	* native/jni/gtk-peer/Makefile.am
+	Add new files.
+	* native/jni/gtk-peer/gtkpeer.h
+	New prototype.
+	
+2006-06-03  Roman Kennke  <kennke@aicas.com>
+
+	PR 27418
+	* javax/swing/plaf/basic/BasicTextUI.java
+	(damageRange): Added null check to avoid NPE.
+
+2006-06-03  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/PlainView.java
+	(updateDamage): Check for valid longestLine and initialize if
+	necessary.
+
+2006-06-03  Mark Wielaard  <mark@klomp.org>
+
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_CairoSurface.c: Use C
+	comments, not C++.
+
+2006-06-02  Sven de Marothy  <sven@physto.se>
+
+	PR 27879 
+	* gnu/java/awt/peer/gtk/CairoGraphics2D.java
+	(copyArea): Implement.
+	(copyAreaImpl, getRealBounds): New methods.
+	* gnu/java/awt/peer/gtk/CairoSurfaceGraphics.java
+	* gnu/java/awt/peer/gtk/ComponentGraphics.java
+	* gnu/java/awt/peer/gtk/BufferedImageGraphics.java
+	(copyAreaImpl, getRealBounds): Implement.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_CairoSurface.c
+	(nativeCopyArea): Reimplement.	
+	
+2006-06-02  Andreas Tobler  <a.tobler@schweiz.ch>
+
+	* configure.ac: Add -lX11 and -lXtst to XTEST_LIBS.
+	(XTEST_LIBS): New, substitute.
+	* native/jni/gtk-peer/Makefile.am (AM_LDFLAGS): Add XTEST_LIBS.
+
+2006-06-02  Roman Kennke <kennke@aicas.com>
+
+	PR 26738
+	* javax/swing/text/PlainView.java
+	(updateDamage): Rewritten for correct repainting and revalidating.
+	(findLongestLine): New helper method.
+	(getLineLength): New helper method.
+
+2006-06-02  Sven de Marothy  <sven@physto.se>
+
+	* gnu/java/awt/peer/gtk/BufferedImageGraphics.java
+	* gnu/java/awt/peer/gtk/CairoSurfaceGraphics.java
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_CairoSurface.c
+	(nativeCopyArea): Change stride parameter to use # of ints.
+	(setPixels): Add checks.
+	* gnu/java/awt/peer/gtk/ComponentGraphics.java
+	(ComponentGraphics): Set background, clip.
+	* gnu/java/awt/peer/gtk/CairoGraphics2D.java
+	(Cairographics2D): Don't set clip.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_ComponentGraphics.c
+	Add flush.
+
+2006-06-02  Lillian Angel  <langel@redhat.com>
+
+	PR 24458
+	* java/awt/DefaultKeyboardFocusManager.java
+	(dispatchEvent): Fixed to getFocusOwner, if that fails it tries
+	to get the focused window.
+
+2006-06-01  Miriam Schuster  <schmir11@web.de>
+
+	* Makefile.am: Add fallback if "mozilla-plugin" is not available.
+	Fallbacks used: "firefox-plugin" and "xulrunner-plugin".
+
+2006-06-02  Roman Kennke <kennke@aicas.com>
+
+	* javax/swing/JTable.java
+	(columnSelectionChanged): Don't return when there's only one
+	column (might still need repainting). Correctly calculate
+	repaint rectangle.
+	(valueChanged): Use return value of SwingUtilities.computeUnion
+	as dirty region.
+
+2006-06-01  Keith Seitz  <keiths@redhat.com>
+
+	From Martin Platter  <motse@complang.tuwien.ac.at>:
+	* gnu/classpath/jdwp/processor/EventRequestCommandSet.java
+	(executeSet): Fix buffer underflow reading reference ID.
+	* gnu/classpath/jdwp/processor/ThreadGroupReferenceCommandSet.java
+	(executeParent): Fix  NPE if ThreadGroup is top-level ThreadGroup. 
+	* gnu/classpath/jdwp/processor/ClassTypeCommandSet.java
+	(executeSuperclass): Handle case of Object with ID zero.
+
+2006-06-02  Raif S. Naffah  <raif@swiftdsl.com.au>
+
+	* tools/gnu/classpath/tools/keytool/StorePasswdCmd.java: Fixed typo.
+	* tools/gnu/classpath/tools/keytool/CertReqCmd.java: Likewise.
+	* tools/gnu/classpath/tools/keytool/DeleteCmd.java: Likewise.
+	* tools/gnu/classpath/tools/keytool/ExportCmd.java: Likewise.
+	* tools/gnu/classpath/tools/keytool/GenKeyCmd.java: Likewise.
+	* tools/gnu/classpath/tools/keytool/IdentityDBCmd.java: Likewise.
+	* tools/gnu/classpath/tools/keytool/ImportCmd.java: Likewise.
+	* tools/gnu/classpath/tools/keytool/KeyCloneCmd.java: Likewise.
+	* tools/gnu/classpath/tools/keytool/KeyPasswdCmd.java: Likewise.
+	* tools/gnu/classpath/tools/keytool/ListCmd.java: Likewise.
+	* tools/gnu/classpath/tools/keytool/SelfCertCmd.java: Likewise.
+
+2006-06-02  Raif S. Naffah  <raif@swiftdsl.com.au>
+
+	* tools/gnu/classpath/tools/keytool/Command.java (shutdownThread): New field.
+	(Command): Add the shutdown hook.
+	(doCommand): Remove the shutdown hook.
+	(ShutdownHook): New class.
+
+2006-06-02  Raif S. Naffah  <raif@swiftdsl.com.au>
+
+	* tools/jarsigner.in: Use @VM_BINARY@.
+	* tools/keytool.in: Likewise.
+
+2006-06-01  Sven de Marothy  <sven@physto.se>
+
+	* gnu/java/awt/peer/gtk/CairoGraphics2D.java:
+	(setColor): Update the cairo paint.
+
+2006-06-01  Mark Wielaard  <mark@klomp.org>
+
+	* java/util/logging/LogManager.java (createInstance): Always add
+	original exception on warning.
+
+2006-06-01  Lillian Angel  <langel@redhat.com>
+
+	* tools/gnu/classpath/tools/appletviewer/AppletTag.java
+	(prependCodebase): Fixed check. No dirname was ever considered to 
+	be a file, so every applet fell into the if-statement causing a lot
+	of classloading problems with the applets.
+
+2006-06-01  Sven de Marothy  <sven@physto.se>
+
+	Patch submitted by Boris Dusek.
+	* native/jni/qt-peer/qtmenupeer.cpp
+	Fix segfault
+
+2006-06-01  Roman Kennke <kennke@aicas.com>
+
+	* javax/swing/JTable.java
+	(AccessibleJTableCell.getAccessibleRow): Added comment explaining
+	why the behaviour is like it is.
+	(AccessibleJTableCell.getAccessibleStateSet): Implemented.
+	(AccessibleJTableHeader): New inner class.
+	(AccessibleJTableHeaderCell): New inner class.
+	(AccessibleJTable.lastSelectedRow): New field.
+	(AccessibleJTable.lastSelectedColumn): New field.
+	(AccessibleJTable.caption): New field.
+	(AccessibleJTable.summary): New field.
+	(AccessibleJTable.rowDescriptions): New field.
+	(AccessibleJTable.columnDescriptions): New field.
+	(AccessibleJTable): Initialize lastSelectedRow and lastSelectedColumn.
+	(AccessibleJTable.getAccessibleSelection(int)): Implemented.
+	(AccessibleJTable.isAccessibleChildSelected): Implemented.
+	(AccessibleJTable.addAccessibleSelection): Implemented.
+	(AccessibleJTable.removeAccessibleSelection): Implemented.
+	(AccessibleJTable.clearAccessibleSelection): Implemented.
+	(AccessibleJTable.selectAllAccessibleSelection): Implemented.
+	(AccessibleJTable.valueChange): Implemented.
+	(AccessibleJTable.tableRowsInserted): Implemented.
+	(AccessibleJTable.tableRowsDeleted): Implemented.
+	(AccessibleJTable.handleRowChange): New helper method.
+	(AccessibleJTable.columnAdded): Implemented.
+	(AccessibleJTable.columnMarginChanged): Implemented.
+	(AccessibleJTable.columnMoved): Implemented.
+	(AccessibleJTable.columnRemoved): Implemented.
+	(AccessibleJTable.columnSelectionChanged): Implemented.
+	(AccessibleJTable.handleColumnChange): New helper method.
+	(AccessibleJTable.editingCanceled): Implemented.
+	(AccessibleJTable.editingStopped): Implemented.
+	(AccessibleJTable.getAccessibleRow): Implemented.
+	(AccessibleJTable.getAccessibleColumn): Implemented.
+	(AccessibleJTable.getAccessibleIndex): Implemented.
+	(AccessibleJTable.getAccessibleCaption): Implemented.
+	(AccessibleJTable.setAccessibleCaption): Implemented.
+	(AccessibleJTable.getAccessibleSummary): Implemented.
+	(AccessibleJTable.setAccessibleSummary): Implemented.
+	(AccessibleJTable.getAccessibleRowCount): Implemented.
+	(AccessibleJTable.getAccessibleColumnCount): Implemented.
+	(AccessibleJTable.getAccessibleAt): Implemented.
+	(AccessibleJTable.getAccessibleRowExtentAt): Implemented.
+	(AccessibleJTable.getAccessibleColumnExtentAt): Implemented.
+	(AccessibleJTable.getAccessibleRowHeader): Implemented.
+	(AccessibleJTable.setAccessibleRowHeader): Implemented.
+	(AccessibleJTable.getAccessibleColumnHeader): Implemented.
+	(AccessibleJTable.setAccessibleColumnHeader): Implemented.
+	(AccessibleJTable.getAccessibleRowDescription): Implemented.
+	(AccessibleJTable.setAccessibleRowDescription): Implemented.
+	(AccessibleJTable.getAccessibleColumnDescription): Implemented.
+	(AccessibleJTable.setAccessibleColumnDescription): Implemented.
+	(AccessibleJTable.isAccessibleSelected): Implemented.
+	(AccessibleJTable.isAccessibleRowSelected): Implemented.
+	(AccessibleJTable.isAccessibleColumnSelected): Implemented.
+	(AccessibleJTable.getSelectedAccessibleRows): Implemented.
+	(AccessibleJTable.getSelectedAccessibleColumns): Implemented.
+	(getAccessibleContext): Register listeners for the accessibility
+	class on the JTable.
+
+2006-06-01  Sven de Marothy  <sven@physto.se>
+
+	* gnu/java/awt/peer/gtk/CairoGraphics2D.java:
+	(setPaint): Scale +1 pixel larger.
+
+2006-06-01  Sven de Marothy  <sven@physto.se>
+
+	PR 27854
+	* gnu/java/awt/Buffers.java (getData): Reimplement.
+	* gnu/java/awt/peer/gtk/CairoSurface.java
+	(getElem, setElem): Call native methods.
+
+2006-06-01  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* gnu/javax/swing/text/html/ImageViewIconFactory.java: New file.
+
+2006-06-01  Sven de Marothy  <sven@physto.se>
+
+	* gnu/java/awt/peer/gtk/CairoGraphics2D.java
+	(drawImage): Check for zero size.
+	* gnu/java/awt/peer/gtk/GdkTextLayout.java:
+	(setFont): Declare new native method.
+	(GdkTextLayout): Read some attributes.
+	* include/gnu_java_awt_peer_gtk_GdkTextLayout.h
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkTextLayout.c
+	(setFont): New native method.
+	
+2006-06-01  Sven de Marothy  <sven@physto.se>
+
+	* gnu/java/awt/peer/gtk/BufferedImageGraphics.java
+	(updateBufferedImage): Fix some errors.
+
+2006-06-01  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/plaf/basic/BasicButtonUI.java: Minor source code style 
+	fixes,
+	* javax/swing/plaf/basic/BasicDirectoryModel.java: Likewise,
+	* javax/swing/plaf/basic/BasicFileChooserUI.java: Likewise,
+	* javax/swing/plaf/basic/BasicIconFactory.java: Likewise,
+	* javax/swing/plaf/basic/BasicListUI.java: Likewise,
+	* javax/swing/plaf/basic/BasicOptionPaneUI.java: Likewise,
+	* javax/swing/plaf/basic/BasicRootPaneUI.java: Likewise,
+	* javax/swing/plaf/basic/BasicScrollPaneUI.java: Likewise,
+	* javax/swing/plaf/basic/BasicSpinnerUI.java: Likewise,
+	* javax/swing/plaf/basic/BasicTabbedPaneUI.java: Likewise,
+	* javax/swing/plaf/basic/BasicTextAreaUI.java: Likewise.
+	
+2006-06-01  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/JComboBox.java: Minor source code formatting fixes,
+	* javax/swing/JEditorPane.java: Likewise,
+	* javax/swing/JFormattedTextField.java: Likewise,
+	* javax/swing/JLayeredPane.java: Likewise,
+	* javax/swing/JScrollPane.java: Likewise,
+	* javax/swing/JSlider.java: Likewise,
+	* javax/swing/JSpinner.java: Likewise,
+	* javax/swing/JTree.java: Likewise,
+	* javax/swing/JViewport.java: Likewise,
+	* javax/swing/UIDefaults.java: Likewise,
+	* javax/swing/UIManager.java: Likewise.
+	
+2006-06-01  Sven de Marothy  <sven@physto.se>
+
+	* gnu/java/awt/peer/gtk/BufferedImageGraphics.java
+	(BufferedImageGraphics): Cache surfaces.
+	(updateBufferedImage): Copy directly for certain color models.
+	* gnu/java/awt/peer/gtk/CairoGraphics2D.java
+	(drawImage): Reimplement.
+
+2006-06-01  Sven de Marothy  <sven@physto.se>
+
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_CairoSurface.c
+	(setPixels): Don't swap, correct size.
+
+2006-05-31  Anthony Green  <green@redhat.com>
+
+	PR 27828
+	* java/net/InetSocketAddress.java: Defer getting the host
+	name until somebody calls InetSocketAddress.getHostName().
+	Fix "represenation" typo.
+
+2006-06-01  Sven de Marothy  <sven@physto.se>
+
+	* gnu/java/awt/peer/gtk/BufferedImageGraphics.java
+	(updateBufferedImage): Simplify.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_CairoSurface.c
+	(getPixels): Don't swap.
+
+2006-06-01  Sven de Marothy  <sven@physto.se>
+
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_CairoGraphics2D.c
+	(setGradient): Reimplement.
+	
+2006-06-01  Andreas Tobler  <a.tobler@schweiz.ch>
+
+	* native/jni/gtk-peer/cairographics2d.h: Rename/prefix function
+	CairoGraphics2D_getCairoT to cp_gtk_get_cairo_t correctly.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_CairoSurface.c
+	(Java_gnu_java_awt_peer_gtk_CairoSurface_drawSurface): Rename function
+	CairoGraphics2D_getCairoT to cp_gtk_get_cairo_t.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkTextLayout.c
+	(Java_gnu_java_awt_peer_gtk_GdkTextLayout_cairoDrawGdkTextLayout):
+	Likewise.
+
+2006-05-31  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/table/JTableHeader.java
+	(getColumnHeaderRenderer): New method,
+	(getAccessibleColumnHeaderRenderer): Delegate part to new
+	getColumnHeaderRenderer() method,
+	(getLocale): Implemented.
+
+2006-05-31  Andreas Tobler  <a.tobler@schweiz.ch>
+
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_ComponentGraphics.c
+	(cp_gtk_grab_current_drawable): Rename
+	cp_java_awt_peer_gtk_ComponentGraphics_grab_current_drawable to
+	cp_gtk_grab_current_drawable, remove static declaration.
+	(Java_gnu_java_awt_peer_gtk_ComponentGraphics_initState): Renamed above
+	function.
+	(Java_gnu_java_awt_peer_gtk_ComponentGraphics_copyAreaNative): Likewise.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_ComponentGraphicsCopy.c:
+	Remove prototype of
+	cp_java_awt_peer_gtk_ComponentGraphics_grab_current_drawable.
+	(Java_gnu_java_awt_peer_gtk_ComponentGraphicsCopy_getPixbuf): Rename
+	function.
+	(Java_gnu_java_awt_peer_gtk_ComponentGraphicsCopy_copyPixbuf): Likewise.
+	* native/jni/gtk-peer/gtkpeer.h: Add prototype for
+	cp_gtk_grab_current_drawable here.
+
+2006-05-31  Sven de Marothy  <sven@physto.se>
+
+	Should fix PR 27835
+	* gnu/java/awt/peer/gtk/BufferedImageGraphics.java
+	(updateBufferedImage): Keep within image bounds.
+
+2006-05-31  Thomas Fitzsimmons  <fitzsim@redhat.com>
+	    Andreas Tobler  <a.tobler@schweiz.ch>
+
+	* configure.ac: Check for libXrender when the GTK peers are
+	enabled, and set HAVE_XRENDER accordingly. Add -lXrender to
+	X_EXTRA_LIBS.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_ComponentGraphics.c
+	(Java_gnu_java_awt_peer_gtk_ComponentGraphics_hasXRender)
+	[HAVE_XRENDER]: Call XRenderQueryExtension conditionally.
+
+2006-05-31  Lillian Angel  <langel@redhat.com>
+
+	* javax/swing/plaf/basic/BasicProgressBarUI.java
+	(paintString): Implemented to paint the string vertically.
+
+2006-05-31  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/JTable.java
+	(AccessibleJTable.AccessibleJTable()): Check for null editor,
+	(AccessibleJTable.getAccessibleRole()): Overridden to return correct 
+	value,
+	(AccessibleJTable.getAccessibleTable()): Likewise,
+	(getAccessibleContext): Create new context if required.
+
+2006-05-31  Roman Kennke <kennke@aicas.com>
+
+	* javax/swing/JTabbedPane.java
+	(AccessibleJTabbedPane.stateChanged): Implemented.
+	(Page.getAccessibleStateSet): Implemented.
+	(Page.getAccessibleIndexInParent): Implemented.
+	(getAccessibleContext): Add AccessibleJTabbedPane object
+	as ChangeListener to the JTabbedPane.
+
+2006-05-31  Roman Kennke <kennke@aicas.com>
+
+	* javax/swing/JMenuItem.java
+	(getAccessibleContext): Register accessible object as ChangeListener
+	to the JMenuItem.
+	(AccessibleJMenuItem.armed): New field.
+	(AccessibleJMenuItem.focusOwner): New field.
+	(AccessibleJMenuItem.pressed): New field.
+	(AccessibleJMenuItem.selected): New field.
+	(stateChanged): Implemented.
+
+2006-05-31  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/ListSelectionModel.java: Added API docs all over.
+
+2006-05-31  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* examples/gnu/classpath/examples/swing/FillRect.java 
+	(paintComponent): Optionally paint lines rather than rectangles.
+	(createContent): Added option to test line painting.
+
+2006-05-31  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/event/EventListenerList.java
+	(getListenerList): Updated API docs.
+
+2006-05-30  Sven de Marothy  <sven@physto.se>
+
+	* gnu/java/awt/peer/gtk/CairoGraphics2D.java
+	(drawImage): Clip scaled image to dest rectangle.
+
+2006-05-30  Sven de Marothy  <sven@physto.se>
+
+	* gnu/java/awt/peer/gtk/CairoSurface.java:
+	(CairoSurface): Convert pixels properly.
+	* gnu/java/awt/peer/gtk/ComponentGraphics.java
+	Remove commented-out lines.
+
+2006-05-30  Sven de Marothy  <sven@physto.se>
+
+	* gnu/java/awt/peer/gtk/CairoGraphics2D.java
+	(drawImage): Use Toolkit to convert to BufferedImage.
+	* gnu/java/awt/peer/gtk/CairoSurface.java
+	(CairoSurface(GtkImage)): New Constructor.
+	(getBufferedImage): New method.
+	* gnu/java/awt/peer/gtk/ComponentGraphics.java
+	Don't fill background - FIXME.
+	* gnu/java/awt/peer/gtk/GdkPixbufDecoder.java:
+	Remove unused methods.
+	* gnu/java/awt/peer/gtk/GtkImage.java:
+	(pixbuflock): New field. Methods change to use this lock.
+	* gnu/java/awt/peer/gtk/GtkToolkit.java
+	(createImage): Use Cairo-backed surfaces via GtkImage instead of 
+	GtkPixbufDecoder.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_CairoSurface.c
+	(setPixels): Correct length in bytes.
+
+2006-05-30  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* gnu/java/awt/peer/gtk/CairoGraphics2D.java (static): Call
+	System.loadLibrary unconditionally.
+	* gnu/java/awt/peer/gtk/GdkFontPeer.java: Likewise.
+	* gnu/java/awt/peer/gtk/GdkPixbufDecoder.java: Likewise.
+	* gnu/java/awt/peer/gtk/GdkTextLayout.java: Likewise.
+	* gnu/java/awt/peer/gtk/GtkToolkit.java: Likewise.
+
+2006-05-30  Mark Wielaard  <mark@klomp.org>
+
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_ComponentGraphics.c
+	(Java_gnu_java_awt_peer_gtk_ComponentGraphics_copyAreaNative):
+	Mark unused parameters, remove unused variables.
+
+2006-05-30  Sven de Marothy  <sven@physto.se>
+
+	* gnu/java/awt/peer/gtk/ComponentGraphics.java
+	(copyArea): Implemented.
+	* include/gnu_java_awt_peer_gtk_ComponentGraphics.h
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_ComponentGraphics.c:
+	(copyAreaNative): New method.
+
+2006-05-30  Andreas Tobler  <a.tobler@schweiz.ch>
+
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_CairoSurface.c
+	(Java_gnu_java_awt_peer_gtk_CairoSurface_getPixels): Define i only
+	for non big endian systems.
+	(Java_gnu_java_awt_peer_gtk_CairoSurface_setPixels): Likewise.
+
+2006-05-30  Roman Kennke <kennke@aicas.com>
+
+	* gnu/java/awt/java2d/TexturePaintContext.java: New file.
+	* java/awt/TexturePaint.java
+	(createContext): Implemented.
+
+2006-05-30  Robert Schuster  <robertschuster@fsfe.org>
+
+	* java/awt/Container.java:
+	(removeAll): Reimplemented, added note.
+
+2006-05-30  Robert Schuster  <robertschuster@fsfe.org>
+
+        * java/awt/Container.java:
+        (removeAll): Implemented different removal mechanism, added note.
+
+2006-05-30  Lillian Angel  <langel@redhat.com>
+
+	PR 27785
+	* java/awt/Component.java:
+	(translateEvent): Added handling to translate WindowEvents
+	* java/awt/Window.java:
+	Removed unneeded imports.
+
+2006-05-30  Mark Wielaard  <mark@klomp.org>
+
+	* native/jni/gtk-peer/Makefile.am (libgtkpeer_la_SOURCES): Add
+	cairographics2d.h.
+
+2006-05-30  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* gnu/java/awt/peer/gtk/GtkImage.java: Fix constructor javadoc.
+
+2006-05-29  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* gnu/java/awt/peer/gtk/CairoGraphics2D.java
+	(clearRect): Do not reuse the fg field, call updateColor.
+	(drawRaster): Likewise.
+	(setColor): Call updateColor.
+	(updateColor): New method.
+
+2006-05-30  Mark Wielaard  <mark@klomp.org>
+
+	* native/jni/classpath/jcl.h (JLONG_TO_PTR): New macro.
+	(PTR_TO_JLONG): Likewise.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_CairoGraphics2D.c
+	(getPointer): Use new conversion macros.
+	(Java_gnu_java_awt_peer_gtk_CairoGraphics2D_init): Likewise.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_CairoSurface.c
+	(Java_gnu_java_awt_peer_gtk_CairoSurface_newCairoContext):
+	Likewise.
+	(setNativeObject): Likewise.
+	(getNativeObject): Likewise.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_ComponentGraphics.c
+	(cp_java_awt_peer_gtk_ComponentGraphics_grab_current_drawable):
+	Mark static.
+	(Java_gnu_java_awt_peer_gtk_ComponentGraphics_initState):
+	Correctly cast XID and pointer values.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_ComponentGraphicsCopy.c
+	(Java_gnu_java_awt_peer_gtk_ComponentGraphicsCopy_getPixbuf):
+	Mark unused variables.
+	(Java_gnu_java_awt_peer_gtk_ComponentGraphicsCopy_copyPixbuf):
+	Likewise.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkTextLayout.c
+	(Java_gnu_java_awt_peer_gtk_GdkTextLayout_cairoDrawGdkTextLayout):
+	Remove unused cairographics2d struct.
+	(_moveTo, _lineTo, _quadTo, _curveTo): Mark arguments const.
+	(Java_gnu_java_awt_peer_gtk_GtkImage_initFromBuffer):
+	Use new conversion macros.
+	* native/jni/midi-dssi/dssi_data.h: Move conversion macros to jcl.h.
+
+2006-05-30  Mark Wielaard  <mark@klomp.org>
+
+	* include/Makefile.am (gnu_java_nio_VMChannel.h): Added.
+
+2006-05-29  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* gnu/java/awt/peer/gtk/CairoGraphics2D.java
+	(copy): Do not reuse the fd field.
+	(setColor): Do not set the color if the parameter
+	matches fd field.
+	(translate(double, double): Rewritten to use
+	AffineTransform.translate. 
+
+2006-05-30  Sven de Marothy  <sven@physto.se>
+
+	* gnu/java/awt/peer/gtk/ComponentGraphicsCopy.java
+	* include/gnu_java_awt_peer_gtk_ComponentGraphicsCopy.h
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_ComponentGraphicsCopy.c
+	New files.
+	* include/Makefile.am
+	* native/jni/gtk-peer/Makefile.am
+	Add new files.
+	* gnu/java/awt/peer/gtk/CairoSurface.java
+	(getSharedGtkImage): New method.
+	* gnu/java/awt/peer/gtk/CairoSurfaceGraphics.java
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_CairoSurface.c
+	Fix copyArea.
+	* gnu/java/awt/peer/gtk/ComponentGraphics.java
+	Support a non-xrender context.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_ComponentGraphics.c
+	Plug memory leak.
+	* gnu/java/awt/peer/gtk/GtkImage.java
+	* include/gnu_java_awt_peer_gtk_GtkImage.h
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkImage.c
+	(initFromBuffer): New method.	
+	* native/jni/gtk-peer/gtkpeer.h: 
+	Remove declarations of previouslyremoved methods.
+
+2006-05-29  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* tools/Makefile.am [FOUND_CACAO] (LIBJVM): Define to -ljvm.
+
+2006-05-29  Mark Wielaard  <mark@klomp.org>
+
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_CairoGraphics2D.c
+	(Java_gnu_java_awt_peer_gtk_CairoGraphics2D_init): Mark unused
+	arguments.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_CairoSurface.c
+	(Java_gnu_java_awt_peer_gtk_CairoSurface_setPixels): Declare size
+	early. Remove unused return statement in void function.
+	(Java_gnu_java_awt_peer_gtk_CairoSurface_newCairoContext): Declare
+	ptr early.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_ComponentGraphics.c
+	(Java_gnu_java_awt_peer_gtk_ComponentGraphics_hasXRender): Mark
+	unused arguments.
+	(Java_gnu_java_awt_peer_gtk_ComponentGraphics_initState): Likewise.
+	(Java_gnu_java_awt_peer_gtk_ComponentGraphics_start_1gdk_1drawing):
+	Likewise.
+	(Java_gnu_java_awt_peer_gtk_ComponentGraphics_end_1gdk_1drawing):
+	Likewise.
+
+2006-05-29  Sven de Marothy  <sven@physto.se>
+
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_CairoSurface.c
+	(setPixels): Remove superfluous return statement.	
+
+2006-05-29  Sven de Marothy  <sven@physto.se>
+
+	* gnu/java/awt/peer/gtk/BufferedImageGraphics.java
+	* gnu/java/awt/peer/gtk/CairoGraphics2D.java
+	* gnu/java/awt/peer/gtk/CairoSurface.java
+	* gnu/java/awt/peer/gtk/CairoSurfaceGraphics.java
+	* gnu/java/awt/peer/gtk/ComponentGraphics.java
+	* include/gnu_java_awt_peer_gtk_CairoGraphics2D.h
+	* include/gnu_java_awt_peer_gtk_CairoSurface.h
+	* include/gnu_java_awt_peer_gtk_ComponentGraphics.h
+	* native/jni/gtk-peer/cairographics2d.h
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_CairoGraphics2D.c
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_ComponentGraphics.c
+	New files.
+
+	* gnu/java/awt/peer/gtk/GdkGraphics2D.java
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics2D.c
+	* include/gnu_java_awt_peer_gtk_GdkGraphics2D.h
+	Removed
+
+	* include/gnu_java_awt_peer_gtk_GdkFontPeer.h
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkFontPeer.c
+	* gnu/java/awt/peer/gtk/GdkFontPeer.java
+	(releasePeerGraphicsResource): Moved to Font peer class.
+
+	* gnu/java/awt/peer/gtk/GdkGraphicsEnvironment.java
+	(createGraphics): Use new context classes.
+
+	* gnu/java/awt/peer/gtk/GdkPixbufDecoder.java:
+	Use native BufferedImages where possible.
+
+	* gnu/java/awt/peer/gtk/GdkTextLayout.java
+	* include/gnu_java_awt_peer_gtk_GdkTextLayout.h
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkTextLayout.c
+	Move GdkGraphics2D.drawGdkTextLayout to the GdkTextLayout class,
+	renamed to cairoDrawGdkTextLayout.
+	
+	* gnu/java/awt/peer/gtk/GtkComponentPeer.java
+	(getGraphics): Use ComponentGraphics context.
+	(createImage): Use native BufferedImage.
+	
+	* gnu/java/awt/peer/gtk/GtkImage.java:
+	* include/gnu_java_awt_peer_gtk_GtkImage.h
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkImage.c
+	Remove pixmap support. (GtkImage(int, int) constructor, getGraphics)
+	Remove drawing methods.
+		
+	* gnu/java/awt/print/JavaPrinterGraphics.java:
+	Use CairoSurface instead of GtkImage.
+	
+	* include/Makefile.am
+	* native/jni/gtk-peer/Makefile.am
+	Update for new files.
+
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkClipboard.c
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkFramePeer.c
+	Remove superfluous GtkImage code for GdkPixmaps. 
+
+	* native/jni/gtk-peer/gtkpeer.h
+	Remove graphics2d structure.
+	
+2006-05-29  Mark Wielaard  <mark@klomp.org>
+
+	* java/io/ObjectStreamConstants.java: Removed double declaration
+	of SC_ENUM.
+
+2006-05-29  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* gnu/java/awt/peer/gtk/GdkGraphics2D.java (copying constructor):
+	Do not reuse fg in the constructor.
+
+2006-05-29  Carsten Neumann  <cn-develop@gmx.net>
+
+	* java/io/ObjectStreamConstants.java: Added API docs.
+
+2006-05-29  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* gnu/java/awt/peer/gtk/GdkGraphics2D.java (setColor):
+	Take no action if this color is already set.
+
+2006-05-29  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* gnu/java/awt/peer/gtk/GdkGraphics2D.java (translate):
+	Rewritten. 
+	* examples/gnu/classpath/examples/swing/FillRect.java (paintComponent):
+	Optionally paint with translation. (createContent): Added option
+	to test painting with translation
+
+2006-05-29  Raif S. Naffah  <raif@swiftdsl.com.au>
+
+	* java/util/logging/FileHandler.java (FileHandler): Set the instance field
+	pattern to the default value when null.
+	Pass field pattern, and not parameter with same name to createFileStream.
+
+2006-05-28  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* gnu/java/lang/management/OperatingSystemMXBeanImpl.java:
+	New class implementing the OS bean.
+	* gnu/java/lang/management/package.html:
+	New file to document the gnu.java.lang.management package.
+	* java/lang/management/ManagementFactory.java:
+	New class to provide access to the OS bean.
+	* java/lang/management/OperatingSystemMXBean.java:
+	New interface.
+	* java/lang/management/package.html:
+	New file to document the java.lang.management package.
+	
+2006-05-28  Raif S. Naffah  <raif@swiftdsl.com.au>
+
+	* tools/gnu/classpath/tools/keytool/ImportCmd.java (GKR): New constant.
+	(JKS): Likewise.
+	(LIB): Likewise.
+	(SECURITY): Likewise.
+	(CACERTS): Likewise.
+	(CACERTS_GKR): Likewise.
+	(gkrCaCertsPathName): New field.
+	(jksCaCertsPathName): Likewise.
+	(selfSignedCertificate): Likewise.
+	(start): Initialize trusted certificate key stores if -trustcacerts is
+	specified.
+	(ensureReplyIsOurs): Initialize selfSignedCertificate.
+	(orderChain): Implemented.
+	(findTrustAndUpdate): Check a cacerts.gkr (GKR) and a cacert (JKS) trusted
+	certificate key stores if -trustcacerts option is specified.
+	(findTrustInCACerts): Removed.
+	(getCertPathParameters): New method.
+	(validate): New method.
+	* resource/gnu/classpath/tools/keytool/messages.properties: Added message.
+
+2006-05-28  Raif S. Naffah  <raif@swiftdsl.com.au>
+
+	* java/util/logging/FileHandler.java (PROPERTY_PREFIX): New constant.
+	(PATTERN_KEY): Likewise.
+	(DEFAULT_PATTERN): Likewise.
+	(LIMIT_KEY): Likewise.
+	(DEFAULT_LIMIT): Likewise.
+	(COUNT_KEY): Likewise.
+	(DEFAULT_COUNT): Likewise.
+	(APPEND_KEY): Likewise.
+	(DEFAULT_APPEND): Likewise.
+	(FileHandler()): Use pattern value as set in logging.properties.
+	Use constants defined above.
+	(FileHandler(1)): Use constants defined above.
+	(FileHandler(2)): Likewise.
+	(FileHandler(3)): Likewise.
+	(FileHandler(4)): Likewise.
+	(createFileStream): Likewise.
+
+2006-05-28  Raif S. Naffah  <raif@swiftdsl.com.au>
+
+	* java/util/logging/FileHandler.java: Reverted previous patch.
+	* java/util/logging/LogManager.java: Likewise.
+
+2006-05-28  Raif S. Naffah  <raif@swiftdsl.com.au>
+
+	* java/util/logging/FileHandler.java (PATTERN_KEY): New constant.
+	(DEFAULT_PATTERN): Likewise.
+	(FileHandler()): Use configured pattern property if any; otherwise use a
+	default value as per RI documentation.
+	* java/util/logging/LogManager.java (getStringProperty): New method.
+
+2006-05-27  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* NEWS: Announce libjawtgnu.so-to-libjawt.so rename.
+
+2006-05-27  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* configure.ac (FOUND_CACAO): New automake conditional.
+	Add --enable-tool-wrappers.
+	* NEWS: Introduce the --enable-tool-wrappers option.
+	* tools/Makefile.am[CREATE_WRAPPERS]: Build wrapper binaries.
+	* tools/appletviewer.c: Remove file.  Make tool-indepedent and
+	rename ...
+	* tools/toolwrapper.c: New file.
+
+2006-05-27  Dalibor Topic  <robilad@kaffe.org>
+
+	* java/awt/Graphics2D.java: Use full class name for 
+	PrinterJob in javadoc.
+
+2006-05-27  Andreas Tobler  <a.tobler@schweiz.ch>
+
+	* native/jni/qt-peer/eventmethods.h (callVoidMethod): Silence warning.
+	(callMouseMethod): Likewise.
+
+2006-05-26  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* native/jni/java-net/java_net_VMURLConnection.c:
+	Fix function declarations to specify unused parameters.
+	* scripts/check_jni_methods.sh:
+	Remove copies of the same function using uniq.
+	
+2006-05-26  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* vm/reference/java/net/VMURLConnection.java:
+	Make package-private and final.
+	
+2006-05-27  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* examples/gnu/classpath/examples/swing/TableDemo.java
+	(TModed): Added editor for the icons column.
+	(createContent): Increase the row height by 2 px.
+
+2006-05-26  Tom Tromey  <tromey@redhat.com>
+
+	PR classpath/27685:
+	* java/math/BigInteger.java (modPow): Correctly handle negative
+	exponent.
+
+2006-05-26  Tom Tromey  <tromey@redhat.com>
+
+	* configure.ac: Check for magic.h and -lmagic.
+	* vm/reference/java/net/VMURLConnection.java: New file.
+	* include/java_net_VMURLConnection.h: New file.
+	* include/Makefile.am (H_FILES): Add VMURLConnection.h.
+	($(top_srcdir)/include/java_net_VMURLConnection.h): New target.
+	* native/jni/java-net/Makefile.am (libjavanet_la_SOURCES):
+	Mention new file.
+	(libjavanet_la_LIBADD): Add $(LIBMAGIC).
+	* native/jni/java-net/java_net_VMURLConnection.c: New file.
+
+2006-05-26  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* tools/Makefile.am (installcheck-binSCRIPTS): Do nothing.
+
+2006-05-26  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* native/jawt/Makefile.am (nativeexeclib_LTLIBRARIES): Rename
+	libjawtgnu.la libjawt.la.
+
+2006-05-26  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* native/jni/gtk-peer/Makefile.am (libgtkpeer_la_SOURCES): Remove
+	gtkcairopeer.h.
+
+2006-05-25  Lillian Angel  <langel@redhat.com>
+	
+	PR 26174
+	* java/awt/Window.java
+	(Window): Moved code to helper.
+	(addWindowFocusListener): New function. Handles focus
+	listener code. Added code to handle focus lost/gained
+	from the window.
+
+2006-05-25  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* configure.ac:
+	Make pkg-config check for GTK+ >= 2.8.
+	
+2006-05-25  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics2D.c
+	(flush): Remove debugging printfs.
+
+2006-05-25  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics2D.c
+	(schedule_flush): New function.
+	(end_drawing_operation): Call schedule_flush.
+
+2006-05-25  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* examples/gnu/classpath/examples/swing/Demo.java: Add FillRect
+	paint performance demo.
+	* examples/gnu/classpath/examples/swing/FillRect.java: New file.
+
+2006-05-25  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* INSTALL: Bump GTK requirement to 2.8 or higher.  Do not mention
+	Cairo version requirement.  Do not mention --enable-gtk-cairo
+	configure option.
+	* NEWS: Add entry for GdkGraphics2D.
+	* configure.ac: Remove --enable-gtk-cairo and explicit checks for
+	Cairo library and headers.
+	* .externalToolBuilders/Configure.launch: Remove
+	--enable-gtk-cairo from configure line.
+	* gnu/classpath/Configuration.java.in (GTK_CAIRO_ENABLED): Remove
+	field.
+	* gnu/java/awt/BitwiseXORComposite.java: Fix javadoc typo.
+	* gnu/java/awt/peer/gtk/GdkFontPeer.java,
+	native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkFontPeer.c : Remove
+	useGraphics2D references.  Always assume Graphics2D is enabled.
+	* gnu/java/awt/peer/gtk/GdkGraphics.java,
+	native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics.c: Remove.
+	* gnu/java/awt/peer/gtk/GdkGraphics2D.java,
+	native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphics2D.c: Remove
+	Unlocked method variants.  Remove GTK_CAIRO_ENABLED and
+	useGraphics2D references.  Always assume Graphics2D is enabled.
+	* gnu/java/awt/peer/gtk/GdkTextLayout.java: Remove instanceof
+	Graphics2D check.  Always assume Graphics2D is enabled.
+	* gnu/java/awt/peer/gtk/GtkCanvasPeer.java,
+	native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkCanvasPeer.c
+	(realize): Remove method.
+	* gnu/java/awt/peer/gtk/GtkComponentPeer.java,
+	native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkComponentPeer.c
+	(isRealized): Remove method.
+	(realize): Implement as a native method.  Remove useGraphics2D
+	references.  Always assume Graphics2D is enabled.
+	* gnu/java/awt/peer/gtk/GtkImage.java,
+	native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkImage.c: Replace
+	GdkGraphics references with GdkGraphics2D references.
+	* gnu/java/awt/peer/gtk/GtkToolkit.java,
+	native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkToolkit.c: Remove
+	useGraphics2D references.  Always assume Graphics2D is enabled.
+	* include/Makefile.am (GTKPEER_H_FILES): Remove
+	gnu_java_awt_peer_gtk_GdkGraphics.h.
+	* include/gnu_java_awt_peer_gtk_GdkFontPeer.h: Regenerate.
+	* include/gnu_java_awt_peer_gtk_GdkGraphics.h: Remove.
+	* include/gnu_java_awt_peer_gtk_GdkGraphics2D.h: Regenerate.
+	* include/gnu_java_awt_peer_gtk_GtkCanvasPeer.h: Likewise.
+	* include/gnu_java_awt_peer_gtk_GtkComponentPeer.h: Likewise.
+	* native/jawt/Makefile.am (AM_LDFLAGS): Remove CAIRO_LIBS.
+	* native/jni/gtk-peer/Makefile.am (libgtkpeer_la_SOURCES): Remove
+	gnu_java_awt_peer_gtk_GdkGraphics.c.  Include
+	gnu_java_awt_peer_gtk_GdkGraphics2D.c unconditionally.
+	(AM_LDFLAGS): Remove CAIRO_LIBS.
+	(AM_CFLAGS): Remove CAIRO_CFLAGS.
+	* native/jni/gtk-peer/gtkcairopeer.h: Remove.  Move declarations
+	to ...
+	* native/jni/gtk-peer/gtkpeer.h: Add Graphics2D declarations.
+
+2006-05-25  Lillian Angel  <langel@redhat.com>
+
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkComponentPeer.c
+	(Java_gnu_java_awt_peer_gtk_GtkComponentPeer_gtkWidgetSetCursorUnlocked):
+	Added check to prevent assertion error. If widget->window is null, then
+	use the parent widget's window to set the cursor on.
+
+2006-05-25  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* javax/swing/plaf/basic/BasicTreeUI.java (TreeCancelEditingAction):
+	Implemented.
+
+2006-05-24  Lillian Angel  <langel@redhat.com>
+
+	* tools/gnu/classpath/tools/appletviewer/AppletTag.java
+	(prependCodeBase): Added check to determine if the documentbase
+	points to a directory or a file.
+
+2006-05-24  Sven de Marothy  <sven@physto.se>
+
+	* java/awt/dnd/DragGestureRecognizer.java
+	(resetRecognizer): Implement.
+	(fireDragGestureRecognized): Implement.
+
+2006-05-24  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/plaf/basic/BasicComboBoxUI.java: Marked stub methods and
+	fixed source code formatting.
+
+2006-05-24  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* javax/swing/JTable.java (valueChanged): If is editing, stop editing.
+
+2006-05-24  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	Reported by Antony Balkisson.
+	* javax/swing/JTable.java (selectAll): Return without action 
+	if the table is empty.
+
 2006-05-23  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
 
 	* examples/gnu/classpath/examples/swing/TableDemo.java:

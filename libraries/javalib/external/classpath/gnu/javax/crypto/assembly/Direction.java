@@ -45,9 +45,9 @@ package gnu.javax.crypto.assembly;
  *
  * <p>The possible values for this type are two:</p>
  * <ol>
- *    <li>FORWARD: equivalent to {@link gnu.crypto.mode.IMode#ENCRYPTION}, and
+ *    <li>FORWARD: equivalent to {@link gnu.javax.crypto.mode.IMode#ENCRYPTION}, and
  *    its inverse value</li>
- *    <li>REVERSED: equivalent to {@link gnu.crypto.mode.IMode#DECRYPTION}.</li>
+ *    <li>REVERSED: equivalent to {@link gnu.javax.crypto.mode.IMode#DECRYPTION}.</li>
  * </ol>
  */
 public final class Direction

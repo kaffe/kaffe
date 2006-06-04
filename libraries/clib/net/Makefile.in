@@ -89,7 +89,8 @@ libjavanet_la_DEPENDENCIES =  \
 am_libjavanet_la_OBJECTS = libjavanet_la-InetAddressImpl.lo \
 	libjavanet_la-NetworkInterface.lo \
 	libjavanet_la-PlainDatagramSocketImpl.lo \
-	libjavanet_la-PlainSocketImpl.lo
+	libjavanet_la-PlainSocketImpl.lo \
+	libjavanet_la-java_net_VMURLConnection.lo
 libjavanet_la_OBJECTS = $(am_libjavanet_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
@@ -406,7 +407,8 @@ libjavanet_la_SOURCES = \
 	InetAddressImpl.c \
 	NetworkInterface.c \
 	PlainDatagramSocketImpl.c \
-	PlainSocketImpl.c
+	PlainSocketImpl.c \
+	java_net_VMURLConnection.c
 
 CLEANFILES = so_locations
 all: all-am
@@ -482,6 +484,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjavanet_la-NetworkInterface.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjavanet_la-PlainDatagramSocketImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjavanet_la-PlainSocketImpl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjavanet_la-java_net_VMURLConnection.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -531,6 +534,13 @@ libjavanet_la-PlainSocketImpl.lo: PlainSocketImpl.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='PlainSocketImpl.c' object='libjavanet_la-PlainSocketImpl.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libjavanet_la_CFLAGS) $(CFLAGS) -c -o libjavanet_la-PlainSocketImpl.lo `test -f 'PlainSocketImpl.c' || echo '$(srcdir)/'`PlainSocketImpl.c
+
+libjavanet_la-java_net_VMURLConnection.lo: java_net_VMURLConnection.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libjavanet_la_CFLAGS) $(CFLAGS) -MT libjavanet_la-java_net_VMURLConnection.lo -MD -MP -MF "$(DEPDIR)/libjavanet_la-java_net_VMURLConnection.Tpo" -c -o libjavanet_la-java_net_VMURLConnection.lo `test -f 'java_net_VMURLConnection.c' || echo '$(srcdir)/'`java_net_VMURLConnection.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjavanet_la-java_net_VMURLConnection.Tpo" "$(DEPDIR)/libjavanet_la-java_net_VMURLConnection.Plo"; else rm -f "$(DEPDIR)/libjavanet_la-java_net_VMURLConnection.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='java_net_VMURLConnection.c' object='libjavanet_la-java_net_VMURLConnection.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libjavanet_la_CFLAGS) $(CFLAGS) -c -o libjavanet_la-java_net_VMURLConnection.lo `test -f 'java_net_VMURLConnection.c' || echo '$(srcdir)/'`java_net_VMURLConnection.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

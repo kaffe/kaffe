@@ -158,7 +158,7 @@ import javax.security.auth.callback.UnsupportedCallbackException;
  *      
  *      <dt>-validity DAY_COUNT</dt>
  *      
- *      <dt>-storetype STORE_TYP}</dt>
+ *      <dt>-storetype STORE_TYPE</dt>
  *      <dd>Use this option to specify the type of the key store to use. The
  *      default value, if this option is omitted, is that of the property
  *      <code>keystore.type</code> in the security properties file, which is

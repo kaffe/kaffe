@@ -86,7 +86,7 @@ public final class PKCS7 extends BasePad
   /**
    * Trivial package-private constructor for use by the <i>Factory</i> class.<p>
    *
-   * @see gnu.crypto.pad.PadFactory
+   * @see PadFactory
    */
   PKCS7()
   {

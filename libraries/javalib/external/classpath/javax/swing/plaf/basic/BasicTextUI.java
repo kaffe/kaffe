@@ -1039,7 +1039,12 @@ public abstract class BasicTextUI extends TextUI
 
         Rectangle l1 = modelToView(t, p0, firstBias);
         Rectangle l2 = modelToView(t, p1, secondBias);
-        if (l1.y == l2.y)
+        if (l1 == null || l2 == null)
+          {
+            // Unable to determine the start or end of the selection.
+            t.repaint();
+          }
+        else if (l1.y == l2.y)
           {
             SwingUtilities.computeUnion(l2.x, l2.y, l2.width, l2.height, l1);
             t.repaint(l1);

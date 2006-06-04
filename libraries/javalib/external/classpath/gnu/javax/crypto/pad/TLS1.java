@@ -38,8 +38,6 @@ exception statement from your version.  */
 
 package gnu.javax.crypto.pad;
 
-import gnu.java.security.util.Util;
-
 /**
  * The padding scheme used by the Transport Layer Security protocol,
  * version 1. This padding scheme is used in the block-ciphered struct,

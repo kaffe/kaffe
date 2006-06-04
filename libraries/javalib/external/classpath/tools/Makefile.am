@@ -21,8 +21,46 @@ endif
 endif
 endif
 
+if CREATE_WRAPPERS
+bin_SCRIPTS =
+bin_PROGRAMS = appletviewer jarsigner keytool
+
+if FOUND_GCJ
+LIBJVM = -lgcj
+else
+if FOUND_CACAO
+LIBJVM = -ljvm
+else
+LIBJVM =
+endif
+endif
+
+appletviewer_SOURCES = toolwrapper.c
+appletviewer_CFLAGS = -Wall \
+	-DDATA_DIR="\"$(datadir)\"" \
+	-DPACKAGE="\"$(PACKAGE)\"" \
+	-DTOOLNAME="\"appletviewer\""
+appletviewer_LDFLAGS = -L$(libdir) $(LIBJVM)
+
+jarsigner_SOURCES = toolwrapper.c
+jarsigner_CFLAGS = -Wall \
+	-DDATA_DIR="\"$(datadir)\"" \
+	-DPACKAGE="\"$(PACKAGE)\"" \
+	-DTOOLNAME="\"jarsigner\""
+jarsigner_LDFLAGS = -L$(libdir) $(LIBJVM)
+
+keytool_SOURCES = toolwrapper.c
+keytool_CFLAGS = -Wall \
+	-DDATA_DIR="\"$(datadir)\"" \
+	-DPACKAGE="\"$(PACKAGE)\"" \
+	-DTOOLNAME="\"keytool\""
+keytool_LDFLAGS = -L$(libdir) $(LIBJVM)
+
+else
 bin_SCRIPTS = appletviewer jarsigner keytool
-EXTRA_DIST = appletviewer.in appletviewer.c jarsigner.in keytool.in
+bin_PROGRAMS =
+endif
+EXTRA_DIST = toolwrapper.c appletviewer.in jarsigner.in keytool.in
 
 # All our example java source files
 TOOLS_JAVA_FILES = $(srcdir)/gnu/classpath/tools/*.java $(srcdir)/gnu/classpath/tools/*/*.java $(srcdir)/gnu/classpath/tools/*/*/*.java
@@ -96,3 +134,7 @@ $(TOOLS_ZIP): $(TOOLS_JAVA_FILES)
 # Zip file be gone! (and make sure the classes are gone too)
 clean-local:
 	rm -rf $(TOOLS_ZIP) classes
+
+# FIXME: remove this when GNU Classpath includes a bootstrap VM.
+installcheck-binSCRIPTS:
+	:

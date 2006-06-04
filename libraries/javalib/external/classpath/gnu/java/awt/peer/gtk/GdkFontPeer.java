@@ -64,10 +64,7 @@ public class GdkFontPeer extends ClasspathFontPeer
   
   static 
   {
-    if (Configuration.INIT_LOAD_LIBRARY)
-      {
-        System.loadLibrary("gtkpeer");
-      }
+    System.loadLibrary("gtkpeer");
 
     initStaticState ();
 
@@ -85,15 +82,17 @@ public class GdkFontPeer extends ClasspathFontPeer
 
   private native void initState ();
   private native void dispose ();
-  private native void setFont (String family, int style, int size, boolean useGraphics2D);
+  private native void setFont (String family, int style, int size);
 
   native void getFontMetrics(double [] metrics);
   native void getTextMetrics(String str, double [] metrics);
 
+  native void releasePeerGraphicsResource();
+
+
   protected void finalize ()
   {
-    if (GtkToolkit.useGraphics2D ())
-      GdkGraphics2D.releasePeerGraphicsResource(this);
+    releasePeerGraphicsResource();
     dispose ();
   }
 
@@ -143,16 +142,14 @@ public class GdkFontPeer extends ClasspathFontPeer
   {  
     super(name, style, size);    
     initState ();
-    setFont (this.familyName, this.style, (int)this.size, 
-             GtkToolkit.useGraphics2D());
+    setFont (this.familyName, this.style, (int)this.size);
   }
 
   public GdkFontPeer (String name, Map attributes)
   {
     super(name, attributes);
     initState ();
-    setFont (this.familyName, this.style, (int)this.size,
-             GtkToolkit.useGraphics2D());
+    setFont (this.familyName, this.style, (int)this.size);
   }
 
   /**

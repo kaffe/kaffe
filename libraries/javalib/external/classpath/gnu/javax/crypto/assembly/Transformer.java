@@ -47,7 +47,7 @@ import java.util.Map;
  * <p>A <code>Transformer</code> is an abstract representation of a two-way
  * <i>transformation</i> that can be chained together with other instances of
  * this type. Examples of such transformations in this library are:
- * {@link Cascade} cipher, {@link gnu.crypto.pad.IPad} algorithm, and a
+ * {@link Cascade} cipher, {@link gnu.javax.crypto.pad.IPad} algorithm, and a
  * ZLib-based deflater/inflater algorithm. A special implementation of a
  * <code>Transformer</code> to close a chain is also provided.</p>
  *

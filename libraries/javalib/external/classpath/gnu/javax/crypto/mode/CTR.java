@@ -40,10 +40,8 @@ package gnu.javax.crypto.mode;
 
 import gnu.java.security.Registry;
 import gnu.java.security.util.Sequence;
-
 import gnu.javax.crypto.cipher.IBlockCipher;
 
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Iterator;
 

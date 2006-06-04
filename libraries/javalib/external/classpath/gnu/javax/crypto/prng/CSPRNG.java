@@ -48,7 +48,6 @@ import gnu.java.security.prng.IRandom;
 import gnu.java.security.prng.LimitReachedException;
 import gnu.java.security.util.SimpleList;
 import gnu.java.security.util.Util;
-
 import gnu.javax.crypto.cipher.CipherFactory;
 import gnu.javax.crypto.cipher.IBlockCipher;
 
@@ -56,15 +55,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.PrintStream;
-
 import java.net.MalformedURLException;
 import java.net.URL;
-
 import java.security.AccessController;
 import java.security.InvalidKeyException;
 import java.security.PrivilegedAction;
-
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -114,7 +109,7 @@ public class CSPRNG extends BasePRNG
    * <li>A {@link String}, indicating the path to the file.</li>
    * </ol>
    *
-   * @see gnu.crypto.util.SimpleList
+   * @see gnu.java.security.util.SimpleList
    */
   public static final String FILE_SOURCES = "gnu.crypto.prng.pool.files";
 
@@ -332,7 +327,7 @@ public class CSPRNG extends BasePRNG
    * and its arguments.</p></dd>
    *
    * <dt>gnu.crypto.cspring.other</dt>
-   * <dd><p>These properties are other sources, passed as the {@link OTHER_SOURCES}
+   * <dd><p>These properties are other sources, passed as the {@link #OTHER_SOURCES}
    * parameter of the instance. The property value must be the full name
    * of a class that implements the {@link EntropySource} interface and has a
    * public no-argument constructor.</p></dd>
@@ -994,7 +989,7 @@ public class CSPRNG extends BasePRNG
     // Field.
     // -----------------------------------------------------------------------
 
-    private byte counter;
+    protected byte counter;
 
     // Constructor.
     // -----------------------------------------------------------------------

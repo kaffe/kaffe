@@ -45,6 +45,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBuffer;
 import java.util.Locale;
 
 public class GdkGraphicsEnvironment extends GraphicsEnvironment
@@ -69,7 +70,11 @@ public class GdkGraphicsEnvironment extends GraphicsEnvironment
 
   public Graphics2D createGraphics (BufferedImage image)
   {
-    return new GdkGraphics2D (image);
+    DataBuffer db = image.getRaster().getDataBuffer();
+    if(db instanceof CairoSurface)
+      return ((CairoSurface)db).getGraphics();
+
+    return new BufferedImageGraphics( image );
   }
   
   private native int nativeGetNumFontFamilies();
@@ -80,17 +85,17 @@ public class GdkGraphicsEnvironment extends GraphicsEnvironment
     throw new java.lang.UnsupportedOperationException ();
   }
 
-    public String[] getAvailableFontFamilyNames ()
-    {
-	String[] family_names;
-	int array_size;
-
-	array_size = nativeGetNumFontFamilies();
-	family_names = new String[array_size];
-
-	nativeGetFontFamilies(family_names);
-	return family_names;
-    }
+  public String[] getAvailableFontFamilyNames ()
+  {
+    String[] family_names;
+    int array_size;
+    
+    array_size = nativeGetNumFontFamilies();
+    family_names = new String[array_size];
+    
+    nativeGetFontFamilies(family_names);
+    return family_names;
+  }
 
   public String[] getAvailableFontFamilyNames (Locale l)
   {

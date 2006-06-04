@@ -1,5 +1,5 @@
 /* PKIXCertPathValidatorImpl.java -- PKIX certificate path validator.
-   Copyright (C) 2004, 2005  Free Software Foundation, Inc.
+   Copyright (C) 2004, 2005, 2006  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -435,7 +435,7 @@ public class PKIXCertPathValidatorImpl extends CertPathValidatorSpi
    * @param crl The CRL being checked.
    * @param path The path this CRL is being checked against.
    * @param now The value to use as 'now'.
-   * @param pubKeySubject The subject of the public key.
+   * @param pubKeyCert The certificate authenticating the public key.
    * @param pubKey The public key to check.
    * @return True if the CRL is acceptable.
    */

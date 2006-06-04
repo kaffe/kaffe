@@ -60,10 +60,13 @@ am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
 am__installdirs = "$(DESTDIR)$(nativeexeclibdir)"
 nativeexeclibLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(nativeexeclib_LTLIBRARIES)
+am__DEPENDENCIES_1 =
 libjavanet_la_DEPENDENCIES =  \
-	$(top_builddir)/native/jni/classpath/jcl.lo
+	$(top_builddir)/native/jni/classpath/jcl.lo \
+	$(am__DEPENDENCIES_1)
 am__libjavanet_la_SOURCES_DIST = javanet.c javanet.h \
 	java_net_VMInetAddress.c java_net_VMNetworkInterface.c \
+	java_net_VMURLConnection.c \
 	gnu_java_net_VMPlainDatagramSocketImpl.c \
 	gnu_java_net_VMPlainSocketImpl.c \
 	gnu_java_net_local_LocalSocketImpl.c local.c local.h
@@ -71,7 +74,7 @@ am__libjavanet_la_SOURCES_DIST = javanet.c javanet.h \
 @ENABLE_LOCAL_SOCKETS_TRUE@am__objects_1 = gnu_java_net_local_LocalSocketImpl.lo \
 @ENABLE_LOCAL_SOCKETS_TRUE@	local.lo
 am_libjavanet_la_OBJECTS = javanet.lo java_net_VMInetAddress.lo \
-	java_net_VMNetworkInterface.lo \
+	java_net_VMNetworkInterface.lo java_net_VMURLConnection.lo \
 	gnu_java_net_VMPlainDatagramSocketImpl.lo \
 	gnu_java_net_VMPlainSocketImpl.lo $(am__objects_1)
 libjavanet_la_OBJECTS = $(am_libjavanet_la_OBJECTS)
@@ -102,8 +105,6 @@ AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
 BUILD_CLASS_FILES_FALSE = @BUILD_CLASS_FILES_FALSE@
 BUILD_CLASS_FILES_TRUE = @BUILD_CLASS_FILES_TRUE@
-CAIRO_CFLAGS = @CAIRO_CFLAGS@
-CAIRO_LIBS = @CAIRO_LIBS@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -134,6 +135,8 @@ CREATE_PLUGIN_FALSE = @CREATE_PLUGIN_FALSE@
 CREATE_PLUGIN_TRUE = @CREATE_PLUGIN_TRUE@
 CREATE_QT_PEER_LIBRARIES_FALSE = @CREATE_QT_PEER_LIBRARIES_FALSE@
 CREATE_QT_PEER_LIBRARIES_TRUE = @CREATE_QT_PEER_LIBRARIES_TRUE@
+CREATE_WRAPPERS_FALSE = @CREATE_WRAPPERS_FALSE@
+CREATE_WRAPPERS_TRUE = @CREATE_WRAPPERS_TRUE@
 CREATE_XMLJ_LIBRARY_FALSE = @CREATE_XMLJ_LIBRARY_FALSE@
 CREATE_XMLJ_LIBRARY_TRUE = @CREATE_XMLJ_LIBRARY_TRUE@
 CXX = @CXX@
@@ -159,6 +162,8 @@ F77 = @F77@
 FASTJAR = @FASTJAR@
 FFLAGS = @FFLAGS@
 FIND = @FIND@
+FOUND_CACAO_FALSE = @FOUND_CACAO_FALSE@
+FOUND_CACAO_TRUE = @FOUND_CACAO_TRUE@
 FOUND_ECJ_FALSE = @FOUND_ECJ_FALSE@
 FOUND_ECJ_TRUE = @FOUND_ECJ_TRUE@
 FOUND_GCJX_FALSE = @FOUND_GCJX_FALSE@
@@ -176,9 +181,6 @@ GCJX = @GCJX@
 GJDOC = @GJDOC@
 GLIB_CFLAGS = @GLIB_CFLAGS@
 GLIB_LIBS = @GLIB_LIBS@
-GTK_CAIRO_ENABLED = @GTK_CAIRO_ENABLED@
-GTK_CAIRO_FALSE = @GTK_CAIRO_FALSE@
-GTK_CAIRO_TRUE = @GTK_CAIRO_TRUE@
 GTK_CFLAGS = @GTK_CFLAGS@
 GTK_LIBS = @GTK_LIBS@
 INIT_LOAD_LIBRARY = @INIT_LOAD_LIBRARY@
@@ -200,6 +202,7 @@ KJC = @KJC@
 LDFLAGS = @LDFLAGS@
 LIBDEBUG = @LIBDEBUG@
 LIBICONV = @LIBICONV@
+LIBMAGIC = @LIBMAGIC@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
@@ -254,6 +257,7 @@ XML_CFLAGS = @XML_CFLAGS@
 XML_LIBS = @XML_LIBS@
 XSLT_CFLAGS = @XSLT_CFLAGS@
 XSLT_LIBS = @XSLT_LIBS@
+XTEST_LIBS = @XTEST_LIBS@
 X_CFLAGS = @X_CFLAGS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_LIBS = @X_LIBS@
@@ -320,11 +324,12 @@ libjavanet_la_SOURCES = javanet.c \
 			javanet.h \
 			java_net_VMInetAddress.c \
 			java_net_VMNetworkInterface.c \
+			java_net_VMURLConnection.c \
 			gnu_java_net_VMPlainDatagramSocketImpl.c \
                         gnu_java_net_VMPlainSocketImpl.c \
 			$(local_sources)
 
-libjavanet_la_LIBADD = $(top_builddir)/native/jni/classpath/jcl.lo
+libjavanet_la_LIBADD = $(top_builddir)/native/jni/classpath/jcl.lo $(LIBMAGIC)
 AM_LDFLAGS = @CLASSPATH_MODULE@
 AM_CPPFLAGS = @CLASSPATH_INCLUDES@
 AM_CFLAGS = @WARNING_CFLAGS@ @STRICT_WARNING_CFLAGS@ @ERROR_CFLAGS@
@@ -402,6 +407,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnu_java_net_local_LocalSocketImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/java_net_VMInetAddress.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/java_net_VMNetworkInterface.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/java_net_VMURLConnection.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/javanet.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/local.Plo@am__quote@
 

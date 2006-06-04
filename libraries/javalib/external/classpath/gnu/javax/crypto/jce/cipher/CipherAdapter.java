@@ -118,9 +118,9 @@ class CipherAdapter extends CipherSpi
 
   /**
    * <p>Protected constructor to be called by subclasses. The cipher name
-   * argument should be the appropriate one listed in {@link gnu.crypto.Registry}.
+   * argument should be the appropriate one listed in {@link gnu.java.security.Registry}.
    * The basic cipher instance is created, along with an instance of the
-   * {@link gnu.crypto.mode.ECB} mode and no padding.</p>
+   * {@link gnu.javax.crypto.mode.ECB} mode and no padding.</p>
    *
    * @param cipherName The cipher to instantiate.
    * @param blockLen The block length to use.

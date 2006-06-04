@@ -37,7 +37,7 @@ exception statement from your version. */
 
 package gnu.java.awt.print;
 
-import gnu.java.awt.peer.gtk.GtkImage;
+import gnu.java.awt.peer.gtk.CairoSurface;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -185,7 +185,7 @@ public class JavaPrinterGraphics extends Graphics implements PrinterGraphics
     // FIXME: This should at least be BufferedImage. 
     // Fix once we have a working B.I.
     // Graphics2D should also be supported of course.
-    image = new GtkImage(xSize, ySize);
+    image = CairoSurface.getBufferedImage(xSize, ySize);
 
     g = image.getGraphics();
     setColor(Color.white);

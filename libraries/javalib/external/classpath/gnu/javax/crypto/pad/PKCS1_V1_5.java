@@ -92,7 +92,7 @@ public class PKCS1_V1_5 extends BasePad
    * <p>Trivial package-private constructor for use by the <i>Factory</i> class.
    * </p>
    *
-   * @see gnu.crypto.pad.PadFactory
+   * @see PadFactory
    */
   PKCS1_V1_5()
   {

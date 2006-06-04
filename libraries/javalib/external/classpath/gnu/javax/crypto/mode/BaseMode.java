@@ -146,7 +146,7 @@ public abstract class BaseMode implements IMode
    * of the method(s) available in the factory class.</p>
    *
    * @return the default value, in bytes, of the mode's block size.
-   * @see gnu.crypto.mode.ModeFactory
+   * @see ModeFactory
    */
   public int defaultBlockSize()
   {

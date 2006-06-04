@@ -156,7 +156,10 @@ public class Demo
 
     examples.add(new JMenuItem(new PopupAction("NavigationFilter",
                                                NavigationFilterDemo.createDemoFactory())));
-    
+    examples.add(new JMenuItem(new PopupAction("Paint Performance",
+                                               FillRect.createDemoFactory())));
+
+
     final JMenuItem vmMenu;
     
     help.add(new JMenuItem("just play with the widgets"));
@@ -543,7 +546,10 @@ public class Demo
     panel.add(new JButton(new PopupAction("Tree",
                                           TreeDemo.createDemoFactory())));
     panel.add(new JButton(new PopupAction("Theme Editor",
-                                       MetalThemeEditor.createDemoFactory())));
+                                      MetalThemeEditor.createDemoFactory())));
+    panel.add(new JButton(new PopupAction("Paint Performance",
+                                          FillRect.createDemoFactory())));
+
     JButton exitDisposer = mkDisposerButton(frame);
     panel.add(exitDisposer);
     

@@ -39,7 +39,6 @@ exception statement from your version.  */
 package gnu.javax.crypto.jce.mac;
 
 import gnu.java.security.Registry;
-import javax.crypto.MacSpi;
 
 public abstract class OMacImpl extends MacAdapter
 {

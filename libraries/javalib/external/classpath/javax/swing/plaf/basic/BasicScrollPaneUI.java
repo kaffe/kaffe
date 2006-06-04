@@ -545,7 +545,7 @@ public class BasicScrollPaneUI extends ScrollPaneUI
   public void uninstallUI(final JComponent c) 
   {
     super.uninstallUI(c);
-    this.uninstallDefaults((JScrollPane)c);
+    this.uninstallDefaults((JScrollPane) c);
     uninstallListeners((JScrollPane) c);
     installKeyboardActions((JScrollPane) c);
   }
@@ -590,7 +590,7 @@ public class BasicScrollPaneUI extends ScrollPaneUI
 
   public Dimension getMinimumSize(JComponent c) 
   {
-    JScrollPane p = (JScrollPane ) c;
+    JScrollPane p = (JScrollPane) c;
     ScrollPaneLayout sl = (ScrollPaneLayout) p.getLayout();
     return sl.minimumLayoutSize(c);
   }

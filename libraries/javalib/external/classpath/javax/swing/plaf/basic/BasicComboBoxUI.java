@@ -1,5 +1,5 @@
 /* BasicComboBoxUI.java --
-   Copyright (C) 2004, 2005  Free Software Foundation, Inc.
+   Copyright (C) 2004, 2005, 2006,  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -37,6 +37,8 @@ exception statement from your version. */
 
 
 package javax.swing.plaf.basic;
+
+import gnu.classpath.NotImplementedException;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -546,7 +548,7 @@ public class BasicComboBoxUI extends ComboBoxUI
   }
 
   /**
-   * Unconfigures the editor for this combo nox.  This method is not implemented.
+   * Unconfigures the editor for this combo box. 
    */
   protected void unconfigureEditor()
   {
@@ -711,12 +713,14 @@ public class BasicComboBoxUI extends ComboBoxUI
   }
 
   public int getAccessibleChildrenCount(JComponent c)
+    throws NotImplementedException
   {
     // FIXME: Need to implement
     return 0;
   }
 
   public Accessible getAccessibleChild(JComponent c, int i)
+    throws NotImplementedException
   {
     // FIXME: Need to implement
     return null;
@@ -731,7 +735,9 @@ public class BasicComboBoxUI extends ComboBoxUI
    * @return true if the specified key is a navigation key and false otherwis
    */
   protected boolean isNavigationKey(int keyCode)
+    throws NotImplementedException
   {
+    // FIXME: Need to implement
     return false;
   }
 
@@ -780,9 +786,7 @@ public class BasicComboBoxUI extends ComboBoxUI
     Insets i = comboBox.getInsets();
     int arrowSize = h - (i.top + i.bottom);
     if (arrowButton != null)
-      {
-        arrowSize = arrowButton.getWidth();
-      }
+      arrowSize = arrowButton.getWidth();
     return new Rectangle(i.left, i.top, w - (i.left + i.right + arrowSize),
                          h - (i.top + i.left));
   }
@@ -822,14 +826,12 @@ public class BasicComboBoxUI extends ComboBoxUI
         if (hasFocus && ! isPopupVisible(comboBox))
           {
             comp = renderer.getListCellRendererComponent(listBox,
-                                                 comboBox.getSelectedItem(),
-                                                         -1, true, false);
+                comboBox.getSelectedItem(), -1, true, false);
           }
         else
           {
             comp = renderer.getListCellRendererComponent(listBox,
-                                                 comboBox.getSelectedItem(),
-                                                         -1, false, false);
+                comboBox.getSelectedItem(), -1, false, false);
             Color bg = UIManager.getColor("ComboBox.disabledForeground");
             comp.setBackground(bg);
           }
@@ -871,13 +873,9 @@ public class BasicComboBoxUI extends ComboBoxUI
   {
     Color saved = g.getColor();
     if (comboBox.isEnabled())
-      {
-        g.setColor(UIManager.getColor("UIManager.background"));
-      }
+      g.setColor(UIManager.getColor("UIManager.background"));
     else
-      {
-        g.setColor(UIManager.getColor("UIManager.disabledBackground"));
-      }
+      g.setColor(UIManager.getColor("UIManager.disabledBackground"));
     g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
     g.setColor(saved);
   }
@@ -897,9 +895,7 @@ public class BasicComboBoxUI extends ComboBoxUI
   protected Dimension getDefaultSize()
   {
     Component comp = DEFAULT_RENDERER.getListCellRendererComponent(listBox,
-                                                                   " ", -1,
-                                                                   false,
-                                                                   false);
+        " ", -1, false, false);
     currentValuePane.add(comp);
     comp.setFont(comboBox.getFont());
     Dimension d = comp.getPreferredSize();
@@ -976,9 +972,8 @@ public class BasicComboBoxUI extends ComboBoxUI
   protected void installKeyboardActions()
   {
     SwingUtilities.replaceUIInputMap(comboBox,
-                                     JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT,
-                                     (InputMap) UIManager.get("ComboBox.ancestorInputMap"));
-    
+        JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT,
+        (InputMap) UIManager.get("ComboBox.ancestorInputMap"));
     // Install any action maps here.
   }
   
@@ -989,7 +984,7 @@ public class BasicComboBoxUI extends ComboBoxUI
   protected void uninstallKeyboardActions()
   {
     SwingUtilities.replaceUIInputMap(comboBox,
-                                     JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, null);
+        JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, null);
     // Uninstall any action maps here.
   }
 
@@ -1149,9 +1144,7 @@ public class BasicComboBoxUI extends ComboBoxUI
       ComboBoxModel model = comboBox.getModel();
       Object v = model.getSelectedItem();
       if (editor != null)
-        {
-          comboBox.configureEditor(comboBox.getEditor(), v);
-        }
+        comboBox.configureEditor(comboBox.getEditor(), v);
       comboBox.repaint();
     }
   }
@@ -1170,9 +1163,10 @@ public class BasicComboBoxUI extends ComboBoxUI
      * Invoked whenever key is pressed while JComboBox is in focus.
      */
     public void keyPressed(KeyEvent e)
+      throws NotImplementedException
     {
-      // FIXME: This method calls JComboBox.selectWithKeyChar if the key that was 
-      // pressed is not a navigation key. 
+      // FIXME: This method calls JComboBox.selectWithKeyChar if the key that 
+      // was pressed is not a navigation key. 
     }
   }
 
@@ -1202,10 +1196,8 @@ public class BasicComboBoxUI extends ComboBoxUI
           comboBox.revalidate();
         }
       if (editor != null)
-        {
-          comboBox.configureEditor(comboBox.getEditor(),
-                                   comboBox.getSelectedItem());
-        }
+        comboBox.configureEditor(comboBox.getEditor(),
+            comboBox.getSelectedItem());
       comboBox.repaint();
     }
 
@@ -1219,9 +1211,7 @@ public class BasicComboBoxUI extends ComboBoxUI
       int start = e.getIndex0();
       int end = e.getIndex1();
       if (start == 0 && comboBox.getItemCount() - (end - start + 1) == 0)
-        {
-          contentsChanged(e);
-        }
+        contentsChanged(e);
       else if (start != -1  || end != -1)
         {
           ListCellRenderer renderer = comboBox.getRenderer();
@@ -1231,10 +1221,8 @@ public class BasicComboBoxUI extends ComboBoxUI
           // TODO: Optimize using prototype here.
           for (int i = start; i <= end; ++i)
             {
-              Component comp =
-                renderer.getListCellRendererComponent(listBox,
-                                                      model.getElementAt(i),
-                                                      -1, false, false);
+              Component comp = renderer.getListCellRendererComponent(listBox,
+                  model.getElementAt(i), -1, false, false);
               currentValuePane.add(comp);
               comp.setFont(comboBox.getFont());
               Dimension dim = comp.getPreferredSize();
@@ -1245,13 +1233,9 @@ public class BasicComboBoxUI extends ComboBoxUI
           if (displaySize.width < w || displaySize.height < h)
             {
               if (displaySize.width < w)
-                {
-                  displaySize.width = w;
-                }
+                displaySize.width = w;
               if (displaySize.height < h)
-                {
-                  displaySize.height = h;
-                }
+                displaySize.height = h;
               comboBox.revalidate();
               if (editor != null)
                 {
@@ -1301,37 +1285,37 @@ public class BasicComboBoxUI extends ComboBoxUI
 
       if (e.getPropertyName().equals("enabled"))
         {
-	  arrowButton.setEnabled(comboBox.isEnabled());
+          arrowButton.setEnabled(comboBox.isEnabled());
 
-	  if (comboBox.isEditable())
-	    comboBox.getEditor().getEditorComponent().setEnabled(comboBox
-	                                                         .isEnabled());
+          if (comboBox.isEditable())
+            comboBox.getEditor().getEditorComponent().setEnabled(
+                comboBox.isEnabled());
         }
       else if (e.getPropertyName().equals("editable"))
         {
-	  if (comboBox.isEditable())
-	    {
-	      configureEditor();
-	      addEditor();
-	    }
-	  else
-	    {
-	      unconfigureEditor();
-	      removeEditor();
-	    }
+          if (comboBox.isEditable())
+            {
+              configureEditor();
+              addEditor();
+            }
+          else
+            {
+              unconfigureEditor();
+              removeEditor();
+            }
 
-	  comboBox.revalidate();
-	  comboBox.repaint();
+          comboBox.revalidate();
+          comboBox.repaint();
         }
       else if (e.getPropertyName().equals("dataModel"))
         {
-	  // remove ListDataListener from old model and add it to new model
-	  ComboBoxModel oldModel = (ComboBoxModel) e.getOldValue();
-	  if (oldModel != null)
-	    oldModel.removeListDataListener(listDataListener);
+          // remove ListDataListener from old model and add it to new model
+          ComboBoxModel oldModel = (ComboBoxModel) e.getOldValue();
+          if (oldModel != null)
+            oldModel.removeListDataListener(listDataListener);
 
-	  if ((ComboBoxModel) e.getNewValue() != null)
-	    comboBox.getModel().addListDataListener(listDataListener);
+          if ((ComboBoxModel) e.getNewValue() != null)
+            comboBox.getModel().addListDataListener(listDataListener);
         }
       else if (e.getPropertyName().equals("font"))
         {
@@ -1343,7 +1327,7 @@ public class BasicComboBoxUI extends ComboBoxUI
           comboBox.repaint();
         }
 
-      // FIXME: Need to handle changes in other bound properties.	
+      // FIXME: Need to handle changes in other bound properties.       
     }
   }
 

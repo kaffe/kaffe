@@ -38,10 +38,9 @@ exception statement from your version.  */
 
 package gnu.javax.crypto.jce.prng;
 
-import gnu.java.security.Registry;
-import gnu.javax.crypto.prng.CSPRNG;
 import gnu.java.security.prng.IRandom;
 import gnu.java.security.prng.LimitReachedException;
+import gnu.javax.crypto.prng.CSPRNG;
 
 import java.net.MalformedURLException;
 import java.security.SecureRandomSpi;

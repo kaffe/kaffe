@@ -40,7 +40,6 @@ package gnu.javax.crypto.sasl;
 
 import gnu.java.security.util.Util;
 
-import java.math.BigInteger;
 import java.security.MessageDigest;
 
 /**

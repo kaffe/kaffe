@@ -37,13 +37,6 @@ exception statement from your version.  */
 
 package gnu.javax.crypto.jce.key;
 
-import java.security.InvalidKeyException;
-import java.security.spec.InvalidKeySpecException;
-
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactorySpi;
-import javax.crypto.spec.SecretKeySpec;
-
 public class SquareSecretKeyFactoryImpl extends SecretKeyFactoryImpl
 {
   public SquareSecretKeyFactoryImpl()

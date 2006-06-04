@@ -33,7 +33,8 @@ libjavanet_la_SOURCES = \
 	InetAddressImpl.c \
 	NetworkInterface.c \
 	PlainDatagramSocketImpl.c \
-	PlainSocketImpl.c
+	PlainSocketImpl.c \
+	java_net_VMURLConnection.c
 
 CLEANFILES = so_locations
 

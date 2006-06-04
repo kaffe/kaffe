@@ -44,7 +44,7 @@ package gnu.javax.crypto.pad;
  * <p>Padding algorithms serve to <i>pad</i> and <i>unpad</i> byte arrays usually
  * as the last step in an <i>encryption</i> or respectively a <i>decryption</i>
  * operation. Their input buffers are usually those processed by instances of
- * {@link gnu.crypto.mode.IMode} and/or {@link gnu.crypto.cipher.IBlockCipher}.</p>
+ * {@link gnu.javax.crypto.mode.IMode} and/or {@link gnu.javax.crypto.cipher.IBlockCipher}.</p>
  */
 public interface IPad
 {

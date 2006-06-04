@@ -52,6 +52,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.geom.AffineTransform;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -725,40 +726,35 @@ public class BasicProgressBarUI extends ProgressBarUI
   protected void paintString(Graphics g, int x, int y, int width, int height,
                              int amountFull, Insets b)
   {
-    // FIXME: We do not support vertical text painting because Java2D is needed
-    // for this.
-    if (progressBar.getOrientation() == JProgressBar.VERTICAL)
-      return;
-
-    // We want to place in the exact center of the bar.
+    String str = progressBar.getString();
+    int full = getAmountFull(b, width, height);
     Point placement = getStringPlacement(g, progressBar.getString(),
-                                         x + b.left, y + b.top,
+                                         x + b.left, y + b.top, 
                                          width - b.left - b.right,
                                          height - b.top - b.bottom);
-
     Color savedColor = g.getColor();
     Shape savedClip = g.getClip();
-    FontMetrics fm = g.getFontMetrics(progressBar.getFont());
-    int full = getAmountFull(b, width, height);
-    String str = progressBar.getString();
-
-    // We draw this string two times with different clips so that the text
-    // over the filled area is painted with selectionForeground and over
-    // the clear area with selectionBackground.
+    
+    if (progressBar.getOrientation() == JProgressBar.VERTICAL)
+      {
+        AffineTransform rotate = AffineTransform.getRotateInstance(Math.PI / 2);
+        g.setFont(progressBar.getFont().deriveFont(rotate));
+      }
+    
     g.setColor(getSelectionForeground());
     g.setClip(0, 0, full + b.left, height);
-    g.drawString(str, placement.x, placement.y + fm.getAscent());
+    g.drawString(str, placement.x, placement.y);
     g.setColor(getSelectionBackground());
     g.setClip(full + b.left, 0, width - full, height);
-    g.drawString(str, placement.x, placement.y + fm.getAscent());
+    g.drawString(str, placement.x, placement.y);
     g.setClip(savedClip);
     g.setColor(savedColor);
   }
 
   /**
-   * This method sets the current animation index. If the index
-   * is greater than the number of frames, it resets to 0.
-   *
+   * This method sets the current animation index. If the index is greater than
+   * the number of frames, it resets to 0.
+   * 
    * @param newValue The new animation index.
    */
   protected void setAnimationIndex(int newValue)

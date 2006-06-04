@@ -45,7 +45,7 @@ import java.security.spec.AlgorithmParameterSpec;
 /**
  * This class represents the algorithm parameters for the Truncated
  * Multi-Modular Hash function for use with JCE-derived instances of
- * {@link gnu.crypto.mac.TMMH16}.
+ * {@link gnu.javax.crypto.mac.TMMH16}.
  *
  * <p>This class is little more than a container for the key stream, tag
  * length, and prefix parameters for the TMMH algorithm.

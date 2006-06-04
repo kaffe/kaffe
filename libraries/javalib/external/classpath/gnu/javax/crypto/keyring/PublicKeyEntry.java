@@ -38,21 +38,18 @@ exception statement from your version.  */
 
 package gnu.javax.crypto.keyring;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-
-import java.security.PublicKey;
-import java.security.KeyFactory;
-import java.security.spec.X509EncodedKeySpec;
-
-import java.util.Date;
-
 import gnu.java.security.key.IKeyPairCodec;
 import gnu.java.security.key.KeyPairCodecFactory;
 import gnu.java.security.key.dss.DSSPublicKey;
 import gnu.java.security.key.rsa.GnuRSAPublicKey;
 import gnu.javax.crypto.key.dh.GnuDHPublicKey;
+
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.security.KeyFactory;
+import java.security.PublicKey;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Date;
 
 public final class PublicKeyEntry extends PrimitiveEntry
 {

@@ -140,7 +140,7 @@ public interface SRPRegistry
 
   /**
    * Name of the SRP password database property --a reference to
-   * {@link gnu.crypto.sasl.srp.PasswordFile} object.
+   * {@link PasswordFile} object.
    */
   String PASSWORD_DB = "gnu.crypto.sasl.srp.password.db";
 

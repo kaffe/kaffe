@@ -165,23 +165,6 @@ dnl GTK native peer error checking
 dnl -----------------------------------------------------------
 AC_ARG_ENABLE([gtk-peers],,AC_MSG_ERROR([No --enable-gtk-peers (or --disable-gtk-peers) option; you want --enable-gtk-peer]))
 
-dnl ------------------------------------------------------------
-dnl determine whether to enable the cairo GTK Graphics2D backend
-dnl ------------------------------------------------------------
-AC_ARG_ENABLE([gtk-cairo],
-              [AS_HELP_STRING(--enable-gtk-cairo,build the cairo Graphics2D implementation on GTK [default=no])],
-              [case "${enableval}" in
-                yes) GTK_CAIRO_ENABLED=true ;;
-                no) GTK_CAIRO_ENABLED=false ;;
-                *) GTK_CAIRO_ENABLED=true ;;
-              esac],
-              [GTK_CAIRO_ENABLED=false])
-AC_SUBST(GTK_CAIRO_ENABLED)
-if test "x${GTK_CAIRO_ENABLED}" = xtrue; then
-  AC_DEFINE(GTK_CAIRO, 1, [defined if cairo support was built in])
-fi
-AM_CONDITIONAL(GTK_CAIRO, test "x${GTK_CAIRO_ENABLED}" = xtrue)
-
 dnl -----------------------------------------------------------
 dnl Qt native peer (disabled by default)
 dnl -----------------------------------------------------------
@@ -249,6 +232,7 @@ AC_ARG_WITH([vm],
 	    ])
 
 AC_SUBST(VM_BINARY)
+AM_CONDITIONAL(FOUND_CACAO, test "x`basename $VM_BINARY`" = xcacao)
 
 dnl -----------------------------------------------------------
 dnl Regenerate headers at build time (disabled by default)
@@ -262,6 +246,20 @@ AC_ARG_ENABLE([regen-headers],
               esac],
               [REGENERATE_JNI_HEADERS=no])
 AM_CONDITIONAL(CREATE_JNI_HEADERS, test "x${REGENERATE_JNI_HEADERS}" = xyes)
+
+dnl -----------------------------------------------------------
+dnl Enable tool wrapper binaries (disabled by default)
+dnl -----------------------------------------------------------
+AC_ARG_ENABLE([tool-wrappers],
+              [AS_HELP_STRING(--enable-tool-wrappers,create tool wrapper binaries [default=no])],
+              [case x"${enableval}" in
+                xyes) COMPILE_WRAPPERS=yes ;;
+                xno) COMPILE_WRAPPERS=no ;;
+		x) COMPILE_WRAPPERS=yes ;;
+                *) COMPILE_WRAPPERS=yes ;;
+              esac],
+              [COMPILE_WRAPPERS=no])
+AM_CONDITIONAL(CREATE_WRAPPERS, test "x${COMPILE_WRAPPERS}" = xyes)
 
 AC_PROG_LN_S
 AC_PROG_INSTALL
@@ -306,7 +304,8 @@ if test "x${COMPILE_JNI}" = xyes; then
 		    sys/select.h \
 		    crt_externs.h \
                     fcntl.h \
-		    sys/mman.h])
+		    sys/mman.h \
+		    magic.h])
 
   AC_EGREP_HEADER(uint32_t, stdint.h, AC_DEFINE(HAVE_INT32_DEFINED, 1, [Define to 1 if you have uint32_t]))
   AC_EGREP_HEADER(uint32_t, inttypes.h, AC_DEFINE(HAVE_INT32_DEFINED, 1, [Define to 1 if you have uint32_t]))
@@ -323,6 +322,10 @@ if test "x${COMPILE_JNI}" = xyes; then
                   fcntl \
 		  mmap munmap mincore msync madvise getpagesize sysconf \
 		  ])
+
+  LIBMAGIC=
+  AC_CHECK_LIB(magic, magic_open, LIBMAGIC=-lmagic)
+  AC_SUBST(LIBMAGIC)
 
   AC_HEADER_TIME
   AC_STRUCT_TM
@@ -397,26 +400,28 @@ if test "x${COMPILE_JNI}" = xyes; then
         AC_MSG_ERROR([GTK+ peers requested but no X library available])
     fi
     dnl We explicitly want the XTest Extension for Robot support.
-    AC_CHECK_LIB([Xtst], [XTestQueryExtension], [true],
-       	  [AC_MSG_ERROR([libXtst NOT found, required for GdkRobot])],
-       	  [${X_LIBS}])
-    PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.4 gthread-2.0 >= 2.2 gdk-pixbuf-2.0)
+    AC_CHECK_LIB([Xtst], [XTestQueryExtension],
+    		 [XTEST_LIBS="$XTEST_LIBS -lX11 -lXtst"],
+		 [AC_MSG_ERROR([libXtst NOT found, required for GdkRobot])],
+		 [${X_LIBS}])
 
-    if test "x${enable_gtk_cairo}" = xyes; then
-      PKG_CHECK_MODULES(CAIRO, cairo >= 0.5.0)
-    fi
-
+    PKG_CHECK_MODULES(GTK, gtk+-2.0 >= 2.8 gthread-2.0 >= 2.2 gdk-pixbuf-2.0)
     PKG_CHECK_MODULES(FREETYPE2, freetype2)
     PKG_CHECK_MODULES(PANGOFT2, pangoft2)
+    dnl Check if we can link against the XRender library and set
+    dnl HAVE_XRENDER accordingly.
+    AC_CHECK_LIB([Xrender], [XRenderQueryExtension],
+		 [AC_DEFINE(HAVE_XRENDER, 1, [Define to 1 if you have libXrender.])[X_EXTRA_LIBS="$X_EXTRA_LIBS -lXrender"]],
+		 [true],
+		 [${X_LIBS}])
 
     AC_SUBST(GTK_CFLAGS)
     AC_SUBST(GTK_LIBS)
-    AC_SUBST(CAIRO_LIBS)
-    AC_SUBST(CAIRO_CFLAGS)
     AC_SUBST(FREETYPE2_LIBS)
     AC_SUBST(FREETYPE2_CFLAGS)
     AC_SUBST(PANGOFT2_LIBS)
     AC_SUBST(PANGOFT2_CFLAGS)
+    AC_SUBST(XTEST_LIBS)
   fi
 
   dnl Check for AWT related Qt4
@@ -470,7 +475,13 @@ if test "x${COMPILE_JNI}" = xyes; then
 
   dnl Check for plugin support headers and libraries.
   if test "x${COMPILE_PLUGIN}" = xyes; then
-    PKG_CHECK_MODULES(MOZILLA, mozilla-plugin)
+    PKG_CHECK_MODULES(MOZILLA, mozilla-plugin, [MOZILLA_FOUND=yes], [MOZILLA_FOUND=no])
+    if test "x${MOZILLA_FOUND}" = xno; then
+      PKG_CHECK_MODULES(MOZILLA, firefox-plugin, [MOZILLA_FOUND=yes], [MOZILLA_FOUND=no])
+    fi
+    if test "x${MOZILLA_FOUND}" = xno; then
+      PKG_CHECK_MODULES(MOZILLA, xulrunner-plugin, [MOZILLA_FOUND=yes], [MOZILLA_FOUND=no])
+    fi
     PKG_CHECK_MODULES(GLIB, glib-2.0)
 
     AC_SUBST(MOZILLA_CFLAGS)
@@ -714,15 +725,20 @@ scripts/classpath.spec
 lib/Makefile
 lib/gen-classlist.sh
 lib/copy-vmresources.sh
-tools/appletviewer
 tools/Makefile
-tools/jarsigner
-tools/keytool
 examples/Makefile
 examples/Makefile.jawt])
-AC_CONFIG_COMMANDS([gen-classlist],[chmod 755 lib/gen-classlist.sh])
-AC_CONFIG_COMMANDS([copy-vmresources],[chmod 755 lib/copy-vmresources.sh])
+
+if test "x${COMPILE_WRAPPERS}" = xno
+then
+AC_CONFIG_FILES([tools/appletviewer
+tools/jarsigner
+tools/keytool])
 AC_CONFIG_COMMANDS([appletviewer],[chmod 755 tools/appletviewer])
 AC_CONFIG_COMMANDS([jarsigner],[chmod 755 tools/jarsigner])
 AC_CONFIG_COMMANDS([keytool],[chmod 755 tools/keytool])
+fi
+
+AC_CONFIG_COMMANDS([gen-classlist],[chmod 755 lib/gen-classlist.sh])
+AC_CONFIG_COMMANDS([copy-vmresources],[chmod 755 lib/copy-vmresources.sh])
 AC_OUTPUT

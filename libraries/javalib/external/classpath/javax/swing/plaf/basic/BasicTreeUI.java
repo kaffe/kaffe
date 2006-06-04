@@ -2591,42 +2591,31 @@ public class BasicTreeUI
   }
 
   /**
-   * ActionListener that invokes cancelEditing when action performed.
+   * The action to cancel editing on this tree.
    */
   public class TreeCancelEditingAction
       extends AbstractAction
   {
-
     /**
-     * Constructor
+     * Creates the new tree cancel editing action.
+     * 
+     * @param name the name of the action (used in toString).
      */
     public TreeCancelEditingAction(String name)
-    throws NotImplementedException
     {
-      // TODO: Implement this properly.
+      super(name);
     }
 
     /**
-     * Invoked when an action occurs.
+     * Invoked when an action occurs, cancels the cell editing (if the
+     * tree cell is being edited). 
      * 
      * @param e event that occured
      */
     public void actionPerformed(ActionEvent e)
-    throws NotImplementedException
     {
-      // TODO: Implement this properly.
-    }
-
-    /**
-     * Returns true if the action is enabled.
-     * 
-     * @return true if the action is enabled, false otherwise
-     */
-    public boolean isEnabled()
-    throws NotImplementedException
-    {
-      // TODO: Implement this properly.
-      return false;
+      if (isEnabled() && tree.isEditing())
+        tree.cancelEditing();
     }
   }
 

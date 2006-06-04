@@ -43,10 +43,8 @@ import gnu.java.security.util.Util;
 import gnu.javax.crypto.cipher.CipherFactory;
 import gnu.javax.crypto.cipher.IBlockCipher;
 import gnu.javax.crypto.mode.IMode;
-import gnu.javax.crypto.mode.ModeFactory;
 
 import java.security.InvalidKeyException;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;

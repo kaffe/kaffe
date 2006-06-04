@@ -38,8 +38,6 @@ exception statement from your version. */
 
 package javax.swing;
 
-import gnu.classpath.NotImplementedException;
-
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Point;
@@ -53,6 +51,7 @@ import javax.accessibility.Accessible;
 import javax.accessibility.AccessibleContext;
 import javax.accessibility.AccessibleRole;
 import javax.accessibility.AccessibleSelection;
+import javax.accessibility.AccessibleState;
 import javax.accessibility.AccessibleStateSet;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -97,14 +96,17 @@ public class JTabbedPane extends JComponent implements Serializable,
 
     /**
      * Receives notification when the selection state of the
-     * <code>JTabbedPane</code> changes.
+     * <code>JTabbedPane</code> changes and fires appropriate property change
+     * events to interested listeners.
      *
      * @param e the change event describing the change
      */
     public void stateChanged(ChangeEvent e)
-      throws NotImplementedException
     {
-      // FIXME: Implement this properly.
+      // I couldn't figure out what else should be done here.
+      Object source = e.getSource();
+      firePropertyChange(AccessibleContext.ACCESSIBLE_SELECTION_PROPERTY,
+                         null, source);
     }
 
     /**
@@ -623,18 +625,31 @@ public class JTabbedPane extends JComponent implements Serializable,
       return AccessibleRole.PAGE_TAB;
     }
 
+    /**
+     * Returns the accessible state set of this object.
+     *
+     * @return the accessible state set of this object
+     */
     public AccessibleStateSet getAccessibleStateSet()
-      throws NotImplementedException
     {
-      // FIXME: Implement this properly.
-      return null;
+      AccessibleContext parentCtx = JTabbedPane.this.getAccessibleContext(); 
+      AccessibleStateSet state = parentCtx.getAccessibleStateSet();
+      state.add(AccessibleState.SELECTABLE);
+      if (component == getSelectedComponent())
+        state.add(AccessibleState.SELECTED);
+      return state;
     }
 
+    /**
+     * Returns the index of this tab inside its parent.
+     *
+     * @return the index of this tab inside its parent
+     */
     public int getAccessibleIndexInParent()
-      throws NotImplementedException
     {
-      // FIXME: Implement this properly.
-      return 0;
+      // TODO: Not sure if the title is unambiguous, but I can't figure
+      // another way of doing this.
+      return indexOfTab(title);
     }
 
     /**
@@ -1671,7 +1686,12 @@ public class JTabbedPane extends JComponent implements Serializable,
   public AccessibleContext getAccessibleContext()
   {
     if (accessibleContext == null)
-      accessibleContext = new AccessibleJTabbedPane();
+      {
+        AccessibleJTabbedPane ctx = new AccessibleJTabbedPane();
+        addChangeListener(ctx);
+        accessibleContext = ctx;
+      }
+
     return accessibleContext;
   }
 }
