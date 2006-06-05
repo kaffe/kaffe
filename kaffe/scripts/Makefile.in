@@ -19,6 +19,9 @@
 # Copyright (c) 1996, 1997, 1998, 1999
 #	Transvirtual Technologies, Inc.  All rights reserved.
 #
+# Copyright (c) 2006
+#       Kaffe.org contributors. See ChangeLog for details.
+#
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
@@ -46,12 +49,11 @@ build_triplet = @build@
 host_triplet = @host@
 subdir = kaffe/scripts
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(srcdir)/appletviewer.in $(srcdir)/install-jar.in \
-	$(srcdir)/jar.in $(srcdir)/javadoc.in $(srcdir)/javah.in \
-	$(srcdir)/javap.in $(srcdir)/jdb.in $(srcdir)/kaffe.in \
-	$(srcdir)/kaffexprof.in $(srcdir)/native2ascii.in \
-	$(srcdir)/rmic.in $(srcdir)/rmiregistry.in \
-	$(srcdir)/serialver.in
+	$(srcdir)/install-jar.in $(srcdir)/jar.in $(srcdir)/javadoc.in \
+	$(srcdir)/javah.in $(srcdir)/javap.in $(srcdir)/jdb.in \
+	$(srcdir)/kaffe.in $(srcdir)/kaffexprof.in \
+	$(srcdir)/native2ascii.in $(srcdir)/rmic.in \
+	$(srcdir)/rmiregistry.in $(srcdir)/serialver.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/acx_pthread.m4 $(top_srcdir)/m4/alsa.m4 \
@@ -78,7 +80,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 mkinstalldirs = $(SHELL) $(top_srcdir)/scripts/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h
 CONFIG_CLEAN_FILES = install-jar kaffe kaffexprof jar javah javap jdb \
-	javadoc appletviewer rmic rmiregistry serialver native2ascii
+	javadoc rmic rmiregistry serialver native2ascii
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(jrebindir)"
 binSCRIPT_INSTALL = $(INSTALL_SCRIPT)
 jrebinSCRIPT_INSTALL = $(INSTALL_SCRIPT)
@@ -376,9 +378,7 @@ SCRIPTFILES_SUN = \
 
 @SUN_COMPAT_TRUE@SUBDIRS = compat
 @COND_GJDOC_TRUE@KAFFE_JAVADOC = javadoc
-@COND_NATIVE_AWT_TRUE@KAFFE_APPLETVIEWER = appletviewer
 SCRIPTFILES_COMPAT = \
-	$(KAFFE_APPLETVIEWER) \
 	$(KAFFE_JAVADOC) 
 
 @ENABLE_XPROF_FALSE@SCRIPTFILES_XPROF = 
@@ -441,8 +441,6 @@ javap: $(top_builddir)/config.status $(srcdir)/javap.in
 jdb: $(top_builddir)/config.status $(srcdir)/jdb.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 javadoc: $(top_builddir)/config.status $(srcdir)/javadoc.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-appletviewer: $(top_builddir)/config.status $(srcdir)/appletviewer.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 rmic: $(top_builddir)/config.status $(srcdir)/rmic.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@

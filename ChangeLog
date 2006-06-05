@@ -1,3 +1,14 @@
+2006-06-05  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/scripts/appletviewer: Removed. Replaced by 
+	GNU Classpath's version.
+
+	* configure.ac (AC_CONFIG_FILES) Removed 
+	kaffe/scripts/appletviewer.
+
+	* kaffe/scripts/Makefile.am (COND_NATIVE_AWT): Removed,
+	since appletviewer is now coming from GNU Classpath.
+
 2006-06-04  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/clib/net/java_net_VMURLConnection.c,
