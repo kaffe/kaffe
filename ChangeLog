@@ -1,5 +1,10 @@
 2006-06-05  Dalibor Topic  <robilad@kaffe.org>
 
+	* config/config.alias: Added mipseb to recognized architectures
+	for SESC.
+
+2006-06-05  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/scripts/appletviewer: Removed. Replaced by 
 	GNU Classpath's version.
 
