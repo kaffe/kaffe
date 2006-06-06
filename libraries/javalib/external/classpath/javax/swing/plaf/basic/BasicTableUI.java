@@ -78,6 +78,7 @@ import javax.swing.plaf.InputMapUIResource;
 import javax.swing.plaf.TableUI;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
@@ -385,10 +386,8 @@ public class BasicTableUI extends TableUI
     int maxTotalColumnWidth = 0;
     for (int i = 0; i < table.getColumnCount(); i++)
       maxTotalColumnWidth += table.getColumnModel().getColumn(i).getMaxWidth();
-    if (maxTotalColumnWidth == 0 || table.getRowCount() == 0)
-      return null;
-    return new Dimension(maxTotalColumnWidth, table.getRowCount()*
-                         (table.getRowHeight()+table.getRowMargin()));
+
+    return new Dimension(maxTotalColumnWidth, getHeight());
   }
 
   /**
@@ -406,16 +405,45 @@ public class BasicTableUI extends TableUI
     int minTotalColumnWidth = 0;
     for (int i = 0; i < table.getColumnCount(); i++)
       minTotalColumnWidth += table.getColumnModel().getColumn(i).getMinWidth();
-    if (minTotalColumnWidth == 0 || table.getRowCount() == 0)
-      return null;
-    return new Dimension(minTotalColumnWidth, table.getRowCount()*table.getRowHeight());
+
+    return new Dimension(minTotalColumnWidth, getHeight());
   }
 
+  /**
+   * Returns the preferred size for the table of that UI.
+   *
+   * @param comp ignored, the <code>table</code> field is used instead
+   *
+   * @return the preferred size for the table of that UI
+   */
   public Dimension getPreferredSize(JComponent comp) 
   {
-    int width = table.getColumnModel().getTotalColumnWidth();
-    int height = table.getRowCount() * (table.getRowHeight()+table.getRowMargin());
-    return new Dimension(width, height);
+    int prefTotalColumnWidth = 0;
+    for (int i = 0; i < table.getColumnCount(); i++)
+      {
+        TableColumn col = table.getColumnModel().getColumn(i);
+        prefTotalColumnWidth += col.getPreferredWidth();
+      }
+    return new Dimension(prefTotalColumnWidth, getHeight());
+  }
+
+  /**
+   * Returns the table height. This helper method is used by
+   * {@link #getMinimumSize(JComponent)}, {@link #getPreferredSize(JComponent)}
+   * and {@link #getMaximumSize(JComponent)} to determine the table height.
+   *
+   * @return the table height
+   */
+  private int getHeight()
+  {
+    int height = 0;
+    int rowCount = table.getRowCount(); 
+    if (rowCount > 0 && table.getColumnCount() > 0)
+      {
+        Rectangle r = table.getCellRect(rowCount - 1, 0, true);
+        height = r.y + r.height;
+      }
+    return height;
   }
 
   protected void installDefaults() 
@@ -1314,7 +1342,7 @@ public class BasicTableUI extends TableUI
           {
             // The horizontal grid is draw below the cells, so we 
             // add before drawing.
-            y += table.getRowHeight(r);// + rowMargin;
+            y += table.getRowHeight(r);
             gfx.drawLine(left, y, p2.x, y);
           }
         gfx.setColor(save);

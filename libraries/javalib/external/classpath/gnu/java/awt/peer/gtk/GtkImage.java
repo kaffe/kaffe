@@ -421,9 +421,12 @@ public class GtkImage extends Image
       return null;
 
     int[] pixels;
-    synchronized(pixbufLock)
+    synchronized (pixbufLock)
       {
-	pixels = getPixels();
+        if (!errorLoading)
+          pixels = getPixels();
+        else
+          return null;
       }
     return new MemoryImageSource(width, height, nativeModel, pixels, 
 				 0, width);

@@ -1,3 +1,390 @@
+2006-06-06  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/basic/BasicTableUI.java
+	(getMaximumSize): Don't return null. Fixed calculation of
+	table height.
+	(getMinimumSize): Don't return null. Fixed calculation of
+	table height.
+	(getPreferredSize): Fixed calculation of with and height. Added
+	API docs.
+	(getHeight): New helper method.
+
+2006-06-06  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/JComponent.java
+	(getInputMap(int)): Throw IllegalArgumentException for unknown 
+	condition argument, and added API docs,
+	(getInputMap()): Added API docs.
+
+2006-06-06  Robert Schuster  <robertschuster@fsfe.org>
+
+	* java/awt/BufferedImage.java: Added fourth 8 to bits4 field.
+
+2006-06-06  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/JTable.java
+	(AccessibleJTableHeaderCell.header): New field,
+	(AccessibleJTableHeaderCell.columnIndex): Likewise,
+	(AccessibleJTableHeaderCell.AccessibleJTableHeaderCell()): Initialise,
+	(AccessibleJTableHeaderCell.getColumnHeaderRenderer): New method,
+	(AccessibleJTableHeaderCell.getAccessibleContext): Implemented,
+	(AccessibleJTableHeaderCell.getAccessibleRole): Implemented,
+	(AccessibleJTable.getAccessibleChild(int)): Overridden,
+	(AccessibleJTable.getAccessibleAt): Reimplemented.
+
+2006-06-05  Sven de Marothy  <sven@physto.se>
+
+	* include/gnu_java_awt_peer_gtk_ComponentGraphics.h
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_ComponentGraphics.c
+	* gnu/java/awt/peer/gtk/ComponentGraphics.java
+	(initFromVolatile): New method.
+	* gnu/java/awt/peer/gtk/GtkVolatileImage.java
+	* gnu/java/awt/peer/gtk/VolatileImageGraphics.java
+	Reimplement.
+	* include/gnu_java_awt_peer_gtk_GtkVolatileImage.h
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkVolatileImage.c
+	(copyArea, drawVolatileImage): New methods.
+	
+2006-06-05  Tania Bento  <tbento@redhat.com>
+
+	* javax/swing/JFrame.java
+	(frameInit): Set background color and fixed layout parameters.
+
+2006-06-05  Tom Tromey  <tromey@redhat.com>
+
+	* NEWS: Mention VMURLConnection.
+
+2006-06-05  Lillian Angel  <langel@redhat.com>
+
+	* native/plugin/gcjwebplugin.cc:
+	Added new field to keep track of initialization.
+	(plugin_start_appletviewer): Fixed to return an error value, if
+	an error was encountered when loading the appletviewer.
+	(GCJ_NEW): Added call to plugin_failed if the loading of the appletviewer
+	has failed.
+	(plugin_failed): New helper function. Shows a warning if the appletviewer
+	has not been installed.
+	(NP_Initialize): Added code to make sure this function is only called
+	once.
+
+2006-06-05  Lillian Angel  <langel@redhat.com>
+
+	* native/plugin/Makefile.am:
+	Fixed to use a set plugin directory in the .mozilla directory.
+	All applet logs are now stored here, instead of /tmp.
+	* native/plugin/gcjwebplugin.cc:
+	Added new fields for security warning.
+	(GCJ_NEW): Added code to generate a security warning for all pages
+	that spawn an appletviewer. This warning asks the user if they trust
+	the applet and if they would like to add it to a 'whitelist'. This
+	whitelist keeps track of all the addresses the user would like
+	to trust indefinitely.
+	(plugin_user_trusts_documentbase): New helper function.
+	(plugin_add_documentbase_to_whitelist): New helper function.
+	(plugin_ask_user_about_documentbase): New helper function.
+	(plugin_in_pipe_callback): Fixed check to determine if channel_error 
+	has been set.
+	(plugin_start_appletviewer): Likewise.
+	(plugin_create_applet_tag):  Reset all fields to null after they have been
+	freed.
+	(plugin_send_message_to_appletviewer): Fixed all error checks to determine 
+	if channel_error has been set.
+	(plugin_stop_appletviewer): Likewise.
+	(NP_Initialize): Likewise. Also, added code to determine if directory and file
+	should be created.	
+
+2006-06-05  Francis Kung  <fkung@redhat.com>
+	
+	PR 27507
+	* gnu/java/awt/peer/gtk/GtkImage.java
+	(getSource): Added check to determine if in
+	errorLoading state.
+	* gnu/java/awt/peer/gtk/GtkToolkit.java
+	(createImage): Added check to prevent NPE.
+
+2006-06-05  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* javax/swing/text/html/HTMLEditorKit.java (HTMLFactory.create):
+	Create the ImageView, when applicable.
+	* gnu/javax/swing/text/html/CombinedAttributes.java,
+	javax/swing/text/html/ImageView.java: New files.
+
+2006-06-05  Roman Kennke  <kennke@aicas.com>
+
+	PR 27834
+	* javax/swing/text/GapContent.java
+	(setPositionsInRange): Compare with startIndex and endIndex
+	rather than start and end.
+	(dumpMarks): Only dump real marks.
+
+2006-06-05  Sven de Marothy  <sven@physto.se>
+
+	*  gnu/java/awt/peer/gtk/ComponentGraphics.java
+	(ComponentGraphics): Use 0,0 as clip origin.
+	
+2006-06-04  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* java/util/Formattable.java,
+	* java/util/FormattableFlags.java,
+	* java/util/Formatter.java:
+	Documented.
+
+2006-03-20  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* java/util/Formatter.java:
+	Make the class final.
+
+2005-09-26  Tom Tromey  <tromey@redhat.com>
+
+	* java/util/Formatter.java (format): Set fmtLocale.
+	(applyLocalization): New method.
+	(basicIntegralConversion): Likewise.
+	(hexOrOctalConversion): Use it.
+	(decimalConversion): New method.
+	(format): Use decimalConversion, dateTimeConversion.
+	(genericFormat): Upper-case earlier.  Justify correctly.
+	(singleDateTimeConversion): New method.
+	(dateTimeConversion): Likewise.
+
+2005-09-25  Tom Tromey  <tromey@redhat.com>
+
+	* java/util/Formatter.java (lineSeparator): Use SystemProperties.
+
+2005-09-24  Tom Tromey  <tromey@redhat.com>
+
+	* java/util/FormattableFlags.java (PLUS, SPACE, ZERO, COMMA,
+	PAREN): New constants.
+	* java/util/Formattable.java: New file.
+	* java/util/Formatter.java: New file.
+
+2005-08-13  Tom Tromey  <tromey@redhat.com>
+
+	* java/util/FormattableFlags.java: New file.
+
+2006-06-04  Sven de Marothy  <sven@physto.se>
+
+	* gnu/java/awt/peer/gtk/GtkComponentPeer.java
+	(createVolatileImage): Pass peer to VolatileImage constructor.
+	* java/awt/Component.java
+	(createVolatileImage): Call peer method directly.
+	
+2006-06-04  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* java/util/DuplicateFormatFlagsException.java,
+	* java/util/FormatFlagsConversionMismatchException.java,
+	* java/util/FormatterClosedException.java,
+	* java/util/IllegalFormatCodePointException.java,
+	* java/util/IllegalFormatConversionException.java,
+	* java/util/IllegalFormatException.java,
+	* java/util/IllegalFormatFlagsException.java,
+	* java/util/IllegalFormatPrecisionException.java,
+	* java/util/IllegalFormatWidthException.java,
+	* java/util/MissingFormatArgumentException.java,
+	* java/util/MissingFormatWidthException.java,
+	* java/util/UnknownFormatConversionException.java,
+	* java/util/UnknownFormatFlagsException.java:
+	Documented.
+
+2005-08-13  Tom Tromey  <tromey@redhat.com>
+
+	* java/util/UnknownFormatConversionException.java
+	(serialVersionUID): New field.
+	(s): Renamed from 'conv' for serialization.
+	* java/util/MissingFormatWidthException.java (serialVersionUID):
+	New field.
+	(s): Renamed from 'width' for serialization.
+	* java/util/MissingFormatArgumentException.java
+	(serialVersionUID): New field.
+	(s): Renamed from 'spec' for serialization.
+	* java/util/IllegalFormatWidthException.java (serialVersionUID):
+	New field.
+	(w): Renamed from 'width' for serialization.
+	* java/util/IllegalFormatPrecisionException.java
+	(serialVersionUID): New field.
+	(p): Renamed from 'precision' for serialization.
+	* java/util/IllegalFormatFlagsException.java (serialVersionUID):
+	New field.
+	* java/util/IllegalFormatConversionException.java
+	(serialVersionUID): New field.
+	(c): Renamed from 'conv' for serialization.
+	(arg): Renamed from 'argClass' for serialization.
+	* java/util/IllegalFormatCodePointException.java
+	(serialVersionUID): New field.
+	(c): Renamed from 'codepoint' for serialization.
+	* java/util/FormatFlagsConversionMismatchException.java
+	(serialVersionUID): New field.
+	(f): Renamed from 'flags' for serialization.
+	(c): Renamed from 'conversion' for serialization.
+	* java/util/DuplicateFormatFlagsException.java (serialVersionUID):
+	New field.
+	* java/util/IllegalFormatException.java (serialVersionUID): New
+	field.
+	* java/util/FormatterClosedException.java (serialVersionUID): New
+	field.
+
+2005-04-20  Tom Tromey  <tromey@redhat.com>
+
+	* java/util/DuplicateFormatFlagsException.java: New file.
+	* java/util/FormatFlagsConversionMismatchException.java: New file.
+	* java/util/FormatterClosedException.java: New file.
+	* java/util/IllegalFormatCodePointException.java: New file.
+	* java/util/IllegalFormatConversionException.java: New file.
+	* java/util/UnknownFormatFlagsException.java: New file.
+	* java/util/UnknownFormatConversionException.java: New file.
+	* java/util/MissingFormatWidthException.java: New file.
+	* java/util/MissingFormatArgumentException.java: New file.
+	* java/util/IllegalFormatWidthException.java: New file.
+	* java/util/IllegalFormatPrecisionException.java: New file.
+	* java/util/IllegalFormatFlagsException.java: New file.
+	* java/util/IllegalFormatException.java: New file.
+
+2006-06-04  Sven de Marothy  <sven@physto.se>
+
+	* gnu/java/awt/peer/gtk/CairoSurface.java
+	(getFlippedBuffer): New method.
+	(getGtkImage): Renamed method.
+	* gnu/java/awt/peer/gtk/ComponentGraphicsCopy.java
+	* gnu/java/awt/peer/gtk/GtkVolatileImage.java
+	Renamed getSharedImage to getGtkImage.
+	* include/gnu_java_awt_peer_gtk_CairoSurface.h
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_CairoSurface.c
+	(getFlippedBuffer): New method
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_ComponentGraphics.c
+	Avoid window casts.
+	
+2006-03-20  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* java/lang/System.java:
+	(nanoTime()): Documented.
+
+2006-03-20  Tom Tromey  <tromey@redhat.com>
+
+	* java/lang/System.java:
+	(nanoTime()): Implemented.
+
+2006-03-01  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* java/math/BigDecimal.java:
+	(precision): Fixed overflow problem with large numbers.
+	(longValueExact): New method.
+	(intValueExact): Likewise.
+	(byteValueExact): Likewise.
+	(shortValueExact): Likewise.
+
+2006-03-01  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* java/math/BigDecimal.java:
+	(remainder(BigDecimal)): New method.
+	(divideAndRemainder(BigDecimal)): Likewise.
+	(divideToIntegralValue(BigDecimal)): Likewise.
+	(floor): New implementation method.
+
+2006-02-28  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* java/math/BigDecimal.java:
+	(divide(BigDecimal, int, RoundingMode)): New method.
+	(divide(BigDecimal, RoundingMode)): Likewise.
+	(divide(BigDecimal, int, int)): Removed incorrect throwing of exception
+	when the new scale is < 0.
+	(setScale(int, RoundingMode)): New method.
+	(ulp): Likewise.
+
+2006-02-27  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* java/math/BigDecimal.java: Replaced occurences of BigInteger.valueOf
+	with BigInteger.ZERO, BigInteger.ONE, BigInteger.TEN where appropriate.
+	(add(BigDecimal, MathContext)): New method.
+	(subtract(BigDecimal, MathContext)): Likewise.
+	(precision): Fixed to correctly handle BigIntegers with more than 19
+	digits.
+	(pow(int, MathContext)): New method.
+
+2006-02-27  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* java/math/BigDecimal.java: Added @throws clause to constructors.
+	(mathContext): Removed this unneeded field.
+	(BigDecimal(int, MathContext)): New constructor.
+	(BigDecimal(BigInteger, int, MathContext)): Likewise.
+	(multiply(BigDecimal, MathContext)): New method.
+	(negate(MathContext)): Likewise.
+	(plus(MathContext)): Likewise.
+	(numDigitsInLong): Fixed to properly handle negatives.
+
+2006-02-24  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* java/math/BigDecimal.java:
+	(BigDecimal(long, MathContext)): New constructor.
+	(BigDecimal(BigInteger, MathContext)): Likewise.
+	(BigDecimal(String, MathContext)): Likewise.
+	(BigDecimal(double, MathContext)): Likewise.
+	(round): Fixed a typo where the precision field was used instead of a
+	call to the precision method, and also store the new precision in the
+	returned BigDecimal.
+	(abs(MathContext)): New method.
+
+2006-02-24  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* java/math/BigDecimal.java
+	(toBigInteger): Fixed problem where this method couldn't handle 
+	negative values for scale.
+	(toBigIntegerExact): New method.
+	(stripTrailingZeros): Likewise.
+
+2006-02-23  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* java/math/BigDecimal.java:
+	(toString): Fixed a problem where the negative sign was being displayed
+	twice in the exponent.
+	(toEngineeringString): New method.
+	(toPlainString): Likewise.
+	(pow): Likewise.
+
+2006-02-23  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* java/math/BigDecimal.java:
+	(toString): Rewrote this method to behave as specified.  Added API
+	comments to explain behaviour.
+	(scaleByPowerOfTen): New method.
+
+2006-02-22  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* java/math/BigDecimal.java:
+	(BigDecimal(char[], int, int, MathContext)): New constructor.
+	(BigDecimal(char[], MathContext)): Likewise.
+	(BigDecimal(char[])): Likewise.
+	(BigDecimal(char[], int, int)): Likewise.
+	(BigDecimal(String)): Fixed handling of exponent and scale.
+
+2006-02-21  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* java/math/BigDecimal.java:
+	(mathContext): New field.
+	(precision): Likewise.
+	(BigDecimal(int)): New constructor.
+	(BigDecimal(long)): Likewise.
+	(BigDecimal(BigInteger)): Added API docs.
+	(BigDecimal(BigInteger, int)): Removed incorrect NumberFormatException
+	and added API docs.
+	(plus): New method.
+	(round): Likewise.
+	(precision): Likewise.
+	(valueOf): Likewise.
+	(numDigitsInLong): New implementation method.
+
+2006-02-21  Anthony Balkissoon  <abalkiss@redhat.com>
+
+	* java/math/MathContext.java: New class.
+
+2006-06-04  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_ComponentGraphics.c:
+	(drawVolatile): Add casts.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkTextLayout.c:
+	(getOutline): Add casts.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkVolatileImage.c:
+	Comment out unused prototype.
+	(getPixels): Add appropriate cast and comment out unused variable.
+	
 2006-06-04  Raif S. Naffah  <raif@swiftdsl.com.au>
 
 	* gnu/javax/crypto/sasl/SaslUtil.java: Remove unused import.
@@ -554,6 +941,11 @@
 	* gnu/java/awt/java2d/TexturePaintContext.java: New file.
 	* java/awt/TexturePaint.java
 	(createContext): Implemented.
+
+2006-05-30  Robert Schuster  <robertschuster@fsfe.org>
+
+	* javax/swing/table/DefaultTableMode.java: Initialize dataVector
+	field early.
 
 2006-05-30  Robert Schuster  <robertschuster@fsfe.org>
 

@@ -83,7 +83,7 @@ public class ComponentGraphicsCopy extends CairoSurfaceGraphics
     this.component = component;
     this.width = width;
     this.height = height;
-    gtkimage = surface.getSharedGtkImage();
+    gtkimage = surface.getGtkImage();
     getPixbuf( component, gtkimage );
   }
 

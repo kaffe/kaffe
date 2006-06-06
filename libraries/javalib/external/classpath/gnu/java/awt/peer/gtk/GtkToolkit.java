@@ -184,6 +184,9 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
 
   public Image createImage (ImageProducer producer) 
   {
+    if (producer == null)
+      return null;
+      
     Image image;
     try
       {

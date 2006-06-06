@@ -46,6 +46,7 @@ import java.awt.GraphicsConfiguration;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.awt.Point;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
@@ -64,15 +65,20 @@ import java.awt.image.RenderedImage;
 public class ComponentGraphics extends CairoGraphics2D
 {
   private GtkComponentPeer component;
-  private long cairo_t;
+  protected long cairo_t;
 
+  ComponentGraphics()
+  {
+  }
+  
   private ComponentGraphics(GtkComponentPeer component)
   {
     this.component = component;
     cairo_t = initState(component);
     setup( cairo_t );
+    Rectangle bounds = component.awtComponent.getBounds();
+    setClip( new Rectangle( 0, 0, bounds.width, bounds.height) );
     setBackground(component.awtComponent.getBackground());
-    setClip(component.awtComponent.getBounds());
     setColor(component.awtComponent.getForeground());
   }
 
@@ -81,8 +87,9 @@ public class ComponentGraphics extends CairoGraphics2D
     component = cg.component;
     cairo_t = initState(component);
     copy( cg, cairo_t );
+    Rectangle bounds = component.awtComponent.getBounds();
+    setClip( new Rectangle( 0, 0, bounds.width, bounds.height) );
     setBackground(component.awtComponent.getBackground());
-    setClip(component.awtComponent.getBounds());
     setColor(component.awtComponent.getForeground());
   }
 
@@ -90,6 +97,11 @@ public class ComponentGraphics extends CairoGraphics2D
    * Creates a cairo_t for the component surface and return it.
    */
   private native long initState(GtkComponentPeer component);
+
+  /**
+   * Creates a cairo_t for a volatile image
+   */
+  protected native long initFromVolatile( long pixmapPtr, int width, int height);
 
   /**
    * Grab lock
@@ -192,8 +204,7 @@ public class ComponentGraphics extends CairoGraphics2D
   {
     if( img instanceof GtkVolatileImage )
       {
-	((GtkVolatileImage)img).validate( null );
-	drawVolatile( component, img, x, y-20 ,
+	drawVolatile( component, img, x, y - 20,
 		      ((GtkVolatileImage)img).width, 
 		      ((GtkVolatileImage)img).height );
 	return true;
@@ -206,8 +217,7 @@ public class ComponentGraphics extends CairoGraphics2D
   {
     if( img instanceof GtkVolatileImage )
       {
-	((GtkVolatileImage)img).validate( null );
-	drawVolatile( component, img, x, y-20, 
+	drawVolatile( component, img, x, y - 20, 
 		      width, height );
 	return true;
       }      

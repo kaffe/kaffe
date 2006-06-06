@@ -829,15 +829,52 @@ public class JTable
       implements Accessible, AccessibleComponent
     {
 
+      JTableHeader header;
+      
+      int columnIndex;
+      
+      /**
+       * 
+       * @param h  the table header.
+       * @param comp
+       * @param r
+       * @param c  the column index.
+       */
       private AccessibleJTableHeaderCell(JTableHeader h, Component comp, int r,
                                          int c)
       {
-        
+        header = h;
+        columnIndex = c;
       }
 
+      /**
+       * Returns the header renderer.
+       * 
+       * @return The header renderer.
+       */
+      Component getColumnHeaderRenderer()
+      {
+        TableColumn tc = header.getColumnModel().getColumn(columnIndex);
+        TableCellRenderer r = tc.getHeaderRenderer();
+        if (r == null)
+          r = header.getDefaultRenderer();
+        return r.getTableCellRendererComponent(header.getTable(), 
+            tc.getHeaderValue(), false, false, -1, columnIndex);
+      }
+      
+      /**
+       * Returns the accessible role for the table header cell.
+       * 
+       * @return The accessible role.
+       */
       public AccessibleRole getAccessibleRole()
       {
-        // TODO Auto-generated method stub
+        Component renderer = getColumnHeaderRenderer();
+        if (renderer instanceof Accessible)
+          {
+            Accessible ac = (Accessible) renderer;
+            return ac.getAccessibleContext().getAccessibleRole();
+          }
         return null;
       }
 
@@ -871,10 +908,14 @@ public class JTable
         return null;
       }
 
+      /**
+       * Returns the accessible context.
+       * 
+       * @return <code>this</code>.
+       */
       public AccessibleContext getAccessibleContext()
       {
-        // TODO Auto-generated method stub
-        return null;
+        return this;
       }
 
       public Color getBackground()
@@ -1585,6 +1626,20 @@ public class JTable
     }
 
     /**
+     * Returns the accessible child at the given index.
+     *
+     * @param index  the child index.
+     * 
+     * @return The accessible child.
+     */
+    public Accessible getAccessibleChild(int index)
+    {
+      int r = getAccessibleRow(index);
+      int c = getAccessibleColumn(index);
+      return getAccessibleAt(r, c);  
+    }
+    
+    /**
      * Returns the accessible child (table cell) at the specified row and
      * column.
      *
@@ -1596,7 +1651,12 @@ public class JTable
      */
     public Accessible getAccessibleAt(int r, int c)
     {
-      return getAccessibleChild(r * getAccessibleColumnCount() + c);
+      TableCellRenderer cellRenderer = getCellRenderer(r, c);
+      Component renderer = cellRenderer.getTableCellRendererComponent(
+          JTable.this, getValueAt(r, c), isCellSelected(r, c), false, r, c);
+      if (renderer instanceof Accessible)
+        return (Accessible) renderer;
+      return null;
     }
 
     /**

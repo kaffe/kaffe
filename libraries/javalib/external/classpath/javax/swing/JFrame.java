@@ -157,7 +157,8 @@ public class JFrame extends Frame
 
   protected void frameInit()
   {
-    super.setLayout(new BorderLayout(1, 1));
+    super.setLayout(new BorderLayout());
+    setBackground(UIManager.getDefaults().getColor("control"));
     enableEvents(AWTEvent.WINDOW_EVENT_MASK);
     getRootPane(); // will do set/create
 

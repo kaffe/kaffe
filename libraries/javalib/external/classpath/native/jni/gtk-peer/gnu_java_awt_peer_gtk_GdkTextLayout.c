@@ -444,10 +444,10 @@ Java_gnu_java_awt_peer_gtk_GdkTextLayout_getOutline
   PangoLayoutLine *current_line;
   FT_Outline_Funcs ftCallbacks = 
     {
-      _moveTo,
-      _lineTo,
-      _quadTo,
-      _curveTo,
+      (FT_Outline_MoveToFunc) _moveTo,
+      (FT_Outline_LineToFunc) _lineTo,
+      (FT_Outline_ConicToFunc) _quadTo,
+      (FT_Outline_CubicToFunc) _curveTo,
       0,
       0
     };

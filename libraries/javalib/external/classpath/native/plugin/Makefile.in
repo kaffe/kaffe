@@ -303,10 +303,11 @@ lib_LTLIBRARIES = libgcjwebplugin.la
 libgcjwebplugin_la_SOURCES = gcjwebplugin.cc
 libgcjwebplugin_la_CXXFLAGS = \
 	-Wall -DAPPLETVIEWER_EXECUTABLE="\"$(bindir)/appletviewer\"" \
-	$(MOZILLA_CFLAGS) $(GLIB_CFLAGS)
+	-DPLUGIN_DATA_DIRECTORY="\"$(PLUGIN_DIR)/gcjwebplugin-data\"" \
+	$(MOZILLA_CFLAGS) $(GLIB_CFLAGS) $(GTK_CFLAGS)
 
 libgcjwebplugin_la_LDFLAGS = -avoid-version \
-	$(GLIB_LIBS) \
+	$(GLIB_LIBS) $(GTK_LIBS) \
 	-lstdc++
 
 all: all-am
@@ -342,6 +343,24 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
+install-libLTLIBRARIES: $(lib_LTLIBRARIES)
+	@$(NORMAL_INSTALL)
+	test -z "$(libdir)" || $(mkdir_p) "$(DESTDIR)$(libdir)"
+	@list='$(lib_LTLIBRARIES)'; for p in $$list; do \
+	  if test -f $$p; then \
+	    f=$(am__strip_dir) \
+	    echo " $(LIBTOOL) --mode=install $(libLTLIBRARIES_INSTALL) $(INSTALL_STRIP_FLAG) '$$p' '$(DESTDIR)$(libdir)/$$f'"; \
+	    $(LIBTOOL) --mode=install $(libLTLIBRARIES_INSTALL) $(INSTALL_STRIP_FLAG) "$$p" "$(DESTDIR)$(libdir)/$$f"; \
+	  else :; fi; \
+	done
+
+uninstall-libLTLIBRARIES:
+	@$(NORMAL_UNINSTALL)
+	@set -x; list='$(lib_LTLIBRARIES)'; for p in $$list; do \
+	  p=$(am__strip_dir) \
+	  echo " $(LIBTOOL) --mode=uninstall rm -f '$(DESTDIR)$(libdir)/$$p'"; \
+	  $(LIBTOOL) --mode=uninstall rm -f "$(DESTDIR)$(libdir)/$$p"; \
+	done
 
 clean-libLTLIBRARIES:
 	-test -z "$(lib_LTLIBRARIES)" || rm -f $(lib_LTLIBRARIES)
@@ -571,12 +590,12 @@ uninstall-am: uninstall-info-am uninstall-libLTLIBRARIES
 	uninstall-libLTLIBRARIES
 
 
-install-libLTLIBRARIES: $(lib_LTLIBRARIES)
-	$(INSTALL) -d -m0755 $(DESTDIR)@PLUGIN_DIR@
-	$(INSTALL) .libs/libgcjwebplugin.so $(DESTDIR)@PLUGIN_DIR@
+install-plugin: $(lib_LTLIBRARIES)
+	$(INSTALL) -d -m0755 $(DESTDIR)$(PLUGIN_DIR)
+	$(INSTALL) .libs/libgcjwebplugin.so $(DESTDIR)$(PLUGIN_DIR)
 
-uninstall-libLTLIBRARIES:
-	rm -f $(DESTDIR)@PLUGIN_DIR@/libgcjwebplugin.so
+uninstall-plugin:
+	rm -f $(DESTDIR)$(PLUGIN_DIR)/libgcjwebplugin.so
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

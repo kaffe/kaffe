@@ -123,6 +123,8 @@ public class CairoSurface extends DataBuffer
    */
   native void setPixels(int[] pixels);
 
+  native long getFlippedBuffer(int size);
+
   /**
    * Create a cairo_surface_t with specified width and height.
    * The format will be ARGB32 with premultiplied alpha and native bit 
@@ -197,11 +199,11 @@ public class CairoSurface extends DataBuffer
   }
 
   /**
-   * Return a GtkImage which shares its data with this Cairo surface.
+   * Return a GtkImage from this Cairo surface.
    */
-  public GtkImage getSharedGtkImage()
+  public GtkImage getGtkImage()
   {
-    return new GtkImage( width, height, bufferPointer );
+    return new GtkImage( width, height, getFlippedBuffer( width * height ));
   }
 
   /**

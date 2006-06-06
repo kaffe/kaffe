@@ -2361,6 +2361,19 @@ public abstract class JComponent extends Container implements Serializable
       }
   }
 
+  /**
+   * Returns the input map associated with this component for the given
+   * state/condition.
+   * 
+   * @param condition  the state (one of {@link #WHEN_FOCUSED}, 
+   *     {@link #WHEN_ANCESTOR_OF_FOCUSED_COMPONENT} and 
+   *     {@link #WHEN_IN_FOCUSED_WINDOW}).
+   * 
+   * @return The input map.
+   * @throws IllegalArgumentException if <code>condition</code> is not one of 
+   *             the specified values.
+   * @since 1.3
+   */
   public final InputMap getInputMap(int condition)
   {
     enableEvents(AWTEvent.KEY_EVENT_MASK);
@@ -2383,10 +2396,20 @@ public abstract class JComponent extends Container implements Serializable
 
       case UNDEFINED_CONDITION:
       default:
-        return null;
+        throw new IllegalArgumentException("Invalid 'condition' argument: " 
+                                           + condition);
       }
   }
 
+  /**
+   * Returns the input map associated with this component for the 
+   * {@link #WHEN_FOCUSED} state.
+   * 
+   * @return The input map.
+   * 
+   * @since 1.3
+   * @see #getInputMap(int)
+   */
   public final InputMap getInputMap()
   {
     return getInputMap(WHEN_FOCUSED);

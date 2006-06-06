@@ -53,23 +53,18 @@ public class GtkVolatileImage extends VolatileImage
   /**
    * Don't touch, accessed from native code.
    */
-  private long nativePointer;
-
-  /**
-   * Offscreen image we draw to.
-   */
-  CairoSurface offScreen;
-
-  private boolean needsUpdate = false;
+  long nativePointer;
 
   native long init(GtkComponentPeer component, int width, int height);
 
   native void destroy();
 
   native int[] getPixels();
-  
-  native void update(GtkImage image);
 
+  native void copyArea( int x, int y, int w, int h, int dx, int dy );
+
+  native void drawVolatile( long ptr, int x, int y, int w, int h );
+  
   public GtkVolatileImage(GtkComponentPeer component, 
 			  int width, int height, ImageCapabilities caps)
   {
@@ -77,7 +72,6 @@ public class GtkVolatileImage extends VolatileImage
     this.height = height;
     this.caps = caps;
     nativePointer = init( component, width, height );
-    offScreen = new CairoSurface( width, height );
   }
 
   public GtkVolatileImage(int width, int height, ImageCapabilities caps)
@@ -100,11 +94,6 @@ public class GtkVolatileImage extends VolatileImage
     destroy();
   }
 
-  void invalidate()
-  {
-    needsUpdate = true;
-  }
-
   public BufferedImage getSnapshot()
   {
     CairoSurface cs = new CairoSurface( width, height );
@@ -119,24 +108,17 @@ public class GtkVolatileImage extends VolatileImage
 
   public Graphics2D createGraphics()
   {
-    invalidate();
-    return offScreen.getGraphics();
+    return new VolatileImageGraphics( this );
   }
 
   public int validate(GraphicsConfiguration gc)
   {
-    if( needsUpdate )
-      {
-	update( offScreen.getSharedGtkImage() );
-	needsUpdate = false;
-	return VolatileImage.IMAGE_RESTORED;
-      }
     return VolatileImage.IMAGE_OK;
   }
 
   public boolean contentsLost()
   {
-    return needsUpdate;
+    return false;
   }
 
   public ImageCapabilities getCapabilities()

@@ -21,6 +21,13 @@ New in release 0.92 (UNRELEASED)
   A new configure option --enable-tool-wrappers causes wrapper
   binaries to be built for VMs that support the JNI Invocation API.
 
+Runtime interface changes:
+
+* A new class, VMURLConnection, is used to implement
+  URLConnection.guessContentTypeFromStream.  The reference
+  implementation uses libmagic (and falls back to doing nothing if
+  libmagic is not available).
+
 New in release 0.91 (May 15, 2006)
 
 * Experimental activation (java.rmi.activation) support, including RMI

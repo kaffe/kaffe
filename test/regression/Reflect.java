@@ -71,6 +71,7 @@ Method: public static java.lang.String java.lang.System.mapLibraryName(java.lang
 Method: public static java.lang.String java.lang.System.setProperty(java.lang.String,java.lang.String)
 Method: public static java.util.Properties java.lang.System.getProperties()
 Method: public static long java.lang.System.currentTimeMillis()
+Method: public static long java.lang.System.nanoTime()
 Method: public static synchronized void java.lang.System.setSecurityManager(java.lang.SecurityManager)
 Method: public static void java.lang.System.arraycopy(java.lang.Object,int,java.lang.Object,int,int)
 Method: public static void java.lang.System.exit(int)

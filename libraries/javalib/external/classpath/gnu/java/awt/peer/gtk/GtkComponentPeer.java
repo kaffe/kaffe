@@ -697,7 +697,7 @@ public class GtkComponentPeer extends GtkGenericPeer
   // on which this component is displayed.
   public VolatileImage createVolatileImage (int width, int height)
   {
-    return new GtkVolatileImage (width, height);
+    return new GtkVolatileImage (this, width, height, null);
   }
 
   // Creates buffers used in a buffering strategy.
@@ -707,7 +707,7 @@ public class GtkComponentPeer extends GtkGenericPeer
     // numBuffers == 2 implies double-buffering, meaning one back
     // buffer and one front buffer.
     if (numBuffers == 2)
-      backBuffer = new GtkVolatileImage(awtComponent.getWidth(),
+      backBuffer = new GtkVolatileImage(this, awtComponent.getWidth(),
 					awtComponent.getHeight(),
 					caps.getBackBufferCapabilities());
     else

@@ -58,72 +58,65 @@ import java.awt.image.RenderedImage;
 import java.awt.image.ImageObserver;
 import java.util.WeakHashMap;
 
-public class VolatileImageGraphics extends CairoSurfaceGraphics
+public class VolatileImageGraphics extends ComponentGraphics
 {
   private GtkVolatileImage owner;
 
-  public VolatileImageGraphics(GtkVolatileImage owner)
+  public VolatileImageGraphics(GtkVolatileImage img)
   {
-    super( owner.offScreen );
-    this.owner = owner;
-  }
-  
-  VolatileImageGraphics(VolatileImageGraphics copyFrom)
-  {
-    super( copyFrom.owner.offScreen );
-    owner = copyFrom.owner;
+    this.owner = img;
+    cairo_t = initFromVolatile( owner.nativePointer, img.width, img.height );
+    setup( cairo_t );
+    setClip( new Rectangle( 0, 0, img.width, img.height) );
   }
 
-  /**
-   * Abstract methods.
-   */  
+  private VolatileImageGraphics(VolatileImageGraphics copy)
+  {
+    this.owner = copy.owner;
+    initFromVolatile( owner.nativePointer, owner.width, owner.height );
+    setClip( new Rectangle( 0, 0, owner.width, owner.height) );
+    copy( copy, cairo_t );
+  }
+
+  public void copyAreaImpl(int x, int y, int width, int height, int dx, int dy)
+  {
+    owner.copyArea(x, y, width, height, dx, dy);
+  }
+
+  public GraphicsConfiguration getDeviceConfiguration()
+  {
+    return null;
+  }
+
   public Graphics create()
   {
     return new VolatileImageGraphics( this );
   }
+
+
+  public boolean drawImage(Image img, int x, int y, ImageObserver observer)
+  {
+    if( img instanceof GtkVolatileImage )
+      {
+	owner.drawVolatile( ((GtkVolatileImage)img).nativePointer, 
+			    x, y,
+			    ((GtkVolatileImage)img).width, 
+			    ((GtkVolatileImage)img).height );
+	return true;
+      }      
+    return super.drawImage( img, x, y, observer );
+  }
   
-  public void copyAreaImpl(int x, int y, int width, int height, int dx, int dy)
+  public boolean drawImage(Image img, int x, int y, int width, int height,
+                           ImageObserver observer)
   {
-    surface.copyAreaNative(x, y, width, height, dx, dy, surface.width);
-    owner.invalidate();
-  }
-
-  /**
-   * Overloaded methods that do actual drawing need to enter the gdk threads 
-   * and also do certain things before and after.
-   */
-  public void draw(Shape s)
-  {
-    super.draw(s);
-    Rectangle r = s.getBounds();
-    owner.invalidate();
-  }
-
-  public void fill(Shape s)
-  {
-    super.fill(s);
-    Rectangle r = s.getBounds();
-    owner.invalidate();
-  }
-
-  public void drawRenderedImage(RenderedImage image, AffineTransform xform)
-  {
-    super.drawRenderedImage(image, xform);
-    owner.invalidate();
-  }
-
-  protected boolean drawImage(Image img, AffineTransform xform,
-			      Color bgcolor, ImageObserver obs)
-  {
-    boolean rv = super.drawImage(img, xform, bgcolor, obs);
-    owner.invalidate();
-    return rv;
-  }
-
-  public void drawGlyphVector(GlyphVector gv, float x, float y)
-  {
-    super.drawGlyphVector(gv, x, y);
-    owner.invalidate();
+    if( img instanceof GtkVolatileImage )
+      {
+	owner.drawVolatile( ((GtkVolatileImage)img).nativePointer, 
+			    x, y, width, height );
+	return true;
+      }      
+    return super.drawImage( img, x, y, width, height, observer );
   }
 }
 

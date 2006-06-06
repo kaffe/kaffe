@@ -2067,11 +2067,9 @@ public abstract class Component
    */
   public VolatileImage createVolatileImage(int width, int height)
   {
-    if (GraphicsEnvironment.isHeadless())
-      return null;
-    GraphicsConfiguration config = getGraphicsConfiguration();
-    return config == null ? null
-      : config.createCompatibleVolatileImage(width, height);
+    if (peer != null)
+      return peer.createVolatileImage(width, height);
+    return null;
   }
 
   /**
@@ -2090,11 +2088,9 @@ public abstract class Component
                                            ImageCapabilities caps)
     throws AWTException
   {
-    if (GraphicsEnvironment.isHeadless())
-      return null;
-    GraphicsConfiguration config = getGraphicsConfiguration();
-    return config == null ? null
-      : config.createCompatibleVolatileImage(width, height, caps);
+    if (peer != null)
+      return peer.createVolatileImage(width, height);
+    return null;
   }
 
   /**

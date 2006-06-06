@@ -208,6 +208,29 @@ Java_gnu_java_awt_peer_gtk_CairoSurface_drawSurface
  (*env)->ReleaseDoubleArrayElements (env, java_matrix, native_matrix, 0);
 }
 
+JNIEXPORT jlong JNICALL 
+Java_gnu_java_awt_peer_gtk_CairoSurface_getFlippedBuffer 
+(JNIEnv *env, jobject obj, jint size)
+{
+  jint *dst;
+  jint *src = (jint *)getNativeObject(env, obj, BUFFER);
+  int i;
+  int t;
+
+  g_assert( src != NULL );
+  dst = g_malloc( size * sizeof( jint ) );
+
+  for(i = 0; i < size; i++ )
+    {
+      t = (src[i] & 0x0000FF) << 16;
+      dst[i] = (src[i] & 0x00FF0000) >> 16;
+      dst[i] |= (src[i] & 0xFF00FF00);
+      dst[i] |= t;
+    }
+
+  return PTR_TO_JLONG(dst);
+}
+
 /**
  * Create and return a cairo context for drawing to the surface.
  */
