@@ -99,6 +99,21 @@ public class ComponentGraphics extends CairoGraphics2D
   private native long initState(GtkComponentPeer component);
 
   /**
+   * Destroys the component surface and calls dispose on the cairo
+   * graphics2d to destroy any super class resources.
+   */
+  public void dispose()
+  {
+    disposeSurface(nativePointer);
+    super.dispose();
+  }
+
+  /**
+   * Destroys the component surface.
+   */
+  private native void disposeSurface(long nativePointer);
+
+  /**
    * Creates a cairo_t for a volatile image
    */
   protected native long initFromVolatile( long pixmapPtr, int width, int height);

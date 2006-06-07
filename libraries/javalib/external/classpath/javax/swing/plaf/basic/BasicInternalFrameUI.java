@@ -38,8 +38,6 @@ exception statement from your version. */
 
 package javax.swing.plaf.basic;
 
-import gnu.classpath.NotImplementedException;
-
 import java.awt.AWTEvent;
 import java.awt.Color;
 import java.awt.Component;
@@ -52,6 +50,7 @@ import java.awt.LayoutManager;
 import java.awt.LayoutManager2;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
@@ -59,6 +58,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
 import javax.swing.DefaultDesktopManager;
 import javax.swing.DesktopManager;
 import javax.swing.JComponent;
@@ -74,6 +75,7 @@ import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.MouseInputListener;
+import javax.swing.plaf.ActionMapUIResource;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.InternalFrameUI;
 import javax.swing.plaf.UIResource;
@@ -1086,6 +1088,23 @@ public class BasicInternalFrameUI extends InternalFrameUI
   }
 
   /**
+   * This action triggers the system menu.
+   *
+   * @author Roman Kennke (kennke@aicas.com)
+   */
+  private class ShowSystemMenuAction
+    extends AbstractAction
+  {
+    public void actionPerformed(ActionEvent e)
+    {
+      if (titlePane != null)
+        {
+          titlePane.showSystemMenu();
+        }
+    }
+  }
+
+  /**
    * The MouseListener that is responsible for dragging and resizing the
    * JInternalFrame in response to MouseEvents.
    */
@@ -1226,9 +1245,17 @@ public class BasicInternalFrameUI extends InternalFrameUI
    * This method installs the keyboard actions for the JInternalFrame.
    */
   protected void installKeyboardActions()
-    throws NotImplementedException
   {
-    // FIXME: Implement.
+    ActionMapUIResource am = new ActionMapUIResource();
+    am.put("showSystemMenu", new ShowSystemMenuAction());
+
+    // The RI impl installs the audio actions as parent of the UI action map,
+    // so do we.
+    BasicLookAndFeel blaf = (BasicLookAndFeel) UIManager.getLookAndFeel();
+    ActionMap audioActionMap = blaf.getAudioActionMap();
+    am.setParent(audioActionMap);
+
+    SwingUtilities.replaceUIActionMap(frame, am);
   }
 
   /**
@@ -1309,9 +1336,10 @@ public class BasicInternalFrameUI extends InternalFrameUI
    * This method uninstalls the keyboard actions for the JInternalFrame.
    */
   protected void uninstallKeyboardActions()
-    throws NotImplementedException
   {
-    // FIXME: Implement.
+    SwingUtilities.replaceUIActionMap(frame, null);
+    SwingUtilities.replaceUIInputMap(frame, JComponent.WHEN_IN_FOCUSED_WINDOW,
+                                     null);
   }
 
   /**

@@ -34,8 +34,8 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_CairoGraphics2D_cairoCurveTo (
 JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_CairoGraphics2D_cairoStroke (JNIEnv *env, jobject);
 JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_CairoGraphics2D_cairoFill (JNIEnv *env, jobject);
 JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_CairoGraphics2D_cairoClip (JNIEnv *env, jobject);
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_CairoGraphics2D_cairoResetClip (JNIEnv *env, jobject);
 JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_CairoGraphics2D_cairoPreserveClip (JNIEnv *env, jobject);
+JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_CairoGraphics2D_cairoResetClip (JNIEnv *env, jobject);
 JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_CairoGraphics2D_cairoSurfaceSetFilter (JNIEnv *env, jobject, jint);
 
 #ifdef __cplusplus

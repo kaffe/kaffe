@@ -45,6 +45,7 @@ $(top_srcdir)/include/gnu_java_awt_peer_gtk_GdkFontPeer.h \
 $(top_srcdir)/include/gnu_java_awt_peer_gtk_GdkGraphicsEnvironment.h \
 $(top_srcdir)/include/gnu_java_awt_peer_gtk_GdkPixbufDecoder.h \
 $(top_srcdir)/include/gnu_java_awt_peer_gtk_GdkRobotPeer.h \
+$(top_srcdir)/include/gnu_java_awt_peer_gtk_GdkScreenGraphicsDevice.h \
 $(top_srcdir)/include/gnu_java_awt_peer_gtk_GdkTextLayout.h \
 $(top_srcdir)/include/gnu_java_awt_peer_gtk_GtkButtonPeer.h \
 $(top_srcdir)/include/gnu_java_awt_peer_gtk_GtkCanvasPeer.h \

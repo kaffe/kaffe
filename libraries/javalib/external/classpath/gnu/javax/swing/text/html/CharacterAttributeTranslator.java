@@ -39,16 +39,11 @@ package gnu.javax.swing.text.html;
 
 import java.awt.Color;
 import java.util.HashMap;
-import javax.swing.text.AbstractDocument;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.Element;
-import javax.swing.text.ElementIterator;
-import javax.swing.text.GapContent;
+import java.util.StringTokenizer;
+
 import javax.swing.text.MutableAttributeSet;
-import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
+import javax.swing.text.html.HTML.Attribute;
 import javax.swing.text.html.HTML.Tag;
 
 /**
@@ -57,6 +52,9 @@ import javax.swing.text.html.HTML.Tag;
  */
 public class CharacterAttributeTranslator
 {
+  /**
+   * Maps color name to its hex encoding.
+   */
   private static final HashMap colorMap = new HashMap();
   static 
   {
@@ -77,37 +75,75 @@ public class CharacterAttributeTranslator
     colorMap.put("white" , "#FFFFFF");
     colorMap.put("yellow" , "#FFFF00");
   };
-
-  private static Color getColor(String s)
+  
+  /**
+   * Convert the color string represenation into java.awt.Color. The valid
+   * values are like "aqua" , "#00FFFF" or "rgb(1,6,44)".
+   * 
+   * @param colorName the color to convert.
+   * @return the matching java.awt.color
+   */
+  private static Color getColor(String colorName)
   {
-    String s2 = (String)colorMap.get(s.toLowerCase());
-    if( s2 == null )
-      s2 = s;
+    colorName = colorName.toLowerCase();
     try
       {
-	return Color.decode(s2);
+        if (colorName.startsWith("rgb"))
+          {
+            // rgb(red, green, blue) notation.
+            StringTokenizer st = new StringTokenizer(colorName, " ,()");
+            String representation = st.nextToken();
+
+            // Return null if the representation is not supported.
+            if (! representation.equals("rgb"))
+              return null;
+            int red = Integer.parseInt(st.nextToken());
+            int green = Integer.parseInt(st.nextToken());
+            int blue = Integer.parseInt(st.nextToken());
+
+            return new Color(red, green, blue);
+          }
+        else
+          {
+            String s2 = (String) colorMap.get(colorName);
+            if (s2 == null)
+              s2 = colorName;
+            return Color.decode(s2);
+          }
       }
-    catch(NumberFormatException nfe)
+    catch (Exception nex)
       {
-	return null;
+        // Can be either number format exception or illegal argument
+        // exception.
+        return null;
       }
   }
   
+  /**
+   * Translate the HTML character attribute to the Swing style constant.
+   * 
+   * @param charAttr the character attributes of the html tag
+   * @param t the html tag itself
+   * @param a the attribute set where the translated attributes will be stored
+   * 
+   * @return true if some attributes were translated, false otherwise.
+   */
   public static boolean translateTag(MutableAttributeSet charAttr, 
 				     Tag t, MutableAttributeSet a)
   {
     if(t == Tag.FONT)
       {
-	if(a.getAttribute("color") != null)
+        Object color = a.getAttribute(Attribute.COLOR); 
+	if(color != null)
 	  {
-	    Color c = getColor(""+a.getAttribute("color"));
+	    Color c = getColor(color.toString());
 	    if( c == null )
 	      return false;
 	    charAttr.addAttribute(StyleConstants.Foreground, c);
 	    return true;
 	  }
 
-	if(a.getAttribute("size") != null)
+	if(a.getAttribute(Attribute.SIZE) != null)
 	  {
 	    // FIXME
 	    //	    charAttr.addAttribute(StyleConstants.FontSize, 
@@ -118,37 +154,37 @@ public class CharacterAttributeTranslator
 
     if( t == Tag.B )
       {
-	charAttr.addAttribute(StyleConstants.Bold, new Boolean(true));
+	charAttr.addAttribute(StyleConstants.Bold, Boolean.TRUE);
 	return true;
       }
 
     if( t == Tag.I )
       {
-	charAttr.addAttribute(StyleConstants.Italic, new Boolean(true));
+	charAttr.addAttribute(StyleConstants.Italic, Boolean.TRUE);
 	return true;
       }
 
     if( t == Tag.U )
       {
-	charAttr.addAttribute(StyleConstants.Underline, new Boolean(true));
+	charAttr.addAttribute(StyleConstants.Underline, Boolean.TRUE);
 	return true;
       }
 
     if( t == Tag.STRIKE )
       {
-	charAttr.addAttribute(StyleConstants.StrikeThrough, new Boolean(true));
+	charAttr.addAttribute(StyleConstants.StrikeThrough, Boolean.TRUE);
 	return true;
       }
 
     if( t == Tag.SUP )
       {
-	charAttr.addAttribute(StyleConstants.Superscript, new Boolean(true));
+	charAttr.addAttribute(StyleConstants.Superscript, Boolean.TRUE);
 	return true;
       }
 
     if( t == Tag.SUB )
       {
-	charAttr.addAttribute(StyleConstants.Subscript, new Boolean(true));
+	charAttr.addAttribute(StyleConstants.Subscript, Boolean.TRUE);
 	return true;
       }
     return false;

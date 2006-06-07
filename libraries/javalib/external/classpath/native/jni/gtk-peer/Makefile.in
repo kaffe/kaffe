@@ -72,6 +72,7 @@ am_libgtkpeer_la_OBJECTS = gnu_java_awt_peer_gtk_CairoSurface.lo \
 	gnu_java_awt_peer_gtk_GdkGraphicsEnvironment.lo \
 	gnu_java_awt_peer_gtk_GdkPixbufDecoder.lo \
 	gnu_java_awt_peer_gtk_GdkRobotPeer.lo \
+	gnu_java_awt_peer_gtk_GdkScreenGraphicsDevice.lo \
 	gnu_java_awt_peer_gtk_GdkTextLayout.lo \
 	gnu_java_awt_peer_gtk_GtkButtonPeer.lo \
 	gnu_java_awt_peer_gtk_GtkCanvasPeer.lo \
@@ -352,6 +353,7 @@ libgtkpeer_la_SOURCES = gnu_java_awt_peer_gtk_CairoSurface.c \
 			gnu_java_awt_peer_gtk_GdkGraphicsEnvironment.c \
 			gnu_java_awt_peer_gtk_GdkPixbufDecoder.c \
 			gnu_java_awt_peer_gtk_GdkRobotPeer.c \
+			gnu_java_awt_peer_gtk_GdkScreenGraphicsDevice.c \
 			gnu_java_awt_peer_gtk_GdkTextLayout.c \
 			gnu_java_awt_peer_gtk_GtkButtonPeer.c \
 			gnu_java_awt_peer_gtk_GtkCanvasPeer.c \
@@ -384,6 +386,7 @@ libgtkpeer_la_SOURCES = gnu_java_awt_peer_gtk_CairoSurface.c \
 			gnu_java_awt_peer_gtk_GtkVolatileImage.c \
 			cairographics2d.h \
 			gthread-jni.c \
+			gdkdisplay.h \
 			gdkfont.h \
 			gthread-jni.h \
 			gtk_jawt.c \
@@ -481,6 +484,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnu_java_awt_peer_gtk_GdkGraphicsEnvironment.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnu_java_awt_peer_gtk_GdkPixbufDecoder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnu_java_awt_peer_gtk_GdkRobotPeer.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnu_java_awt_peer_gtk_GdkScreenGraphicsDevice.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnu_java_awt_peer_gtk_GdkTextLayout.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnu_java_awt_peer_gtk_GtkButtonPeer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnu_java_awt_peer_gtk_GtkCanvasPeer.Plo@am__quote@

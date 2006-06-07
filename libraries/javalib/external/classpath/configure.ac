@@ -415,6 +415,13 @@ if test "x${COMPILE_JNI}" = xyes; then
 		 [true],
 		 [${X_LIBS}])
 
+    dnl Check if we can link against the XRandR library and set
+    dnl HAVE_XRANDR accordingly.
+    AC_CHECK_LIB([Xrandr], [XRRQueryExtension],
+                 [AC_DEFINE(HAVE_XRANDR, 1, [Define to 1 if you have libXrandr.])[X_EXTRA_LIBS="$X_EXTRA_LIBS -lXrandr"]],
+                 [true],
+                 [${X_LIBS}])
+
     AC_SUBST(GTK_CFLAGS)
     AC_SUBST(GTK_LIBS)
     AC_SUBST(FREETYPE2_LIBS)

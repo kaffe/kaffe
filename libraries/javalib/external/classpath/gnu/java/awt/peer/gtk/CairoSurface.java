@@ -199,6 +199,14 @@ public class CairoSurface extends DataBuffer
   }
 
   /**
+   * Call dispose() to clean up any native resources allocated.
+   */
+  protected void finalize()
+  {
+    dispose();
+  }
+
+  /**
    * Return a GtkImage from this Cairo surface.
    */
   public GtkImage getGtkImage()

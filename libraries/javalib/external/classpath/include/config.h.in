@@ -233,6 +233,9 @@
 /* Define to 1 if you have the `write' function. */
 #undef HAVE_WRITE
 
+/* Define to 1 if you have libXrandr. */
+#undef HAVE_XRANDR
+
 /* Define to 1 if you have libXrender. */
 #undef HAVE_XRENDER
 

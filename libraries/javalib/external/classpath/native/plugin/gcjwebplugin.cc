@@ -134,9 +134,10 @@ exception statement from your version. */
   "The whitelist is a list of the URLs from which you trust"            \
   " applets.\n"                                                         \
   "Your whitelist file is \"" WHITELIST_FILENAME "\"."
-#define FAILURE_MESSAGE                                                     \
-  "This page wants to load an applet.\n"                                    \
-  "There is no appletviewer installed in \"" APPLETVIEWER_EXECUTABLE "\"."  \
+#define FAILURE_MESSAGE                                                 \
+  "This page wants to load an applet.\n"                                \
+  "The appletviewer is missing or not installed properly in \""         \
+  APPLETVIEWER_EXECUTABLE "\"."        
 
 // Documentbase retrieval required definition.
 static NS_DEFINE_IID (kIPluginTagInfo2IID, NS_IPLUGINTAGINFO2_IID);
@@ -144,7 +145,7 @@ static NS_DEFINE_IID (kIPluginTagInfo2IID, NS_IPLUGINTAGINFO2_IID);
 // Browser function table.
 static NPNetscapeFuncs browserFunctions;
 
-// Keeps track of initialization. NP_INITIALIZE should only be
+// Keeps track of initialization. NP_Initialize should only be
 // called once.
 bool initialized = false;
 
@@ -376,7 +377,7 @@ GCJ_New (NPMIMEType pluginType, NPP instance, uint16 mode,
   // appletviewer, create the IO channels and install the channel
   // watch callbacks.
   g_mutex_lock (data->appletviewer_mutex);
-
+  
   np_error = plugin_start_appletviewer (data);
   
   // If the appletviewer is not installed, then a dialog box will
@@ -386,7 +387,7 @@ GCJ_New (NPMIMEType pluginType, NPP instance, uint16 mode,
       if (plugin_failed ())
         goto cleanup_applet_failure; 
   	}
-
+  
   // Create plugin-to-appletviewer channel.  The default encoding for
   // the file is UTF-8.
   // data->out_to_appletviewer
@@ -1559,6 +1560,11 @@ plugin_data_destroy (GCJPluginData** data)
 // implement and initializes a local table with browser functions that
 // we may wish to call.  Called once, after browser startup and before
 // the first plugin instance is created.
+// The field 'initialized' is set to true once this function has
+// finished. If 'initialized' is already true at the beginning of
+// this function, then it is evident that NP_Initialize has already
+// been called. There is no need to call this function more than once and
+// this workaround avoids any duplicate calls.
 NPError
 NP_Initialize (NPNetscapeFuncs* browserTable, NPPluginFuncs* pluginTable)
 {

@@ -522,6 +522,9 @@ public class JMenuBar extends JComponent implements Accessible, MenuElement
                                          KeyEvent e, int condition,
                                          boolean pressed)
   {
+    if (menuElement == null)
+      return false;
+
     // First check the menuElement itself, if it's a JComponent
     if (menuElement instanceof JComponent
         && ((JComponent) menuElement).processKeyBinding(ks, e, condition,

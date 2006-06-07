@@ -677,17 +677,6 @@ public class HTMLDocument extends DefaultStyledDocument
         // FIXME: Implement.
         print ("IsindexAction.start not implemented");
       }
-      
-      /**
-       * Called when an end tag is seen for one of the types of tags associated
-       * with this Action.
-       */
-      public void end(HTML.Tag t)
-        throws NotImplementedException
-      {
-        // FIXME: Implement.
-        print ("IsindexAction.end not implemented");
-      } 
     }
     
     public class ParagraphAction extends BlockAction
@@ -745,22 +734,9 @@ public class HTMLDocument extends DefaultStyledDocument
        * of tags associated with this Action.
        */
       public void start(HTML.Tag t, MutableAttributeSet a)
-        throws NotImplementedException
       {
-        // FIXME: Implement.
-        print ("SpecialAction.start not implemented");
+        addSpecialElement(t, a);
       }
-      
-      /**
-       * Called when an end tag is seen for one of the types of tags associated
-       * with this Action.
-       */
-      public void end(HTML.Tag t)
-        throws NotImplementedException
-      {
-        // FIXME: Implement.
-        print ("SpecialAction.end not implemented");
-      }                
     }
     
     class AreaAction extends TagAction

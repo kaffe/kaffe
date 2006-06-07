@@ -203,6 +203,8 @@ public class Demo
         boolean selected = laf.getClassName().equals(currentLaf);
         lafItem.setSelected(selected);
         lafMenu.add(lafItem);
+        
+        lafGroup.add(lafItem);
       }
 
     // Create themes menu.

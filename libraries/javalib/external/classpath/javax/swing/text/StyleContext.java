@@ -38,8 +38,6 @@ exception statement from your version. */
 
 package javax.swing.text;
 
-import gnu.classpath.NotImplementedException;
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -50,7 +48,6 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.EventListener;
-import java.util.HashSet;
 import java.util.Hashtable;
 
 import javax.swing.event.ChangeEvent;
@@ -770,16 +767,29 @@ public class StyleContext
   }
   
   /**
-   * TODO: DOCUMENT ME!
+   * Serialize an attribute set in a way that is compatible with it
+   * being read in again by {@link #readAttributeSet(ObjectInputStream, MutableAttributeSet)}.
+   * In particular registered static keys are transformed properly.
    * 
    * @param out - stream to write to
    * @param a - the attribute set
    * @throws IOException - any I/O error
    */
   public static void writeAttributeSet(ObjectOutputStream out, AttributeSet a)
-    throws IOException, NotImplementedException
+    throws IOException
   {
-    // FIXME: Not implemented
+    Enumeration e = a.getAttributeNames();
+    while (e.hasMoreElements())
+      {
+        Object oldKey = e.nextElement();
+        Object newKey = getStaticAttribute(oldKey);
+        Object key = (newKey == null) ? oldKey : newKey;
+ 
+        out.writeObject(key);
+        out.writeObject(a.getAttribute(oldKey));
+      }
+    out.writeObject(null);
+    out.writeObject(null);
   }
 
   /**
@@ -813,7 +823,7 @@ public class StyleContext
 
   /**
    * Registers an attribute key as a well-known keys. When an attribute with
-   * such a key is written to a stream,, a special syntax is used so that it
+   * such a key is written to a stream, a special syntax is used so that it
    * can be recognized when it is read back in. All attribute keys defined
    * in <code>StyleContext</code> are registered as static keys. If you define
    * additional attribute keys that you want to exist as nonreplicated objects,

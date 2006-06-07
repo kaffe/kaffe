@@ -124,6 +124,10 @@ Java_gnu_java_awt_peer_gtk_CairoGraphics2D_disposeNative
     cairo_surface_destroy (gr->pattern_surface);
   gr->pattern_surface = NULL;
 
+  if (gr->pattern_pixels)
+    g_free(gr->pattern_pixels);
+  gr->pattern_pixels = NULL;
+
   g_free( gr );
 }
 

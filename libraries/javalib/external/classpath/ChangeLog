@@ -1,3 +1,237 @@
+2006-06-07  Chris Burdess  <dog@gnu.org>
+
+	* gnu/classpath/debug/TeeInputStream.java,
+	  gnu/classpath/debug/TeeOutputStream.java,
+	  gnu/classpath/debug/TeeReader.java,
+	  gnu/classpath/debug/TeeWriter.java: New classes for debugging streams.
+	* gnu/xml/stream/XMLParser.java: Use tee streams for debugging. Don't
+	  read more characters than absolutely necessary in tryRead method.
+
+2006-06-07  Robert Schuster  <robertschuster@fsfe.org>
+
+	* examples/gnu/classpath/examples/swing/Demo.java:
+	(mkMenuBar): Put look and feel radio buttons into 
+	appropriate button group.
+
+2006-06-07  Chris Burdess  <dog@gnu.org>
+
+	* gnu/xml/stream/SAXParser.java,
+	  gnu/xml/stream/XMLParser.java: Add command line options for setting
+	  parsing parameters (for simpler debugging).
+	* gnu/xml/transform/TransformerImpl.java: Try to ensure that I/O error
+	  closing output stream is propagated to application.
+
+2006-06-06  Mark Wielaard  <mark@klomp.org>
+
+	PR 27917
+	* gnu/java/awt/peer/gtk/CairoSurface.java (finalize): Call dispose.
+	* gnu/java/awt/peer/gtk/ComponentGraphics.java: Override dispose to
+	call disposeSurface.
+	(disposeSurface): New native method.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_CairoGraphics2D.c
+	(Java_gnu_java_awt_peer_gtk_CairoGraphics2D_disposeNative): Free
+	pattern_pixels.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_CairoSurface.c
+	(Java_gnu_java_awt_peer_gtk_CairoSurface_drawSurface): Call
+	cairo_pattern_destroy.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_ComponentGraphics.c
+	(Java_gnu_java_awt_peer_gtk_ComponentGraphics_disposeSurface):
+	New function to destroy the surface.
+	* include/gnu_java_awt_peer_gtk_CairoGraphics2D.h: Regenerated.
+	* include/gnu_java_awt_peer_gtk_CairoSurface.h: Likewise.
+	* include/gnu_java_awt_peer_gtk_ComponentGraphics.h: Likewise.
+
+2006-06-06  Mark Wielaard  <mark@klomp.org>
+
+	* include/jni.h (JDK1_1InitArgs): Mark pointer-to-function types
+	with JNICALL.
+
+2006-06-06  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/plaf/metal/MetalSplitPaneDivider.java
+	(paint): If has focus, paint special background color,
+	* javax/swing/plaf/basic/BasicSplitPaneUI.java
+	(FocusHandler.focusGained): Implemented,
+	(FocusHandler.focusLost): Implemented.
+
+2006-06-06  Tom Tromey  <tromey@redhat.com>
+
+	* javax/swing/text/StyleContext.java (registerStaticAttributeKey):
+	Javadoc fix.
+	(writeAttributeSet): Implemented.
+
+2006-06-06  Tom Tromey  <tromey@redhat.com>
+
+	* javax/swing/text/html/HTMLDocument.java (SpecialAction.start):
+	Implement.
+	(SpecialAction.end): Removed.
+	(IsindexAction.end): Likewise.
+
+2006-06-06  Tom Tromey  <tromey@redhat.com>
+
+	* include/jni.h (JDK1_1InitArgs): New struct.
+	(JDK1_1AttachArgs): Likewise.
+
+2006-06-06  Tom Tromey  <tromey@redhat.com>
+
+	* java/security/UnresolvedPermission.java (getUnresolvedType): New
+	method.
+	(getUnresolvedName): New method.
+	(getUnresolvedActions): New method.
+	(getUnresolvedCerts): New method.
+
+2006-06-06  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* gnu/javax/swing/text/html/CharacterAttributeTranslator.java
+	(getColor): Removed debugging code.
+
+2006-06-06  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* gnu/javax/swing/text/html/CharacterAttributeTranslator.java
+	(getColor): Added support for "rgb(red, green, blue)" notation.
+	(translateTag): Use Boolean.TRUE, not new Boolean().
+
+2006-06-06  Roman Kennke  <kennke@aicas.com>
+
+	PR 27651
+	* javax/swing/JTree.java
+	(JTree(TreeModel)): Call updateUI() before setModel().
+	(setModel): Don't call updateUI here.
+
+2006-06-06  Lillian Angel  <langel@redhat.com>
+	
+	* native/plugin/gcjwebplugin.cc:
+	Fixed failure message and commenting.
+	(NP_Initialize): Added more comments.
+
+2006-06-06  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/JSplitPane.java
+	(AccessibleJSplitPane): API doc fixes,
+	(setDividerLocation): Likewise,
+	* javax/swing/plaf/basic/BasicLookAndFeel.java
+	(initComponentDefaults): Additions to SplitPane.ancestorInputMap,
+	* javax/swing/plaf/basic/BasicSplitPaneUI.java
+	(getInputMap): New method,
+	(getActionMap): New method,
+	(createActionMap): New method,
+	(installKeyboardActions): Implemented,
+	(uninstallKeyboardActions): Implemented.
+
+2006-06-06  Roman Kennke  <kennke@aicas.com>
+
+	PR 27523
+	* javax/swing/MenuSelectionManager.java
+	(processKeyEvent): Added check to avoid
+	ArrayIndexOutOfBoundsException.
+
+2006-06-06  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* gnu/javax/swing/text/html/htmlAttributeSet.java
+	(getAttributeNames): Rewritten
+
+2006-06-06  Chris Burdess  <dog@gnu.org>
+
+	* gnu/xml/transform/TransformerImpl.java: Check type of created
+	  document (more cases).
+
+2006-06-06  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* gnu/javax/swing/text/html/htmlAttributeSet.java
+	(clone): New method. (copyAttributes): New method.
+	(getResolveParent): Comment fix. (getAttribute):
+	Rewritten. (addAttribute): Rewritten.
+	* gnu/javax/swing/text/html/SmallHtmlAttributeSet.java:
+	New file.
+
+2006-06-06  Roman Kennke  <kennke@aicas.com>
+
+	PR 27522
+	* javax/swing/JMenuBar.java
+	(processKeyBindingHelper): Added null check to prevent NPE.
+
+2006-06-06  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/basic/BasicInternalFrameUI.java
+	(ShowSystemMenuAction): New class.
+	(installKeyboardActions): Implemented.
+	(uninstallKeyboardActions): Implemented.
+	* javax/swing/plaf/metal/MetalInternalFrameUI.java
+	(installKeyboardActions): Overridden to remove showSystemMenu action.
+
+2006-06-06  Chris Burdess  <dog@gnu.org>
+
+	* gnu/xml/transform/TransformerImpl.java: Check type of created
+	  document.
+
+2006-06-06  Robert Schuster  <robertschuster@fsfe.org>
+
+	* gnu/java/awt/peer/gtk/GdkGraphicsEnvironment.java:
+	(getScreenDevices): Added explicit cast.
+
+2006-06-06  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/basic/BasicTextUI.java
+	(installKeyboardActions): Use shared input map. Correctly
+	install the input/action maps in the component's input/action
+	map hierarchies.
+	(getActionMap): New helper method for fetching an ActionMap from
+	the UIManager or creating a default one if there is none supplied
+	by the UIManager.
+	(createActionMap): Add the TransferHandler's actions here. Made
+	method private.
+	(getInputMap): Leave out unnecessary method parameter. Load
+	shared input map.
+	* javax/swing/plaf/basic/SharedUIDefaults.java: New file.
+
+2006-06-06  Robert Schuster  <robertschuster@fsfe.org>
+
+	* configure.ac: Added missing [ to expression.
+
+2006-06-06  Robert Schuster  <robertschuster@fsfe.org>
+
+	* configure.ac: Added missing { to expression.
+
+2006-06-06  Robert Schuster  <robertschuster@fsfe.org>
+
+	* include/gnu_java_awt_peer_gtk_GdkGraphicsEnvironment.h: Regenerated.
+	* include/gnu_java_awt_peer_gtk_GdkScreenGraphicsDevice.h: New file.
+	* include/Makefile.am: Added
+	gnu_java_awt_peer_gtk_GdkScreenGraphicsDevice.
+	* gnu/java/awt/peer/gtk/GdkGraphicsConfiguration.java:
+	(GdkGraphicsConfiguration): Rewritten.
+	(getColorModel): Rewritten.
+	(getColorModel(int)): Rewritten.
+	(getBounds): Rewritten.
+	(createCompatibleVolatileImage): Implemented.
+	* gnu/java/awt/peer/gtk/GdkGraphicsEnvironment.java: Added static
+	initializer.
+	(getDefaultScreenDevice): Rewritten.
+	(nativeGetDefaultScreenDevice): New method.
+	(getScreenDevices): Rewritten.
+	(nativeGetScreenDevices): New method.
+	(nativeInitState): New method.
+	* gnu/java/awt/peer/gtk/GdkScreenGraphicsDevice.java: Entirely
+	rewritten.
+	(X11DisplayMode): New inner class.
+	* native/jni/gtk-peer/Makefile.am: Added gdkdisplay.h and
+	gnu_java_awt_peer_gtk_GdkScreenGraphicsDevice.c
+	* native/jni/gtk-peer/gdkdisplay.h: New file.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkGraphicsEnvironment.c:
+	(Java_gnu_java_awt_peer_gtk_GdkGraphicsEnvironment_initStaticState):
+	New function.
+	(Java_gnu_java_awt_peer_gtk_GdkGraphicsEnvironment_nativeInitState):
+	New function.
+	(Java_gnu_java_awt_peer_gtk_GdkGraphicsEnvironment
+	_nativeGetScreenDevices):
+	New function.
+	(Java_gnu_java_awt_peer_gtk_GdkGraphicsEnvironment
+	_nativeGetDefaultScreenDevice):
+	New function.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkScreenGraphicsDevice.c:
+	New file.
+	* configure.ac: Added check for Xrandr library.
+
 2006-06-06  Roman Kennke  <kennke@aicas.com>
 
 	* javax/swing/plaf/basic/BasicTableUI.java

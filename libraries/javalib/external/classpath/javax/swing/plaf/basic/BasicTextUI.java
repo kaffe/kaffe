@@ -62,10 +62,12 @@ import javax.swing.JComponent;
 import javax.swing.LookAndFeel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.TransferHandler;
 import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.plaf.ActionMapUIResource;
+import javax.swing.plaf.InputMapUIResource;
 import javax.swing.plaf.TextUI;
 import javax.swing.plaf.UIResource;
 import javax.swing.text.AbstractDocument;
@@ -732,18 +734,8 @@ public abstract class BasicTextUI extends TextUI
 
     // load any bindings for the newer InputMap / ActionMap interface
     SwingUtilities.replaceUIInputMap(textComponent, JComponent.WHEN_FOCUSED,
-                                     getInputMap(JComponent.WHEN_FOCUSED));
-    SwingUtilities.replaceUIActionMap(textComponent, createActionMap());
-    
-    ActionMap parentActionMap = new ActionMapUIResource();
-    Action[] actions = textComponent.getActions();
-    for (int j = 0; j < actions.length; j++)
-      {
-        Action currAction = actions[j];
-        parentActionMap.put(currAction.getValue(Action.NAME), currAction);
-      }
-    
-    SwingUtilities.replaceUIActionMap(textComponent, parentActionMap);
+                                     getInputMap());
+    SwingUtilities.replaceUIActionMap(textComponent, getActionMap());
   }
   
   /**
@@ -751,40 +743,71 @@ public abstract class BasicTextUI extends TextUI
    * 
    * @return an ActionMap to be installed on the text component
    */
-  ActionMap createActionMap()
+  private ActionMap getActionMap()
   {
-    Action[] actions = textComponent.getActions();
-    ActionMap am = new ActionMapUIResource();
-    for (int i = 0; i < actions.length; ++i)
+    // Note: There are no .actionMap entries in the standard L&Fs. However,
+    // with the RI it is possible to install action maps via such keys, so
+    // we must load them too. It can be observed that when there is no
+    // .actionMap entry in the UIManager, one gets installed after a text
+    // component of that type has been loaded.
+    String prefix = getPropertyPrefix();
+    String amName = prefix + ".actionMap";
+    ActionMap am = (ActionMap) UIManager.get(amName);
+    if (am == null)
       {
-        String name = (String) actions[i].getValue(Action.NAME);
-        if (name != null)
-          am.put(name, actions[i]);
+        am = createActionMap();
+        UIManager.put(amName, am);
       }
+
+    ActionMap map = new ActionMapUIResource();
+    map.setParent(am);
+
+    return map;
+  }
+
+  /**
+   * Creates a default ActionMap for text components that have no UI default
+   * for this (the standard for the built-in L&Fs). The ActionMap is copied
+   * from the text component's getActions() method.
+   *
+   * @returna default ActionMap
+   */
+  private ActionMap createActionMap()
+  {
+    ActionMap am = new ActionMapUIResource();
+    Action[] actions = textComponent.getActions();
+    for (int i = actions.length - 1; i >= 0; i--)
+      {
+        Action action = actions[i];
+        am.put(action.getValue(Action.NAME), action);
+      }
+    // Add TransferHandler's actions here. They don't seem to be in the
+    // JTextComponent's default actions, and I can't make up a better place
+    // to add them.
+    Action copyAction = TransferHandler.getCopyAction();
+    am.put(copyAction.getValue(Action.NAME), copyAction);
+    Action cutAction = TransferHandler.getCutAction();
+    am.put(cutAction.getValue(Action.NAME), cutAction);
+    Action pasteAction = TransferHandler.getPasteAction();
+    am.put(pasteAction.getValue(Action.NAME), pasteAction);
+
     return am;
   }
 
   /**
    * Gets the input map for the specified <code>condition</code>.
    *
-   * @param condition the condition for the InputMap
-   *
    * @return the InputMap for the specified condition
    */
-  InputMap getInputMap(int condition)
+  private InputMap getInputMap()
   {
+    InputMap im = new InputMapUIResource();
     String prefix = getPropertyPrefix();
-    switch (condition)
-      {
-      case JComponent.WHEN_IN_FOCUSED_WINDOW:
-        // FIXME: is this the right string? nobody seems to use it.
-        return (InputMap) UIManager.get(prefix + ".windowInputMap"); 
-      case JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT:
-        return (InputMap) UIManager.get(prefix + ".ancestorInputMap");
-      default:
-      case JComponent.WHEN_FOCUSED:
-        return (InputMap) UIManager.get(prefix + ".focusInputMap");
-      }
+    InputMap shared =
+      (InputMap) SharedUIDefaults.get(prefix + ".focusInputMap");
+    if (shared != null)
+      im.setParent(shared);
+    return im;
   }
 
   /**

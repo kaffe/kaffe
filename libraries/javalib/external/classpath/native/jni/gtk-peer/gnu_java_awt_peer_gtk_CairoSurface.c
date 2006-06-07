@@ -203,6 +203,7 @@ Java_gnu_java_awt_peer_gtk_CairoSurface_drawSurface
 
    cairo_set_source(cr, p);
    cairo_paint(cr);
+   cairo_pattern_destroy(p);
  }
   
  (*env)->ReleaseDoubleArrayElements (env, java_matrix, native_matrix, 0);
