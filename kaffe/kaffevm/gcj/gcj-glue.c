@@ -158,9 +158,10 @@ DBG(GCJ, dprintf("making kaffe class for %s@%p vtab=%p gcj=%p...\n",
 						   other gcj class */
 
 	if (info->methodCount > 0) {
-		class->methods = gc_malloc(sizeof(Method) * info->methodCount, 
-					   GC_ALLOC_METHOD);
-		if (class->methods == 0) {
+		Kaffe_set_class_methods(class->methods,
+					gc_malloc(sizeof(Method) * info->methodCount, 
+						  GC_ALLOC_METHOD));
+		if (Kaffe_get_class_methods(class) == NULL) {
 			goto oom;
 		}
 	}
@@ -232,7 +233,7 @@ kenvMakeMethod(neutralMethodInfo* info, Hjava_lang_Class *c, errorInfo *einfo)
 	Utf8Const *signature;
 	static 	char buf[1024];
 
-        Method *mt = &CLASS_METHODS(c)[CLASS_NMETHODS(c)];
+        Method *mt = &(Kaffe_get_class_methods(c)[CLASS_NMETHODS(c)]);
 	mt->name = utf8ConstFromString(info->name);
 
 	classname2pathname(info->signature, buf);
@@ -590,7 +591,7 @@ kenvFindMethod(Hjava_lang_Class *kclass,
         for (; kclass != 0; kclass = kclass->superclass) {
 
 		int n = CLASS_NMETHODS(kclass);        
-		for (meth = CLASS_METHODS(kclass); --n >= 0; ++meth) {
+		for (meth = Kaffe_get_class_methods(kclass); --n >= 0; ++meth) {
 
 			/* Ouch.  GCJ keeps signatures in dotted form, we 
 			 * keep them in slashed form.
@@ -648,7 +649,7 @@ kenvTranslateMethod(const char *classname, const char *mname, const char *msig)
 
 	for (cc = kclass; cc; cc = cc->superclass) {
 		int  nm = CLASS_NMETHODS(cc);
-		meth = CLASS_METHODS(cc);
+		meth = Kaffe_get_class_methods(cc);
 		while (nm-- > 0) {
 			if (!strcmp(mname, meth->name->data) &&
 			    !strncmp(msig, METHOD_SIGD(meth), msiglen)) 

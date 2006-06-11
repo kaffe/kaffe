@@ -699,14 +699,14 @@ expandMethods(Hjava_lang_Class *cl, Method *imeth, errorInfo *einfo)
 	}
 	else
 	*/
-	if( (new_methods = gc_realloc(CLASS_METHODS(cl),
+	if( (new_methods = gc_realloc(Kaffe_get_class_methods(cl),
 				      sizeof(Method) *
 				      (CLASS_NMETHODS(cl) + 1), KGC_ALLOC_METHOD)) )
 	{
 		int i;
 		
 		i = CLASS_NMETHODS(cl);
-		CLASS_METHODS(cl) = new_methods;
+		Kaffe_set_class_methods(cl, new_methods);
 		utf8ConstAddRef(imeth->name);
 		new_methods[i] = *imeth;
 
@@ -765,7 +765,7 @@ expandInterfaces(Hjava_lang_Class *root_class,
 			int foundit = 0;
 			Method *imeth;
 			
-			imeth = &CLASS_METHODS(iface)[j];
+			imeth = &(Kaffe_get_class_methods(iface)[j]);
 			/* Igore statics */
 			if( imeth->accflags & ACC_STATIC )
 				continue;
@@ -778,7 +778,7 @@ expandInterfaces(Hjava_lang_Class *root_class,
 				{
 					Method *cmeth;
 					
-					cmeth = &CLASS_METHODS(cl)[k];
+					cmeth = &(Kaffe_get_class_methods(cl)[k]);
 					if( (cmeth->name == imeth->name) &&
 					    (cmeth->parsed_sig->signature ==
 					     imeth->parsed_sig->signature) )
@@ -982,7 +982,7 @@ internalSetupClass(Hjava_lang_Class* cl, Utf8Const* name, int flags,
 		return 0;
 	}
 	cl->packageLength = findPackageLength(name->data);
-	CLASS_METHODS(cl) = NULL;
+	Kaffe_set_class_methods(cl, NULL);
 	CLASS_NMETHODS(cl) = 0;
 	assert(cl->superclass == 0);
 	cl->superclass = (Hjava_lang_Class*)(uintp)su;
@@ -1129,18 +1129,20 @@ startMethods(Hjava_lang_Class* this, u2 methct, errorInfo *einfo)
 {
 	if (methct == 0)
 	{
-		this->methods = NULL;
+		Kaffe_set_class_methods(this, NULL);
 	}
 	else
 	{
-		this->methods = gc_malloc(sizeof(Method)*(methct), KGC_ALLOC_METHOD);
-		if (this->methods == NULL)
+		Kaffe_set_class_methods(this, 
+					gc_malloc(sizeof(Method)*(methct), 
+						  KGC_ALLOC_METHOD));
+		if (Kaffe_get_class_methods(this) == NULL)
 		{
 			postOutOfMemory(einfo);
 			return false;
 		}
 	}
-	KGC_WRITE(this, this->methods);
+	KGC_WRITE(this, Kaffe_get_class_methods(this));
 
 	CLASS_NMETHODS(this) = 0; /* updated in addMethod */
 	return true;
@@ -1191,7 +1193,7 @@ DBG(RESERROR,	dprintf("addMethod: no signature name.\n");	);
 
 #ifdef KAFFE_VMDEBUG
 	/* Search down class for method name - don't allow duplicates */
-	for (ni = CLASS_NMETHODS(c), mt = CLASS_METHODS(c); --ni >= 0; ) {
+	for (ni = CLASS_NMETHODS(c), mt = Kaffe_get_class_methods(c); --ni >= 0; ) {
 		assert(! utf8ConstEqual (name, mt->name)
 		       || ! utf8ConstEqual (signature, METHOD_SIG(mt)));
 	}
@@ -1201,7 +1203,7 @@ DBG(CLASSFILE,
 	dprintf("Adding method %s:%s%s (%x)\n", c->name->data, name->data, signature->data, access_flags);
     );
 
-	mt = &CLASS_METHODS(c)[CLASS_NMETHODS(c)];
+	mt = &(Kaffe_get_class_methods(c)[CLASS_NMETHODS(c)]);
 	utf8ConstAssign(mt->name, name);
 	METHOD_PSIG(mt) = parseSignature(signature, einfo);
 	if (METHOD_PSIG(mt) == NULL) {
@@ -2024,7 +2026,7 @@ getInheritedMethodIndex(Hjava_lang_Class *super, Method *meth)
 	 */
 	for (; super != NULL;  super = super->superclass) {
 		int j = CLASS_NMETHODS(super);
-		Method* mt = CLASS_METHODS(super);
+		Method* mt = Kaffe_get_class_methods(super);
 		for (; --j >= 0;  ++mt) {
 			/* skip methods that are private or static */
 			if ((mt->accflags & (ACC_PRIVATE|ACC_STATIC)) != 0)
@@ -2085,7 +2087,7 @@ buildDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
 		class->msize = 0;
 	}
 
-	meth = CLASS_METHODS(class);
+	meth = Kaffe_get_class_methods(class);
 	i = CLASS_NMETHODS(class);
 	for (; --i >= 0; meth++) {
 		Hjava_lang_Class* super = class->superclass;
@@ -2130,7 +2132,7 @@ buildDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
 	mtab = class->vtable->method;
 
 	/* now build a trampoline for each and every method */
-	meth = CLASS_METHODS(class);
+	meth = Kaffe_get_class_methods(class);
 	i = CLASS_NMETHODS(class);
 
 	for (; --i >= 0; meth++) {
@@ -2150,7 +2152,7 @@ buildDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
 	 * methods so they can be patched up independently
 	 */
 	for (cc = class->superclass; cc != 0; cc = cc->superclass) {
-		meth = CLASS_METHODS(cc);
+		meth = Kaffe_get_class_methods(cc);
 		i = CLASS_NMETHODS(cc);
 		for (; --i >= 0; meth++) {
 			void **where;
@@ -2230,7 +2232,7 @@ buildInterfaceDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
 	j = 1;
 	for (i = 0; i < class->total_interface_len; i++) {
 		int inm = CLASS_NMETHODS(class->interfaces[i]);
-		Method *imeth = CLASS_METHODS(class->interfaces[i]);
+		Method *imeth = Kaffe_get_class_methods(class->interfaces[i]);
 
 		/* store interface as first word for type inclusion test */
 		class->itable2dtable[j++] = class->interfaces[i];
@@ -2250,7 +2252,7 @@ buildInterfaceDispatchTable(Hjava_lang_Class* class, errorInfo *einfo)
 			 */
 			for (ncl = class; ncl != NULL;  ncl = ncl->superclass) {
 				int k = CLASS_NMETHODS(ncl);
-				cmeth = CLASS_METHODS(ncl);
+				cmeth = Kaffe_get_class_methods(ncl);
 				for (; --k >= 0;  ++cmeth) {
 					if (utf8ConstEqual (cmeth->name,
 							    imeth->name) &&
@@ -2479,7 +2481,7 @@ prepareInterface(Hjava_lang_Class* class, errorInfo *einfo)
 	Method* meth;
 	int i;
 
-	meth = CLASS_METHODS(class);
+	meth = Kaffe_get_class_methods(class);
 	class->msize = 0;
 
 	/* enumerate indices and store them in meth->idx */
@@ -2895,7 +2897,7 @@ lookupArray(Hjava_lang_Class* c, errorInfo *einfo)
 			return (NULL);
 		}
 
-		arr_class = CLASS_ARRAY_CACHE(c);
+		arr_class = Kaffe_get_primitive_array_cache(c);
 		if (arr_class) {
 			return (arr_class);
 		}
@@ -2973,7 +2975,7 @@ lookupArray(Hjava_lang_Class* c, errorInfo *einfo)
 		centry->data.cl = c = NULL;
 		goto bail;
 	}
-	CLASS_ELEMENT_TYPE(arr_class) = c;
+	Kaffe_set_array_element_type(arr_class, c);
 
 	/* Add the interfaces that arrays implement.  Note that addInterface
 	 * will hold on to arr_interfaces, so it must be a static variable.
@@ -2998,7 +3000,7 @@ bail:
 
 	found:;
 	if (c && CLASS_IS_PRIMITIVE(c)) {
-		CLASS_ARRAY_CACHE(c) = centry->data.cl;
+		Kaffe_set_primitive_array_cache(c, centry->data.cl);
 	}
 	
 #if defined(KAFFE_XDEBUGGING)

@@ -327,7 +327,7 @@ static void dfHandleArray(struct debug_file *df, struct Hjava_lang_Class *cl)
 	assert(df != NULL);
 	assert(cl != NULL);
 
-	etype = CLASS_ELEMENT_TYPE(cl);
+	etype = Kaffe_get_array_element_type(cl);
 	if( cl->stab_id == 0 )
 	{
 		cl->stab_id = df->df_current_type_id + 1;

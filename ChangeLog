@@ -1,3 +1,46 @@
+2006-06-11  Dalibor Topic  <robilad@kaffe.org>
+
+	Fixed 16 gcc 4.1.1 warnings due to abuse of a methods
+	field in class to store different types for array and primitive
+	classes.
+
+        * kaffe/kaffevm/classMethod.h:
+	(struct Hjava_lang_Class): New union cache of methods,
+	element_type and array_cache.
+	(Kaffe_get_class_methods, Kaffe_set_class_methods,
+	Kaffe_get_array_element_type, Kaffe_set_array_element_type,
+	Kaffe_get_primitive_array_cache, Kaffe_set_primitive_array_cache)
+	New accessor functions.
+	(CLASS_METHODS, CLASS_ELEMENT_TYPE, CLASS_ARRAY_CACHE) Removed.
+
+	* kaffe/jvmpi/jvmpi_kaffe.c,
+        kaffe/kaffevm/access.c,
+        kaffe/kaffevm/classMethod.c,
+        kaffe/kaffevm/classPool.c,
+        kaffe/kaffevm/code.c,
+        kaffe/kaffevm/gcFuncs.c,
+        kaffe/kaffevm/gcj/gcj-class.cc,
+        kaffe/kaffevm/gcj/gcj-glue.c,
+        kaffe/kaffevm/jit/machine.c,
+        kaffe/kaffevm/jit3/machine.c,
+        kaffe/kaffevm/jni/jni-helpers.c,
+        kaffe/kaffevm/jni/jni.c,
+        kaffe/kaffevm/lookup.c,
+        kaffe/kaffevm/object.c,
+        kaffe/kaffevm/reflect.c,
+        kaffe/kaffevm/soft.c,
+        kaffe/kaffevm/verifier/verify.c,
+        kaffe/kaffevm/verifier/verify2.c,
+        kaffe/xprof/debugFile.c,
+        libraries/clib/native/Class.c,
+        libraries/clib/native/Constructor.c,
+        libraries/clib/native/Method.c,
+        libraries/clib/native/Object.c,
+        libraries/clib/native/System.c,
+        libraries/extensions/microsoft/clib/Delegate.c,
+        test/internal/jitBasic.c:
+	Use accessor functions instead of removed macros.
+
 2006-06-07  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/external/classpath: Resynced with GNU Classpath.

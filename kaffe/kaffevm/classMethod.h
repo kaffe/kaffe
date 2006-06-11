@@ -12,6 +12,8 @@
 #ifndef __classmethod_h
 #define __classmethod_h
 
+#include <assert.h>
+
 #include "gtypes.h"
 #include "machine.h"
 #include "access.h"
@@ -117,7 +119,11 @@ struct Hjava_lang_Class {
 	/* For regular classes, an array of the methods defined in this class.
 	   For array types, used for CLASS_ELEMENT_TYPE.
 	   For primitive types, used by CLASS_ARRAY_CACHE. */
-	Method*			methods;
+        union {
+	  Method*		       methods;
+	  struct Hjava_lang_Class*     element_type;
+	  struct Hjava_lang_Class*     array_cache;
+	} cache;
 	short			method_count;
 
 	/* Number of methods in the dtable. */
@@ -419,7 +425,6 @@ struct _method_info;
 struct _field_info;
 struct classFile;
 
-#define CLASS_METHODS(CLASS)  ((CLASS)->methods)
 #define CLASS_NMETHODS(CLASS)  ((CLASS)->method_count)
 
 /* An array containing all the Fields, static fields first. */
@@ -467,11 +472,97 @@ struct classFile;
 #define	CLASS_IS_ABSTRACT(CL) ((CL)->accflags & ACC_ABSTRACT)
 #define	CLASS_IS_FINAL(CL) ((CL)->accflags & ACC_FINAL)
 
-/* For an array type, the types of the elements. */
-#define CLASS_ELEMENT_TYPE(ARRAYCLASS) (*(Hjava_lang_Class**)&(ARRAYCLASS)->methods)
+/**
+ * get array of methods in class.
+ * 
+ * @param clazz the class
+ *
+ * @return methods in the class
+ */
+static inline 
+Method * 
+Kaffe_get_class_methods(struct Hjava_lang_Class * clazz)
+{
+  return clazz->cache.methods;
+}
 
-/* Used by the lookupArray function. */
-#define CLASS_ARRAY_CACHE(PRIMTYPE) (*(Hjava_lang_Class**)&(PRIMTYPE)->methods)
+/**
+ * set array of methods in class.
+ *
+ * @param clazz the class
+ * @param methods the methods to set
+ */
+static inline 
+void 
+Kaffe_set_class_methods(struct Hjava_lang_Class * clazz,
+			Method * methods)
+{
+  clazz->cache.methods = methods;
+}
+
+/**
+ * get type of elements in an array class.
+ * 
+ * @param arrayclazz the class
+ *
+ * @return  type of elements in the array class
+ */
+static inline 
+Hjava_lang_Class * 
+Kaffe_get_array_element_type(struct Hjava_lang_Class * arrayclazz)
+{
+  assert(CLASS_IS_ARRAY(arrayclazz));
+
+  return arrayclazz->cache.element_type;
+}
+
+/**
+ * set type of elements in an array class.
+ *
+ * @param arrayclazz the class
+ * @param element_type the type to set
+ */
+static inline 
+void 
+Kaffe_set_array_element_type(struct Hjava_lang_Class * arrayclazz,
+			     Hjava_lang_Class * element_type)
+{
+  assert(CLASS_IS_ARRAY(arrayclazz));
+
+  arrayclazz->cache.element_type = element_type;
+}
+
+/**
+ * get array cache of a primitive class.
+ * 
+ * @param primitive_clazz the class
+ *
+ * @return  array_cache of the primitive class
+ */
+static inline 
+Hjava_lang_Class * 
+Kaffe_get_primitive_array_cache(struct Hjava_lang_Class * primitive_clazz)
+{
+  assert(CLASS_IS_PRIMITIVE(primitive_clazz));
+
+  return primitive_clazz->cache.array_cache;
+}
+
+/**
+ * set array cache in primitive class.
+ *
+ * @param primitive_clazz the class
+ * @param array_cache the new value
+ */
+static inline 
+void 
+Kaffe_set_primitive_array_cache(struct Hjava_lang_Class * primitive_clazz,
+			     Hjava_lang_Class * array_cache)
+{
+  assert(CLASS_IS_PRIMITIVE(primitive_clazz));
+
+  primitive_clazz->cache.array_cache = array_cache;
+}
 
 #define TYPE_PRIM_SIZE(CL) ((CL)->size_in_bytes)
 #define TYPE_SIZE(CL) \

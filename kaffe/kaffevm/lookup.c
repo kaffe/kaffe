@@ -339,7 +339,7 @@ findMethodLocal(Hjava_lang_Class* class, Utf8Const* name, Utf8Const* signature)
 	 * Also there is no attempt to honour PUBLIC, PRIVATE, etc.
 	 */
 	n = CLASS_NMETHODS(class);
-	for (mptr = CLASS_METHODS(class); --n >= 0; ++mptr) {
+	for (mptr = Kaffe_get_class_methods(class); --n >= 0; ++mptr) {
 		if (utf8ConstEqual (name, mptr->name) && utf8ConstEqual (signature, METHOD_SIG(mptr))) {
 DBG(MLOOKUP,
 			dprintf("findMethodLocal(%s,%s,%s) -> %p\n",

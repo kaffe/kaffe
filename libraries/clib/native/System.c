@@ -103,8 +103,8 @@ java_lang_VMSystem_arraycopy0(struct Hjava_lang_Object* src,
 	sclass = OBJECT_CLASS(src); 	 
 	dclass = OBJECT_CLASS(dst);
 
-	sclass = CLASS_ELEMENT_TYPE(sclass); 	 
-	dclass = CLASS_ELEMENT_TYPE(dclass); 	 
+	sclass = Kaffe_get_array_element_type(sclass); 	 
+	dclass = Kaffe_get_array_element_type(dclass); 	 
 	elemsz = TYPE_SIZE(sclass); 	 
 
 	len *= elemsz; 	 

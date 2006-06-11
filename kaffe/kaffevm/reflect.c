@@ -111,7 +111,7 @@ KaffeVM_makeReflectConstructor(struct Hjava_lang_Class* clazz, int slot)
 	Hjava_lang_reflect_Constructor* meth;
 	Method* mth;
 
-	mth = CLASS_METHODS(clazz) + slot;
+	mth = Kaffe_get_class_methods(clazz) + slot;
 	meth = (Hjava_lang_reflect_Constructor*)
 	    AllocObject("java/lang/reflect/Constructor", NULL);
 
@@ -129,7 +129,7 @@ KaffeVM_makeReflectMethod(struct Hjava_lang_Class* clazz, int slot)
 	Hjava_lang_reflect_Method* meth;
 	Method* mth;
 
-	mth = CLASS_METHODS(clazz) + slot;
+	mth = Kaffe_get_class_methods(clazz) + slot;
 	meth = (Hjava_lang_reflect_Method*)
 	    AllocObject("java/lang/reflect/Method", NULL);
 

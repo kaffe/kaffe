@@ -147,7 +147,7 @@ findMethodFromPC(uintp pc)
 		for (entry = classEntryPool[ipool];  entry != NULL; entry = entry->next) {
 			if (entry->data.cl != 0) {
 				imeth = CLASS_NMETHODS(entry->data.cl);
-				ptr = CLASS_METHODS(entry->data.cl);
+				ptr = Kaffe_get_class_methods(entry->data.cl);
 				for (; --imeth >= 0;  ptr++) {
 					uintp ncode;
 					if (!METHOD_TRANSLATED(ptr)) {
@@ -608,11 +608,11 @@ statClass(Hjava_lang_Class *clazz, int *total)
 
 	/* methods only if we have some */
 	if (!CLASS_IS_PRIMITIVE(clazz) && !CLASS_IS_ARRAY(clazz)
-		&& CLASS_METHODS(clazz) != 0)
+		&& Kaffe_get_class_methods(clazz) != NULL)
 	{
-		Method *m = CLASS_METHODS(clazz);
+		Method *m = Kaffe_get_class_methods(clazz);
 		int i, n = CLASS_NMETHODS(clazz);
-		misc += SIZE_IFNONZERO(CLASS_METHODS(clazz));
+		misc += SIZE_IFNONZERO(Kaffe_get_class_methods(clazz));
 		for (i = 0; i < n; m++, i++) {
 			miscfixed += SIZE_IFNONZERO(m->parsed_sig);
 			miscfixed += SIZE_IFNONZERO(m->lines);

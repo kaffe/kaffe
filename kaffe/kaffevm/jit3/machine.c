@@ -1421,7 +1421,7 @@ profilerClassStat(Hjava_lang_Class *clazz, void *param UNUSED)
 	Method *meth;
 	int mindex;
 
-	for (mindex = CLASS_NMETHODS(clazz), meth = CLASS_METHODS(clazz); mindex-- > 0; meth++) {
+	for (mindex = CLASS_NMETHODS(clazz), meth = Kaffe_get_class_methods(clazz); mindex-- > 0; meth++) {
 		if (meth->callsCount == 0)
 			continue;
 

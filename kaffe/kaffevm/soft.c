@@ -345,8 +345,8 @@ instanceof_array(Hjava_lang_Class* c, Hjava_lang_Class* oc)
 	/* Skip as many arrays of arrays as we can.  We stop when we find
 	 * a base class in either. */
 	while (CLASS_IS_ARRAY(c) && CLASS_IS_ARRAY(oc)) {
-		c = CLASS_ELEMENT_TYPE(c);
-		oc = CLASS_ELEMENT_TYPE(oc);
+		c = Kaffe_get_array_element_type(c);
+		oc = Kaffe_get_array_element_type(oc);
 	}
 
 	/* If we are still casting to an array then we have failed already */
@@ -614,7 +614,7 @@ soft_initialise_class(Hjava_lang_Class* c)
 void
 soft_checkarraystore(Hjava_lang_Object* array, Hjava_lang_Object* obj)
 {
-	if (obj != NULL && soft_instanceof(CLASS_ELEMENT_TYPE(OBJECT_CLASS(array)), obj) == 0) {
+	if (obj != NULL && soft_instanceof(Kaffe_get_array_element_type(OBJECT_CLASS(array)), obj) == 0) {
 		Hjava_lang_Throwable* asexc;
 		const char *otype = CLASS_CNAME(OBJECT_CLASS(obj));
 		const char *atype = CLASS_CNAME(OBJECT_CLASS(array));

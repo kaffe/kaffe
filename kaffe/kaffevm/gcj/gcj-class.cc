@@ -291,7 +291,7 @@ dumpClass(java::lang::Class *clazz)
 	fprintf(stderr, "\n");
 
 	for (int i = 0; i < clazz->method_count; i++) {
-		dumpMethod(clazz->methods + i);
+		dumpMethod(Kaffe_get_class_methods(clazz) + i);
 	}
 	for (int i = 0; i < clazz->field_count; i++) {
 		dumpField(clazz->fields + i);
@@ -422,7 +422,7 @@ makeMethods(java::lang::Class *clazz,
 
 	for (int i = 0; i < clazz->method_count; i++) {
 		neutralMethodInfo minfo;
-		_Jv_Method *meth = clazz->methods + i;
+		_Jv_Method *meth = Kaffe_get_class_methods(clazz) + i;
 		fillInMethodInfo(&minfo, meth);
 		/* A final classes's methods are automatically final and
 		 * so are private methods.

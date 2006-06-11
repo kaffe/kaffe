@@ -37,7 +37,7 @@ java_lang_reflect_Constructor_getModifiersInternal(struct Hjava_lang_reflect_Con
 
 	assert(slot < CLASS_NMETHODS(clazz));
 
-	return CLASS_METHODS(clazz)[slot].accflags;
+	return Kaffe_get_class_methods(clazz)[slot].accflags;
 }
 
 Hjava_lang_String *
@@ -51,5 +51,5 @@ java_lang_reflect_Constructor_getSignature(struct Hjava_lang_reflect_Constructor
 
 	assert(slot < CLASS_NMETHODS(clazz));
 
-	return utf8Const2Java(CLASS_METHODS(clazz)[slot].extSignature);
+	return utf8Const2Java(Kaffe_get_class_methods(clazz)[slot].extSignature);
 }

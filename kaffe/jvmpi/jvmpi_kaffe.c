@@ -138,7 +138,7 @@ void jvmpiFillObjectAlloc(JVMPI_Event *ev, struct Hjava_lang_Object *obj)
 	if( CLASS_IS_ARRAY(cl) )
 	{
 		jint prim_type = 0;
-		Hjava_lang_Class *eclazz = CLASS_ELEMENT_TYPE(cl);
+		Hjava_lang_Class *eclazz = Kaffe_get_array_element_type(cl);
 		
 		if (CLASS_IS_PRIMITIVE(eclazz))
 		  {
@@ -243,7 +243,7 @@ void jvmpiFillClassLoad(JVMPI_Event *ev, struct Hjava_lang_Class *cl)
 	for( lpc = 0; lpc < CLASS_NMETHODS(cl); lpc++ )
 	{
 		jvmpiConvertMethod(&ev->u.class_load.methods[lpc],
-				   &CLASS_METHODS(cl)[lpc]);
+				   &(Kaffe_get_class_methods(cl)[lpc]));
 	}
 	for( lpc = 0; lpc < CLASS_NSFIELDS(cl); lpc++ )
 	{

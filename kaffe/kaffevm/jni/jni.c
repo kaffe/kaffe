@@ -690,7 +690,7 @@ Kaffe_RegisterNatives(JNIEnv* env UNUSED, jclass cls, const JNINativeMethod* met
 
 	cls_local = unveil(cls);
 
-	meth = CLASS_METHODS((Hjava_lang_Class*)cls_local);
+	meth = Kaffe_get_class_methods((Hjava_lang_Class*)cls_local);
 	nmeth = CLASS_NMETHODS((Hjava_lang_Class*)cls_local);
 
 	for (j = 0; j < nmethods; j++) {

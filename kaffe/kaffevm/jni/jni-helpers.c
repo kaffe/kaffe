@@ -116,7 +116,7 @@ KaffeJNI_FromReflectedMethod (JNIEnv *env UNUSED, jobject method)
   method_local = unveil(method);
   realMethod = (Hjava_lang_reflect_Method *)method_local;
 
-  id = (jmethodID) &(unhand(realMethod)->declaringClass->methods[unhand(realMethod)->slot]);
+  id = (jmethodID) &(Kaffe_get_class_methods(unhand(realMethod)->declaringClass)[unhand(realMethod)->slot]);
 
   END_EXCEPTION_HANDLING();
 
@@ -155,7 +155,7 @@ KaffeJNI_ToReflectedMethod (JNIEnv *env UNUSED, jclass cls, jmethodID mid, jbool
 	cls_local = unveil(cls);
 	clazz = (Hjava_lang_Class *)cls_local;
 	refMeth = NULL;
-	for (allMethods = CLASS_METHODS(clazz), i = 0;
+	for (allMethods = Kaffe_get_class_methods(clazz), i = 0;
 	     i < CLASS_NMETHODS(clazz); 
 	     i++, allMethods++)
 	  {

@@ -100,7 +100,7 @@ java_lang_reflect_Method_getModifiersInternal(struct Hjava_lang_reflect_Method* 
 
 	assert(slot < CLASS_NMETHODS(clazz));
 
-	flags = clazz->methods[slot].accflags;
+	flags = Kaffe_get_class_methods(clazz)[slot].accflags;
 	if (flags & ACC_ABSTRACT)
 	  /* If an abstract method is ever referenced,
 	   * it's native code is throwAbstractMethodError, and
@@ -118,7 +118,7 @@ java_lang_reflect_Method_getSignature(struct Hjava_lang_reflect_Method* this)
   jint slot = unhand(this)->slot;
   Method *meth;
 
-  meth = &CLASS_METHODS(clazz)[slot];
+  meth = &(Kaffe_get_class_methods(clazz)[slot]);
 
   return utf8Const2Java(meth->extSignature);
 }
@@ -167,7 +167,7 @@ Java_java_lang_reflect_Method_invoke0(JNIEnv* env, jobject _this, jobject _obj, 
 	/* Note: we assume here that `meth' is identical to the jmethodID which
 	 * would be returned by JNIEnv::GetMethodID for this method.
 	 */
-	meth = &CLASS_METHODS(clazz)[slot];
+	meth = &(Kaffe_get_class_methods(clazz)[slot]);
 	methID = (*env)->FromReflectedMethod(env, _this);
 
 	len = argobj ? obj_length(argobj) : 0;

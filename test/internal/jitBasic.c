@@ -45,8 +45,8 @@ Method *findMethodNoSig(Hjava_lang_Class *cl, Utf8Const *name)
 
 	for( lpc = 0; (lpc < CLASS_NMETHODS(cl)) && !retval; lpc++ )
 	{
-		if( CLASS_METHODS(cl)[lpc].name == name )
-			retval = &CLASS_METHODS(cl)[lpc];
+		if( Kaffe_get_class_methods(cl)[lpc].name == name )
+			retval = &(Kaffe_get_class_methods(cl)[lpc]);
 	}
 
 	assert(retval != 0);

@@ -262,7 +262,7 @@ Hjava_lang_Class*
 java_lang_VMClass_getComponentType(struct Hjava_lang_Class* this)
 {
 	if (CLASS_IS_ARRAY(this)) {
-		return (CLASS_ELEMENT_TYPE(this));
+		return (Kaffe_get_array_element_type(this));
 	}
 	else {
 		return ((Hjava_lang_Class*)NULL);
@@ -311,7 +311,7 @@ java_lang_VMClass_getDeclaredMethods(struct Hjava_lang_Class* clazz, jboolean pu
 	Hjava_lang_reflect_Method** ptr;
 	HArrayOfObject* array;
 	int i;
-	Method *mth = CLASS_METHODS(clazz);
+	Method *mth = Kaffe_get_class_methods(clazz);
 
 	count = 0;
 	for (i = CLASS_NMETHODS(clazz)-1; i >= 0; i--) {
@@ -355,7 +355,7 @@ java_lang_VMClass_getDeclaredConstructors(struct Hjava_lang_Class* clas, jboolea
 	Hjava_lang_reflect_Constructor** ptr;
 	HArrayOfObject* array;
 	int i;
-	Method* mth = CLASS_METHODS(clas);
+	Method* mth = Kaffe_get_class_methods(clas);
 
 	count = 0;
 	for (i = CLASS_NMETHODS(clas)-1; i >= 0;  i--) {
@@ -597,7 +597,7 @@ java_lang_VMClass_getEnclosingConstructor(struct Hjava_lang_Class* klass)
   if (method == NULL || !METHOD_IS_CONSTRUCTOR (method))
     return NULL;
 
-  methodSlot = method - CLASS_METHODS(klass);
+  methodSlot = method - Kaffe_get_class_methods(klass);
   assert(methodSlot < CLASS_NMETHODS(klass));
   
   return KaffeVM_makeReflectConstructor(klass, methodSlot);
@@ -658,7 +658,7 @@ java_lang_VMClass_getEnclosingMethod(struct Hjava_lang_Class* klass)
   if (method == NULL || METHOD_IS_CONSTRUCTOR (method))
     return NULL;
 
-  methodSlot = method - CLASS_METHODS(klass);
+  methodSlot = method - Kaffe_get_class_methods(klass);
   assert(methodSlot < CLASS_NMETHODS(klass));
   
   return KaffeVM_makeReflectMethod(klass, methodSlot);

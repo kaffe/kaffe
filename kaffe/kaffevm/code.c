@@ -107,8 +107,8 @@ addCode(Method* m, size_t len UNUSED, classFile* fp, errorInfo *einfo)
 				     "Code of a method has length 0",
 				     m->class->name->data,
 				     m->name->data,
-				     m->class->
-				     methods[m - CLASS_METHODS(m->class)].
+				     Kaffe_get_class_methods(m->class)
+				     [m - Kaffe_get_class_methods(m->class)].
 				     parsed_sig->signature->data);
 	}
 	else
@@ -119,8 +119,8 @@ addCode(Method* m, size_t len UNUSED, classFile* fp, errorInfo *einfo)
 				     "Code of a method longer than 65535 bytes",
 				     m->class->name->data,
 				     m->name->data,
-				     m->class->
-				     methods[m - CLASS_METHODS(m->class)].
+				     Kaffe_get_class_methods(m->class)
+				     [m - Kaffe_get_class_methods(m->class)].
 				     parsed_sig->signature->data);
 	}
 	return (retval);

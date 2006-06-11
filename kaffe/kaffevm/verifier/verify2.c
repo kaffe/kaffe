@@ -347,7 +347,7 @@ verify2(Hjava_lang_Class* class, errorInfo *einfo)
 			Method* method;
 			int n;
 		
-			for (n = CLASS_NMETHODS(class), method = CLASS_METHODS(class);
+			for (n = CLASS_NMETHODS(class), method = Kaffe_get_class_methods(class);
 			     n > 0;
 			     --n, ++method) {
 				
@@ -387,7 +387,7 @@ verify2(Hjava_lang_Class* class, errorInfo *einfo)
 			int n, m;
 			
 			
-			for (n = CLASS_NMETHODS(class), curMethod = CLASS_METHODS(class);
+			for (n = CLASS_NMETHODS(class), curMethod = Kaffe_get_class_methods(class);
 			     n > 0;
 			     --n, ++curMethod) {
 			
@@ -405,7 +405,7 @@ verify2(Hjava_lang_Class* class, errorInfo *einfo)
 			for (superclass = class->superclass; superclass != NULL; superclass = superclass->superclass) {
 				
 			        /* cycle through methods in current super class */
-				for (m = CLASS_NMETHODS(superclass), method = CLASS_METHODS(superclass);
+				for (m = CLASS_NMETHODS(superclass), method = Kaffe_get_class_methods(superclass);
 				     m > 0;
 				     --m, ++method) {
 					
@@ -416,7 +416,7 @@ verify2(Hjava_lang_Class* class, errorInfo *einfo)
 					     strcmp("this", METHOD_NAMED(method)))) {
 						
 					        /* make sure the method in question was not overriden in the current class */
-						for (n = CLASS_NMETHODS(class), curMethod = CLASS_METHODS(class);
+						for (n = CLASS_NMETHODS(class), curMethod = Kaffe_get_class_methods(class);
 						     n > 0;
 						     --n, ++curMethod) {
 						

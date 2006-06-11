@@ -112,8 +112,8 @@ DBG(CLASSGC,
         }
 
         /* destroy all methods, only if this class has indeed a method table */
-        if (!CLASS_IS_ARRAY(clazz) && CLASS_METHODS(clazz) != 0) {
-                Method *m = CLASS_METHODS(clazz);
+        if (!CLASS_IS_ARRAY(clazz) && Kaffe_get_class_methods(clazz) != NULL) {
+                Method *m = Kaffe_get_class_methods(clazz);
                 for (i = 0; i < CLASS_NMETHODS(clazz); i++) {
 			void *ncode = NULL;
 
@@ -151,7 +151,7 @@ DBG(CLASSGC,
 			/* ncode is swept by the GC. */
 			m++;
                 }
-                KFREE(CLASS_METHODS(clazz));
+                KFREE(Kaffe_get_class_methods(clazz));
         }
 
         /* release remaining refs to utf8consts in constant pool */
@@ -437,7 +437,7 @@ DBG(GCPRECISE,
                 }
         } else {
                 /* array classes should keep their element type alive */
-		Hjava_lang_Class *etype = CLASS_ELEMENT_TYPE(class);
+		Hjava_lang_Class *etype = Kaffe_get_array_element_type(class);
 		if (etype && !CLASS_IS_PRIMITIVE(etype)) {
 			KGC_markObject(collector, gc_info, etype);
 		}
@@ -462,8 +462,8 @@ DBG(GCPRECISE,
 
         /* CLASS_METHODS only points to the method array for non-array and
          * non-primitive classes */
-        if (!CLASS_IS_PRIMITIVE(class) && !CLASS_IS_ARRAY(class) && CLASS_METHODS(class) != 0) {
-                walkMethods(collector, gc_info, CLASS_METHODS(class), CLASS_NMETHODS(class));
+        if (!CLASS_IS_PRIMITIVE(class) && !CLASS_IS_ARRAY(class) && Kaffe_get_class_methods(class) != 0) {
+                walkMethods(collector, gc_info, Kaffe_get_class_methods(class), CLASS_NMETHODS(class));
         }
         KGC_markObject(collector, gc_info, class->loader);
 	KGC_markObject(collector, gc_info, class->signers);

@@ -241,7 +241,7 @@ newMultiArrayChecked(Hjava_lang_Class* clazz, int* dims, errorInfo *einfo)
       return NULL;
     }
   
-  obj = newArrayChecked(CLASS_ELEMENT_TYPE(clazz), (jsize)dims[0], einfo);
+  obj = newArrayChecked(Kaffe_get_array_element_type(clazz), (jsize)dims[0], einfo);
   if (!obj)
     return NULL;
   
@@ -252,7 +252,7 @@ newMultiArrayChecked(Hjava_lang_Class* clazz, int* dims, errorInfo *einfo)
     {
       int localdim = dims[j];
       
-      prevclazz = CLASS_ELEMENT_TYPE(clazz);
+      prevclazz = Kaffe_get_array_element_type(clazz);
       for (i=0;i<stacksize;i++)
 	{
 	  int localptr = stackptr + stacksize + i*localdim;
@@ -261,7 +261,7 @@ newMultiArrayChecked(Hjava_lang_Class* clazz, int* dims, errorInfo *einfo)
 	  for (k=0;k<localdim;k++)
 	  {
 	    stack[localptr+k] = array[k] = 
-	      newArrayChecked(CLASS_ELEMENT_TYPE(prevclazz), (jsize)dims[j+1], einfo);
+	      newArrayChecked(Kaffe_get_array_element_type(prevclazz), (jsize)dims[j+1], einfo);
 	    if (array[k] == NULL)
 	      return NULL;
 	  }

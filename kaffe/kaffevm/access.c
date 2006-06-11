@@ -194,7 +194,7 @@ Hjava_lang_Class *findSuperMethod(Hjava_lang_Class *orig_cl, Method *meth)
 
 		for( lpc = 0; lpc < CLASS_NMETHODS(cl) && !retval; lpc++ )
 		{
-			if( CLASS_METHODS(cl)[lpc].idx == meth->idx )
+			if( Kaffe_get_class_methods(cl)[lpc].idx == meth->idx )
 			{
 				retval = orig_cl->superclass;
 			}

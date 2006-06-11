@@ -82,9 +82,9 @@ java_lang_VMObject_clone(struct Hjava_lang_Cloneable* c)
   else
     {
       /* Clone an array */
-      obj = newArray(CLASS_ELEMENT_TYPE(class), ARRAY_SIZE(o));
+      obj = newArray(Kaffe_get_array_element_type(class), ARRAY_SIZE(o));
       memcpy(ARRAY_DATA(obj), ARRAY_DATA(o),
-	     (size_t) ARRAY_SIZE(o) * TYPE_SIZE(CLASS_ELEMENT_TYPE(class)));
+	     (size_t) ARRAY_SIZE(o) * TYPE_SIZE(Kaffe_get_array_element_type(class)));
     }
   return (obj);
 }

@@ -120,7 +120,7 @@ Java_com_ms_lang_Delegate_getMethod0(JNIEnv* env, jclass delegate, jobject o, js
 	meth = (Hjava_lang_reflect_Method*)
 	    AllocObject("java/lang/reflect/Method", 0);
 	unhand(meth)->clazz = clazz;
-	unhand(meth)->slot = m - CLASS_METHODS(clazz);
+	unhand(meth)->slot = m - Kaffe_get_class_methods(clazz);
 	unhand(meth)->name = name;
 	unhand(meth)->parameterTypes = makeParameters(m);
 	unhand(meth)->exceptionTypes = makeExceptions(m);
