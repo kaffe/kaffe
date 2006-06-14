@@ -96,7 +96,7 @@ extern bool used_ieee_division;
  * from COUNTER.  As this will scratch EDX and EAX, the second
  * parameter said if they must be saved.  */
 #define profiler_start(COUNTER, SAVE_EDX_EAX) do {		\
-	int *__counter = (int *)&(COUNTER);			\
+	profiler_click_t *__counter = &(COUNTER);		\
 	if (SAVE_EDX_EAX) {					\
 		/* Save EAX and EDX */				\
 		OUT(0x50|REG_edx);				\
@@ -132,7 +132,7 @@ extern bool used_ieee_division;
  * As this will scratch EDX and EAX, the second parameter said if
  * they must be saved.  */
 #define profiler_end(COUNTER, SAVE_EDX_EAX) do {		\
-	int *__counter = (int *)&(COUNTER);			\
+	profiler_click_t *__counter = &(COUNTER);		\
 	if (SAVE_EDX_EAX) {					\
 		/* Save EAX and EDX */				\
 		OUT(0x50|REG_edx);				\

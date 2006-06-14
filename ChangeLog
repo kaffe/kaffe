@@ -1,3 +1,10 @@
+2006-06-14  Dalibor Topic  <robilad@kaffe.org>
+
+	Fixed 9 gcc 4.1.1 warnings.
+
+	* config/i386/jit3-i386.def (profiler_start, profiler_end):
+	Use profiler_click_t for count.
+
 2006-06-11  Dalibor Topic  <robilad@kaffe.org>
 
 	Fixed 16 gcc 4.1.1 warnings due to abuse of a methods
