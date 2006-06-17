@@ -108,6 +108,7 @@ EXTRA_DIST= \
 	vmspecific/gnu/bytecodecvssnap/ZipLoader.java \
 	vmspecific/gnu/bytecodecvssnap/dump.java \
 	vmspecific/gnu/bytecodecvssnap/package.html \
+	vmspecific/gnu/classpath/.#VMSystemProperties.java.1.4 \
 	vmspecific/gnu/classpath/Configuration.java.in \
 	vmspecific/gnu/classpath/Unsafe.java \
 	vmspecific/gnu/classpath/VMStackWalker.java \
@@ -221,6 +222,7 @@ EXTRA_DIST= \
 	vmspecific/java/io/VMFile.java \
 	vmspecific/java/io/VMObjectInputStream.java \
 	vmspecific/java/io/VMObjectStreamClass.java \
+	vmspecific/java/lang/.#VMSystem.java.1.1 \
 	vmspecific/java/lang/Runtime.java \
 	vmspecific/java/lang/String.java \
 	vmspecific/java/lang/VMClass.java \
@@ -233,16 +235,12 @@ EXTRA_DIST= \
 	vmspecific/java/lang/VMProcess.java \
 	vmspecific/java/lang/VMRuntime.java \
 	vmspecific/java/lang/VMSystem.java \
-	vmspecific/java/lang/VMSystem.java.orig \
 	vmspecific/java/lang/VMThread.java \
 	vmspecific/java/lang/VMThrowable.java \
 	vmspecific/java/lang/ref/Reference.java \
 	vmspecific/java/lang/reflect/Constructor.java \
-	vmspecific/java/lang/reflect/Constructor.java.orig \
 	vmspecific/java/lang/reflect/Field.java \
-	vmspecific/java/lang/reflect/Field.java.orig \
 	vmspecific/java/lang/reflect/Method.java \
-	vmspecific/java/lang/reflect/Method.java.orig \
 	vmspecific/java/lang/reflect/VMArray.java \
 	vmspecific/java/lang/reflect/VMProxy.java \
 	vmspecific/java/net/InetAddress.java \

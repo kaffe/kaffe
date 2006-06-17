@@ -1,3 +1,17 @@
+2006-06-17  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in,
+	libraries/javalib/external/classpath/config.guess,
+	libraries/javalib/external/classpath/config.sub,
+	libraries/javalib/external/classpath/ltmain.sh,
+	po/de.po,
+	po/fr.po,
+	po/kaffe.pot,
+	po/zh_CN.po,
+	po/zh_TW.po,
+	scripts/ltmain.sh: Regenerated.
+
 2006-06-14  Dalibor Topic  <robilad@kaffe.org>
 
 	Fixed 9 gcc 4.1.1 warnings.
