@@ -1,6 +1,12 @@
 2006-06-17  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* libraries/javalib/Makefile.am,
+	libraries/javalib/Makefile.in: Regenerated.
+
+
+2006-06-17  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* libraries/javalib/Makefile.am,
 	libraries/javalib/Makefile.in,
 	libraries/javalib/external/classpath/config.guess,
 	libraries/javalib/external/classpath/config.sub,

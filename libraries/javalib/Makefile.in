@@ -429,7 +429,6 @@ EXTRA_DIST = \
 	vmspecific/gnu/bytecodecvssnap/ZipLoader.java \
 	vmspecific/gnu/bytecodecvssnap/dump.java \
 	vmspecific/gnu/bytecodecvssnap/package.html \
-	vmspecific/gnu/classpath/.#VMSystemProperties.java.1.4 \
 	vmspecific/gnu/classpath/Configuration.java.in \
 	vmspecific/gnu/classpath/Unsafe.java \
 	vmspecific/gnu/classpath/VMStackWalker.java \
@@ -543,7 +542,6 @@ EXTRA_DIST = \
 	vmspecific/java/io/VMFile.java \
 	vmspecific/java/io/VMObjectInputStream.java \
 	vmspecific/java/io/VMObjectStreamClass.java \
-	vmspecific/java/lang/.#VMSystem.java.1.1 \
 	vmspecific/java/lang/Runtime.java \
 	vmspecific/java/lang/String.java \
 	vmspecific/java/lang/VMClass.java \
@@ -1127,7 +1125,7 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/vmspecific/META-INF $(distdir)/vmspecific/META-INF/services $(distdir)/vmspecific/gnu/bytecodecvssnap $(distdir)/vmspecific/gnu/classpath
+	$(mkdir_p) $(distdir)/vmspecific/META-INF $(distdir)/vmspecific/META-INF/services $(distdir)/vmspecific/gnu/bytecodecvssnap $(distdir)/vmspecific/gnu/classpath $(distdir)/vmspecific/gnu/classpath/jdwp $(distdir)/vmspecific/gnu/getopt $(distdir)/vmspecific/gnu/inet/comsat $(distdir)/vmspecific/gnu/inet/finger $(distdir)/vmspecific/gnu/inet/gopher $(distdir)/vmspecific/gnu/inet/imap $(distdir)/vmspecific/gnu/inet/ldap $(distdir)/vmspecific/gnu/inet/nntp $(distdir)/vmspecific/gnu/inet/pop3 $(distdir)/vmspecific/gnu/inet/smtp $(distdir)/vmspecific/gnu/inet/util $(distdir)/vmspecific/gnu/java/lang $(distdir)/vmspecific/gnu/java/net $(distdir)/vmspecific/gnu/java/nio $(distdir)/vmspecific/java/io $(distdir)/vmspecific/java/lang $(distdir)/vmspecific/java/lang/ref $(distdir)/vmspecific/java/lang/reflect $(distdir)/vmspecific/java/net $(distdir)/vmspecific/java/nio $(distdir)/vmspecific/java/nio/channels $(distdir)/vmspecific/java/security $(distdir)/vmspecific/java/util $(distdir)/vmspecific/java/util/mime $(distdir)/vmspecific/java/util/zip $(distdir)/vmspecific/org/kaffe/beans/editors $(distdir)/vmspecific/org/kaffe/io $(distdir)/vmspecific/org/kaffe/jar $(distdir)/vmspecific/org/kaffe/lang $(distdir)/vmspecific/org/kaffe/management $(distdir)/vmspecific/org/kaffe/security $(distdir)/vmspecific/org/kaffe/security/provider $(distdir)/vmspecific/org/kaffe/util $(distdir)/vmspecific/org/kaffe/util/locale $(distdir)/vmspecific/org/kaffe/util/log $(distdir)/vmspecific/org/kaffe/util/zip $(distdir)/vmspecific/org/objectweb/asm153 $(distdir)/vmspecific/org/tritonus/core $(distdir)/vmspecific/org/tritonus/lowlevel/alsa $(distdir)/vmspecific/org/tritonus/lowlevel/esd $(distdir)/vmspecific/org/tritonus/midi/device/alsa $(distdir)/vmspecific/org/tritonus/midi/file $(distdir)/vmspecific/org/tritonus/sampled/convert $(distdir)/vmspecific/org/tritonus/sampled/file $(distdir)/vmspecific/org/tritonus/sampled/mixer/alsa $(distdir)/vmspecific/org/tritonus/sampled/mixer/esd $(distdir)/vmspecific/org/tritonus/share $(distdir)/vmspecific/org/tritonus/share/midi $(distdir)/vmspecific/org/tritonus/share/sampled $(distdir)/vmspecific/org/tritonus/share/sampled/convert $(distdir)/vmspecific/org/tritonus/share/sampled/file $(distdir)/vmspecific/org/tritonus/share/sampled/mixer $(distdir)/vmspecific/org/xbill/DNS $(distdir)/vmspecific/org/xbill/DNS/security $(distdir)/vmspecific/org/xbill/DNS/utils
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
