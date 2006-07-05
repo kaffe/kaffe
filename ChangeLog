@@ -1,3 +1,13 @@
+2006-07-06  Dalibor Topic  <robilad@kaffe.org>
+
+	* config/i386/jit.h (FIRSTFRAME): Don't use 
+	__builtin_frame_address, as that behaves differently
+	under -O0 and -O1 under gcc 4.1.x. Use a small bit
+	of assembler instead.
+
+	* configure.ac: Ensure that -fno-strict-aliasing and
+	-fno-omit-frame-pointer are set for gcc.
+
 2006-06-17  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* libraries/javalib/Makefile.am,

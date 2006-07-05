@@ -187,6 +187,17 @@ AX_CFLAGS_GCC_OPTION([-Wextra])
 ## and GNU/Linux.
 AX_CFLAGS_GCC_OPTION([-mregnames])
 
+## Required for gcc 4.1.x as long as kaffe's
+## not cleaned up to use unions in classMethod.h
+## where necessary.
+AX_CFLAGS_GCC_OPTION([-fno-strict-aliasing])
+
+## Required for gcc 4.1.x and above, as it 
+## omits the frame pointer on -O1 and above on
+## some architectures, notably i386, making
+## it impossible to unwind exceptions.
+AX_CFLAGS_GCC_OPTION([-fno-omit-frame-pointer])
+
 GCC_ATTRIBUTE_ALWAYS_INLINE
 GCC_ATTRIBUTE_CONST
 GCC_ATTRIBUTE_FORMAT

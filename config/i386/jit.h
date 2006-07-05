@@ -41,7 +41,11 @@ typedef struct _exceptionFrame {
 
 /* Get the first exception frame from a subroutine call */
 #define	FIRSTFRAME(f, o)						\
-	((f) = *(exceptionFrame*)__builtin_frame_address(0))
+do {                                                                    \
+  void * bp;                                                            \
+  __asm__( "movl %%ebp, %0" : "=g"(bp));                                \
+  f = *((exceptionFrame*) bp);                                          \
+} while (0);
 
 /**/
 /* Method dispatch.  */
