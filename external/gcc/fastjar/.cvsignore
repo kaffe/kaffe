@@ -1,1 +1,11 @@
+.deps
 autom4te.cache
+config.h
+config.log
+config.status
+fastjar
+install-defs.sh
+libtool
+Makefile
+stamp-geninsrc
+stamp-h1
