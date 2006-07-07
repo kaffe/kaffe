@@ -1,3 +1,8 @@
+2006-07-07  Riccardo Mottola <riccardo@kaffe.org>
+
+   	* libraries/clib/awt/X/fnt.c:  Removed c99-ism
+
+
 2006-07-07  Michael Koch  <mkoch@kaffe.org>
 
 	* .cvsignore, kaffe/kaffevm/boehm-gc/boehm/.cvsignore,

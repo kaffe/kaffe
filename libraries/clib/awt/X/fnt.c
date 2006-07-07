@@ -223,11 +223,12 @@ KAFFE_FONT_FUNC_DECL( jint, Java_java_awt_Toolkit_fntGetFixedWidth )
     XFontSet *fontSet;
     XFontStruct **fontStructList;
     char **fontNameList;
-    fontSet = UNVEIL_XOC(xoc);
     Atom atom;
     unsigned long retValue;
     char *atomValue;
     int isFixedWidth;
+
+    fontSet = UNVEIL_XOC(xoc);
 
     // we create an atom to query the font properties
     atom = XInternAtom( X->dsp, "SPACING", 0);
