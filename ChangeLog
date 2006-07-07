@@ -1,5 +1,11 @@
 2006-07-07  Michael Koch  <mkoch@kaffe.org>
 
+	* .cvsignore, kaffe/kaffevm/boehm-gc/boehm/.cvsignore,
+	kaffe/kaffevm/kaffe-gc/.cvsignore, kaffe/kaffevm/verifier/.cvsignore,
+	libraries/clib/nio/.cvsignore: Updated.
+
+2006-07-07  Michael Koch  <mkoch@kaffe.org>
+
 	* libraries/javalib/Makefile.am, libraries/javalib/Makefile.in:
 	Regenerated.
 

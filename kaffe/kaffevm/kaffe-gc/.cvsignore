@@ -1,2 +1,5 @@
 .deps
+.libs
 Makefile
+*.la
+*.lo
