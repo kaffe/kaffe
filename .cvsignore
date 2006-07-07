@@ -6,4 +6,6 @@ config.status
 BUILD_ENVIRONMENT
 .deps
 autom4te.cache
+project.xml
+project.properties
 
