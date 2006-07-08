@@ -1,3 +1,9 @@
+2006-07-08  Kashyap  <ck_kashyap@yahoo.com>
+
+	* libraries/clib/awt/nano-X/window.c
+	(Java_java_awt_Toolkit_wndSetVisible):
+	Reordered call to getSourceIndex.
+	
 2006-07-08  Diego Pettenò  <flameeyes@gentoo.org>
 
 	* kaffe/kaffevm/stackTrace.c

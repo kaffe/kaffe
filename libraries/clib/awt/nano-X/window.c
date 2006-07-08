@@ -107,8 +107,8 @@ Java_java_awt_Toolkit_wndSetVisible( JNIEnv* env, jclass clazz, jobject _jwindow
 	int index;
 	GR_WINDOW_ID wid;
 
-	index = getSourceIndex((GR_WINDOW_ID)_jwindow);
 	wid = (GR_WINDOW_ID)JCL_GetRawData (env, _jwindow);
+	index = getSourceIndex(wid);
 	if (( index < 0 ) || (nanoX.windowsP[index].flags & TLK_SOURCE_DESTROYED)) {
 #ifdef DEBUG
 		SignalError("java.lang.InternalError", "now, debug!!");
