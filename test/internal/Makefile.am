@@ -73,7 +73,7 @@ jitBasic_SOURCES = \
 nodist_jitBasic_SOURCES = $(nodist_GEN_SRCS)
 
 # Order matters here!
-JAVA_CLASSES = \
+TEST_CLASSES = \
 	ConstMethods.class \
 	ConstMathMethods.class \
 	ParameterizedMethods.class \
@@ -91,92 +91,53 @@ JAVA_CLASSES = \
 	Exceptions.class \
 	VirtualMethod.class
 
-TESTS_ENVIRONMENT = env TEST_CLASSES="$(JAVA_CLASSES)" `. $(top_builddir)/BUILD_ENVIRONMENT; BOOTCLASSPATH=.:\$${BOOTCLASSPATH}; export BOOTCLASSPATH; sed 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
+JAVA_CLASSES = \
+	$(TEST_CLASSES) \
+	java/lang/System.class \
+	java/lang/VMSystem.class
 
-##CPATH = $(top_builddir)/libraries/javalib/rt.jar
+JAVA_SOURCE_FILES = \
+	$(srcdir)/ConstMethods.java \
+	$(srcdir)/ConstMathMethods.java \
+	$(srcdir)/ParameterizedMethods.java \
+	$(srcdir)/ParameterizedMathMethods.java \
+	$(srcdir)/ParameterizedLogicalMethods.java \
+	$(srcdir)/ParameterizedBitwiseMethods.java \
+	$(srcdir)/ControlFlowMethods.java \
+	$(srcdir)/StaticMethodCall.java \
+	$(srcdir)/TypeConversion.java \
+	$(srcdir)/StaticFields.java \
+	$(srcdir)/PrimitiveArrays.java \
+	$(srcdir)/ObjectFields.java \
+	$(srcdir)/MethodOptimizations.java \
+	$(srcdir)/NativeMethodCall.java \
+	$(srcdir)/Exceptions.java \
+	$(srcdir)/VirtualMethod.java \
+	$(srcdir)/java/lang/System.java \
+	$(srcdir)/java/lang/VMSystem.java
+
+TESTS_ENVIRONMENT = env TEST_CLASSES="$(TEST_CLASSES)" `. $(top_builddir)/BUILD_ENVIRONMENT; BOOTCLASSPATH=.:\$${BOOTCLASSPATH}; export BOOTCLASSPATH; sed 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
+
 CPATH = .:$(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
 
-ConstMethods.class: $(srcdir)/ConstMethods.java
-	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/ConstMethods.java
+$(JAVA_CLASSES): $(JAVA_SOURCE_FILES)
+	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(JAVA_SOURCE_FILES)
 
-ConstMathMethods.class: $(srcdir)/ConstMathMethods.java
-	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/ConstMathMethods.java
-
-ParameterizedMethods.class: $(srcdir)/ParameterizedMethods.java
-	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/ParameterizedMethods.java
-
-ParameterizedMathMethods.class: $(srcdir)/ParameterizedMathMethods.java
-	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/ParameterizedMathMethods.java
-
-ParameterizedLogicalMethods.class: $(srcdir)/ParameterizedLogicalMethods.java
-	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/ParameterizedLogicalMethods.java
-
-ParameterizedBitwiseMethods.class: $(srcdir)/ParameterizedBitwiseMethods.java
-	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/ParameterizedBitwiseMethods.java
-
-ControlFlowMethods.class: $(srcdir)/ControlFlowMethods.java
-	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/ControlFlowMethods.java
-
-StaticMethodCall.class: $(srcdir)/StaticMethodCall.java
-	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/StaticMethodCall.java
-
-TypeConversion.class: $(srcdir)/TypeConversion.java
-	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/TypeConversion.java
-
-StaticFields.class: $(srcdir)/StaticFields.java
-	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/StaticFields.java
-
-PrimitiveArrays.class: $(srcdir)/PrimitiveArrays.java
-	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/PrimitiveArrays.java
-
-ObjectFields.class: $(srcdir)/ObjectFields.java
-	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/ObjectFields.java
-
-MethodOptimizations.class: $(srcdir)/MethodOptimizations.java
-	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/MethodOptimizations.java
-
-NativeMethodCall.class java/lang/System.class java/lang/VMSystem.class: $(srcdir)/NativeMethodCall.java   $(srcdir)/java/lang/VMSystem.java $(srcdir)/java/lang/System.java
-	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/java/lang/VMSystem.java $(srcdir)/java/lang/System.java $(srcdir)/NativeMethodCall.java
-
-Exceptions.class: $(srcdir)/Exceptions.java
-	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/Exceptions.java
-
-VirtualMethod.class: $(srcdir)/VirtualMethod.java
-	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/VirtualMethod.java
-
-jit_stub.o: java/lang/System.class java/lang/VMSystem.class $(JAVA_CLASSES)
+jit_stub.o: $(JAVA_CLASSES)
 
 TESTS = $(check_PROGRAMS)
 
 XFAIL_TESTS =
 
 EXTRA_DIST = \
-	ConstMethods.java \
-	ConstMathMethods.java \
-	ParameterizedMethods.java \
-	ParameterizedMathMethods.java \
-	ParameterizedLogicalMethods.java \
-	ParameterizedBitwiseMethods.java \
-	ControlFlowMethods.java \
-	StaticMethodCall.java \
-	TypeConversion.java \
-	StaticFields.java \
-	PrimitiveArrays.java \
-	ObjectFields.java \
-	MethodOptimizations.java \
-	NativeMethodCall.java \
-	Exceptions.java \
-	VirtualMethod.java \
-	java/lang/System.java \
-	java/lang/VMSystem.java
+	$(JAVA_SOURCE_FILES)
 
 CLEANFILES = \
 	*.fail \
 	*.out \
 	core \
 	*.core \
-	*.class \
-	$(nodist_GEN_SRCS) \
-	java/lang/System.class  \
-	java/lang/VMSystem.class
+	$(JAVA_CLASSES) \
+	$(nodist_GEN_SRCS) 
+
 

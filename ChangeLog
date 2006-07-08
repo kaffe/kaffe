@@ -1,3 +1,13 @@
+2006-07-08  Dalibor Topic  <robilad@kaffe.org>
+
+	* test/internal/Makefile.am (JAVA_SOURCE_FILES) List all the 
+	sources. Use a single target to build all java test classes.
+	(JAVA_CLASSES) Added java/lang/ stuf classes.
+	(TEST_CLASSES) List all test classes.
+	(jit_stub.o) Depend on JAVA_CLASSES alone.
+	(EXTRA_DIST) Use JAVA_SOURCE_FILES.
+	(CLEANFILES) Use JAVA_CLASSES.
+
 2006-07-08  Kashyap  <ck_kashyap@yahoo.com>
 
 	* libraries/clib/awt/nano-X/window.c
