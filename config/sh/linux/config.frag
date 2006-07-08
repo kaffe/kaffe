@@ -6,7 +6,7 @@
 #
 Khost_cpu=sh
 Khost_os=linux
-CFLAGS="-g"
+KAFFE_CFLAGS="-g"
 if [ "$cross_compiling" = yes ]; then
 # In cross environment, following values may not be detected automatically.
   ac_cv_alignmentof_voidp=${ac_cv_alignmentof_voidp='4'}

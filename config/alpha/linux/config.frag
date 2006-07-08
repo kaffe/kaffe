@@ -1,7 +1,7 @@
 #
 # Alpha/Linux configuration
 #
-CFLAGS="$CFLAGS -mieee"
+KAFFE_CFLAGS="$KAFFE_CFLAGS -mieee"
 
 # if we use cross environment, following values may not be detected.
 if [ "$cross_compiling" = yes ]; then

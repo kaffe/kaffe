@@ -5,6 +5,8 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
+AM_CFLAGS= $(KAFFE_CFLAGS)
+
 AM_CPPFLAGS = \
 	$(CLASSPATH_INCLUDES) \
 	-I$(top_builddir)/include \

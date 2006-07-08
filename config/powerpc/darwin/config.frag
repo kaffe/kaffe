@@ -8,4 +8,4 @@ Khost_os=darwin
 ## use of precompiled headers off, which leads
 ## to wrong warnings and build failures.
 
-CFLAGS="$CFLAGS -fsigned-char -no-cpp-precomp"
+KAFFE_CFLAGS="$KAFFE_CFLAGS -fsigned-char -no-cpp-precomp"

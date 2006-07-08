@@ -3,4 +3,4 @@
 #
 Khost_cpu=m68k
 Khost_os=a-ux
-CFLAGS="-g -O2 -fno-omit-frame-pointer"
+KAFFE_CFLAGS="-g -O2 -fno-omit-frame-pointer"

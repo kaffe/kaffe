@@ -2,4 +2,4 @@
 # PowerPC/OpenBSD configuration
 #
 
-CFLAGS="$CFLAGS -fsigned-char"
+KAFFE_CFLAGS="$KAFFE_CFLAGS -fsigned-char"

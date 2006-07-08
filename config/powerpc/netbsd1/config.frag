@@ -1,7 +1,7 @@
 #
 # PowerPC/NetBSD configuration
 #
-CFLAGS="$CFLAGS -fsigned-char"
+KAFFE_CFLAGS="$KAFFE_CFLAGS -fsigned-char"
 
 if [ "$cross_compiling" = yes ]; then
   ac_cv_c_char_unsigned=${ac_cv_c_char_unsigned='no'}

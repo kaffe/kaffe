@@ -9,6 +9,8 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
+AM_CFLAGS= $(KAFFE_CFLAGS)
+
 native_LTLIBRARIES = libjavalang.la
 
 AM_CPPFLAGS = \

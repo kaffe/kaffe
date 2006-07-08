@@ -3,7 +3,7 @@
 #
 Khost_cpu=i386
 Khost_os=nextstep3
-CFLAGS="-g -seglinkedit -all_load"
+KAFFE_CFLAGS="-g -seglinkedit -all_load"
 LIBSHARE=-r
 LIBEXT=.o
 vm_dynamic_library=no

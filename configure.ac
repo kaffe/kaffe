@@ -10,7 +10,7 @@ AC_CONFIG_SRCDIR([kaffe])
 # GPLed portions has been taken from the GPL-d configure.ac
 # file of gimp-print project
 
-AC_COPYRIGHT([Copyright 1996 - 2005 Kaffe.org project contributors. All rights reserved.
+AC_COPYRIGHT([Copyright 1996 - 2006 Kaffe.org project contributors. All rights reserved.
 Portions Copyright 1996 - 2002 Transvirtual Technologies, Inc.
 Portions Copyright by various third parties, see file THIRDPARTY for details.
 
@@ -33,7 +33,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 ])
 
-AM_INIT_AUTOMAKE([1.9.5 dist-bzip2 dist-zip tar-ustar])
+AM_INIT_AUTOMAKE([1.9.6 dist-bzip2 dist-zip tar-ustar])
 
 AC_PREFIX_DEFAULT(/usr/local/kaffe)
 
@@ -82,7 +82,7 @@ AC_PROG_CC
 
 dnl If gcc is the compiler, compile with -Wall for lots of warnings
 
-AX_CFLAGS_WARN_ALL
+AX_CFLAGS_WARN_ALL(KAFFE_CFLAGS)
 
 # the following are covered by -Wall, but we list them separately, so
 # that it's easier to control.
@@ -142,8 +142,8 @@ AX_CFLAGS_WARN_ALL
 # AX_CFLAGS_GCC_OPTION([-pedantic])
 # AX_CFLAGS_GCC_OPTION([-ansi])
 
-AX_CFLAGS_GCC_OPTION([-W])	dnl new name is -Wextra
-AX_CFLAGS_GCC_OPTION([-Wextra])
+AX_CFLAGS_GCC_OPTION([-W],KAFFE_CFLAGS)	dnl new name is -Wextra
+AX_CFLAGS_GCC_OPTION([-Wextra],KAFFE_CFLAGS)
 
 # AX_CFLAGS_GCC_OPTION([-Wfloat-equal])
 # AX_CFLAGS_GCC_OPTION([-Wtraditional])
@@ -185,18 +185,18 @@ AX_CFLAGS_GCC_OPTION([-Wextra])
 ## required for powerpc assember register names
 ## in order to use a common notation on darwin
 ## and GNU/Linux.
-AX_CFLAGS_GCC_OPTION([-mregnames])
+AX_CFLAGS_GCC_OPTION([-mregnames],KAFFE_CFLAGS)
 
 ## Required for gcc 4.1.x as long as kaffe's
 ## not cleaned up to use unions in classMethod.h
 ## where necessary.
-AX_CFLAGS_GCC_OPTION([-fno-strict-aliasing])
+AX_CFLAGS_GCC_OPTION([-fno-strict-aliasing],KAFFE_CFLAGS)
 
 ## Required for gcc 4.1.x and above, as it 
 ## omits the frame pointer on -O1 and above on
 ## some architectures, notably i386, making
 ## it impossible to unwind exceptions.
-AX_CFLAGS_GCC_OPTION([-fno-omit-frame-pointer])
+AX_CFLAGS_GCC_OPTION([-fno-omit-frame-pointer],KAFFE_CFLAGS)
 
 GCC_ATTRIBUTE_ALWAYS_INLINE
 GCC_ATTRIBUTE_CONST
@@ -208,6 +208,9 @@ GCC_ATTRIBUTE_UNUSED
 if test "$GCC" != "yes"; then
 	AC_MSG_ERROR([Kaffe can only build with GCC])
 fi
+
+dnl Replace KAFFE_CFLAGS by the generated one
+AC_SUBST(KAFFE_CFLAGS)
 
 dnl Find the c++ compiler early on
 AC_PROG_CXX
@@ -705,7 +708,7 @@ THREAD_DIR=systems/$with_threads
 dnl Check for thread libraries
 if test x$with_threads = xunix-pthreads ; then
 	ACX_PTHREAD([THREADLIBS="$PTHREAD_LIBS "
-		     CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
+		     KAFFE_CFLAGS="$KAFFE_CFLAGS $PTHREAD_CFLAGS"
                      CC="$PTHREAD_CC"])
 	OLD_LIBS="$LIBS"
 	LIBS="$LIBS $THREADLIBS"
@@ -1399,7 +1402,7 @@ if test "x$enable_gcj" = "xyes"; then
     if test "x$have_libgcj_headers" = xyes; then
       enable_gcj=yes
       AC_DEFINE([HAVE_GCJ_SUPPORT], 1, [Enable GCJ support. ])
-      CFLAGS="$CFLAGS -fexceptions"
+      KAFFE_CFLAGS="$KAFFE_CFLAGS -fexceptions"
     fi
   fi
 fi
@@ -1428,7 +1431,7 @@ if test x"$enable_mips2" != x"no" -a x"$Khost_cpu" = x"mips"; then
     enable_mips2=yes
     case "$Khost_os" in
 	linux*)
-		CFLAGS="$CFLAGS -mips2"
+		KAFFE_CFLAGS="$KAFFE_CFLAGS -mips2"
 		;;
     esac
 fi
@@ -2450,7 +2453,7 @@ LIBS="$LIBS $LTLIBS"
 
 dnl Avoid GNU Make $(filter-out -pg,@CFLAGS@) in kaffe/xprof/Makefile.am
 CFLAGS_WITHOUT_PG=""
-for ac_option in $CFLAGS; do
+for ac_option in $CFLAGS $KAFFE_CFLAGS; do
     if test x"$ac_option" = x"-pg"; then :;
     else
         CFLAGS_WITHOUT_PG="$CFLAGS_WITHOUT_PG $ac_option"
@@ -2470,11 +2473,11 @@ dnl Update args for classpath
 dnl -------------------------
 
 dnl First we remove eventually CFLAGS from the configure call.
-ac_configure_args=`echo "$ac_configure_args" | sed "s%'CFLAGS=.*'%%g"`
+dnl ac_configure_args=`echo "$ac_configure_args" | sed "s%'CFLAGS=.*'%%g"`
 dnl Then we add it again for config.status
-ac_configure_args="$ac_configure_args 'CFLAGS=${CFLAGS}'"
-ac_cv_env_CFLAGS_value="${CFLAGS}"
-ac_cv_env_CFLAGS_set=set
+dnl ac_configure_args="$ac_configure_args 'CFLAGS=${CFLAGS}'"
+dnl ac_cv_env_CFLAGS_value="${CFLAGS}"
+dnl ac_cv_env_CFLAGS_set=set
 
 # Preset the compiler to jikes, since GNU Classpath's default is gcj.
 # Unfortunately, many gcj versions are incapable of compiling GNU 

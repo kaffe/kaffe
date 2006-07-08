@@ -7,7 +7,7 @@
 # of this file. 
 
 @engine_frag@
-
+AM_CFLAGS= $(KAFFE_CFLAGS)
 AM_CPPFLAGS = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) -I.. -I$(srcdir)/.. $(ENGINE_DEFS) -I$(top_srcdir)/compat-include -I$(top_builddir)/include
 
 if HAVE_GCJ_SUPPORT

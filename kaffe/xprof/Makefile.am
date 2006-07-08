@@ -10,6 +10,8 @@
 # Contributed by the Flux Research Group, Department of Computer Science,
 # University of Utah, http://www.cs.utah.edu/flux/
 
+AM_CFLAGS= $(KAFFE_CFLAGS)
+
 @engine_frag@
 
 AM_CPPFLAGS = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) $(ENGINE_INCLUDES) -I$(top_srcdir)/libltdl $(ENGINE_DEFS) -I$(top_srcdir)/kaffe/kaffevm -I$(top_builddir)/include

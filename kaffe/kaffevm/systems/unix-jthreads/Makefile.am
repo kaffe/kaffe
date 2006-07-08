@@ -6,6 +6,8 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
+AM_CFLAGS= $(KAFFE_CFLAGS)
+
 noinst_LTLIBRARIES = libkthread.la
 libkthread_la_LDFLAGS = \
 	$(KVMLIBFLAGS)

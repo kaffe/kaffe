@@ -228,6 +228,7 @@ KAFFEVM_JIT_DEF = @KAFFEVM_JIT_DEF@
 KAFFEVM_MD_C = @KAFFEVM_MD_C@
 KAFFEVM_TRAMPOLINES_S = @KAFFEVM_TRAMPOLINES_S@
 KAFFE_ARCHOS = @KAFFE_ARCHOS@
+KAFFE_CFLAGS = @KAFFE_CFLAGS@
 KAFFE_LIBS = @KAFFE_LIBS@
 KLIBFLAGS = @KLIBFLAGS@
 KPREFIX = @KPREFIX@
@@ -376,6 +377,7 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
+AM_CFLAGS = $(KAFFE_CFLAGS)
 AM_CPPFLAGS = \
 	-I$(top_builddir)/include \
 	-I$(top_srcdir)/kaffe/kaffevm/jni

@@ -4,7 +4,7 @@
 #
 # in ARM gcc characters are by default unsigned
 #
-CFLAGS="$CFLAGS -fsigned-char -fno-omit-frame-pointer"
+KAFFE_CFLAGS="$KAFFE_CFLAGS -fsigned-char -fno-omit-frame-pointer"
 
 # if we use cross environment, following values may not be detected.
 if [ "$cross_compiling" = yes ]; then

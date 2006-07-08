@@ -3,4 +3,4 @@
 #
 Khost_cpu=i386
 Khost_os=qnx
-CFLAGS="-O -fno-pack-struct"
+KAFFE_CFLAGS="-O -fno-pack-struct"

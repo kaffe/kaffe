@@ -6,7 +6,7 @@ Khost_os=riscos
 #
 # On ARM compilers characters are by default unsigned
 #
-CFLAGS="$CFLAGS -fsigned-char -mpoke-function-name"
+KAFFE_CFLAGS="$KAFFE_CFLAGS -fsigned-char -mpoke-function-name"
 
 if [ "$cross_compiling" = yes ]; then
 # if we use cross environment, following values may not be detected.

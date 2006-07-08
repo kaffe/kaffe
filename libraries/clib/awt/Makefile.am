@@ -16,6 +16,8 @@
 #
 #
 
+AM_CFLAGS= $(KAFFE_CFLAGS)
+
 if COND_KAFFE_X_AWT
 MAYBE_KAFFE_X_AWT = X
 endif

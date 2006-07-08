@@ -3,4 +3,4 @@
 #
 Khost_cpu=powerpc
 Khost_os=aix
-CFLAGS="$CFLAGS -fsigned-char -mpowerpc"
+KAFFE_CFLAGS="$KAFFE_CFLAGS -fsigned-char -mpowerpc"

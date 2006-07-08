@@ -6,6 +6,8 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
+AM_CFLAGS= $(KAFFE_CFLAGS)
+
 if COND_SYSTEM_ZLIB
 LINKED_ZIP_LIBS=$(ZIP_LIBS)
 else

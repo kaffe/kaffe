@@ -1,6 +1,8 @@
 # Makefile.frag for kaffevm l4threads
 #
 
+AM_CFLAGS= $(KAFFE_CFLAGS)
+
 noinst_LTLIBRARIES = libkthread.la
 libkthread_la_LDFLAGS = $(KVMLIBFLAGS)
 libkthread_la_SOURCES = l4thread.c signal.c syscalls.c

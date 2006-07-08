@@ -4,4 +4,4 @@
 Khost_cpu=i386
 Khost_os=darwin
 
-CFLAGS="$CFLAGS -fsigned-char"
+KAFFE_CFLAGS="$KAFFE_CFLAGS -fsigned-char"
