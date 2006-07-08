@@ -307,7 +307,7 @@ printStackTrace(struct Hjava_lang_Throwable* o,
 	    }
 
 	    nextCause = unhand(o)->cause;
-	    if (nextCause != o)
+	    if (nextCause != o && nextCause != NULL)
 	      {
 		const char *className = CLASS_CNAME(OBJECT_CLASS((struct Hjava_lang_Object*)nextCause));
 		buf = checkPtr(KMALLOC(strlen(className) + 64));
@@ -351,7 +351,7 @@ printStackTrace(struct Hjava_lang_Throwable* o,
 
 		KFREE(buf);
 	      }
-	  } while (nextCause != o);
+	  } while (nextCause != o && nextCause != NULL);
 	if (p != NULL || !nullOK) {
 	  do_execute_java_method(NULL, p, "flush", "()V", NULL, 0);
 	}

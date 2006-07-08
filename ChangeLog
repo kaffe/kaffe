@@ -1,3 +1,8 @@
+2006-07-08  Diego Pettenò  <flameeyes@gentoo.org>
+
+	* kaffe/kaffevm/stackTrace.c
+	(printStackTrace): Fix for inconsistent exception list.
+	
 2006-07-08  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* configure.ac,
