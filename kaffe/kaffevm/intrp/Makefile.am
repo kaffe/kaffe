@@ -14,7 +14,10 @@ AM_CPPFLAGS = \
 	      -I.. \
 	      -I$(srcdir)/.. \
 	      $(ENGINE_DEFS) \
-	      -I$(top_builddir)/include
+	      -I$(top_builddir)/include \
+              -I$(top_srcdir)/config/$(Khost_cpu) \
+	      -I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os) 
+
 
 if COND_DIRECT_THREADING
     AM_CPPFLAGS += -DDIRECT_THREADING

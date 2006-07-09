@@ -13,7 +13,9 @@ native_LTLIBRARIES = libjavanet.la
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/kaffe \
 	-I$(top_builddir)/include \
-	-I$(top_srcdir)/kaffe/kaffevm/jni
+	-I$(top_srcdir)/kaffe/kaffevm/jni \
+        -I$(top_srcdir)/config/$(Khost_cpu) \
+        -I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os) 
 
 libjavanet_la_CFLAGS = \
 	$(CFLAGS_PG)

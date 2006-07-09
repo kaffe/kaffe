@@ -14,7 +14,15 @@ AM_CFLAGS= $(KAFFE_CFLAGS)
 
 @engine_frag@
 
-AM_CPPFLAGS = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) $(ENGINE_INCLUDES) -I$(top_srcdir)/libltdl $(ENGINE_DEFS) -I$(top_srcdir)/kaffe/kaffevm -I$(top_builddir)/include
+AM_CPPFLAGS = \
+	-I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) \
+	$(ENGINE_INCLUDES) \
+	-I$(top_srcdir)/libltdl \
+	$(ENGINE_DEFS) \
+	-I$(top_srcdir)/kaffe/kaffevm \
+	-I$(top_builddir)/include \
+        -I$(top_srcdir)/config/$(Khost_cpu) \
+        -I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os) 
 
 native_LTLIBRARIES = libkaffexprof.la
 

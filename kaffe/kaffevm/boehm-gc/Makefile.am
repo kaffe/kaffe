@@ -19,6 +19,8 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/kaffe/kaffevm \
 	-I$(top_srcdir)/kaffe/jvmpi \
 	-I$(top_srcdir)/kaffe/kaffevm/boehm-gc/boehm/include \
+        -I$(top_srcdir)/config/$(Khost_cpu) \
+        -I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os) \
 	$(BOEHMGC_SPECIFIC_FLAGS)
 
 native_LTLIBRARIES = libkaffegc.la

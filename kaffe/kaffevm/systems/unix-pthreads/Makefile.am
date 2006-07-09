@@ -53,6 +53,8 @@ AM_CPPFLAGS = \
 	-I$(top_builddir)/include \
 	-I$(top_srcdir)/include \
 	-I$(top_builddir)/include \
+        -I$(top_srcdir)/config/$(Khost_cpu) \
+        -I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os) \
 	$(ENGINE_INCUDES) \
 	$(ENGINE_DEFS) \
 	$(GC_DEFS)

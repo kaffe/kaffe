@@ -38,6 +38,8 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/kaffe/xprof \
 	-I$(top_srcdir)/kaffe/kaffevm/jni \
 	-I$(top_builddir)/include \
+	-I$(top_srcdir)/config/$(Khost_cpu) \
+	-I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os) \
 	$(INCLUDE_KAFFE_X_AWT) \
 	$(INCLUDE_KAFFE_QT_AWT) \
 	$(INCLUDE_KAFFE_NANOX_AWT)

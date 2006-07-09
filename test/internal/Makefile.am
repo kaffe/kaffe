@@ -38,7 +38,9 @@ AM_CPPFLAGS = -I$(top_srcdir)/kaffe \
 	-I$(top_srcdir)/kaffe/kaffevm \
 	-I$(top_srcdir)/kaffe/jvmpi \
 	-I$(top_builddir)/include \
-	-I$(top_srcdir)/kaffe/kaffevm/jni
+	-I$(top_srcdir)/kaffe/kaffevm/jni \
+        -I$(top_srcdir)/config/$(Khost_cpu) \
+        -I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os)
 
 LIBNATIVE = $(top_builddir)/libraries/clib/native/libjavalang.la
 LIBREPLACE = $(top_builddir)/replace/libreplace.la

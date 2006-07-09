@@ -10,7 +10,9 @@ AM_CFLAGS= $(KAFFE_CFLAGS)
 
 AM_CPPFLAGS = \
 	-I$(top_builddir)/include \
-	-I$(top_srcdir)/kaffe/kaffevm/jni
+	-I$(top_srcdir)/kaffe/kaffevm/jni \
+        -I$(top_srcdir)/config/$(Khost_cpu) \
+        -I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os) 
 
 native_LTLIBRARIES = libmanagement.la
 

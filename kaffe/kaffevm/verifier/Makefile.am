@@ -21,7 +21,9 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/kaffe/xprof \
 	-I$(top_builddir)/include \
 	-I$(top_srcdir)/kaffe/kaffevm \
-	-I$(top_srcdir)/kaffe/kaffevm/verifier
+	-I$(top_srcdir)/kaffe/kaffevm/verifier \
+        -I$(top_srcdir)/config/$(Khost_cpu) \
+        -I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os) 
 
 noinst_LTLIBRARIES = libkaffeverifier.la
 

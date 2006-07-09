@@ -1,5 +1,46 @@
 2006-07-09  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac: (Khost_cpu, Khost_os) Added subsitutions.
+	(CONFIG_MD_H, CONFIG_CALLKAFFEEXCEPTION_H, CONFIG_JIT_MD_H,
+	CONFIG_XPROFILE_MD_H)
+	Cleaned up, removed substituions and used to create links.
+	(HAVE_CONFIG_JIT_MD_H) Removed unused variable.
+
+	* config/Makefile.am: (USE_JIT, ENGINE_GEN_HDRS, ENABLE_XPROF,
+	XPROF_HDRS, GEN_HDRS, DISTCLEANFILES, nodist_noinst_HEADERS, 
+	jit-md.h, stamp-h01, md.h, stamp-h02, xprofile-md.h, stamp-h03,
+ 	callKaffeException.h, stamp-h04, dist-hook) Removed no longer
+	useful targets and variables.
+
+	* kaffe/jvmpi/Makefile.am,
+        kaffe/kaffe/Makefile.am,
+        kaffe/kaffeh/Makefile.am,
+        kaffe/kaffevm/Makefile.am,
+        kaffe/kaffevm/boehm-gc/Makefile.am,
+        kaffe/kaffevm/gcj/Makefile.am,
+        kaffe/kaffevm/intrp/Makefile.am,
+        kaffe/kaffevm/jit/Makefile.am,
+        kaffe/kaffevm/jit3/Makefile.am,
+        kaffe/kaffevm/jni/Makefile.am,
+        kaffe/kaffevm/kaffe-gc/Makefile.am,
+        kaffe/kaffevm/systems/beos-native/Makefile.am,
+        kaffe/kaffevm/systems/drops-l4threads/Makefile.am,
+        kaffe/kaffevm/systems/oskit-pthreads/Makefile.am,
+        kaffe/kaffevm/systems/unix-jthreads/Makefile.am,
+        kaffe/kaffevm/systems/unix-pthreads/Makefile.am,
+        kaffe/kaffevm/verifier/Makefile.am,
+        kaffe/xprof/Makefile.am,
+        libraries/clib/awt/X/Makefile.am,
+        libraries/clib/management/Makefile.am,
+        libraries/clib/native/Makefile.am,
+        libraries/clib/net/Makefile.am,
+        libraries/clib/security/Makefile.am,
+        test/internal/Makefile.am (AM_CPPFLAGS): Added
+	config/$Khost_cpu and config/$Khost_cpu/$Khost_os
+	to include path.
+
+2006-07-09  Dalibor Topic  <robilad@kaffe.org>
+
 	* (nodist_GEN_SRCS, $(nodist_GEN_SRCS), nodist_jitBasic_SOURCES)
 	Removed, since functions from version.c are not used anywhere in 
 	the test code, so it doesn't need to be forward generated, compiled

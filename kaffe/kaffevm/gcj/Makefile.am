@@ -8,7 +8,15 @@
 
 @engine_frag@
 AM_CFLAGS= $(KAFFE_CFLAGS)
-AM_CPPFLAGS = -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) -I.. -I$(srcdir)/.. $(ENGINE_DEFS) -I$(top_srcdir)/compat-include -I$(top_builddir)/include
+AM_CPPFLAGS = \
+	-I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) \
+	-I.. \
+	-I$(srcdir)/.. \
+	$(ENGINE_DEFS) \
+	-I$(top_srcdir)/compat-include \
+	-I$(top_builddir)/include \
+        -I$(top_srcdir)/config/$(Khost_cpu) \
+        -I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os) 
 
 if HAVE_GCJ_SUPPORT
 libgcj = libgcj.la

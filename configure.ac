@@ -279,7 +279,9 @@ dnl -------------------------------------------------------------------------
 
 known=no
 Khost_cpu=$host_cpu
+AC_SUBST([Khost_cpu])
 Khost_os=$host_os
+AC_SUBST([Khost_os])
 if test -f $srcdir/config/config.alias ; then
 	. $srcdir/config/config.alias
 fi
@@ -387,11 +389,9 @@ dnl Set the base set of platform-dependent files
 dnl One-liners with #include directives will be created in the Makefiles
 dnl -------------------------------------------------------------------------
 
-CONFIG_MD_H="\$(srcdir)/$Khost_cpu/$Khost_os/md.h"
-CONFIG_CALLKAFFEEXCEPTION_H="\$(top_srcdir)/config/$Khost_cpu/callKaffeException.h"
+CONFIG_MD_H="config/$Khost_cpu/$Khost_os/md.h"
+CONFIG_CALLKAFFEEXCEPTION_H="config/$Khost_cpu/callKaffeException.h"
 KAFFEVM_MD_C="\$(top_srcdir)/config/$Khost_cpu/$Khost_os/md.c"
-AC_SUBST(CONFIG_MD_H)
-AC_SUBST(CONFIG_CALLKAFFEEXCEPTION_H)
 AC_SUBST(KAFFEVM_MD_C)
 
 dnl =========================================================================
@@ -480,18 +480,12 @@ else
 fi
 
 if test x"$with_engine" != x"intrp" ; then
-    HAVE_CONFIG_JIT_MD_H=1
-    CONFIG_JIT_MD_H="\$(top_srcdir)/config/$Khost_cpu/$Khost_os/$with_engine-md.h"
-    AC_SUBST(CONFIG_JIT_MD_H)
+    CONFIG_JIT_MD_H="config/$Khost_cpu/$Khost_os/$with_engine-md.h"
     KAFFEVM_JIT_DEF="\$(top_srcdir)/config/$Khost_cpu/$with_engine-$Khost_cpu.def"
     AC_SUBST(KAFFEVM_JIT_DEF)
     KAFFEVM_ICODE_H="\$(top_srcdir)/config/$Khost_cpu/$with_engine-icode.h"
     AC_SUBST(KAFFEVM_ICODE_H)
-else
-    HAVE_CONFIG_JIT_MD_H=0
 fi
-
-AC_SUBST(HAVE_CONFIG_JIT_MD_H)
 
 AC_MSG_CHECKING(execution engine)
 AC_MSG_RESULT($with_engine)
@@ -598,8 +592,7 @@ AM_CONDITIONAL(ENABLE_XPROF, test x"$xprofiling" = x"yes")
 
 if test x"$xprofiling" = x"yes"; then
   if test -f "$srcdir/config/$Khost_cpu/$Khost_os/xprofile-md.h"; then
-    CONFIG_XPROFILE_MD_H="\$(top_srcdir)/config/$Khost_cpu/$Khost_os/xprofile-md.h"
-    AC_SUBST(CONFIG_XPROFILE_MD_H)
+    CONFIG_XPROFILE_MD_H="config/$Khost_cpu/$Khost_os/xprofile-md.h"
   else
     AC_MSG_ERROR(Profiling not supported in $Khost_cpu-$Khost_os)
   fi
@@ -2618,5 +2611,16 @@ AC_CONFIG_FILES([test/regression/compiler/CompileScript])
 AC_CONFIG_FILES([test/regression/run_time/Makefile])
 AC_CONFIG_FILES([test/regression/run_time/CompileScript])
 AC_CONFIG_FILES([test/jni/Makefile])
+
+if test x"$with_engine" != x"intrp" ; then
+  AC_CONFIG_LINKS([config/jit-md.h:$CONFIG_JIT_MD_H])
+fi
+
+if test x"$xprofiling" = x"yes"; then
+  AC_CONFIG_LINKS([config/xprofile-md.h:$CONFIG_XPROFILE_MD_H])
+fi
+
+AC_CONFIG_LINKS([config/md.h:$CONFIG_MD_H])
+AC_CONFIG_LINKS([config/callKaffeException.h:$CONFIG_CALLKAFFEEXCEPTION_H])
 
 AC_OUTPUT

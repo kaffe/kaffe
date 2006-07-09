@@ -38,6 +38,8 @@ AM_CPPFLAGS = \
 	-I$(top_builddir)/include \
 	-I$(top_srcdir)/kaffe/kaffevm/verifier \
 	-I$(top_srcdir)/kaffe/kaffevm/jni \
+        -I$(top_srcdir)/config/$(Khost_cpu) \
+	-I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os) \
 	$(MAYBE_INTERNAL_ZIP_INCLUDES)
 
 native_LTLIBRARIES = libkaffevm.la

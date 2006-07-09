@@ -9,34 +9,6 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-if USE_JIT
-ENGINE_GEN_HDRS = jit-md.h
-else
-ENGINE_GEN_HDRS =
-endif
-
-if ENABLE_XPROF
-XPROF_HDRS = xprofile-md.h
-else
-XPROF_HDRS =
-endif
-
-GEN_HDRS = \
-	md.h \
-	callKaffeException.h \
-	$(XPROF_HDRS) \
-	$(ENGINE_GEN_HDRS)
-
-DISTCLEANFILES = \
-	$(GEN_HDRS) \
-	stamp-h01 \
-	stamp-h02 \
-	stamp-h03 \
-	stamp-h04
-
-nodist_noinst_HEADERS = \
-	$(GEN_HDRS)
-
 noinst_HEADERS = \
 	config-hacks.h \
 	config-io.h \
@@ -422,32 +394,3 @@ EXTRA_DIST = \
 	sh/sysdepCallMethod.h \
         sh/threads.h \
         sh/trampolines.S
-
-jit-md.h: stamp-h01
-	@if test ! -f $@; then rm -f stamp-h01; $(MAKE) stamp-h01; \
-	else :; fi
-stamp-h01: $(top_builddir)/config.status
-	$(SHELL) $(REGEN_FORWARD) $(CONFIG_JIT_MD_H) jit-md.h $@
-
-md.h: stamp-h02
-	@if test ! -f $@; then rm -f stamp-h02; $(MAKE) stamp-h02; \
-	else :; fi
-stamp-h02: $(top_builddir)/config.status
-	$(SHELL) $(REGEN_FORWARD) $(CONFIG_MD_H) md.h $@
-
-xprofile-md.h: stamp-h03
-	@if test ! -f $@; then rm -f stamp-h03; $(MAKE) stamp-h03; \
-	else :; fi
-stamp-h03: $(top_builddir)/config.status
-	$(SHELL) $(REGEN_FORWARD) $(CONFIG_XPROFILE_MD_H) xprofile-md.h $@
-
-callKaffeException.h: stamp-h04
-	@if test ! -f $@; then rm -f stamp-h04; $(MAKE) stamp-h04; \
-	else :; fi
-stamp-h04: $(top_builddir)/config.status
-	$(SHELL) $(REGEN_FORWARD) $(CONFIG_CALLKAFFEEXCEPTION_H) callKaffeException.h $@
-
-dist-hook:
-	@for file in $(DISTCLEANFILES); do \
-	  rm -f $(distdir)/$$file; \
-	done
