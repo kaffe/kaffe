@@ -1,7 +1,6 @@
 #
 # Mips/Linux configuration.
 #
-KAFFE_CFLAGS="$KAFFE_CFLAGS -fno-omit-frame-pointer"
 
 # if we use cross environment, following values may not be detected.
 if [ "$cross_compiling" = yes ]; then

@@ -4,7 +4,7 @@
 #
 # in ARM gcc characters are by default unsigned
 #
-KAFFE_CFLAGS="$KAFFE_CFLAGS -fsigned-char -fno-omit-frame-pointer -D__UCLIBC__ -D__unix__ -DKAFFEMD_BUGGY_STACK_OVERFLOW -DKAFFE_VMDEBUG -D_SCALB_INT -Wl,-elf2flt "
+KAFFE_CFLAGS="$KAFFE_CFLAGS -fsigned-char -D__UCLIBC__ -D__unix__ -DKAFFEMD_BUGGY_STACK_OVERFLOW -DKAFFE_VMDEBUG -D_SCALB_INT -Wl,-elf2flt "
 
 # if we use cross environment, following values may not be detected.
 if [ "$cross_compiling" = yes ]; then

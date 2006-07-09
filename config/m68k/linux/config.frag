@@ -1,7 +1,7 @@
 #
 # m68k/Linux configuration.
 #
-KAFFE_CFLAGS="$KAFFE_CFLAGS -O1 -fno-omit-frame-pointer"
+KAFFE_CFLAGS="$KAFFE_CFLAGS -O1"
 
 # if we use cross environment, following values may not be detected.
 if [ "$cross_compiling" = yes ]; then

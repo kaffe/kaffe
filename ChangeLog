@@ -1,3 +1,17 @@
+2006-07-09  Dalibor Topic  <topic@amy.domain.wg>
+
+	* config/arm/linux/config.frag,
+	config/bfin/uclinux/config.frag,
+	config/ia64/linux/config.frag,
+	config/m68k/netbsd1/config.frag,
+	config/m68k/linux/config.frag,
+	config/m68k/amigaos/config.frag,
+	config/m68k/a-ux/config.frag,
+	config/mips/netbsd1/config.frag, 
+	config/mips/linux/config.frag (KAFFE_CFLAGS): 	 
+	Removed -f-no-omit-frame-pointer from KAFFE_CFLAGS,
+	since it's now automatically set in configure.
+
 2006-07-09  Dalibor Topic  <robilad@kaffe.org>
 
 	* configure.ac: (Khost_cpu, Khost_os) Added subsitutions.

@@ -11,4 +11,4 @@ if [ "$cross_compiling" = yes ]; then
 fi
 
 # work around bug in gcc's optimizer
-KAFFE_CFLAGS="$KAFFE_CFLAGS -g -O1 -fno-omit-frame-pointer"
+KAFFE_CFLAGS="$KAFFE_CFLAGS -g -O1"
