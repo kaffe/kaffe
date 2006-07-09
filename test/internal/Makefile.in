@@ -79,9 +79,7 @@ CONFIG_CLEAN_FILES =
 am__objects_1 = jit_stub.$(OBJEXT)
 am_jitBasic_OBJECTS = jitBasic.$(OBJEXT) stringParsing.$(OBJEXT) \
 	$(am__objects_1)
-am__objects_2 = version.$(OBJEXT)
-nodist_jitBasic_OBJECTS = $(am__objects_2)
-jitBasic_OBJECTS = $(am_jitBasic_OBJECTS) $(nodist_jitBasic_OBJECTS)
+jitBasic_OBJECTS = $(am_jitBasic_OBJECTS)
 am__DEPENDENCIES_1 =  \
 	$(top_builddir)/libraries/clib/native/libjavalang.la
 @ENABLE_JVMPI_TRUE@am__DEPENDENCIES_2 =  \
@@ -102,7 +100,7 @@ LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
 	$(AM_CFLAGS) $(CFLAGS)
 LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(jitBasic_SOURCES) $(nodist_jitBasic_SOURCES)
+SOURCES = $(jitBasic_SOURCES)
 DIST_SOURCES = $(jitBasic_SOURCES)
 ETAGS = etags
 CTAGS = ctags
@@ -387,9 +385,6 @@ AM_CFLAGS = $(KAFFE_CFLAGS)
 @NEED_LIBXPROF_TRUE@libxprof = ../../kaffe/xprof/libkaffexprof.la
 @ENABLE_JVMPI_FALSE@libjvmpi = #
 @ENABLE_JVMPI_TRUE@libjvmpi = ../../kaffe/jvmpi/libkaffejvmpi.la
-nodist_GEN_SRCS = \
-	version.c
-
 AM_CPPFLAGS = -I$(top_srcdir)/kaffe \
 	-I$(top_builddir)/kaffe/kaffe \
 	$(ENGINE_INCLUDES) \
@@ -421,7 +416,6 @@ jitBasic_SOURCES = \
 	stringParsing.h \
 	$(JIT_STUB)
 
-nodist_jitBasic_SOURCES = $(nodist_GEN_SRCS)
 
 # Order matters here!
 TEST_CLASSES = \
@@ -479,8 +473,7 @@ CLEANFILES = \
 	*.out \
 	core \
 	*.core \
-	$(JAVA_CLASSES) \
-	$(nodist_GEN_SRCS) 
+	$(JAVA_CLASSES)
 
 all: all-am
 
@@ -535,7 +528,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jitBasic.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/jit_stub.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stringParsing.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/version.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -815,9 +807,6 @@ uninstall-am: uninstall-info-am
 @engine_frag@
 
 @threads_frag@
-
-$(nodist_GEN_SRCS):
-	$(SHELL) $(REGEN_FORWARD) $(top_srcdir)/kaffe/kaffe/$@ $@
 
 $(JAVA_CLASSES): $(JAVA_SOURCE_FILES)
 	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(JAVA_SOURCE_FILES)

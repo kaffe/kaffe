@@ -30,12 +30,6 @@ endif
 
 check_PROGRAMS = jitBasic
 
-nodist_GEN_SRCS = \
-	version.c
-
-$(nodist_GEN_SRCS):
-	$(SHELL) $(REGEN_FORWARD) $(top_srcdir)/kaffe/kaffe/$@ $@
-
 AM_CPPFLAGS = -I$(top_srcdir)/kaffe \
 	-I$(top_builddir)/kaffe/kaffe \
 	$(ENGINE_INCLUDES) \
@@ -69,8 +63,6 @@ jitBasic_SOURCES = \
 	stringParsing.c \
 	stringParsing.h \
 	$(JIT_STUB)
-
-nodist_jitBasic_SOURCES = $(nodist_GEN_SRCS)
 
 # Order matters here!
 TEST_CLASSES = \
@@ -137,7 +129,7 @@ CLEANFILES = \
 	*.out \
 	core \
 	*.core \
-	$(JAVA_CLASSES) \
-	$(nodist_GEN_SRCS) 
+	$(JAVA_CLASSES)
+
 
 
