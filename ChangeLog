@@ -1,4 +1,12 @@
-2006-07-09  Dalibor Topic  <topic@amy.domain.wg>
+2006-07-09  Dalibor Topic  <robilad@kaffe.org>
+
+	* config/powerpc/callKaffeException.h: New file.
+	* config/powerpc/jit.h: (CALL_KAFFE_EXCEPTION) Moved
+	to callKaffeException.h.
+
+	Reported by:  Riccardo Mottola <riccardo@kaffe.org>
+
+2006-07-09  Dalibor Topic  <robilad@kaffe.org>
 
 	* config/arm/linux/config.frag,
 	config/bfin/uclinux/config.frag,
