@@ -1,5 +1,11 @@
 2006-07-09  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac: AC_SUBST KAFFE_CFLAGS after config.frag
+	has been sourced. This may fix the problem Riccardo reported
+	on Darwin with -no-cpp-precomp not being honoured.
+
+2006-07-09  Dalibor Topic  <robilad@kaffe.org>
+
 	* config/powerpc/callKaffeException.h: New file.
 	* config/powerpc/jit.h: (CALL_KAFFE_EXCEPTION) Moved
 	to callKaffeException.h.

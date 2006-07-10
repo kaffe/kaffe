@@ -209,9 +209,6 @@ if test "$GCC" != "yes"; then
 	AC_MSG_ERROR([Kaffe can only build with GCC])
 fi
 
-dnl Replace KAFFE_CFLAGS by the generated one
-AC_SUBST(KAFFE_CFLAGS)
-
 dnl Find the c++ compiler early on
 AC_PROG_CXX
 
@@ -2460,6 +2457,9 @@ dnl Used by AM_CPPFLAGS in the different modules.
 dnl -----------------------------------------------------------
 CLASSPATH_INCLUDES="-I\$(top_srcdir)/libraries/clib/target/Linux -I\$(top_srcdir)/libraries/clib/target/generic"
 AC_SUBST(CLASSPATH_INCLUDES)
+
+dnl Replace KAFFE_CFLAGS by the generated one
+AC_SUBST(KAFFE_CFLAGS)
 
 dnl -------------------------
 dnl Update args for classpath
