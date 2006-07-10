@@ -2614,6 +2614,7 @@ AC_CONFIG_FILES([test/jni/Makefile])
 
 if test x"$with_engine" != x"intrp" ; then
   AC_CONFIG_LINKS([config/jit-md.h:$CONFIG_JIT_MD_H])
+  AC_CONFIG_LINKS([config/callKaffeException.h:$CONFIG_CALLKAFFEEXCEPTION_H])
 fi
 
 if test x"$xprofiling" = x"yes"; then
@@ -2621,6 +2622,5 @@ if test x"$xprofiling" = x"yes"; then
 fi
 
 AC_CONFIG_LINKS([config/md.h:$CONFIG_MD_H])
-AC_CONFIG_LINKS([config/callKaffeException.h:$CONFIG_CALLKAFFEEXCEPTION_H])
 
 AC_OUTPUT

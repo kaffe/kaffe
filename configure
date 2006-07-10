@@ -51213,6 +51213,8 @@ subdirs="$subdirs libltdl"
 if test x"$with_engine" != x"intrp" ; then
             ac_config_links="$ac_config_links config/jit-md.h:$CONFIG_JIT_MD_H"
 
+            ac_config_links="$ac_config_links config/callKaffeException.h:$CONFIG_CALLKAFFEEXCEPTION_H"
+
 fi
 
 if test x"$xprofiling" = x"yes"; then
@@ -51221,8 +51223,6 @@ if test x"$xprofiling" = x"yes"; then
 fi
 
           ac_config_links="$ac_config_links config/md.h:$CONFIG_MD_H"
-
-          ac_config_links="$ac_config_links config/callKaffeException.h:$CONFIG_CALLKAFFEEXCEPTION_H"
 
 
 cat >confcache <<\_ACEOF
@@ -52151,9 +52151,9 @@ do
   "test/regression/run_time/CompileScript" ) CONFIG_FILES="$CONFIG_FILES test/regression/run_time/CompileScript" ;;
   "test/jni/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/jni/Makefile" ;;
   "config/jit-md.h" ) CONFIG_LINKS="$CONFIG_LINKS config/jit-md.h:$CONFIG_JIT_MD_H" ;;
+  "config/callKaffeException.h" ) CONFIG_LINKS="$CONFIG_LINKS config/callKaffeException.h:$CONFIG_CALLKAFFEEXCEPTION_H" ;;
   "config/xprofile-md.h" ) CONFIG_LINKS="$CONFIG_LINKS config/xprofile-md.h:$CONFIG_XPROFILE_MD_H" ;;
   "config/md.h" ) CONFIG_LINKS="$CONFIG_LINKS config/md.h:$CONFIG_MD_H" ;;
-  "config/callKaffeException.h" ) CONFIG_LINKS="$CONFIG_LINKS config/callKaffeException.h:$CONFIG_CALLKAFFEEXCEPTION_H" ;;
   "depfiles" ) CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
   "default-1" ) CONFIG_COMMANDS="$CONFIG_COMMANDS default-1" ;;
   "$ac_stdint_h" ) CONFIG_COMMANDS="$CONFIG_COMMANDS $ac_stdint_h" ;;
