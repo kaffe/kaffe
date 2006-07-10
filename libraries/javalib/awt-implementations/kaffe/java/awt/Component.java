@@ -49,7 +49,9 @@ import java.awt.peer.LightweightPeer;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.util.Collections;
+import java.util.EventListener;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
@@ -582,29 +584,505 @@ public void add ( PopupMenu menu ) {
 	}
 }
 
-public void addComponentListener ( ComponentListener newListener ) {
-	componentListener = AWTEventMulticaster.add( componentListener, newListener);
-}
+  /**
+   * Adds the specified listener to this component. This is harmless if the
+   * listener is null, but if the listener has already been registered, it
+   * will now be registered twice.
+   *
+   * @param listener the new listener to add
+   * @see ComponentEvent
+   * @see #removeComponentListener(ComponentListener)
+   * @see #getComponentListeners()
+   * @since 1.1
+   */
+  public synchronized void addComponentListener(ComponentListener listener)
+  {
+    componentListener = AWTEventMulticaster.add(componentListener, listener);
+    if (componentListener != null)
+      enableEvents(AWTEvent.COMPONENT_EVENT_MASK);
+  }
 
-public void addFocusListener ( FocusListener newListener ) {
-	focusListener = AWTEventMulticaster.add( focusListener, newListener);
-}
+  /**
+   * Removes the specified listener from the component. This is harmless if
+   * the listener was not previously registered.
+   *
+   * @param listener the listener to remove
+   * @see ComponentEvent
+   * @see #addComponentListener(ComponentListener)
+   * @see #getComponentListeners()
+   * @since 1.1
+   */
+  public synchronized void removeComponentListener(ComponentListener listener)
+  {
+    componentListener = AWTEventMulticaster.remove(componentListener, listener);
+  }
 
-public void addKeyListener ( KeyListener newListener ) {
-	keyListener = AWTEventMulticaster.add( keyListener, newListener);
-}
+  /**
+   * Returns an array of all specified listeners registered on this component.
+   *
+   * @return an array of listeners
+   * @see #addComponentListener(ComponentListener)
+   * @see #removeComponentListener(ComponentListener)
+   * @since 1.4
+   */
+  public synchronized ComponentListener[] getComponentListeners()
+  {
+    return (ComponentListener[])
+      AWTEventMulticaster.getListeners(componentListener,
+                                       ComponentListener.class);
+  }
 
-public void addMouseListener ( MouseListener newListener ) {
-	mouseListener = AWTEventMulticaster.add( mouseListener, newListener);
-	
-	flags |= IS_MOUSE_AWARE;
-}
+  /**
+   * Adds the specified listener to this component. This is harmless if the
+   * listener is null, but if the listener has already been registered, it
+   * will now be registered twice.
+   *
+   * @param listener the new listener to add
+   * @see FocusEvent
+   * @see #removeFocusListener(FocusListener)
+   * @see #getFocusListeners()
+   * @since 1.1
+   */
+  public synchronized void addFocusListener(FocusListener listener)
+  {
+    focusListener = AWTEventMulticaster.add(focusListener, listener);
+    if (focusListener != null)
+      enableEvents(AWTEvent.FOCUS_EVENT_MASK);
+  }
 
-public void addMouseMotionListener ( MouseMotionListener newListener ) {
-	mouseMotionListener = AWTEventMulticaster.add( mouseMotionListener, newListener);
-	
-	flags |= IS_MOUSE_AWARE;
-}
+  /**
+   * Removes the specified listener from the component. This is harmless if
+   * the listener was not previously registered.
+   *
+   * @param listener the listener to remove
+   * @see FocusEvent
+   * @see #addFocusListener(FocusListener)
+   * @see #getFocusListeners()
+   * @since 1.1
+   */
+  public synchronized void removeFocusListener(FocusListener listener)
+  {
+    focusListener = AWTEventMulticaster.remove(focusListener, listener);
+  }
+
+  /**
+   * Returns an array of all specified listeners registered on this component.
+   *
+   * @return an array of listeners
+   * @see #addFocusListener(FocusListener)
+   * @see #removeFocusListener(FocusListener)
+   * @since 1.4
+   */
+  public synchronized FocusListener[] getFocusListeners()
+  {
+    return (FocusListener[])
+      AWTEventMulticaster.getListeners(focusListener, FocusListener.class);
+  }
+
+  /**
+   * Adds the specified listener to this component. This is harmless if the
+   * listener is null, but if the listener has already been registered, it
+   * will now be registered twice.
+   *
+   * @param listener the new listener to add
+   * @see HierarchyEvent
+   * @see #removeHierarchyListener(HierarchyListener)
+   * @see #getHierarchyListeners()
+   * @since 1.3
+   */
+  public synchronized void addHierarchyListener(HierarchyListener listener)
+  {
+    hierarchyListener = AWTEventMulticaster.add(hierarchyListener, listener);
+    if (hierarchyListener != null)
+      enableEvents(AWTEvent.HIERARCHY_EVENT_MASK);
+  }
+
+  /**
+   * Removes the specified listener from the component. This is harmless if
+   * the listener was not previously registered.
+   *
+   * @param listener the listener to remove
+   * @see HierarchyEvent
+   * @see #addHierarchyListener(HierarchyListener)
+   * @see #getHierarchyListeners()
+   * @since 1.3
+   */
+  public synchronized void removeHierarchyListener(HierarchyListener listener)
+  {
+    hierarchyListener = AWTEventMulticaster.remove(hierarchyListener, listener);
+  }
+
+  /**
+   * Returns an array of all specified listeners registered on this component.
+   *
+   * @return an array of listeners
+   * @see #addHierarchyListener(HierarchyListener)
+   * @see #removeHierarchyListener(HierarchyListener)
+   * @since 1.4
+   */
+  public synchronized HierarchyListener[] getHierarchyListeners()
+  {
+    return (HierarchyListener[])
+      AWTEventMulticaster.getListeners(hierarchyListener,
+                                       HierarchyListener.class);
+  }
+
+  /**
+   * Adds the specified listener to this component. This is harmless if the
+   * listener is null, but if the listener has already been registered, it
+   * will now be registered twice.
+   *
+   * @param listener the new listener to add
+   * @see HierarchyEvent
+   * @see #removeHierarchyBoundsListener(HierarchyBoundsListener)
+   * @see #getHierarchyBoundsListeners()
+   * @since 1.3
+   */
+  public synchronized void
+    addHierarchyBoundsListener(HierarchyBoundsListener listener)
+  {
+    hierarchyBoundsListener =
+      AWTEventMulticaster.add(hierarchyBoundsListener, listener);
+    if (hierarchyBoundsListener != null)
+      enableEvents(AWTEvent.HIERARCHY_BOUNDS_EVENT_MASK);
+  }
+
+  /**
+   * Removes the specified listener from the component. This is harmless if
+   * the listener was not previously registered.
+   *
+   * @param listener the listener to remove
+   * @see HierarchyEvent
+   * @see #addHierarchyBoundsListener(HierarchyBoundsListener)
+   * @see #getHierarchyBoundsListeners()
+   * @since 1.3
+   */
+  public synchronized void
+    removeHierarchyBoundsListener(HierarchyBoundsListener listener)
+  {
+    hierarchyBoundsListener =
+      AWTEventMulticaster.remove(hierarchyBoundsListener, listener);
+  }
+
+  /**
+   * Returns an array of all specified listeners registered on this component.
+   *
+   * @return an array of listeners
+   * @see #addHierarchyBoundsListener(HierarchyBoundsListener)
+   * @see #removeHierarchyBoundsListener(HierarchyBoundsListener)
+   * @since 1.4
+   */
+  public synchronized HierarchyBoundsListener[] getHierarchyBoundsListeners()
+  {
+    return (HierarchyBoundsListener[])
+      AWTEventMulticaster.getListeners(hierarchyBoundsListener,
+                                       HierarchyBoundsListener.class);
+  }
+
+  /**
+   * Adds the specified listener to this component. This is harmless if the
+   * listener is null, but if the listener has already been registered, it
+   * will now be registered twice.
+   *
+   * @param listener the new listener to add
+   * @see KeyEvent
+   * @see #removeKeyListener(KeyListener)
+   * @see #getKeyListeners()
+   * @since 1.1
+   */
+  public synchronized void addKeyListener(KeyListener listener)
+  {
+    keyListener = AWTEventMulticaster.add(keyListener, listener);
+    if (keyListener != null)
+      enableEvents(AWTEvent.KEY_EVENT_MASK);
+  }
+
+  /**
+   * Removes the specified listener from the component. This is harmless if
+   * the listener was not previously registered.
+   *
+   * @param listener the listener to remove
+   * @see KeyEvent
+   * @see #addKeyListener(KeyListener)
+   * @see #getKeyListeners()
+   * @since 1.1
+   */
+  public synchronized void removeKeyListener(KeyListener listener)
+  {
+    keyListener = AWTEventMulticaster.remove(keyListener, listener);
+  }
+
+  /**
+   * Returns an array of all specified listeners registered on this component.
+   *
+   * @return an array of listeners
+   * @see #addKeyListener(KeyListener)
+   * @see #removeKeyListener(KeyListener)
+   * @since 1.4
+   */
+  public synchronized KeyListener[] getKeyListeners()
+  {
+    return (KeyListener[])
+      AWTEventMulticaster.getListeners(keyListener, KeyListener.class);
+  }
+
+  /**
+   * Adds the specified listener to this component. This is harmless if the
+   * listener is null, but if the listener has already been registered, it
+   * will now be registered twice.
+   *
+   * @param listener the new listener to add
+   * @see MouseEvent
+   * @see #removeMouseListener(MouseListener)
+   * @see #getMouseListeners()
+   * @since 1.1
+   */
+  public synchronized void addMouseListener(MouseListener listener)
+  {
+    mouseListener = AWTEventMulticaster.add(mouseListener, listener);
+    if (mouseListener != null)
+      enableEvents(AWTEvent.MOUSE_EVENT_MASK);
+
+    // TODO is this still needed ?
+    flags |= IS_MOUSE_AWARE;
+  }
+
+  /**
+   * Removes the specified listener from the component. This is harmless if
+   * the listener was not previously registered.
+   *
+   * @param listener the listener to remove
+   * @see MouseEvent
+   * @see #addMouseListener(MouseListener)
+   * @see #getMouseListeners()
+   * @since 1.1
+   */
+  public synchronized void removeMouseListener(MouseListener listener)
+  {
+    mouseListener = AWTEventMulticaster.remove(mouseListener, listener);
+    // TODO is this still needed?
+    checkMouseAware();
+  }
+
+  /**
+   * Returns an array of all specified listeners registered on this component.
+   *
+   * @return an array of listeners
+   * @see #addMouseListener(MouseListener)
+   * @see #removeMouseListener(MouseListener)
+   * @since 1.4
+   */
+  public synchronized MouseListener[] getMouseListeners()
+  {
+    return (MouseListener[])
+      AWTEventMulticaster.getListeners(mouseListener, MouseListener.class);
+  }
+
+  /**
+   * Adds the specified listener to this component. This is harmless if the
+   * listener is null, but if the listener has already been registered, it
+   * will now be registered twice.
+   *
+   * @param listener the new listener to add
+   * @see MouseEvent
+   * @see #removeMouseMotionListener(MouseMotionListener)
+   * @see #getMouseMotionListeners()
+   * @since 1.1
+   */
+  public synchronized void addMouseMotionListener(MouseMotionListener listener)
+  {
+    mouseMotionListener = AWTEventMulticaster.add(mouseMotionListener, listener);
+    if (mouseMotionListener != null)
+      enableEvents(AWTEvent.MOUSE_MOTION_EVENT_MASK);
+
+    // TODO is this still needed ?
+    flags |= IS_MOUSE_AWARE;
+  }
+
+  /**
+   * Removes the specified listener from the component. This is harmless if
+   * the listener was not previously registered.
+   *
+   * @param listener the listener to remove
+   * @see MouseEvent
+   * @see #addMouseMotionListener(MouseMotionListener)
+   * @see #getMouseMotionListeners()
+   * @since 1.1
+   */
+  public synchronized void removeMouseMotionListener(MouseMotionListener listener)
+  {
+    mouseMotionListener = AWTEventMulticaster.remove(mouseMotionListener, listener);
+
+    // TODO is this still needed?
+    checkMouseAware();
+  }
+
+  /**
+   * Returns an array of all specified listeners registered on this component.
+   *
+   * @return an array of listeners
+   * @see #addMouseMotionListener(MouseMotionListener)
+   * @see #removeMouseMotionListener(MouseMotionListener)
+   * @since 1.4
+   */
+  public synchronized MouseMotionListener[] getMouseMotionListeners()
+  {
+    return (MouseMotionListener[])
+      AWTEventMulticaster.getListeners(mouseMotionListener,
+                                       MouseMotionListener.class);
+  }
+
+  /**
+   * Adds the specified listener to this component. This is harmless if the
+   * listener is null, but if the listener has already been registered, it
+   * will now be registered twice.
+   *
+   * @param listener the new listener to add
+   * @see MouseEvent
+   * @see MouseWheelEvent
+   * @see #removeMouseWheelListener(MouseWheelListener)
+   * @see #getMouseWheelListeners()
+   * @since 1.4
+   */
+  public synchronized void addMouseWheelListener(MouseWheelListener listener)
+  {
+    mouseWheelListener = AWTEventMulticaster.add(mouseWheelListener, listener);
+    if (mouseWheelListener != null)
+      enableEvents(AWTEvent.MOUSE_WHEEL_EVENT_MASK);
+  }
+
+  /**
+   * Removes the specified listener from the component. This is harmless if
+   * the listener was not previously registered.
+   *
+   * @param listener the listener to remove
+   * @see MouseEvent
+   * @see MouseWheelEvent
+   * @see #addMouseWheelListener(MouseWheelListener)
+   * @see #getMouseWheelListeners()
+   * @since 1.4
+   */
+  public synchronized void removeMouseWheelListener(MouseWheelListener listener)
+  {
+    mouseWheelListener = AWTEventMulticaster.remove(mouseWheelListener, listener);
+  }
+
+  /**
+   * Returns an array of all specified listeners registered on this component.
+   *
+   * @return an array of listeners
+   * @see #addMouseWheelListener(MouseWheelListener)
+   * @see #removeMouseWheelListener(MouseWheelListener)
+   * @since 1.4
+   */
+  public synchronized MouseWheelListener[] getMouseWheelListeners()
+  {
+    return (MouseWheelListener[])
+      AWTEventMulticaster.getListeners(mouseWheelListener,
+                                       MouseWheelListener.class);
+  }
+
+  /**
+   * Adds the specified listener to this component. This is harmless if the
+   * listener is null, but if the listener has already been registered, it
+   * will now be registered twice.
+   *
+   * @param listener the new listener to add
+   * @see InputMethodEvent
+   * @see #removeInputMethodListener(InputMethodListener)
+   * @see #getInputMethodListeners()
+   * @see #getInputMethodRequests()
+   * @since 1.2
+   */
+  public synchronized void addInputMethodListener(InputMethodListener listener)
+  {
+    inputMethodListener = AWTEventMulticaster.add(inputMethodListener, listener);
+    if (inputMethodListener != null)
+      enableEvents(AWTEvent.INPUT_METHOD_EVENT_MASK);
+  }
+
+  /**
+   * Removes the specified listener from the component. This is harmless if
+   * the listener was not previously registered.
+   *
+   * @param listener the listener to remove
+   * @see InputMethodEvent
+   * @see #addInputMethodListener(InputMethodListener)
+   * @see #getInputMethodRequests()
+   * @since 1.2
+   */
+  public synchronized void removeInputMethodListener(InputMethodListener listener)
+  {
+    inputMethodListener = AWTEventMulticaster.remove(inputMethodListener, listener);
+  }
+
+  /**
+   * Returns an array of all specified listeners registered on this component.
+   *
+   * @return an array of listeners
+   * @see #addInputMethodListener(InputMethodListener)
+   * @see #removeInputMethodListener(InputMethodListener)
+   * @since 1.4
+   */
+  public synchronized InputMethodListener[] getInputMethodListeners()
+  {
+    return (InputMethodListener[])
+      AWTEventMulticaster.getListeners(inputMethodListener,
+                                       InputMethodListener.class);
+  }
+
+  /**
+   * Returns all registered {@link EventListener}s of the given 
+   * <code>listenerType</code>.
+   *
+   * @param listenerType the class of listeners to filter (<code>null</code> 
+   *                     not permitted).
+   *                     
+   * @return An array of registered listeners.
+   * 
+   * @throws ClassCastException if <code>listenerType</code> does not implement
+   *                            the {@link EventListener} interface.
+   * @throws NullPointerException if <code>listenerType</code> is 
+   *                              <code>null</code>.
+   *                            
+   * @see #getComponentListeners()
+   * @see #getFocusListeners()
+   * @see #getHierarchyListeners()
+   * @see #getHierarchyBoundsListeners()
+   * @see #getKeyListeners()
+   * @see #getMouseListeners()
+   * @see #getMouseMotionListeners()
+   * @see #getMouseWheelListeners()
+   * @see #getInputMethodListeners()
+   * @see #getPropertyChangeListeners()
+   * @since 1.3
+   */
+  public EventListener[] getListeners(Class listenerType)
+  {
+    if (listenerType == ComponentListener.class)
+      return getComponentListeners();
+    if (listenerType == FocusListener.class)
+      return getFocusListeners();
+    if (listenerType == HierarchyListener.class)
+      return getHierarchyListeners();
+    if (listenerType == HierarchyBoundsListener.class)
+      return getHierarchyBoundsListeners();
+    if (listenerType == KeyListener.class)
+      return getKeyListeners();
+    if (listenerType == MouseListener.class)
+      return getMouseListeners();
+    if (listenerType == MouseMotionListener.class)
+      return getMouseMotionListeners();
+    if (listenerType == MouseWheelListener.class)
+      return getMouseWheelListeners();
+    if (listenerType == InputMethodListener.class)
+      return getInputMethodListeners();
+    if (listenerType == PropertyChangeListener.class)
+      return getPropertyChangeListeners();
+    return (EventListener[]) Array.newInstance(listenerType, 0);
+  }
+
+
 
 public void addNotify () {
 	if ( (flags & IS_ADD_NOTIFIED) == 0 ) {
@@ -2367,30 +2845,6 @@ public void remove( MenuComponent mc) {
 		popup.remove( mc);
 }
 
-public void removeComponentListener ( ComponentListener client ) {
-	componentListener = AWTEventMulticaster.remove( componentListener, client);
-}
-
-public void removeFocusListener ( FocusListener listener ) {
-	focusListener = AWTEventMulticaster.remove( focusListener, listener);
-}
-
-public void removeKeyListener ( KeyListener listener ) {
-	keyListener = AWTEventMulticaster.remove( keyListener, listener);
-}
-
-public void removeMouseListener ( MouseListener listener ) {
-	mouseListener = AWTEventMulticaster.remove( mouseListener, listener);
-	
-	checkMouseAware();
-}
-
-public void removeMouseMotionListener ( MouseMotionListener listener ) {
-	mouseMotionListener = AWTEventMulticaster.remove( mouseMotionListener, listener);
-	
-	checkMouseAware();
-}
-
 public void removeNotify () {
 	flags &= ~IS_ADD_NOTIFIED;
 
@@ -3172,105 +3626,6 @@ public AccessibleContext getAccessibleContext()
     return null;
 }
 
-/**
-* Returns an array of all specified listeners registered on this component.
- *
- * @return an array of listeners
- * @see #addMouseMotionListener(MouseMotionListener)
- * @see #removeMouseMotionListener(MouseMotionListener)
- * @since 1.4
- */
-public synchronized MouseMotionListener[] getMouseMotionListeners()
-{
-    return (MouseMotionListener[])
-    AWTEventMulticaster.getListeners(mouseMotionListener,
-                                     MouseMotionListener.class);
-}
-
-/**
-* Adds the specified listener to this component. This is harmless if the
- * listener is null, but if the listener has already been registered, it
- * will now be registered twice.
- *
- * @param listener the new listener to add
- * @see MouseEvent
- * @see MouseWheelEvent
- * @see #removeMouseWheelListener(MouseWheelListener)
- * @see #getMouseWheelListeners()
- * @since 1.4
- */
-public synchronized void addMouseWheelListener(MouseWheelListener listener)
-{
-    mouseWheelListener = AWTEventMulticaster.add(mouseWheelListener, listener);
-    if (mouseWheelListener != null)
-        enableEvents(AWTEvent.MOUSE_WHEEL_EVENT_MASK);
-}
-
-/**
-* Removes the specified listener from the component. This is harmless if
- * the listener was not previously registered.
- *
- * @param listener the listener to remove
- * @see MouseEvent
- * @see MouseWheelEvent
- * @see #addMouseWheelListener(MouseWheelListener)
- * @see #getMouseWheelListeners()
- * @since 1.4
- */
-public synchronized void removeMouseWheelListener(MouseWheelListener listener)
-{
-    mouseWheelListener = AWTEventMulticaster.remove(mouseWheelListener, listener);
-}
-
-/**
-* Returns an array of all specified listeners registered on this component.
- *
- * @return an array of listeners
- * @see #addMouseWheelListener(MouseWheelListener)
- * @see #removeMouseWheelListener(MouseWheelListener)
- * @since 1.4
- */
-public synchronized MouseWheelListener[] getMouseWheelListeners()
-{
-    return (MouseWheelListener[])
-    AWTEventMulticaster.getListeners(mouseWheelListener,
-                                     MouseWheelListener.class);
-}
-
-/**
-* Adds the specified listener to this component. This is harmless if the
- * listener is null, but if the listener has already been registered, it
- * will now be registered twice.
- *
- * @param listener the new listener to add
- * @see InputMethodEvent
- * @see #removeInputMethodListener(InputMethodListener)
- * @see #getInputMethodListeners()
- * @see #getInputMethodRequests()
- * @since 1.2
- */
-public synchronized void addInputMethodListener(InputMethodListener listener)
-{
-    inputMethodListener = AWTEventMulticaster.add(inputMethodListener, listener);
-    if (inputMethodListener != null)
-        enableEvents(AWTEvent.INPUT_METHOD_EVENT_MASK);
-}
-
-/**
-* Removes the specified listener from the component. This is harmless if
- * the listener was not previously registered.
- *
- * @param listener the listener to remove
- * @see InputMethodEvent
- * @see #addInputMethodListener(InputMethodListener)
- * @see #getInputMethodRequests()
- * @since 1.2
- */
-public synchronized void removeInputMethodListener(InputMethodListener listener)
-{
-    inputMethodListener = AWTEventMulticaster.remove(inputMethodListener, listener);
-}
-
 
 synchronized void updateLinkedGraphics () {
 	GraphicsLink li, last, next;
@@ -3342,6 +3697,21 @@ synchronized void updateLinkedGraphics () {
   {
     if (changeSupport != null)
       changeSupport.removePropertyChangeListener(listener);
+  }
+
+  /**
+   * Returns an array of all specified listeners registered on this component.
+   *
+   * @return an array of listeners
+   * @see #addPropertyChangeListener(PropertyChangeListener)
+   * @see #removePropertyChangeListener(PropertyChangeListener)
+   * @see #getPropertyChangeListeners(String)
+   * @since 1.4
+   */
+  public PropertyChangeListener[] getPropertyChangeListeners()
+  {
+    return changeSupport == null ? new PropertyChangeListener[0]
+      : changeSupport.getPropertyChangeListeners();
   }
 
 public void validate () {

@@ -1,3 +1,8 @@
+2006-07-11  Riccardo Mottola <riccardo@kaffe.org>
+
+	* libraries/javalib/awt-implementations/kaffe/java/awt/Component.java:
+	implemented and updated some listener accessors
+	
 2006-07-09  Dalibor Topic  <robilad@kaffe.org>
 
 	* configure.ac: Only link callKaffeException.h if we
