@@ -50,7 +50,9 @@ build_triplet = @build@
 host_triplet = @host@
 subdir = kaffe/kaffevm
 DIST_COMMON = $(noinst_HEADERS) $(srcdir)/Makefile.am \
-	$(srcdir)/Makefile.in
+	$(srcdir)/Makefile.in $(srcdir)/binreloc.c \
+	$(srcdir)/constants.c $(srcdir)/debug.c $(srcdir)/file.c \
+	$(srcdir)/jar.c $(srcdir)/readClass.c $(srcdir)/utf8const.c
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/acx_pthread.m4 $(top_srcdir)/m4/alsa.m4 \

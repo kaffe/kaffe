@@ -28,17 +28,6 @@ AM_CPPFLAGS = \
 
 bin_PROGRAMS = kaffeh
 
-GEN_SRCS = \
-	constants.c \
-	debug.c \
-	file.c \
-	jar.c \
-	readClass.c \
-	utf8const.c \
-	binreloc.c
-
-DISTCLEANFILES = $(GEN_SRCS)
-
 kaffeh_CFLAGS = \
 	$(CFLAGS_PG)
 
@@ -52,18 +41,17 @@ kaffeh_SOURCES = \
 	sigs.c \
 	support.c
 
-nodist_kaffeh_SOURCES = $(GEN_SRCS)
+nodist_kaffeh_SOURCES = \
+	constants.c \
+	debug.c \
+	file.c \
+	jar.c \
+	readClass.c \
+	utf8const.c \
+	binreloc.c
 
 noinst_HEADERS = \
 	kaffeh-support.h \
 	java_lang_ClassLoader.h \
 	java_lang_Object.h \
 	java_lang_String.h
-
-$(GEN_SRCS):
-	$(SHELL) $(REGEN_FORWARD) $(srcdir)/../kaffevm/$@ $@
-
-##dist-hook:
-##	@for file in $(DISTCLEANFILES); do \
-##	  rm -f $(distdir)/$$file; \
-##	done

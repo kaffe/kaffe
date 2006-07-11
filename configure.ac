@@ -2612,6 +2612,14 @@ AC_CONFIG_FILES([test/regression/run_time/Makefile])
 AC_CONFIG_FILES([test/regression/run_time/CompileScript])
 AC_CONFIG_FILES([test/jni/Makefile])
 
+AC_CONFIG_LINKS([kaffe/kaffeh/constants.c:kaffe/kaffevm/constants.c])
+AC_CONFIG_LINKS([kaffe/kaffeh/debug.c:kaffe/kaffevm/debug.c])
+AC_CONFIG_LINKS([kaffe/kaffeh/file.c:kaffe/kaffevm/file.c])
+AC_CONFIG_LINKS([kaffe/kaffeh/jar.c:kaffe/kaffevm/jar.c])
+AC_CONFIG_LINKS([kaffe/kaffeh/readClass.c:kaffe/kaffevm/readClass.c])
+AC_CONFIG_LINKS([kaffe/kaffeh/utf8const.c:kaffe/kaffevm/utf8const.c])
+AC_CONFIG_LINKS([kaffe/kaffeh/binreloc.c:kaffe/kaffevm/binreloc.c])
+
 if test x"$with_engine" != x"intrp" ; then
   AC_CONFIG_LINKS([config/jit-md.h:$CONFIG_JIT_MD_H])
   AC_CONFIG_LINKS([config/callKaffeException.h:$CONFIG_CALLKAFFEEXCEPTION_H])

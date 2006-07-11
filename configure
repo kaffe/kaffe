@@ -51210,6 +51210,21 @@ subdirs="$subdirs libltdl"
           ac_config_files="$ac_config_files test/jni/Makefile"
 
 
+          ac_config_links="$ac_config_links kaffe/kaffeh/constants.c:kaffe/kaffevm/constants.c"
+
+          ac_config_links="$ac_config_links kaffe/kaffeh/debug.c:kaffe/kaffevm/debug.c"
+
+          ac_config_links="$ac_config_links kaffe/kaffeh/file.c:kaffe/kaffevm/file.c"
+
+          ac_config_links="$ac_config_links kaffe/kaffeh/jar.c:kaffe/kaffevm/jar.c"
+
+          ac_config_links="$ac_config_links kaffe/kaffeh/readClass.c:kaffe/kaffevm/readClass.c"
+
+          ac_config_links="$ac_config_links kaffe/kaffeh/utf8const.c:kaffe/kaffevm/utf8const.c"
+
+          ac_config_links="$ac_config_links kaffe/kaffeh/binreloc.c:kaffe/kaffevm/binreloc.c"
+
+
 if test x"$with_engine" != x"intrp" ; then
             ac_config_links="$ac_config_links config/jit-md.h:$CONFIG_JIT_MD_H"
 
@@ -52150,6 +52165,13 @@ do
   "test/regression/run_time/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/regression/run_time/Makefile" ;;
   "test/regression/run_time/CompileScript" ) CONFIG_FILES="$CONFIG_FILES test/regression/run_time/CompileScript" ;;
   "test/jni/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/jni/Makefile" ;;
+  "kaffe/kaffeh/constants.c" ) CONFIG_LINKS="$CONFIG_LINKS kaffe/kaffeh/constants.c:kaffe/kaffevm/constants.c" ;;
+  "kaffe/kaffeh/debug.c" ) CONFIG_LINKS="$CONFIG_LINKS kaffe/kaffeh/debug.c:kaffe/kaffevm/debug.c" ;;
+  "kaffe/kaffeh/file.c" ) CONFIG_LINKS="$CONFIG_LINKS kaffe/kaffeh/file.c:kaffe/kaffevm/file.c" ;;
+  "kaffe/kaffeh/jar.c" ) CONFIG_LINKS="$CONFIG_LINKS kaffe/kaffeh/jar.c:kaffe/kaffevm/jar.c" ;;
+  "kaffe/kaffeh/readClass.c" ) CONFIG_LINKS="$CONFIG_LINKS kaffe/kaffeh/readClass.c:kaffe/kaffevm/readClass.c" ;;
+  "kaffe/kaffeh/utf8const.c" ) CONFIG_LINKS="$CONFIG_LINKS kaffe/kaffeh/utf8const.c:kaffe/kaffevm/utf8const.c" ;;
+  "kaffe/kaffeh/binreloc.c" ) CONFIG_LINKS="$CONFIG_LINKS kaffe/kaffeh/binreloc.c:kaffe/kaffevm/binreloc.c" ;;
   "config/jit-md.h" ) CONFIG_LINKS="$CONFIG_LINKS config/jit-md.h:$CONFIG_JIT_MD_H" ;;
   "config/callKaffeException.h" ) CONFIG_LINKS="$CONFIG_LINKS config/callKaffeException.h:$CONFIG_CALLKAFFEEXCEPTION_H" ;;
   "config/xprofile-md.h" ) CONFIG_LINKS="$CONFIG_LINKS config/xprofile-md.h:$CONFIG_XPROFILE_MD_H" ;;

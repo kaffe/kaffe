@@ -74,17 +74,17 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(SHELL) $(top_srcdir)/scripts/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = constants.c debug.c file.c jar.c readClass.c \
+	utf8const.c binreloc.c
 am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_kaffeh_OBJECTS = kaffeh-main.$(OBJEXT) kaffeh-mem.$(OBJEXT) \
 	kaffeh-sigs.$(OBJEXT) kaffeh-support.$(OBJEXT)
-am__objects_1 = kaffeh-constants.$(OBJEXT) kaffeh-debug.$(OBJEXT) \
-	kaffeh-file.$(OBJEXT) kaffeh-jar.$(OBJEXT) \
-	kaffeh-readClass.$(OBJEXT) kaffeh-utf8const.$(OBJEXT) \
-	kaffeh-binreloc.$(OBJEXT)
-nodist_kaffeh_OBJECTS = $(am__objects_1)
+nodist_kaffeh_OBJECTS = kaffeh-constants.$(OBJEXT) \
+	kaffeh-debug.$(OBJEXT) kaffeh-file.$(OBJEXT) \
+	kaffeh-jar.$(OBJEXT) kaffeh-readClass.$(OBJEXT) \
+	kaffeh-utf8const.$(OBJEXT) kaffeh-binreloc.$(OBJEXT)
 kaffeh_OBJECTS = $(am_kaffeh_OBJECTS) $(nodist_kaffeh_OBJECTS)
 am__DEPENDENCIES_1 =
 @COND_SYSTEM_ZLIB_FALSE@am__DEPENDENCIES_2 =  \
@@ -394,16 +394,6 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os) \
 	$(MAYBE_INTERNAL_ZIP_INCLUDES)
 
-GEN_SRCS = \
-	constants.c \
-	debug.c \
-	file.c \
-	jar.c \
-	readClass.c \
-	utf8const.c \
-	binreloc.c
-
-DISTCLEANFILES = $(GEN_SRCS)
 kaffeh_CFLAGS = \
 	$(CFLAGS_PG)
 
@@ -417,7 +407,15 @@ kaffeh_SOURCES = \
 	sigs.c \
 	support.c
 
-nodist_kaffeh_SOURCES = $(GEN_SRCS)
+nodist_kaffeh_SOURCES = \
+	constants.c \
+	debug.c \
+	file.c \
+	jar.c \
+	readClass.c \
+	utf8const.c \
+	binreloc.c
+
 noinst_HEADERS = \
 	kaffeh-support.h \
 	java_lang_ClassLoader.h \
@@ -794,7 +792,6 @@ clean-generic:
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
-	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -861,9 +858,6 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am
 	pdf pdf-am ps ps-am tags uninstall uninstall-am \
 	uninstall-binPROGRAMS uninstall-info-am
 
-
-$(GEN_SRCS):
-	$(SHELL) $(REGEN_FORWARD) $(srcdir)/../kaffevm/$@ $@
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
