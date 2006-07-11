@@ -260,7 +260,6 @@ QT_CXXFLAGS = @QT_CXXFLAGS@
 QT_GUILINK = @QT_GUILINK@
 QT_LDADD = @QT_LDADD@
 RANLIB = @RANLIB@
-REGEN_FORWARD = @REGEN_FORWARD@
 REPLACE_GETOPT_FALSE = @REPLACE_GETOPT_FALSE@
 REPLACE_GETOPT_TRUE = @REPLACE_GETOPT_TRUE@
 SECURITY_LIBS = @SECURITY_LIBS@
@@ -365,8 +364,6 @@ noinst_HEADERS = \
 
 EXTRA_DIST = \
 	config.alias \
-	regen-forward \
-	stamp-h1.in \
 	generic/comparexch.h \
 	generic/genatomic.h \
 	generic/gentypes.h \

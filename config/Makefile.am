@@ -24,8 +24,6 @@ noinst_HEADERS = \
 
 EXTRA_DIST = \
 	config.alias \
-	regen-forward \
-	stamp-h1.in \
 	generic/comparexch.h \
 	generic/genatomic.h \
 	generic/gentypes.h \

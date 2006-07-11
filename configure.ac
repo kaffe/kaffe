@@ -373,17 +373,7 @@ dnl End of default configurations
 dnl =========================================================================
 
 dnl =========================================================================
-dnl This is a hack to ease the generation of forward-sources, i.e.,
-dnl sources that just #include others, because automake can't use
-dnl sources from other directories
-dnl -------------------------------------------------------------------------
-
-AC_SUBST(REGEN_FORWARD)
-REGEN_FORWARD="\$(top_srcdir)/config/regen-forward"
-
-dnl =========================================================================
 dnl Set the base set of platform-dependent files 
-dnl One-liners with #include directives will be created in the Makefiles
 dnl -------------------------------------------------------------------------
 
 CONFIG_MD_H="config/$Khost_cpu/$Khost_os/md.h"
