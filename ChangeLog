@@ -1,5 +1,16 @@
 2006-07-11  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac (AC_CONFIG_LINKS) Link icode.h,
+	jit.def and tromplines.S into kaffe/kaffevm/jit* 
+	directory. Don't AC_SUBST KAFFEVM_JIT_DEF, 
+	KAFFEVM_ICODE_H and KAFFEVM_TRAMPOLINES_S.
+
+	* kaffe/kaffevm/jit/Makefile.am,
+	kaffe/kaffevm/jit3/Makefile.am:
+	Cleaned up from regen-forward leftovers.
+
+2006-07-11  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac (AC_CONFIG_LINKS) Link md.c into
 	kaffevm directory.
 

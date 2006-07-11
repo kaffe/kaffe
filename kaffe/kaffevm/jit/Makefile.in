@@ -75,8 +75,8 @@ CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libengine_la_LIBADD =
 am_libengine_la_OBJECTS = basecode.lo constpool.lo funcs.lo icode.lo \
-	labels.lo registers.lo slots.lo machine.lo seq.lo \
-	native-wrapper.lo methodcalls.lo
+	labels.lo registers.lo machine.lo methodcalls.lo \
+	native-wrapper.lo seq.lo slots.lo
 nodist_libengine_la_OBJECTS = trampolines.lo
 libengine_la_OBJECTS = $(am_libengine_la_OBJECTS) \
 	$(nodist_libengine_la_OBJECTS)
@@ -214,9 +214,6 @@ JAVA_COMPILER = @JAVA_COMPILER@
 JAVA_LIBS = @JAVA_LIBS@
 JIKESPROG = @JIKESPROG@
 KAFFEH = @KAFFEH@
-KAFFEVM_ICODE_H = @KAFFEVM_ICODE_H@
-KAFFEVM_JIT_DEF = @KAFFEVM_JIT_DEF@
-KAFFEVM_TRAMPOLINES_S = @KAFFEVM_TRAMPOLINES_S@
 KAFFE_ARCHOS = @KAFFE_ARCHOS@
 KAFFE_CFLAGS = @KAFFE_CFLAGS@
 KAFFE_LIBS = @KAFFE_LIBS@
@@ -394,42 +391,37 @@ libengine_la_LDFLAGS = \
 
 libengine_la_SOURCES = \
 	basecode.c \
+	basecode.h \
+	checks.h \
+	codeproto.h \
 	constpool.c \
+	constpool.h \
 	funcs.c \
 	icode.c \
+	icode_internal.h \
 	labels.c \
+	labels.h \
 	registers.c \
-	slots.c \
 	machine.c \
-	seq.c \
+	machine.h \
+	methodcalls.c \
+	methodcalls.h \
 	native-wrapper.c \
-	methodcalls.c
-
-BUILT_SOURCES = \
-	trampolines.S
+	native-wrapper.h \
+	registers.h \
+	seq.c \
+	seq.h \
+	slots.c \
+	slots.h \
+	stackTrace-impl.h
 
 nodist_libengine_la_SOURCES = \
 	trampolines.S
 
 EXTRA_DIST = \
-	Makefile.frag \
-	basecode.h \
-	checks.h \
-	codeproto.h \
-	constpool.h \
-	icode_internal.h \
-	labels.h \
-	machine.h \
-	registers.h \
-	seq.h \
-	slots.h \
-	stackTrace-impl.h \
-	native-wrapper.h \
-	methodcalls.h
+	Makefile.frag
 
-DISTCLEANFILES = icode.h jit.def trampolines.S
-all: $(BUILT_SOURCES)
-	$(MAKE) $(AM_MAKEFLAGS) all-am
+all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .S .c .lo .o .obj
@@ -608,12 +600,10 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 check-am: all-am
-check: $(BUILT_SOURCES)
-	$(MAKE) $(AM_MAKEFLAGS) check-am
+check: check-am
 all-am: Makefile $(LTLIBRARIES)
 installdirs:
-install: $(BUILT_SOURCES)
-	$(MAKE) $(AM_MAKEFLAGS) install-am
+install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
 uninstall: uninstall-am
@@ -633,12 +623,10 @@ clean-generic:
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
-	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 clean: clean-am
 
 clean-am: clean-generic clean-libtool clean-noinstLTLIBRARIES \
@@ -704,27 +692,6 @@ uninstall-am: uninstall-info-am
 
 
 @engine_frag@
-
-basecode.lo icode.lo machine.lo registers.lo: icode.h
-funcs.lo: jit.def trampolines.S
-
-icode.h: stamp-h01
-	@if test ! -f $@; then rm -f stamp-h01; $(MAKE) stamp-h01; \
-	else :; fi
-stamp-h01: $(top_builddir)/config.status
-	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_ICODE_H) icode.h $@
-
-jit.def: stamp-h02
-	@if test ! -f $@; then rm -f stamp-h02; $(MAKE) stamp-h02; \
-	else :; fi
-stamp-h02: $(top_builddir)/config.status
-	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_JIT_DEF) jit.def $@
-
-trampolines.S: stamp-h03
-	@if test ! -f $@; then rm -f stamp-h03; $(MAKE) stamp-h03; \
-	else :; fi
-stamp-h03: $(top_builddir)/config.status
-	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_TRAMPOLINES_S) trampolines.S $@
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

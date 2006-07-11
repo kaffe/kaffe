@@ -214,9 +214,6 @@ JAVA_COMPILER = @JAVA_COMPILER@
 JAVA_LIBS = @JAVA_LIBS@
 JIKESPROG = @JIKESPROG@
 KAFFEH = @KAFFEH@
-KAFFEVM_ICODE_H = @KAFFEVM_ICODE_H@
-KAFFEVM_JIT_DEF = @KAFFEVM_JIT_DEF@
-KAFFEVM_TRAMPOLINES_S = @KAFFEVM_TRAMPOLINES_S@
 KAFFE_ARCHOS = @KAFFE_ARCHOS@
 KAFFE_CFLAGS = @KAFFE_CFLAGS@
 KAFFE_LIBS = @KAFFE_LIBS@
@@ -421,18 +418,13 @@ libengine_la_SOURCES = \
 	methodcalls.c \
 	methodcalls.h
 
-BUILT_SOURCES = \
-	trampolines.S
-
 nodist_libengine_la_SOURCES = \
 	trampolines.S
 
 EXTRA_DIST = \
 	Makefile.frag
 
-DISTCLEANFILES = icode.h jit.def trampolines.S stamp-h01 stamp-h02 stamp-h03
-all: $(BUILT_SOURCES)
-	$(MAKE) $(AM_MAKEFLAGS) all-am
+all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .S .c .lo .o .obj
@@ -611,16 +603,11 @@ distdir: $(DISTFILES)
 	    || exit 1; \
 	  fi; \
 	done
-	$(MAKE) $(AM_MAKEFLAGS) \
-	  top_distdir="$(top_distdir)" distdir="$(distdir)" \
-	  dist-hook
 check-am: all-am
-check: $(BUILT_SOURCES)
-	$(MAKE) $(AM_MAKEFLAGS) check-am
+check: check-am
 all-am: Makefile $(LTLIBRARIES)
 installdirs:
-install: $(BUILT_SOURCES)
-	$(MAKE) $(AM_MAKEFLAGS) install-am
+install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
 uninstall: uninstall-am
@@ -640,12 +627,10 @@ clean-generic:
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
-	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 clean: clean-am
 
 clean-am: clean-generic clean-libtool clean-noinstLTLIBRARIES \
@@ -698,45 +683,19 @@ ps-am:
 uninstall-am: uninstall-info-am
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-libtool clean-noinstLTLIBRARIES ctags dist-hook \
-	distclean distclean-compile distclean-generic \
-	distclean-libtool distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am install-data \
-	install-data-am install-exec install-exec-am install-info \
-	install-info-am install-man install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags uninstall uninstall-am uninstall-info-am
+	clean-libtool clean-noinstLTLIBRARIES ctags distclean \
+	distclean-compile distclean-generic distclean-libtool \
+	distclean-tags distdir dvi dvi-am html html-am info info-am \
+	install install-am install-data install-data-am install-exec \
+	install-exec-am install-info install-info-am install-man \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	pdf pdf-am ps ps-am tags uninstall uninstall-am \
+	uninstall-info-am
 
 
 @engine_frag@
-
-basecode.lo icode.lo machine.lo registers.lo: icode.h
-funcs.lo: jit.def trampolines.S
-
-icode.h: stamp-h01
-	@if test ! -f $@; then rm -f stamp-h01; $(MAKE) stamp-h01; \
-	else :; fi
-stamp-h01: $(top_builddir)/config.status
-	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_ICODE_H) icode.h $@
-
-jit.def: stamp-h02
-	@if test ! -f $@; then rm -f stamp-h02; $(MAKE) stamp-h02; \
-	else :; fi
-stamp-h02: $(top_builddir)/config.status
-	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_JIT_DEF) jit.def $@
-
-trampolines.S: stamp-h03
-	@if test ! -f $@; then rm -f stamp-h03; $(MAKE) stamp-h03; \
-	else :; fi
-stamp-h03: $(top_builddir)/config.status
-	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_TRAMPOLINES_S) trampolines.S $@
-
-dist-hook:
-	@for file in $(DISTCLEANFILES); do \
-	  rm -f $(distdir)/$$file; \
-	done
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

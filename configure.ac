@@ -477,10 +477,8 @@ fi
 
 if test x"$with_engine" != x"intrp" ; then
     CONFIG_JIT_MD_H="config/$Khost_cpu/$Khost_os/$with_engine-md.h"
-    KAFFEVM_JIT_DEF="\$(top_srcdir)/config/$Khost_cpu/$with_engine-$Khost_cpu.def"
-    AC_SUBST(KAFFEVM_JIT_DEF)
-    KAFFEVM_ICODE_H="\$(top_srcdir)/config/$Khost_cpu/$with_engine-icode.h"
-    AC_SUBST(KAFFEVM_ICODE_H)
+    KAFFEVM_JIT_DEF="config/$Khost_cpu/$with_engine-$Khost_cpu.def"
+    KAFFEVM_ICODE_H="config/$Khost_cpu/$with_engine-icode.h"
 fi
 
 AC_MSG_CHECKING(execution engine)
@@ -945,7 +943,6 @@ if test x"$with_engine" != x"intrp" ; then
 	AC_MSG_CHECKING(for trampolines)
 	if test -f $srcdir/config/$Khost_cpu/trampolines.S ; then
 		KAFFEVM_TRAMPOLINES_S="\$(top_srcdir)/config/$Khost_cpu/trampolines.S"
-		AC_SUBST(KAFFEVM_TRAMPOLINES_S)
 		AC_MSG_RESULT(yes)
 	else
 		AC_MSG_ERROR(does not support trampolines - now mandatory)
@@ -2622,6 +2619,9 @@ AC_CONFIG_LINKS([kaffe/kaffeh/binreloc.c:kaffe/kaffevm/binreloc.c])
 if test x"$with_engine" != x"intrp" ; then
   AC_CONFIG_LINKS([config/jit-md.h:$CONFIG_JIT_MD_H])
   AC_CONFIG_LINKS([config/callKaffeException.h:$CONFIG_CALLKAFFEEXCEPTION_H])
+  AC_CONFIG_LINKS([kaffe/kaffevm/$with_engine/icode.h:$KAFFEVM_ICODE_H])
+  AC_CONFIG_LINKS([kaffe/kaffevm/$with_engine/jit.def:$KAFFEVM_JIT_DEF])
+  AC_CONFIG_LINKS([kaffe/kaffevm/$with_engine/trampolines.S:$KAFFEVM_TRAMPOLINES_S])
 fi
 
 if test x"$xprofiling" = x"yes"; then

@@ -62,39 +62,8 @@ libengine_la_SOURCES = \
 	methodcalls.c \
 	methodcalls.h
 
-BUILT_SOURCES = \
-	trampolines.S
-
 nodist_libengine_la_SOURCES = \
 	trampolines.S
 
 EXTRA_DIST = \
 	Makefile.frag
-
-DISTCLEANFILES = icode.h jit.def trampolines.S stamp-h01 stamp-h02 stamp-h03
-
-basecode.lo icode.lo machine.lo registers.lo: icode.h
-funcs.lo: jit.def trampolines.S
-
-icode.h: stamp-h01
-	@if test ! -f $@; then rm -f stamp-h01; $(MAKE) stamp-h01; \
-	else :; fi
-stamp-h01: $(top_builddir)/config.status
-	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_ICODE_H) icode.h $@
-
-jit.def: stamp-h02
-	@if test ! -f $@; then rm -f stamp-h02; $(MAKE) stamp-h02; \
-	else :; fi
-stamp-h02: $(top_builddir)/config.status
-	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_JIT_DEF) jit.def $@
-
-trampolines.S: stamp-h03
-	@if test ! -f $@; then rm -f stamp-h03; $(MAKE) stamp-h03; \
-	else :; fi
-stamp-h03: $(top_builddir)/config.status
-	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_TRAMPOLINES_S) trampolines.S $@
-
-dist-hook:
-	@for file in $(DISTCLEANFILES); do \
-	  rm -f $(distdir)/$$file; \
-	done
