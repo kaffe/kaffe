@@ -1,3 +1,9 @@
+2006-07-11  Riccardo Mottola <riccardo@kaffe.org>
+
+	* libraries/javalib/awt-implementations/kaffe/java/awt/Component.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/Container.java:
+	further focus traversal improvments from CP
+
 2006-07-11  Dalibor Topic  <robilad@kaffe.org>
 
 	* configure.ac (REGEN_FORWARD): Removed.

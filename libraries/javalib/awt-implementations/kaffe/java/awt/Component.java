@@ -3446,53 +3446,67 @@ public String toString () {
 	return (getClass().getName() + '[' + paramString() + ']');
 }
 
-/**
- * Transfer the focus to the next appropriate components in this
- * components container.
- */
-public void transferFocus() {
-	Component curr = this;
+  /**
+   * Returns the root container that owns the focus cycle where this
+   * component resides. A focus cycle root is in two cycles, one as
+   * the ancestor, and one as the focusable element; this call always
+   * returns the ancestor.
+   *
+   * @return the ancestor container that owns the focus cycle
+   * @since 1.4
+   */
+  public Container getFocusCycleRootAncestor ()
+  {
+    Container parent = getParent ();
 
-	while (curr.parent != null) {
+    while (parent != null && !parent.isFocusCycleRoot())
+      parent = parent.getParent ();
 
-		Container parent = curr.parent;
-		int end = parent.getComponentCount();
+    return parent;
+  }
 
-		/* Find out where 'curr' is in its container so we can start
-		 * looking for the next component after it
-		 */
-		int start;
-		for (start = 0; start < end; start++) {
-			Component c = parent.getComponent(start);
-			if (c == curr) {
-				break;
-			}
-		}
+  /**
+   * Tests if the container is the ancestor of the focus cycle that
+   * this component belongs to.
+   *
+   * @param c the container to test
+   * @return true if c is the focus cycle root
+   * @since 1.4
+   */
+  public boolean isFocusCycleRoot (Container c)
+  {
+    return c == getFocusCycleRootAncestor ();
+  }
 
-		/* This shouldn't happen but just in case ... */
-		if (start == end) {
-			return;
-		}
+  public void transferFocus ()
+  {
+    // Find the nearest valid (== showing && focusable && enabled) focus
+    // cycle root ancestor and the focused component in it.
+    Container focusRoot = getFocusCycleRootAncestor();
+    Component focusComp = this;
+    while (focusRoot != null
+           && ! (focusRoot.isShowing() && focusRoot.isFocusable()
+                 && focusRoot.isEnabled()))
+      {
+        focusComp = focusRoot;
+        focusRoot = focusComp.getFocusCycleRootAncestor();
+      }
 
-		/* Look for next focusable component after me */
-		for (start++; start < end; start++) {
-			Component c = parent.getComponent(start);
+    if (focusRoot != null)
+      {
+        // First try to get the componentBefore from the policy.
+        FocusTraversalPolicy policy = focusRoot.getFocusTraversalPolicy();
+        Component nextFocus = policy.getComponentAfter(focusRoot, focusComp);
 
-			if (c.isEnabled() && ((c.flags & IS_VISIBLE) !=0) && c.isFocusTraversable()) {
-			  // Then if it is enabled, visible and focus traversable set the focus to it
-			  c.requestFocus();
-			  return;
-			} else if (c instanceof Container) {
-			  // If it is a container drop into it
-			parent = (Container)c;
-			end = parent.getComponentCount();
-			start = -1;
-			}
-		}
+        // If this fails, then ask for the defaultComponent.
+        if (nextFocus == null)
+          nextFocus = policy.getDefaultComponent(focusRoot);
 
-		curr = parent;
-	}
-}
+        // Request focus on this component, if not null.
+        if (nextFocus != null)
+          nextFocus.requestFocus();
+      }
+  }
 
 PopupMenu triggerPopup ( int x, int y ) {
 	if ( popup != null ) {
