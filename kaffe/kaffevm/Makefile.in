@@ -78,7 +78,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(SHELL) $(top_srcdir)/scripts/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = md.c
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -115,8 +115,7 @@ am_libkaffevm_la_OBJECTS = libkaffevm_la-access.lo \
 	libkaffevm_la-utf8const.lo libkaffevm_la-gcFuncs.lo \
 	libkaffevm_la-reflect.lo libkaffevm_la-reference.lo \
 	libkaffevm_la-binreloc.lo
-am__objects_1 = libkaffevm_la-md.lo
-nodist_libkaffevm_la_OBJECTS = $(am__objects_1)
+nodist_libkaffevm_la_OBJECTS = libkaffevm_la-md.lo
 libkaffevm_la_OBJECTS = $(am_libkaffevm_la_OBJECTS) \
 	$(nodist_libkaffevm_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config
@@ -259,7 +258,6 @@ JIKESPROG = @JIKESPROG@
 KAFFEH = @KAFFEH@
 KAFFEVM_ICODE_H = @KAFFEVM_ICODE_H@
 KAFFEVM_JIT_DEF = @KAFFEVM_JIT_DEF@
-KAFFEVM_MD_C = @KAFFEVM_MD_C@
 KAFFEVM_TRAMPOLINES_S = @KAFFEVM_TRAMPOLINES_S@
 KAFFE_ARCHOS = @KAFFE_ARCHOS@
 KAFFE_CFLAGS = @KAFFE_CFLAGS@
@@ -472,11 +470,8 @@ libkaffevm_la_LIBADD = \
 	$(M_LIBS) \
 	$(LINKED_ZIP_LIBS)
 
-libkaffevm_la_GEN_SRCS = \
-	md.c
-
 nodist_libkaffevm_la_SOURCES = \
-	$(libkaffevm_la_GEN_SRCS)
+	md.c
 
 libkaffevm_la_SOURCES = \
 	access.c \
@@ -553,7 +548,6 @@ noinst_HEADERS = \
 	binreloc.h
 
 CLEANFILES = so_locations
-DISTCLEANFILES = md.c stamp-h01
 all: all-recursive
 
 .SUFFIXES:
@@ -1110,9 +1104,6 @@ distdir: $(DISTFILES)
 	      || exit 1; \
 	  fi; \
 	done
-	$(MAKE) $(AM_MAKEFLAGS) \
-	  top_distdir="$(top_distdir)" distdir="$(distdir)" \
-	  dist-hook
 check-am: all-am
 check: check-recursive
 all-am: Makefile $(LTLIBRARIES) $(HEADERS)
@@ -1142,7 +1133,6 @@ clean-generic:
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
-	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -1202,7 +1192,7 @@ uninstall-info: uninstall-info-recursive
 
 .PHONY: $(RECURSIVE_TARGETS) CTAGS GTAGS all all-am check check-am \
 	clean clean-generic clean-libtool clean-nativeLTLIBRARIES \
-	clean-recursive ctags ctags-recursive dist-hook distclean \
+	clean-recursive ctags ctags-recursive distclean \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-recursive distclean-tags distdir dvi dvi-am html \
 	html-am info info-am install install-am install-data \
@@ -1222,17 +1212,6 @@ uninstall-info: uninstall-info-recursive
 @cpu_os_frag@
 @threads_frag@
 @gc_frag@
-
-md.c: stamp-h01
-	@if test ! -f $@; then rm -f stamp-h01; $(MAKE) stamp-h01; \
-	else :; fi
-stamp-h01: $(top_builddir)/config.status
-	$(SHELL) $(REGEN_FORWARD) $(KAFFEVM_MD_C) md.c $@
-
-dist-hook:
-	@for file in $(DISTCLEANFILES); do \
-	  rm -f $(distdir)/$$file; \
-	done
 
 jit/icode.h:
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

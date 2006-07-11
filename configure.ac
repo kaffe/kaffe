@@ -388,8 +388,7 @@ dnl -------------------------------------------------------------------------
 
 CONFIG_MD_H="config/$Khost_cpu/$Khost_os/md.h"
 CONFIG_CALLKAFFEEXCEPTION_H="config/$Khost_cpu/callKaffeException.h"
-KAFFEVM_MD_C="\$(top_srcdir)/config/$Khost_cpu/$Khost_os/md.c"
-AC_SUBST(KAFFEVM_MD_C)
+KAFFEVM_MD_C="config/$Khost_cpu/$Khost_os/md.c"
 
 dnl =========================================================================
 
@@ -2630,5 +2629,6 @@ if test x"$xprofiling" = x"yes"; then
 fi
 
 AC_CONFIG_LINKS([config/md.h:$CONFIG_MD_H])
+AC_CONFIG_LINKS([kaffe/kaffevm/md.c:$KAFFEVM_MD_C])
 
 AC_OUTPUT

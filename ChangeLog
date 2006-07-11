@@ -1,5 +1,14 @@
 2006-07-11  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac (AC_CONFIG_LINKS) Link md.c into
+	kaffevm directory.
+
+	* kaffe/kaffevm/Makefile.am (libkaffevm_la_GEN_SRCS, md.c, stamp-h01,
+	DISTCLEANFILES, dist-hook) Removed.
+	(nodist_libkaffevm_la_SOURCES) List md.c directly.
+
+2006-07-11  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac (AC_CONFIG_LINKS) Link files from kaffevm
 	into kaffeh directory to compile them there as well. This
 	should really become a shared library eventually.
