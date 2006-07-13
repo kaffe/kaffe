@@ -25,7 +25,8 @@ AM_CCASFLAGS = \
 	$(ENGINE_DEFS) \
 	$(DEFAULT_INCLUDES) \
 	$(INCLUDES) \
-	-I$(top_srcdir)/include
+	-I$(top_srcdir)/include \
+	$(KAFFE_CCASFLAGS)
 
 noinst_LTLIBRARIES = libengine.la
 

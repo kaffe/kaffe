@@ -185,7 +185,7 @@ AX_CFLAGS_GCC_OPTION([-Wextra],KAFFE_CFLAGS)
 ## required for powerpc assember register names
 ## in order to use a common notation on darwin
 ## and GNU/Linux.
-AX_CFLAGS_GCC_OPTION([-mregnames],KAFFE_CFLAGS)
+AX_CFLAGS_GCC_OPTION([-mregnames],KAFFE_CCASFLAGS)
 
 ## Required for gcc 4.1.x as long as kaffe's
 ## not cleaned up to use unions in classMethod.h
@@ -2446,6 +2446,8 @@ AC_SUBST(CLASSPATH_INCLUDES)
 
 dnl Replace KAFFE_CFLAGS by the generated one
 AC_SUBST(KAFFE_CFLAGS)
+dnl Replace KAFFE_CCASFLAGS by the generated one
+AC_SUBST(KAFFE_CCASFLAGS)
 
 dnl -------------------------
 dnl Update args for classpath

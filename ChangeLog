@@ -1,3 +1,13 @@
+2006-07-13  Dalibor Topic  <robilad@kaffe.org>
+
+	Fixed build on powerpc-linux.
+
+	* configure.ac: Put -mregnames into KAFFE_CCASFLAGS.
+
+	* kaffe/kaffevm/jit/Makefile.am,
+	kaffe/kaffevm/jit3/Makefile.am (AM_CCASFLAGS):
+	Added KAFFE_CCASFLAGS.
+	
 2006-07-11  Riccardo Mottola <riccardo@kaffe.org>
 
 	* libraries/javalib/awt-implementations/kaffe/java/awt/Component.java,
