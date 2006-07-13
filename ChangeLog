@@ -1,3 +1,12 @@
+2006-07-13  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	Reported by Riccardo Mottola <mottola@kaffe.org>
+
+	* libraries/clib/awt/X/Makefile.am
+	(libxawt_la_CFLAGS): Added KAFFE_CFLAGS.
+
+	* libraries/clib/awt/X/Makefile.in: Regenerated.
+
 2006-07-13  Dalibor Topic  <robilad@kaffe.org>
 
 	Fixed build on powerpc-linux.
