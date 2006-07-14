@@ -802,16 +802,16 @@ AC_ARG_ENABLE([gtk-peer],
 AM_CONDITIONAL(CREATE_GTK_PEER_LIBRARIES, test "x${COMPILE_GTK_PEER}" = xyes)
 
 dnl -----------------------------------------------------------
-dnl Plugin (enabled by default)
+dnl Plugin (disabled by default)
 dnl -----------------------------------------------------------
 AC_ARG_ENABLE([plugin],
-              [AS_HELP_STRING(--disable-plugin,compile gcjwebplugin (disabled by --disable-plugin) [default=yes])],
+              [AS_HELP_STRING(--enable-plugin,compile gcjwebplugin (disabled by --disable-plugin) [default=yes])],
               [case "${enableval}" in
                 yes) COMPILE_PLUGIN=yes ;;
                 no) COMPILE_PLUGIN=no ;;
                 *) COMPILE_PLUGIN=yes ;;
               esac],
-              [COMPILE_PLUGIN=yes])
+              [COMPILE_PLUGIN=no])
 AM_CONDITIONAL(CREATE_PLUGIN, test "x${COMPILE_PLUGIN}" = xyes)
 
 dnl -----------------------------------------------------------------------
@@ -2475,6 +2475,10 @@ fi
 
 if test x"$enable_native_awt" = x"no"; then
   ac_configure_args="$ac_configure_args --disable-gtk-peer"
+fi
+
+if test x"$COMPILE_PLUGIN" = x"no"; then
+  ac_configure_args="$ac_configure_args --disable-plugin"
 fi
 
 ac_configure_args="$ac_configure_args --with-vm=${prefix}/bin/kaffe"

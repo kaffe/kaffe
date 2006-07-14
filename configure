@@ -1098,7 +1098,7 @@ Optional Features:
                           default=yes
   --disable-gtk-peer      compile GTK native peers (disabled by --disable-jni)
                           default=yes
-  --disable-plugin        compile gcjwebplugin (disabled by --disable-plugin)
+  --enable-plugin         compile gcjwebplugin (disabled by --disable-plugin)
                           default=yes
   --disable-boehm-gc-configuration
                           Don't run boehm-gc configure script. Boehm gc does
@@ -25361,7 +25361,7 @@ if test "${enable_plugin+set}" = set; then
                 *) COMPILE_PLUGIN=yes ;;
               esac
 else
-  COMPILE_PLUGIN=yes
+  COMPILE_PLUGIN=no
 fi;
 
 
@@ -50966,6 +50966,10 @@ fi
 
 if test x"$enable_native_awt" = x"no"; then
   ac_configure_args="$ac_configure_args --disable-gtk-peer"
+fi
+
+if test x"$COMPILE_PLUGIN" = x"no"; then
+  ac_configure_args="$ac_configure_args --disable-plugin"
 fi
 
 ac_configure_args="$ac_configure_args --with-vm=${prefix}/bin/kaffe"
