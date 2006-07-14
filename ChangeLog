@@ -1,5 +1,12 @@
 2006-07-14  Dalibor Topic  <robilad@kaffe.org>
 
+	Fixed build again for interpreter-only architectures.
+
+	* kaffe/kaffevm/exception.c: Don't include callKaffeException.h.
+	(DISPATCH_EXCEPTION) Removed.
+
+2006-07-14  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac: Disable mozilla plugin building by 
 	default.
 

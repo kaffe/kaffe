@@ -35,7 +35,6 @@
 #include "constants.h"
 #include "md.h"
 #include "methodcalls.h"
-#include "callKaffeException.h"
 #include "classMethod.h"
 #include "code.h"
 #include "exception.h"
@@ -68,12 +67,7 @@ vmExcept_getSyncObj(VmExceptHandler* eh)
 }
 
 #define FRAMEOBJECT(O, F, E)    (O) = vmExcept_getSyncObj((VmExceptHandler*)(F))
-#else
-
-#define DISPATCH_EXCEPTION(F,H,E) thread_data->exceptObj = NULL;\
-                                  CALL_KAFFE_EXCEPTION((F),(H),(E));
-
-#endif	/* TRANSLATOR */
+#endif	/* INTERPRETER */
 
 static void nullException(struct _exceptionFrame *);
 static void floatingException(struct _exceptionFrame *);
