@@ -1,5 +1,12 @@
 2006-07-15  Dalibor Topic  <robilad@kaffe.org>
 
+	Fix for #47.
+
+	* config/ia64/atomic.h: Updated to the 
+	version from glibc 2.4.0.
+
+2006-07-15  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac: Improved the error message when both
 	jikes and ecj are selected in configure options.
 
