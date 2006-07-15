@@ -1,5 +1,14 @@
 2006-07-15  Dalibor Topic  <robilad@kaffe.org>
 
+	Fix for #49.
+
+	* kaffe/kaffevm/jar.c (instantiateSignature),
+	kaffe/kaffevm/utf8const.c (UTFmalloc, UTFfree):
+	Removing the inline keyword fixes the build with
+	gcc-4.1 and -O0.
+
+2006-07-15  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac: (KAFFEVM_TRAMPOLINES_S) Removed unnecessary
 	top_srcdir part, fixing a config.status warning.
 

@@ -625,7 +625,7 @@ instantiateCentralDirEnd(uint8 *dest, uint8 *buf)
 	return( FILE_SIZEOF_CENTRALEND );
 }
 
-static inline int instantiateSignature(uint8 *dest, uint8 *buf)
+static int instantiateSignature(uint8 *dest, uint8 *buf)
 {
 	uint32 *sig = (uint32 *)dest;
 

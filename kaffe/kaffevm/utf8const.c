@@ -57,7 +57,7 @@ static iStaticLock	utf8Lock;	/* mutex on all intern operations */
 #define lockUTF() lockStaticMutex(&utf8Lock)
 #define unlockUTF() unlockStaticMutex(&utf8Lock)
 
-static inline void *UTFmalloc(size_t size)
+static void *UTFmalloc(size_t size)
 {
 	void *ret;
 
@@ -68,7 +68,7 @@ static inline void *UTFmalloc(size_t size)
 	return ret;
 }
 
-static inline void UTFfree(const void *mem)
+static void UTFfree(const void *mem)
 {
         unlockStaticMutex(&utf8Lock);
 	gc_free((void *)mem);
