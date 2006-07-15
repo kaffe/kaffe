@@ -909,7 +909,7 @@ dnl =========================================================================
 dnl Set the java compiler variable.
 dnl =========================================================================
 
-if test x"use_ecj" = x"yes" -a x"use_jikes" = x"yes"; then
+if test x"$use_ecj" = x"yes" -a x"$use_jikes" = x"yes"; then
 	AC_MSG_ERROR([You must specify only one compiler])
 fi
 

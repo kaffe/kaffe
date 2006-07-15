@@ -1,5 +1,14 @@
 2006-07-15  Dalibor Topic  <robilad@kaffe.org>
 
+	Fix for #44.
+
+	* configure.ac: Fixed typos in check for multiple
+	compilers that prevented it from firing when someone
+	asked configure to use both ecj and jikes at the same 
+	time.
+
+2006-07-15  Dalibor Topic  <robilad@kaffe.org>
+
 	* FAQ/FAQ.automake,
 	developers/autogen.sh: Updated gettext to 0.14.6.
 
