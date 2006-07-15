@@ -1,5 +1,8 @@
 ## Process this file with automake to create Makefile.in.
 
+AM_CFLAGS = \
+	$(KAFFE_CFLAGS)
+
 ZLIB_SOURCES = adler32.c compress.c crc32.c crc32.h deflate.c \
 deflate.h gzio.c infback.c inffast.c inffast.h inffixed.h inflate.c \
 inflate.h inftrees.c inftrees.h trees.c trees.h uncompr.c zconf.h \

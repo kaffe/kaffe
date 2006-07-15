@@ -17,6 +17,11 @@ if COND_NATIVE_SOUND
   MAYBE_NATIVE_SOUND_DIR = sound
 endif
 
+if COND_PURE_JAVA_MATH
+else
+  MAYBE_NATIVE_MATH_DIR = math
+endif
+
 SUBDIRS = \
 	target \
 	native \
@@ -24,8 +29,8 @@ SUBDIRS = \
 	nio \
 	net \
 	zip \
-	math \
 	security \
 	management \
 	$(MAYBE_NATIVE_AWT_DIR) \
+	$(MAYBE_NATIVE_MATH_DIR) \
 	$(MAYBE_NATIVE_SOUND_DIR)

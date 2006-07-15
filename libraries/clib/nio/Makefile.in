@@ -386,6 +386,7 @@ AM_CPPFLAGS = \
 
 native_LTLIBRARIES = libjavanio.la
 libjavanio_la_CFLAGS = \
+	$(AM_CFLAGS) \
 	$(CFLAGS_PG)
 
 libjavanio_la_LDFLAGS = \

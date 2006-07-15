@@ -18,6 +18,7 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os) 
 
 libjavanet_la_CFLAGS = \
+	$(AM_CFLAGS) \
 	$(CFLAGS_PG)
 
 libjavanet_la_LDFLAGS = \

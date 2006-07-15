@@ -1,5 +1,37 @@
 2006-07-15  Dalibor Topic  <robilad@kaffe.org>
 
+	Cross-compilation fixes for Debian's gcc 4.1 cross-compilation
+	toolchain.
+
+	* configure.ac: Propagate KAFFE_CFLAGS to sub-configure 
+	invocations.
+
+	* config/x86_64/linux/config.frag: (KAFFE_CFLAGS) Added
+	with -m64 to make sure Debian's gcc cross-compilation 
+	toolchain picks is up.
+
+	* external/gcc/zlib/Makefile.am: (AM_CFLAGS) Added.
+
+	* kaffe/kaffeh/Makefile.am (kaffeh_CFLAGS),
+	kaffe/kaffevm/Makefile.am (libkaffevm_la_CFLAGS),
+	kaffe/kaffevm/systems/unix-pthreads/Makefile.am (libkthread_la_CFLAGS),
+	libraries/clib/io/Makefile.am (libjavaio_la_CFLAGS),
+	libraries/clib/management/Makefile.am (libmanagement_la_CFLAGS),
+	libraries/clib/native/Makefile.am (libjavalang_la_CFLAGS),
+	libraries/clib/net/Makefile.am (libjavanet_la_CFLAGS),
+	libraries/clib/native/Makefile.am (libjavalang_la_CFLAGS),
+	libraries/clib/net/Makefile.am (libjavanet_la_CFLAGS),
+	libraries/clib/nio/Makefile.am (libjavanio_la_CFLAGS),
+	libraries/clib/security/Makefile.am (libsecurity_la_CFLAGS),
+	libraries/clib/zip/Makefile.am (libzip_la_CFLAGS): 
+	Added KAFFE_CFLAGS via AM_CFLAGS.
+
+	* libraries/clib/Makefile.am (MAYBE_NATIVE_MATH_DIR) New variable.
+	(SUBDIRS) Only compile native java.math implementation if pure java
+	java.math has not been configured.
+
+2006-07-15  Dalibor Topic  <robilad@kaffe.org>
+
 	Fix for #47.
 
 	* config/ia64/atomic.h: Updated to the 

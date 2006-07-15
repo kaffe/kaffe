@@ -29,6 +29,7 @@ AM_CPPFLAGS = \
 bin_PROGRAMS = kaffeh
 
 kaffeh_CFLAGS = \
+	$(AM_CFLAGS) \
 	$(CFLAGS_PG)
 
 kaffeh_LDADD = \

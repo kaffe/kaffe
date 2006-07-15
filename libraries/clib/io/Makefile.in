@@ -379,6 +379,7 @@ AM_CPPFLAGS = \
 
 native_LTLIBRARIES = libjavaio.la
 libjavaio_la_CFLAGS = \
+	$(KAFFE_CFLAGS) \
 	$(CFLAGS_PG)
 
 libjavaio_la_LDFLAGS = \

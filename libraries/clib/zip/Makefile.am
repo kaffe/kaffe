@@ -22,6 +22,7 @@ AM_CPPFLAGS = \
 native_LTLIBRARIES = libzip.la
 
 libzip_la_CFLAGS = \
+	$(AM_CFLAGS) \
 	$(CFLAGS_PG)
 
 libzip_la_LDFLAGS = \

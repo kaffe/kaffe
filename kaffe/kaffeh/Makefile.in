@@ -391,6 +391,7 @@ AM_CPPFLAGS = \
 	$(MAYBE_INTERNAL_ZIP_INCLUDES)
 
 kaffeh_CFLAGS = \
+	$(AM_CFLAGS) \
 	$(CFLAGS_PG)
 
 kaffeh_LDADD = \

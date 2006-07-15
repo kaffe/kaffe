@@ -62,6 +62,7 @@ UTIL_SRCS = \
 		TimeZone.c
 
 libjavalang_la_CFLAGS = \
+	$(AM_CFLAGS) \
 	$(CFLAGS_PG)
 
 libjavalang_la_LDFLAGS = \

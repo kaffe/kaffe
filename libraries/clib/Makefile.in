@@ -84,8 +84,8 @@ RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	uninstall-recursive
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = target native io nio net zip math security management \
-	awt sound
+DIST_SUBDIRS = target native io nio net zip security management awt \
+	math sound
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 ALSA_CFLAGS = @ALSA_CFLAGS@
@@ -357,6 +357,7 @@ toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 @COND_NATIVE_AWT_TRUE@MAYBE_NATIVE_AWT_DIR = awt
 @COND_NATIVE_SOUND_TRUE@MAYBE_NATIVE_SOUND_DIR = sound
+@COND_PURE_JAVA_MATH_FALSE@MAYBE_NATIVE_MATH_DIR = math
 SUBDIRS = \
 	target \
 	native \
@@ -364,10 +365,10 @@ SUBDIRS = \
 	nio \
 	net \
 	zip \
-	math \
 	security \
 	management \
 	$(MAYBE_NATIVE_AWT_DIR) \
+	$(MAYBE_NATIVE_MATH_DIR) \
 	$(MAYBE_NATIVE_SOUND_DIR)
 
 all: all-recursive

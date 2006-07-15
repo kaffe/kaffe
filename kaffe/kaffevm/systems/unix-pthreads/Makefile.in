@@ -377,6 +377,7 @@ libkthread_la_LDFLAGS = \
 	$(SEMAPHORE_LIB)
 
 libkthread_la_CFLAGS = \
+	$(AM_CFLAGS) \
 	$(PTHREAD_CFLAGS)
 
 libkthread_la_SOURCES = \

@@ -2495,6 +2495,8 @@ if  test x$use_glibj_zip = xtrue ; then
 	ac_configure_args="$ac_configure_args --with-glibj=none";
 fi
 
+ac_configure_args="$ac_configure_args CFLAGS=\"${KAFFE_CFLAGS} ${CFLAGS}\"";
+
 AC_CONFIG_SUBDIRS([libraries/javalib/external/classpath])
 
 AC_CONFIG_SUBDIRS([external/gcc/fastjar])

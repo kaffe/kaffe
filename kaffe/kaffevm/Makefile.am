@@ -56,6 +56,7 @@ libgcj = #
 endif
 
 libkaffevm_la_CFLAGS = \
+	$(AM_CFLAGS) \
 	$(CFLAGS_PG) \
 	$(PTHREAD_CFLAGS)
 
