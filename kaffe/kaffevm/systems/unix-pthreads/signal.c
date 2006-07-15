@@ -445,7 +445,7 @@ void kaffeNoopFunc(char c UNUSED)
 void
 KaffePThread_detectStackBoundaries(jthread_t jtid, size_t mainThreadStackSize)
 {
-	static volatile char *guessPointer;
+	static volatile char *volatile guessPointer;
 	void *handler_segv, *handler_bus;
 
 #if defined(SIGSEGV)

@@ -1,3 +1,10 @@
+2006-07-15  Kurt Roeckx  <kurt@roeckx.be>
+
+	* kaffe/kaffevm/systems/unix-pthreads/signal.c,
+	kaffe/kaffevm/systems/unix-jthreads/signal.c
+	(KaffeVM_detectStackBoundaries): Add more volatile modifiers to remove
+	optimizations.
+	
 2006-07-15  Dalibor Topic  <robilad@kaffe.org>
 
 	Cross-compilation fixes for Debian's gcc 4.1 cross-compilation
