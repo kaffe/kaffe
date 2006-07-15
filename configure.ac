@@ -932,7 +932,7 @@ KAFFEVM_TRAMPOLINES_S=
 if test x"$with_engine" != x"intrp" ; then
 	AC_MSG_CHECKING(for trampolines)
 	if test -f $srcdir/config/$Khost_cpu/trampolines.S ; then
-		KAFFEVM_TRAMPOLINES_S="\$(top_srcdir)/config/$Khost_cpu/trampolines.S"
+		KAFFEVM_TRAMPOLINES_S="config/$Khost_cpu/trampolines.S"
 		AC_MSG_RESULT(yes)
 	else
 		AC_MSG_ERROR(does not support trampolines - now mandatory)
