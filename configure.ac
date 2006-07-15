@@ -910,7 +910,7 @@ dnl Set the java compiler variable.
 dnl =========================================================================
 
 if test x"$use_ecj" = x"yes" -a x"$use_jikes" = x"yes"; then
-	AC_MSG_ERROR([You must specify only one compiler])
+	AC_MSG_ERROR([You can not chose jikes and ecj at the same time.])
 fi
 
 if test x"$JAVA_COMPILER" = x; then
