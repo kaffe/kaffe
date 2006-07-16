@@ -316,9 +316,6 @@ EXTRA_DIST= \
 	vmspecific/org/kaffe/util/UNIXTimeZone.java \
 	vmspecific/org/kaffe/util/UTF8.java \
 	vmspecific/org/kaffe/util/VectorSnapshot.java \
-	vmspecific/org/kaffe/util/log/LogClient.java \
-	vmspecific/org/kaffe/util/log/LogStream.java \
-	vmspecific/org/kaffe/util/log/SimpleLogViewer.java \
 	vmspecific/org/kaffe/util/zip/SwitchInflater.java \
 	vmspecific/org/objectweb/asm153/Attribute.java \
 	vmspecific/org/objectweb/asm153/ByteVector.java \

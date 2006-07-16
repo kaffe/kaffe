@@ -1,5 +1,13 @@
 2006-07-16  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/vmspecific/org/kaffe/util/log/LogClient.java,
+	libraries/javalib/vmspecific/org/kaffe/util/log/LogStream.java,
+	libraries/javalib/vmspecific/org/kaffe/util/log/SimpleLogViewer.java:
+	Removed kaffe-awt specific classes. They already exist as a copy
+	in kaffe's awt implementation directory.
+
+2006-07-16  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/vmspecific/org/kaffe/util/locale/CountryCodes.java,
 	libraries/javalib/vmspecific/org/kaffe/util/locale/Country_de.java,
 	libraries/javalib/vmspecific/org/kaffe/util/locale/Country_en.java,
