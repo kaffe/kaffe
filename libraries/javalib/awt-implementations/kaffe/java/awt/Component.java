@@ -1164,6 +1164,11 @@ public Image createImage ( int width, int height ) {
 	return new Image( width, height);
 }
 
+// TODO this is only a stub
+public VolatileImage createVolatileImage ( int width, int height ) {
+	return null;
+}
+
 void createNative () {
 	// nothing native, all lightweight
 }

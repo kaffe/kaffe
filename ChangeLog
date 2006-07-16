@@ -1,3 +1,8 @@
+2006-07-17  Riccardo Mottola <riccardo@kaffe.org>
+
+	* libraries/javalib/awt-implementations/kaffe/java/awt/Component.java:
+	created dummy method
+
 2006-07-16  Dalibor Topic  <robilad@kaffe.org>
 
 	* configure.ac: Output libraries/javalib/tritonus-sound/Makefile.
