@@ -76,3 +76,8 @@ jboolean java_lang_VMThread_isInterrupted(Hjava_lang_VMThread *this)
 {
   return KTHREAD(is_interrupted)((jthread_t)unhand(this)->vmdata);
 }
+
+jint java_lang_VMThread_getState0(struct Hjava_lang_VMThread* this)
+{
+   return KTHREAD(get_status)((jthread_t)unhand(this)->vmdata);
+}

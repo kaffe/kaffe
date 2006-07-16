@@ -179,10 +179,10 @@ public class BasicInternalFrameUI extends InternalFrameUI
     protected final int RESIZE_NONE = 0;
 
     /** The x offset from the top left corner of the JInternalFrame. */
-    private transient int xOffset = 0;
+    private transient int xOffset;
 
     /** The y offset from the top left corner of the JInternalFrame. */
-    private transient int yOffset = 0;
+    private transient int yOffset;
 
     /** The direction that the resize is occuring in. */
     private transient int direction = -1;
@@ -314,7 +314,7 @@ public class BasicInternalFrameUI extends InternalFrameUI
           frame.setCursor(Cursor.getDefaultCursor());
           showingCursor = Cursor.DEFAULT_CURSOR;
         }
-      else if (e.getSource()==frame && frame.isResizable())
+      else if (e.getSource() == frame && frame.isResizable())
         {
           setCursor(e);
         }
@@ -945,40 +945,53 @@ public class BasicInternalFrameUI extends InternalFrameUI
      */
     public void propertyChange(PropertyChangeEvent evt)
     {
-      if (evt.getPropertyName().equals(JInternalFrame.IS_MAXIMUM_PROPERTY))
+      String property = evt.getPropertyName();
+      if (property.equals(JInternalFrame.IS_MAXIMUM_PROPERTY))
         {
           if (frame.isMaximum())
             maximizeFrame(frame);
           else
             minimizeFrame(frame);
         }
-      else if (evt.getPropertyName().equals(JInternalFrame.IS_ICON_PROPERTY))
+      else if (property.equals(JInternalFrame.IS_ICON_PROPERTY))
         {
           if (frame.isIcon())
             iconifyFrame(frame);
           else
             deiconifyFrame(frame);
         }
-      else if (evt.getPropertyName().equals(JInternalFrame.IS_SELECTED_PROPERTY))
+      else if (property.equals(JInternalFrame.IS_SELECTED_PROPERTY))
         {
           if (frame.isSelected())
             activateFrame(frame);
           else
             deactivateFrame(frame);
         }
-      else if (evt.getPropertyName().equals(JInternalFrame.ROOT_PANE_PROPERTY)
-               || evt.getPropertyName().equals(
-                                               JInternalFrame.GLASS_PANE_PROPERTY))
+      else if (property.equals(JInternalFrame.ROOT_PANE_PROPERTY)
+               || property.equals(JInternalFrame.GLASS_PANE_PROPERTY))
         {
           Component old = (Component) evt.getOldValue();
-          old.removeMouseListener(glassPaneDispatcher);
-          old.removeMouseMotionListener(glassPaneDispatcher);
+          if (old != null)
+            {
+              old.removeMouseListener(glassPaneDispatcher);
+              old.removeMouseMotionListener(glassPaneDispatcher);
+            }
 
           Component newPane = (Component) evt.getNewValue();
-          newPane.addMouseListener(glassPaneDispatcher);
-          newPane.addMouseMotionListener(glassPaneDispatcher);
+          if (newPane != null)
+            {
+              newPane.addMouseListener(glassPaneDispatcher);
+              newPane.addMouseMotionListener(glassPaneDispatcher);
+            }
 
           frame.revalidate();
+        }
+      else if (property.equals(JInternalFrame.IS_CLOSED_PROPERTY))
+        {
+          if (evt.getNewValue() == Boolean.TRUE)
+            {
+              closeFrame(frame);
+            }
         }
       /*
        * FIXME: need to add ancestor properties to JComponents. else if

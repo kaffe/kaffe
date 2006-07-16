@@ -38,6 +38,7 @@ exception statement from your version.  */
 
 package gnu.javax.crypto.keyring;
 
+import gnu.java.security.Configuration;
 import gnu.java.security.Registry;
 import gnu.java.security.prng.IRandom;
 import gnu.java.security.prng.LimitReachedException;
@@ -62,29 +63,21 @@ import java.util.Iterator;
 import java.util.logging.Logger;
 
 /**
- * <p>An entry authenticated with a password-based MAC.</p>
+ * An entry authenticated with a password-based MAC.
  */
-public final class PasswordAuthenticatedEntry extends MaskableEnvelopeEntry
+public final class PasswordAuthenticatedEntry
+    extends MaskableEnvelopeEntry
     implements PasswordProtectedEntry, Registry
 {
-  // Constants and variables
-  // -------------------------------------------------------------------------
-
   private static final Logger log = Logger.getLogger(PasswordAuthenticatedEntry.class.getName());
   public static final int TYPE = 3;
-
-  // Constructor(s)
-  // -------------------------------------------------------------------------
 
   public PasswordAuthenticatedEntry(String mac, int maclen,
                                     Properties properties)
   {
     super(TYPE, properties);
-
     if (mac == null || mac.length() == 0)
-      {
-        throw new IllegalArgumentException("no MAC specified");
-      }
+      throw new IllegalArgumentException("no MAC specified");
     this.properties.put("mac", mac);
     this.properties.put("maclen", String.valueOf(maclen));
     setMasked(false);
@@ -95,9 +88,6 @@ public final class PasswordAuthenticatedEntry extends MaskableEnvelopeEntry
     super(TYPE);
     setMasked(true);
   }
-
-  // Class methods
-  // -------------------------------------------------------------------------
 
   public static PasswordAuthenticatedEntry decode(DataInputStream in,
                                                   char[] password)
@@ -114,10 +104,8 @@ public final class PasswordAuthenticatedEntry extends MaskableEnvelopeEntry
     entry.decodeEnvelope(in2);
     byte[] macValue = new byte[mac.macSize()];
     in.readFully(macValue);
-    if (!Arrays.equals(macValue, mac.digest()))
-      {
-        throw new MalformedKeyringException("MAC verification failed");
-      }
+    if (! Arrays.equals(macValue, mac.digest()))
+      throw new MalformedKeyringException("MAC verification failed");
     return entry;
   }
 
@@ -126,31 +114,24 @@ public final class PasswordAuthenticatedEntry extends MaskableEnvelopeEntry
   {
     PasswordAuthenticatedEntry entry = new PasswordAuthenticatedEntry();
     entry.defaultDecode(in);
-    if (!entry.properties.containsKey("mac"))
-      {
-        throw new MalformedKeyringException("no MAC");
-      }
-    if (!entry.properties.containsKey("maclen"))
-      {
-        throw new MalformedKeyringException("no MAC length");
-      }
-    if (!entry.properties.containsKey("salt"))
-      {
-        throw new MalformedKeyringException("no salt");
-      }
+    if (! entry.properties.containsKey("mac"))
+      throw new MalformedKeyringException("no MAC");
+    if (! entry.properties.containsKey("maclen"))
+      throw new MalformedKeyringException("no MAC length");
+    if (! entry.properties.containsKey("salt"))
+      throw new MalformedKeyringException("no salt");
     return entry;
   }
 
-  // Instance methods
-  // -------------------------------------------------------------------------
-
   public void verify(char[] password)
   {
-    log.entering(this.getClass().getName(), "verify");
+    if (Configuration.DEBUG)
+      log.entering(this.getClass().getName(), "verify");
     if (isMasked() && payload != null)
       {
-        log.finest("payload to verify: " + Util.dumpString(payload));
-        long tt = - System.currentTimeMillis();
+        if (Configuration.DEBUG)
+          log.fine("payload to verify: " + Util.dumpString(payload));
+        long tt = -System.currentTimeMillis();
         IMac m = null;
         try
           {
@@ -160,17 +141,14 @@ public final class PasswordAuthenticatedEntry extends MaskableEnvelopeEntry
           {
             throw new IllegalArgumentException(x.toString(), x);
           }
-
         int limit = payload.length - m.macSize();
         m.update(payload, 0, limit);
         byte[] macValue = new byte[m.macSize()];
-        System.arraycopy(payload, payload.length - macValue.length, macValue, 0,
-                         macValue.length);
+        System.arraycopy(payload, payload.length - macValue.length, macValue,
+                         0, macValue.length);
         if (! Arrays.equals(macValue, m.digest()))
           throw new IllegalArgumentException("MAC verification failed");
-
         setMasked(false);
-
         ByteArrayInputStream bais;
         try
           {
@@ -182,28 +160,30 @@ public final class PasswordAuthenticatedEntry extends MaskableEnvelopeEntry
           {
             throw new IllegalArgumentException("malformed keyring fragment");
           }
-
         tt += System.currentTimeMillis();
-        log.finer("Verified in " + tt + "ms.");
+        if (Configuration.DEBUG)
+          log.fine("Verified in " + tt + "ms.");
       }
-    else
-      log.finer("Skip verification; " + (isMasked() ? "null payload" : "unmasked"));
-    log.exiting(this.getClass().getName(), "verify");
+    else if (Configuration.DEBUG)
+      log.fine("Skip verification; "
+               + (isMasked() ? "null payload" : "unmasked"));
+    if (Configuration.DEBUG)
+      log.exiting(this.getClass().getName(), "verify");
   }
 
   public void authenticate(char[] password) throws IOException
   {
-    log.entering(this.getClass().getName(), "authenticate");
-    long tt = - System.currentTimeMillis();
-    long t1 = - System.currentTimeMillis();
-
+    if (Configuration.DEBUG)
+      log.entering(this.getClass().getName(), "authenticate");
+    long tt = -System.currentTimeMillis();
+    long t1 = -System.currentTimeMillis();
     if (isMasked())
       throw new IllegalStateException("entry is masked");
-
     byte[] salt = new byte[8];
     PRNG.getInstance().nextBytes(salt);
     t1 += System.currentTimeMillis();
-    log.finer("-- Generated salt in " + t1 + "ms.");
+    if (Configuration.DEBUG)
+      log.fine("-- Generated salt in " + t1 + "ms.");
     properties.put("salt", Util.toString(salt));
     IMac m = getMac(password);
     ByteArrayOutputStream bout = new ByteArrayOutputStream(1024);
@@ -212,21 +192,25 @@ public final class PasswordAuthenticatedEntry extends MaskableEnvelopeEntry
     for (Iterator it = entries.iterator(); it.hasNext();)
       {
         Entry entry = (Entry) it.next();
-        log.finer("-- About to authenticate one " + entry);
-        t1 = - System.currentTimeMillis();
+        if (Configuration.DEBUG)
+          log.fine("-- About to authenticate one " + entry);
+        t1 = -System.currentTimeMillis();
         entry.encode(out2);
         t1 += System.currentTimeMillis();
-        log.finer("-- Authenticated an Entry in " + t1 + "ms.");
+        if (Configuration.DEBUG)
+          log.fine("-- Authenticated an Entry in " + t1 + "ms.");
       }
     bout.write(m.digest());
-
     payload = bout.toByteArray();
-    log.finest("authenticated payload: " + Util.dumpString(payload));
+    if (Configuration.DEBUG)
+      log.fine("authenticated payload: " + Util.dumpString(payload));
     setMasked(true);
-
     tt += System.currentTimeMillis();
-    log.finer("Authenticated in " + tt + "ms.");
-    log.exiting(this.getClass().getName(), "authenticate");
+    if (Configuration.DEBUG)
+      {
+        log.fine("Authenticated in " + tt + "ms.");
+        log.exiting(this.getClass().getName(), "authenticate");
+      }
   }
 
   public void encode(DataOutputStream out, char[] password) throws IOException
@@ -244,26 +228,21 @@ public final class PasswordAuthenticatedEntry extends MaskableEnvelopeEntry
       }
   }
 
-  // Own methods.
-  // ------------------------------------------------------------------------
-
   private IMac getMac(char[] password) throws MalformedKeyringException
   {
-    log.entering(this.getClass().getName(), "getMac");
+    if (Configuration.DEBUG)
+      log.entering(this.getClass().getName(), "getMac");
     String saltString = properties.get("salt");
     if (saltString == null)
       throw new MalformedKeyringException("no salt");
-
     byte[] salt = Util.toBytesFromString(saltString);
     String macAlgorithm = properties.get("mac");
     IMac mac = MacFactory.getInstance(macAlgorithm);
     if (mac == null)
       throw new MalformedKeyringException("no such mac: " + macAlgorithm);
-
     String macLenString = properties.get("maclen");
     if (macLenString == null)
       throw new MalformedKeyringException("no MAC length");
-
     int maclen;
     try
       {
@@ -273,14 +252,12 @@ public final class PasswordAuthenticatedEntry extends MaskableEnvelopeEntry
       {
         throw new MalformedKeyringException("bad MAC length");
       }
-
     HashMap pbAttr = new HashMap();
     pbAttr.put(IPBE.PASSWORD, password);
     pbAttr.put(IPBE.SALT, salt);
     pbAttr.put(IPBE.ITERATION_COUNT, ITERATION_COUNT);
     IRandom kdf = PRNGFactory.getInstance("PBKDF2-HMAC-SHA");
     kdf.init(pbAttr);
-
     int keylen = mac.macSize();
     byte[] dk = new byte[keylen];
     try
@@ -291,10 +268,9 @@ public final class PasswordAuthenticatedEntry extends MaskableEnvelopeEntry
       {
         throw new Error(shouldNotHappen.toString());
       }
-
     HashMap macAttr = new HashMap();
     macAttr.put(IMac.MAC_KEY_MATERIAL, dk);
-    macAttr.put(IMac.TRUNCATED_SIZE, new Integer(maclen));
+    macAttr.put(IMac.TRUNCATED_SIZE, Integer.valueOf(maclen));
     try
       {
         mac.init(macAttr);
@@ -303,7 +279,8 @@ public final class PasswordAuthenticatedEntry extends MaskableEnvelopeEntry
       {
         throw new Error(shouldNotHappen.toString());
       }
-    log.exiting(this.getClass().getName(), "getMac");
+    if (Configuration.DEBUG)
+      log.exiting(this.getClass().getName(), "getMac");
     return mac;
   }
 }

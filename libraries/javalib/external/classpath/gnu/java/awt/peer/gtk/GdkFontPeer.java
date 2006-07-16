@@ -47,20 +47,28 @@ import java.awt.FontMetrics;
 import java.awt.Toolkit;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
+import java.awt.font.GlyphMetrics;
 import java.awt.font.LineMetrics;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.Point2D;
 import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
 
 public class GdkFontPeer extends ClasspathFontPeer
 {
   static native void initStaticState();
   private final int native_state = GtkGenericPeer.getUniqueInteger ();
   private static ResourceBundle bundle;
+
+  /**
+   * Cache GlyphMetrics objects.
+   */
+  private HashMap metricsCache;
   
   static 
   {
@@ -143,6 +151,7 @@ public class GdkFontPeer extends ClasspathFontPeer
     super(name, style, size);    
     initState ();
     setFont (this.familyName, this.style, (int)this.size);
+    metricsCache = new HashMap();
   }
 
   public GdkFontPeer (String name, Map attributes)
@@ -150,6 +159,7 @@ public class GdkFontPeer extends ClasspathFontPeer
     super(name, attributes);
     initState ();
     setFont (this.familyName, this.style, (int)this.size);
+    metricsCache = new HashMap();
   }
 
   /**
@@ -234,39 +244,41 @@ public class GdkFontPeer extends ClasspathFontPeer
     return -1;
   }
   
-  private native GdkGlyphVector getGlyphVector(String txt, 
-                                               Font f, 
-                                               FontRenderContext ctx);
-
   public GlyphVector createGlyphVector (Font font, 
                                         FontRenderContext ctx, 
                                         CharacterIterator i)
   {
-    return getGlyphVector(buildString (i), font, ctx);
+    return new FreetypeGlyphVector(font, buildString (i), ctx);
   }
 
   public GlyphVector createGlyphVector (Font font, 
                                         FontRenderContext ctx, 
                                         int[] glyphCodes)
   {
-    return null;
-    //    return new GdkGlyphVector (font, this, ctx, glyphCodes);
+    return new FreetypeGlyphVector(font, glyphCodes, ctx);
   }
 
   public byte getBaselineFor (Font font, char c)
   {
-    throw new UnsupportedOperationException ();
+    // FIXME: Actually check.
+    return Font.ROMAN_BASELINE;
   }
 
-  protected class GdkFontLineMetrics extends LineMetrics
+  private static class GdkFontLineMetrics extends LineMetrics
   {
-    FontMetrics fm;
-    int nchars; 
+    private FontMetrics fm;
+    private int nchars; 
+    private float strikethroughOffset, strikethroughThickness,
+      underlineOffset, underlineThickness;
 
-    public GdkFontLineMetrics (FontMetrics m, int n)
+    public GdkFontLineMetrics (GdkFontPeer fp, FontMetrics m, int n)
     {
       fm = m;
       nchars = n;
+      strikethroughOffset = 0f;
+      underlineOffset = 0f;
+      strikethroughThickness = ((float)fp.getSize(null)) / 12f;
+      underlineThickness = strikethroughThickness;
     }
 
     public float getAscent()
@@ -275,7 +287,8 @@ public class GdkFontPeer extends ClasspathFontPeer
     }
   
     public int getBaselineIndex()
-    {
+    {      
+      // FIXME
       return Font.ROMAN_BASELINE;
     }
     
@@ -306,7 +319,7 @@ public class GdkFontPeer extends ClasspathFontPeer
   public LineMetrics getLineMetrics (Font font, CharacterIterator ci, 
                                      int begin, int limit, FontRenderContext rc)
   {
-    return new GdkFontLineMetrics (getFontMetrics (font), limit - begin);
+    return new GdkFontLineMetrics (this, getFontMetrics (font), limit - begin);
   }
 
   public Rectangle2D getMaxCharBounds (Font font, FontRenderContext rc)
@@ -338,7 +351,9 @@ public class GdkFontPeer extends ClasspathFontPeer
   public Rectangle2D getStringBounds (Font font, CharacterIterator ci, 
                                       int begin, int limit, FontRenderContext frc)
   {
-    GdkGlyphVector gv = getGlyphVector(buildString (ci, begin, limit), font, frc);
+    GlyphVector gv = new FreetypeGlyphVector( font, 
+					      buildString(ci, begin, limit),
+					      frc);
     return gv.getVisualBounds();
   }
 
@@ -351,20 +366,15 @@ public class GdkFontPeer extends ClasspathFontPeer
                                         char[] chars, int start, int limit, 
                                         int flags)
   {
-    int nchars = (limit - start) + 1;
-    char[] nc = new char[nchars];
-
-    for (int i = 0; i < nchars; ++i)
-      nc[i] = chars[start + i];
-
-    return createGlyphVector (font, frc, 
-                              new StringCharacterIterator (new String (nc)));
+    return new FreetypeGlyphVector( font, new String( chars, start, 
+						      limit - start),
+				    frc, flags);
   }
 
   public LineMetrics getLineMetrics (Font font, String str, 
                                      FontRenderContext frc)
   {
-    return new GdkFontLineMetrics (getFontMetrics (font), str.length ());
+    return new GdkFontLineMetrics (this, getFontMetrics (font), str.length ());
   }
 
   public FontMetrics getFontMetrics (Font font)
@@ -374,4 +384,20 @@ public class GdkFontPeer extends ClasspathFontPeer
     return Toolkit.getDefaultToolkit().getFontMetrics (font);
   }
 
+  /**
+   * Returns a cached GlyphMetrics object for a given glyphcode,
+   * or null if it doesn't exist in the cache.
+   */
+  GlyphMetrics getGlyphMetrics( int glyphCode )
+  {
+    return (GlyphMetrics)metricsCache.get( new Integer( glyphCode ) );
+  }
+
+  /**
+   * Put a GlyphMetrics object in the cache.
+   */ 
+  void putGlyphMetrics( int glyphCode, Object metrics )
+  {
+    metricsCache.put( new Integer( glyphCode ), metrics );
+  }
 }

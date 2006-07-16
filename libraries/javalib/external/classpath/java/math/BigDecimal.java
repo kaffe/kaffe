@@ -810,7 +810,11 @@ public class BigDecimal extends Number implements Comparable
     
   public int compareTo (Object obj) 
   {
-    BigDecimal val = (BigDecimal) obj;
+    return compareTo((BigDecimal) obj);
+  }
+
+  public int compareTo (BigDecimal val)
+  {
     if (scale == val.scale)
       return intVal.compareTo (val.intVal);
 

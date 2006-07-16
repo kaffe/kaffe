@@ -1,5 +1,5 @@
 /* VMThread -- VM interface for Thread of executable code
-   Copyright (C) 2003, 2004, 2005 Free Software Foundation
+   Copyright (C) 2003, 2004, 2005, 2006 Free Software Foundation
 
 This file is part of GNU Classpath.
 
@@ -126,7 +126,9 @@ final class VMThread
 	    {
 		try
 		{
-		    thread.group.uncaughtException(thread, t);
+		  Thread.UncaughtExceptionHandler handler;
+		  handler = thread.getUncaughtExceptionHandler();
+		  handler.uncaughtException(thread, t);
 		}
 		catch(Throwable ignore)
 		{
@@ -388,15 +390,11 @@ final class VMThread
      */
     static void sleep(long ms, int ns) throws InterruptedException
     {
-
-      // Round up
-      ms += (ns != 0) ? 1 : 0;
-
       // Note: JDK treats a zero length sleep is like Thread.yield(),
       // without checking the interrupted status of the thread.
       // It's unclear if this is a bug in the implementation or the spec.
       // See http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6213203
-      if (ms == 0)
+      if (ms == 0 && ns == 0)
 	{
 	  if (Thread.interrupted())
 	    throw new InterruptedException();
@@ -416,11 +414,12 @@ final class VMThread
 	{
 	  while (true)
 	    {
-	      vt.wait(ms);
+	      vt.wait(ms, ns);
 	      now = System.currentTimeMillis();
 	      if (now >= end)
 		break;
 	      ms = end - now;
+	      ns = 0;
 	    }
 	}
     }
@@ -462,6 +461,35 @@ final class VMThread
 	{
 	  // it doesn't hold the lock
 	  return false;
+	}
+    }
+
+  /**
+   * Returns the current state of the thread.
+   * The value must be one of "BLOCKED", "NEW",
+   * "RUNNABLE", "TERMINATED", "TIMED_WAITING" or
+   * "WAITING".
+   *
+   * @return a string corresponding to one of the 
+   *         thread enumeration states specified above.
+   */
+  private native int getState0();
+
+    /* Kaffe-specific implementation. 
+     * The jthread status interface is not very detailed,
+     * so we return just what's avaiable.
+     */
+  String getState()
+    {
+	int state = getState0();
+
+	switch (state) {
+	case 2:
+	    return "TERMINATED";
+	case 1:
+	    return "RUNNABLE";
+	default:
+	    return "BLOCKED";
 	}
     }
 }

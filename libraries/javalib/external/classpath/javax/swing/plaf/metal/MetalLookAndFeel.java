@@ -85,7 +85,7 @@ public class MetalLookAndFeel extends BasicLookAndFeel
   }
 
   /**
-   * Sets the current theme to a new instance of {@link DefaultMetalTheme}.
+   * Sets the current theme to a new instance of {@link OceanTheme}.
    */
   protected void createDefaultTheme()
   {
@@ -709,6 +709,8 @@ public class MetalLookAndFeel extends BasicLookAndFeel
    * @param theme  the theme (<code>null</code> not permitted).
    * 
    * @throws NullPointerException if <code>theme</code> is <code>null</code>.
+   * 
+   * @see #getCurrentTheme()
    */
   public static void setCurrentTheme(MetalTheme theme)
   {
@@ -1243,6 +1245,7 @@ public class MetalLookAndFeel extends BasicLookAndFeel
       "TextPane.selectionBackground", getTextHighlightColor(),
       "TextPane.selectionForeground", getHighlightedTextColor(),
 
+      "TitledBorder.border", new LineBorderUIResource(getPrimaryControl(), 1),
       "TitledBorder.font", new FontUIResource("Dialog", Font.BOLD, 12),
       "TitledBorder.titleColor", getSystemTextColor(),
 
@@ -1335,12 +1338,17 @@ public class MetalLookAndFeel extends BasicLookAndFeel
   }
 
   /**
-   * Returns the current theme setting for the Metal L&amp;F.
+   * Returns the current theme for the Metal look and feel.  The default is
+   * an instance of {@link OceanTheme}.
    *
-   * @return the current theme setting for the Metal L&amp;F
+   * @return The current theme (never <code>null</code>).
+   * 
+   * @see #setCurrentTheme(MetalTheme)
    */
   public static MetalTheme getCurrentTheme()
   {
+    if (theme == null)
+      theme = new OceanTheme();
     return theme;
   }
 

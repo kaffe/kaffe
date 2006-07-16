@@ -38,6 +38,7 @@ exception statement from your version. */
 package gnu.java.awt.peer.qt;
 
 import java.awt.AlphaComposite;
+import java.awt.AWTPermission;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Composite;
@@ -605,8 +606,16 @@ public abstract class QtGraphics extends Graphics2D
 	composite = comp;
       }
     else
-      throw new UnsupportedOperationException("We don't support custom"+
-					      " composites yet.");
+      {
+	// FIXME: this check is only required "if this Graphics2D
+	// context is drawing to a Component on the display screen".
+	SecurityManager sm = System.getSecurityManager();
+	if (sm != null)
+	  sm.checkPermission(new AWTPermission("readDisplayPixels"));
+
+	throw new UnsupportedOperationException("We don't support custom"+
+						" composites yet.");
+      }
   }
 
   public Composite getComposite()

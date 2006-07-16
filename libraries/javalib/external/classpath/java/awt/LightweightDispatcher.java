@@ -38,8 +38,6 @@ exception statement from your version. */
 
 package java.awt;
 
-import gnu.java.awt.AWTUtilities;
-
 import java.awt.event.MouseEvent;
 import java.util.WeakHashMap;
 
@@ -147,11 +145,11 @@ class LightweightDispatcher
       return false;
     Container parent = deepest.getParent();
     Point loc = ev.getPoint();
-    loc = AWTUtilities.convertPoint(window, loc.x, loc.y, parent);
+    loc = convertPointToChild(window, loc, parent);
     Component target = null;
     if (parent != null)
       {
-        target = findTarget(deepest.getParent(), loc);
+        target = findTarget(parent, loc);
         while (target == null && parent != null)
           {
             if (parent.getMouseListeners().length > 0
@@ -171,8 +169,8 @@ class LightweightDispatcher
           {
             if (lastTarget != null)
               {
-                Point p1 = AWTUtilities.convertPoint(window, ev.getX(),
-                                                     ev.getY(), lastTarget);
+                Point p1 = convertPointToChild(window, ev.getPoint(),
+                                               lastTarget);
                 MouseEvent mouseExited =
                   new MouseEvent(lastTarget, MouseEvent.MOUSE_EXITED,
                                  ev.getWhen(), ev.getModifiers(), p1.x, p1.y,
@@ -190,8 +188,7 @@ class LightweightDispatcher
             // button.
             if (target != null && (dragTarget == null || dragTarget == target))
               {
-                Point p = AWTUtilities.convertPoint(window, ev.getX(), ev.getY(),
-                                                    target);
+                Point p = convertPointToChild(window, ev.getPoint(), target);
                 MouseEvent mouseEntered =
                   new MouseEvent(target, MouseEvent.MOUSE_ENTERED, ev.getWhen(),
                                  ev.getModifiers(), p.x, p.y, ev.getClickCount(),
@@ -254,8 +251,9 @@ class LightweightDispatcher
 
         if (target != null)
           {
-            Point targetCoordinates =
-              AWTUtilities.convertPoint(window, ev.getX(), ev.getY(), target);
+            Point targetCoordinates = convertPointToChild(window,
+                                                          ev.getPoint(),
+                                                          target);
             int dx = targetCoordinates.x - ev.getX();
             int dy = targetCoordinates.y - ev.getY();
             ev.translatePoint(dx, dy);
@@ -289,24 +287,53 @@ class LightweightDispatcher
    */
   private Component findTarget(Container c, Point loc)
   {
-    Component[] children = c.getComponents();
+    int numComponents = c.getComponentCount();
     Component target = null;
     if (c != null)
       {
-        Point childLoc;
-        for (int i = 0; i < children.length; i++)
+        for (int i = 0; i < numComponents; i++)
           {
-            Component child = children[i];
-            childLoc = AWTUtilities.convertPoint(c, loc.x, loc.y, child);
-            if (child.isShowing() && child.contains(childLoc)
-                && (child.getMouseListeners().length > 0 
-                    || child.getMouseMotionListeners().length > 0))
+            Component child = c.getComponent(i);
+            if (child.isShowing())
               {
-                target = child;
-                break;
+                if (child.contains(loc.x - child.getX(), loc.y - child.getY())
+                    && (child.getMouseListeners().length > 0 
+                        || child.getMouseMotionListeners().length > 0))
+                  {
+                    target = child;
+                    break;
+                  }
               }
           }
       }
     return target;
+  }
+
+  /**
+   * Converts a point in the parent's coordinate system to a child coordinate
+   * system. The resulting point is stored in the same Point object and
+   * returned.
+   *
+   * @param parent the parent component
+   * @param p the point
+   * @param child the child component
+   *
+   * @return the translated point
+   */
+  private Point convertPointToChild(Component parent, Point p,
+                                   Component child)
+  {
+    int offX = 0;
+    int offY = 0;
+    Component comp = child;
+    while (comp != null && comp != parent)
+      {
+        offX += comp.getX();
+        offY += comp.getY();
+        comp = comp.getParent();
+      }
+    p.x -= offX;
+    p.y -= offY;
+    return p;
   }
 }

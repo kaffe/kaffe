@@ -59,20 +59,13 @@ import java.util.Date;
 public final class PrivateKeyEntry
     extends PrimitiveEntry
 {
-  // Constants and variables
-  // -------------------------------------------------------------------------
-
   public static final int TYPE = 7;
-
   /** The key. */
   private Key key;
 
-  // Constructor(s)
-  // -------------------------------------------------------------------------
-
   /**
    * Creates a new key entry.
-   *
+   * 
    * @param key The key.
    * @param creationDate The entry creation date.
    * @param properties The entry properties.
@@ -81,13 +74,10 @@ public final class PrivateKeyEntry
   public PrivateKeyEntry(Key key, Date creationDate, Properties properties)
   {
     super(TYPE, creationDate, properties);
-
     if (key == null)
       throw new IllegalArgumentException("no private key");
-
     if (! (key instanceof PrivateKey) && ! (key instanceof GnuSecretKey))
       throw new IllegalArgumentException("not a private or secret key");
-
     this.key = key;
   }
 
@@ -96,9 +86,6 @@ public final class PrivateKeyEntry
     super(TYPE);
   }
 
-  // Class methods
-  // -------------------------------------------------------------------------
-
   public static PrivateKeyEntry decode(DataInputStream in) throws IOException
   {
     PrivateKeyEntry entry = new PrivateKeyEntry();
@@ -106,7 +93,6 @@ public final class PrivateKeyEntry
     String type = entry.properties.get("type");
     if (type == null)
       throw new MalformedKeyringException("no key type");
-
     if (type.equalsIgnoreCase("RAW-DSS"))
       {
         IKeyPairCodec coder = KeyPairCodecFactory.getInstance("dss");
@@ -135,7 +121,6 @@ public final class PrivateKeyEntry
         catch (Exception ignored)
           {
           }
-
         if (entry.key == null)
           {
             try
@@ -147,23 +132,18 @@ public final class PrivateKeyEntry
             catch (Exception ignored)
               {
               }
-
             if (entry.key == null)
               throw new MalformedKeyringException("could not decode PKCS#8 key");
           }
       }
     else
       throw new MalformedKeyringException("unsupported key type " + type);
-
     return entry;
   }
 
-  // Instance methods
-  // -------------------------------------------------------------------------
-
   /**
    * Returns this entry's key.
-   *
+   * 
    * @return The key.
    */
   public Key getKey()
@@ -209,6 +189,6 @@ public final class PrivateKeyEntry
   public String toString()
   {
     return "PrivateKeyEntry{key="
-        + (key == null ? "-" : key.getClass().getName()) + "}";
+           + (key == null ? "-" : key.getClass().getName()) + "}";
   }
 }

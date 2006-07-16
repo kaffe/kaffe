@@ -3468,6 +3468,8 @@ public class JTable
    * Get the value of the {@link #rowSelectionAllowed} property.
    *
    * @return The current value of the property
+   * 
+   * @see #setRowSelectionAllowed(boolean)
    */
   public boolean getRowSelectionAllowed()
   {
@@ -3621,6 +3623,8 @@ public class JTable
    * Get the value of the <code>columnSelectionAllowed</code> property.
    *
    * @return The current value of the columnSelectionAllowed property
+   * 
+   * @see #setColumnSelectionAllowed(boolean)
    */
   public boolean getColumnSelectionAllowed()
   {
@@ -3874,11 +3878,17 @@ public class JTable
    * Set the value of the {@link #rowSelectionAllowed} property.
    *
    * @param r The new value of the rowSelectionAllowed property
+   * 
+   * @see #getRowSelectionAllowed()
    */ 
   public void setRowSelectionAllowed(boolean r)
   {
-    rowSelectionAllowed = r;
-    repaint();
+    if (rowSelectionAllowed != r) 
+      {
+        rowSelectionAllowed = r;
+        firePropertyChange("rowSelectionAllowed", !r, r);
+        repaint();
+      }
   }
 
   /**
@@ -3988,11 +3998,17 @@ public class JTable
    * Set the value of the <code>columnSelectionAllowed</code> property.
    *
    * @param c The new value of the property
+   * 
+   * @see #getColumnSelectionAllowed()
    */ 
   public void setColumnSelectionAllowed(boolean c)
   {
-    getColumnModel().setColumnSelectionAllowed(c);
-    repaint();
+    if (columnModel.getColumnSelectionAllowed() != c)
+      {
+        columnModel.setColumnSelectionAllowed(c);
+        firePropertyChange("columnSelectionAllowed", !c, c);
+        repaint();
+      }
   }
 
   /**

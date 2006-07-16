@@ -221,9 +221,12 @@ public class DefaultCaret extends Rectangle
       if (name.equals("document"))
         {
           Document oldDoc = (Document) e.getOldValue();
-          oldDoc.removeDocumentListener(documentListener);
+          if (oldDoc != null)
+            oldDoc.removeDocumentListener(documentListener);
+          
           Document newDoc = (Document) e.getNewValue();
-          newDoc.addDocumentListener(documentListener);
+          if (newDoc != null)
+            newDoc.addDocumentListener(documentListener);
         }
       else if (name.equals("editable"))
         {
@@ -708,7 +711,11 @@ public class DefaultCaret extends Rectangle
     propertyChangeListener = new PropertyChangeHandler();
     textComponent.addPropertyChangeListener(propertyChangeListener);
     documentListener = new DocumentHandler();
-    textComponent.getDocument().addDocumentListener(documentListener);
+    
+    Document doc = textComponent.getDocument();
+    if (doc != null)
+      doc.addDocumentListener(documentListener);
+    
     active = textComponent.isEditable() && textComponent.isEnabled();
 
     repaint();
@@ -1138,6 +1145,24 @@ public class DefaultCaret extends Rectangle
       }
     repaint();
   }  
+
+  /**
+   * Returns <code>true</code> if this <code>Caret</code> is blinking,
+   * and <code>false</code> if not. The returned value is independent of
+   * the visiblity of this <code>Caret</code> as returned by {@link #isVisible()}.
+   *
+   * @return <code>true</code> if this <code>Caret</code> is blinking,
+   *         and <code>false</code> if not.
+   * @see #isVisible()
+   * @since 1.5
+   */
+  public boolean isActive()
+  {
+    if (blinkTimer != null)
+      return blinkTimer.isRunning();
+
+    return false;
+  }
 
   /**
    * Returns <code>true</code> if this <code>Caret</code> is currently visible,

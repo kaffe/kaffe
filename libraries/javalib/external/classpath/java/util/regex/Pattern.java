@@ -37,9 +37,9 @@ exception statement from your version. */
 
 package java.util.regex;
 
-import gnu.regexp.RE;
-import gnu.regexp.REException;
-import gnu.regexp.RESyntax;
+import gnu.java.util.regex.RE;
+import gnu.java.util.regex.REException;
+import gnu.java.util.regex.RESyntax;
 
 import java.io.Serializable;
 import java.util.ArrayList;

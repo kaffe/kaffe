@@ -78,8 +78,25 @@ public class CubicSegment extends Segment
    */
   public Object clone()
   {
-    return new CubicSegment(P1.getX(), P1.getY(), cp1.getX(), cp1.getY(),
-                            cp2.getX(), cp2.getY(), P2.getX(), P2.getY());
+    CubicSegment segment = null;
+    
+    try
+      {
+        segment = (CubicSegment) super.clone();
+        
+        segment.P1 = (Point2D) P1.clone();
+        segment.P2 = (Point2D) P2.clone();
+        segment.cp1 = (Point2D) cp1.clone();
+        segment.cp2 = (Point2D) cp2.clone();
+      }
+    catch (CloneNotSupportedException cnse)
+      {
+        InternalError ie = new InternalError();
+        ie.initCause(cnse);
+        throw ie;
+      }
+  
+    return segment;
   }
 
   /**
@@ -100,7 +117,6 @@ public class CubicSegment extends Segment
     double[] p1 = normal(x0, y0, x1, y1);
     double[] p2 = normal(x2, y2, x3, y3);
 
-    
     // FIXME: Doesn't compile.
     // return new Segment[]{s1, s2};
     return new Segment[0];

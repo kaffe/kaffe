@@ -1,3 +1,38 @@
+2006-07-15  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/clib/io/java_io_VMFile.c:
+	Added new file, taken from GNU Classpath.
+	All functions except Java_java_io_VMFile_toCanonicalForm
+	and its helper functions were removed, as they already exist 
+	in File.c.
+
+	* libraries/clib/io/Makefile.am:
+	Add libraries/clib/io/java_io_VMFile.c to sources.
+
+	* libraries/clib/native/Thread.c:
+	(java_lang_VMThread_getState0) Implemented.
+
+	* libraries/javalib/vmspecific/gnu/classpath/Unsafe.java:
+	Removed.
+
+	* libraries/javalib/vmspecific/gnu/java/lang/management/VMClassLoadingMXBeanImpl.java,
+	libraries/javalib/vmspecific/gnu/java/lang/management/VMCompilationMXBeanImpl.java,
+	libraries/javalib/vmspecific/gnu/java/lang/management/VMGarbageCollectorMXBeanImpl.java,
+	libraries/javalib/vmspecific/gnu/java/lang/management/VMMemoryMXBeanImpl.java,
+	libraries/javalib/vmspecific/gnu/java/lang/management/VMMemoryManagerMXBeanImpl.java,
+	libraries/javalib/vmspecific/gnu/java/lang/management/VMMemoryPoolMXBeanImpl.java,
+	libraries/javalib/vmspecific/gnu/java/lang/management/VMRuntimeMXBeanImpl.java,
+	libraries/javalib/vmspecific/gnu/java/lang/management/VMThreadMXBeanImpl.java,
+	libraries/javalib/vmspecific/java/lang/management/VMManagementFactory.java:
+	Added new files, taken from GNU Classpath.
+
+	* libraries/javalib/vmspecific/java/io/VMFile.java: Resynced with the classpath version.
+
+	* libraries/javalib/vmspecific/java/lang/VMThread.java: Resynced with the classpath version.
+	Added kaffe-specific native method getState0.
+
+	*  libraries/javalib/external/classpath: Resynced.
+
 2006-07-15  Kurt Roeckx  <kurt@roeckx.be>
 
 	* kaffe/kaffevm/systems/unix-pthreads/signal.c,

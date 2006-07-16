@@ -109,7 +109,6 @@ EXTRA_DIST= \
 	vmspecific/gnu/bytecodecvssnap/dump.java \
 	vmspecific/gnu/bytecodecvssnap/package.html \
 	vmspecific/gnu/classpath/Configuration.java.in \
-	vmspecific/gnu/classpath/Unsafe.java \
 	vmspecific/gnu/classpath/VMStackWalker.java \
 	vmspecific/gnu/classpath/VMSystemProperties.java \
 	vmspecific/gnu/classpath/jdwp/VMFrame.java \
@@ -210,6 +209,14 @@ EXTRA_DIST= \
 	vmspecific/gnu/inet/util/SaslPlain.java \
 	vmspecific/gnu/inet/util/TraceLevel.java \
 	vmspecific/gnu/java/lang/VMInstrumentationImpl.java \
+	vmspecific/gnu/java/lang/management/VMClassLoadingMXBeanImpl.java \
+	vmspecific/gnu/java/lang/management/VMCompilationMXBeanImpl.java \
+	vmspecific/gnu/java/lang/management/VMGarbageCollectorMXBeanImpl.java \
+	vmspecific/gnu/java/lang/management/VMMemoryMXBeanImpl.java \
+	vmspecific/gnu/java/lang/management/VMMemoryManagerMXBeanImpl.java \
+	vmspecific/gnu/java/lang/management/VMMemoryPoolMXBeanImpl.java \
+	vmspecific/gnu/java/lang/management/VMRuntimeMXBeanImpl.java \
+	vmspecific/gnu/java/lang/management/VMThreadMXBeanImpl.java \
 	vmspecific/gnu/java/net/DNSJavaInetAddressImpl.java \
 	vmspecific/gnu/java/net/InetAddressImpl.java \
 	vmspecific/gnu/java/net/PlainDatagramSocketImpl.java \
@@ -235,6 +242,7 @@ EXTRA_DIST= \
 	vmspecific/java/lang/VMSystem.java \
 	vmspecific/java/lang/VMThread.java \
 	vmspecific/java/lang/VMThrowable.java \
+	vmspecific/java/lang/management/VMManagementFactory.java \
 	vmspecific/java/lang/ref/Reference.java \
 	vmspecific/java/lang/reflect/Constructor.java \
 	vmspecific/java/lang/reflect/Field.java \

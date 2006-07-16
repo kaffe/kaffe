@@ -218,11 +218,7 @@ public class GtkFramePeer extends GtkWindowPeer
     // TODO Auto-generated method stub
     
   }
-  public void updateAlwaysOnTop()
-  {
-    // TODO Auto-generated method stub
-    
-  }
+
   public boolean requestWindowFocus()
   {
     // TODO Auto-generated method stub

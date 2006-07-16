@@ -50,6 +50,8 @@ public class GtkVolatileImage extends VolatileImage
   int width, height;
   private ImageCapabilities caps;
 
+  final GtkComponentPeer component;
+
   /**
    * Don't touch, accessed from native code.
    */
@@ -57,20 +59,35 @@ public class GtkVolatileImage extends VolatileImage
 
   native long init(GtkComponentPeer component, int width, int height);
 
-  native void destroy();
+  native void destroy(long pointer);
 
-  native int[] getPixels();
+  native int[] nativeGetPixels(long pointer);
+  public int[] getPixels()
+  {
+    return nativeGetPixels(nativePointer);
+  }
 
-  native void copyArea( int x, int y, int w, int h, int dx, int dy );
+  native void nativeCopyArea(long pointer, int x, int y, int w, int h, int dx,
+                             int dy );
+  public void copyArea(int x, int y, int w, int h, int dx, int dy)
+  {
+    nativeCopyArea(nativePointer, x, y, w, h, dx, dy);
+  }
 
-  native void drawVolatile( long ptr, int x, int y, int w, int h );
-  
+  native void nativeDrawVolatile(long pointer, long srcPtr, int x, int y,
+                                 int w, int h );
+  public void drawVolatile(long srcPtr, int x, int y, int w, int h )
+  {
+    nativeDrawVolatile(nativePointer, srcPtr, x, y, w, h);
+  }
+
   public GtkVolatileImage(GtkComponentPeer component, 
 			  int width, int height, ImageCapabilities caps)
   {
     this.width = width;
     this.height = height;
     this.caps = caps;
+    this.component = component;
     nativePointer = init( component, width, height );
   }
 
@@ -91,7 +108,7 @@ public class GtkVolatileImage extends VolatileImage
 
   public void dispose()
   {
-    destroy();
+    destroy(nativePointer);
   }
 
   public BufferedImage getSnapshot()

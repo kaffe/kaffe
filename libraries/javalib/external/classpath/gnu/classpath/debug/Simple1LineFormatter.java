@@ -38,10 +38,11 @@ exception statement from your version. */
 
 package gnu.classpath.debug;
 
-import gnu.classpath.SystemProperties;
+import gnu.java.security.action.GetPropertyAction;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.security.AccessController;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -94,8 +95,8 @@ public class Simple1LineFormatter
   private static final String THREAD_PATTERN = " #########0;-#########0";
   private static final String SPACES_32 = "                                ";
   private static final String SPACES_6 = "      ";
-  private static final String LS = SystemProperties.getProperty("line.separator");
-
+  private static final String LS = (String) AccessController.doPrivileged
+    (new GetPropertyAction("line.separator"));
   private DateFormat dateFormat;
   private NumberFormat threadFormat;
 

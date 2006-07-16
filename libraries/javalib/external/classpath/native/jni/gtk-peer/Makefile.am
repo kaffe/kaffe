@@ -5,16 +5,15 @@ libgtkpeer_la_SOURCES = gnu_java_awt_peer_gtk_CairoSurface.c \
 			gnu_java_awt_peer_gtk_CairoGraphics2D.c \
 			gnu_java_awt_peer_gtk_ComponentGraphics.c \
 			gnu_java_awt_peer_gtk_ComponentGraphicsCopy.c \
+			gnu_java_awt_peer_gtk_FreetypeGlyphVector.c \
 			gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.c \
 			gnu_java_awt_peer_gtk_GdkFontPeer.c \
 			gnu_java_awt_peer_gtk_GdkGraphicsEnvironment.c \
 			gnu_java_awt_peer_gtk_GdkPixbufDecoder.c \
 			gnu_java_awt_peer_gtk_GdkRobotPeer.c \
 			gnu_java_awt_peer_gtk_GdkScreenGraphicsDevice.c \
-			gnu_java_awt_peer_gtk_GdkTextLayout.c \
 			gnu_java_awt_peer_gtk_GtkButtonPeer.c \
 			gnu_java_awt_peer_gtk_GtkCanvasPeer.c \
-			gnu_java_awt_peer_gtk_GtkCheckboxGroupPeer.c \
 			gnu_java_awt_peer_gtk_GtkCheckboxMenuItemPeer.c \
 			gnu_java_awt_peer_gtk_GtkCheckboxPeer.c \
 			gnu_java_awt_peer_gtk_GtkChoicePeer.c \

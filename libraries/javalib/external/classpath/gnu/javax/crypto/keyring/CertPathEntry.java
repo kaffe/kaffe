@@ -50,27 +50,18 @@ import java.util.Date;
 /**
  * A primitive entry that contains a path of X.509 certificates.
  */
-public final class CertPathEntry extends PrimitiveEntry
+public final class CertPathEntry
+    extends PrimitiveEntry
 {
-
-  // Constants and fields.
-  // ------------------------------------------------------------------------
-
   public static final int TYPE = 8;
-
   private Certificate[] path;
-
-  // Constructor.
-  // ------------------------------------------------------------------------
 
   public CertPathEntry(Certificate[] path, Date creationDate,
                        Properties properties)
   {
     super(TYPE, creationDate, properties);
     if (path == null || path.length == 0)
-      {
-        throw new IllegalArgumentException("no certificate path");
-      }
+      throw new IllegalArgumentException("no certificate path");
     this.path = (Certificate[]) path.clone();
   }
 
@@ -78,9 +69,6 @@ public final class CertPathEntry extends PrimitiveEntry
   {
     super(TYPE);
   }
-
-  // Class method.
-  // ------------------------------------------------------------------------
 
   public static CertPathEntry decode(DataInputStream in) throws IOException
   {
@@ -92,8 +80,7 @@ public final class CertPathEntry extends PrimitiveEntry
     try
       {
         CertificateFactory fact = CertificateFactory.getInstance("X.509");
-        entry.path = (Certificate[]) fact.generateCertificates(in2).toArray(
-                                                                            new Certificate[0]);
+        entry.path = (Certificate[]) fact.generateCertificates(in2).toArray(new Certificate[0]);
       }
     catch (CertificateException ce)
       {
@@ -101,9 +88,6 @@ public final class CertPathEntry extends PrimitiveEntry
       }
     return entry;
   }
-
-  // Instance methods.
-  // ------------------------------------------------------------------------
 
   public Certificate[] getCertPath()
   {
@@ -117,9 +101,7 @@ public final class CertPathEntry extends PrimitiveEntry
     try
       {
         for (int i = 0; i < path.length; i++)
-          {
-            bout.write(path[i].getEncoded());
-          }
+          bout.write(path[i].getEncoded());
       }
     catch (CertificateEncodingException cee)
       {

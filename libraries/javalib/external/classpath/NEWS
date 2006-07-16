@@ -13,13 +13,24 @@ New in release 0.92 (UNRELEASED)
   build the GTK peers.
 * A Mozilla plugin, 'gcjwebplugin', is now included.  It introduces a
   dependency on the Mozilla plugin support headers and libraries.
+* A tools.texinfo document has been created and now includes documentation
+  about:
+  * appletviewer
+  * gcjwebplugin
+  * jarsigner
+  * keytool
 * Several new tools are now included:
   * appletviewer
   * jar
   * native2ascii
   * serialver
+  * keytool
+  * jarsigner
   A new configure option --enable-tool-wrappers causes wrapper
   binaries to be built for VMs that support the JNI Invocation API.
+* javax.sound.midi providers have been added to read and
+  write standard MIDI files.
+* New Java Virtual Machine Tool Interface header, jvmti.h. 
 
 Runtime interface changes:
 
@@ -27,6 +38,50 @@ Runtime interface changes:
   URLConnection.guessContentTypeFromStream.  The reference
   implementation uses libmagic (and falls back to doing nothing if
   libmagic is not available).
+* The method gnu.java.io.PlatformHelper.toCanonicalForm() has been
+  replaced with a JNI implementation of VMFile.toCanonicalForm() for
+  GNU/Posix systems.
+* A new class, VMRuntimeMXBeanImpl, is used to implement
+  the low-level support of the runtime management bean.
+  VMs should use it to supply the input arguments and start
+  time of the VM.  In addition, one of sun.boot.class.path
+  or java.boot.class.path should be defined by the VM to
+  support the optional boot class path access functionality.
+* The Unsafe class was moved back to the place expected by the JSR 166
+  reference implementation.  We've also added a couple other new VM
+  classes to support the JSR 166 code -- sun.reflect.Reflection and
+  sun.reflect.misc.ReflectUtil.
+* Another new class, VMClassLoadingMXBeanImpl, is used to implement
+  the low-level support of the class loading management bean.
+  VMs need to supply it with information about how many classes
+  are currently loaded, how many have been unloaded and whether
+  verbose class loading output is on or off.  Provision should also
+  be made for the latter to be toggled at runtime.
+* VMThreadMXBeanImpl is used to implement the low-level support
+  of the thread management bean.  Providing this interface requires
+  providing a fair amount of information about threads, including
+  optional time and contention monitoring, and instances of the
+  new ThreadInfo class in java.lang.management.  getState() has also
+  been added to the VMThread interface; this is required by the bean
+  as well as java.lang.Thread.
+* VMMemoryMXBeanImpl is used to implement the low-level support
+  of the memory management bean.  Providing this interface requires
+  providing information about the levels of heap and non-heap memory,
+  and the number of objects eligible for garbage collection.
+* VMCompilationMXBeanImpl is used to allow for optional compilation
+  time support for Just-In-Time compilers.
+* VMMemoryPoolMXBeanImpl is used to implement the low-level support
+  of the memory pool beans.  Providing this interface requires
+  providing memory usage statistics for each supported bean.
+* VMManagementFactory provides the names of the memory pools,
+  memory managers and garbage collectors maintained by the virtual
+  machine.  These are used to create the beans by the ManagementFactory.
+* VMMemoryManagerMXBeanImpl and VMGarbageCollectorMXBeanImpl provide
+  low-level support for memory managers (including the specific subclass
+  of garbage collecting memory managers).  The interfaces for these
+  require no more than enumerating the number of collections and the
+  time spent (for garbage collectors) and a relationship to the memory
+  pools (for all), along with a validity check.
 
 New in release 0.91 (May 15, 2006)
 

@@ -38,8 +38,6 @@ exception statement from your version. */
 
 package javax.swing.plaf.basic;
 
-import gnu.classpath.NotImplementedException;
-
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -62,6 +60,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.accessibility.Accessible;
+import javax.accessibility.AccessibleContext;
 import javax.swing.CellRendererPane;
 import javax.swing.ComboBoxEditor;
 import javax.swing.ComboBoxModel;
@@ -241,6 +240,8 @@ public class BasicComboBoxUI extends ComboBoxUI
         comboBox.setLayout(createLayoutManager());
         comboBox.setFocusable(true);
         installKeyboardActions();
+        comboBox.putClientProperty(BasicLookAndFeel.DONT_CANCEL_POPUP,
+                                   Boolean.TRUE);
       }
   }
 
@@ -571,6 +572,10 @@ public class BasicComboBoxUI extends ComboBoxUI
           arrowButton.addMouseListener(popupMouseListener);
         if (popupMouseMotionListener != null)
           arrowButton.addMouseMotionListener(popupMouseMotionListener);
+        
+        // Mark the button as not closing the popup, we handle this ourselves.
+        arrowButton.putClientProperty(BasicLookAndFeel.DONT_CANCEL_POPUP,
+                                      Boolean.TRUE);
       }
   }
 
@@ -712,18 +717,51 @@ public class BasicComboBoxUI extends ComboBoxUI
     return new Dimension(32767, 32767);
   }
 
+  /**
+   * Returns the number of accessible children of the combobox.
+   *
+   * @param c the component (combobox) to check, ignored
+   *
+   * @return the number of accessible children of the combobox
+   */
   public int getAccessibleChildrenCount(JComponent c)
-    throws NotImplementedException
   {
-    // FIXME: Need to implement
-    return 0;
+    int count = 1;
+    if (comboBox.isEditable())
+      count = 2;
+    return count;
   }
 
+  /**
+   * Returns the accessible child with the specified index.
+   *
+   * @param c the component, this is ignored
+   * @param i the index of the accessible child to return
+   */
   public Accessible getAccessibleChild(JComponent c, int i)
-    throws NotImplementedException
   {
-    // FIXME: Need to implement
-    return null;
+    Accessible child = null;
+    switch (i)
+    {
+      case 0: // The popup.
+        if (popup instanceof Accessible)
+          {
+            AccessibleContext ctx = ((Accessible) popup).getAccessibleContext();
+            ctx.setAccessibleParent(comboBox);
+            child = (Accessible) popup;
+          }
+        break;
+      case 1: // The editor, if any.
+        if (comboBox.isEditable() && editor instanceof Accessible)
+          {
+            AccessibleContext ctx =
+              ((Accessible) editor).getAccessibleContext();
+            ctx.setAccessibleParent(comboBox);
+            child = (Accessible) editor;
+          }
+        break;
+    }
+    return child;
   }
 
   /**
@@ -735,10 +773,9 @@ public class BasicComboBoxUI extends ComboBoxUI
    * @return true if the specified key is a navigation key and false otherwis
    */
   protected boolean isNavigationKey(int keyCode)
-    throws NotImplementedException
   {
-    // FIXME: Need to implement
-    return false;
+    return keyCode == KeyEvent.VK_UP || keyCode == KeyEvent.VK_DOWN
+           || keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_RIGHT;
   }
 
   /**
@@ -921,8 +958,8 @@ public class BasicComboBoxUI extends ComboBoxUI
     Object prototype = comboBox.getPrototypeDisplayValue();
     if (prototype != null)
       {
-        Component comp = renderer.getListCellRendererComponent
-          (listBox, prototype, -1, false, false);
+        Component comp = renderer.getListCellRendererComponent(listBox, 
+            prototype, -1, false, false);
         currentValuePane.add(comp);
         comp.setFont(comboBox.getFont());
         Dimension renderSize = comp.getPreferredSize();
@@ -938,8 +975,8 @@ public class BasicComboBoxUI extends ComboBoxUI
           {
             for (int i = 0; i < size; ++i)
               {
-                Component comp = renderer.getListCellRendererComponent
-                (listBox, model.getElementAt(i), -1, false, false);
+                Component comp = renderer.getListCellRendererComponent(listBox, 
+                    model.getElementAt(i), -1, false, false);
                 currentValuePane.add(comp);
                 comp.setFont(comboBox.getFont());
                 Dimension renderSize = comp.getPreferredSize();
@@ -1163,10 +1200,13 @@ public class BasicComboBoxUI extends ComboBoxUI
      * Invoked whenever key is pressed while JComboBox is in focus.
      */
     public void keyPressed(KeyEvent e)
-      throws NotImplementedException
     {
-      // FIXME: This method calls JComboBox.selectWithKeyChar if the key that 
-      // was pressed is not a navigation key. 
+      if (! isNavigationKey(e.getKeyCode()) && comboBox.isEnabled()
+          && comboBox.getModel().getSize() != 0)
+        {
+          if (comboBox.selectWithKeyChar(e.getKeyChar()))
+            e.consume();
+        }
     }
   }
 

@@ -45,37 +45,34 @@ import java.util.Iterator;
 import java.security.InvalidKeyException;
 
 /**
- * Triple-DES, 3DES, or DESede is a <i>combined cipher</i> that uses
- * three iterations of the Data Encryption Standard cipher to improve
- * the security (at the cost of speed) of plain DES.
- *
- * <p>Triple-DES runs the DES algorithm three times with three
- * independent 56 bit keys. To encrypt:</p>
- *
- * <blockquote><i>C<sub>i</sub> =
- * E<sub>k3</sub> ( E<sub>k2</sub><sup>-1</sup> ( E<sub>k1</sub> ( P<sub>i</sub> )))</i></blockquote>
- *
- * <p>And to decrypt:</p>
- *
- * <blockquote><i>P<sub>i</sub> =
- * E<sub>k1</sub><sup>-1</sup> ( E<sub>k2</sub> ( E<sub>k3</sub><sup>-1</sup> ( C<sub>i</sub> )))</i></blockquote>
- *
- * <p>(The "ede" comes from the encryption operation, which runs
- * Encrypt-Decrypt-Encrypt)</p>
- *
- * <p>References:</p>
+ * Triple-DES, 3DES, or DESede is a <i>combined cipher</i> that uses three
+ * iterations of the Data Encryption Standard cipher to improve the security (at
+ * the cost of speed) of plain DES.
+ * <p>
+ * Triple-DES runs the DES algorithm three times with three independent 56 bit
+ * keys. To encrypt:
+ * <blockquote><i>C<sub>i</sub> = E<sub>k3</sub> ( E<sub>k2</sub><sup>-1</sup> (
+ * E<sub>k1</sub> ( P<sub>i</sub> )))</i>
+ * </blockquote>
+ * <p>
+ * And to decrypt:
+ * <blockquote><i>P<sub>i</sub> = E<sub>k1</sub><sup>-1</sup> (
+ * E<sub>k2</sub> ( E<sub>k3</sub><sup>-1</sup> ( C<sub>i</sub> )))</i>
+ * </blockquote>
+ * <p>
+ * (The "ede" comes from the encryption operation, which runs
+ * Encrypt-Decrypt-Encrypt)
+ * <p>
+ * References:
  * <ol>
- * <li>Bruce Schneier, <i>Applied Cryptography: Protocols, Algorithms,
- * and Source Code in C, Second Edition</i>. (1996 John Wiley and Sons)
- * ISBN 0-471-11709-9. Page 294--295.</li>
+ * <li>Bruce Schneier, <i>Applied Cryptography: Protocols, Algorithms, and
+ * Source Code in C, Second Edition</i>. (1996 John Wiley and Sons) ISBN
+ * 0-471-11709-9. Page 294--295.</li>
  * </ol>
  */
-public class TripleDES extends BaseCipher
+public class TripleDES
+    extends BaseCipher
 {
-
-  // Constants and variables.
-  // -----------------------------------------------------------------------
-
   /** Triple-DES only operates on 64 bit blocks. */
   public static final int BLOCK_SIZE = 8;
 
@@ -84,9 +81,6 @@ public class TripleDES extends BaseCipher
 
   /** The underlying DES instance. */
   private DES des;
-
-  // Constructors.
-  // -----------------------------------------------------------------------
 
   /**
    * Default 0-arguments constructor.
@@ -97,13 +91,10 @@ public class TripleDES extends BaseCipher
     des = new DES();
   }
 
-  // Class methods.
-  // -----------------------------------------------------------------------
-
   /**
    * Transform a key so it will be parity adjusted.
-   *
-   * @param kb     The key bytes to adjust.
+   * 
+   * @param kb The key bytes to adjust.
    * @param offset The starting offset into the key bytes.
    * @see DES#adjustParity(byte[],int)
    */
@@ -116,8 +107,8 @@ public class TripleDES extends BaseCipher
 
   /**
    * Tests if a byte array has already been parity adjusted.
-   *
-   * @param kb     The key bytes to test.
+   * 
+   * @param kb The key bytes to test.
    * @param offset The starting offset into the key bytes.
    * @return <code>true</code> if the bytes in <i>kb</i> starting at
    *         <i>offset</i> are parity adjusted.
@@ -131,9 +122,6 @@ public class TripleDES extends BaseCipher
            && DES.isParityAdjusted(kb, offset + 16);
   }
 
-  // Methods implementing BaseCipher.
-  // -----------------------------------------------------------------------
-
   public Object clone()
   {
     return new TripleDES();
@@ -141,32 +129,30 @@ public class TripleDES extends BaseCipher
 
   public Iterator blockSizes()
   {
-    return Collections.singleton(new Integer(BLOCK_SIZE)).iterator();
+    return Collections.singleton(Integer.valueOf(BLOCK_SIZE)).iterator();
   }
 
   public Iterator keySizes()
   {
-    return Collections.singleton(new Integer(KEY_SIZE)).iterator();
+    return Collections.singleton(Integer.valueOf(KEY_SIZE)).iterator();
   }
 
   public Object makeKey(byte[] kb, int bs) throws InvalidKeyException
   {
     if (kb.length != KEY_SIZE)
       throw new InvalidKeyException("TripleDES key must be 24 bytes");
-
-    if (!isParityAdjusted(kb, 0))
+    if (! isParityAdjusted(kb, 0))
       adjustParity(kb, 0);
-
-    byte[] k1 = new byte[DES.KEY_SIZE], k2 = new byte[DES.KEY_SIZE], k3 = new byte[DES.KEY_SIZE];
+    byte[] k1 = new byte[DES.KEY_SIZE];
+    byte[] k2 = new byte[DES.KEY_SIZE];
+    byte[] k3 = new byte[DES.KEY_SIZE];
     System.arraycopy(kb, 0, k1, 0, DES.KEY_SIZE);
     System.arraycopy(kb, DES.KEY_SIZE, k2, 0, DES.KEY_SIZE);
     System.arraycopy(kb, 2 * DES.KEY_SIZE, k3, 0, DES.KEY_SIZE);
     Context ctx = new Context();
-
     ctx.k1 = (DES.Context) des.makeKey(k1, bs);
     ctx.k2 = (DES.Context) des.makeKey(k2, bs);
     ctx.k3 = (DES.Context) des.makeKey(k3, bs);
-
     return ctx;
   }
 
@@ -185,9 +171,6 @@ public class TripleDES extends BaseCipher
     des.encrypt(temp, 0, temp, 0, ((Context) K).k2, bs);
     des.decrypt(temp, 0, out, o, ((Context) K).k1, bs);
   }
-
-  // Inner classes.
-  // -----------------------------------------------------------------------
 
   private final class Context
   {

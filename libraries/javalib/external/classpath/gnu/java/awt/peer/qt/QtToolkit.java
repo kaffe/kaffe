@@ -41,7 +41,6 @@ import gnu.classpath.Configuration;
 import gnu.java.awt.EmbeddedWindow;
 import gnu.java.awt.peer.ClasspathFontPeer;
 import gnu.java.awt.peer.EmbeddedWindowPeer;
-import gnu.java.awt.peer.ClasspathTextLayoutPeer;
 import java.awt.AWTEvent;
 import java.awt.AWTException;
 import java.awt.Button;
@@ -136,8 +135,7 @@ public class QtToolkit extends ClasspathToolkit
   {
     eventQueue = new EventQueue();
     repaintThread = new QtRepaintThread();
-    if (Configuration.INIT_LOAD_LIBRARY)
-      System.loadLibrary("qtpeer");
+    System.loadLibrary("qtpeer");
 
     String theme = null;
     try 
@@ -403,6 +401,11 @@ public class QtToolkit extends ClasspathToolkit
 			      String jobtitle,
 			      Properties props)
   {
+    SecurityManager sm;
+    sm = System.getSecurityManager();
+    if (sm != null)
+      sm.checkPrintJobAccess();
+    
     throw new RuntimeException("Not implemented");
   }
 
@@ -444,12 +447,6 @@ public class QtToolkit extends ClasspathToolkit
   public ClasspathFontPeer getClasspathFontPeer (String name, Map attrs)
   {  
     return new QtFontPeer (name, attrs);
-  }
-
-  public ClasspathTextLayoutPeer getClasspathTextLayoutPeer(AttributedString str, 
-							    FontRenderContext frc)
-  {
-    return null;
   }
 
   // FIXME

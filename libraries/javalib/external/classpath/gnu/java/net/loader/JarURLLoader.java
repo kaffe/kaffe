@@ -135,6 +135,11 @@ public final class JarURLLoader extends URLLoader
                 try
                   {
                     URL subURL = new URL(baseURL, e);
+                    // We've seen at least one jar file whose Class-Path
+                    // attribute includes the original jar.  If we process
+                    // that normally we end up with infinite recursion.
+                    if (subURL.equals(baseURL))
+                      continue;
                     JarURLLoader subLoader = new JarURLLoader(classloader,
                                                               cache, factory,
                                                               subURL, subURL);

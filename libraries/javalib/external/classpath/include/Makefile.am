@@ -41,15 +41,14 @@ $(top_srcdir)/include/gnu_java_awt_peer_gtk_CairoSurface.h \
 $(top_srcdir)/include/gnu_java_awt_peer_gtk_CairoGraphics2D.h \
 $(top_srcdir)/include/gnu_java_awt_peer_gtk_ComponentGraphics.h \
 $(top_srcdir)/include/gnu_java_awt_peer_gtk_ComponentGraphicsCopy.h \
+$(top_srcdir)/include/gnu_java_awt_peer_gtk_FreetypeGlyphVector.h \
 $(top_srcdir)/include/gnu_java_awt_peer_gtk_GdkFontPeer.h \
 $(top_srcdir)/include/gnu_java_awt_peer_gtk_GdkGraphicsEnvironment.h \
 $(top_srcdir)/include/gnu_java_awt_peer_gtk_GdkPixbufDecoder.h \
 $(top_srcdir)/include/gnu_java_awt_peer_gtk_GdkRobotPeer.h \
 $(top_srcdir)/include/gnu_java_awt_peer_gtk_GdkScreenGraphicsDevice.h \
-$(top_srcdir)/include/gnu_java_awt_peer_gtk_GdkTextLayout.h \
 $(top_srcdir)/include/gnu_java_awt_peer_gtk_GtkButtonPeer.h \
 $(top_srcdir)/include/gnu_java_awt_peer_gtk_GtkCanvasPeer.h \
-$(top_srcdir)/include/gnu_java_awt_peer_gtk_GtkCheckboxGroupPeer.h \
 $(top_srcdir)/include/gnu_java_awt_peer_gtk_GtkCheckboxMenuItemPeer.h \
 $(top_srcdir)/include/gnu_java_awt_peer_gtk_GtkCheckboxPeer.h \
 $(top_srcdir)/include/gnu_java_awt_peer_gtk_GtkChoicePeer.h \
@@ -116,11 +115,15 @@ $(top_srcdir)/include/gnu_java_awt_peer_qt_QtFileDialogPeer.h \
 $(top_srcdir)/include/gnu_java_awt_peer_qt_QtContainerPeer.h \
 $(top_srcdir)/include/gnu_java_awt_peer_qt_QtEmbeddedWindowPeer.h 
 
+GCONF_PREFS_FILES = \
+$(top_srcdir)/include/gnu_java_util_prefs_gconf_GConfNativePeer.h
+
 H_FILES = \
 $(SOUND_H_FILES) \
 $(XMLJ_H_FILES) \
 $(GTKPEER_H_FILES) \
 $(QTPEER_H_FILES) \
+$(GCONF_PREFS_FILES) \
 $(top_srcdir)/include/gnu_java_net_VMPlainDatagramSocketImpl.h \
 $(top_srcdir)/include/gnu_java_net_VMPlainSocketImpl.h \
 $(top_srcdir)/include/gnu_java_net_local_LocalSocketImpl.h \
@@ -170,6 +173,9 @@ $(top_srcdir)/include/gnu_javax_sound_midi_alsa_%.h: $(top_builddir)/$(CLASSDIR)
 
 $(top_srcdir)/include/gnu_javax_sound_midi_dssi_%.h: $(top_builddir)/$(CLASSDIR)/gnu/javax/sound/midi/dssi/%.class
 	$(JAVAH) -o $@ gnu.javax.sound.midi.dssi.$*
+
+$(top_srcdir)/include/gnu_java_util_prefs_gconf_%.h: $(top_builddir)/$(CLASSDIR)/gnu/java/util/prefs/gconf/%.class
+	$(JAVAH) -o $@ gnu.java.util.prefs.gconf.$*
 
 $(top_srcdir)/include/gnu_java_net_VMPlainDatagramSocketImpl.h: $(top_srcdir)/vm/reference/gnu/java/net/VMPlainDatagramSocketImpl.java
 	$(JAVAH) -o $@ gnu.java.net.VMPlainDatagramSocketImpl

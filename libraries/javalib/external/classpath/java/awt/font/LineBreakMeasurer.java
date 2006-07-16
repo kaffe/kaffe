@@ -1,5 +1,5 @@
 /* LineBreakMeasurer.java
-   Copyright (C) 2003 Free Software Foundation, Inc.
+   Copyright (C) 2006 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -38,84 +38,114 @@ exception statement from your version. */
 
 package java.awt.font;
 
-import gnu.classpath.NotImplementedException;
-
 import java.text.AttributedCharacterIterator;
+import java.text.AttributedString;
 import java.text.BreakIterator;
+import java.awt.Shape;
 
 public final class LineBreakMeasurer
 {
-  private AttributedCharacterIterator ci;
-  private FontRenderContext frc;
-  private BreakIterator bi;
+  private AttributedCharacterIterator text;
+  private int position;
+  private TextMeasurer tm; 
+  private int numChars;
 
-  /**
-   * Constructs a <code>LineBreakMeasurer</code> object.
-   */
-  public LineBreakMeasurer (AttributedCharacterIterator text,
-                            FontRenderContext frc)
+  public LineBreakMeasurer(AttributedCharacterIterator text, 
+			   BreakIterator breakIter, FontRenderContext frc)
   {
-    this (text, null, frc);
+    this( text, frc );
   }
 
-  /**
-   * Constructs a <code>LineBreakMeasurer</code> object.
-   */
-  public LineBreakMeasurer (AttributedCharacterIterator text,
-                            BreakIterator breakIter, FontRenderContext frc) 
+  public LineBreakMeasurer(AttributedCharacterIterator text, 
+			   FontRenderContext frc)
   {
-    this.ci = text;
-    this.bi = breakIter;
-    this.frc = frc;
+    this.text = text;
+    position = 0;
+    numChars = text.getEndIndex();
+    tm = new TextMeasurer( text, frc );
   }
 
-  public void deleteChar (AttributedCharacterIterator newParagraph,
-                          int deletePos)
-    throws NotImplementedException
+  public void deleteChar(AttributedCharacterIterator newParagraph, 
+			 int deletePos)
   {
-    throw new Error ("not implemented");
+    tm.deleteChar( newParagraph, deletePos );
+    position = 0;
   }
 
-  public int getPosition ()
+  public void insertChar(AttributedCharacterIterator newParagraph, 
+			 int insertPos)
   {
-    return ci.getIndex ();
+    tm.insertChar( newParagraph, insertPos );
+    position = 0;
   }
 
-  public void insertChar (AttributedCharacterIterator newParagraph,
-                          int insertPos)
-    throws NotImplementedException
+  public TextLayout nextLayout(float wrappingWidth)
   {
-    throw new Error ("not implemented");
+    return nextLayout( wrappingWidth, numChars, false );
   }
 
-  public TextLayout nextLayout (float wrappingWidth)
-    throws NotImplementedException
+  public TextLayout nextLayout(float wrappingWidth, int offsetLimit, 
+			       boolean requireNextWord)
   {
-    throw new Error ("not implemented");
+    int next = nextOffset( wrappingWidth, offsetLimit, requireNextWord );
+    TextLayout tl = tm.getLayout( position, next );
+    position = next;
+    return tl;
   }
 
-  public TextLayout nextLayout (float wrappingWidth, int offsetLimit,
-                                boolean requireNextWord)
-    throws NotImplementedException
+  public int nextOffset(float wrappingWidth)
   {
-    throw new Error ("not implemented");
+    return nextOffset( wrappingWidth, numChars, false );
   }
 
-  public int nextOffset (float wrappingWidth)
-    throws NotImplementedException
+  public int nextOffset(float wrappingWidth, int offsetLimit, 
+			boolean requireNextWord)
   {
-    throw new Error ("not implemented");
+    int guessOffset = tm.getLineBreakIndex(position, wrappingWidth);
+    if( offsetLimit > numChars )
+      offsetLimit = numChars;
+
+    if( guessOffset > offsetLimit )
+      {
+	text.setIndex( offsetLimit );
+	return offsetLimit;
+      }
+
+    text.setIndex( guessOffset );
+
+    // If we're on a breaking character, return directly
+    if( Character.isWhitespace( text.current() ) )
+      return guessOffset;
+
+    // Otherwise jump forward or backward to the last such char.
+    if( !requireNextWord )
+      while( !Character.isWhitespace( text.previous() ) && 
+	     guessOffset > position )
+	guessOffset--; 
+    else
+      while( !Character.isWhitespace( text.next() ) && 
+	     guessOffset < offsetLimit )
+	guessOffset++;
+    
+    if( guessOffset > offsetLimit )
+      {
+	text.setIndex( offsetLimit );
+	return offsetLimit;
+      }
+
+    text.setIndex( guessOffset );
+
+    return guessOffset;
   }
 
-  public int nextOffset (float wrappingWidth, int offsetLimit,
-                         boolean requireNextWord)
-    throws NotImplementedException
+  public void setPosition(int newPosition)
   {
-    throw new Error ("not implemented");
+    position = newPosition;
   }
 
-  public void setPosition (int newPosition)
+  public int getPosition()
   {
-    ci.setIndex (newPosition);
+    return position;
   }
 }
+

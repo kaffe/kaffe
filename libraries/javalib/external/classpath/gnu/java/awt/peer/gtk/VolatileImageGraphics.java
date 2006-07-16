@@ -67,14 +67,12 @@ public class VolatileImageGraphics extends ComponentGraphics
     this.owner = img;
     cairo_t = initFromVolatile( owner.nativePointer, img.width, img.height );
     setup( cairo_t );
-    setClip( new Rectangle( 0, 0, img.width, img.height) );
   }
 
   private VolatileImageGraphics(VolatileImageGraphics copy)
   {
     this.owner = copy.owner;
-    initFromVolatile( owner.nativePointer, owner.width, owner.height );
-    setClip( new Rectangle( 0, 0, owner.width, owner.height) );
+    cairo_t = initFromVolatile(owner.nativePointer, owner.width, owner.height);
     copy( copy, cairo_t );
   }
 
@@ -85,7 +83,7 @@ public class VolatileImageGraphics extends ComponentGraphics
 
   public GraphicsConfiguration getDeviceConfiguration()
   {
-    return null;
+    return owner.component.getGraphicsConfiguration();
   }
 
   public Graphics create()
@@ -117,6 +115,11 @@ public class VolatileImageGraphics extends ComponentGraphics
 	return true;
       }      
     return super.drawImage( img, x, y, width, height, observer );
+  }
+
+  protected Rectangle2D getRealBounds()
+  {
+    return new Rectangle2D.Double(0, 0, owner.width, owner.height);
   }
 }
 

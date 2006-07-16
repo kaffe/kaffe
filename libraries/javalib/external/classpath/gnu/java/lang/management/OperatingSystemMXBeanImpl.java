@@ -47,6 +47,7 @@ import java.lang.management.OperatingSystemMXBean;
  * @since 1.5
  */
 public final class OperatingSystemMXBeanImpl
+  extends BeanImpl
   implements OperatingSystemMXBean
 {
   

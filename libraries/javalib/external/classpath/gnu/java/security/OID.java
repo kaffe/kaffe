@@ -71,6 +71,9 @@ public class OID implements Cloneable, Comparable, java.io.Serializable
   // Fields.
   // ------------------------------------------------------------------------
 
+  /* Serial version id for serialization. */
+  static final long serialVersionUID = 5722492029044597779L;
+  
   /**
    * The numeric ID structure.
    */
@@ -229,13 +232,6 @@ public class OID implements Cloneable, Comparable, java.io.Serializable
       }
   }
 
-  /**
-   * Our private constructor.
-   */
-  private OID()
-  {
-  }
-
   // Instance methods.
   // ------------------------------------------------------------------------
 
@@ -325,10 +321,16 @@ public class OID implements Cloneable, Comparable, java.io.Serializable
    */
   public Object clone()
   {
-    OID oid = new OID();
-    oid.components = this.components;
-    oid.strRep = this.strRep;
-    return oid;
+    try
+      {
+        return super.clone();
+      }
+    catch (CloneNotSupportedException cnse)
+      {
+        InternalError ie = new InternalError();
+        ie.initCause(cnse);
+        throw ie;
+      }
   }
 
   /* Nice idea, but possibly too expensive for whatever benefit it

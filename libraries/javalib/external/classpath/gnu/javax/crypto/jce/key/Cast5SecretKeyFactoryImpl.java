@@ -38,7 +38,8 @@ exception statement from your version.  */
 
 package gnu.javax.crypto.jce.key;
 
-public class Cast5SecretKeyFactoryImpl extends SecretKeyFactoryImpl
+public class Cast5SecretKeyFactoryImpl
+    extends SecretKeyFactoryImpl
 {
   public Cast5SecretKeyFactoryImpl()
   {

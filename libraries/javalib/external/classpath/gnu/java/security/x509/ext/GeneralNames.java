@@ -90,7 +90,7 @@ public class GeneralNames
         int tagClass = name.getTagClass();
         if (tagClass != DER.CONTEXT)
           throw new IOException("malformed GeneralName: Tag class is " + tagClass);
-        namePair.add(new Integer(name.getTag()));
+        namePair.add(Integer.valueOf(name.getTag()));
         DERValue val = null;
         switch (name.getTag())
           {

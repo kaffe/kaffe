@@ -52,11 +52,15 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.font.FontRenderContext;
+import java.awt.font.TextLayout;
+import java.awt.geom.AffineTransform;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
+import javax.swing.AbstractButton;
 import javax.swing.ActionMap;
 import javax.swing.ButtonModel;
 import javax.swing.Icon;
@@ -237,17 +241,32 @@ public class BasicMenuItemUI extends MenuItemUI
      */
     public void propertyChange(PropertyChangeEvent e)
     {
-      if (e.getPropertyName() == "accelerator")
+      String property = e.getPropertyName();
+      if (property.equals("accelerator"))
         {
-          InputMap map = SwingUtilities.getUIInputMap(menuItem, JComponent.WHEN_IN_FOCUSED_WINDOW);
+          InputMap map = SwingUtilities.getUIInputMap(menuItem, 
+              JComponent.WHEN_IN_FOCUSED_WINDOW);
           if (map != null)
-            map.remove((KeyStroke)e.getOldValue());
+            map.remove((KeyStroke) e.getOldValue());
           else
             map = new ComponentInputMapUIResource(menuItem);
 
           KeyStroke accelerator = (KeyStroke) e.getNewValue();
           if (accelerator != null)
             map.put(accelerator, "doClick");
+        }
+      // TextLayout caching for speed-up drawing of text.
+      else if (property.equals(AbstractButton.TEXT_CHANGED_PROPERTY)
+          || property.equals("font"))
+        {
+          AbstractButton b = (AbstractButton) e.getSource();
+          String text = b.getText();
+          if (text == null)
+            text = "";
+          FontRenderContext frc = new FontRenderContext(new AffineTransform(),
+                                                        false, false);
+          TextLayout layout = new TextLayout(text, b.getFont(), frc);
+          b.putClientProperty(BasicGraphicsUtils.CACHED_TEXT_LAYOUT, layout);
         }
     }
   }
@@ -499,7 +518,8 @@ public class BasicMenuItemUI extends MenuItemUI
    */
   public Dimension getPreferredSize(JComponent c)
   {
-    return getPreferredMenuItemSize(c, checkIcon, arrowIcon, defaultTextIconGap);
+    return getPreferredMenuItemSize(c, checkIcon, arrowIcon, 
+                                    defaultTextIconGap);
   }
 
   /**
@@ -535,8 +555,10 @@ public class BasicMenuItemUI extends MenuItemUI
                                      prefix + ".foreground", prefix + ".font");
     menuItem.setMargin(UIManager.getInsets(prefix + ".margin"));
     acceleratorFont = UIManager.getFont(prefix + ".acceleratorFont");
-    acceleratorForeground = UIManager.getColor(prefix + ".acceleratorForeground");
-    acceleratorSelectionForeground = UIManager.getColor(prefix + ".acceleratorSelectionForeground");
+    acceleratorForeground = UIManager.getColor(prefix 
+        + ".acceleratorForeground");
+    acceleratorSelectionForeground = UIManager.getColor(prefix 
+        + ".acceleratorSelectionForeground");
     selectionBackground = UIManager.getColor(prefix + ".selectionBackground");
     selectionForeground = UIManager.getColor(prefix + ".selectionForeground");
     acceleratorDelimiter = UIManager.getString(prefix + ".acceleratorDelimiter");
@@ -551,13 +573,15 @@ public class BasicMenuItemUI extends MenuItemUI
    */
   protected void installKeyboardActions()
   {
-    InputMap focusedWindowMap = SwingUtilities.getUIInputMap(menuItem, JComponent.WHEN_IN_FOCUSED_WINDOW);
+    InputMap focusedWindowMap = SwingUtilities.getUIInputMap(menuItem, 
+        JComponent.WHEN_IN_FOCUSED_WINDOW);
     if (focusedWindowMap == null)
       focusedWindowMap = new ComponentInputMapUIResource(menuItem);
     KeyStroke accelerator = menuItem.getAccelerator();
     if (accelerator != null)
       focusedWindowMap.put(accelerator, "doClick");
-    SwingUtilities.replaceUIInputMap(menuItem, JComponent.WHEN_IN_FOCUSED_WINDOW, focusedWindowMap);
+    SwingUtilities.replaceUIInputMap(menuItem, 
+        JComponent.WHEN_IN_FOCUSED_WINDOW, focusedWindowMap);
     
     ActionMap UIActionMap = SwingUtilities.getUIActionMap(menuItem);
     if (UIActionMap == null)
@@ -827,12 +851,13 @@ public class BasicMenuItemUI extends MenuItemUI
         int mnemonicIndex = menuItem.getDisplayedMnemonicIndex();
 
         if (mnemonicIndex != -1)
-          BasicGraphicsUtils.drawStringUnderlineCharAt(g, text, mnemonicIndex,
+          BasicGraphicsUtils.drawStringUnderlineCharAt(menuItem, g, text,
+                                                       mnemonicIndex,
                                                        textRect.x,
                                                        textRect.y
                                                            + fm.getAscent());
         else
-          BasicGraphicsUtils.drawString(g, text, 0, textRect.x,
+          BasicGraphicsUtils.drawString(menuItem, g, text, 0, textRect.x,
                                         textRect.y + fm.getAscent());
       }
   }
@@ -1268,8 +1293,8 @@ public class BasicMenuItemUI extends MenuItemUI
     Insets insets = m.getInsets();
     viewRect.x += insets.left;
     viewRect.y += insets.top;
-    viewRect.width -= (insets.left + insets.right);
-    viewRect.height -= (insets.top + insets.bottom);
+    viewRect.width -= insets.left + insets.right;
+    viewRect.height -= insets.top + insets.bottom;
 
     // Fetch the fonts.
     Font font = m.getFont();

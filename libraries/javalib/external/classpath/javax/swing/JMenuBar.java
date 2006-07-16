@@ -370,10 +370,30 @@ public class JMenuBar extends JComponent implements Accessible, MenuElement
   {
     MenuElement[] subElements = new MenuElement[getComponentCount()];
 
+    int j = 0;
+    boolean doResize = false;
+    MenuElement menu;
     for (int i = 0; i < getComponentCount(); i++)
-      subElements[i] = (MenuElement) getMenu(i);
+      {
+        menu = getMenu(i);
+        if (menu != null)
+          {
+            subElements[j++] = (MenuElement) menu;
+          }
+        else
+          doResize = true;
+      }
 
-    return subElements;
+    if (! doResize)
+      return subElements;
+    else
+      {
+        MenuElement[] subElements2 = new MenuElement[j];
+        for (int i = 0; i < j; i++)
+          subElements2[i] = subElements[i];
+
+        return subElements2;
+      }
   }
 
   /**

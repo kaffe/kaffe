@@ -38,6 +38,7 @@ exception statement from your version. */
 
 package gnu.classpath.tools.keytool;
 
+import gnu.classpath.Configuration;
 import gnu.classpath.SystemProperties;
 import gnu.classpath.tools.common.CallbackUtil;
 import gnu.classpath.tools.common.ProviderUtil;
@@ -242,12 +243,12 @@ abstract class Command
    */
   String[] processArgs(String[] args)
   {
-    log.entering(this.getClass().getName(), "processArgs", args); //$NON-NLS-1$
-
+    if (Configuration.DEBUG)
+      log.entering(this.getClass().getName(), "processArgs", args); //$NON-NLS-1$
     Parser cmdOptionsParser = getParser();
     String[] result = cmdOptionsParser.parse(args);
-
-    log.exiting(this.getClass().getName(), "processArgs", result); //$NON-NLS-1$
+    if (Configuration.DEBUG)
+      log.exiting(this.getClass().getName(), "processArgs", result); //$NON-NLS-1$
     return result;
   }
 
@@ -312,8 +313,8 @@ abstract class Command
    */
   void teardown()
   {
-    log.entering(this.getClass().getName(), "teardown"); //$NON-NLS-1$
-
+    if (Configuration.DEBUG)
+      log.entering(this.getClass().getName(), "teardown"); //$NON-NLS-1$
     if (storeStream != null)
       try
         {
@@ -321,8 +322,9 @@ abstract class Command
         }
       catch (IOException ignored)
         {
-          log.fine("Exception while closing key store URL stream. Ignored: " //$NON-NLS-1$
-                   + ignored);
+          if (Configuration.DEBUG)
+            log.fine("Exception while closing key store URL stream. Ignored: " //$NON-NLS-1$
+                     + ignored);
         }
 
     if (outStream != null)
@@ -357,7 +359,8 @@ abstract class Command
     if (providerNdx > 0)
       ProviderUtil.removeProvider(provider.getName());
 
-    log.exiting(this.getClass().getName(), "teardown"); //$NON-NLS-1$
+    if (Configuration.DEBUG)
+      log.exiting(this.getClass().getName(), "teardown"); //$NON-NLS-1$
   }
 
   // parameter setup and validation methods -----------------------------------
@@ -401,15 +404,18 @@ abstract class Command
    */
   protected void setProviderClassNameParam(String className)
   {
-    log.finest("setProviderClassNameParam(" + className + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+    if (Configuration.DEBUG)
+      log.fine("setProviderClassNameParam(" + className + ")"); //$NON-NLS-1$ //$NON-NLS-2$
     if (className != null && className.trim().length() > 0)
       {
         className = className.trim();
         SecurityProviderInfo spi = ProviderUtil.addProvider(className);
         provider = spi.getProvider();
         if (provider == null)
-          log.fine("Was unable to add provider from class " + className);
-
+          {
+            if (Configuration.DEBUG)
+              log.fine("Was unable to add provider from class " + className);
+          }
         providerNdx = spi.getPosition();
       }
   }
@@ -426,7 +432,8 @@ abstract class Command
    */
   protected void setKeystoreTypeParam(String type)
   {
-    log.finest("setKeystoreTypeParam(" + type + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+    if (Configuration.DEBUG)
+      log.fine("setKeystoreTypeParam(" + type + ")"); //$NON-NLS-1$ //$NON-NLS-2$
     if (type == null || type.trim().length() == 0)
       storeType = KeyStore.getDefaultType();
     else
@@ -525,7 +532,8 @@ abstract class Command
       KeyStoreException, UnsupportedCallbackException, NoSuchAlgorithmException,
       CertificateException
   {
-    log.finest("setKeystoreURLParam(" + url + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+    if (Configuration.DEBUG)
+      log.fine("setKeystoreURLParam(" + url + ")"); //$NON-NLS-1$ //$NON-NLS-2$
     if (url == null || url.trim().length() == 0)
       {
         String userHome = SystemProperties.getProperty("user.home"); //$NON-NLS-1$
@@ -551,7 +559,8 @@ abstract class Command
     storeStream = storeURL.openStream();
     if (storeStream.available() == 0)
       {
-        log.fine("Store is empty. Will use <null> when loading, to create it"); //$NON-NLS-1$
+        if (Configuration.DEBUG)
+          log.fine("Store is empty. Will use <null> when loading, to create it"); //$NON-NLS-1$
         newKeyStore = true;
       }
 
@@ -564,8 +573,9 @@ abstract class Command
         if (provider != null)
           throw x;
 
-        log.fine("Exception while getting key store with default provider(s)." //$NON-NLS-1$
-                 + " Will prompt user for another provider and continue"); //$NON-NLS-1$
+        if (Configuration.DEBUG)
+          log.fine("Exception while getting key store with default provider(s)." //$NON-NLS-1$
+                   + " Will prompt user for another provider and continue"); //$NON-NLS-1$
         String prompt = Messages.getString("Command.40"); //$NON-NLS-1$
         NameCallback ncb = new NameCallback(prompt);
         getCallbackHandler().handle(new Callback[] { ncb });
@@ -596,8 +606,9 @@ abstract class Command
     }
     catch (IOException x)
     {
-      log.fine("Exception while closing the key store input stream: " + x //$NON-NLS-1$
-               + ". Ignore"); //$NON-NLS-1$
+      if (Configuration.DEBUG)
+        log.fine("Exception while closing the key store input stream: " + x //$NON-NLS-1$
+                 + ". Ignore"); //$NON-NLS-1$
     }
   }
 
@@ -818,9 +829,9 @@ abstract class Command
                                             PrivateKey privateKey)
       throws IOException, SignatureException, InvalidKeyException
   {
-    log.entering(this.getClass().getName(), "getSelfSignedCertificate", //$NON-NLS-1$
-                 new Object[] { distinguishedName, publicKey, privateKey });
-
+    if (Configuration.DEBUG)
+      log.entering(this.getClass().getName(), "getSelfSignedCertificate", //$NON-NLS-1$
+                   new Object[] { distinguishedName, publicKey, privateKey });
     byte[] versionBytes = new DERValue(DER.INTEGER, BigInteger.ZERO).getEncoded();
     DERValue derVersion = new DERValue(DER.CONSTRUCTED | DER.CONTEXT | 0,
                                        versionBytes.length, versionBytes, null);
@@ -901,8 +912,8 @@ abstract class Command
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     DERWriter.write(baos, derCertificate);
     byte[] result = baos.toByteArray();
-
-    log.exiting(this.getClass().getName(), "getSelfSignedCertificate"); //$NON-NLS-1$
+    if (Configuration.DEBUG)
+      log.exiting(this.getClass().getName(), "getSelfSignedCertificate"); //$NON-NLS-1$
     return result;
   }
 
@@ -992,8 +1003,8 @@ abstract class Command
   protected void saveKeyStore(char[] password) throws IOException,
       KeyStoreException, NoSuchAlgorithmException, CertificateException
   {
-    log.entering(this.getClass().getName(), "saveKeyStore"); //$NON-NLS-1$
-
+    if (Configuration.DEBUG)
+      log.entering(this.getClass().getName(), "saveKeyStore"); //$NON-NLS-1$
     URLConnection con = storeURL.openConnection();
     con.setDoOutput(true);
     con.setUseCaches(false);
@@ -1004,8 +1015,8 @@ abstract class Command
     store.store(out, password);
     out.flush();
     out.close();
-
-    log.exiting(this.getClass().getName(), "saveKeyStore"); //$NON-NLS-1$
+    if (Configuration.DEBUG)
+      log.exiting(this.getClass().getName(), "saveKeyStore"); //$NON-NLS-1$
   }
 
   /**

@@ -88,8 +88,24 @@ public class QuadSegment extends Segment
    */
   public Object clone()
   {
-    return new QuadSegment(P1.getX(), P1.getY(), cp.getX(), cp.getY(),
-                           P2.getX(), P2.getY());
+    QuadSegment segment = null;
+    
+    try
+      {
+        segment = (QuadSegment) super.clone();
+
+        segment.P1 = (Point2D) P1.clone();
+        segment.P2 = (Point2D) P2.clone();
+        segment.cp = (Point2D) cp.clone();
+      }
+    catch (CloneNotSupportedException cnse)
+      {
+        InternalError ie = new InternalError();
+        ie.initCause(cnse);
+        throw ie;
+      }
+    
+    return segment;
   }
 
   /**

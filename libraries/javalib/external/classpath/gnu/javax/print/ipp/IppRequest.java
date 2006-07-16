@@ -794,7 +794,7 @@ public class IppRequest
     
     alreadySent = true;
       
-    OutputStream stream = stream = connection.getOutputStream();   
+    OutputStream stream = connection.getOutputStream();   
     DataOutputStream out = new DataOutputStream(stream);
         
     //  the header 8 bytes long
@@ -849,7 +849,7 @@ public class IppRequest
     // own thread.
     connection.setConnectTimeout( timeout );
 
-    int responseCode = responseCode = connection.getResponseCode();
+    int responseCode = connection.getResponseCode();
     
     if (responseCode == HttpURLConnection.HTTP_OK)
       { 

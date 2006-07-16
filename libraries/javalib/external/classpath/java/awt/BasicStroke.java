@@ -43,7 +43,6 @@ import gnu.java.awt.java2d.LineSegment;
 import gnu.java.awt.java2d.QuadSegment;
 import gnu.java.awt.java2d.Segment;
 
-import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
@@ -260,7 +259,7 @@ public class BasicStroke implements Stroke
    */
   public Shape createStrokedShape(Shape s)
   {
-    PathIterator pi = s.getPathIterator( new AffineTransform() );
+    PathIterator pi = s.getPathIterator(null);
 
     if( dash == null )
       return solidStroke( pi );

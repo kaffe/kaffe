@@ -278,9 +278,10 @@ public class BasicPopupMenuUI extends PopupMenuUI
       // Adds topWindowListener to top-level window to listener to 
       // ComponentEvents fired by it. We need to cancel this popup menu
       // if topWindow to which this popup belongs was resized or moved.
-      Component invoker = popupMenu.getInvoker();
+      Component invoker = popupMenu.getInvoker();            
       Component rootContainer = SwingUtilities.getRoot(invoker);
-      rootContainer.addComponentListener(topWindowListener);
+      if (rootContainer != null)
+        rootContainer.addComponentListener(topWindowListener);
 
       // if this popup menu is a free floating popup menu,
       // then by default its first element should be always selected when

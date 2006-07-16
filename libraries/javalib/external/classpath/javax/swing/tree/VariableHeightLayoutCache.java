@@ -232,6 +232,9 @@ public class VariableHeightLayoutCache
     
     totalHeight = maximalWidth = 0;
 
+    if (treeModel == null)
+      return;
+
     Object root = treeModel.getRoot();
 
     if (rootVisible)
@@ -555,9 +558,16 @@ public class VariableHeightLayoutCache
   public void setModel(TreeModel newModel)
   {
     treeModel = newModel;
-    // The root node is expanded by default.
-    expanded.add(treeModel.getRoot());
-    dirty = true;
+    // We need to clear the table and update the layout,
+    // so that we don't end up with wrong data in the tables.
+    expanded.clear();
+    update();
+    if (treeModel != null)
+      {
+        // The root node is expanded by default.
+        expanded.add(treeModel.getRoot());
+        dirty = true;
+      }
   }
   
   /**

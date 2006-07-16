@@ -70,7 +70,7 @@ public class GtkWindowPeer extends GtkContainerPeer
   native void gtkWindowSetTitle (String title);
   native void gtkWindowSetResizable (boolean resizable);
   native void gtkWindowSetModal (boolean modal);
-
+  native void gtkWindowSetAlwaysOnTop ( boolean alwaysOnTop );
   native void realize ();
 
   /** Returns the cached width of the AWT window component. */
@@ -275,10 +275,13 @@ public class GtkWindowPeer extends GtkContainerPeer
     else
       q().postEvent (new WindowEvent ((Window) awtComponent, id, opposite));
   }
+
+  /**
+   * Update the always-on-top status of the native window.
+   */
   public void updateAlwaysOnTop()
   {
-    // TODO Auto-generated method stub
-    
+    gtkWindowSetAlwaysOnTop( ((Window)awtComponent).isAlwaysOnTop() );
   }
 
   protected void postExposeEvent (int x, int y, int width, int height)

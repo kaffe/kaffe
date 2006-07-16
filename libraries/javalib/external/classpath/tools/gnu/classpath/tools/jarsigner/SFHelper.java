@@ -38,6 +38,7 @@ exception statement from your version. */
 
 package gnu.classpath.tools.jarsigner;
 
+import gnu.classpath.Configuration;
 import gnu.java.security.OID;
 import gnu.java.security.Registry;
 import gnu.java.security.der.DER;
@@ -142,7 +143,8 @@ public class SFHelper
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     JarUtils.writeSFManifest(sfMainAttributes, sfEntries, baos);
     sfBytes = baos.toByteArray();
-    log.finest("\n" + Util.dumpString(sfBytes, "+++ sfBytes ")); //$NON-NLS-1$ //$NON-NLS-2$
+    if (Configuration.DEBUG)
+      log.fine("\n" + Util.dumpString(sfBytes, "+++ sfBytes ")); //$NON-NLS-1$ //$NON-NLS-2$
     jar.write(sfBytes);
     jar.flush();
 
@@ -216,7 +218,8 @@ public class SFHelper
     if (this.state != SF_GENERATED)
       throw new IllegalStateException(Messages.getString("SFHelper.4")); //$NON-NLS-1$
 
-    log.finest("+++ signer private key = " + signerKey); //$NON-NLS-1$
+    if (Configuration.DEBUG)
+      log.fine("+++ signer private key = " + signerKey); //$NON-NLS-1$
     ISignature signatureAlgorithm;
     ISignatureCodec signatureCodec;
     OID digestEncryptionAlgorithmOID;
@@ -241,7 +244,8 @@ public class SFHelper
     signatureAlgorithm.update(sfBytes, 0, sfBytes.length);
     Object signature = signatureAlgorithm.sign();
     byte[] signedSFBytes = signatureCodec.encodeSignature(signature);
-    log.finest("\n" + Util.dumpString(signedSFBytes, "+++ signedSFBytes ")); //$NON-NLS-1$ //$NON-NLS-2$
+    if (Configuration.DEBUG)
+      log.fine("\n" + Util.dumpString(signedSFBytes, "+++ signedSFBytes ")); //$NON-NLS-1$ //$NON-NLS-2$
 
     Set digestAlgorithms = new HashSet();
     List digestAlgorithm = new ArrayList(2);
@@ -322,7 +326,8 @@ public class SFHelper
     String name = entry.getName();
     InputStream jeis = jar.getInputStream(entry);
     String hash = util.hashStream(jeis);
-    log.finer("Hash of " + name + " = " + hash); //$NON-NLS-1$ //$NON-NLS-2$
+    if (Configuration.DEBUG)
+      log.fine("Hash of " + name + " = " + hash); //$NON-NLS-1$ //$NON-NLS-2$
 
     Attributes mainfestAttributes = manifest.getAttributes(name);
     if (mainfestAttributes == null)
@@ -344,9 +349,12 @@ public class SFHelper
       }
 
     sfAttributes.putValue(Main.DIGEST, sfHash);
-    log.finest("Name: " + name); //$NON-NLS-1$
-    log.finest(Main.DIGEST + ": " + sfHash); //$NON-NLS-1$
-    log.finest(""); //$NON-NLS-1$
+    if (Configuration.DEBUG)
+      {
+        log.fine("Name: " + name); //$NON-NLS-1$
+        log.fine(Main.DIGEST + ": " + sfHash); //$NON-NLS-1$
+        log.fine(""); //$NON-NLS-1$
+      }
   }
 
   /**
@@ -365,7 +373,8 @@ public class SFHelper
     manifest.write(baos);
     baos.flush();
     String manifestHash = util.hashByteArray(baos.toByteArray());
-    log.fine("Hashed Manifest " + manifestHash); //$NON-NLS-1$
+    if (Configuration.DEBUG)
+      log.fine("Hashed Manifest " + manifestHash); //$NON-NLS-1$
     sfMainAttributes.putValue(Main.DIGEST_MANIFEST, manifestHash);
 
     this.state = FINISHED;

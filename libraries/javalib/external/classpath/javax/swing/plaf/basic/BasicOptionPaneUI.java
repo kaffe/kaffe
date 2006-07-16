@@ -139,8 +139,8 @@ public class BasicOptionPaneUI extends OptionPaneUI
 	((JDialog) owner).dispose();
 
       //else we probably have some kind of internal frame.
-      JInternalFrame inf = (JInternalFrame) SwingUtilities.getAncestorOfClass(JInternalFrame.class,
-                                                                              optionPane);
+      JInternalFrame inf = (JInternalFrame) SwingUtilities.getAncestorOfClass(
+          JInternalFrame.class, optionPane);
       if (inf != null)
         {
           try
@@ -433,7 +433,7 @@ public class BasicOptionPaneUI extends OptionPaneUI
   public static final int MinimumHeight = 90;
 
   /** Whether the JOptionPane contains custom components. */
-  protected boolean hasCustomComponents = false;
+  protected boolean hasCustomComponents;
 
   // The initialFocusComponent seems to always be set to a button (even if 
   // I try to set initialSelectionValue). This is different from what the 
@@ -460,8 +460,7 @@ public class BasicOptionPaneUI extends OptionPaneUI
   protected JOptionPane optionPane;
 
   /** The size of the icons. */
-  // FIXME: wrong name for a constant.
-  private static final int iconSize = 36;
+  private static final int ICON_SIZE = 36;
 
   /** The foreground color for the message area. */
   private transient Color messageForeground;
@@ -505,7 +504,7 @@ public class BasicOptionPaneUI extends OptionPaneUI
      */
     public int getIconWidth()
     {
-      return iconSize;
+      return ICON_SIZE;
     }
 
     /**
@@ -515,7 +514,7 @@ public class BasicOptionPaneUI extends OptionPaneUI
      */
     public int getIconHeight()
     {
-      return iconSize;
+      return ICON_SIZE;
     }
 
     /**
@@ -566,7 +565,7 @@ public class BasicOptionPaneUI extends OptionPaneUI
 	// Should be purple.
 	g.setColor(Color.RED);
 
-	g.fillOval(0, 0, iconSize, iconSize);
+	g.fillOval(0, 0, ICON_SIZE, ICON_SIZE);
 
 	g.setColor(Color.BLACK);
 	g.drawOval(16, 6, 4, 4);
@@ -615,7 +614,7 @@ public class BasicOptionPaneUI extends OptionPaneUI
 	Color saved = g.getColor();
 	g.setColor(Color.GREEN);
 
-	g.fillRect(0, 0, iconSize, iconSize);
+	g.fillRect(0, 0, ICON_SIZE, ICON_SIZE);
 
 	g.setColor(Color.BLACK);
 
@@ -623,7 +622,7 @@ public class BasicOptionPaneUI extends OptionPaneUI
 	g.drawOval(14, 5, 10, 10);
 
 	g.setColor(Color.GREEN);
-	g.fillRect(0, 10, iconSize, iconSize - 10);
+	g.fillRect(0, 10, ICON_SIZE, ICON_SIZE - 10);
 
 	g.setColor(Color.BLACK);
 
@@ -639,10 +638,6 @@ public class BasicOptionPaneUI extends OptionPaneUI
 	g.translate(-x, -y);
       }
     };
-
-  // FIXME: Uncomment when the ImageIcons are fixed.
-
-  /*  IconUIResource warningIcon, questionIcon, infoIcon, errorIcon;*/
 
   /**
    * Creates a new BasicOptionPaneUI object.
@@ -821,8 +816,8 @@ public class BasicOptionPaneUI extends OptionPaneUI
     if (remainder.length() == 0)
       return;
 
-    // Recursivly call ourselves to burst the remainder of the string, 
-    if ((remainder.length() > maxll || remainder.contains("\n")))
+    // Recursively call ourselves to burst the remainder of the string, 
+    if (remainder.length() > maxll || remainder.contains("\n"))
       burstStringInto(c, remainder, maxll);
     else
       // Add the remainder to the container and be done.
@@ -940,6 +935,7 @@ public class BasicOptionPaneUI extends OptionPaneUI
    * @return A Container that will separate the message and button areas.
    */
   protected Container createSeparator()
+    throws NotImplementedException
   {
     // FIXME: Figure out what this method is supposed to return and where
     // this should be added to the OptionPane.
@@ -979,7 +975,7 @@ public class BasicOptionPaneUI extends OptionPaneUI
       case JOptionPane.DEFAULT_OPTION:
         return (optionPane.getWantsInput()) ?
                new Object[] { OK_STRING, CANCEL_STRING } :
-               ( optionPane.getMessageType() == JOptionPane.QUESTION_MESSAGE ) ?
+               (optionPane.getMessageType() == JOptionPane.QUESTION_MESSAGE) ?
                new Object[] { YES_STRING, NO_STRING, CANCEL_STRING } :
                // ERROR_MESSAGE, INFORMATION_MESSAGE, WARNING_MESSAGE, PLAIN_MESSAGE
                new Object[] { OK_STRING };

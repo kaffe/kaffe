@@ -39,7 +39,7 @@ package java.lang.management;
 
 /**
  * Provides access to information about the underlying operating
- * system.  Instances of this bean are obtained by calling
+ * system.  An instance of this bean is obtained by calling
  * {@link ManagementFactory#getOperatingSystemMXBean()}.
  *
  * @author Andrew John Hughes (gnu_andrew@member.fsf.org)

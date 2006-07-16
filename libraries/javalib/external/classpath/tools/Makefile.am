@@ -23,7 +23,8 @@ endif
 
 if CREATE_WRAPPERS
 bin_SCRIPTS =
-bin_PROGRAMS = appletviewer jarsigner keytool
+bin_PROGRAMS = gappletviewer gjarsigner gkeytool \
+	gjar gnative2ascii gserialver
 
 if FOUND_GCJ
 LIBJVM = -lgcj
@@ -35,36 +36,56 @@ LIBJVM =
 endif
 endif
 
-appletviewer_SOURCES = toolwrapper.c
-appletviewer_CFLAGS = -Wall \
-	-DDATA_DIR="\"$(datadir)\"" \
-	-DPACKAGE="\"$(PACKAGE)\"" \
-	-DTOOLNAME="\"appletviewer\""
-appletviewer_LDFLAGS = -L$(libdir) $(LIBJVM)
+AM_CPPFLAGS = -Wall \
+	-I$(top_srcdir)/include \
+	-DTOOLS_ZIP="\"$(TOOLSdir)/$(TOOLS_ZIP)\""
 
-jarsigner_SOURCES = toolwrapper.c
-jarsigner_CFLAGS = -Wall \
-	-DDATA_DIR="\"$(datadir)\"" \
-	-DPACKAGE="\"$(PACKAGE)\"" \
-	-DTOOLNAME="\"jarsigner\""
-jarsigner_LDFLAGS = -L$(libdir) $(LIBJVM)
+gappletviewer_SOURCES = toolwrapper.c
+gappletviewer_CFLAGS = \
+	-DTOOLPACKAGE="\"appletviewer\"" \
+	-DTOOLNAME="\"gappletviewer\""
+gappletviewer_LDFLAGS = -L$(libdir) $(LIBJVM)
 
-keytool_SOURCES = toolwrapper.c
-keytool_CFLAGS = -Wall \
-	-DDATA_DIR="\"$(datadir)\"" \
-	-DPACKAGE="\"$(PACKAGE)\"" \
-	-DTOOLNAME="\"keytool\""
-keytool_LDFLAGS = -L$(libdir) $(LIBJVM)
+gjarsigner_SOURCES = toolwrapper.c
+gjarsigner_CFLAGS = \
+	-DTOOLPACKAGE="\"jarsigner\"" \
+	-DTOOLNAME="\"gjarsigner\""
+gjarsigner_LDFLAGS = -L$(libdir) $(LIBJVM)
+
+gkeytool_SOURCES = toolwrapper.c
+gkeytool_CFLAGS = \
+	-DTOOLPACKAGE="\"keytool\"" \
+	-DTOOLNAME="\"gkeytool\""
+gkeytool_LDFLAGS = -L$(libdir) $(LIBJVM)
+
+gjar_SOURCES = toolwrapper.c
+gjar_CFLAGS = \
+	-DTOOLPACKAGE="\"jar\"" \
+	-DTOOLNAME="\"gjar\""
+gjar_LDFLAGS = -L$(libdir) $(LIBJVM)
+
+gnative2ascii_SOURCES = toolwrapper.c
+gnative2ascii_CFLAGS = \
+	-DTOOLPACKAGE="\"native2ascii\"" \
+	-DTOOLNAME="\"gnative2ascii\""
+gnative2ascii_LDFLAGS = -L$(libdir) $(LIBJVM)
+
+gserialver_SOURCES = toolwrapper.c
+gserialver_CFLAGS = \
+	-DTOOLPACKAGE="\"serialver\"" \
+	-DTOOLNAME="\"gserialver\""
+gserialver_LDFLAGS = -L$(libdir) $(LIBJVM)
 
 else
-bin_SCRIPTS = appletviewer jarsigner keytool
+bin_SCRIPTS = gappletviewer gjarsigner gkeytool \
+	gjar gnative2ascii gserialver
 bin_PROGRAMS =
 endif
-EXTRA_DIST = toolwrapper.c appletviewer.in jarsigner.in keytool.in
+EXTRA_DIST = toolwrapper.c gappletviewer.in gjarsigner.in gkeytool.in \
+	gjar.in gnative2ascii.in gserialver.in
 
 # All our example java source files
 TOOLS_JAVA_FILES = $(srcdir)/gnu/classpath/tools/*.java $(srcdir)/gnu/classpath/tools/*/*.java $(srcdir)/gnu/classpath/tools/*/*/*.java
-
 
 # The zip files with classes we want to produce.
 TOOLS_ZIP = tools.zip

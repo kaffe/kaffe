@@ -1,5 +1,5 @@
 /* BasicScrollBarUI.java --
-   Copyright (C) 2004, 2005  Free Software Foundation, Inc.
+   Copyright (C) 2004, 2005, 2006,  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -38,8 +38,6 @@ exception statement from your version. */
 
 package javax.swing.plaf.basic;
 
-import gnu.classpath.NotImplementedException;
-
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -56,10 +54,14 @@ import java.awt.event.MouseMotionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
 import javax.swing.BoundedRangeModel;
+import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JScrollBar;
+import javax.swing.JSlider;
 import javax.swing.LookAndFeel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -67,6 +69,7 @@ import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.plaf.ActionMapUIResource;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.ScrollBarUI;
 
@@ -299,8 +302,10 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
      */
     public void mouseMoved(MouseEvent e)
     {
-      // Not interested in where the mouse
-      // is unless it is being dragged.
+      if (thumbRect.contains(e.getPoint()))
+        thumbRollover = true;
+      else
+        thumbRollover = false;
     }
 
     /**
@@ -397,9 +402,9 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
         return false;
       
       if (direction == POSITIVE_SCROLL)
-	return (value > scrollbar.getValue());
+	return value > scrollbar.getValue();
       else
-	return (value < scrollbar.getValue());
+	return value < scrollbar.getValue();
     }
   }
 
@@ -483,6 +488,9 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
 
   /** The scrollbar this UI is acting for. */
   protected JScrollBar scrollbar;
+  
+  /** True if the mouse is over the thumb. */
+  boolean thumbRollover;
 
   /**
    * This method adds a component to the layout.
@@ -724,7 +732,7 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
     int orientation = scrollbar.getOrientation();
     switch (orientation)
       {
-      case (JScrollBar.HORIZONTAL):
+      case JScrollBar.HORIZONTAL:
         incrButton = createIncreaseButton(EAST);
         decrButton = createDecreaseButton(WEST);
         break;
@@ -762,14 +770,150 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
   }
 
   /**
-   * This method installs the keyboard actions for the scrollbar.
+   * Installs the input map from the look and feel defaults, and a 
+   * corresponding action map.  Note the the keyboard bindings will only
+   * work when the {@link JScrollBar} component has the focus, which is rare.
    */
   protected void installKeyboardActions()
-    throws NotImplementedException
   {
-    // FIXME: implement.
+    InputMap keyMap = getInputMap(
+        JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+    SwingUtilities.replaceUIInputMap(scrollbar, 
+        JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, keyMap);
+    ActionMap map = getActionMap();
+    SwingUtilities.replaceUIActionMap(scrollbar, map);
   }
 
+  /**
+   * Uninstalls the input map and action map installed by
+   * {@link #installKeyboardActions()}.
+   */
+  protected void uninstallKeyboardActions()
+  {
+    SwingUtilities.replaceUIActionMap(scrollbar, null);
+    SwingUtilities.replaceUIInputMap(scrollbar, 
+        JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, null);
+  }
+
+  InputMap getInputMap(int condition) 
+  {
+    if (condition == JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+      return (InputMap) UIManager.get("ScrollBar.focusInputMap");
+    return null;
+  }
+  
+  /**
+   * Returns the action map for the {@link JScrollBar}.  All scroll bars 
+   * share a single action map which is created the first time this method is 
+   * called, then stored in the UIDefaults table for subsequent access.
+   * 
+   * @return The shared action map.
+   */
+  ActionMap getActionMap() 
+  {
+    ActionMap map = (ActionMap) UIManager.get("ScrollBar.actionMap");
+
+    if (map == null) // first time here
+      {
+        map = createActionMap();
+        if (map != null)
+          UIManager.put("ScrollBar.actionMap", map);
+      }
+    return map;
+  }
+
+  /**
+   * Creates the action map shared by all {@link JSlider} instances.
+   * This method is called once by {@link #getActionMap()} when it 
+   * finds no action map in the UIDefaults table...after the map is 
+   * created, it gets added to the defaults table so that subsequent 
+   * calls to {@link #getActionMap()} will return the same shared 
+   * instance.
+   * 
+   * @return The action map.
+   */
+  ActionMap createActionMap()
+  {
+    ActionMap map = new ActionMapUIResource();
+    map.put("positiveUnitIncrement", 
+            new AbstractAction("positiveUnitIncrement") {
+              public void actionPerformed(ActionEvent event)
+              {
+                JScrollBar sb = (JScrollBar) event.getSource();
+                if (sb.isVisible()) 
+                  {
+                    int delta = sb.getUnitIncrement(1);
+                    sb.setValue(sb.getValue() + delta);
+                  }
+              }
+            }
+    );
+    map.put("positiveBlockIncrement", 
+            new AbstractAction("positiveBlockIncrement") {
+              public void actionPerformed(ActionEvent event)
+              {
+                JScrollBar sb = (JScrollBar) event.getSource();
+                if (sb.isVisible()) 
+                  {
+                    int delta = sb.getBlockIncrement(1);
+                    sb.setValue(sb.getValue() + delta);
+                  }
+              }
+            }
+    );
+    map.put("negativeUnitIncrement", 
+            new AbstractAction("negativeUnitIncrement") {
+              public void actionPerformed(ActionEvent event)
+              {
+                JScrollBar sb = (JScrollBar) event.getSource();
+                if (sb.isVisible()) 
+                  {
+                    int delta = sb.getUnitIncrement(-1);
+                    sb.setValue(sb.getValue() + delta);
+                  }
+              }
+            }
+    );
+    map.put("negativeBlockIncrement", 
+            new AbstractAction("negativeBlockIncrement") {
+              public void actionPerformed(ActionEvent event)
+              {
+                JScrollBar sb = (JScrollBar) event.getSource();
+                if (sb.isVisible()) 
+                  {
+                    int delta = sb.getBlockIncrement(-1);
+                    sb.setValue(sb.getValue() + delta);
+                  }
+              }
+            }
+    );
+    map.put("minScroll", 
+            new AbstractAction("minScroll") {
+              public void actionPerformed(ActionEvent event)
+              {
+                JScrollBar sb = (JScrollBar) event.getSource();
+                if (sb.isVisible()) 
+                  {
+                    sb.setValue(sb.getMinimum());
+                  }
+              }
+            }
+    );
+    map.put("maxScroll", 
+            new AbstractAction("maxScroll") {
+              public void actionPerformed(ActionEvent event)
+              {
+                JScrollBar sb = (JScrollBar) event.getSource();
+                if (sb.isVisible()) 
+                  {
+                    sb.setValue(sb.getMaximum());
+                  }
+              }
+            }
+    );
+    return map;
+  }
+  
   /**
    * This method installs any listeners for the scrollbar. This method also
    * installs listeners for things such as the JButtons and the timer.
@@ -806,19 +950,20 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
     super.installUI(c);
     if (c instanceof JScrollBar)
       {
-	scrollbar = (JScrollBar) c;
+        scrollbar = (JScrollBar) c;
 
-	trackRect = new Rectangle();
-	thumbRect = new Rectangle();
+        trackRect = new Rectangle();
+        thumbRect = new Rectangle();
 
-	scrollTimer = new Timer(300, null);
+        scrollTimer = new Timer(300, null);
 
         installDefaults();
-	installComponents();
-	configureScrollBarColors();
-	installListeners();
+        installComponents();
+        configureScrollBarColors();
+        installListeners();
+        installKeyboardActions();
 
-	calculatePreferredSize();
+        calculatePreferredSize();
       }
   }
 
@@ -1140,16 +1285,6 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
   }
 
   /**
-   * This method uninstalls any keyboard actions this scrollbar acquired
-   * during install.
-   */
-  protected void uninstallKeyboardActions()
-    throws NotImplementedException
-  {
-    // FIXME: implement.
-  }
-
-  /**
    * This method uninstalls any listeners that were registered during install.
    */
   protected void uninstallListeners()
@@ -1186,6 +1321,7 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
    */
   public void uninstallUI(JComponent c)
   {
+    uninstallKeyboardActions();
     uninstallListeners();
     uninstallDefaults();
     uninstallComponents();
@@ -1226,9 +1362,9 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
     // If the length is 0, you shouldn't be able to even see where the thumb is.
     // This really shouldn't ever happen, but just in case, we'll return the middle.
     if (len == 0)
-      return ((max - min) / 2);
+      return (max - min) / 2;
 
-    value = ((yPos - trackRect.y) * (max - min) / len + min);
+    value = (yPos - trackRect.y) * (max - min) / len + min;
 
     // If this isn't a legal value, then we'll have to move to one now.
     if (value > max)
@@ -1259,9 +1395,9 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
     // If the length is 0, you shouldn't be able to even see where the slider is.
     // This really shouldn't ever happen, but just in case, we'll return the middle.
     if (len == 0)
-      return ((max - min) / 2);
+      return (max - min) / 2;
 
-    value = ((xPos - trackRect.x) * (max - min) / len + min);
+    value = (xPos - trackRect.x) * (max - min) / len + min;
 
     // If this isn't a legal value, then we'll have to move to one now.
     if (value > max)
@@ -1269,5 +1405,46 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
     else if (value < min)
       value = min;
     return value;
+  }
+  
+  /**
+   * Returns true if the mouse is over the thumb.
+   * 
+   * @return true if the mouse is over the thumb.
+   * 
+   * @since 1.5
+   */
+  public boolean isThumbRollover()
+  {
+   return thumbRollover; 
+  }
+  
+  /**
+   * Set thumbRollover to active. This indicates
+   * whether or not the mouse is over the thumb.
+   * 
+   * @param active - true if the mouse is over the thumb.
+   * 
+   * @since 1.5
+   */
+  protected void setThumbRollover(boolean active)
+  {
+    thumbRollover = active;
+  }
+  
+  /**
+   * Indicates whether the user can position the thumb with 
+   * a mouse click (i.e. middle button).
+   * 
+   * @return true if the user can position the thumb with a mouse
+   * click.
+   * 
+   * @since 1.5
+   */
+  public boolean getSupportsAbsolutePositioning()
+  {
+    // The positioning feature has not been implemented.
+    // So, false is always returned.
+    return false;
   }
 }

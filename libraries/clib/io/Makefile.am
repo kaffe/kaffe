@@ -32,6 +32,7 @@ libjavaio_la_LIBADD = \
 
 libjavaio_la_SOURCES = \
 	File.c \
+	java_io_VMFile.c \
 	java_io_VMObjectInputStream.c \
 	java_io_VMObjectStreamClass.c
 

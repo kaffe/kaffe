@@ -157,11 +157,10 @@ public class DSSKeyPairX509Codec
       }
     catch (IOException x)
       {
-        InvalidParameterException e = new InvalidParameterException();
+        InvalidParameterException e = new InvalidParameterException(x.getMessage());
         e.initCause(x);
         throw e;
       }
-
     return result;
   }
 
@@ -230,11 +229,10 @@ public class DSSKeyPairX509Codec
       }
     catch (IOException x)
       {
-        InvalidParameterException e = new InvalidParameterException();
+        InvalidParameterException e = new InvalidParameterException(x.getMessage());
         e.initCause(x);
         throw e;
       }
-
     return new DSSPublicKey(Registry.X509_ENCODING_ID, p, q, g, y);
   }
 

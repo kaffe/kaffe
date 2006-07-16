@@ -1392,9 +1392,9 @@ public class JTree extends JComponent implements Scrollable, Accessible
   public static final String EXPANDS_SELECTED_PATHS_PROPERTY =
     "expandsSelectedPaths";
 
-  private static final Object EXPANDED = new Object();
+  private static final Object EXPANDED = Boolean.TRUE;
 
-  private static final Object COLLAPSED = new Object();
+  private static final Object COLLAPSED = Boolean.FALSE;
 
   private boolean dragEnabled;
 
@@ -1478,7 +1478,7 @@ public class JTree extends JComponent implements Scrollable, Accessible
    */
   public JTree()
   {
-    this(createTreeModel(null));
+    this(getDefaultTreeModel());
   }
 
   /**
@@ -1513,7 +1513,12 @@ public class JTree extends JComponent implements Scrollable, Accessible
     selectionModel.setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
     
     // The root node appears expanded by default.
-    nodeStates.put(new TreePath(model.getRoot()), EXPANDED);
+    nodeStates = new Hashtable();
+
+    // Install the UI before installing the model. This way we avoid double
+    // initialization of lots of UI and model stuff inside the UI and related
+    // classes. The necessary UI updates are performed via property change
+    // events to the UI.
     updateUI();
     setModel(model);
   }
@@ -1897,6 +1902,10 @@ public class JTree extends JComponent implements Scrollable, Accessible
     if (treeModel == model)
       return;
 
+    // Remove listeners from old model.
+    if (treeModel != null && treeModelListener != null)
+      treeModel.removeTreeModelListener(treeModelListener);
+
     // add treeModelListener to the new model
     if (treeModelListener == null)
       treeModelListener = createTreeModelListener();
@@ -1905,6 +1914,20 @@ public class JTree extends JComponent implements Scrollable, Accessible
 
     TreeModel oldValue = treeModel;
     treeModel = model;
+    clearToggledPaths();
+
+    if (treeModel != null)
+      {
+        if (treeModelListener == null)
+          treeModelListener = createTreeModelListener();
+        if (treeModelListener != null)
+          treeModel.addTreeModelListener(treeModelListener);
+        Object root = treeModel.getRoot();
+        if (root != null && !treeModel.isLeaf(root))
+          {
+            nodeStates.put(new TreePath(root), Boolean.TRUE);
+          }
+      }
 
     firePropertyChange(TREE_MODEL_PROPERTY, oldValue, model);
   }

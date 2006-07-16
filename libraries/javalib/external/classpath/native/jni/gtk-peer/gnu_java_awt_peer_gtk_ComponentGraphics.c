@@ -186,7 +186,11 @@ Java_gnu_java_awt_peer_gtk_ComponentGraphics_disposeSurface
 
   surface = cairo_get_target (gr->cr);
   if (surface != NULL)
-    cairo_surface_destroy (surface);
+    {
+      gdk_threads_enter();
+      cairo_surface_destroy (surface);
+      gdk_threads_leave();
+    }
 }
 
 JNIEXPORT jlong JNICALL 
@@ -275,12 +279,13 @@ Java_gnu_java_awt_peer_gtk_ComponentGraphics_copyAreaNative
 JNIEXPORT void JNICALL 
 Java_gnu_java_awt_peer_gtk_ComponentGraphics_drawVolatile
 (JNIEnv *env, jobject obj __attribute__ ((unused)), jobject peer, 
- jobject img, jint x, jint y, jint w, jint h)
+ jlong img, jint x, jint y, jint w, jint h, jint cx, jint cy, jint cw, jint ch)
 {
   GdkPixmap *pixmap;
   GtkWidget *widget = NULL;
   void *ptr = NULL;
   GdkGC *gc;
+  GdkRectangle clip;
 
   gdk_threads_enter();
   ptr = NSA_GET_PTR (env, peer);
@@ -289,9 +294,16 @@ Java_gnu_java_awt_peer_gtk_ComponentGraphics_drawVolatile
   widget = GTK_WIDGET (ptr);
   g_assert (widget != NULL);
 
-  pixmap = cp_gtk_get_pixmap( env, img );
+  pixmap = JLONG_TO_PTR(GdkPixmap, img);
  
   gc = gdk_gc_new(widget->window);
+
+  clip.x = cx;
+  clip.y = cy;
+  clip.width = cw;
+  clip.height = ch;
+  gdk_gc_set_clip_rectangle(gc, &clip);
+
   gdk_draw_drawable(widget->window,
 		    gc,
 		    pixmap,

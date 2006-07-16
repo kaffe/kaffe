@@ -38,7 +38,8 @@ exception statement from your version.  */
 
 package gnu.javax.crypto.jce.key;
 
-public class BlowfishSecretKeyFactoryImpl extends SecretKeyFactoryImpl
+public class BlowfishSecretKeyFactoryImpl
+    extends SecretKeyFactoryImpl
 {
   public BlowfishSecretKeyFactoryImpl()
   {

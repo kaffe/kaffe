@@ -114,7 +114,14 @@ public class Font implements Serializable
    * @since 1.3
    */
   public static final int TRUETYPE_FONT = 0;
-
+  
+  /**
+   * Indicates to <code>createFont</code> that the supplied font data
+   * is in Type1 format.
+   * 
+   * @since 1.5
+   */
+  public static final int TYPE1_FONT = 1;
 
   /**
    * A flag for <code>layoutGlyphVector</code>, indicating that the

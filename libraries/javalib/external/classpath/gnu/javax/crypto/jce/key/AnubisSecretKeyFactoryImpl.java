@@ -38,7 +38,8 @@ exception statement from your version.  */
 
 package gnu.javax.crypto.jce.key;
 
-public class AnubisSecretKeyFactoryImpl extends SecretKeyFactoryImpl
+public class AnubisSecretKeyFactoryImpl
+    extends SecretKeyFactoryImpl
 {
   public AnubisSecretKeyFactoryImpl()
   {

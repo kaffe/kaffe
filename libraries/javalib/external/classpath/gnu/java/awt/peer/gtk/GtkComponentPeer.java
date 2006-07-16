@@ -52,6 +52,8 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.ItemSelectable;
@@ -647,8 +649,10 @@ public class GtkComponentPeer extends GtkGenericPeer
 
   public GraphicsConfiguration getGraphicsConfiguration ()
   {
-    // FIXME: just a stub for now.
-    return null;
+    // FIXME: The component might be showing on a non-default screen.
+    GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    GraphicsDevice dev = env.getDefaultScreenDevice();
+    return dev.getDefaultConfiguration();
   }
 
   public void setEventMask (long mask)

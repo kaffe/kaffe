@@ -37,7 +37,20 @@ exception statement from your version. */
 
 package java.lang.management;
 
+import gnu.classpath.SystemProperties;
+
+import gnu.java.lang.management.ClassLoadingMXBeanImpl;
+import gnu.java.lang.management.CompilationMXBeanImpl;
+import gnu.java.lang.management.GarbageCollectorMXBeanImpl;
 import gnu.java.lang.management.OperatingSystemMXBeanImpl;
+import gnu.java.lang.management.MemoryMXBeanImpl;
+import gnu.java.lang.management.MemoryManagerMXBeanImpl;
+import gnu.java.lang.management.MemoryPoolMXBeanImpl;
+import gnu.java.lang.management.RuntimeMXBeanImpl;
+import gnu.java.lang.management.ThreadMXBeanImpl;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>
@@ -65,6 +78,36 @@ public class ManagementFactory
   private static OperatingSystemMXBean osBean;
 
   /**
+   * The runtime management bean.
+   */
+  private static RuntimeMXBean runtimeBean;
+
+  /**
+   * The class loading management bean.
+   */
+  private static ClassLoadingMXBean classLoadingBean;
+
+  /**
+   * The thread bean.
+   */
+  private static ThreadMXBean threadBean;
+
+  /**
+   * The memory bean.
+   */
+  private static MemoryMXBean memoryBean;
+
+  /**
+   * The compilation bean (may remain null).
+   */
+  private static CompilationMXBean compilationBean;
+
+  /**
+   * Private constructor to prevent instance creation.
+   */
+  private ManagementFactory() {}
+
+  /**
    * Returns the operating system management bean for the
    * operating system on which the virtual machine is running.
    *
@@ -76,6 +119,129 @@ public class ManagementFactory
     if (osBean == null)
       osBean = new OperatingSystemMXBeanImpl();
     return osBean;
+  }
+
+  /**
+   * Returns the runtime management bean for the
+   * running virtual machine.
+   *
+   * @return an instance of {@link RuntimeMXBean} for
+   *         this virtual machine.
+   */
+  public static RuntimeMXBean getRuntimeMXBean()
+  {
+    if (runtimeBean == null)
+      runtimeBean = new RuntimeMXBeanImpl();
+    return runtimeBean;
+  }
+
+  /**
+   * Returns the class loading management bean for the
+   * running virtual machine.
+   *
+   * @return an instance of {@link ClassLoadingMXBean} for
+   *         this virtual machine.
+   */
+  public static ClassLoadingMXBean getClassLoadingMXBean()
+  {
+    if (classLoadingBean == null)
+      classLoadingBean = new ClassLoadingMXBeanImpl();
+    return classLoadingBean;
+  }
+
+  /**
+   * Returns the thread management bean for the running
+   * virtual machine.
+   *
+   * @return an instance of {@link ThreadMXBean} for
+   *         this virtual machine.
+   */
+  public static ThreadMXBean getThreadMXBean()
+  {
+    if (threadBean == null)
+      threadBean = new ThreadMXBeanImpl();
+    return threadBean;
+  }
+
+  /**
+   * Returns the memory management bean for the running
+   * virtual machine.
+   *
+   * @return an instance of {@link MemoryMXBean} for
+   *         this virtual machine.
+   */
+  public static MemoryMXBean getMemoryMXBean()
+  {
+    if (memoryBean == null)
+      memoryBean = new MemoryMXBeanImpl();
+    return memoryBean;
+  }
+
+  /**
+   * Returns the compilation bean for the running
+   * virtual machine, if supported.  Otherwise,
+   * it returns <code>null</code>.
+   *
+   * @return an instance of {@link CompilationMXBean} for
+   *         this virtual machine, or <code>null</code>
+   *         if the virtual machine doesn't include
+   *         a Just-In-Time (JIT) compiler.
+   */
+  public static CompilationMXBean getCompilationMXBean()
+  {
+    if (compilationBean == null &&
+	SystemProperties.getProperty("gnu.java.compiler.name") != null)
+      compilationBean = new CompilationMXBeanImpl();
+    return compilationBean;
+  }
+
+  /**
+   * Returns the memory pool beans for the running
+   * virtual machine.  These may change during the course
+   * of execution.
+   *
+   * @return a list of memory pool beans, one for each pool.
+   */
+  public static List getMemoryPoolMXBeans()
+  {
+    List poolBeans = new ArrayList();
+    String[] names = VMManagementFactory.getMemoryPoolNames();
+    for (int a = 0; a < names.length; ++a)
+      poolBeans.add(new MemoryPoolMXBeanImpl(names[a]));
+    return poolBeans;
+  }
+
+  /**
+   * Returns the memory manager beans for the running
+   * virtual machine.  These may change during the course
+   * of execution.
+   *
+   * @return a list of memory manager beans, one for each manager.
+   */
+  public static List getMemoryManagerMXBeans()
+  {
+    List managerBeans = new ArrayList();
+    String[] names = VMManagementFactory.getMemoryManagerNames();
+    for (int a = 0; a < names.length; ++a)
+      managerBeans.add(new MemoryManagerMXBeanImpl(names[a]));
+    managerBeans.addAll(getGarbageCollectorMXBeans());
+    return managerBeans;
+  }
+
+  /**
+   * Returns the garbage collector beans for the running
+   * virtual machine.  These may change during the course
+   * of execution.
+   *
+   * @return a list of garbage collector beans, one for each pool.
+   */
+  public static List getGarbageCollectorMXBeans()
+  {
+    List gcBeans = new ArrayList();
+    String[] names = VMManagementFactory.getGarbageCollectorNames();
+    for (int a = 0; a < names.length; ++a)
+      gcBeans.add(new GarbageCollectorMXBeanImpl(names[a]));
+    return gcBeans;
   }
 
 }

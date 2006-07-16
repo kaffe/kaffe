@@ -52,6 +52,7 @@ import java.awt.image.ColorModel;
 import java.awt.image.DirectColorModel;
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteOrder;
 import java.util.Hashtable;
 import java.util.Vector;
 import java.io.ByteArrayOutputStream;
@@ -79,58 +80,74 @@ public class CairoSurface extends DataBuffer
   long bufferPointer;
 
 
-  static ColorModel nativeModel = new DirectColorModel(32, 
-						       0x000000FF,
-						       0x0000FF00,
+  static ColorModel nativeModel = new DirectColorModel(32,
 						       0x00FF0000,
+						       0x0000FF00,
+						       0x000000FF,
 						       0xFF000000);
 
   /**
    * Allocates and clears the buffer and creates the cairo surface.
    * @param width, height - the image size
-   * @param stride - the buffer row stride.
+   * @param stride - the buffer row stride. (in ints)
    */
   private native void create(int width, int height, int stride);
 
   /**
    * Destroys the cairo surface and frees the buffer.
    */
-  private native void destroy();
+  private native void destroy(long surfacePointer, long bufferPointer);
 
   /**
    * Gets buffer elements
    */
-  private native int nativeGetElem(int i);
+  private native int nativeGetElem(long bufferPointer, int i);
   
   /**
    * Sets buffer elements.
    */
-  private native void nativeSetElem(int i, int val);
+  private native void nativeSetElem(long bufferPointer, int i, int val);
 
   /**
    * Draws this image to a given CairoGraphics context, 
    * with an affine transform given by i2u.
    */
-  public native void drawSurface(CairoGraphics2D context, double[] i2u);
+  public native void nativeDrawSurface(long surfacePointer, long contextPointer,
+                                       double[] i2u, double alpha);
+
+  public void drawSurface(long contextPointer, double[] i2u, double alpha)
+  {
+    nativeDrawSurface(surfacePointer, contextPointer, i2u, alpha);
+  }
 
   /**
    * getPixels -return the pixels as a java array.
    */
-  native int[] getPixels(int size);
+  native int[] nativeGetPixels(long bufferPointer, int size);
+
+  public int[] getPixels(int size)
+  {
+    return nativeGetPixels(bufferPointer, size);
+  }
 
   /**
    * getPixels -return the pixels as a java array.
    */
-  native void setPixels(int[] pixels);
+  native void nativeSetPixels(long bufferPointer, int[] pixels);
 
-  native long getFlippedBuffer(int size);
+  public void setPixels(int[] pixels)
+  {
+    nativeSetPixels(bufferPointer, pixels);
+  }
+
+  native long getFlippedBuffer(long bufferPointer, int size);
 
   /**
    * Create a cairo_surface_t with specified width and height.
    * The format will be ARGB32 with premultiplied alpha and native bit 
    * and word ordering.
    */
-  CairoSurface(int width, int height)
+  public CairoSurface(int width, int height)
   {
     super(DataBuffer.TYPE_INT, width * height);
 
@@ -140,7 +157,7 @@ public class CairoSurface extends DataBuffer
     this.width = width;
     this.height = height;
 
-    create(width, height, width * 4);
+    create(width, height, width);
 
     if(surfacePointer == 0 || bufferPointer == 0)
       throw new Error("Could not allocate bitmap.");
@@ -160,29 +177,52 @@ public class CairoSurface extends DataBuffer
     width = image.width;
     height = image.height;
 
-    create(width, height, width * 4);
-    
+    create(width, height, width);
+
     if(surfacePointer == 0 || bufferPointer == 0)
       throw new Error("Could not allocate bitmap.");
-    
+
     // Copy the pixel data from the GtkImage.
     int[] data = image.getPixels();
 
     // Swap ordering from GdkPixbuf to Cairo
     for(int i = 0; i < data.length; i++ )
       {
-	int alpha = (data[i] & 0xFF000000) >> 24;
-	if( alpha == 0 ) // I do not know why we need this, but it works.
-	  data[i] = 0;
+	if (ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN)
+	  {
+	    // On a big endian system we get a RRGGBBAA data array.
+	    int alpha = (data[i] & 0xFF);
+	    if( alpha == 0 ) // I do not know why we need this, but it works.
+	      data[i] = 0;
+	    else
+	      {
+		int r = (((data[i] & 0xFF000000) >> 24));
+		int g = (((data[i] & 0x00FF0000) >> 16));
+		int b = (((data[i] & 0x0000FF00) >> 8));
+		// Cairo needs a ARGB32 native array.
+		data[i] = (( alpha << 24 ) & 0xFF000000)
+		  | (( r << 16 ) & 0x00FF0000)
+		  | (( g << 8 )  & 0x0000FF00)
+		  | ( b  & 0x000000FF);
+	      }
+	  }
 	else
 	  {
-	    int r = (((data[i] & 0x00FF0000) >> 16) );
-	    int g = (((data[i] & 0x0000FF00) >> 8) );
-	    int b = ((data[i] & 0x000000FF) );
-	    data[i] = (( alpha << 24 ) & 0xFF000000) 
-	      | (( b << 16 ) & 0x00FF0000)
-	      | (( g << 8 )  & 0x0000FF00)
-	      | ( r  & 0x000000FF);
+	    // On a little endian system we get a AABBGGRR data array.
+	    int alpha = (data[i] & 0xFF000000) >> 24;
+	    if( alpha == 0 ) // I do not know why we need this, but it works.
+	      data[i] = 0;
+	    else
+	      {
+		int b = (((data[i] & 0x00FF0000) >> 16));
+		int g = (((data[i] & 0x0000FF00) >> 8));
+		int r = ((data[i] & 0x000000FF));
+		// Cairo needs a ARGB32 native array.
+		data[i] = (( alpha << 24 ) & 0xFF000000)
+		  | (( r << 16 ) & 0x00FF0000)
+		  | (( g << 8 )  & 0x0000FF00)
+		  | ( b  & 0x000000FF);
+	      }
 	  }
       }
 
@@ -195,7 +235,7 @@ public class CairoSurface extends DataBuffer
   public void dispose()
   {
     if(surfacePointer != 0)
-      destroy();
+      destroy(surfacePointer, bufferPointer);
   }
 
   /**
@@ -211,7 +251,8 @@ public class CairoSurface extends DataBuffer
    */
   public GtkImage getGtkImage()
   {
-    return new GtkImage( width, height, getFlippedBuffer( width * height ));
+    return new GtkImage( width, height,
+                         getFlippedBuffer(bufferPointer, width * height ));
   }
 
   /**
@@ -251,7 +292,7 @@ public class CairoSurface extends DataBuffer
   {
     if(bank != 0 || i < 0 || i >= width*height)
       throw new IndexOutOfBoundsException(i+" size: "+width*height);
-    return nativeGetElem(i);
+    return nativeGetElem(bufferPointer, i);
   }
   
   /**
@@ -261,7 +302,7 @@ public class CairoSurface extends DataBuffer
   {
     if(bank != 0 || i < 0 || i >= width*height)
       throw new IndexOutOfBoundsException(i+" size: "+width*height);
-    nativeSetElem(i, val);
+    nativeSetElem(bufferPointer, i, val);
   }
 
   /**
@@ -277,12 +318,22 @@ public class CairoSurface extends DataBuffer
    * Creates a cairo_t drawing context, returns the pointer as a long.
    * Used by CairoSurfaceGraphics.
    */
-  native long newCairoContext();
+  native long nativeNewCairoContext(long surfacePointer);
+
+  public long newCairoContext()
+  {
+    return nativeNewCairoContext(surfacePointer);
+  }
 
   /**
    * Copy an area of the surface. Expects parameters must be within bounds. 
    * Count on a segfault otherwise.
    */
-  native void copyAreaNative(int x, int y, int width, int height, 
-			     int dx, int dy, int stride);
+  native void copyAreaNative2(long bufferPointer, int x, int y, int width,
+                             int height, int dx, int dy, int stride);
+  public void copyAreaNative(int x, int y, int width,
+                             int height, int dx, int dy, int stride)
+  {
+    copyAreaNative2(bufferPointer, x, y, width, height, dx, dy, stride);
+  }
 }

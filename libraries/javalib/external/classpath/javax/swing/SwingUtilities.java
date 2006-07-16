@@ -1599,4 +1599,27 @@ public class SwingUtilities
         throw new IllegalArgumentException("Unrecognised code: " + code);
     }
   }
+
+  /**
+   * Converts a rectangle in the coordinate system of a child component into
+   * a rectangle of one of it's Ancestors. The result is stored in the input
+   * rectangle.
+   *
+   * @param comp the child component
+   * @param r the rectangle to convert
+   * @param ancestor the ancestor component
+   */
+  static void convertRectangleToAncestor(Component comp, Rectangle r,
+                                         Component ancestor)
+  {
+    if (comp == ancestor)
+      return;
+
+    r.x += comp.getX();
+    r.y += comp.getY();
+
+    Component parent = comp.getParent();
+    if (parent != null && parent != ancestor)
+      convertRectangleToAncestor(parent, r, ancestor);
+  }
 }

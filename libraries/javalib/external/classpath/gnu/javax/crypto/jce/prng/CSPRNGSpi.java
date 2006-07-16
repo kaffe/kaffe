@@ -46,19 +46,13 @@ import java.net.MalformedURLException;
 import java.security.SecureRandomSpi;
 
 /**
- * The implementation of the continuously-seeded SecureRandom
- * <i>Service Provider Interface</i> (<b>SPI</b>) adapter.<p>
+ * The implementation of the continuously-seeded SecureRandom <i>Service
+ * Provider Interface</i> (<b>SPI</b>) adapter.
  */
-public class CSPRNGSpi extends SecureRandomSpi
+public class CSPRNGSpi
+    extends SecureRandomSpi
 {
-
-  // Constants and variables
-  // -------------------------------------------------------------------------
-
   private final IRandom adaptee;
-
-  // Constructor(s)
-  // -------------------------------------------------------------------------
 
   public CSPRNGSpi() throws ClassNotFoundException, MalformedURLException,
       NumberFormatException
@@ -68,20 +62,13 @@ public class CSPRNGSpi extends SecureRandomSpi
     adaptee = CSPRNG.getSystemInstance();
   }
 
-  // Instance methods
-  // -------------------------------------------------------------------------
-
   protected byte[] engineGenerateSeed(final int count)
   {
     if (count < 0)
-      {
-        throw new IllegalArgumentException("count must be nonnegative");
-      }
+      throw new IllegalArgumentException("count must be nonnegative");
     byte[] buf = new byte[count];
     if (count == 0)
-      {
-        return buf;
-      }
+      return buf;
     engineNextBytes(buf);
     return buf;
   }
@@ -89,9 +76,7 @@ public class CSPRNGSpi extends SecureRandomSpi
   protected void engineNextBytes(final byte[] buffer)
   {
     if (buffer == null)
-      {
-        throw new NullPointerException();
-      }
+      throw new NullPointerException();
     try
       {
         adaptee.nextBytes(buffer, 0, buffer.length);
@@ -105,9 +90,7 @@ public class CSPRNGSpi extends SecureRandomSpi
   protected void engineSetSeed(final byte[] seed)
   {
     if (seed == null)
-      {
-        throw new NullPointerException();
-      }
+      throw new NullPointerException();
     adaptee.addRandomBytes(seed, 0, seed.length);
   }
 }

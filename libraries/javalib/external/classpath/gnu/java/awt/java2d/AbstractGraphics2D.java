@@ -39,6 +39,7 @@ package gnu.java.awt.java2d;
 
 import java.awt.AWTError;
 import java.awt.AlphaComposite;
+import java.awt.AWTPermission;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Composite;
@@ -72,6 +73,7 @@ import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.ColorModel;
+import java.awt.image.DataBuffer;
 import java.awt.image.ImageObserver;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
@@ -144,7 +146,7 @@ public abstract class AbstractGraphics2D
   /**
    * The transformation for this Graphics2D instance
    */
-  private AffineTransform transform;
+  protected AffineTransform transform;
 
   /**
    * The foreground.
@@ -539,6 +541,15 @@ public abstract class AbstractGraphics2D
    */
   public void setComposite(Composite comp)
   {
+    if (! (comp instanceof AlphaComposite))
+      {
+        // FIXME: this check is only required "if this Graphics2D
+        // context is drawing to a Component on the display screen".
+        SecurityManager sm = System.getSecurityManager();
+        if (sm != null)
+          sm.checkPermission(new AWTPermission("readDisplayPixels"));
+      }
+
     composite = comp;
     if (! (comp.equals(AlphaComposite.SrcOver)))
       isOptimized = false;
@@ -1331,8 +1342,8 @@ public abstract class AbstractGraphics2D
   {
     AffineTransform t = new AffineTransform();
     t.translate(x, y);
-    double scaleX = (double) image.getWidth(observer) / (double) width;
-    double scaleY = (double) image.getHeight(observer) / (double) height;
+    double scaleX = (double) width / (double) image.getWidth(observer);
+    double scaleY =  (double) height / (double) image.getHeight(observer);
     t.scale(scaleX, scaleY);
     return drawImage(image, t, observer);
   }
@@ -1473,15 +1484,11 @@ public abstract class AbstractGraphics2D
         antialias = (v == RenderingHints.VALUE_ANTIALIAS_ON);
       }
 
-    double offs = 0.5;
-    if (antialias)
-      offs = offs / AA_SAMPLING;
-
     Rectangle2D userBounds = s.getBounds2D();
     Rectangle2D deviceBounds = new Rectangle2D.Double();
-    ArrayList segs = getSegments(s, transform, deviceBounds, false, offs);
+    ArrayList segs = getSegments(s, transform, deviceBounds, false);
     Rectangle2D clipBounds = new Rectangle2D.Double();
-    ArrayList clipSegs = getSegments(clip, transform, clipBounds, true, offs);
+    ArrayList clipSegs = getSegments(clip, transform, clipBounds, true);
     segs.addAll(clipSegs);
     Rectangle2D inclClipBounds = new Rectangle2D.Double();
     Rectangle2D.union(clipBounds, deviceBounds, inclClipBounds);
@@ -1676,7 +1683,10 @@ public abstract class AbstractGraphics2D
 
     // Scan all relevant lines.
     int minYInt = (int) Math.ceil(icMinY);
-    for (int y = minYInt; y <= maxY; y++)
+
+    Rectangle devClip = getDeviceBounds();
+    int scanlineMax = (int) Math.min(maxY, devClip.getMaxY());
+    for (int y = minYInt; y < scanlineMax; y++)
       {
         ArrayList bucket = edgeTable[y - minYInt];
         // Update all the x intersections in the current activeEdges table
@@ -2055,7 +2065,34 @@ public abstract class AbstractGraphics2D
    *
    * @return the destination raster
    */
-  protected abstract WritableRaster getDestinationRaster();
+  protected WritableRaster getDestinationRaster()
+  {
+    // TODO: Ideally we would fetch the xdrawable's surface pixels for
+    // initialization of the raster.
+    Rectangle db = getDeviceBounds();
+    if (destinationRaster == null)
+      {
+        int[] bandMasks = new int[]{ 0xFF0000, 0xFF00, 0xFF };
+        destinationRaster = Raster.createPackedRaster(DataBuffer.TYPE_INT,
+                                                      db.width, db.height,
+                                                      bandMasks, null);
+        // Initialize raster with white.
+        int x0 = destinationRaster.getMinX();
+        int x1 = destinationRaster.getWidth() + x0;
+        int y0 = destinationRaster.getMinY();
+        int y1 = destinationRaster.getHeight() + y0;
+        int numBands = destinationRaster.getNumBands();
+        for (int y = y0; y < y1; y++)
+          {
+            for (int x = x0; x < x1; x++)
+              {
+                for (int b = 0; b < numBands; b++)
+                  destinationRaster.setSample(x, y, b, 255);
+              }
+          }
+      }
+    return destinationRaster;
+  }
 
   /**
    * Notifies the backend that the raster has changed in the specified
@@ -2169,8 +2206,7 @@ public abstract class AbstractGraphics2D
    * @return a list of PolyEdge that form the shape in device space
    */
   private ArrayList getSegments(Shape s, AffineTransform t,
-                                Rectangle2D deviceBounds, boolean isClip,
-                                double offs)
+                                Rectangle2D deviceBounds, boolean isClip)
   {
     // Flatten the path. TODO: Determine the best flattening factor
     // wrt to speed and quality.
@@ -2213,14 +2249,14 @@ public abstract class AbstractGraphics2D
         else if (segType == PathIterator.SEG_CLOSE)
           {
             // Close the polyline.
-            PolyEdge edge = new PolyEdge(segX, segY - offs,
-                                         polyX, polyY - offs, isClip);
+            PolyEdge edge = new PolyEdge(segX, segY,
+                                         polyX, polyY, isClip);
             segs.add(edge);
           }
         else if (segType == PathIterator.SEG_LINETO)
           {
-            PolyEdge edge = new PolyEdge(segX, segY - offs,
-                                         seg[0], seg[1] - offs, isClip);
+            PolyEdge edge = new PolyEdge(segX, segY,
+                                         seg[0], seg[1], isClip);
             segs.add(edge);
             segX = seg[0];
             segY = seg[1];

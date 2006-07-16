@@ -418,7 +418,19 @@ public abstract class BasicTextUI extends TextUI
       if (event.getPropertyName().equals("document"))
         {
           // Document changed.
-	      modelChanged();
+          Object oldValue = event.getOldValue();
+          if (oldValue != null)
+            {
+              Document oldDoc = (Document) oldValue;
+              oldDoc.removeDocumentListener(documentHandler);
+            }
+          Object newValue = event.getNewValue();
+          if (newValue != null)
+            {
+              Document newDoc = (Document) newValue;
+              newDoc.addDocumentListener(documentHandler);
+            }
+          modelChanged();
         }
 
       BasicTextUI.this.propertyChange(event);
@@ -501,18 +513,6 @@ public abstract class BasicTextUI extends TextUI
   DocumentHandler documentHandler = new DocumentHandler();
 
   /**
-   * The standard background color. This is the color which is used to paint
-   * text in enabled text components.
-   */
-  Color background;
-
-  /**
-   * The inactive background color. This is the color which is used to paint
-   * text in disabled text components.
-   */
-  Color inactiveBackground;
-
-  /**
    * Creates a new <code>BasicTextUI</code> instance.
    */
   public BasicTextUI()
@@ -558,22 +558,23 @@ public abstract class BasicTextUI extends TextUI
    */
   public void installUI(final JComponent c)
   {
-    super.installUI(c);
-
     textComponent = (JTextComponent) c;
+    installDefaults();
+    textComponent.addPropertyChangeListener(updateHandler);
     Document doc = textComponent.getDocument();
     if (doc == null)
       {
         doc = getEditorKit(textComponent).createDefaultDocument();
         textComponent.setDocument(doc);
       }
-    installDefaults();
+    else
+      {
+        doc.addDocumentListener(documentHandler);
+        modelChanged();
+      }
+
     installListeners();
     installKeyboardActions();
-
-    // We need to trigger this so that the view hierarchy gets initialized.
-    modelChanged();
-
   }
 
   /**
@@ -581,32 +582,60 @@ public abstract class BasicTextUI extends TextUI
    */
   protected void installDefaults()
   {
-    Caret caret = textComponent.getCaret();
-    if (caret == null)
-      {
-        caret = createCaret();
-        textComponent.setCaret(caret);
-      }
-
-    Highlighter highlighter = textComponent.getHighlighter();
-    if (highlighter == null)
-      textComponent.setHighlighter(createHighlighter());
-
     String prefix = getPropertyPrefix();
+    // Install the standard properties.
     LookAndFeel.installColorsAndFont(textComponent, prefix + ".background",
                                      prefix + ".foreground", prefix + ".font");
     LookAndFeel.installBorder(textComponent, prefix + ".border");
     textComponent.setMargin(UIManager.getInsets(prefix + ".margin"));
 
-    caret.setBlinkRate(UIManager.getInt(prefix + ".caretBlinkRate"));
+    // Some additional text component only properties.
+    Color color = textComponent.getCaretColor();
+    if (color == null || color instanceof UIResource)
+      {
+        color = UIManager.getColor(prefix + ".caretForeground");
+        textComponent.setCaretColor(color);
+      }
 
     // Fetch the colors for enabled/disabled text components.
-    background = UIManager.getColor(prefix + ".background");
-    inactiveBackground = UIManager.getColor(prefix + ".inactiveBackground");
-    textComponent.setDisabledTextColor
-                         (UIManager.getColor(prefix + ".inactiveForeground"));
-    textComponent.setSelectedTextColor(UIManager.getColor(prefix + ".selectionForeground"));
-    textComponent.setSelectionColor(UIManager.getColor(prefix + ".selectionBackground"));    
+    color = textComponent.getDisabledTextColor();
+    if (color == null || color instanceof UIResource)
+      {
+        color = UIManager.getColor(prefix + ".inactiveBackground");
+        textComponent.setDisabledTextColor(color);
+      }
+    color = textComponent.getSelectedTextColor();
+    if (color == null || color instanceof UIResource)
+      {
+        color = UIManager.getColor(prefix  + ".selectionForeground");
+        textComponent.setSelectedTextColor(color);
+      }
+    color = textComponent.getSelectionColor();
+    if (color == null || color instanceof UIResource)
+      {
+        color = UIManager.getColor(prefix  + ".selectionBackground");
+        textComponent.setSelectionColor(color);    
+      }
+
+    Insets margin = textComponent.getMargin();
+    if (margin == null || margin instanceof UIResource)
+      {
+        margin = UIManager.getInsets(prefix + ".margin");
+        textComponent.setMargin(margin);
+      }
+
+    Caret caret = textComponent.getCaret();
+    if (caret == null || caret instanceof UIResource)
+      {
+        caret = createCaret();
+        textComponent.setCaret(caret);
+        caret.setBlinkRate(UIManager.getInt(prefix + ".caretBlinkRate"));
+      }
+
+    Highlighter highlighter = textComponent.getHighlighter();
+    if (highlighter == null || highlighter instanceof UIResource)
+      textComponent.setHighlighter(createHighlighter());
+
   }
 
   /**
@@ -639,7 +668,8 @@ public abstract class BasicTextUI extends TextUI
                 Clipboard cb = Toolkit.getDefaultToolkit().getSystemSelection();
                 if (cb != null)
                   {
-                    StringSelection selection = new StringSelection(textComponent.getSelectedText());
+                    StringSelection selection = new StringSelection(
+                        textComponent.getSelectedText());
                     cb.setContents(selection, selection);
                   }
               }
@@ -667,18 +697,6 @@ public abstract class BasicTextUI extends TextUI
   protected void installListeners()
   {
     textComponent.addFocusListener(focuslistener);
-    textComponent.addPropertyChangeListener(updateHandler);
-    installDocumentListeners();
-  }
-
-  /**
-   * Installs the document listeners on the textComponent's model.
-   */
-  private void installDocumentListeners()
-  {
-    Document doc = textComponent.getDocument();
-    if (doc != null)
-      doc.addDocumentListener(documentHandler);
   }
 
   /**
@@ -842,9 +860,7 @@ public abstract class BasicTextUI extends TextUI
    */
   protected void uninstallListeners()
   {
-    textComponent.removePropertyChangeListener(updateHandler);
     textComponent.removeFocusListener(focuslistener);
-    textComponent.getDocument().removeDocumentListener(documentHandler);
   }
 
   /**
@@ -853,7 +869,8 @@ public abstract class BasicTextUI extends TextUI
    */
   protected void uninstallKeyboardActions()
   {
-    SwingUtilities.replaceUIInputMap(textComponent, JComponent.WHEN_FOCUSED, null);
+    SwingUtilities.replaceUIInputMap(textComponent, JComponent.WHEN_FOCUSED, 
+                                     null);
     SwingUtilities.replaceUIActionMap(textComponent, null);
   }
 
@@ -1114,13 +1131,14 @@ public abstract class BasicTextUI extends TextUI
                        && Utilities.getRowStart(t, nextPosBelow) != p1RowStart)
                   {
                     posBelow = nextPosBelow;
-                    nextPosBelow = Utilities.getPositionBelow(t, posBelow, l1.x);
+                    nextPosBelow = Utilities.getPositionBelow(t, posBelow, 
+                                                              l1.x);
                     
                     if (posBelow == nextPosBelow)
                       break;
                   }
-                // Now posBelow is an offset on the last line which has to be damaged
-                // completely. (newPosBelow is on the same line as p1)
+                // Now posBelow is an offset on the last line which has to be 
+                // damaged completely. (newPosBelow is on the same line as p1)
                  
                 // Retrieve the rectangle of posBelow and use its y and height
                 // value to calculate the final height of the multiple line
@@ -1356,7 +1374,6 @@ public abstract class BasicTextUI extends TextUI
     Document doc = textComponent.getDocument();
     if (doc == null)
       return;
-    installDocumentListeners();
     Element elem = doc.getDefaultRootElement();
     if (elem == null)
       return;
