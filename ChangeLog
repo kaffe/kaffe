@@ -1,5 +1,19 @@
 2006-07-16  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/vmspecific/org/kaffe/util/Base64.java,
+	libraries/javalib/vmspecific/org/kaffe/util/DateParser.java,
+	libraries/javalib/vmspecific/org/kaffe/util/DateScanner.java,
+	libraries/javalib/vmspecific/org/kaffe/util/Deprecated.java,
+	libraries/javalib/vmspecific/org/kaffe/util/IdentityHashtable.java,
+	libraries/javalib/vmspecific/org/kaffe/util/IntegerHashtable.java,
+	libraries/javalib/vmspecific/org/kaffe/util/IntegerIntegerHashtable.java,
+	libraries/javalib/vmspecific/org/kaffe/util/LongHashtable.java,
+	libraries/javalib/vmspecific/org/kaffe/util/NotImplementedReport.java,
+	libraries/javalib/vmspecific/org/kaffe/util/UNIXTimeZone.java:
+	Removed unused classes.
+
+2006-07-16  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/vmspecific/org/kaffe/util/Timer.java,
 	libraries/javalib/vmspecific/org/kaffe/util/TimerClient.java,
 	libraries/javalib/vmspecific/org/kaffe/util/VectorSnapshot.java:

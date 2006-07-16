@@ -291,19 +291,9 @@ EXTRA_DIST= \
 	vmspecific/org/kaffe/security/provider/SHA1PRNG.java \
 	vmspecific/org/kaffe/security/provider/UpdateDigest.java \
 	vmspecific/org/kaffe/util/Assert.java \
-	vmspecific/org/kaffe/util/Base64.java \
-	vmspecific/org/kaffe/util/DateParser.java \
-	vmspecific/org/kaffe/util/DateScanner.java \
-	vmspecific/org/kaffe/util/Deprecated.java \
-	vmspecific/org/kaffe/util/IdentityHashtable.java \
-	vmspecific/org/kaffe/util/IntegerHashtable.java \
-	vmspecific/org/kaffe/util/IntegerIntegerHashtable.java \
-	vmspecific/org/kaffe/util/LongHashtable.java \
 	vmspecific/org/kaffe/util/NotImplemented.java \
-	vmspecific/org/kaffe/util/NotImplementedReport.java \
 	vmspecific/org/kaffe/util/Ptr.java \
 	vmspecific/org/kaffe/util/SupportDisabled.java \
-	vmspecific/org/kaffe/util/UNIXTimeZone.java \
 	vmspecific/org/kaffe/util/UTF8.java \
 	vmspecific/org/kaffe/util/zip/SwitchInflater.java \
 	vmspecific/org/objectweb/asm153/Attribute.java \
