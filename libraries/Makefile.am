@@ -6,4 +6,4 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-SUBDIRS = clib javalib extensions
+SUBDIRS = clib javalib

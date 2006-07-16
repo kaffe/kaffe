@@ -2131,36 +2131,6 @@ fi
 AC_SUBST(MATH_LIB)
 
 dnl -----------------------------------------------------------------------
-dnl                       Support selection of extensions
-dnl -----------------------------------------------------------------------
-
-AC_ARG_WITH([extensions], 
-            AS_HELP_STRING([--with-extensions],
-                           [the extensions to include (all|comm|microsoft|pjava|servlet) separated by ',' @<:@default=none@:>@]))
-
-AC_MSG_CHECKING([which extensions to include])
-
-case $with_extensions in
-        *)
-                for i in `echo $with_extensions | sed -e 's/,/ /g'` ; do
-                        if test -d $srcdir/libraries/extensions/$i ; then
-                        	INCLUDED_EXTENSIONS="$INCLUDED_EXTENSIONS $i"
-                        fi
-                done
-                ;;
-
-	no | "")
-		;;
-
-	"yes"| "all")
-		INCLUDED_EXTENSIONS="comm  microsoft  pjava  servlet"
-		;;
-esac
-
-AC_MSG_RESULT($INCLUDED_EXTENSIONS)
-AC_SUBST(INCLUDED_EXTENSIONS)
-
-dnl -----------------------------------------------------------------------
 dnl                    Memory debugging support
 dnl -----------------------------------------------------------------------
 
@@ -2562,16 +2532,6 @@ AC_CONFIG_FILES([libraries/clib/sound/alsa/Makefile])
 AC_CONFIG_FILES([libraries/clib/sound/common/Makefile])
 AC_CONFIG_FILES([libraries/clib/sound/esd/Makefile])
 AC_CONFIG_FILES([libraries/javalib/rebuildLib])
-AC_CONFIG_FILES([libraries/extensions/Makefile])
-AC_CONFIG_FILES([libraries/extensions/comm/Makefile])
-AC_CONFIG_FILES([libraries/extensions/comm/javalib/Makefile])
-AC_CONFIG_FILES([libraries/extensions/pjava/Makefile])
-AC_CONFIG_FILES([libraries/extensions/pjava/javalib/Makefile])
-AC_CONFIG_FILES([libraries/extensions/servlet/Makefile])
-AC_CONFIG_FILES([libraries/extensions/servlet/javalib/Makefile])
-AC_CONFIG_FILES([libraries/extensions/microsoft/Makefile])
-AC_CONFIG_FILES([libraries/extensions/microsoft/javalib/Makefile])
-AC_CONFIG_FILES([libraries/extensions/microsoft/clib/Makefile])
 AC_CONFIG_FILES([kaffe/man/kaffe.1])
 AC_CONFIG_FILES([kaffe/scripts/install-jar])
 AC_CONFIG_FILES([kaffe/scripts/kaffe])
