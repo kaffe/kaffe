@@ -156,7 +156,7 @@ utf8Const2Java(const Utf8Const *utf8)
 	Hjava_lang_String* string;
 
 	string = utf8Const2JavaReplace(utf8, 0, 0);
-	unhand(string)->hash = utf8->hash;	/* why not, they're equal */
+	unhand(string)->cachedHashCode = utf8->hash;	/* why not, they're equal */
 	return(string);
 }
 
@@ -263,7 +263,7 @@ utf8ConstEqualJavaString(const Utf8Const *utf8, const Hjava_lang_String *string)
 
 #if 0
 	/* Question: would this optimization be worthwhile? */
-	if (unhand(string)->hash != 0 && unhand(string)->hash != utf8->hash) {
+	if (unhand(string)->cachedHashCode != 0 && unhand(string)->cachedHashCode != utf8->hash) {
 		return(0);
 	}
 #endif
@@ -308,6 +308,27 @@ stringFree(const void *ptr)
 	lockStaticMutex(&stringLock);
 }
 
+/**
+ * Return the interned version of the String if
+ * it has been already interned, or NULL otherwise.
+ */
+static Hjava_lang_String *
+string_isInterned(Hjava_lang_String *string)
+{
+  Hjava_lang_String * result = NULL;
+
+  /* Lock intern table */
+  lockStaticMutex(&stringLock);
+
+  /* See if string is already in the table */
+  if (hashTable != NULL)
+    result = hashFind(hashTable, string);
+
+  unlockStaticMutex(&stringLock);
+
+  return(result);
+}
+
 /*
  * Return the interned version of a String object.
  * May or may not be the same String.
@@ -317,18 +338,16 @@ stringInternString(Hjava_lang_String *string)
 {
 	Hjava_lang_String *temp;
 
+	temp = string_isInterned(string);
+
+	if(temp != NULL)
+	  return temp;
+
 	/* Lock intern table */
 	lockStaticMutex(&stringLock);
 
 	/* See if string is already in the table */
-	if (hashTable != NULL) {
-		Hjava_lang_String *string2;
-
-		if ((string2 = hashFind(hashTable, string)) != NULL) {
-			unlockStaticMutex(&stringLock);
-			return(string2);
-		}
-	} else {
+	if (hashTable == NULL) {
 		hashTable = hashInit(stringHashValue, stringCompare, stringAlloc, stringFree);
 		assert(hashTable != NULL);
 	}
@@ -340,7 +359,6 @@ stringInternString(Hjava_lang_String *string)
 		return temp;
 	}
 	assert(temp == string);
-	unhand(string)->interned = true;
 
 	/* Unlock table and return new string */
 	unlockStaticMutex(&stringLock);
@@ -354,15 +372,11 @@ stringInternString(Hjava_lang_String *string)
 void
 stringUninternString(Hjava_lang_String* string)
 {
+	if (!string_isInterned(string))
+	  return;
 
 	lockStaticMutex(&stringLock);
-	if (!unhand(string)->interned)
-	{
-	  unlockStaticMutex(&stringLock);
-	  return;
-	}
 	hashRemove(hashTable, string);
-	unhand(string)->interned = false;
 	unlockStaticMutex(&stringLock);
 }
 
@@ -378,13 +392,13 @@ stringHashValue(const void *ptr)
 	jint hash;
 	int k;
 
-	if (unhand(string)->hash != 0) {
-		return(unhand(string)->hash);
+	if (unhand(string)->cachedHashCode != 0) {
+		return(unhand(string)->cachedHashCode);
 	}
 	for (k = hash = 0; k < STRING_SIZE(string); k++) {
 	       hash = (31 * hash) + STRING_DATA(string)[k];
 	}
-	unhand(string)->hash = hash;
+	unhand(string)->cachedHashCode = hash;
 	return(hash);
 }
 
@@ -402,9 +416,9 @@ stringCompare(const void *v1, const void *v2)
 	if (STRING_SIZE(s1) != STRING_SIZE(s2)) {
 		return(1);
 	}
-	if (unhand(s1)->hash != 0
-	    && unhand(s2)->hash != 0
-	    && unhand(s1)->hash != unhand(s2)->hash) {
+	if (unhand(s1)->cachedHashCode != 0
+	    && unhand(s2)->cachedHashCode != 0
+	    && unhand(s1)->cachedHashCode != unhand(s2)->cachedHashCode) {
 		return(1);
 	}
 	for (k = 0; k < len; k++) {
@@ -525,7 +539,7 @@ stringDestroy(Collector* collector UNUSED, void* obj)
         Hjava_lang_String* str = (Hjava_lang_String*)obj;
 
         /* unintern this string if necessary */
-        if (unhand(str)->interned == true) {
+        if (string_isInterned(str)) {
                 stringUninternString(str);
         }       
 }

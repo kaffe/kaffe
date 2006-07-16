@@ -1,5 +1,33 @@
 2006-07-16  Dalibor Topic  <robilad@kaffe.org>
 
+	Switched over to GNU Classpath's java.lang.String.
+
+	* libraries/javalib/vmspecific/java/lang/String.java:
+	Removed.
+
+	* libraries/javalib/vmspecific/java/lang/VMString.java:
+	Added new file from GNU Classpath. Adapted for Kaffe's
+	native string interning.
+
+	* include/Makefile.am (NOINSTALL_DERIVED_HDRS): 
+	Added java_lang_VMString.h.
+
+	* kaffe/kaffevm/string.c (utf8Const2Java, utf8ConstEqualJavaString,
+	stringHashValue, stringCompare) Use cachedHashCode field in String
+	instead of hash.
+	(string_isInterned) New helper function.
+	(stringInternString, stringDestroy) Use string_isInterned rather than
+	using the removed interned field of String.
+
+	* kaffe/kaffevm/jni/jni-string.c (KaffeJNI_NewString):
+	Don't set the interned field, it has been removed from String.
+
+	* libraries/clib/native/String.c (java_lang_String_intern0) Renamed to ..
+	(java_lang_VMString_intern) ... this.
+	(java_lang_String_indexOf) Removed.
+
+2006-07-16  Dalibor Topic  <robilad@kaffe.org>
+
 	libraries/extensions/comm/javalib/.cvsignore,
 	libraries/extensions/comm/javalib/Makefile.am,
 	libraries/extensions/comm/javalib/Makefile.in,

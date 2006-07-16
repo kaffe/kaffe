@@ -543,7 +543,6 @@ EXTRA_DIST = \
 	vmspecific/java/io/VMObjectInputStream.java \
 	vmspecific/java/io/VMObjectStreamClass.java \
 	vmspecific/java/lang/Runtime.java \
-	vmspecific/java/lang/String.java \
 	vmspecific/java/lang/VMClass.java \
 	vmspecific/java/lang/VMClassLoader.java \
 	vmspecific/java/lang/VMCompiler.java \
@@ -553,6 +552,7 @@ EXTRA_DIST = \
 	vmspecific/java/lang/VMObject.java \
 	vmspecific/java/lang/VMProcess.java \
 	vmspecific/java/lang/VMRuntime.java \
+	vmspecific/java/lang/VMString.java \
 	vmspecific/java/lang/VMSystem.java \
 	vmspecific/java/lang/VMThread.java \
 	vmspecific/java/lang/VMThrowable.java \

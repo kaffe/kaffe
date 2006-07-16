@@ -46,7 +46,6 @@ KaffeJNI_NewString(JNIEnv* env UNUSED, const jchar* data, jsize len)
   unhand(str)->offset = 0;
   unhand(str)->count = len;
   unhand(str)->value = (HArrayOfChar*)newArray(TYPE_CLASS(TYPE_Char), len);                   
-  unhand(str)->interned = 0;
   memcpy(STRING_DATA(str), data, len * sizeof(jchar));
 
   END_EXCEPTION_HANDLING();
