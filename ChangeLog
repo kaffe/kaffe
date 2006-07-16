@@ -1,5 +1,27 @@
 2006-07-16  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/vmspecific/org/kaffe/util/locale/CountryCodes.java,
+	libraries/javalib/vmspecific/org/kaffe/util/locale/Country_de.java,
+	libraries/javalib/vmspecific/org/kaffe/util/locale/Country_en.java,
+	libraries/javalib/vmspecific/org/kaffe/util/locale/Country_fr.java,
+	libraries/javalib/vmspecific/org/kaffe/util/locale/Country_it.java,
+	libraries/javalib/vmspecific/org/kaffe/util/locale/Country_ja.java,
+	libraries/javalib/vmspecific/org/kaffe/util/locale/Country.java,
+	libraries/javalib/vmspecific/org/kaffe/util/locale/Country_ko.java,
+	libraries/javalib/vmspecific/org/kaffe/util/locale/Country_zh.java,
+	libraries/javalib/vmspecific/org/kaffe/util/locale/LanguageCodes.java,
+	libraries/javalib/vmspecific/org/kaffe/util/locale/Language_de.java,
+	libraries/javalib/vmspecific/org/kaffe/util/locale/Language_en.java,
+	libraries/javalib/vmspecific/org/kaffe/util/locale/Language_fr.java,
+	libraries/javalib/vmspecific/org/kaffe/util/locale/Language_it.java,
+	libraries/javalib/vmspecific/org/kaffe/util/locale/Language_ja.java,
+	libraries/javalib/vmspecific/org/kaffe/util/locale/Language.java,
+	libraries/javalib/vmspecific/org/kaffe/util/locale/Language_ko.java,
+	libraries/javalib/vmspecific/org/kaffe/util/locale/Language_zh.java:
+	Removed unused classes.
+
+2006-07-16  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/vmspecific/org/kaffe/beans/editors/BooleanEditor.java,
 	libraries/javalib/vmspecific/org/kaffe/beans/editors/ByteEditor.java,
 	libraries/javalib/vmspecific/org/kaffe/beans/editors/DoubleEditor.java,

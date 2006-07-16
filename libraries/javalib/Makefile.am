@@ -316,24 +316,6 @@ EXTRA_DIST= \
 	vmspecific/org/kaffe/util/UNIXTimeZone.java \
 	vmspecific/org/kaffe/util/UTF8.java \
 	vmspecific/org/kaffe/util/VectorSnapshot.java \
-	vmspecific/org/kaffe/util/locale/Country.java \
-	vmspecific/org/kaffe/util/locale/CountryCodes.java \
-	vmspecific/org/kaffe/util/locale/Country_de.java \
-	vmspecific/org/kaffe/util/locale/Country_en.java \
-	vmspecific/org/kaffe/util/locale/Country_fr.java \
-	vmspecific/org/kaffe/util/locale/Country_it.java \
-	vmspecific/org/kaffe/util/locale/Country_ja.java \
-	vmspecific/org/kaffe/util/locale/Country_ko.java \
-	vmspecific/org/kaffe/util/locale/Country_zh.java \
-	vmspecific/org/kaffe/util/locale/Language.java \
-	vmspecific/org/kaffe/util/locale/LanguageCodes.java \
-	vmspecific/org/kaffe/util/locale/Language_de.java \
-	vmspecific/org/kaffe/util/locale/Language_en.java \
-	vmspecific/org/kaffe/util/locale/Language_fr.java \
-	vmspecific/org/kaffe/util/locale/Language_it.java \
-	vmspecific/org/kaffe/util/locale/Language_ja.java \
-	vmspecific/org/kaffe/util/locale/Language_ko.java \
-	vmspecific/org/kaffe/util/locale/Language_zh.java \
 	vmspecific/org/kaffe/util/log/LogClient.java \
 	vmspecific/org/kaffe/util/log/LogStream.java \
 	vmspecific/org/kaffe/util/log/SimpleLogViewer.java \
