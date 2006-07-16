@@ -1,5 +1,13 @@
 2006-07-17  Dalibor Topic  <robilad@kaffe.org>
 
+	* test/regression/KaffeInternal.java:
+	Use org.kaffe.lang.UNIXProcess for the test.
+
+	* libraries/javalib/vmspecific/org/kaffe/lang/PackageHelper.java:
+	Removed unused class.
+
+2006-07-17  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/vmspecific/org/kaffe/lang/ResourceReader.java,
 	libraries/javalib/vmspecific/org/kaffe/lang/ClassPathReader.java:
 	Removed unused classes.

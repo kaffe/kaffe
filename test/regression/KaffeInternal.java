@@ -1,5 +1,5 @@
 
-import org.kaffe.lang.PackageHelper;
+import org.kaffe.lang.UNIXProcess;
 import gnu.classpath.SystemProperties;
 
 /**
@@ -11,7 +11,7 @@ class KaffeInternal
     {
 	try
 	{
-            PackageHelper.getPackageName (KaffeInternal.class);
+            UNIXProcess.sendSignal(0,0);
 	}
 	catch(Throwable th)
 	{
@@ -30,6 +30,6 @@ class KaffeInternal
 }
 
 /* Expected Output:
-java.lang.NoClassDefFoundError: org/kaffe/lang/PackageHelper
+java.lang.NoClassDefFoundError: org/kaffe/lang/UNIXProcess
 java.lang.NoClassDefFoundError: gnu/classpath/SystemProperties
 */
