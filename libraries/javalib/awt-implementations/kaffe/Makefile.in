@@ -370,6 +370,7 @@ kaffeawt_jar_SRCS = \
 	$(org_kaffe_applet_SRCS) \
 	$(org_kaffe_awt_SRCS) \
 	$(org_kaffe_io_SRCS) \
+	$(org_kaffe_util_SRCS) \
         $(org_kaffe_util_log_SRCS)
 
 java_applet_SRCS = \
@@ -675,6 +676,9 @@ org_kaffe_awt_SRCS = \
 org_kaffe_io_SRCS = \
 	org/kaffe/io/AccessibleBAOStream.java
 
+org_kaffe_util_SRCS = \
+	org/kaffe/util/DoubleLinkedObject.java
+
 org_kaffe_util_log_SRCS = \
         org/kaffe/util/log/LogClient.java \
         org/kaffe/util/log/LogStream.java \
@@ -754,7 +758,7 @@ CTAGS:
 
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/java/applet $(distdir)/java/awt $(distdir)/java/awt/color $(distdir)/java/awt/datatransfer $(distdir)/java/awt/event $(distdir)/java/awt/font $(distdir)/java/awt/geom $(distdir)/java/awt/im $(distdir)/java/awt/image $(distdir)/java/awt/image/renderable $(distdir)/org/kaffe/applet $(distdir)/org/kaffe/awt $(distdir)/org/kaffe/io $(distdir)/org/kaffe/util/log
+	$(mkdir_p) $(distdir)/java/applet $(distdir)/java/awt $(distdir)/java/awt/color $(distdir)/java/awt/datatransfer $(distdir)/java/awt/event $(distdir)/java/awt/font $(distdir)/java/awt/geom $(distdir)/java/awt/im $(distdir)/java/awt/image $(distdir)/java/awt/image/renderable $(distdir)/org/kaffe/applet $(distdir)/org/kaffe/awt $(distdir)/org/kaffe/io $(distdir)/org/kaffe/util $(distdir)/org/kaffe/util/log
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \

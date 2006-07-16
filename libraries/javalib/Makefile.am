@@ -295,7 +295,6 @@ EXTRA_DIST= \
 	vmspecific/org/kaffe/util/DateParser.java \
 	vmspecific/org/kaffe/util/DateScanner.java \
 	vmspecific/org/kaffe/util/Deprecated.java \
-	vmspecific/org/kaffe/util/DoubleLinkedObject.java \
 	vmspecific/org/kaffe/util/IdentityHashtable.java \
 	vmspecific/org/kaffe/util/IntegerHashtable.java \
 	vmspecific/org/kaffe/util/IntegerIntegerHashtable.java \
