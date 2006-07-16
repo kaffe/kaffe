@@ -270,11 +270,6 @@ EXTRA_DIST= \
 	vmspecific/java/util/zip/ZipFile.java \
 	vmspecific/java/util/zip/ZipInputStream.java \
 	vmspecific/java/util/zip/ZipOutputStream.java \
-	vmspecific/org/kaffe/io/AccessibleBAOStream.java \
-	vmspecific/org/kaffe/io/NullOutputStream.java \
-	vmspecific/org/kaffe/io/StdErrorStream.java \
-	vmspecific/org/kaffe/io/StdInputStream.java \
-	vmspecific/org/kaffe/io/StdOutputStream.java \
 	vmspecific/org/kaffe/jar/ExecJar.java \
 	vmspecific/org/kaffe/jar/ExecJarName.java \
 	vmspecific/org/kaffe/lang/ClassPathReader.java \

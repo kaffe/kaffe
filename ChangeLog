@@ -1,5 +1,20 @@
 2006-07-16  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/vmspecific/org/kaffe/io/AccessibleBAOStream.java,
+	libraries/javalib/vmspecific/org/kaffe/io/NullOutputStream.java,
+	libraries/javalib/vmspecific/org/kaffe/io/StdErrorStream.java,
+	libraries/javalib/vmspecific/org/kaffe/io/StdInputStream.java,
+	libraries/javalib/vmspecific/org/kaffe/io/StdOutputStream.java:
+	Removed.
+
+	* libraries/javalib/awt-implementations/kaffe/Makefile.am:
+	Added org/kaffe/io/AccessibleBAOStream.java.
+
+	* libraries/javalib/awt-implementations/kaffe/org/kaffe/io/AccessibleBAOStream.java:
+	Moved over here from libraries/javalib/vmspecific/org/kaffe/io/AccessibleBAOStream.java.
+
+2006-07-16  Dalibor Topic  <robilad@kaffe.org>
+
 	* developers/README.unicode,
 	developers/unicode.pl,
 	libraries/javalib/vmspecific/org/kaffe/lang/unicode.idx, 

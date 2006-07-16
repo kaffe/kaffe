@@ -25,6 +25,7 @@ kaffeawt_jar_SRCS = \
 	$(java_awt_image_renderable_SRCS) \
 	$(org_kaffe_applet_SRCS) \
 	$(org_kaffe_awt_SRCS) \
+	$(org_kaffe_io_SRCS) \
         $(org_kaffe_util_log_SRCS)
 java_applet_SRCS = \
 	java/applet/AppletContext.java \
@@ -314,6 +315,8 @@ org_kaffe_awt_SRCS = \
 	org/kaffe/awt/ObjectSelection.java \
 	org/kaffe/awt/OpaqueComponent.java \
 	org/kaffe/awt/SerializerConverter.java
+org_kaffe_io_SRCS = \
+	org/kaffe/io/AccessibleBAOStream.java
 org_kaffe_util_log_SRCS = \
         org/kaffe/util/log/LogClient.java \
         org/kaffe/util/log/LogStream.java \
