@@ -493,7 +493,6 @@ EXTRA_DIST = \
 	developers/GCJ.note.1 \
 	developers/JavaClass.pm \
 	developers/README \
-	developers/README.unicode \
 	developers/README.EUC_JP \
 	developers/alignment_of_size.c \
 	developers/autogen.sh \
@@ -512,7 +511,6 @@ EXTRA_DIST = \
 	developers/rpm-kaffe.spec \
 	developers/sp_offset.c \
 	developers/test-kaffe-sh \
-	developers/unicode.pl \
 	developers/update-class-list \
 	developers/update-vm-list \
 	developers/utf8munge.pl \

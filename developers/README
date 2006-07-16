@@ -18,8 +18,6 @@ utf8munge.pl:	change the values of utf8 constants of a .class file
 autogen.sh:	script to run all of the various auto* programs
 		in the correct order
 
-unicode.pl:	Perl script to generate unicode.idx and unicode.tbl
-
 geteh_from_libgcc2:	how to extract eh.c from libgcc2.c
 		See kaffe/kaffevm/gcj/eh.c
 
