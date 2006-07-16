@@ -85,53 +85,45 @@ TEST_CLASSES = \
 	Exceptions.class \
 	VirtualMethod.class
 
-JAVA_CLASSES = \
-	$(TEST_CLASSES) \
-	java/lang/System.class \
-	java/lang/VMSystem.class
-
-JAVA_SOURCE_FILES = \
-	$(srcdir)/ConstMethods.java \
-	$(srcdir)/ConstMathMethods.java \
-	$(srcdir)/ParameterizedMethods.java \
-	$(srcdir)/ParameterizedMathMethods.java \
-	$(srcdir)/ParameterizedLogicalMethods.java \
-	$(srcdir)/ParameterizedBitwiseMethods.java \
-	$(srcdir)/ControlFlowMethods.java \
-	$(srcdir)/StaticMethodCall.java \
-	$(srcdir)/TypeConversion.java \
-	$(srcdir)/StaticFields.java \
-	$(srcdir)/PrimitiveArrays.java \
-	$(srcdir)/ObjectFields.java \
-	$(srcdir)/MethodOptimizations.java \
-	$(srcdir)/NativeMethodCall.java \
-	$(srcdir)/Exceptions.java \
-	$(srcdir)/VirtualMethod.java \
-	$(srcdir)/java/lang/System.java \
-	$(srcdir)/java/lang/VMSystem.java
+jitBasicdir = $(srcdir)
+dist_jitBasic_JAVA = \
+	ConstMethods.java \
+	ConstMathMethods.java \
+	ParameterizedMethods.java \
+	ParameterizedMathMethods.java \
+	ParameterizedLogicalMethods.java \
+	ParameterizedBitwiseMethods.java \
+	ControlFlowMethods.java \
+	StaticMethodCall.java \
+	TypeConversion.java \
+	StaticFields.java \
+	PrimitiveArrays.java \
+	ObjectFields.java \
+	MethodOptimizations.java \
+	NativeMethodCall.java \
+	Exceptions.java \
+	VirtualMethod.java \
+	java/lang/System.java \
+	java/lang/VMSystem.java
 
 TESTS_ENVIRONMENT = env TEST_CLASSES="$(TEST_CLASSES)" `. $(top_builddir)/BUILD_ENVIRONMENT; BOOTCLASSPATH=.:\$${BOOTCLASSPATH}; export BOOTCLASSPATH; sed 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
 
-CPATH = .:$(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
-
-$(JAVA_CLASSES): $(JAVA_SOURCE_FILES)
-	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(JAVA_SOURCE_FILES)
-
-jit_stub.o: $(JAVA_CLASSES)
+CPATH =  .:$(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
+AM_JAVACFLAGS = -classpath $(CPATH)
+JAVAC = $(JAVA_COMPILER)
+JAVAROOT = .
 
 TESTS = $(check_PROGRAMS)
 
 XFAIL_TESTS =
-
-EXTRA_DIST = \
-	$(JAVA_SOURCE_FILES)
 
 CLEANFILES = \
 	*.fail \
 	*.out \
 	core \
 	*.core \
-	$(JAVA_CLASSES)
+	java/lang/*.class
+
 
 
 

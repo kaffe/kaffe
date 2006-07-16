@@ -49,7 +49,8 @@ build_triplet = @build@
 host_triplet = @host@
 check_PROGRAMS = jitBasic$(EXEEXT)
 subdir = test/internal
-DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
+DIST_COMMON = $(dist_jitBasic_JAVA) $(srcdir)/Makefile.am \
+	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/acx_pthread.m4 $(top_srcdir)/m4/alsa.m4 \
@@ -102,6 +103,8 @@ LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(jitBasic_SOURCES)
 DIST_SOURCES = $(jitBasic_SOURCES)
+CLASSPATH_ENV = CLASSPATH=$(JAVAROOT):$(srcdir)/$(JAVAROOT):$$CLASSPATH
+am__installdirs = "$(DESTDIR)$(jitBasicdir)"
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -431,44 +434,40 @@ TEST_CLASSES = \
 	Exceptions.class \
 	VirtualMethod.class
 
-JAVA_CLASSES = \
-	$(TEST_CLASSES) \
-	java/lang/System.class \
-	java/lang/VMSystem.class
-
-JAVA_SOURCE_FILES = \
-	$(srcdir)/ConstMethods.java \
-	$(srcdir)/ConstMathMethods.java \
-	$(srcdir)/ParameterizedMethods.java \
-	$(srcdir)/ParameterizedMathMethods.java \
-	$(srcdir)/ParameterizedLogicalMethods.java \
-	$(srcdir)/ParameterizedBitwiseMethods.java \
-	$(srcdir)/ControlFlowMethods.java \
-	$(srcdir)/StaticMethodCall.java \
-	$(srcdir)/TypeConversion.java \
-	$(srcdir)/StaticFields.java \
-	$(srcdir)/PrimitiveArrays.java \
-	$(srcdir)/ObjectFields.java \
-	$(srcdir)/MethodOptimizations.java \
-	$(srcdir)/NativeMethodCall.java \
-	$(srcdir)/Exceptions.java \
-	$(srcdir)/VirtualMethod.java \
-	$(srcdir)/java/lang/System.java \
-	$(srcdir)/java/lang/VMSystem.java
+jitBasicdir = $(srcdir)
+dist_jitBasic_JAVA = \
+	ConstMethods.java \
+	ConstMathMethods.java \
+	ParameterizedMethods.java \
+	ParameterizedMathMethods.java \
+	ParameterizedLogicalMethods.java \
+	ParameterizedBitwiseMethods.java \
+	ControlFlowMethods.java \
+	StaticMethodCall.java \
+	TypeConversion.java \
+	StaticFields.java \
+	PrimitiveArrays.java \
+	ObjectFields.java \
+	MethodOptimizations.java \
+	NativeMethodCall.java \
+	Exceptions.java \
+	VirtualMethod.java \
+	java/lang/System.java \
+	java/lang/VMSystem.java
 
 TESTS_ENVIRONMENT = env TEST_CLASSES="$(TEST_CLASSES)" `. $(top_builddir)/BUILD_ENVIRONMENT; BOOTCLASSPATH=.:\$${BOOTCLASSPATH}; export BOOTCLASSPATH; sed 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
 CPATH = .:$(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
+AM_JAVACFLAGS = -classpath $(CPATH)
+JAVAC = $(JAVA_COMPILER)
+JAVAROOT = .
 TESTS = $(check_PROGRAMS)
 XFAIL_TESTS = 
-EXTRA_DIST = \
-	$(JAVA_SOURCE_FILES)
-
 CLEANFILES = \
 	*.fail \
 	*.out \
 	core \
 	*.core \
-	$(JAVA_CLASSES)
+	java/lang/*.class
 
 all: all-am
 
@@ -554,6 +553,31 @@ clean-libtool:
 distclean-libtool:
 	-rm -f libtool
 uninstall-info-am:
+
+classdist_jitBasic.stamp: $(dist_jitBasic_JAVA)
+	@if test -n "$?"; then \
+	  echo '$(CLASSPATH_ENV) $(JAVAC) -d $(JAVAROOT) $(AM_JAVACFLAGS) $(JAVACFLAGS) $?' ; \
+	  $(CLASSPATH_ENV) $(JAVAC) -d $(JAVAROOT) \
+	    $(AM_JAVACFLAGS) $(JAVACFLAGS) $?; \
+	else :; fi
+	echo timestamp > classdist_jitBasic.stamp
+install-dist_jitBasicJAVA: classdist_jitBasic.stamp
+	@$(NORMAL_INSTALL)
+	test -z "$(jitBasicdir)" || $(mkdir_p) "$(DESTDIR)$(jitBasicdir)"
+	@test -z "$(dist_jitBasic_JAVA)" || for p in *.class; do \
+	  echo " $(INSTALL_DATA) '$$p' '$(DESTDIR)$(jitBasicdir)/$$p'"; \
+	  $(INSTALL_DATA) "$$p" "$(DESTDIR)$(jitBasicdir)/$$p"; \
+	done
+
+uninstall-dist_jitBasicJAVA:
+	@$(NORMAL_UNINSTALL)
+	@test -z "$(dist_jitBasic_JAVA)" || for p in *.class; do \
+	  echo " rm -f '$(DESTDIR)$(jitBasicdir)/$$p'"; \
+	  rm -f "$(DESTDIR)$(jitBasicdir)/$$p"; \
+	done
+
+clean-dist_jitBasicJAVA:
+	-rm -f *.class classdist_jitBasic.stamp
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -677,7 +701,7 @@ check-TESTS: $(TESTS)
 	else :; fi
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/$(srcdir) $(distdir)/$(srcdir)/java/lang
+	$(mkdir_p) $(distdir)/java/lang
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -708,8 +732,11 @@ check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS)
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-am
-all-am: Makefile
+all-am: Makefile classdist_jitBasic.stamp
 installdirs:
+	for dir in "$(DESTDIR)$(jitBasicdir)"; do \
+	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
+	done
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -737,8 +764,8 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-checkPROGRAMS clean-generic clean-libtool \
-	mostlyclean-am
+clean-am: clean-checkPROGRAMS clean-dist_jitBasicJAVA clean-generic \
+	clean-libtool mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -756,7 +783,7 @@ info: info-am
 
 info-am:
 
-install-data-am:
+install-data-am: install-dist_jitBasicJAVA
 
 install-exec-am:
 
@@ -784,29 +811,25 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-info-am
+uninstall-am: uninstall-dist_jitBasicJAVA uninstall-info-am
 
 .PHONY: CTAGS GTAGS all all-am check check-TESTS check-am clean \
-	clean-checkPROGRAMS clean-generic clean-libtool ctags \
-	distclean distclean-compile distclean-generic \
-	distclean-libtool distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am install-data \
-	install-data-am install-exec install-exec-am install-info \
-	install-info-am install-man install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags uninstall uninstall-am uninstall-info-am
+	clean-checkPROGRAMS clean-dist_jitBasicJAVA clean-generic \
+	clean-libtool ctags distclean distclean-compile \
+	distclean-generic distclean-libtool distclean-tags distdir dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-data install-data-am install-dist_jitBasicJAVA \
+	install-exec install-exec-am install-info install-info-am \
+	install-man install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool pdf pdf-am ps ps-am tags uninstall \
+	uninstall-am uninstall-dist_jitBasicJAVA uninstall-info-am
 
 
 @engine_frag@
 
 @threads_frag@
-
-$(JAVA_CLASSES): $(JAVA_SOURCE_FILES)
-	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(JAVA_SOURCE_FILES)
-
-jit_stub.o: $(JAVA_CLASSES)
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
