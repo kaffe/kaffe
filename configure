@@ -51045,6 +51045,8 @@ subdirs="$subdirs libltdl"
 
           ac_config_files="$ac_config_files libraries/javalib/gmp-math/Makefile"
 
+          ac_config_files="$ac_config_files libraries/javalib/tritonus-sound/Makefile"
+
           ac_config_files="$ac_config_files libraries/clib/Makefile"
 
           ac_config_files="$ac_config_files libraries/clib/target/Makefile"
@@ -52053,6 +52055,7 @@ do
   "libraries/javalib/awt-implementations/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/javalib/awt-implementations/Makefile" ;;
   "libraries/javalib/awt-implementations/kaffe/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/javalib/awt-implementations/kaffe/Makefile" ;;
   "libraries/javalib/gmp-math/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/javalib/gmp-math/Makefile" ;;
+  "libraries/javalib/tritonus-sound/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/javalib/tritonus-sound/Makefile" ;;
   "libraries/clib/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/Makefile" ;;
   "libraries/clib/target/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/target/Makefile" ;;
   "libraries/clib/target/generic/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/target/generic/Makefile" ;;

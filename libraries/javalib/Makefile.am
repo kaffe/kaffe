@@ -19,6 +19,10 @@ else
 MAYBE_GMP_JAVA_MATH=gmp-math
 endif
 
+if COND_NATIVE_SOUND
+  MAYBE_TRITONUS_SOUND=tritonus-sound
+endif
+
 if USE_PRECOMPILED_RT_JAR
 stamp-glibj:
 	@echo Importing glibj.zip from $(PATH_TO_RT_JAR)
@@ -37,7 +41,12 @@ endif
 clean-local:
 	rm -rf stamp-glibj glibj.zip
 
-SUBDIRS= . external/classpath $(MAYBE_PEERLESS_KAFFE_AWT) $(MAYBE_GMP_JAVA_MATH)
+SUBDIRS= \
+	. \
+	external/classpath \
+	$(MAYBE_PEERLESS_KAFFE_AWT) \
+	$(MAYBE_GMP_JAVA_MATH) \
+	$(MAYBE_TRITONUS_SOUND)
 
 jrelib_DATA= \
 	     logging.properties \
@@ -59,10 +68,6 @@ EXTRA_DIST= \
 	    Makefile.am.in \
 	    logging.properties \
 	vmspecific/META-INF/MANIFEST.MF \
-	vmspecific/META-INF/services/javax.sound.sampled.spi.AudioFileReader \
-	vmspecific/META-INF/services/javax.sound.sampled.spi.AudioFileWriter \
-	vmspecific/META-INF/services/javax.sound.sampled.spi.FormatConversionProvider \
-	vmspecific/META-INF/services/javax.sound.sampled.spi.MixerProvider \
 	vmspecific/gnu/bytecodecvssnap/Access.java \
 	vmspecific/gnu/bytecodecvssnap/ArrayClassLoader.java \
 	vmspecific/gnu/bytecodecvssnap/ArrayType.java \
@@ -308,147 +313,6 @@ EXTRA_DIST= \
 	vmspecific/org/objectweb/asm153/Item.java \
 	vmspecific/org/objectweb/asm153/Label.java \
 	vmspecific/org/objectweb/asm153/Type.java \
-	vmspecific/org/tritonus/core/Service.java \
-	vmspecific/org/tritonus/core/TAudioConfig.java \
-	vmspecific/org/tritonus/core/TInit.java \
-	vmspecific/org/tritonus/core/TMidiConfig.java \
-	vmspecific/org/tritonus/core/package.html \
-	vmspecific/org/tritonus/lowlevel/alsa/Alsa.java \
-	vmspecific/org/tritonus/lowlevel/alsa/AlsaCtl.java \
-	vmspecific/org/tritonus/lowlevel/alsa/AlsaCtlCardInfo.java \
-	vmspecific/org/tritonus/lowlevel/alsa/AlsaMixer.java \
-	vmspecific/org/tritonus/lowlevel/alsa/AlsaMixerElement.java \
-	vmspecific/org/tritonus/lowlevel/alsa/AlsaPcm.java \
-	vmspecific/org/tritonus/lowlevel/alsa/AlsaPcmHWParams.java \
-	vmspecific/org/tritonus/lowlevel/alsa/AlsaPcmHWParamsFormatMask.java \
-	vmspecific/org/tritonus/lowlevel/alsa/AlsaPcmSWParams.java \
-	vmspecific/org/tritonus/lowlevel/alsa/AlsaSeq.java \
-	vmspecific/org/tritonus/lowlevel/alsa/AlsaSeqClientInfo.java \
-	vmspecific/org/tritonus/lowlevel/alsa/AlsaSeqEvent.java \
-	vmspecific/org/tritonus/lowlevel/alsa/AlsaSeqPortInfo.java \
-	vmspecific/org/tritonus/lowlevel/alsa/AlsaSeqPortSubscribe.java \
-	vmspecific/org/tritonus/lowlevel/alsa/AlsaSeqQueueInfo.java \
-	vmspecific/org/tritonus/lowlevel/alsa/AlsaSeqQueueStatus.java \
-	vmspecific/org/tritonus/lowlevel/alsa/AlsaSeqQueueTempo.java \
-	vmspecific/org/tritonus/lowlevel/alsa/AlsaSeqQueueTimer.java \
-	vmspecific/org/tritonus/lowlevel/alsa/AlsaSeqRemoveEvents.java \
-	vmspecific/org/tritonus/lowlevel/alsa/AlsaSeqSystemInfo.java \
-	vmspecific/org/tritonus/lowlevel/alsa/package.html \
-	vmspecific/org/tritonus/lowlevel/esd/Esd.java \
-	vmspecific/org/tritonus/lowlevel/esd/EsdRecordingStream.java \
-	vmspecific/org/tritonus/lowlevel/esd/EsdSample.java \
-	vmspecific/org/tritonus/lowlevel/esd/EsdStream.java \
-	vmspecific/org/tritonus/lowlevel/esd/package.html \
-	vmspecific/org/tritonus/midi/device/alsa/AlsaMidiChannel.java \
-	vmspecific/org/tritonus/midi/device/alsa/AlsaMidiDevice.java \
-	vmspecific/org/tritonus/midi/device/alsa/AlsaMidiDeviceProvider.java \
-	vmspecific/org/tritonus/midi/device/alsa/AlsaMidiIn.java \
-	vmspecific/org/tritonus/midi/device/alsa/AlsaMidiOut.java \
-	vmspecific/org/tritonus/midi/device/alsa/AlsaQueueHolder.java \
-	vmspecific/org/tritonus/midi/device/alsa/AlsaReceiver.java \
-	vmspecific/org/tritonus/midi/device/alsa/AlsaSequencer.java \
-	vmspecific/org/tritonus/midi/device/alsa/AlsaSequencerProvider.java \
-	vmspecific/org/tritonus/midi/device/alsa/AlsaSequencerReceiver.java \
-	vmspecific/org/tritonus/midi/device/alsa/AlsaSynthesizer.java \
-	vmspecific/org/tritonus/midi/device/alsa/package.html \
-	vmspecific/org/tritonus/midi/file/MidiConstants.java \
-	vmspecific/org/tritonus/midi/file/StandardMidiFileReader.java \
-	vmspecific/org/tritonus/midi/file/StandardMidiFileWriter.java \
-	vmspecific/org/tritonus/midi/file/package.html \
-	vmspecific/org/tritonus/sampled/convert/AlawFormatConversionProvider.java \
-	vmspecific/org/tritonus/sampled/convert/PCM2PCMConversionProvider.java \
-	vmspecific/org/tritonus/sampled/convert/SampleRateConversionProvider.java \
-	vmspecific/org/tritonus/sampled/convert/SmartFormatConversionProvider.java \
-	vmspecific/org/tritonus/sampled/convert/UlawFormatConversionProvider.java \
-	vmspecific/org/tritonus/sampled/convert/package.html \
-	vmspecific/org/tritonus/sampled/file/AiffAudioFileReader.java \
-	vmspecific/org/tritonus/sampled/file/AiffAudioFileWriter.java \
-	vmspecific/org/tritonus/sampled/file/AiffAudioOutputStream.java \
-	vmspecific/org/tritonus/sampled/file/AiffTool.java \
-	vmspecific/org/tritonus/sampled/file/AuAudioFileReader.java \
-	vmspecific/org/tritonus/sampled/file/AuAudioFileWriter.java \
-	vmspecific/org/tritonus/sampled/file/AuAudioOutputStream.java \
-	vmspecific/org/tritonus/sampled/file/AuTool.java \
-	vmspecific/org/tritonus/sampled/file/WaveAudioFileReader.java \
-	vmspecific/org/tritonus/sampled/file/WaveAudioFileWriter.java \
-	vmspecific/org/tritonus/sampled/file/WaveAudioOutputStream.java \
-	vmspecific/org/tritonus/sampled/file/WaveTool.java \
-	vmspecific/org/tritonus/sampled/file/package.html \
-	vmspecific/org/tritonus/sampled/mixer/alsa/AlsaBaseDataLine.java \
-	vmspecific/org/tritonus/sampled/mixer/alsa/AlsaDataLineMixer.java \
-	vmspecific/org/tritonus/sampled/mixer/alsa/AlsaDataLineMixerProvider.java \
-	vmspecific/org/tritonus/sampled/mixer/alsa/AlsaPortMixer.java \
-	vmspecific/org/tritonus/sampled/mixer/alsa/AlsaPortMixerProvider.java \
-	vmspecific/org/tritonus/sampled/mixer/alsa/AlsaSourceDataLine.java \
-	vmspecific/org/tritonus/sampled/mixer/alsa/AlsaTargetDataLine.java \
-	vmspecific/org/tritonus/sampled/mixer/alsa/AlsaUtils.java \
-	vmspecific/org/tritonus/sampled/mixer/alsa/package.html \
-	vmspecific/org/tritonus/sampled/mixer/esd/EsdClip.java \
-	vmspecific/org/tritonus/sampled/mixer/esd/EsdMixer.java \
-	vmspecific/org/tritonus/sampled/mixer/esd/EsdMixerProvider.java \
-	vmspecific/org/tritonus/sampled/mixer/esd/EsdSourceDataLine.java \
-	vmspecific/org/tritonus/sampled/mixer/esd/EsdTargetDataLine.java \
-	vmspecific/org/tritonus/sampled/mixer/esd/EsdUtils.java \
-	vmspecific/org/tritonus/sampled/mixer/esd/package.html \
-	vmspecific/org/tritonus/share/ArraySet.java \
-	vmspecific/org/tritonus/share/GlobalInfo.java \
-	vmspecific/org/tritonus/share/StringHashedSet.java \
-	vmspecific/org/tritonus/share/TCircularBuffer.java \
-	vmspecific/org/tritonus/share/TDebug.java \
-	vmspecific/org/tritonus/share/TNotifier.java \
-	vmspecific/org/tritonus/share/TSettings.java \
-	vmspecific/org/tritonus/share/midi/MidiUtils.java \
-	vmspecific/org/tritonus/share/midi/TMidiDevice.java \
-	vmspecific/org/tritonus/share/midi/TMidiFileFormat.java \
-	vmspecific/org/tritonus/share/midi/TSequencer.java \
-	vmspecific/org/tritonus/share/midi/package.html \
-	vmspecific/org/tritonus/share/package.html \
-	vmspecific/org/tritonus/share/sampled/AudioFileTypes.java \
-	vmspecific/org/tritonus/share/sampled/AudioFormatSet.java \
-	vmspecific/org/tritonus/share/sampled/AudioFormats.java \
-	vmspecific/org/tritonus/share/sampled/AudioSystemShadow.java \
-	vmspecific/org/tritonus/share/sampled/AudioUtils.java \
-	vmspecific/org/tritonus/share/sampled/Encodings.java \
-	vmspecific/org/tritonus/share/sampled/FloatSampleBuffer.java \
-	vmspecific/org/tritonus/share/sampled/TConversionTool.java \
-	vmspecific/org/tritonus/share/sampled/TVolumeUtils.java \
-	vmspecific/org/tritonus/share/sampled/convert/TAsynchronousFilteredAudioInputStream.java \
-	vmspecific/org/tritonus/share/sampled/convert/TAudioInputStream.java \
-	vmspecific/org/tritonus/share/sampled/convert/TEncodingFormatConversionProvider.java \
-	vmspecific/org/tritonus/share/sampled/convert/TFormatConversionProvider.java \
-	vmspecific/org/tritonus/share/sampled/convert/TMatrixFormatConversionProvider.java \
-	vmspecific/org/tritonus/share/sampled/convert/TSimpleFormatConversionProvider.java \
-	vmspecific/org/tritonus/share/sampled/convert/TSynchronousFilteredAudioInputStream.java \
-	vmspecific/org/tritonus/share/sampled/convert/package.html \
-	vmspecific/org/tritonus/share/sampled/file/AudioOutputStream.java \
-	vmspecific/org/tritonus/share/sampled/file/HeaderlessAudioOutputStream.java \
-	vmspecific/org/tritonus/share/sampled/file/TAudioFileFormat.java \
-	vmspecific/org/tritonus/share/sampled/file/TAudioFileReader.java \
-	vmspecific/org/tritonus/share/sampled/file/TAudioFileWriter.java \
-	vmspecific/org/tritonus/share/sampled/file/TAudioOutputStream.java \
-	vmspecific/org/tritonus/share/sampled/file/TDataOutputStream.java \
-	vmspecific/org/tritonus/share/sampled/file/THeaderlessAudioFileWriter.java \
-	vmspecific/org/tritonus/share/sampled/file/TNonSeekableDataOutputStream.java \
-	vmspecific/org/tritonus/share/sampled/file/TSeekableDataOutputStream.java \
-	vmspecific/org/tritonus/share/sampled/file/package.html \
-	vmspecific/org/tritonus/share/sampled/mixer/TBaseDataLine.java \
-	vmspecific/org/tritonus/share/sampled/mixer/TBooleanControl.java \
-	vmspecific/org/tritonus/share/sampled/mixer/TClip.java \
-	vmspecific/org/tritonus/share/sampled/mixer/TCompoundControl.java \
-	vmspecific/org/tritonus/share/sampled/mixer/TCompoundControlType.java \
-	vmspecific/org/tritonus/share/sampled/mixer/TControlController.java \
-	vmspecific/org/tritonus/share/sampled/mixer/TControllable.java \
-	vmspecific/org/tritonus/share/sampled/mixer/TDataLine.java \
-	vmspecific/org/tritonus/share/sampled/mixer/TEnumControl.java \
-	vmspecific/org/tritonus/share/sampled/mixer/TFloatControl.java \
-	vmspecific/org/tritonus/share/sampled/mixer/TLine.java \
-	vmspecific/org/tritonus/share/sampled/mixer/TMixer.java \
-	vmspecific/org/tritonus/share/sampled/mixer/TMixerInfo.java \
-	vmspecific/org/tritonus/share/sampled/mixer/TMixerProvider.java \
-	vmspecific/org/tritonus/share/sampled/mixer/TPort.java \
-	vmspecific/org/tritonus/share/sampled/mixer/TSoftClip.java \
-	vmspecific/org/tritonus/share/sampled/mixer/package.html \
-	vmspecific/org/tritonus/share/sampled/package.html \
 	vmspecific/org/xbill/DNS/A6Record.java \
 	vmspecific/org/xbill/DNS/AAAARecord.java \
 	vmspecific/org/xbill/DNS/AFSDBRecord.java \

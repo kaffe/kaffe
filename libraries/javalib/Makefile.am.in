@@ -19,6 +19,10 @@ else
 MAYBE_GMP_JAVA_MATH=gmp-math
 endif
 
+if COND_NATIVE_SOUND
+  MAYBE_TRITONUS_SOUND=tritonus-sound
+endif
+
 if USE_PRECOMPILED_RT_JAR
 stamp-glibj:
 	@echo Importing glibj.zip from $(PATH_TO_RT_JAR)
@@ -37,7 +41,12 @@ endif
 clean-local:
 	rm -rf stamp-glibj glibj.zip
 
-SUBDIRS= . external/classpath $(MAYBE_PEERLESS_KAFFE_AWT) $(MAYBE_GMP_JAVA_MATH)
+SUBDIRS= \
+	. \
+	external/classpath \
+	$(MAYBE_PEERLESS_KAFFE_AWT) \
+	$(MAYBE_GMP_JAVA_MATH) \
+	$(MAYBE_TRITONUS_SOUND)
 
 jrelib_DATA= \
 	     logging.properties \

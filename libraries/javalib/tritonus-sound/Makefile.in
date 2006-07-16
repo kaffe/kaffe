@@ -14,25 +14,13 @@
 
 @SET_MAKE@
 
-# Library support
-#
-# Copyright (c) 1996, 1997, 1998, 1999
-#	Transvirtual Technologies, Inc.  All rights reserved.
-# Copyright (c) 2003
-#	Mark Wielaard <mark@klomp.org>
-# Copyright (c) 2004, 2006
-#	Kaffe.org contributors. All rights reserved.
-#
-# See the file "license.terms" for information on usage and redistribution 
-# of this file. 
-
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
-top_builddir = ..
+top_builddir = ../../..
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 INSTALL = @INSTALL@
 install_sh_DATA = $(install_sh) -c -m 644
@@ -48,9 +36,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = include
-DIST_COMMON = $(include_HEADERS) $(noinst_HEADERS) \
-	$(pkginclude_HEADERS) $(srcdir)/Makefile.am \
+subdir = libraries/javalib/tritonus-sound
+DIST_COMMON = $(dist_tritonus_JAVA) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
@@ -80,22 +67,16 @@ CONFIG_HEADER = $(top_builddir)/config/config.h
 CONFIG_CLEAN_FILES =
 SOURCES =
 DIST_SOURCES =
+CLASSPATH_ENV = CLASSPATH=$(JAVAROOT):$(srcdir)/$(JAVAROOT):$$CLASSPATH
+am__installdirs = "$(DESTDIR)$(tritonusdir)" "$(DESTDIR)$(jrelibdir)"
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
     *) f=$$p;; \
   esac;
 am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
-am__installdirs = "$(DESTDIR)$(includedir)" \
-	"$(DESTDIR)$(pkgincludedir)" "$(DESTDIR)$(pkgincludedir)"
-includeHEADERS_INSTALL = $(INSTALL_HEADER)
-nodist_pkgincludeHEADERS_INSTALL = $(INSTALL_HEADER)
-pkgincludeHEADERS_INSTALL = $(INSTALL_HEADER)
-HEADERS = $(include_HEADERS) $(nodist_noinst_HEADERS) \
-	$(nodist_pkginclude_HEADERS) $(noinst_HEADERS) \
-	$(pkginclude_HEADERS)
-ETAGS = etags
-CTAGS = ctags
+jrelibDATA_INSTALL = $(INSTALL_DATA)
+DATA = $(jrelib_DATA)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 ALSA_CFLAGS = @ALSA_CFLAGS@
@@ -364,190 +345,150 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
-KLASSES_JAR = $(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
-KAFFEH_JNI_CLASSPATH = $(top_builddir)/libraries/javalib/tritonus-sound/lib:$(top_builddir)/libraries/javalib/gmp-math/lib:$(KLASSES_JAR)
-EXTRA_DIST = distclean-hack \
-		stamp-h2.in
+CLASSFILE = kaffe-tritonus.jar
+SRCDIRS = org
+jrelib_DATA = $(CLASSFILE)
+LIBDIR = lib
+JAR_CMD1 = ($(FASTJAR) cf $(CLASSFILE) -C $(LIBDIR) $(SRCDIRS))
+JAR_CMD2 = ($(FASTJAR) uf $(CLASSFILE) -C $(srcdir) META-INF)
+CPATH = .:$(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
+AM_JAVACFLAGS = -classpath $(CPATH)
+JAVAC = $(JAVA_COMPILER)
+JAVAROOT = $(LIBDIR)
+EXTRA_DIST = \
+	META-INF
 
 
-# INSTALL_ means: these headers get installed,
-# NOINSTALL_ means: they don't get installed.
-# _DERIVED_ means: these headers are derived (using
-# kaffeh, from glibj.zip). 
-# _JNI_DERIVED_ means: these headers are derived using kaffeh
-# from glibj.zip *and* the -jni option is
-# set, resulting in JNI-ish method names.
-#
-# So if your class uses JNI to call its native methods
-# (like tritonus), then it goes into the JNI set,
-# otherwise it goes into the other one.
-INSTALL_DERIVED_HDRS = 
-NOINSTALL_DERIVED_HDRS = \
-	java_lang_Object.h \
-	java_lang_VMObject.h \
-	java_lang_VMClass.h \
-	java_lang_VMClassLoader.h \
-	java_lang_VMRuntime.h \
-	java_lang_String.h \
-	java_lang_VMString.h \
-	java_lang_StackTraceElement.h \
-	java_lang_Thread.h \
-	java_lang_VMThread.h \
-	java_lang_ThreadGroup.h \
-	java_lang_Throwable.h \
-	java_lang_VMThrowable.h \
-	java_io_InterruptedIOException.h \
-	java_io_VMFile.h \
-	java_lang_ClassLoader.h \
-	java_lang_Cloneable.h \
-	java_lang_Integer.h \
-	java_lang_Math.h \
-	java_lang_reflect_Constructor.h \
-	java_lang_reflect_Field.h \
-	java_lang_reflect_Method.h \
-	java_net_DatagramPacket.h \
-	java_net_InetAddress.h \
-	java_net_VMInetAddress.h \
-	java_net_InetSocketAddress.h \
-	java_net_NetworkInterface.h \
-	java_net_VMNetworkInterface.h \
-	gnu_java_net_PlainDatagramSocketImpl.h \
-	gnu_java_net_PlainSocketImpl.h \
-	gnu_java_net_SysInetAddressImpl.h \
-	java_net_SocketAddress.h \
-	java_net_SocketImpl.h \
-	java_net_SocketOptions.h \
-	java_security_VMAccessController.h \
-	java_util_Comparator.h \
-	java_util_VMTimeZone.h \
-	java_util_Vector.h \
-	java_util_zip_Adler32.h \
-	java_util_zip_CRC32.h \
-	java_util_zip_Deflater.h \
-	java_util_zip_Inflater.h \
-	java_util_zip_ZipEntry.h \
-	java_util_zip_ZipFile.h \
-	org_kaffe_management_Classpath.h \
-	gnu_classpath_VMStackWalker.h
-
-DERIVED_HDRS = $(INSTALL_DERIVED_HDRS) $(NOINSTALL_DERIVED_HDRS)
-INSTALL_JNI_DERIVED_HDRS = 
-LIBTRITONUSALSA_JNI_HDRS = \
-	org_tritonus_lowlevel_alsa_AlsaCtlCardInfo.h \
-	org_tritonus_lowlevel_alsa_AlsaCtl.h \
-	org_tritonus_lowlevel_alsa_Alsa.h \
-	org_tritonus_lowlevel_alsa_AlsaMixerElement.h \
-	org_tritonus_lowlevel_alsa_AlsaMixer.h \
-	org_tritonus_lowlevel_alsa_AlsaPcmHWParamsFormatMask.h \
-	org_tritonus_lowlevel_alsa_AlsaPcmHWParams.h \
-	org_tritonus_lowlevel_alsa_AlsaPcm.h \
-	org_tritonus_lowlevel_alsa_AlsaPcmSWParams.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqClientInfo.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqEvent.h \
-	org_tritonus_lowlevel_alsa_AlsaSeq.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqPortInfo.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqPortSubscribe.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqQueueInfo.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqQueueStatus.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqQueueTempo.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqQueueTimer.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqRemoveEvents.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqSystemInfo.h
-
-LIBTRITONUSESD_JNI_HDRS = \
-	org_tritonus_lowlevel_esd_Esd.h \
-	org_tritonus_lowlevel_esd_EsdRecordingStream.h \
-	org_tritonus_lowlevel_esd_EsdSample.h \
-	org_tritonus_lowlevel_esd_EsdStream.h
-
-
-# Only create headers for sound if they are going to be built.
-@COND_NATIVE_SOUND_TRUE@@COND_SOUND_ALSA_TRUE@MAYBE_LIBTRITONUSALSA_JNI_HDRS = $(LIBTRITONUSALSA_JNI_HDRS)
-@COND_NATIVE_SOUND_TRUE@@COND_SOUND_ESD_TRUE@MAYBE_LIBTRITONUSESD_JNI_HDRS = $(LIBTRITONUSESD_JNI_HDRS)
-NOINSTALL_JNI_DERIVED_HDRS = \
-	java_math_BigInteger.h \
-	java_lang_VMProcess.h \
-	java_lang_ref_Reference.h \
-	gnu_classpath_VMSystemProperties.h \
-	gnu_java_nio_SelectorImpl.h \
-	java_lang_VMSystem.h \
-	java_nio_VMDirectByteBuffer.h \
-	java_nio_MappedByteBufferImpl.h \
-	org_kaffe_lang_UNIXProcess.h \
-	org_kaffe_management_JIT.h \
-	org_kaffe_management_Debug.h \
-	org_kaffe_management_XProfiler.h \
-	org_kaffe_security_provider_MD2.h \
-	org_kaffe_security_provider_MD4.h \
-	org_kaffe_security_provider_MD5.h \
-	org_kaffe_security_provider_SHA.h \
-	$(MAYBE_LIBTRITONUSALSA_JNI_HDRS) \
-	$(MAYBE_LIBTRITONUSESD_JNI_HDRS) 
-
-JNI_DERIVED_HDRS = \
-	$(INSTALL_JNI_DERIVED_HDRS) \
-	$(NOINSTALL_JNI_DERIVED_HDRS)
-
-@USE_COMPAT_IFADDRS_FALSE@ifaddrs_compat = #
-@USE_COMPAT_IFADDRS_TRUE@ifaddrs_compat = ifaddrs.h
-nodist_noinst_HEADERS = \
-	$(ifaddrs_compat) \
-	$(NOINSTALL_DERIVED_HDRS) \
-	$(NOINSTALL_JNI_DERIVED_HDRS)
-
-noinst_HEADERS = \
-	ifaddrs_compat.h \
-	defs.h \
-	dummyin6.h \
-	files.h \
-	gccbuiltin.h \
-	getaddrinfo.h \
-	gettext.h \
-	nets.h \
-	system.h \
-	Arrays.h \
-	errors.h \
-	jsyscall.h \
-	native.h 
-
-include_HEADERS = \
-	config-int.h \
-	jni.h \
-	jni_md.h \
-	jni_cpp.h \
-	jvmpi.h \
-	kaffe_jni.h \
-	$(JAWT_HDRS)
-
-nodist_pkginclude_HEADERS = \
-	$(INSTALL_DERIVED_HDRS) \
-	$(INSTALL_JNI_DERIVED_HDRS)
-
-pkginclude_HEADERS = \
-	java_lang_Object.h \
-	java_lang_String.h \
-	java_lang_StackTraceElement.h \
-	java_lang_Thread.h \
-	java_lang_ThreadGroup.h \
-	java_lang_Throwable.h \
-	java_lang_VMThrowable.h \
-	kaffe/jmalloc.h \
-	kaffe/trampoline.h
-
-CLEANFILES = \
-	$(DERIVED_HDRS) \
-	$(JNI_DERIVED_HDRS) \
-	stamp-kaffeh
-
-DISTCLEANFILES = \
-	$(DERIVED_HDRS) \
-	$(JNI_DERIVED_HDRS) \
-	config-int.h \
-	stamp-h0all \
-	stamp-h1all \
-	stamp-libtritonusalsa \
-	stamp-libtritonusesd \
-	stamp-libgtkpeer
+# Use a fake install class and dir to keep automake's JAVA (un)install tasks happy.
+FAKE = fakeinstall
+tritonusdir = $(FAKE)
+dist_tritonus_JAVA = \
+	org/tritonus/core/Service.java \
+	org/tritonus/core/TAudioConfig.java \
+	org/tritonus/core/TInit.java \
+	org/tritonus/core/TMidiConfig.java \
+	org/tritonus/lowlevel/alsa/Alsa.java \
+	org/tritonus/lowlevel/alsa/AlsaCtl.java \
+	org/tritonus/lowlevel/alsa/AlsaCtlCardInfo.java \
+	org/tritonus/lowlevel/alsa/AlsaMixer.java \
+	org/tritonus/lowlevel/alsa/AlsaMixerElement.java \
+	org/tritonus/lowlevel/alsa/AlsaPcm.java \
+	org/tritonus/lowlevel/alsa/AlsaPcmHWParams.java \
+	org/tritonus/lowlevel/alsa/AlsaPcmHWParamsFormatMask.java \
+	org/tritonus/lowlevel/alsa/AlsaPcmSWParams.java \
+	org/tritonus/lowlevel/alsa/AlsaSeq.java \
+	org/tritonus/lowlevel/alsa/AlsaSeqClientInfo.java \
+	org/tritonus/lowlevel/alsa/AlsaSeqEvent.java \
+	org/tritonus/lowlevel/alsa/AlsaSeqPortInfo.java \
+	org/tritonus/lowlevel/alsa/AlsaSeqPortSubscribe.java \
+	org/tritonus/lowlevel/alsa/AlsaSeqQueueInfo.java \
+	org/tritonus/lowlevel/alsa/AlsaSeqQueueStatus.java \
+	org/tritonus/lowlevel/alsa/AlsaSeqQueueTempo.java \
+	org/tritonus/lowlevel/alsa/AlsaSeqQueueTimer.java \
+	org/tritonus/lowlevel/alsa/AlsaSeqRemoveEvents.java \
+	org/tritonus/lowlevel/alsa/AlsaSeqSystemInfo.java \
+	org/tritonus/lowlevel/esd/Esd.java \
+	org/tritonus/lowlevel/esd/EsdRecordingStream.java \
+	org/tritonus/lowlevel/esd/EsdSample.java \
+	org/tritonus/lowlevel/esd/EsdStream.java \
+	org/tritonus/midi/device/alsa/AlsaMidiChannel.java \
+	org/tritonus/midi/device/alsa/AlsaMidiDevice.java \
+	org/tritonus/midi/device/alsa/AlsaMidiDeviceProvider.java \
+	org/tritonus/midi/device/alsa/AlsaMidiIn.java \
+	org/tritonus/midi/device/alsa/AlsaMidiOut.java \
+	org/tritonus/midi/device/alsa/AlsaQueueHolder.java \
+	org/tritonus/midi/device/alsa/AlsaReceiver.java \
+	org/tritonus/midi/device/alsa/AlsaSequencer.java \
+	org/tritonus/midi/device/alsa/AlsaSequencerProvider.java \
+	org/tritonus/midi/device/alsa/AlsaSequencerReceiver.java \
+	org/tritonus/midi/device/alsa/AlsaSynthesizer.java \
+	org/tritonus/midi/file/MidiConstants.java \
+	org/tritonus/midi/file/StandardMidiFileReader.java \
+	org/tritonus/midi/file/StandardMidiFileWriter.java \
+	org/tritonus/sampled/convert/AlawFormatConversionProvider.java \
+	org/tritonus/sampled/convert/PCM2PCMConversionProvider.java \
+	org/tritonus/sampled/convert/SampleRateConversionProvider.java \
+	org/tritonus/sampled/convert/SmartFormatConversionProvider.java \
+	org/tritonus/sampled/convert/UlawFormatConversionProvider.java \
+	org/tritonus/sampled/file/AiffAudioFileReader.java \
+	org/tritonus/sampled/file/AiffAudioFileWriter.java \
+	org/tritonus/sampled/file/AiffAudioOutputStream.java \
+	org/tritonus/sampled/file/AiffTool.java \
+	org/tritonus/sampled/file/AuAudioFileReader.java \
+	org/tritonus/sampled/file/AuAudioFileWriter.java \
+	org/tritonus/sampled/file/AuAudioOutputStream.java \
+	org/tritonus/sampled/file/AuTool.java \
+	org/tritonus/sampled/file/WaveAudioFileReader.java \
+	org/tritonus/sampled/file/WaveAudioFileWriter.java \
+	org/tritonus/sampled/file/WaveAudioOutputStream.java \
+	org/tritonus/sampled/file/WaveTool.java \
+	org/tritonus/sampled/mixer/alsa/AlsaBaseDataLine.java \
+	org/tritonus/sampled/mixer/alsa/AlsaDataLineMixer.java \
+	org/tritonus/sampled/mixer/alsa/AlsaDataLineMixerProvider.java \
+	org/tritonus/sampled/mixer/alsa/AlsaPortMixer.java \
+	org/tritonus/sampled/mixer/alsa/AlsaPortMixerProvider.java \
+	org/tritonus/sampled/mixer/alsa/AlsaSourceDataLine.java \
+	org/tritonus/sampled/mixer/alsa/AlsaTargetDataLine.java \
+	org/tritonus/sampled/mixer/alsa/AlsaUtils.java \
+	org/tritonus/sampled/mixer/esd/EsdClip.java \
+	org/tritonus/sampled/mixer/esd/EsdMixer.java \
+	org/tritonus/sampled/mixer/esd/EsdMixerProvider.java \
+	org/tritonus/sampled/mixer/esd/EsdSourceDataLine.java \
+	org/tritonus/sampled/mixer/esd/EsdTargetDataLine.java \
+	org/tritonus/sampled/mixer/esd/EsdUtils.java \
+	org/tritonus/share/midi/MidiUtils.java \
+	org/tritonus/share/midi/TMidiDevice.java \
+	org/tritonus/share/midi/TMidiFileFormat.java \
+	org/tritonus/share/midi/TSequencer.java \
+	org/tritonus/share/ArraySet.java \
+	org/tritonus/share/GlobalInfo.java \
+	org/tritonus/share/StringHashedSet.java \
+	org/tritonus/share/TCircularBuffer.java \
+	org/tritonus/share/TDebug.java \
+	org/tritonus/share/TNotifier.java \
+	org/tritonus/share/TSettings.java \
+	org/tritonus/share/sampled/convert/TAsynchronousFilteredAudioInputStream.java \
+	org/tritonus/share/sampled/convert/TAudioInputStream.java \
+	org/tritonus/share/sampled/convert/TEncodingFormatConversionProvider.java \
+	org/tritonus/share/sampled/convert/TFormatConversionProvider.java \
+	org/tritonus/share/sampled/convert/TMatrixFormatConversionProvider.java \
+	org/tritonus/share/sampled/convert/TSimpleFormatConversionProvider.java \
+	org/tritonus/share/sampled/convert/TSynchronousFilteredAudioInputStream.java \
+	org/tritonus/share/sampled/AudioFileTypes.java \
+	org/tritonus/share/sampled/AudioFormatSet.java \
+	org/tritonus/share/sampled/AudioFormats.java \
+	org/tritonus/share/sampled/AudioSystemShadow.java \
+	org/tritonus/share/sampled/AudioUtils.java \
+	org/tritonus/share/sampled/Encodings.java \
+	org/tritonus/share/sampled/FloatSampleBuffer.java \
+	org/tritonus/share/sampled/TConversionTool.java \
+	org/tritonus/share/sampled/TVolumeUtils.java \
+	org/tritonus/share/sampled/file/AudioOutputStream.java \
+	org/tritonus/share/sampled/file/HeaderlessAudioOutputStream.java \
+	org/tritonus/share/sampled/file/TAudioFileFormat.java \
+	org/tritonus/share/sampled/file/TAudioFileReader.java \
+	org/tritonus/share/sampled/file/TAudioFileWriter.java \
+	org/tritonus/share/sampled/file/TAudioOutputStream.java \
+	org/tritonus/share/sampled/file/TDataOutputStream.java \
+	org/tritonus/share/sampled/file/THeaderlessAudioFileWriter.java \
+	org/tritonus/share/sampled/file/TNonSeekableDataOutputStream.java \
+	org/tritonus/share/sampled/file/TSeekableDataOutputStream.java \
+	org/tritonus/share/sampled/mixer/TBaseDataLine.java \
+	org/tritonus/share/sampled/mixer/TBooleanControl.java \
+	org/tritonus/share/sampled/mixer/TClip.java \
+	org/tritonus/share/sampled/mixer/TCompoundControl.java \
+	org/tritonus/share/sampled/mixer/TCompoundControlType.java \
+	org/tritonus/share/sampled/mixer/TControlController.java \
+	org/tritonus/share/sampled/mixer/TControllable.java \
+	org/tritonus/share/sampled/mixer/TDataLine.java \
+	org/tritonus/share/sampled/mixer/TEnumControl.java \
+	org/tritonus/share/sampled/mixer/TFloatControl.java \
+	org/tritonus/share/sampled/mixer/TLine.java \
+	org/tritonus/share/sampled/mixer/TMixer.java \
+	org/tritonus/share/sampled/mixer/TMixerInfo.java \
+	org/tritonus/share/sampled/mixer/TMixerProvider.java \
+	org/tritonus/share/sampled/mixer/TPort.java \
+	org/tritonus/share/sampled/mixer/TSoftClip.java 
 
 all: all-am
 
@@ -561,9 +502,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  include/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  libraries/javalib/tritonus-sound/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  include/Makefile
+	  $(AUTOMAKE) --gnu  libraries/javalib/tritonus-sound/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -591,108 +532,57 @@ clean-libtool:
 distclean-libtool:
 	-rm -f libtool
 uninstall-info-am:
-install-includeHEADERS: $(include_HEADERS)
+
+classdist_tritonus.stamp: $(dist_tritonus_JAVA)
+	@if test -n "$?"; then \
+	  echo '$(CLASSPATH_ENV) $(JAVAC) -d $(JAVAROOT) $(AM_JAVACFLAGS) $(JAVACFLAGS) $?' ; \
+	  $(CLASSPATH_ENV) $(JAVAC) -d $(JAVAROOT) \
+	    $(AM_JAVACFLAGS) $(JAVACFLAGS) $?; \
+	else :; fi
+	echo timestamp > classdist_tritonus.stamp
+install-dist_tritonusJAVA: classdist_tritonus.stamp
 	@$(NORMAL_INSTALL)
-	test -z "$(includedir)" || $(mkdir_p) "$(DESTDIR)$(includedir)"
-	@list='$(include_HEADERS)'; for p in $$list; do \
+	test -z "$(tritonusdir)" || $(mkdir_p) "$(DESTDIR)$(tritonusdir)"
+	@test -z "$(dist_tritonus_JAVA)" || for p in *.class; do \
+	  echo " $(INSTALL_DATA) '$$p' '$(DESTDIR)$(tritonusdir)/$$p'"; \
+	  $(INSTALL_DATA) "$$p" "$(DESTDIR)$(tritonusdir)/$$p"; \
+	done
+
+uninstall-dist_tritonusJAVA:
+	@$(NORMAL_UNINSTALL)
+	@test -z "$(dist_tritonus_JAVA)" || for p in *.class; do \
+	  echo " rm -f '$(DESTDIR)$(tritonusdir)/$$p'"; \
+	  rm -f "$(DESTDIR)$(tritonusdir)/$$p"; \
+	done
+
+clean-dist_tritonusJAVA:
+	-rm -f *.class classdist_tritonus.stamp
+install-jrelibDATA: $(jrelib_DATA)
+	@$(NORMAL_INSTALL)
+	test -z "$(jrelibdir)" || $(mkdir_p) "$(DESTDIR)$(jrelibdir)"
+	@list='$(jrelib_DATA)'; for p in $$list; do \
 	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
 	  f=$(am__strip_dir) \
-	  echo " $(includeHEADERS_INSTALL) '$$d$$p' '$(DESTDIR)$(includedir)/$$f'"; \
-	  $(includeHEADERS_INSTALL) "$$d$$p" "$(DESTDIR)$(includedir)/$$f"; \
+	  echo " $(jrelibDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(jrelibdir)/$$f'"; \
+	  $(jrelibDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(jrelibdir)/$$f"; \
 	done
 
-uninstall-includeHEADERS:
+uninstall-jrelibDATA:
 	@$(NORMAL_UNINSTALL)
-	@list='$(include_HEADERS)'; for p in $$list; do \
+	@list='$(jrelib_DATA)'; for p in $$list; do \
 	  f=$(am__strip_dir) \
-	  echo " rm -f '$(DESTDIR)$(includedir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(includedir)/$$f"; \
+	  echo " rm -f '$(DESTDIR)$(jrelibdir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(jrelibdir)/$$f"; \
 	done
-install-nodist_pkgincludeHEADERS: $(nodist_pkginclude_HEADERS)
-	@$(NORMAL_INSTALL)
-	test -z "$(pkgincludedir)" || $(mkdir_p) "$(DESTDIR)$(pkgincludedir)"
-	@list='$(nodist_pkginclude_HEADERS)'; for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  f=$(am__strip_dir) \
-	  echo " $(nodist_pkgincludeHEADERS_INSTALL) '$$d$$p' '$(DESTDIR)$(pkgincludedir)/$$f'"; \
-	  $(nodist_pkgincludeHEADERS_INSTALL) "$$d$$p" "$(DESTDIR)$(pkgincludedir)/$$f"; \
-	done
-
-uninstall-nodist_pkgincludeHEADERS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(nodist_pkginclude_HEADERS)'; for p in $$list; do \
-	  f=$(am__strip_dir) \
-	  echo " rm -f '$(DESTDIR)$(pkgincludedir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(pkgincludedir)/$$f"; \
-	done
-install-pkgincludeHEADERS: $(pkginclude_HEADERS)
-	@$(NORMAL_INSTALL)
-	test -z "$(pkgincludedir)" || $(mkdir_p) "$(DESTDIR)$(pkgincludedir)"
-	@list='$(pkginclude_HEADERS)'; for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  f=$(am__strip_dir) \
-	  echo " $(pkgincludeHEADERS_INSTALL) '$$d$$p' '$(DESTDIR)$(pkgincludedir)/$$f'"; \
-	  $(pkgincludeHEADERS_INSTALL) "$$d$$p" "$(DESTDIR)$(pkgincludedir)/$$f"; \
-	done
-
-uninstall-pkgincludeHEADERS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(pkginclude_HEADERS)'; for p in $$list; do \
-	  f=$(am__strip_dir) \
-	  echo " rm -f '$(DESTDIR)$(pkgincludedir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(pkgincludedir)/$$f"; \
-	done
-
-ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
-	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
-	unique=`for i in $$list; do \
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
-	  done | \
-	  $(AWK) '    { files[$$0] = 1; } \
-	       END { for (i in files) print i; }'`; \
-	mkid -fID $$unique
 tags: TAGS
+TAGS:
 
-TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
-		$(TAGS_FILES) $(LISP)
-	tags=; \
-	here=`pwd`; \
-	list='$(SOURCES) $(HEADERS)  $(LISP) $(TAGS_FILES)'; \
-	unique=`for i in $$list; do \
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
-	  done | \
-	  $(AWK) '    { files[$$0] = 1; } \
-	       END { for (i in files) print i; }'`; \
-	if test -z "$(ETAGS_ARGS)$$tags$$unique"; then :; else \
-	  test -n "$$unique" || unique=$$empty_fix; \
-	  $(ETAGS) $(ETAGSFLAGS) $(AM_ETAGSFLAGS) $(ETAGS_ARGS) \
-	    $$tags $$unique; \
-	fi
 ctags: CTAGS
-CTAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
-		$(TAGS_FILES) $(LISP)
-	tags=; \
-	here=`pwd`; \
-	list='$(SOURCES) $(HEADERS)  $(LISP) $(TAGS_FILES)'; \
-	unique=`for i in $$list; do \
-	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
-	  done | \
-	  $(AWK) '    { files[$$0] = 1; } \
-	       END { for (i in files) print i; }'`; \
-	test -z "$(CTAGS_ARGS)$$tags$$unique" \
-	  || $(CTAGS) $(CTAGSFLAGS) $(AM_CTAGSFLAGS) $(CTAGS_ARGS) \
-	     $$tags $$unique
+CTAGS:
 
-GTAGS:
-	here=`$(am__cd) $(top_builddir) && pwd` \
-	  && cd $(top_srcdir) \
-	  && gtags -i $(GTAGS_ARGS) $$here
-
-distclean-tags:
-	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/kaffe
+	$(mkdir_p) $(distdir)/org/tritonus/core $(distdir)/org/tritonus/lowlevel/alsa $(distdir)/org/tritonus/lowlevel/esd $(distdir)/org/tritonus/midi/device/alsa $(distdir)/org/tritonus/midi/file $(distdir)/org/tritonus/sampled/convert $(distdir)/org/tritonus/sampled/file $(distdir)/org/tritonus/sampled/mixer/alsa $(distdir)/org/tritonus/sampled/mixer/esd $(distdir)/org/tritonus/share $(distdir)/org/tritonus/share/midi $(distdir)/org/tritonus/share/sampled $(distdir)/org/tritonus/share/sampled/convert $(distdir)/org/tritonus/share/sampled/file $(distdir)/org/tritonus/share/sampled/mixer
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -719,14 +609,11 @@ distdir: $(DISTFILES)
 	    || exit 1; \
 	  fi; \
 	done
-	$(MAKE) $(AM_MAKEFLAGS) \
-	  top_distdir="$(top_distdir)" distdir="$(distdir)" \
-	  dist-hook
 check-am: all-am
 check: check-am
-all-am: Makefile $(HEADERS)
+all-am: Makefile classdist_tritonus.stamp $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(includedir)" "$(DESTDIR)$(pkgincludedir)" "$(DESTDIR)$(pkgincludedir)"; do \
+	for dir in "$(DESTDIR)$(tritonusdir)" "$(DESTDIR)$(jrelibdir)"; do \
 	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
 	done
 install: install-am
@@ -746,23 +633,21 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
-	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
-	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libtool mostlyclean-am
+clean-am: clean-dist_tritonusJAVA clean-generic clean-libtool \
+	clean-local mostlyclean-am
 
 distclean: distclean-am
 	-rm -f Makefile
-distclean-am: clean-am distclean-generic distclean-libtool \
-	distclean-tags
+distclean-am: clean-am distclean-generic distclean-libtool
 
 dvi: dvi-am
 
@@ -774,8 +659,8 @@ info: info-am
 
 info-am:
 
-install-data-am: install-includeHEADERS \
-	install-nodist_pkgincludeHEADERS install-pkgincludeHEADERS
+install-data-am: install-data-local install-dist_tritonusJAVA \
+	install-jrelibDATA
 
 install-exec-am:
 
@@ -801,77 +686,34 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-includeHEADERS uninstall-info-am \
-	uninstall-nodist_pkgincludeHEADERS uninstall-pkgincludeHEADERS
+uninstall-am: uninstall-dist_tritonusJAVA uninstall-info-am \
+	uninstall-jrelibDATA uninstall-local
 
-.PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-libtool ctags dist-hook distclean distclean-generic \
-	distclean-libtool distclean-tags distdir dvi dvi-am html \
+.PHONY: all all-am check check-am clean clean-dist_tritonusJAVA \
+	clean-generic clean-libtool clean-local distclean \
+	distclean-generic distclean-libtool distdir dvi dvi-am html \
 	html-am info info-am install install-am install-data \
-	install-data-am install-exec install-exec-am \
-	install-includeHEADERS install-info install-info-am \
-	install-man install-nodist_pkgincludeHEADERS \
-	install-pkgincludeHEADERS install-strip installcheck \
+	install-data-am install-data-local install-dist_tritonusJAVA \
+	install-exec install-exec-am install-info install-info-am \
+	install-jrelibDATA install-man install-strip installcheck \
 	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am tags uninstall \
-	uninstall-am uninstall-includeHEADERS uninstall-info-am \
-	uninstall-nodist_pkgincludeHEADERS uninstall-pkgincludeHEADERS
+	mostlyclean-libtool pdf pdf-am ps ps-am uninstall uninstall-am \
+	uninstall-dist_tritonusJAVA uninstall-info-am \
+	uninstall-jrelibDATA uninstall-local
 
 
-# Always link, ignore failures.
-@USE_COMPAT_IFADDRS_TRUE@ifaddrs.h: ifaddrs_compat.h
-@USE_COMPAT_IFADDRS_TRUE@	$(LN_S) $(top_srcdir)/include/ifaddrs_compat.h ifaddrs.h || true
+$(CLASSFILE): classdist_tritonus.stamp
+	rm -f $(CLASSFILE)
+	$(JAR_CMD1)
+	$(JAR_CMD2)
 
-stamp-kaffeh:
-	@test -x $(KAFFEH) || ($(MAKE_KAFFEH))
-	@echo timestamp > $@
-
-$(DERIVED_HDRS): stamp-h0all
-	@if test -f $@; then :; else \
-	  rm -f stamp-h0all; $(MAKE) DERIVED_HDRS=$@ stamp-h0all; \
-	fi
-
-stamp-h0all: stamp-kaffeh $(KLASSES_JAR)
-	@set -e; for f in $(DERIVED_HDRS); do \
-	  class=`echo $$f | sed -e 's%.*/%%g' -e 's%\.h$$%%' -e 's%_%/%g'`; \
-	  echo "$(KAFFEH) -classpath $(KLASSES_JAR) -o $$f $$class"; \
-	  $(KAFFEH) -classpath $(KLASSES_JAR) -o stamp-h0$$f $$class; \
-	  if test -f $$f && cmp $$f stamp-h0$$f >/dev/null; then \
-	    echo "$$f is already up-to-date"; \
-	    rm -f stamp-h0$$f; \
-	  else \
-	    rm -f $$f; mv stamp-h0$$f $$f; \
-	  fi; \
-	done
-	@echo timestamp > $@
-
-stamp-h1all: stamp-kaffeh $(KLASSES_JAR)
-	@set -e; for f in $(JNI_DERIVED_HDRS); do \
-	  class=`echo $$f | sed -e 's%.*/%%g' -e 's%\.h$$%%' -e 's%_%/%g'`; \
-	  echo "$(KAFFEH) -jni -classpath $(KAFFEH_JNI_CLASSPATH) -o $$f $$class"; \
-	  $(KAFFEH) -jni -classpath $(KAFFEH_JNI_CLASSPATH) -o stamp-h1$$f $$class; \
-	  if test -f $$f && cmp $$f stamp-h1$$f >/dev/null; then \
-	    echo "$$f is already up-to-date"; \
-	    rm -f stamp-h1$$f; \
-	  else \
-	    rm -f $$f; mv stamp-h1$$f $$f; \
-	  fi; \
-	done
-	@echo timestamp > $@
-
-#
-# jni headers of the core libraries
-#
-$(JNI_DERIVED_HDRS): stamp-h1all
-	@if test -f $@; then :; else \
-	  rm -f stamp-h1all; $(MAKE) JNI_DERIVED_HDRS=$@ stamp-h1all; \
-	fi
-
-dist-hook:
-	@for file in $(DISTCLEANFILES); do \
-	  rm -f $(distdir)/$$file; \
-	done
+clean-local:
+	rm -rf $(LIBDIR) $(CLASSFILE)
+install-data-local: 
+	touch $(FAKE).class
+uninstall-local: 
+	rm $(FAKE).class
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
