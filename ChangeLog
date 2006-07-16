@@ -1,5 +1,17 @@
 2006-07-16  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/vmspecific/org/kaffe/beans/editors/BooleanEditor.java,
+	libraries/javalib/vmspecific/org/kaffe/beans/editors/ByteEditor.java,
+	libraries/javalib/vmspecific/org/kaffe/beans/editors/DoubleEditor.java,
+	libraries/javalib/vmspecific/org/kaffe/beans/editors/FloatEditor.java,
+	libraries/javalib/vmspecific/org/kaffe/beans/editors/IntegerEditor.java,
+	libraries/javalib/vmspecific/org/kaffe/beans/editors/LongEditor.java,
+	libraries/javalib/vmspecific/org/kaffe/beans/editors/ShortEditor.java,
+	libraries/javalib/vmspecific/org/kaffe/beans/editors/StringEditor.java:
+	Removed unused classes.
+
+2006-07-16  Dalibor Topic  <robilad@kaffe.org>
+
 	Use automake's support for Java to build the jitter test suite.
 
 	* test/internal/Makefile.am (JAVA_CLASSES, $(JAVA_CLASSES), EXTRA_DIST, 

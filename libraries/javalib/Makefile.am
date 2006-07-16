@@ -270,14 +270,6 @@ EXTRA_DIST= \
 	vmspecific/java/util/zip/ZipFile.java \
 	vmspecific/java/util/zip/ZipInputStream.java \
 	vmspecific/java/util/zip/ZipOutputStream.java \
-	vmspecific/org/kaffe/beans/editors/BooleanEditor.java \
-	vmspecific/org/kaffe/beans/editors/ByteEditor.java \
-	vmspecific/org/kaffe/beans/editors/DoubleEditor.java \
-	vmspecific/org/kaffe/beans/editors/FloatEditor.java \
-	vmspecific/org/kaffe/beans/editors/IntegerEditor.java \
-	vmspecific/org/kaffe/beans/editors/LongEditor.java \
-	vmspecific/org/kaffe/beans/editors/ShortEditor.java \
-	vmspecific/org/kaffe/beans/editors/StringEditor.java \
 	vmspecific/org/kaffe/io/AccessibleBAOStream.java \
 	vmspecific/org/kaffe/io/NullOutputStream.java \
 	vmspecific/org/kaffe/io/StdErrorStream.java \
