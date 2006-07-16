@@ -1,5 +1,20 @@
 2006-07-16  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/vmspecific/org/kaffe/util/Timer.java,
+	libraries/javalib/vmspecific/org/kaffe/util/TimerClient.java,
+	libraries/javalib/vmspecific/org/kaffe/util/VectorSnapshot.java:
+	Removed. Moved to kaffe's awt implementatin, i.e. ...
+
+	* libraries/javalib/awt-implementations/kaffe/org/kaffe/util/TimerClient.java,
+	libraries/javalib/awt-implementations/kaffe/org/kaffe/util/Timer.java,
+	libraries/javalib/awt-implementations/kaffe/org/kaffe/util/VectorSnapshot.java:
+	... to here.
+
+	* libraries/javalib/awt-implementations/Makefile.am: Added the new 
+	org/kaffe/util classes.
+
+2006-07-16  Dalibor Topic  <robilad@kaffe.org>
+
 	Switched over to GNU Classpath's java.lang.String.
 
 	* libraries/javalib/vmspecific/java/lang/String.java:

@@ -617,11 +617,8 @@ EXTRA_DIST = \
 	vmspecific/org/kaffe/util/NotImplementedReport.java \
 	vmspecific/org/kaffe/util/Ptr.java \
 	vmspecific/org/kaffe/util/SupportDisabled.java \
-	vmspecific/org/kaffe/util/Timer.java \
-	vmspecific/org/kaffe/util/TimerClient.java \
 	vmspecific/org/kaffe/util/UNIXTimeZone.java \
 	vmspecific/org/kaffe/util/UTF8.java \
-	vmspecific/org/kaffe/util/VectorSnapshot.java \
 	vmspecific/org/kaffe/util/zip/SwitchInflater.java \
 	vmspecific/org/objectweb/asm153/Attribute.java \
 	vmspecific/org/objectweb/asm153/ByteVector.java \

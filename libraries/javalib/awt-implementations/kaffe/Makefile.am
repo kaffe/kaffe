@@ -319,7 +319,10 @@ org_kaffe_awt_SRCS = \
 org_kaffe_io_SRCS = \
 	org/kaffe/io/AccessibleBAOStream.java
 org_kaffe_util_SRCS = \
-	org/kaffe/util/DoubleLinkedObject.java
+	org/kaffe/util/DoubleLinkedObject.java \
+	org/kaffe/util/TimerClient.java \
+	org/kaffe/util/Timer.java \
+	org/kaffe/util/VectorSnapshot.java
 org_kaffe_util_log_SRCS = \
         org/kaffe/util/log/LogClient.java \
         org/kaffe/util/log/LogStream.java \
