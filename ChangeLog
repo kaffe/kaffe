@@ -1,5 +1,22 @@
 2006-07-17  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/META-INF/MANIFEST.MF,
+	libraries/javalib/META-INF/services/javax.sound.midi.spi.MidiDeviceProvider,
+	libraries/javalib/META-INF/services/javax.sound.midi.spi.MidiFileReader,
+	libraries/javalib/META-INF/services/javax.sound.midi.spi.MidiFileWriter,
+	libraries/javalib/META-INF/services/javax.sound.midi.spi.SoundbankReader,
+	libraries/javalib/META-INF/services/javax.sound.sampled.spi.AudioFileReader,
+	libraries/javalib/META-INF/services/javax.sound.sampled.spi.AudioFileWriter,
+	libraries/javalib/META-INF/services/javax.sound.sampled.spi.FormatConversionProvider,
+	libraries/javalib/META-INF/services/javax.sound.sampled.spi.MixerProvider,
+	libraries/javalib/META-INF/services/javax.xml.parsers.DocumentBuilderFactory,
+	libraries/javalib/META-INF/services/javax.xml.parsers.SAXParserFactory,
+	libraries/javalib/META-INF/services/javax.xml.parsers.TransformerFactory,
+	libraries/javalib/META-INF/services/org.xml.sax.driver:
+	Removed.
+
+2006-07-17  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/vmspecific/org/kaffe/lang/UNIXProcess.java:
 	Removed.
 
