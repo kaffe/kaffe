@@ -277,7 +277,6 @@ EXTRA_DIST= \
 	vmspecific/java/util/zip/ZipOutputStream.java \
 	vmspecific/org/kaffe/jar/ExecJar.java \
 	vmspecific/org/kaffe/jar/ExecJarName.java \
-	vmspecific/org/kaffe/lang/UNIXProcess.java \
 	vmspecific/org/kaffe/management/Classpath.java \
 	vmspecific/org/kaffe/management/Debug.java \
 	vmspecific/org/kaffe/management/JIT.java \

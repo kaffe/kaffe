@@ -1,5 +1,21 @@
 2006-07-17  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/vmspecific/org/kaffe/lang/UNIXProcess.java:
+	Removed.
+
+	* test/regression/ProcessTest.java, 
+	test/regression/KaffeInternal.java:
+	Removed references to org.kaffe.lang.UNIXProcess.
+
+	* libraries/clib/native/ClassLoader.c: (java_lang_VMClassLoader_loadClass)
+	Don't prohibit loading of org.kaffe.lang classes any more, as there are
+	no classes left in that package. 
+
+	* include/Makefile.am (NOINSTALL_JNI_DERIVED_HDRS): Removed 
+	org_kaffe_lang_UNIXProcess.h.
+
+2006-07-17  Dalibor Topic  <robilad@kaffe.org>
+
 	* test/regression/KaffeInternal.java:
 	Use org.kaffe.lang.UNIXProcess for the test.
 

@@ -473,7 +473,6 @@ NOINSTALL_JNI_DERIVED_HDRS = \
 	java_lang_VMSystem.h \
 	java_nio_VMDirectByteBuffer.h \
 	java_nio_MappedByteBufferImpl.h \
-	org_kaffe_lang_UNIXProcess.h \
 	org_kaffe_management_JIT.h \
 	org_kaffe_management_Debug.h \
 	org_kaffe_management_XProfiler.h \

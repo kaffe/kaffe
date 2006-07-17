@@ -1,5 +1,4 @@
 /*
- * a simple test for kaffe.lang.UNIXProcess.
  * This will run on Unixoids only.
  *
  * We spawn a copy of the kaffe JVM which executes this program, sends

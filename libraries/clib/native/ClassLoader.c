@@ -210,7 +210,6 @@ java_lang_VMClassLoader_loadClass(Hjava_lang_String* jStr, jboolean resolve)
 	  classname2pathname(name, name);
 
 	if (foundSlash ||
-	    !strncmp (name, "org/kaffe/lang/", 11) ||
 	    (!strncmp (name, "gnu/classpath/", 14)
              && strncmp (name, 
                          "gnu/classpath/tools/", 
