@@ -317,6 +317,16 @@ public final class GnuCrypto
         put("Cipher.PBEWithHMacWhirlpoolAndTwofish",
             gnu.javax.crypto.jce.cipher.PBES2.HMacWhirlpool.Twofish.class.getName());
 
+        // Key Wrapping Algorithm cipher
+        put("Cipher." + Registry.AES128_KWA,
+            gnu.javax.crypto.jce.cipher.AES128KeyWrapSpi.class.getName());
+        put("Cipher." + Registry.AES192_KWA,
+            gnu.javax.crypto.jce.cipher.AES192KeyWrapSpi.class.getName());
+        put("Cipher." + Registry.AES256_KWA,
+            gnu.javax.crypto.jce.cipher.AES256KeyWrapSpi.class.getName());
+        put("Cipher." + Registry.TRIPLEDES_KWA,
+            gnu.javax.crypto.jce.cipher.TripleDESKeyWrapSpi.class.getName());
+
         // SecretKeyFactory interface to PBKDF2.
         put("SecretKeyFactory.PBKDF2WithHMacHaval",
             gnu.javax.crypto.jce.PBKDF2SecretKeyFactory.HMacHaval.class.getName());

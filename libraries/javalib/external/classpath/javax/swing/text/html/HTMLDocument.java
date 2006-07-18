@@ -1317,16 +1317,6 @@ public class HTMLDocument extends DefaultStyledDocument
       printBuffer();
       DefaultStyledDocument.ElementSpec element;
 
-      // If the previous tag is content and the parent is p-implied, then
-      // we must also close the p-implied.
-      if (parseStack.size() > 0 && parseStack.peek() == HTML.Tag.IMPLIED)
-        {
-          element = new DefaultStyledDocument.ElementSpec(null,
-                                    DefaultStyledDocument.ElementSpec.EndTagType);
-          parseBuffer.addElement(element);
-          parseStack.pop();
-        }
-
       parseStack.push(t);
       AbstractDocument.AttributeContext ctx = getAttributeContext();
       AttributeSet copy = attr.copyAttributes();
@@ -1363,16 +1353,6 @@ public class HTMLDocument extends DefaultStyledDocument
 			  DefaultStyledDocument.ElementSpec.ContentType,
                                     new char[0], 0, 0);
           parseBuffer.add(element);
-        }
-      // If the previous tag is content and the parent is p-implied, then
-      // we must also close the p-implied.
-      else if (!parseStack.isEmpty() && parseStack.peek() == HTML.Tag.IMPLIED)
-        {
-          element = new DefaultStyledDocument.ElementSpec(null,
-                                 DefaultStyledDocument.ElementSpec.EndTagType);
-          parseBuffer.addElement(element);
-          if (parseStack.size() > 0)
-            parseStack.pop();
         }
 
       element = new DefaultStyledDocument.ElementSpec(null,
@@ -1412,27 +1392,6 @@ public class HTMLDocument extends DefaultStyledDocument
       AbstractDocument.AttributeContext ctx = getAttributeContext();
       DefaultStyledDocument.ElementSpec element;
       AttributeSet attributes = null;
-
-      // Content must always be embedded inside a paragraph element,
-      // so we create this if the previous element is not one of
-      // <p>, <h1> .. <h6>.
-      boolean createImpliedParagraph = false;
-      HTML.Tag parent = (HTML.Tag) parseStack.peek();
-      if (parent != HTML.Tag.P && parent != HTML.Tag.H1
-          && parent != HTML.Tag.H2
-          && parent != HTML.Tag.H3 && parent != HTML.Tag.H4
-          && parent != HTML.Tag.H5 && parent != HTML.Tag.H6
-          && parent != HTML.Tag.TD)
-        {
-          attributes = ctx.getEmptySet();
-          attributes = ctx.addAttribute(attributes,
-                                        StyleConstants.NameAttribute,
-                                        HTML.Tag.IMPLIED);
-          element = new DefaultStyledDocument.ElementSpec(attributes,
-                       DefaultStyledDocument.ElementSpec.StartTagType);
-          parseBuffer.add(element);
-          parseStack.push(HTML.Tag.IMPLIED);
-        }
 
       // Copy the attribute set, don't use the same object because 
       // it may change

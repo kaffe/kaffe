@@ -38,40 +38,84 @@ exception statement from your version. */
 
 package gnu.java.awt.dnd.peer.gtk;
 
+import gnu.java.awt.peer.gtk.GtkGenericPeer;
+
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.Window;
 import java.awt.dnd.DragGestureEvent;
 import java.awt.dnd.DragSourceContext;
 import java.awt.dnd.InvalidDnDOperationException;
 import java.awt.dnd.peer.DragSourceContextPeer;
+import java.awt.peer.ComponentPeer;
+import java.awt.peer.LightweightPeer;
 
 public class GtkDragSourceContextPeer
+    extends GtkGenericPeer
     implements DragSourceContextPeer
 {
 
   private DragGestureEvent dge;
+  private ComponentPeer peer;
+  private Cursor cursor;
+  
+  native void nativeStartDrag(Image i, int x, int y, int action, String target);
+  native void connectSignals(ComponentPeer comp);
+  native void create(ComponentPeer comp);
+  native void nativeSetCursor(int cursor);
   
   public GtkDragSourceContextPeer(DragGestureEvent e)
   {
+    super(e.getComponent());
     dge = e;
+    
+    Component comp = e.getComponent();
+    
+    peer = getComponentPeer(comp);
+    create(peer);
+    connectSignals(peer);
+    cursor = comp.getCursor();
+  }
+  
+  ComponentPeer getComponentPeer(Component c)
+  {
+    Component curr = c;
+    while (curr.getPeer() instanceof LightweightPeer)
+      curr = curr.getParent();
+    
+    if (curr != null)
+      return curr.getPeer();
+    return null;
   }
   
   public void startDrag(DragSourceContext context, Cursor c, Image i, Point p)
       throws InvalidDnDOperationException
-  {
-    // FIXME: Not Implemented
+  {   
+    if (p == null)
+      p = new Point();
+    
+    // FIXME: use proper DataFlavor, not "text/plain".
+    // Also, add check to determine if dragging.
+    
+    setCursor(c);
+    nativeStartDrag(i, p.x, p.y, context.getTrigger().getDragAction(),
+                    "text/plain");
   }
 
   public Cursor getCursor()
   {
-    // FIXME: Not Implemented
-    return null;
+    return cursor;
   }
 
   public void setCursor(Cursor c) throws InvalidDnDOperationException
   {
-    // FIXME: Not Implemented
+    if (c != null)
+      {
+        nativeSetCursor(c.getType());
+        cursor = c;
+      }
   }
 
   public void transferablesFlavorsChanged()

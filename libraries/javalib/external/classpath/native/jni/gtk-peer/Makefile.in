@@ -101,8 +101,8 @@ am_libgtkpeer_la_OBJECTS = gnu_java_awt_peer_gtk_CairoSurface.lo \
 	gnu_java_awt_peer_gtk_GtkTextFieldPeer.lo \
 	gnu_java_awt_peer_gtk_GtkToolkit.lo \
 	gnu_java_awt_peer_gtk_GtkWindowPeer.lo \
-	gnu_java_awt_peer_gtk_GtkVolatileImage.lo gthread-jni.lo \
-	gtk_jawt.lo
+	gnu_java_awt_peer_gtk_GtkVolatileImage.lo \
+	GtkDragSourceContextPeer.lo gthread-jni.lo gtk_jawt.lo
 libgtkpeer_la_OBJECTS = $(am_libgtkpeer_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -390,6 +390,7 @@ libgtkpeer_la_SOURCES = gnu_java_awt_peer_gtk_CairoSurface.c \
 			gnu_java_awt_peer_gtk_GtkToolkit.c \
 			gnu_java_awt_peer_gtk_GtkWindowPeer.c \
 			gnu_java_awt_peer_gtk_GtkVolatileImage.c \
+			GtkDragSourceContextPeer.c \
 			cairographics2d.h \
 			gthread-jni.c \
 			gdkdisplay.h \
@@ -481,6 +482,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GtkDragSourceContextPeer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnu_java_awt_peer_gtk_CairoGraphics2D.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnu_java_awt_peer_gtk_CairoSurface.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnu_java_awt_peer_gtk_ComponentGraphics.Plo@am__quote@

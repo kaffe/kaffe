@@ -82,6 +82,7 @@ public class AESKeyWrap
     cipherAttributes.put(IBlockCipher.CIPHER_BLOCK_SIZE, Integer.valueOf(16));
     cipherAttributes.put(IBlockCipher.KEY_MATERIAL,
                          attributes.get(KEY_ENCRYPTION_KEY_MATERIAL));
+    aes.reset();
     aes.init(cipherAttributes);
     byte[] initialValue = (byte[]) attributes.get(INITIAL_VALUE);
     iv = initialValue == null ? DEFAULT_IV : (byte[]) initialValue.clone();

@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package javax.swing.plaf.basic;
 
+import gnu.classpath.SystemProperties;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -256,8 +258,11 @@ public class BasicMenuItemUI extends MenuItemUI
             map.put(accelerator, "doClick");
         }
       // TextLayout caching for speed-up drawing of text.
-      else if (property.equals(AbstractButton.TEXT_CHANGED_PROPERTY)
-          || property.equals("font"))
+      else if ((property.equals(AbstractButton.TEXT_CHANGED_PROPERTY)
+                || property.equals("font"))
+               && SystemProperties.getProperty("gnu.javax.swing.noGraphics2D")
+               == null)
+               
         {
           AbstractButton b = (AbstractButton) e.getSource();
           String text = b.getText();

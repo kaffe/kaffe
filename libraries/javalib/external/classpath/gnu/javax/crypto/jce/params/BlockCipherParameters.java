@@ -49,6 +49,8 @@ import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidParameterSpecException;
 import java.util.logging.Logger;
 
+import javax.crypto.spec.IvParameterSpec;
+
 /**
  * An implementation of algorithm parameters for the GNU block ciphers. This
  * encompasses the cipher's block size, its key size, and an optional
@@ -132,6 +134,11 @@ public class BlockCipherParameters
   {
     if (c.isInstance(cipherSpec))
       return cipherSpec;
+    if (IvParameterSpec.class.isAssignableFrom(c))
+      {
+        IvParameterSpec result = new IvParameterSpec(cipherSpec.getIV());
+        return result;
+      }
     throw new InvalidParameterSpecException();
   }
 

@@ -303,8 +303,9 @@ public class MetalFileChooserUI
             
           if (file == null)
             setFileName(null);
-          else
-            setFileName(file.getName());
+          else if (file.isFile() || filechooser.getFileSelectionMode() 
+		   != JFileChooser.FILES_ONLY)
+	    setFileName(file.getName());
           int index = -1;
           index = getModel().indexOf(file);
           if (index >= 0)
@@ -956,9 +957,12 @@ public class MetalFileChooserUI
         {
           String text = editField.getText();
           if (text != null && text != "" && !text.equals(fc.getName(editFile)))
-              if (editFile.renameTo(fc.getFileSystemView().createFileObject(
-                  fc.getCurrentDirectory(), text)))
+	    {
+	      File f = fc.getFileSystemView().
+		createFileObject(fc.getCurrentDirectory(), text);
+              if ( editFile.renameTo(f) )
                 rescanCurrentDirectory(fc);
+	    }
           list.remove(editField);
         }
       startEditing = false;
@@ -982,17 +986,8 @@ public class MetalFileChooserUI
        */
       public void actionPerformed(ActionEvent e)
       {
-        if (e.getActionCommand().equals("notify-field-accept"))
+	if (editField != null)
           completeEditing();
-        else if (editField != null)
-          {
-            list.remove(editField);
-            startEditing = false;
-            editFile = null;
-            lastSelected = null;
-            editField = null;
-            list.repaint();
-          }
       }
     }
   }
@@ -1101,7 +1096,7 @@ public class MetalFileChooserUI
           lastSelected = selVal;
           if (f.isFile())
             setFileName(path.substring(path.lastIndexOf("/") + 1));
-          else if (fc.getFileSelectionMode() == JFileChooser.DIRECTORIES_ONLY)
+          else if (fc.getFileSelectionMode() != JFileChooser.FILES_ONLY)
             setFileName(path);
         }
       fileTable.repaint();
@@ -1171,16 +1166,8 @@ public class MetalFileChooserUI
        */
       public void actionPerformed(ActionEvent e)
       {
-        if (e.getActionCommand().equals("notify-field-accept"))
+	if (editField != null)
           completeEditing();
-        else if (editField != null)
-          {
-            table.remove(editField);
-            startEditing = false;
-            editFile = null;
-            editField = null;
-            table.repaint();
-          }
       }
     }
     

@@ -40,6 +40,7 @@ libgtkpeer_la_SOURCES = gnu_java_awt_peer_gtk_CairoSurface.c \
 			gnu_java_awt_peer_gtk_GtkToolkit.c \
 			gnu_java_awt_peer_gtk_GtkWindowPeer.c \
 			gnu_java_awt_peer_gtk_GtkVolatileImage.c \
+			GtkDragSourceContextPeer.c \
 			cairographics2d.h \
 			gthread-jni.c \
 			gdkdisplay.h \

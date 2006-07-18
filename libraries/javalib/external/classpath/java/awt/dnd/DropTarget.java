@@ -49,6 +49,7 @@ import java.awt.dnd.peer.DropTargetPeer;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.peer.ComponentPeer;
+import java.awt.peer.LightweightPeer;
 import java.io.Serializable;
 import java.util.EventListener;
 import java.util.TooManyListenersException;
@@ -160,12 +161,15 @@ public class DropTarget
     if (GraphicsEnvironment.isHeadless ())
       throw new HeadlessException ();
 
-    component = c;
-    actions = i;
+    setComponent(c);
+    setDefaultActions(i);
     dropTargetListener = dtl;
     flavorMap = fm;
     
     setActive (b);
+    
+    if (c != null)
+      c.setDropTarget(this);
   }
 
   /**
@@ -275,9 +279,16 @@ public class DropTarget
 
   public void addNotify(ComponentPeer p)
   {
+    Component c = component;
+    while (c != null && p instanceof LightweightPeer)
+      {
+        p = c.getPeer();
+        c = c.getParent();
+      }
+
     if (p instanceof DropTargetPeer)
       {
-        peer = (DropTargetPeer) p;
+        peer = ((DropTargetPeer) p);
         peer.addDropTarget(this);
       }
     else

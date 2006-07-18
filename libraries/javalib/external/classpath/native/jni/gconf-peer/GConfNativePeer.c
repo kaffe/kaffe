@@ -41,6 +41,7 @@
 #include <jni.h>
 
 #include <glib.h>
+#include <gdk/gdk.h>
 #include <gconf/gconf-client.h>
 
 #include "jcl.h"
@@ -72,6 +73,7 @@ static jmethodID jlist_add_id = NULL;
  * Gets the reference of the default GConfClient and initialize the
  * the type system.
  * The client reference should be released with g_object_unref after use.
+ * This functions must be called with gdk lock held.
  */
 static void init_gconf_client (void);
 
@@ -131,7 +133,9 @@ JNICALL Java_gnu_java_util_prefs_gconf_GConfNativePeer_init_1id_1cache
 {
   reference_count++;
 
+  gdk_threads_enter ();
   init_gconf_client ();
+  gdk_threads_leave ();
 
   /* if client is null, there is probably an out of memory */
   if (client == NULL)
@@ -160,6 +164,8 @@ JNIEXPORT jobject JNICALL
 Java_gnu_java_util_prefs_gconf_GConfNativePeer_gconf_1client_1gconf_1client_1all_1keys
   (JNIEnv *env, jclass clazz __attribute__ ((unused)), jstring node)
 {
+  /* TODO: check all the calls to gdk_threads_enter/leave */
+  
   const char *dir = NULL;
   GError *err = NULL;
   GSList *entries = NULL;
@@ -174,7 +180,9 @@ Java_gnu_java_util_prefs_gconf_GConfNativePeer_gconf_1client_1gconf_1client_1all
       return NULL;
     }
 
+  gdk_threads_enter ();
   entries = gconf_client_all_entries (client, dir, &err);
+  gdk_threads_leave ();
   if (err != NULL)
     {
       throw_exception_by_name (env, "java/util/prefs/BackingStoreException",
@@ -212,7 +220,7 @@ Java_gnu_java_util_prefs_gconf_GConfNativePeer_gconf_1client_1gconf_1client_1all
   JCL_free_cstring (env, node, dir);
   g_slist_foreach (entries, (GFunc) gconf_entry_free, NULL);
   g_slist_free (entries);
-
+  
   return jlist;
 }
 
@@ -239,7 +247,9 @@ Java_gnu_java_util_prefs_gconf_GConfNativePeer_gconf_1client_1gconf_1client_1all
       return NULL;
     }
 
+  gdk_threads_enter ();
   entries = gconf_client_all_dirs (client, dir, &err);
+  gdk_threads_leave ();
   if (err != NULL)
     {
       throw_exception_by_name (env, "java/util/prefs/BackingStoreException",
@@ -291,7 +301,9 @@ Java_gnu_java_util_prefs_gconf_GConfNativePeer_gconf_1client_1suggest_1sync
 {
   GError *err = NULL;
 
+  gdk_threads_enter ();
   gconf_client_suggest_sync (client, &err);
+  gdk_threads_leave ();
   if (err != NULL)
     {
       throw_exception_by_name (env, "java/util/prefs/BackingStoreException",
@@ -320,7 +332,9 @@ Java_gnu_java_util_prefs_gconf_GConfNativePeer_gconf_1client_1unset
       return JNI_FALSE;
     }
 
+  gdk_threads_enter ();
   result = gconf_client_unset (client, _key, &err);
+  gdk_threads_leave ();
   if (err != NULL)
     {
       result = JNI_FALSE;
@@ -353,7 +367,9 @@ Java_gnu_java_util_prefs_gconf_GConfNativePeer_gconf_1client_1get_1string
       return NULL;
     }
 
+  gdk_threads_enter ();
   _value = gconf_client_get_string (client, _key, &err);
+  gdk_threads_leave ();
   JCL_free_cstring (env, key, _key);
   if (err != NULL)
     {
@@ -400,7 +416,9 @@ Java_gnu_java_util_prefs_gconf_GConfNativePeer_gconf_1client_1set_1string
       return JNI_FALSE;
     }
 
+  gdk_threads_enter ();
   result = gconf_client_set_string (client, _key, _value, &err);
+  gdk_threads_leave ();
   if (err != NULL)
   	{
 	  g_error_free (err);
@@ -429,7 +447,9 @@ Java_gnu_java_util_prefs_gconf_GConfNativePeer_gconf_1client_1remove_1dir
   if (dir == NULL)
     return;
 
+  gdk_threads_enter ();
   gconf_client_remove_dir (client, dir, NULL);
+  gdk_threads_leave ();
 
   JCL_free_cstring (env, node, dir);
 }
@@ -450,7 +470,9 @@ Java_gnu_java_util_prefs_gconf_GConfNativePeer_gconf_1client_1add_1dir
     return;
 
   /* ignore errors */
+  gdk_threads_enter ();
   gconf_client_add_dir (client, dir, GCONF_CLIENT_PRELOAD_ONELEVEL, NULL);
+  gdk_threads_leave ();
 
   JCL_free_cstring (env, node, dir);
 }
@@ -473,7 +495,9 @@ Java_gnu_java_util_prefs_gconf_GConfNativePeer_gconf_1client_1dir_1exists
     return value;
 
   /* on error return false */
+  gdk_threads_enter ();
   value = gconf_client_dir_exists (client, dir, &err);
+  gdk_threads_leave ();
   if (err != NULL)
     value = JNI_FALSE;
 
@@ -494,7 +518,9 @@ JNICALL Java_gnu_java_util_prefs_gconf_GConfNativePeer_finalize_1class
   if (reference_count == 0)
     {
       /* last reference, free all resources and return */
+      gdk_threads_enter ();
       g_object_unref (G_OBJECT (client));
+      gdk_threads_leave ();
 
       (*env)->DeleteGlobalRef (env, jlist_class);
 

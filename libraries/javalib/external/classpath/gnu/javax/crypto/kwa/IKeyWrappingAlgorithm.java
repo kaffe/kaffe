@@ -39,6 +39,7 @@ exception statement from your version. */
 package gnu.javax.crypto.kwa;
 
 import java.security.InvalidKeyException;
+import java.security.SecureRandom;
 import java.util.Map;
 
 import javax.crypto.ShortBufferException;
@@ -62,6 +63,11 @@ public interface IKeyWrappingAlgorithm
    * containing the initial integrity check register value.
    */
   String INITIAL_VALUE = "gnu.crypto.kwa.iv";
+  /**
+   * Property name of an optional {@link SecureRandom} instance to use. The
+   * default is to use a {@link gnu.java.security.util.PRNG} instance.
+   */
+  String SOURCE_OF_RANDOMNESS = "gnu.crypto.kwa.prng";
 
   /**
    * Returns the canonical name of this Key Wrapping Algorithm.

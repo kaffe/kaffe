@@ -80,7 +80,7 @@ public class XGraphicsEnvironment
    * environment. If there is no configuration, then there is one
    * default device initialized with the local main X device.
    */
-  XGraphicsEnvironment()
+  public XGraphicsEnvironment()
   {
     // Initiliaze the devices.
     Properties props = new Properties();

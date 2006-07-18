@@ -40,7 +40,6 @@ package gnu.java.awt.peer.gtk;
 
 import java.awt.Point;
 import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
 import java.awt.Window;
 import java.awt.peer.MouseInfoPeer;
 

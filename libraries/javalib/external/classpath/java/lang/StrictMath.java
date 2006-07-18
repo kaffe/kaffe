@@ -1,5 +1,5 @@
 /* java.lang.StrictMath -- common mathematical functions, strict Java
-   Copyright (C) 1998, 2001, 2002, 2003 Free Software Foundation, Inc.
+   Copyright (C) 1998, 2001, 2002, 2003, 2006 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -630,6 +630,131 @@ public final strictfp class StrictMath
     if (x > 0)
       return y > 0 ? z : -z;
     return y > 0 ? PI - (z - PI_L) : z - PI_L - PI;
+  }
+
+  /**
+   * Returns the lower two words of a long. This is intended to be
+   * used like this:
+   * <code>getLowDWord(Double.doubleToLongBits(x))</code>.
+   */
+  private static int getLowDWord(long x)
+  {
+    return (int) (x & 0x00000000ffffffffL);
+  }
+
+  /**
+   * Returns the higher two words of a long. This is intended to be
+   * used like this:
+   * <code>getHighDWord(Double.doubleToLongBits(x))</code>.
+   */
+  private static int getHighDWord(long x)
+  {
+    return (int) ((x & 0xffffffff00000000L) >> 32);
+  }
+
+  /**
+   * Returns a double with the IEEE754 bit pattern given in the lower
+   * and higher two words <code>lowDWord</code> and <code>highDWord</code>.
+   */
+  private static double buildDouble(int lowDWord, int highDWord)
+  {
+    return Double.longBitsToDouble((((long) highDWord & 0xffffffffL) << 32)
+				   | ((long) lowDWord & 0xffffffffL));
+  }
+
+  /**
+   * Returns the cube root of <code>x</code>. The sign of the cube root
+   * is equal to the sign of <code>x</code>.
+   *
+   * Special cases:
+   * <ul>
+   * <li>If the argument is NaN, the result is NaN</li>
+   * <li>If the argument is positive infinity, the result is positive
+   * infinity.</li>
+   * <li>If the argument is negative infinity, the result is negative
+   * infinity.</li>
+   * <li>If the argument is zero, the result is zero with the same
+   * sign as the argument.</li>
+   * </ul>
+   *
+   * @param x the number to take the cube root of
+   * @return the cube root of <code>x</code>
+   * @see #sqrt(double)
+   *
+   * @since 1.5
+   */
+  public static double cbrt(double x)
+  {
+    boolean negative = (x < 0);
+    double r;
+    double s;
+    double t;
+    double w;
+
+    long bits;
+    int l;
+    int h;
+
+    // handle the special cases
+    if (x != x)
+      return Double.NaN;
+    if (x == Double.POSITIVE_INFINITY)
+      return Double.POSITIVE_INFINITY;
+    if (x == Double.NEGATIVE_INFINITY)
+      return Double.NEGATIVE_INFINITY;
+    if (x == 0)
+      return x;
+
+    x = abs(x);
+    bits = Double.doubleToLongBits(x);
+
+    if (bits < 0x0010000000000000L)   // subnormal number
+      {
+	t = TWO_54;
+	t *= x;
+
+	// __HI(t)=__HI(t)/3+B2;
+	bits = Double.doubleToLongBits(t);
+	h = getHighDWord(bits);
+	l = getLowDWord(bits);
+
+	h = h / 3 + CBRT_B2;
+
+	t = buildDouble(l, h);
+      }
+    else
+      {
+	// __HI(t)=__HI(x)/3+B1;
+	h = getHighDWord(bits);
+	l = 0;
+
+	h = h / 3 + CBRT_B1;
+	t = buildDouble(l, h);
+      }
+
+    // new cbrt to 23 bits
+    r =  t * t / x;
+    s =  CBRT_C + r * t;
+    t *= CBRT_G + CBRT_F / (s + CBRT_E + CBRT_D / s);
+
+    // chopped to 20 bits and make it larger than cbrt(x)
+    bits = Double.doubleToLongBits(t);
+    h = getHighDWord(bits);
+
+    // __LO(t)=0;
+    // __HI(t)+=0x00000001;
+    l = 0;
+    h += 1;
+    t = buildDouble(l, h);
+
+    // one step newton iteration to 53 bits with error less than 0.667 ulps
+    s = t * t;		    // t * t is exact
+    r = x / s;
+    w = t + t;
+    r = (r - t) / (w + r);  // r - s is exact
+    t = t + t * r;
+
+    return negative ? -t : t;
   }
 
   /**
@@ -1427,6 +1552,23 @@ public final strictfp class StrictMath
     AT8 = 0.049768779946159324, // Long bits 0x3fa97b4b24760debL.
     AT9 = -0.036531572744216916, // Long bits 0xbfa2b4442c6a6c2fL.
     AT10 = 0.016285820115365782; // Long bits 0x3f90ad3ae322da11L.
+
+  /**
+   * Constants for computing {@link #cbrt(double)}.
+   */
+  private static final int
+    CBRT_B1 = 715094163, // B1 = (682-0.03306235651)*2**20
+    CBRT_B2 = 696219795; // B2 = (664-0.03306235651)*2**20
+
+  /**
+   * Constants for computing {@link #cbrt(double)}.
+   */
+  private static final double
+    CBRT_C =  5.42857142857142815906e-01, // Long bits  0x3fe15f15f15f15f1L
+    CBRT_D = -7.05306122448979611050e-01, // Long bits  0xbfe691de2532c834L
+    CBRT_E =  1.41428571428571436819e+00, // Long bits  0x3ff6a0ea0ea0ea0fL
+    CBRT_F =  1.60714285714285720630e+00, // Long bits  0x3ff9b6db6db6db6eL
+    CBRT_G =  3.57142857142857150787e-01; // Long bits  0x3fd6db6db6db6db7L
 
   /**
    * Helper function for reducing an angle to a multiple of pi/2 within

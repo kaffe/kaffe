@@ -3856,6 +3856,8 @@ public abstract class Component
        the peer. For efficiency, the peer can choose not to
        invalidate if it is happy with the current dimensions,
        etc. */
+       if (dropTarget != null) 
+         dropTarget.addNotify(peer);
       }
   }
 

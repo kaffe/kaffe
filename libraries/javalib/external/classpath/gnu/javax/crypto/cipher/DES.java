@@ -299,7 +299,7 @@ public class DES
    */
   public static void adjustParity(byte[] kb, int offset)
   {
-    for (int i = offset; i < KEY_SIZE; i++)
+    for (int i = offset; i < offset + KEY_SIZE; i++)
       kb[i] ^= (PARITY[kb[i] & 0xff] == 8) ? 1 : 0;
   }
 

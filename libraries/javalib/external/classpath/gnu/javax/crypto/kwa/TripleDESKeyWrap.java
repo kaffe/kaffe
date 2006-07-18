@@ -40,7 +40,6 @@ package gnu.javax.crypto.kwa;
 
 import gnu.java.security.Registry;
 import gnu.java.security.hash.Sha160;
-import gnu.java.security.util.PRNG;
 import gnu.javax.crypto.assembly.Assembly;
 import gnu.javax.crypto.assembly.Cascade;
 import gnu.javax.crypto.assembly.Direction;
@@ -53,6 +52,7 @@ import gnu.javax.crypto.mode.IMode;
 import gnu.javax.crypto.mode.ModeFactory;
 
 import java.security.InvalidKeyException;
+import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -82,7 +82,7 @@ public class TripleDESKeyWrap
   private HashMap asmAttributes = new HashMap();
   private HashMap modeAttributes = new HashMap();
   private Sha160 sha = new Sha160();
-  private PRNG prng = PRNG.getInstance();
+  private SecureRandom rnd;
 
   public TripleDESKeyWrap()
   {
@@ -91,6 +91,7 @@ public class TripleDESKeyWrap
 
   protected void engineInit(Map attributes) throws InvalidKeyException
   {
+    rnd = (SecureRandom) attributes.get(IKeyWrappingAlgorithm.SOURCE_OF_RANDOMNESS);
     IMode des3CBC = ModeFactory.getInstance(Registry.CBC_MODE, new TripleDES(), 8);
     Stage des3CBCStage = Stage.getInstance(des3CBC, Direction.FORWARD);
     Cascade cascade = new Cascade();
@@ -103,7 +104,6 @@ public class TripleDESKeyWrap
 
     modeAttributes.put(IBlockCipher.KEY_MATERIAL,
                        attributes.get(KEY_ENCRYPTION_KEY_MATERIAL));
-//    modeAttributes.put(IMode.IV, DEFAULT_IV);
     asmAttributes.put(Assembly.DIRECTION, Direction.FORWARD);
   }
 
@@ -148,7 +148,7 @@ public class TripleDESKeyWrap
 
     // 4. Generate 8 octets at random, call the result IV.
     byte[] IV = new byte[8];
-    prng.nextBytes(IV);
+    nextRandomBytes(IV);
 
     // 5. Encrypt CEKICV in CBC mode using the key-encryption key.  Use the
     //    random value generated in the previous step as the initialization
@@ -275,5 +275,18 @@ public class TripleDESKeyWrap
 
     // 9. Use CEK as a Triple-DES key.
     return CEK;
+  }
+  
+  /**
+   * Fills the designated byte array with random data.
+   * 
+   * @param buffer the byte array to fill with random data.
+   */
+  private void nextRandomBytes(byte[] buffer)
+  {
+    if (rnd != null)
+      rnd.nextBytes(buffer);
+    else
+      getDefaultPRNG().nextBytes(buffer);
   }
 }

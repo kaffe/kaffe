@@ -104,6 +104,13 @@ public class MBeanInfo
   private String className;
 
   /**
+   * Descriptions of the notifications emitted by the bean.
+   *
+   * @serial The bean's notifications.
+   */
+  private MBeanNotificationInfo[] notifications;
+
+  /**
    * Returns a shallow clone of the information.  This is
    * simply a new copy of each string and a clone
    * of each array, which still references the same objects,
@@ -147,6 +154,23 @@ public class MBeanInfo
   public String getDescription()
   {
     return description;
+  }
+
+  /**
+   * Returns descriptions of each of the notifications emitted
+   * by this management bean.  The returned value is a shallow
+   * copy of the notification array maintained by this instance.
+   * Hence, changing the elements of the returned array will not
+   * affect the notification array, and the elements (instances
+   * of the {@link MBeanNotificationInfo} class) are immutable.
+   *
+   * @return an array of {@link MBeanNotificationInfo} objects,
+   *         representing the notifications emitted by this
+   *         management bean.
+   */
+  public MBeanNotificationInfo[] getNotifications()
+  {
+    return (MBeanNotificationInfo[]) notifications.clone();
   }
 
 }

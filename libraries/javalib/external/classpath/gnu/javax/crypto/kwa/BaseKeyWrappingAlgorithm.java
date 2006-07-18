@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package gnu.javax.crypto.kwa;
 
+import gnu.java.security.util.PRNG;
+
 import java.security.InvalidKeyException;
 import java.util.Collections;
 import java.util.Map;
@@ -53,6 +55,8 @@ public abstract class BaseKeyWrappingAlgorithm
 {
   /** The canonical name of the key wrapping algorithm. */
   protected String name;
+  /** A source of randomness if/when needed by concrete implementations. */
+  private PRNG prng;
 
   /**
    * Protected constructor.
@@ -129,4 +133,13 @@ public abstract class BaseKeyWrappingAlgorithm
 
   protected abstract byte[] engineUnwrap(byte[] in, int inOffset, int length)
       throws KeyUnwrappingException;
+
+  /** @return a strong pseudo-random number generator if/when needed. */
+  protected PRNG getDefaultPRNG()
+  {
+    if (prng == null)
+      prng = PRNG.getInstance();
+
+    return prng;
+  }
 }

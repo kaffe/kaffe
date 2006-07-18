@@ -353,7 +353,7 @@ public class JFileChooser extends JComponent implements Accessible
    * The file selection mode.
    * @see #setFileSelectionMode(int) 
    */
-  private int fileSelectionMode = FILES_AND_DIRECTORIES;
+  private int fileSelectionMode = FILES_ONLY;
 
   /** 
    * The file view.

@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package gnu.java.awt.dnd.peer.gtk;
 
+import gnu.java.awt.peer.gtk.GtkGenericPeer;
+
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DropTarget;
@@ -45,9 +47,15 @@ import java.awt.dnd.InvalidDnDOperationException;
 import java.awt.dnd.peer.DropTargetContextPeer;
 
 public class GtkDropTargetContextPeer
+    extends GtkGenericPeer
     implements DropTargetContextPeer
 {
 
+  public GtkDropTargetContextPeer()
+  {
+    super(null);
+  }
+  
   public void setTargetActions(int actions)
   {
     // FIXME: Not Implemented

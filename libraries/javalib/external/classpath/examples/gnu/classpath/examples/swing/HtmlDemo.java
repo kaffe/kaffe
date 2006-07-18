@@ -65,7 +65,7 @@ public class HtmlDemo extends JPanel
   
   JTextPane html = new JTextPane();
 
-  JTextArea text = new JTextArea("<html><body><p>" +
+  JTextArea text = new JTextArea("<html><body>" +
     "123456789HR!<hr>987654321"+
     "123456789BR!<br>987654321"+
     "<p id='insertHere'>Insertion target</p><p>"+

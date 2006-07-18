@@ -171,7 +171,7 @@ public class SinglePixelPackedSampleModel extends SampleModel
    */
   public int[] getSampleSize()
   {
-    return sampleSize;
+    return (int[]) sampleSize.clone();
   }
   
   /**
@@ -187,6 +187,14 @@ public class SinglePixelPackedSampleModel extends SampleModel
     return sampleSize[band];
   }
 
+  /**
+   * Returns the index in the data buffer that stores the pixel at (x, y).
+   * 
+   * @param x  the x-coordinate.
+   * @param y  the y-coordinate.
+   * 
+   * @return The index in the data buffer that stores the pixel at (x, y).
+   */
   public int getOffset(int x, int y)
   {
     return scanlineStride*y + x;
@@ -202,14 +210,34 @@ public class SinglePixelPackedSampleModel extends SampleModel
     return bitMasks;
   }
 
+  /**
+   * Returns the number of data elements from a pixel in one row to the
+   * corresponding pixel in the next row.
+   * 
+   * @return The scanline stride.
+   */
   public int getScanlineStride()
   {
     return scanlineStride;
   }
 
+  /**
+   * Creates a new <code>SinglePixelPackedSampleModel</code> that accesses
+   * the specified subset of bands.
+   * 
+   * @param bands  an array containing band indices (<code>null</code> not
+   *     permitted).
+   * 
+   * @return A new sample model.
+   * 
+   * @throws NullPointerException if <code>bands</code> is <code>null</code>.
+   * @throws RasterFormatException if <code>bands.length</code> is greater
+   *     than the number of bands in this model.
+   */
   public SampleModel createSubsetSampleModel(int[] bands)
   {
-    // FIXME: Is this the right way to interpret bands?
+    if (bands.length > numBands)
+      throw new RasterFormatException("Too many bands.");
     
     int numBands = bands.length;
     
@@ -616,6 +644,27 @@ public class SinglePixelPackedSampleModel extends SampleModel
     if (!Arrays.equals(this.bitOffsets, that.bitOffsets)) 
       return false;
     return true;
+  }
+  
+  /**
+   * Returns a hash code for this <code>SinglePixelPackedSampleModel</code>.
+   * 
+   * @return A hash code.
+   */
+  public int hashCode()
+  {
+    // this hash code won't match Sun's, but that shouldn't matter...
+    int result = 193;
+    result = 37 * result + dataType;
+    result = 37 * result + width;
+    result = 37 * result + height;
+    result = 37 * result + numBands;
+    result = 37 * result + scanlineStride;
+    for (int i = 0; i < bitMasks.length; i++)
+      result = 37 * result + bitMasks[i];
+    for (int i = 0; i < bitOffsets.length; i++)
+      result = 37 * result + bitOffsets[i];
+    return result;
   }
   
   /**

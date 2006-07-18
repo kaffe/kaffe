@@ -43,7 +43,6 @@ import gnu.x11.Pixmap;
 import java.awt.Graphics;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
-import java.awt.Toolkit;
 import java.awt.image.ImageObserver;
 import java.awt.image.ImageProducer;
 
@@ -55,8 +54,8 @@ public class XImage
 
   XImage(int w, int h)
   {
-    XToolkit tk = (XToolkit) Toolkit.getDefaultToolkit();
-    GraphicsEnvironment env = tk.getLocalGraphicsEnvironment();
+    GraphicsEnvironment env =
+      GraphicsEnvironment.getLocalGraphicsEnvironment();
     XGraphicsDevice dev = (XGraphicsDevice) env.getDefaultScreenDevice();
     pixmap = new Pixmap(dev.getDisplay(), w, h);
   }

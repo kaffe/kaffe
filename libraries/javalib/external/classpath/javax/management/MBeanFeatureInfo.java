@@ -141,14 +141,14 @@ public class MBeanFeatureInfo
 
   /**
    * Returns the hashcode of the feature as
-   * the multiplication of the hashcodes of
-   * its name and description.
+   * the sum of the hashcodes of its name
+   * and description.
    *
    * @return the hashcode of this feature.
    */
   public int hashCode()
   {
-    return name.hashCode() * description.hashCode();
+    return name.hashCode() + description.hashCode();
   }
 
 }

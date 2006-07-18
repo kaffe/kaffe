@@ -40,6 +40,7 @@ package java.awt.dnd;
 
 import java.awt.Point;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
 import java.util.List;
 
 /**
@@ -135,5 +136,18 @@ public class DropTargetDragEvent extends DropTargetEvent
   public void rejectDrag ()
   {
     context.rejectDrag ();
+  }
+  
+  /**
+   * TODO
+   * 
+   * @return
+   * 
+   * @since 1.5
+   */
+  public Transferable getTransferable()
+  {
+    // FIXME: Not implemented
+    return null;
   }
 } // class DropTargetDragEvent

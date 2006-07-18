@@ -334,8 +334,10 @@ public class XGraphics
 
   public void copyArea(int x, int y, int width, int height, int dx, int dy)
   {
-    // FIXME: Implement this.
-    throw new UnsupportedOperationException("Not yet implemented");
+    int srcX = x + translateX;
+    int srcY = y + translateY;
+    xdrawable.copy_area(xdrawable, xgc, srcX, srcY, width, height,
+                        srcX + dx, srcY + dy);
   }
 
   /**

@@ -38,27 +38,16 @@ exception statement from your version. */
 
 package gnu.java.awt.peer.gtk;
 
-import java.awt.Graphics;
-import java.awt.Color;
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.Graphics2D;
-import java.awt.GraphicsConfiguration;
 import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DirectColorModel;
-import java.io.File;
-import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.Hashtable;
-import java.util.Vector;
-import java.io.ByteArrayOutputStream;
-import java.io.BufferedInputStream;
-import java.net.URL;
-import gnu.classpath.Pointer;
 
 /**
  * CairoSurface - wraps a Cairo surface.

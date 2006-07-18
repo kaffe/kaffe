@@ -131,8 +131,6 @@ public class XToolkit
    */
   static boolean DEBUG = false;
 
-  private XGraphicsEnvironment env;
-
   /**
    * The system event queue.
    */
@@ -162,9 +160,8 @@ public class XToolkit
 
   public GraphicsEnvironment getLocalGraphicsEnvironment()
   {
-    if (env == null)
-      env = new XGraphicsEnvironment();
-    return env;
+    assert false : "Don't call this";
+    return null;
   }
 
   /**

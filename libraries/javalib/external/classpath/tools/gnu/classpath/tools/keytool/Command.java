@@ -374,6 +374,11 @@ abstract class Command
   /**
    * Convenience method to setup the key store given its type, its password, its
    * location and portentially a specialized security provider.
+   * <p>
+   * Calls the method with the same name and 5 arguments passing
+   * <code>false</code> to the first argument implying that no attempt to
+   * create the keystore will be made if one was not found at the designated
+   * location.
    * 
    * @param className the potentially null fully qualified class name of a
    *          security provider to add at runtime, if no installed provider is
@@ -388,10 +393,31 @@ abstract class Command
       throws IOException, UnsupportedCallbackException, KeyStoreException,
       NoSuchAlgorithmException, CertificateException
   {
+    setKeyStoreParams(false, className, type, password, url);
+  }
+
+  /**
+   * Convenience method to setup the key store given its type, its password, its
+   * location and portentially a specialized security provider.
+   * 
+   * @param createIfNotFound if <code>true</code> then create the keystore if
+   *          it was not found; otherwise do not.
+   * @param className the potentially null fully qualified class name of a
+   *          security provider to add at runtime, if no installed provider is
+   *          able to provide a key store implementation of the desired type.
+   * @param type the potentially null type of the key store to request from the
+   *          key store factory.
+   * @param password the potentially null password protecting the key store.
+   * @param url the URL of the key store.
+   */
+  protected void setKeyStoreParams(boolean createIfNotFound, String className,
+                                   String type, String password, String url)
+      throws IOException, UnsupportedCallbackException, KeyStoreException,
+      NoSuchAlgorithmException, CertificateException
+  {
     setProviderClassNameParam(className);
     setKeystoreTypeParam(type);
-    setKeystorePasswordParam(password);
-    setKeystoreURLParam(url);
+    setKeystoreURLParam(createIfNotFound, url, password);
   }
 
   /**
@@ -402,7 +428,7 @@ abstract class Command
    *          security provider to add, if it is not already installed, to the
    *          set of available providers.
    */
-  protected void setProviderClassNameParam(String className)
+  private void setProviderClassNameParam(String className)
   {
     if (Configuration.DEBUG)
       log.fine("setProviderClassNameParam(" + className + ")"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -430,7 +456,7 @@ abstract class Command
    *          For GNU Classpath this is <i>gkr</i> which stands for the "Gnu
    *          KeyRing" specifications.
    */
-  protected void setKeystoreTypeParam(String type)
+  private void setKeystoreTypeParam(String type)
   {
     if (Configuration.DEBUG)
       log.fine("setKeystoreTypeParam(" + type + ")"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -491,7 +517,7 @@ abstract class Command
    * @throws SecurityException if no password is available, even after prompting
    *           the user.
    */
-  protected void setKeyPasswordParam() throws IOException,
+  private void setKeyPasswordParam() throws IOException,
       UnsupportedCallbackException
   {
     String prompt = Messages.getFormattedString("Command.21", alias); //$NON-NLS-1$
@@ -503,7 +529,7 @@ abstract class Command
       throw new SecurityException(Messages.getString("Command.23")); //$NON-NLS-1$
   }
 
-  protected void setKeystorePasswordParam(String password) throws IOException,
+  private void setKeystorePasswordParam(String password) throws IOException,
       UnsupportedCallbackException
   {
     if (password != null)
@@ -521,14 +547,20 @@ abstract class Command
   /**
    * Set the key store URL to use.
    * 
-   * @param url
+   * @param createIfNotFound when <code>true</code> an attempt to create a
+   *          keystore at the designated location will be made. If
+   *          <code>false</code> then no file creation is carried out, which
+   *          may cause an exception to be thrown later.
+   * @param url the full, or partial, URL to the keystore location.
+   * @param password an eventually null string to use when loading the keystore.
    * @throws IOException
    * @throws KeyStoreException
    * @throws UnsupportedCallbackException
    * @throws NoSuchAlgorithmException
    * @throws CertificateException
    */
-  protected void setKeystoreURLParam(String url) throws IOException,
+  private void setKeystoreURLParam(boolean createIfNotFound, String url,
+                                     String password) throws IOException,
       KeyStoreException, UnsupportedCallbackException, NoSuchAlgorithmException,
       CertificateException
   {
@@ -541,16 +573,19 @@ abstract class Command
           throw new InvalidParameterException(Messages.getString("Command.36")); //$NON-NLS-1$
 
         url = userHome.trim() + "/.keystore"; //$NON-NLS-1$
-        // if it does not exist create it
-        new File(url).createNewFile();
+        // if it does not exist create it if required
+        if (createIfNotFound)
+          new File(url).createNewFile();
         url = "file:" + url; //$NON-NLS-1$
       }
     else
       {
         url = url.trim();
         if (url.indexOf(":") == -1) // if it does not exist create it //$NON-NLS-1$
-          new File(url).createNewFile();
-
+          {
+            if (createIfNotFound)
+              new File(url).createNewFile();
+          }
         url = "file:" + url; //$NON-NLS-1$
       }
 
@@ -589,6 +624,8 @@ abstract class Command
         // try again
         store = KeyStore.getInstance(storeType, provider);
       }
+
+    setKeystorePasswordParam(password);
 
     // now we have a KeyStore instance. load it
     // KeyStore public API claims: "...In order to create an empty keystore,

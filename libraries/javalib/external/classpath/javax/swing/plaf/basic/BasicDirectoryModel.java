@@ -1,5 +1,5 @@
 /* BasicDirectoryModel.java --
-   Copyright (C) 2005  Free Software Foundation, Inc.
+   Copyright (C) 2005, 2006  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -51,24 +51,29 @@ import javax.swing.filechooser.FileSystemView;
 
 
 /**
- * DOCUMENT ME!
+ * Implements an AbstractListModel for directories where the source
+ * of the files is a JFileChooser object. 
+ *
+ * This class is used for sorting and ordering the file list in
+ * a JFileChooser L&F object.
  */
 public class BasicDirectoryModel extends AbstractListModel
   implements PropertyChangeListener
 {
-  /** DOCUMENT ME! */
+  /** The list of files itself */
   private Vector contents;
 
-  /** DOCUMENT ME! */
+  /** The number of directories in the list */
   private int directories;
 
-  /** DOCUMENT ME! */
+  /** The listing mode of the associated JFileChooser,
+      either FILES_ONLY, DIRECTORIES_ONLY or FILES_AND_DIRECTORIES */
   private int listingMode;
 
-  /** DOCUMENT ME! */
+  /** The JFileCooser associated with this model */
   private JFileChooser filechooser;
 
-  /** DOCUMENT ME! */
+  /** A Comparator class/object for sorting the file list. */
   private Comparator comparator = new Comparator()
     {
       public int compare(Object o1, Object o2)
@@ -91,14 +96,15 @@ public class BasicDirectoryModel extends AbstractListModel
     filechooser.addPropertyChangeListener(this);
     listingMode = filechooser.getFileSelectionMode();
     contents = new Vector();
+    validateFileCache();
   }
 
   /**
-   * DOCUMENT ME!
+   * Returns whether a given (File) object is included in the list.
    *
-   * @param o DOCUMENT ME!
+   * @param o - The file object to test.
    *
-   * @return DOCUMENT ME!
+   * @return <code>true</code> if the list contains the given object.
    */
   public boolean contains(Object o)
   {
@@ -106,7 +112,7 @@ public class BasicDirectoryModel extends AbstractListModel
   }
 
   /**
-   * DOCUMENT ME!
+   * Fires a content change event. 
    */
   public void fireContentsChanged()
   {
@@ -114,9 +120,10 @@ public class BasicDirectoryModel extends AbstractListModel
   }
 
   /**
-   * DOCUMENT ME!
+   * Returns a Vector of (java.io.File) objects containing
+   * the directories in this list.
    *
-   * @return DOCUMENT ME!
+   * @return a Vector
    */
   public Vector getDirectories()
   {
@@ -127,26 +134,24 @@ public class BasicDirectoryModel extends AbstractListModel
   }
 
   /**
-   * DOCUMENT ME!
+   * Returns the (java.io.File) object at 
+   * an index in the list.
    *
-   * @param index DOCUMENT ME!
-   *
-   * @return DOCUMENT ME!
+   * @param index The list index
+   * @return a File object
    */
   public Object getElementAt(int index)
   {
     if (index > getSize() - 1)
       return null;
-    if (listingMode == JFileChooser.FILES_ONLY)
-      return contents.get(directories + index);
-    else
-      return contents.elementAt(index);
+    return contents.elementAt(index);
   }
 
   /**
-   * DOCUMENT ME!
+   * Returns a Vector of (java.io.File) objects containing
+   * the files in this list.
    *
-   * @return DOCUMENT ME!
+   * @return a Vector
    */
   public Vector getFiles()
   {
@@ -157,37 +162,34 @@ public class BasicDirectoryModel extends AbstractListModel
   }
 
   /**
-   * DOCUMENT ME!
+   * Returns the size of the list, which only includes directories 
+   * if the JFileChooser is set to DIRECTORIES_ONLY.
    *
-   * @return DOCUMENT ME!
+   * Otherwise, both directories and files are included in the count.
+   *
+   * @return The size of the list.
    */
   public int getSize()
   {
     if (listingMode == JFileChooser.DIRECTORIES_ONLY)
       return directories;
-    else if (listingMode == JFileChooser.FILES_ONLY)
-      return contents.size() - directories;
     return contents.size();
   }
 
   /**
-   * DOCUMENT ME!
+   * Returns the index of an (java.io.File) object in the list.
    *
-   * @param o DOCUMENT ME!
+   * @param o The object - normally a File.
    *
-   * @return DOCUMENT ME!
+   * @return the index of that object, or -1 if it is not in the list.
    */
   public int indexOf(Object o)
   {
-    if (listingMode == JFileChooser.FILES_ONLY)
-      return contents.indexOf(o) - directories;
     return contents.indexOf(o);
   }
 
   /**
-   * DOCUMENT ME!
-   *
-   * @param e DOCUMENT ME!
+   * Obsoleted method which does nothing.
    */
   public void intervalAdded(ListDataEvent e)
   {
@@ -195,9 +197,7 @@ public class BasicDirectoryModel extends AbstractListModel
   }
 
   /**
-   * DOCUMENT ME!
-   *
-   * @param e DOCUMENT ME!
+   * Obsoleted method which does nothing.
    */
   public void intervalRemoved(ListDataEvent e)
   {
@@ -205,7 +205,7 @@ public class BasicDirectoryModel extends AbstractListModel
   }
 
   /**
-   * DOCUMENT ME!
+   * Obsoleted method which does nothing.
    */
   public void invalidateFileCache()
   {
@@ -213,12 +213,16 @@ public class BasicDirectoryModel extends AbstractListModel
   }
 
   /**
-   * DOCUMENT ME!
+   * Less than, determine the relative order in the list of two files
+   * for sorting purposes.
    *
-   * @param a DOCUMENT ME!
-   * @param b DOCUMENT ME!
+   * The order is: directories < files, and thereafter alphabetically,
+   * using the default locale collation.
    *
-   * @return DOCUMENT ME!
+   * @param a the first file
+   * @param b the second file
+   *
+   * @return <code>true</code> if a > b, <code>false</code> if a < b.
    */
   protected boolean lt(File a, File b)
   {
@@ -241,34 +245,38 @@ public class BasicDirectoryModel extends AbstractListModel
   }
 
   /**
-   * DOCUMENT ME!
+   * Listens for a property change; the change in file selection mode of the
+   * associated JFileChooser. Reloads the file cache on that event.
    *
-   * @param e DOCUMENT ME!
+   * @param e - A PropertyChangeEvent.
    */
   public void propertyChange(PropertyChangeEvent e)
   {
     if (e.getPropertyName().equals(JFileChooser.FILE_SELECTION_MODE_CHANGED_PROPERTY))
-      listingMode = filechooser.getFileSelectionMode();
+      {
+	listingMode = filechooser.getFileSelectionMode();
+	validateFileCache();
+      }
   }
 
   /**
-   * DOCUMENT ME!
+   * Renames a file - However, does <I>not</I> re-sort the list 
+   * or replace the old file with the new one in the list.
    *
-   * @param oldFile DOCUMENT ME!
-   * @param newFile DOCUMENT ME!
+   * @param oldFile The old file
+   * @param newFile The new file name
    *
-   * @return DOCUMENT ME!
+   * @return <code>true</code> if the rename succeeded
    */
   public boolean renameFile(File oldFile, File newFile)
   {
-    // FIXME: implement
-    return false;
+    return oldFile.renameTo( newFile );
   }
 
   /**
-   * DOCUMENT ME!
+   * Sorts a Vector of File objects.
    *
-   * @param v DOCUMENT ME!
+   * @param v The Vector to sort.
    */
   protected void sort(Vector v)
   {
@@ -282,10 +290,13 @@ public class BasicDirectoryModel extends AbstractListModel
   }
 
   /**
-   * DOCUMENT ME!
+   * Re-loads the list of files
    */
   public void validateFileCache()
   {
+    // FIXME: Get the files and sort them in a seperate thread and deliver
+    // them a few at a time to be filtered, so that the file selector is
+    // responsive even with long file lists.
     contents.clear();
     directories = 0;
     FileSystemView fsv = filechooser.getFileSystemView();
@@ -299,15 +310,19 @@ public class BasicDirectoryModel extends AbstractListModel
       {
 	if (list[i] == null)
 	  continue;
-	if (filechooser.accept(list[i]))
-	  {
-	    contents.add(list[i]);
-	    if (filechooser.isTraversable(list[i]))
-	      directories++;
-	  }
+	boolean isDir = filechooser.isTraversable(list[i]);
+
+	if( listingMode != JFileChooser.DIRECTORIES_ONLY || isDir )
+	  if (filechooser.accept(list[i]))
+	    {
+	      contents.add(list[i]);
+	      if (isDir)
+		directories++;
+	    }
       }
     sort(contents);
     filechooser.revalidate();
     filechooser.repaint();
   }
 }
+

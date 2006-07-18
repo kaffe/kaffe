@@ -1,3 +1,374 @@
+2006-07-18  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/awt/image/BufferedImageOp.java: API docs added,
+	* java/awt/image/RasterOp.java: Likewise.
+
+2006-07-18  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/awt/Graphics2D.java: API docs updated.
+
+2006-07-18  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/awt/image/WritableRaster.java: Added API docs and reformatted 
+	source code.
+
+2006-07-18  Sven de Marothy  <sven@physto.se>
+
+	* java/net/Inet6Address.java:
+	Add 1.5 serialized fields.
+	(getByAddress): New methods.
+	(readObject, writeObject): New methods. 
+	(equals): Reimplement.
+
+2006-07-18  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/awt/image/Raster.java: Added API docs and reformatted source
+	code.
+
+2006-07-18  Andreas Tobler  <a.tobler@schweiz.ch>
+
+	* gnu/java/awt/peer/gtk/BufferedImageGraphics.java: Remove unneeded
+	imports.
+	* gnu/java/awt/peer/gtk/CairoSurface.java: Likewise.
+	* gnu/java/awt/peer/gtk/CairoSurfaceGraphics.java: Likewise.
+	* gnu/java/awt/peer/gtk/ComponentGraphicsCopy.java: Likewise.
+	* gnu/java/awt/peer/gtk/GdkFontPeer.java: Likewise.
+	* gnu/java/awt/peer/gtk/GdkPixbufDecoder.java: Likewise.
+	* gnu/java/awt/peer/gtk/GtkButtonPeer.java: Likewise.
+	* gnu/java/awt/peer/gtk/GtkClipboardNotifier.java: Likewise.
+	* gnu/java/awt/peer/gtk/GtkComponentPeer.java: Likewise.
+	* gnu/java/awt/peer/gtk/GtkContainerPeer.java: Likewise.
+	* gnu/java/awt/peer/gtk/GtkDialogPeer.java: Likewise.
+	* gnu/java/awt/peer/gtk/GtkFramePeer.java: Likewise.
+	* gnu/java/awt/peer/gtk/GtkImage.java: Likewise.
+	* gnu/java/awt/peer/gtk/GtkImageConsumer.java: Likewise.
+	* gnu/java/awt/peer/gtk/GtkMenuBarPeer.java: Likewise.
+	* gnu/java/awt/peer/gtk/GtkMenuItemPeer.java: Likewise.
+	* gnu/java/awt/peer/gtk/GtkMouseInfoPeer.java: Likewise.
+	* gnu/java/awt/peer/gtk/GtkPanelPeer.java: Likewise.
+	* gnu/java/awt/peer/gtk/GtkPopupMenuPeer.java: Likewise.
+	* gnu/java/awt/peer/gtk/GtkScrollbarPeer.java: Likewise.
+	* gnu/java/awt/peer/gtk/GtkWindowPeer.java: Likewise.
+	* gnu/java/awt/peer/gtk/VolatileImageGraphics.java: Likewise.
+
+2006-07-17  Andreas Tobler  <a.tobler@schweiz.ch>
+
+	* javax/swing/text/html/HTMLEditorKit.java: Rearrange import statements
+	to make it compile again under jikes. Note added.
+
+2006-07-17  Lillian Angel  <langel@redhat.com>
+
+	* examples/gnu/classpath/examples/awt/Demo.java
+	(Demo): Added new window for DnD demo.
+	(DragDropWindow): New class.
+	* gnu/java/awt/dnd/peer/gtk/GtkDragSourceContextPeer.java:
+	Added new fields and declarations for native functions.
+	(GtkDragSourceContextPeer): Implemented.
+	(getComponentPeer): New function.
+	(startDrag): Partially implemented.
+	(getCursor): Implemented.
+	(setCursor): Implemented.
+	* include/GtkDragSourceContextPeer.h: New file.
+	* include/Makefile.am: Added new header file.
+	* java/awt/Component.java
+	(addNotify): Added call to the dropTarget's addNotify.
+	* java/awt/dnd/DragSource.java
+	(startDrag): Fixed code to use shared instances of peer and
+	context.
+	(getDragThreshold): Added stub.
+	* java/awt/dnd/DropTarget.java
+	(DropTarget): Implemented fully.
+	(addNotify): Added code to get the peer of the parent that is
+	not lightweight.
+	* java/awt/dnd/DropTargetDragEvent.java
+	(getTransferable): Added stub.
+	* native/jni/gtk-peer/GtkDragSourceContextPeer.c: New file.
+	* native/jni/gtk-peer/Makefile.am: Added new c file.
+	* gnu/java/awt/dnd/peer/gtk/GtkDropTargetContextPeer.java:
+	Changed to extend GtkGenericPeer.
+	(GtkDropTargetContextPeer): New constructor.
+	* gnu/java/awt/dnd/peer/gtk/GtkDropTargetPeer.java:
+	Changed to extend GtkGenericPeer.
+	(GtkDropTargetContextPeer): New constructor.
+
+2006-07-17  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/awt/image/SinglePixelPackedSampleModel.java
+	(createSubsetSampleModel): Added argument check and API docs.
+
+2006-07-17  Roman Kennke  <kennke@aicas.com>
+
+	* gnu/java/awt/peer/x/XGraphics.java
+	(copyArea): Implemented.
+
+2006-07-17  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/awt/image/SinglePixelPackedSampleModel.java
+	(getSampleSize): Return copy of array,
+	(getOffset): Added API docs,
+	(getScanlineStride): Likewise,
+	(hashCode): Implemented.
+
+2006-07-17  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/awt/image/MultiPixelPackedSampleModel.java
+	(getOffset): Updated API docs and source reformatting,
+	(getBitOffset): Source reformatting only,
+	(getDataElements): Likewise,
+	(getPixel): Likewise,
+	(getPixels): Removed method override,
+	(setDataElements): Reimplemented.
+
+2006-07-17  Gary Benson  <gbenson@redhat.com>
+
+	* resource/META-INF/services/.cvsignore: New file.
+	* lib/.cvsignore: Updated.	
+
+2006-07-17  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/basic/BasicButtonListener.java
+	(propertyChange): Only do the text layout caching as long
+	as the noGraphics2D property isn't set.
+	* javax/swing/plaf/basic/BasicMenuItemUI.java
+	(PropertyChangeHandler.propertyChange): Only do the text layout
+	caching as long	as the noGraphics2D property isn't set.
+
+2006-07-17  Roman Kennke  <kennke@aicas.com>
+
+	* gnu/java/awt/peer/x/XGraphicsEnvironment.java
+	(XGraphicsEnvironment): Make constructor public so that it
+	can be called via Class.forName().newInstance().
+	* gnu/java/awt/peer/x/XImage.java
+	(XImage): Fetch GraphicsEnvironment via
+	GraphicsEnvironment.getLocalGraphicsEnvironment() rather
+	than the XToolkit method, to avoid double instantiation
+	of the XGraphicsEnvironment.
+	* gnu/java/awt/peer/x/XToolkit.java
+	(env): Removed field.
+	(getLocalGraphicsEnvironment): Removed impl. This method
+	should not be called since we set the graphicsenv property
+	in the constructor.
+
+2006-07-16  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* java/util/UUID.java:
+	(compareTo(Object)): Call compareTo(UUID).
+	(compareTo(UUID)): Implemented.
+	
+2006-07-16  Tom Tromey  <tromey@redhat.com>
+
+	* java/lang/StrictMath.java (cbrt): Added '@since'.
+
+2006-07-16  Carsten Neumann  <cn-develop@gmx.net>
+
+	* java/lang/StrictMath.java (cbrt): New method.
+	(getLowDWord): New helper method.
+	(getHighDWord): Likewise.
+	(buildDouble): Likewise.
+	(CBRT_B1): New field.
+	(CBRT_B2): Likewise.
+	(CBRT_C): Likewise.
+	(CBRT_D): Likewise.
+	(CBRT_E): Likewise.
+	(CBRT_F): Likewise.
+	(CBRT_G): Likewise.
+
+2006-07-16  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* javax/management/MBeanInfo.java:
+	(getNotifications()): Implemented.
+	* javax/management/NotificationBroadcaster.java:
+	(removeNotificationListener(NotificationListener)):
+	Renamed from removeListener.
+	* javax/management/NotificationEmitter.java:
+	(removeNotificationListener(NotificationListener,
+	NotificationFilter, Object)): Likewise.
+	* javax/management/NotificationFilter.java:
+	Implement Serializable.
+	* javax/management/NotificationListener.java:
+	Implement java.util.EventListener.
+	* javax/rmi/ssl/SslRMIClientSocketFactory.java:
+	Implement Serializable.
+
+2006-07-16  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* java/lang/management/MemoryNotificationInfo.java:
+	New file.
+	
+2006-07-16  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	PR 28392
+	* gnu/javax/swing/text/html/parser/htmlValidator.java 
+	(tagIsValidForContext):	If it is not possible to insert any tag, but 
+	is possible to insert a P, insert a P.
+	* gnu/javax/swing/text/html/parser/HTML_401Swing.java
+	(newInstance): Removed print statement. (getBodyElements):
+	Removed ABBR, ACRONYM, BDO, Q, S, SUB, SUP and ADDRESS from the
+	valid body level tags (will be enclosed into P's).
+
+2006-07-17  Raif S. Naffah  <raif@swiftdsl.com.au>
+
+	* tools/gnu/classpath/tools/keytool/Command.java (setKeystoreURLParam):
+	Condition the creation of .keystore (a default keystore) based on the
+	createIfNotFound argument as well.
+
+2006-07-16  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	PR 28392
+	* examples/gnu/classpath/examples/swing/HtmlDemo.java:
+	Removed heading p tag from the parsing example.
+	* gnu/javax/swing/text/html/parser/HTML_401F.java:
+	(createHtmlContentModel): Explained.
+	(defineElements): Call getBodyElements to get the body
+	elements. (getBodyElements): New method. (model):
+	Made protected from private.
+	* gnu/javax/swing/text/html/parser/htmlValidator.java
+	(openTag): Mind that current content model may be null.
+	(tagIsValidForContext): If the tag is PCDATA, and it is not
+	valid for context, but the paragraph (P) is valid for context,
+	suggest to insert the P tag here.
+	* javax/swing/text/html/HTMLDocument.java (HTMLReader.addContent,
+	HTMLReader.blockOpen, HTMLReader.blockClose): Do not handle
+	implied P tags here.
+	* javax/swing/text/html/HTMLEditorKit.java (getParser):
+	Get the custom parser, using HTML_401Swing.java DTD.
+	* javax/swing/text/html/parser/ParserDelegator.java:
+	Removed the obsolete note that HTMLEditorKit does not exist.
+	* gnu/javax/swing/text/html/parser/GnuParserDelegator.java,
+	gnu/javax/swing/text/html/parser/HTML_401Swing.java: New files.
+
+2006-07-16  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* javax/management/ListenerNotFoundException.java:
+	New file.
+	* javax/management/MBeanFeatureInfo.java:
+	(hashCode()): Use summation instead of multiplication
+	for consistency with other classes.
+	* javax/management/MBeanNotificationInfo.java,
+	* javax/management/Notification.java,
+	* javax/management/NotificationBroadcaster.java,
+	* javax/management/NotificationEmitter.java,
+	* javax/management/NotificationFilter.java,
+	* javax/management/NotificationListener.java:
+	New files.
+	* javax/management/OperationsException.java:
+	(serialVersionUID): Added.
+	
+2006-07-16  Thomas Minor  <1nocentrabidlamb@sexMagnet.com>
+	    Mark Wielaard  <mark@klomp.org>
+
+	* java/io/PrintStream.java: Added four constructors, for File and
+	String describing a filename with or without explicit encoding.
+
+2006-07-16  Sven de Marothy  <sven@physto.se>
+
+	* javax/rmi/ssl/SslRMIServerSocketFactory.java,
+	* javax/rmi/ssl/SslRMIClientSocketFactory.java:
+	New files.
+
+2006-07-16  Raif S. Naffah  <raif@swiftdsl.com.au>
+
+	PR Classpath/28391
+	* tools/gnu/classpath/tools/keytool/Command.java (setKeyStoreParams(5)): 
+	New method.
+	(setKeyStoreParams(4)): Call the above method with false as its 1st arg.
+	(setProviderClassNameParam): Made private.
+	(setKeystoreTypeParam): Likewise.
+	(setKeyPasswordParam): Likewise
+	(setKeystorePasswordParam): Likewise.
+	(setKeystoreURLParam): Now accepts 2 more arguments; the first a boolean to
+	create or not the keystore if it's not there, and the second is the store's
+	password to process before loading the keystore. Amended the code
+	accordingly.
+	* tools/gnu/classpath/tools/keytool/GenKeyCmd.java (setup): Call super's
+	setKeyStoreParams(5) with true as its first argument.
+	* tools/gnu/classpath/tools/keytool/IdentityDBCmd.java (setup): Likewise.
+	* tools/gnu/classpath/tools/keytool/ImportCmd.java (setup): Likewise.
+
+2006-07-16  Sven de Marothy  <sven@physto.se>
+
+	* java/util/UUID.java: New file.
+
+2006-07-16  Raif S. Naffah  <raif@swiftdsl.com.au>
+
+	* gnu/javax/crypto/jce/cipher/KeyWrappingAlgorithmAdapter.java: New file.
+	* gnu/javax/crypto/jce/cipher/AESKeyWrapSpi.java: New file.
+	* gnu/javax/crypto/jce/cipher/AES128KeyWrapSpi.java: Likewise.
+	* gnu/javax/crypto/jce/cipher/AES192KeyWrapSpi.java: Likewise.
+	* gnu/javax/crypto/jce/cipher/AES256KeyWrapSpi.java: Likewise.
+	* gnu/javax/crypto/jce/cipher/TripleDESKeyWrapSpi.java: Likewise.
+	* gnu/javax/crypto/jce/GnuCrypto.java (.run): Added mappings for newly
+	added Key Wrapping Algorithm SPIs.
+
+2006-07-16  Raif S. Naffah  <raif@swiftdsl.com.au>
+
+	* javax/crypto/Cipher.java (getOutputSize): Allow SPIs initialised for key
+	wrapping/unwrapping to invoke their engineGetOutputSize.
+
+2006-07-16  Raif S. Naffah  <raif@swiftdsl.com.au>
+
+	* gnu/javax/crypto/kwa/TripleDESKeyWrap.java (rnd): New field.
+	(engineInit): If a SecureRandom was specified then use it.
+	(nextRandomBytes): New method.
+	(engineWrap): Use above method.
+	* gnu/javax/crypto/kwa/BaseKeyWrappingAlgorithm.java (prng): New field.
+	(getDefaultPRNG): New method.
+	* gnu/javax/crypto/kwa/AESKeyWrap.java (engineInit): Reset underlying AES.
+	* gnu/javax/crypto/kwa/IKeyWrappingAlgorithm.java (SOURCE_OF_RANDOMNESS):
+	New constant.
+
+2006-07-16  Raif S. Naffah  <raif@swiftdsl.com.au>
+
+	* gnu/javax/crypto/jce/params/BlockCipherParameters.java
+	(engineGetParameterSpec): Should be able to return an IvParameterSpec.
+
+2006-07-16  Raif S. Naffah  <raif@swiftdsl.com.au>
+
+	* gnu/javax/crypto/cipher/DES.java (adjustParity): Index limit now takes
+	offset into consideration.
+
+2006-07-16  Mario Torre  <neugens@limasoftware.net>
+
+	* native/jni/gconf-peer/GConfNativePeer.c (init_gconf_client):
+	Fixed comment. This functions now requires to be called
+	with gdk lock held, the comment states that.
+	(Java_gnu_java_util_prefs_gconf_GConfNativePeer_init_1id_1cache):
+	Introduces gdk locks around critical regions of code.
+	(Java_gnu_java_util_prefs_gconf_GConfNativePeer_gconf_1client_1gconf_1client_1all_1keys):
+	Likewise.
+	(Java_gnu_java_util_prefs_gconf_GConfNativePeer_gconf_1client_1gconf_1client_1all_1nodes):
+	Likewise.
+	(Java_gnu_java_util_prefs_gconf_GConfNativePeer_gconf_1client_1suggest_1sync):
+	Likewise.
+	(Java_gnu_java_util_prefs_gconf_GConfNativePeer_gconf_1client_1unset):
+	Likewise.
+	(Java_gnu_java_util_prefs_gconf_GConfNativePeer_gconf_1client_1get_1string):
+	Likewise.
+	(Java_gnu_java_util_prefs_gconf_GConfNativePeer_gconf_1client_1set_1string):
+	Likewise.
+	(Java_gnu_java_util_prefs_gconf_GConfNativePeer_gconf_1client_1remove_1dir):
+	Likewise.
+	(Java_gnu_java_util_prefs_gconf_GConfNativePeer_gconf_1client_1add_1dir):
+	Likewise.
+	(Java_gnu_java_util_prefs_gconf_GConfNativePeer_gconf_1client_1dir_1exists):
+	Likewise.
+	(Java_gnu_java_util_prefs_gconf_GConfNativePeer_finalize_1class):
+	* native/jni/gconf-peer/Makefile.am: The GConf peer now depends on GTK.
+
+2006-07-15  Sven de Marothy  <sven@physto.se>
+
+        * javax/swing/JFileChooser.java
+        Change default selection mode to FILES_ONLY.
+        * javax/swing/plaf/basic/BasicDirectoryModel.java
+        Document, fix selection mode filtering.
+        (renameFile): Implement
+        * javax/swing/plaf/basic/BasicFileChooserUI.java
+        (selectedDir): New field to handle selected directories,
+        disallow selecting of directories in FILES_ONLY mode.
+        * javax/swing/plaf/metal/MetalFileChooserUI.java:
+        (EditingActionListener.actionPerformed):
+        Stop editing on all actions (e.g. return-key press)
+
 2006-07-15  Mark Wielaard  <mark@klomp.org>
 
 	* doc/vmintegration.texinfo (gnu.java.lang.management): Change xref

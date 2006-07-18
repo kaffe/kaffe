@@ -149,7 +149,7 @@ class IdentityDBCmd extends Command
   void setup() throws Exception
   {
     setInputStreamParam(_idbFileName);
-    setKeyStoreParams(_providerClassName, _ksType, _ksPassword, _ksURL);
+    setKeyStoreParams(true, _providerClassName, _ksType, _ksPassword, _ksURL);
     if (Configuration.DEBUG)
       {
         log.fine("-identitydb handler will use the following options:"); //$NON-NLS-1$

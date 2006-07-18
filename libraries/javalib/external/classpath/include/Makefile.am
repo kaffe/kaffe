@@ -75,7 +75,8 @@ $(top_srcdir)/include/gnu_java_awt_peer_gtk_GtkTextFieldPeer.h \
 $(top_srcdir)/include/gnu_java_awt_peer_gtk_GtkToolkit.h \
 $(top_srcdir)/include/gnu_java_awt_peer_gtk_GtkWindowPeer.h \
 $(top_srcdir)/include/gnu_java_awt_peer_gtk_GtkVolatileImage.h \
-$(top_srcdir)/include/gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.h
+$(top_srcdir)/include/gnu_java_awt_peer_gtk_GThreadNativeMethodRunner.h \
+$(top_srcdir)/include/GtkDragSourceContextPeer.h
 
 QTPEER_H_FILES = \
 $(top_srcdir)/include/gnu_java_awt_peer_qt_QtCheckboxPeer.h \

@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package javax.swing.plaf.basic;
 
+import gnu.classpath.SystemProperties;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -71,8 +73,10 @@ public class BasicButtonListener implements MouseListener, MouseMotionListener,
     // Store the TextLayout for this in a client property for speed-up
     // painting of the label.
     String property = e.getPropertyName();
-    if (property.equals(AbstractButton.TEXT_CHANGED_PROPERTY)
-        || property.equals("font"))
+    if ((property.equals(AbstractButton.TEXT_CHANGED_PROPERTY)
+         || property.equals("font"))
+        && SystemProperties.getProperty("gnu.javax.swing.noGraphics2D")
+        == null)
       {
         AbstractButton b = (AbstractButton) e.getSource();
         String text = b.getText();

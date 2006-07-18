@@ -49,6 +49,11 @@ public class OperationsException
 {
 
   /**
+   * Compatible with JDK 1.5
+   */
+  private static final long serialVersionUID = -4967597595580536216L;
+
+  /**
    * Constructs a new <code>OperationsException</code>.
    */
   public OperationsException()

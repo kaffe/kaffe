@@ -231,10 +231,12 @@ public class MultiPixelPackedSampleModel extends SampleModel
    * @param y  the y-coordinate.
    * 
    * @return The index in the data buffer that stores the pixel at (x, y).
+   * 
+   * @see #getBitOffset(int)
    */
   public int getOffset(int x, int y)
   {
-    return scanlineStride * y + ((dataBitOffset + x*numberOfBits) / elemBits);
+    return scanlineStride * y + ((dataBitOffset + x * numberOfBits) / elemBits);
   }
 
   /**
@@ -247,7 +249,7 @@ public class MultiPixelPackedSampleModel extends SampleModel
    */
   public int getBitOffset(int x)
   {
-    return (dataBitOffset + x*numberOfBits) % elemBits;
+    return (dataBitOffset + x * numberOfBits) % elemBits;
   }
 
   /**
@@ -331,35 +333,41 @@ public class MultiPixelPackedSampleModel extends SampleModel
    * array obj, since there is only one band.  If obj is null, a new array of
    * getTransferType() is created.
    *
-   * @param x The x-coordinate of the pixel rectangle to store in <code>obj</code>.
-   * @param y The y-coordinate of the pixel rectangle to store in <code>obj</code>.
-   * @param obj The primitive array to store the pixels into or null to force creation.
+   * @param x The x-coordinate of the pixel rectangle to store in 
+   *     <code>obj</code>.
+   * @param y The y-coordinate of the pixel rectangle to store in 
+   *     <code>obj</code>.
+   * @param obj The primitive array to store the pixels into or null to force 
+   *     creation.
    * @param data The DataBuffer that is the source of the pixel data.
    * @return The primitive array containing the pixel data.
-   * @see java.awt.image.SampleModel#getDataElements(int, int, java.lang.Object, java.awt.image.DataBuffer)
+   * @see java.awt.image.SampleModel#getDataElements(int, int, Object, 
+   *     DataBuffer)
    */
-  public Object getDataElements(int x, int y, Object obj,
-				DataBuffer data)
+  public Object getDataElements(int x, int y, Object obj, DataBuffer data)
   {
     int pixel = getSample(x, y, 0, data);
     switch (getTransferType())
-    {
-    case DataBuffer.TYPE_BYTE:
-      if (obj == null) obj = new byte[1];
-      ((byte[])obj)[0] = (byte)pixel;
-      return obj;
-    case DataBuffer.TYPE_USHORT:
-      if (obj == null) obj = new short[1];
-      ((short[])obj)[0] = (short)pixel;
-      return obj;
-    case DataBuffer.TYPE_INT:
-      if (obj == null) obj = new int[1];
-      ((int[])obj)[0] = pixel;
-      return obj;
-    default:
-      // Seems like the only sensible thing to do.
-      throw new ClassCastException();
-    }
+      {
+        case DataBuffer.TYPE_BYTE:
+          if (obj == null) 
+            obj = new byte[1];
+          ((byte[]) obj)[0] = (byte) pixel;
+          return obj;
+        case DataBuffer.TYPE_USHORT:
+          if (obj == null) 
+            obj = new short[1];
+          ((short[]) obj)[0] = (short) pixel;
+          return obj;
+        case DataBuffer.TYPE_INT:
+          if (obj == null) 
+            obj = new int[1];
+          ((int[]) obj)[0] = pixel;
+          return obj;
+        default:
+          // Seems like the only sensible thing to do.
+          throw new ClassCastException();
+      }
   }
 
   /**
@@ -381,52 +389,10 @@ public class MultiPixelPackedSampleModel extends SampleModel
    */
   public int[] getPixel(int x, int y, int[] iArray, DataBuffer data)
   {
-    if (iArray == null) iArray = new int[1];
+    if (iArray == null) 
+      iArray = new int[1];
     iArray[0] = getSample(x, y, 0, data);
-	
     return iArray;
-  }
-
-  /**
-   * Returns an array containing the samples for the pixels in the region 
-   * specified by (x, y, w, h) in the specified data buffer.  If 
-   * <code>iArray</code> is not <code>null</code>, it will be populated with 
-   * the sample values and returned as the result of this function (this 
-   * avoids allocating a new array instance).
-   * 
-   * @param x  the x-coordinate of the top-left pixel.
-   * @param y  the y-coordinate of the top-left pixel.
-   * @param w  the width of the region of pixels.
-   * @param h  the height of the region of pixels.
-   * @param iArray  an array to populate with the sample values and return as 
-   *     the result (if <code>null</code>, a new array will be allocated).
-   * @param data  the data buffer (<code>null</code> not permitted).
-   * 
-   * @return The pixel sample values.
-   * 
-   * @throws NullPointerException if <code>data</code> is <code>null</code>.
-   */
-  public int[] getPixels(int x, int y, int w, int h, int[] iArray,
-			 DataBuffer data)
-  {
-    int offset = getOffset(x, y);
-    if (iArray == null) iArray = new int[w*h];
-    int outOffset = 0;
-    for (y=0; y<h; y++)
-      {
-	int lineOffset = offset;
-	for (x=0; x<w;)
-	  {
-	    int samples = data.getElem(lineOffset++);
-	    for (int b=0; b<numElems && x<w; b++)
-	      {
-		iArray[outOffset++] = (samples & bitMasks[b]) >>> bitOffsets[b];
-		x++;
-	      }
-	  }
-	offset += scanlineStride;
-      }
-    return iArray;	
   }
 
   /**
@@ -460,66 +426,49 @@ public class MultiPixelPackedSampleModel extends SampleModel
    * @param y The y-coordinate of the data elements in <code>obj</code>.
    * @param obj The primitive array containing the data elements to set.
    * @param data The DataBuffer to store the data elements into.
-   * @see java.awt.image.SampleModel#setDataElements(int, int, int, int, java.lang.Object, java.awt.image.DataBuffer)
    */
   public void setDataElements(int x, int y, Object obj, DataBuffer data)
   {
     int transferType = getTransferType();
-    if (getTransferType() != data.getDataType())
-      {
-	throw new IllegalArgumentException("transfer type ("+
-					   getTransferType()+"), "+
-					   "does not match data "+
-					   "buffer type (" +
-					   data.getDataType() +
-					   ").");
-      }
-
-    int offset = getOffset(x, y);
-    
     try
       {
-	switch (transferType)
-	  {
-	  case DataBuffer.TYPE_BYTE:
-	    {
-	      DataBufferByte out = (DataBufferByte) data;
-	      byte[] in = (byte[]) obj;
-	      out.getData()[offset] = in[0];
-	      return;
-	    }
-	  case DataBuffer.TYPE_USHORT:
-	    {
-	      DataBufferUShort out = (DataBufferUShort) data;
-	      short[] in = (short[]) obj;
-	      out.getData()[offset] = in[0];
-	      return;
-	    }
-	  case DataBuffer.TYPE_INT:
-	    {
-	      DataBufferInt out = (DataBufferInt) data;
-	      int[] in = (int[]) obj;
-	      out.getData()[offset] = in[0];
-	      return;
-	    }
-	  default:
-	    throw new ClassCastException("Unsupported data type");
-	  }
+        switch (transferType)
+          {
+            case DataBuffer.TYPE_BYTE:
+              {
+                byte[] in = (byte[]) obj;
+                setSample(x, y, 0, in[0] & 0xFF, data);
+                return;
+              }
+            case DataBuffer.TYPE_USHORT:
+              {
+                short[] in = (short[]) obj;
+                setSample(x, y, 0, in[0] & 0xFFFF, data);
+                return;
+              }
+            case DataBuffer.TYPE_INT:
+              {
+                int[] in = (int[]) obj;
+                setSample(x, y, 0, in[0], data);
+                return;
+              }
+            default:
+              throw new ClassCastException("Unsupported data type");
+          }
       }
     catch (ArrayIndexOutOfBoundsException aioobe)
       {
-	String msg = "While writing data elements" +
-	  ", x="+x+", y="+y+
-	  ", width="+width+", height="+height+
-	  ", scanlineStride="+scanlineStride+
-	  ", offset="+offset+
-	  ", data.getSize()="+data.getSize()+
-	  ", data.getOffset()="+data.getOffset()+
-	  ": " +
-	  aioobe;
-	throw new ArrayIndexOutOfBoundsException(msg);
+        String msg = "While writing data elements" +
+          ", x=" + x + ", y=" + y +
+          ", width=" + width + ", height=" + height +
+          ", scanlineStride=" + scanlineStride +
+          ", offset=" + getOffset(x, y) +
+          ", data.getSize()=" + data.getSize() +
+          ", data.getOffset()=" + data.getOffset() +
+          ": " + aioobe;
+        throw new ArrayIndexOutOfBoundsException(msg);
       }
-    }
+  }
 
   /**
    * Sets the sample value for the pixel at (x, y) in the specified data 

@@ -38,13 +38,21 @@ exception statement from your version. */
 
 package gnu.java.awt.dnd.peer.gtk;
 
+import gnu.java.awt.peer.gtk.GtkGenericPeer;
+
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.peer.DropTargetPeer;
 
 public class GtkDropTargetPeer
+    extends GtkGenericPeer
     implements DropTargetPeer
 {
 
+  public GtkDropTargetPeer()
+  {
+    super(null);
+  }
+  
   public void addDropTarget(DropTarget target)
   {
     // FIXME: Not Implemented

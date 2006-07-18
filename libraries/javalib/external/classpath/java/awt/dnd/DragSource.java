@@ -51,7 +51,6 @@ import java.awt.datatransfer.FlavorMap;
 import java.awt.datatransfer.SystemFlavorMap;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.peer.DragSourceContextPeer;
-import java.awt.event.MouseMotionListener;
 import java.io.Serializable;
 import java.util.EventListener;
 
@@ -77,6 +76,8 @@ public class DragSource implements Serializable
   private transient DragSourceMotionListener dragSourceMotionListener;
   
   private static DragSource ds;
+  private DragSourceContextPeer peer;
+  private DragSourceContext context;
 
   /**
    * Initializes the drag source.
@@ -140,12 +141,17 @@ public class DragSource implements Serializable
     // it to the peer, passing itself as a parameter. Now, the native system has
     // access to the Transferable through the context.
 
+    // FIXME: Add check to determine if dragging.
+    
     try
       {
         flavorMap = map;
-        DragSourceContextPeer peer = Toolkit.getDefaultToolkit().
-                                          createDragSourceContextPeer(trigger);
-        DragSourceContext context = createDragSourceContext(peer, trigger,
+        
+        if (peer == null)
+          peer = Toolkit.getDefaultToolkit().createDragSourceContextPeer(trigger);
+        
+        if (context == null)
+          context = createDragSourceContext(peer, trigger,
                                                             dragCursor,
                                                             dragImage,
                                                             imageOffset, trans,
@@ -305,5 +311,18 @@ public class DragSource implements Serializable
 
     // Return an empty EventListener array.
     return new EventListener [0];
+  }
+  
+  /**
+   * TODO
+   * @return
+   * 
+   * @since 1.5
+   */
+  public static int getDragThreshold()
+    throws NotImplementedException
+  {
+    // FIXME: Not implemented.
+    return 0;
   }
 } // class DragSource
