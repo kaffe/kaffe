@@ -15,6 +15,8 @@
 
 package java.awt;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.PaintEvent;
 import java.awt.event.InvocationEvent;
@@ -26,6 +28,11 @@ public class EventQueue
 	AWTEvent localQueue;
 	AWTEvent localEnd;
 
+  private AWTEvent currentEvent;
+  private long lastWhen = System.currentTimeMillis();
+  
+  private EventDispatchThread dispatchThread = new EventDispatchThread(this);
+  
 static {
 	// force static init of AWTEvent (need that for native event system
 	// initialization)
@@ -339,10 +346,67 @@ synchronized void postPaintEvent ( int id, Component c, int x, int y, int width,
 	}
 }
 
-  /* taken from GNU Classpath */
+    /**
+   * Dispatches an event. The manner in which the event is dispatched depends
+   * upon the type of the event and the type of the event's source object.
+   *
+   * @exception NullPointerException If event is null.
+   */
+  protected void dispatchEvent(AWTEvent evt)
+  {
+    currentEvent = evt;
+
+    if (evt instanceof InputEvent)
+      lastWhen = ((InputEvent) evt).getWhen();
+    else if (evt instanceof ActionEvent)
+      lastWhen = ((ActionEvent) evt).getWhen();
+    else if (evt instanceof InvocationEvent)
+      lastWhen = ((InvocationEvent) evt).getWhen();
+
+    if (evt instanceof ActiveEvent)
+      {
+        ActiveEvent active_evt = (ActiveEvent) evt;
+        active_evt.dispatch();
+      }
+    else
+      {
+        Object source = evt.getSource();
+
+        if (source instanceof Component)
+          {
+            Component srccmp = (Component) source;
+            srccmp.dispatchEvent(evt);
+          }
+        else if (source instanceof MenuComponent)
+          {
+            MenuComponent srccmp = (MenuComponent) source;
+            srccmp.dispatchEvent(evt);
+          }
+      }
+  }
+
+  /**
+   * Returns the timestamp of the most recent event that had a timestamp, or
+   * the initialization time of the event queue if no events have been fired.
+   * At present, only <code>InputEvent</code>s, <code>ActionEvent</code>s,
+   * <code>InputMethodEvent</code>s, and <code>InvocationEvent</code>s have
+   * timestamps, but this may be added to other events in future versions.
+   * If this is called by the event dispatching thread, it can be any
+   * (sequential) value, but to other threads, the safest bet is to return
+   * System.currentTimeMillis().
+   *
+   * @return the most recent timestamp
+   * @see InputEvent#getWhen()
+   * @see ActionEvent#getWhen()
+   * @see InvocationEvent#getWhen()
+   * @see InputMethodEvent#getWhen()
+   * @since 1.4
+   */
   public static long getMostRecentEventTime()
   {
-    // XXX For now, this ONLY does the current time.
-    return System.currentTimeMillis();
+    EventQueue eq = Toolkit.getDefaultToolkit().getSystemEventQueue(); 
+    if (Thread.currentThread() != eq.dispatchThread)
+      return System.currentTimeMillis();
+    return eq.lastWhen;
   }
 }

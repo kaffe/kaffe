@@ -18,8 +18,11 @@ package java.awt;
 
 import java.awt.event.FocusEvent;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import java.awt.event.WindowListener;
+import java.awt.event.WindowStateListener;
 import java.awt.peer.ComponentPeer;
+import java.util.Vector;
 
 import gnu.classpath.Pointer;
 
@@ -33,9 +36,23 @@ public class Window
 	static Window dummy = new Window();
 	private static int counter;
 	final private static long serialVersionUID = 4497834738069338734L;
+  /** @since 1.2 */
+  private int state = 0;
         /** @since 1.4 */
         private boolean focusableWindowState = true;
 
+  // A list of other top-level windows owned by this window.
+  private transient Vector ownedWindows = new Vector();
+
+  private transient WindowListener windowListener;
+  private transient WindowFocusListener windowFocusListener;
+  private transient WindowStateListener windowStateListener;
+  private transient GraphicsConfiguration graphicsConfiguration;
+
+  private transient boolean shown;
+
+  // This is package-private to avoid an accessor method.
+  transient Component windowFocusOwner;
 Window () {
 	// windows aren't visible per se, but they are exposed, colored and fontified
 	flags = (IS_PARENT_SHOWING | IS_BG_COLORED | IS_FG_COLORED | IS_FONTIFIED);
@@ -209,6 +226,38 @@ public void pack () {
 	validate();
 }
 
+  /**
+   * Returns the child component of this window that would receive
+   * focus if this window were to become focused.  If the window
+   * already has the top-level focus, then this method returns the
+   * same component as getFocusOwner.  If no child component has
+   * requested focus within the window, then the initial focus owner
+   * is returned.  If this is a non-focusable window, this method
+   * returns null.
+   *
+   * @return the child component of this window that most recently had
+   * the focus, or <code>null</code>
+   * @since 1.4
+   */
+  public Component getMostRecentFocusOwner ()
+  {
+    return windowFocusOwner;
+  }
+
+  /**
+   * Set the focus owner for this window.  This method is used to
+   * remember which component was focused when this window lost
+   * top-level focus, so that when it regains top-level focus the same
+   * child component can be refocused.
+   *
+   * @param windowFocusOwner the component in this window that owns
+   * the focus.
+   */
+  void setFocusOwner (Component windowFocusOwner)
+  {
+    this.windowFocusOwner = windowFocusOwner;
+  }
+  
 void process ( FocusEvent event ) {
 	Component c;
 
@@ -404,7 +453,6 @@ public void toFront () {
 	if ( nativeData != null ) Toolkit.wndToFront( nativeData);
 }
 
-// TODO this is only a stub
 public void setLocationRelativeTo(Component c) {
     int x = 0;
     int y = 0;
