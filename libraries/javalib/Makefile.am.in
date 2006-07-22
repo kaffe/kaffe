@@ -44,6 +44,7 @@ clean-local:
 SUBDIRS= \
 	. \
 	external/classpath \
+	dnsjava \
 	$(MAYBE_PEERLESS_KAFFE_AWT) \
 	$(MAYBE_GMP_JAVA_MATH) \
 	$(MAYBE_TRITONUS_SOUND)

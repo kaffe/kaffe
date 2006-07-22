@@ -44,6 +44,7 @@ clean-local:
 SUBDIRS= \
 	. \
 	external/classpath \
+	dnsjava \
 	$(MAYBE_PEERLESS_KAFFE_AWT) \
 	$(MAYBE_GMP_JAVA_MATH) \
 	$(MAYBE_TRITONUS_SOUND)
@@ -222,7 +223,6 @@ EXTRA_DIST= \
 	vmspecific/gnu/java/lang/management/VMMemoryPoolMXBeanImpl.java \
 	vmspecific/gnu/java/lang/management/VMRuntimeMXBeanImpl.java \
 	vmspecific/gnu/java/lang/management/VMThreadMXBeanImpl.java \
-	vmspecific/gnu/java/net/DNSJavaInetAddressImpl.java \
 	vmspecific/gnu/java/net/InetAddressImpl.java \
 	vmspecific/gnu/java/net/PlainDatagramSocketImpl.java \
 	vmspecific/gnu/java/net/PlainSocketImpl.java \
@@ -308,121 +308,4 @@ EXTRA_DIST= \
 	vmspecific/org/objectweb/asm153/Edge.java \
 	vmspecific/org/objectweb/asm153/Item.java \
 	vmspecific/org/objectweb/asm153/Label.java \
-	vmspecific/org/objectweb/asm153/Type.java \
-	vmspecific/org/xbill/DNS/A6Record.java \
-	vmspecific/org/xbill/DNS/AAAARecord.java \
-	vmspecific/org/xbill/DNS/AFSDBRecord.java \
-	vmspecific/org/xbill/DNS/APLRecord.java \
-	vmspecific/org/xbill/DNS/ARecord.java \
-	vmspecific/org/xbill/DNS/Address.java \
-	vmspecific/org/xbill/DNS/CERTRecord.java \
-	vmspecific/org/xbill/DNS/CNAMERecord.java \
-	vmspecific/org/xbill/DNS/Cache.java \
-	vmspecific/org/xbill/DNS/Client.java \
-	vmspecific/org/xbill/DNS/Compression.java \
-	vmspecific/org/xbill/DNS/Credibility.java \
-	vmspecific/org/xbill/DNS/DClass.java \
-	vmspecific/org/xbill/DNS/DNAMERecord.java \
-	vmspecific/org/xbill/DNS/DNSInput.java \
-	vmspecific/org/xbill/DNS/DNSKEYRecord.java \
-	vmspecific/org/xbill/DNS/DNSOutput.java \
-	vmspecific/org/xbill/DNS/DNSSEC.java \
-	vmspecific/org/xbill/DNS/DSRecord.java \
-	vmspecific/org/xbill/DNS/EmptyRecord.java \
-	vmspecific/org/xbill/DNS/ExtendedFlags.java \
-	vmspecific/org/xbill/DNS/ExtendedResolver.java \
-	vmspecific/org/xbill/DNS/Flags.java \
-	vmspecific/org/xbill/DNS/FormattedTime.java \
-	vmspecific/org/xbill/DNS/GPOSRecord.java \
-	vmspecific/org/xbill/DNS/Generator.java \
-	vmspecific/org/xbill/DNS/HINFORecord.java \
-	vmspecific/org/xbill/DNS/Header.java \
-	vmspecific/org/xbill/DNS/ISDNRecord.java \
-	vmspecific/org/xbill/DNS/InvalidDClassException.java \
-	vmspecific/org/xbill/DNS/InvalidTTLException.java \
-	vmspecific/org/xbill/DNS/InvalidTypeException.java \
-	vmspecific/org/xbill/DNS/KEYBase.java \
-	vmspecific/org/xbill/DNS/KEYRecord.java \
-	vmspecific/org/xbill/DNS/KXRecord.java \
-	vmspecific/org/xbill/DNS/LOCRecord.java \
-	vmspecific/org/xbill/DNS/Lookup.java \
-	vmspecific/org/xbill/DNS/MBRecord.java \
-	vmspecific/org/xbill/DNS/MDRecord.java \
-	vmspecific/org/xbill/DNS/MFRecord.java \
-	vmspecific/org/xbill/DNS/MGRecord.java \
-	vmspecific/org/xbill/DNS/MINFORecord.java \
-	vmspecific/org/xbill/DNS/MRRecord.java \
-	vmspecific/org/xbill/DNS/MXRecord.java \
-	vmspecific/org/xbill/DNS/Master.java \
-	vmspecific/org/xbill/DNS/Message.java \
-	vmspecific/org/xbill/DNS/Mnemonic.java \
-	vmspecific/org/xbill/DNS/NAPTRRecord.java \
-	vmspecific/org/xbill/DNS/NSAPRecord.java \
-	vmspecific/org/xbill/DNS/NSAP_PTRRecord.java \
-	vmspecific/org/xbill/DNS/NSECRecord.java \
-	vmspecific/org/xbill/DNS/NSRecord.java \
-	vmspecific/org/xbill/DNS/NULLRecord.java \
-	vmspecific/org/xbill/DNS/NXTRecord.java \
-	vmspecific/org/xbill/DNS/Name.java \
-	vmspecific/org/xbill/DNS/NameTooLongException.java \
-	vmspecific/org/xbill/DNS/OPTRecord.java \
-	vmspecific/org/xbill/DNS/Opcode.java \
-	vmspecific/org/xbill/DNS/Options.java \
-	vmspecific/org/xbill/DNS/PTRRecord.java \
-	vmspecific/org/xbill/DNS/PXRecord.java \
-	vmspecific/org/xbill/DNS/RPRecord.java \
-	vmspecific/org/xbill/DNS/RRSIGRecord.java \
-	vmspecific/org/xbill/DNS/RRset.java \
-	vmspecific/org/xbill/DNS/RTRecord.java \
-	vmspecific/org/xbill/DNS/Rcode.java \
-	vmspecific/org/xbill/DNS/Record.java \
-	vmspecific/org/xbill/DNS/RelativeNameException.java \
-	vmspecific/org/xbill/DNS/ResolveThread.java \
-	vmspecific/org/xbill/DNS/Resolver.java \
-	vmspecific/org/xbill/DNS/ResolverConfig.java \
-	vmspecific/org/xbill/DNS/ResolverListener.java \
-	vmspecific/org/xbill/DNS/ReverseMap.java \
-	vmspecific/org/xbill/DNS/SIGBase.java \
-	vmspecific/org/xbill/DNS/SIGRecord.java \
-	vmspecific/org/xbill/DNS/SOARecord.java \
-	vmspecific/org/xbill/DNS/SRVRecord.java \
-	vmspecific/org/xbill/DNS/SSHFPRecord.java \
-	vmspecific/org/xbill/DNS/Section.java \
-	vmspecific/org/xbill/DNS/Serial.java \
-	vmspecific/org/xbill/DNS/SetResponse.java \
-	vmspecific/org/xbill/DNS/SimpleResolver.java \
-	vmspecific/org/xbill/DNS/SingleCompressedNameBase.java \
-	vmspecific/org/xbill/DNS/SingleNameBase.java \
-	vmspecific/org/xbill/DNS/TCPClient.java \
-	vmspecific/org/xbill/DNS/TKEYRecord.java \
-	vmspecific/org/xbill/DNS/TSIG.java \
-	vmspecific/org/xbill/DNS/TSIGRecord.java \
-	vmspecific/org/xbill/DNS/TTL.java \
-	vmspecific/org/xbill/DNS/TXTRecord.java \
-	vmspecific/org/xbill/DNS/TextParseException.java \
-	vmspecific/org/xbill/DNS/Tokenizer.java \
-	vmspecific/org/xbill/DNS/Type.java \
-	vmspecific/org/xbill/DNS/TypedObject.java \
-	vmspecific/org/xbill/DNS/U16NameBase.java \
-	vmspecific/org/xbill/DNS/UDPClient.java \
-	vmspecific/org/xbill/DNS/UNKRecord.java \
-	vmspecific/org/xbill/DNS/Update.java \
-	vmspecific/org/xbill/DNS/Verifier.java \
-	vmspecific/org/xbill/DNS/WKSRecord.java \
-	vmspecific/org/xbill/DNS/WireParseException.java \
-	vmspecific/org/xbill/DNS/X25Record.java \
-	vmspecific/org/xbill/DNS/Zone.java \
-	vmspecific/org/xbill/DNS/ZoneTransferException.java \
-	vmspecific/org/xbill/DNS/ZoneTransferIn.java \
-	vmspecific/org/xbill/DNS/security/CERTConverter.java \
-	vmspecific/org/xbill/DNS/security/DHPubKey.java \
-	vmspecific/org/xbill/DNS/security/DNSSECVerifier.java \
-	vmspecific/org/xbill/DNS/security/DSAPubKey.java \
-	vmspecific/org/xbill/DNS/security/DSASignature.java \
-	vmspecific/org/xbill/DNS/security/KEYConverter.java \
-	vmspecific/org/xbill/DNS/security/RSAPubKey.java \
-	vmspecific/org/xbill/DNS/security/SIG0Signer.java \
-	vmspecific/org/xbill/DNS/utils/HMAC.java \
-	vmspecific/org/xbill/DNS/utils/base16.java \
-	vmspecific/org/xbill/DNS/utils/base64.java \
-	vmspecific/org/xbill/DNS/utils/hexdump.java
+	vmspecific/org/objectweb/asm153/Type.java
