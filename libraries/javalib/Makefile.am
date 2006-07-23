@@ -69,51 +69,6 @@ EXTRA_DIST= \
 	    Makefile.am.in \
 	    logging.properties \
 	vmspecific/META-INF/MANIFEST.MF \
-	vmspecific/gnu/bytecodecvssnap/Access.java \
-	vmspecific/gnu/bytecodecvssnap/ArrayClassLoader.java \
-	vmspecific/gnu/bytecodecvssnap/ArrayType.java \
-	vmspecific/gnu/bytecodecvssnap/AttrContainer.java \
-	vmspecific/gnu/bytecodecvssnap/Attribute.java \
-	vmspecific/gnu/bytecodecvssnap/ClassFileInput.java \
-	vmspecific/gnu/bytecodecvssnap/ClassType.java \
-	vmspecific/gnu/bytecodecvssnap/ClassTypeWriter.java \
-	vmspecific/gnu/bytecodecvssnap/CodeAttr.java \
-	vmspecific/gnu/bytecodecvssnap/ConstantPool.java \
-	vmspecific/gnu/bytecodecvssnap/ConstantValueAttr.java \
-	vmspecific/gnu/bytecodecvssnap/CpoolClass.java \
-	vmspecific/gnu/bytecodecvssnap/CpoolEntry.java \
-	vmspecific/gnu/bytecodecvssnap/CpoolFloat.java \
-	vmspecific/gnu/bytecodecvssnap/CpoolNameAndType.java \
-	vmspecific/gnu/bytecodecvssnap/CpoolRef.java \
-	vmspecific/gnu/bytecodecvssnap/CpoolString.java \
-	vmspecific/gnu/bytecodecvssnap/CpoolUtf8.java \
-	vmspecific/gnu/bytecodecvssnap/CpoolValue1.java \
-	vmspecific/gnu/bytecodecvssnap/CpoolValue2.java \
-	vmspecific/gnu/bytecodecvssnap/ExceptionsAttr.java \
-	vmspecific/gnu/bytecodecvssnap/Field.java \
-	vmspecific/gnu/bytecodecvssnap/Filter.java \
-	vmspecific/gnu/bytecodecvssnap/IfState.java \
-	vmspecific/gnu/bytecodecvssnap/InnerClassesAttr.java \
-	vmspecific/gnu/bytecodecvssnap/Label.java \
-	vmspecific/gnu/bytecodecvssnap/LineNumbersAttr.java \
-	vmspecific/gnu/bytecodecvssnap/LocalVarsAttr.java \
-	vmspecific/gnu/bytecodecvssnap/Location.java \
-	vmspecific/gnu/bytecodecvssnap/Method.java \
-	vmspecific/gnu/bytecodecvssnap/MiscAttr.java \
-	vmspecific/gnu/bytecodecvssnap/ObjectType.java \
-	vmspecific/gnu/bytecodecvssnap/PrimType.java \
-	vmspecific/gnu/bytecodecvssnap/Scope.java \
-	vmspecific/gnu/bytecodecvssnap/SourceDebugExtAttr.java \
-	vmspecific/gnu/bytecodecvssnap/SourceFileAttr.java \
-	vmspecific/gnu/bytecodecvssnap/SwitchState.java \
-	vmspecific/gnu/bytecodecvssnap/TryState.java \
-	vmspecific/gnu/bytecodecvssnap/Type.java \
-	vmspecific/gnu/bytecodecvssnap/VarEnumerator.java \
-	vmspecific/gnu/bytecodecvssnap/Variable.java \
-	vmspecific/gnu/bytecodecvssnap/ZipArchive.java \
-	vmspecific/gnu/bytecodecvssnap/ZipLoader.java \
-	vmspecific/gnu/bytecodecvssnap/dump.java \
-	vmspecific/gnu/bytecodecvssnap/package.html \
 	vmspecific/gnu/classpath/Configuration.java.in \
 	vmspecific/gnu/classpath/VMStackWalker.java \
 	vmspecific/gnu/classpath/VMSystemProperties.java \
@@ -296,16 +251,4 @@ EXTRA_DIST= \
 	vmspecific/org/kaffe/util/Ptr.java \
 	vmspecific/org/kaffe/util/SupportDisabled.java \
 	vmspecific/org/kaffe/util/UTF8.java \
-	vmspecific/org/kaffe/util/zip/SwitchInflater.java \
-	vmspecific/org/objectweb/asm153/Attribute.java \
-	vmspecific/org/objectweb/asm153/ByteVector.java \
-	vmspecific/org/objectweb/asm153/ClassReader.java \
-	vmspecific/org/objectweb/asm153/ClassVisitor.java \
-	vmspecific/org/objectweb/asm153/ClassWriter.java \
-	vmspecific/org/objectweb/asm153/CodeVisitor.java \
-	vmspecific/org/objectweb/asm153/CodeWriter.java \
-	vmspecific/org/objectweb/asm153/Constants.java \
-	vmspecific/org/objectweb/asm153/Edge.java \
-	vmspecific/org/objectweb/asm153/Item.java \
-	vmspecific/org/objectweb/asm153/Label.java \
-	vmspecific/org/objectweb/asm153/Type.java
+	vmspecific/org/kaffe/util/zip/SwitchInflater.java

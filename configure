@@ -51133,8 +51133,6 @@ subdirs="$subdirs libltdl"
 
           ac_config_files="$ac_config_files tools/javatools/Makefile"
 
-          ac_config_files="$ac_config_files tools/javatools/javalib/Makefile"
-
           ac_config_files="$ac_config_files test/Makefile"
 
           ac_config_files="$ac_config_files test/internal/Makefile"
@@ -52101,7 +52099,6 @@ do
   "tools/gjdoc/Makefile" ) CONFIG_FILES="$CONFIG_FILES tools/gjdoc/Makefile" ;;
   "tools/gjdoc/javalib/Makefile" ) CONFIG_FILES="$CONFIG_FILES tools/gjdoc/javalib/Makefile" ;;
   "tools/javatools/Makefile" ) CONFIG_FILES="$CONFIG_FILES tools/javatools/Makefile" ;;
-  "tools/javatools/javalib/Makefile" ) CONFIG_FILES="$CONFIG_FILES tools/javatools/javalib/Makefile" ;;
   "test/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/Makefile" ;;
   "test/internal/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/internal/Makefile" ;;
   "test/regression/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/regression/Makefile" ;;

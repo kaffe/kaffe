@@ -382,51 +382,6 @@ EXTRA_DIST = \
 	    Makefile.am.in \
 	    logging.properties \
 	vmspecific/META-INF/MANIFEST.MF \
-	vmspecific/gnu/bytecodecvssnap/Access.java \
-	vmspecific/gnu/bytecodecvssnap/ArrayClassLoader.java \
-	vmspecific/gnu/bytecodecvssnap/ArrayType.java \
-	vmspecific/gnu/bytecodecvssnap/AttrContainer.java \
-	vmspecific/gnu/bytecodecvssnap/Attribute.java \
-	vmspecific/gnu/bytecodecvssnap/ClassFileInput.java \
-	vmspecific/gnu/bytecodecvssnap/ClassType.java \
-	vmspecific/gnu/bytecodecvssnap/ClassTypeWriter.java \
-	vmspecific/gnu/bytecodecvssnap/CodeAttr.java \
-	vmspecific/gnu/bytecodecvssnap/ConstantPool.java \
-	vmspecific/gnu/bytecodecvssnap/ConstantValueAttr.java \
-	vmspecific/gnu/bytecodecvssnap/CpoolClass.java \
-	vmspecific/gnu/bytecodecvssnap/CpoolEntry.java \
-	vmspecific/gnu/bytecodecvssnap/CpoolFloat.java \
-	vmspecific/gnu/bytecodecvssnap/CpoolNameAndType.java \
-	vmspecific/gnu/bytecodecvssnap/CpoolRef.java \
-	vmspecific/gnu/bytecodecvssnap/CpoolString.java \
-	vmspecific/gnu/bytecodecvssnap/CpoolUtf8.java \
-	vmspecific/gnu/bytecodecvssnap/CpoolValue1.java \
-	vmspecific/gnu/bytecodecvssnap/CpoolValue2.java \
-	vmspecific/gnu/bytecodecvssnap/ExceptionsAttr.java \
-	vmspecific/gnu/bytecodecvssnap/Field.java \
-	vmspecific/gnu/bytecodecvssnap/Filter.java \
-	vmspecific/gnu/bytecodecvssnap/IfState.java \
-	vmspecific/gnu/bytecodecvssnap/InnerClassesAttr.java \
-	vmspecific/gnu/bytecodecvssnap/Label.java \
-	vmspecific/gnu/bytecodecvssnap/LineNumbersAttr.java \
-	vmspecific/gnu/bytecodecvssnap/LocalVarsAttr.java \
-	vmspecific/gnu/bytecodecvssnap/Location.java \
-	vmspecific/gnu/bytecodecvssnap/Method.java \
-	vmspecific/gnu/bytecodecvssnap/MiscAttr.java \
-	vmspecific/gnu/bytecodecvssnap/ObjectType.java \
-	vmspecific/gnu/bytecodecvssnap/PrimType.java \
-	vmspecific/gnu/bytecodecvssnap/Scope.java \
-	vmspecific/gnu/bytecodecvssnap/SourceDebugExtAttr.java \
-	vmspecific/gnu/bytecodecvssnap/SourceFileAttr.java \
-	vmspecific/gnu/bytecodecvssnap/SwitchState.java \
-	vmspecific/gnu/bytecodecvssnap/TryState.java \
-	vmspecific/gnu/bytecodecvssnap/Type.java \
-	vmspecific/gnu/bytecodecvssnap/VarEnumerator.java \
-	vmspecific/gnu/bytecodecvssnap/Variable.java \
-	vmspecific/gnu/bytecodecvssnap/ZipArchive.java \
-	vmspecific/gnu/bytecodecvssnap/ZipLoader.java \
-	vmspecific/gnu/bytecodecvssnap/dump.java \
-	vmspecific/gnu/bytecodecvssnap/package.html \
 	vmspecific/gnu/classpath/Configuration.java.in \
 	vmspecific/gnu/classpath/VMStackWalker.java \
 	vmspecific/gnu/classpath/VMSystemProperties.java \
@@ -609,19 +564,7 @@ EXTRA_DIST = \
 	vmspecific/org/kaffe/util/Ptr.java \
 	vmspecific/org/kaffe/util/SupportDisabled.java \
 	vmspecific/org/kaffe/util/UTF8.java \
-	vmspecific/org/kaffe/util/zip/SwitchInflater.java \
-	vmspecific/org/objectweb/asm153/Attribute.java \
-	vmspecific/org/objectweb/asm153/ByteVector.java \
-	vmspecific/org/objectweb/asm153/ClassReader.java \
-	vmspecific/org/objectweb/asm153/ClassVisitor.java \
-	vmspecific/org/objectweb/asm153/ClassWriter.java \
-	vmspecific/org/objectweb/asm153/CodeVisitor.java \
-	vmspecific/org/objectweb/asm153/CodeWriter.java \
-	vmspecific/org/objectweb/asm153/Constants.java \
-	vmspecific/org/objectweb/asm153/Edge.java \
-	vmspecific/org/objectweb/asm153/Item.java \
-	vmspecific/org/objectweb/asm153/Label.java \
-	vmspecific/org/objectweb/asm153/Type.java
+	vmspecific/org/kaffe/util/zip/SwitchInflater.java
 
 all: all-recursive
 
@@ -818,7 +761,7 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/vmspecific/META-INF $(distdir)/vmspecific/gnu/bytecodecvssnap $(distdir)/vmspecific/gnu/classpath $(distdir)/vmspecific/gnu/classpath/jdwp $(distdir)/vmspecific/gnu/getopt $(distdir)/vmspecific/gnu/inet/comsat $(distdir)/vmspecific/gnu/inet/finger $(distdir)/vmspecific/gnu/inet/gopher $(distdir)/vmspecific/gnu/inet/imap $(distdir)/vmspecific/gnu/inet/ldap $(distdir)/vmspecific/gnu/inet/nntp $(distdir)/vmspecific/gnu/inet/pop3 $(distdir)/vmspecific/gnu/inet/smtp $(distdir)/vmspecific/gnu/inet/util $(distdir)/vmspecific/gnu/java/lang $(distdir)/vmspecific/gnu/java/lang/management $(distdir)/vmspecific/gnu/java/net $(distdir)/vmspecific/gnu/java/nio $(distdir)/vmspecific/java/io $(distdir)/vmspecific/java/lang $(distdir)/vmspecific/java/lang/management $(distdir)/vmspecific/java/lang/ref $(distdir)/vmspecific/java/lang/reflect $(distdir)/vmspecific/java/net $(distdir)/vmspecific/java/nio $(distdir)/vmspecific/java/nio/channels $(distdir)/vmspecific/java/security $(distdir)/vmspecific/java/util $(distdir)/vmspecific/java/util/mime $(distdir)/vmspecific/java/util/zip $(distdir)/vmspecific/org/kaffe/jar $(distdir)/vmspecific/org/kaffe/management $(distdir)/vmspecific/org/kaffe/security $(distdir)/vmspecific/org/kaffe/security/provider $(distdir)/vmspecific/org/kaffe/util $(distdir)/vmspecific/org/kaffe/util/zip $(distdir)/vmspecific/org/objectweb/asm153
+	$(mkdir_p) $(distdir)/vmspecific/META-INF $(distdir)/vmspecific/gnu/classpath $(distdir)/vmspecific/gnu/classpath/jdwp $(distdir)/vmspecific/gnu/getopt $(distdir)/vmspecific/gnu/inet/comsat $(distdir)/vmspecific/gnu/inet/finger $(distdir)/vmspecific/gnu/inet/gopher $(distdir)/vmspecific/gnu/inet/imap $(distdir)/vmspecific/gnu/inet/ldap $(distdir)/vmspecific/gnu/inet/nntp $(distdir)/vmspecific/gnu/inet/pop3 $(distdir)/vmspecific/gnu/inet/smtp $(distdir)/vmspecific/gnu/inet/util $(distdir)/vmspecific/gnu/java/lang $(distdir)/vmspecific/gnu/java/lang/management $(distdir)/vmspecific/gnu/java/net $(distdir)/vmspecific/gnu/java/nio $(distdir)/vmspecific/java/io $(distdir)/vmspecific/java/lang $(distdir)/vmspecific/java/lang/management $(distdir)/vmspecific/java/lang/ref $(distdir)/vmspecific/java/lang/reflect $(distdir)/vmspecific/java/net $(distdir)/vmspecific/java/nio $(distdir)/vmspecific/java/nio/channels $(distdir)/vmspecific/java/security $(distdir)/vmspecific/java/util $(distdir)/vmspecific/java/util/mime $(distdir)/vmspecific/java/util/zip $(distdir)/vmspecific/org/kaffe/jar $(distdir)/vmspecific/org/kaffe/management $(distdir)/vmspecific/org/kaffe/security $(distdir)/vmspecific/org/kaffe/security/provider $(distdir)/vmspecific/org/kaffe/util $(distdir)/vmspecific/org/kaffe/util/zip
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
