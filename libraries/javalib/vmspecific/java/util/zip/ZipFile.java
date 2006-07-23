@@ -21,6 +21,9 @@ import org.kaffe.util.Ptr;
 
 public class ZipFile implements ZipConstants {
 
+  static {
+    System.loadLibrary("zip");
+  }
 
   /**
    * Mode flag to open a zip file for reading.

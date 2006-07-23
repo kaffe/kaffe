@@ -1,5 +1,21 @@
 2006-07-23  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/clib/native/ZipFile.c: Removed. Moved ...
+
+	* libraries/clib/zip/ZipFile.c: ... over here.
+
+	* libraries/clib/native/Makefile.am
+	(LANG_SRCS) Removed ZipFile.c.
+
+	* libraries/clib/zip/Makefile.am
+	(AM_CPPFLAGS) Added includes for md.h.
+	(libzip_la_SOURCES) Added ZipFile.c.
+
+	* libraries/javalib/vmspecific/java/util/zip/ZipFile.java
+	Load native zip library.
+
+2006-07-23  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac:
 	Don't output tools/javalib/javalib/Makefile.
  

@@ -40,8 +40,7 @@ LANG_SRCS = \
 		String.c \
 		System.c \
 		Thread.c \
-		Throwable.c \
-		ZipFile.c
+		Throwable.c 
 
 REF_SRCS= \
 	  java_lang_ref_Reference.c

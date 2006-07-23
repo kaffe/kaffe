@@ -17,7 +17,9 @@ endif
 
 AM_CPPFLAGS = \
 	-I$(top_builddir)/include \
-	$(MAYBE_INTERNAL_ZIP_INCLUDES)
+	$(MAYBE_INTERNAL_ZIP_INCLUDES) \
+        -I$(top_srcdir)/config/$(Khost_cpu) \
+        -I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os)
 
 native_LTLIBRARIES = libzip.la
 
@@ -40,6 +42,7 @@ libzip_la_SOURCES = \
 	Adler32.c \
 	CRC32.c \
 	Deflater.c \
-	Inflater.c
+	Inflater.c \
+	ZipFile.c
 
 CLEANFILES = so_locations

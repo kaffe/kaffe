@@ -88,7 +88,8 @@ am__DEPENDENCIES_1 =
 libzip_la_DEPENDENCIES = $(top_builddir)/kaffe/kaffevm/libkaffevm.la \
 	$(am__DEPENDENCIES_2)
 am_libzip_la_OBJECTS = libzip_la-Adler32.lo libzip_la-CRC32.lo \
-	libzip_la-Deflater.lo libzip_la-Inflater.lo
+	libzip_la-Deflater.lo libzip_la-Inflater.lo \
+	libzip_la-ZipFile.lo
 libzip_la_OBJECTS = $(am_libzip_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
@@ -378,7 +379,9 @@ AM_CFLAGS = $(KAFFE_CFLAGS)
 @COND_SYSTEM_ZLIB_FALSE@MAYBE_INTERNAL_ZIP_INCLUDES = -I$(srcdir)/../../../external/gcc/zlib/
 AM_CPPFLAGS = \
 	-I$(top_builddir)/include \
-	$(MAYBE_INTERNAL_ZIP_INCLUDES)
+	$(MAYBE_INTERNAL_ZIP_INCLUDES) \
+        -I$(top_srcdir)/config/$(Khost_cpu) \
+        -I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os)
 
 native_LTLIBRARIES = libzip.la
 libzip_la_CFLAGS = \
@@ -400,7 +403,8 @@ libzip_la_SOURCES = \
 	Adler32.c \
 	CRC32.c \
 	Deflater.c \
-	Inflater.c
+	Inflater.c \
+	ZipFile.c
 
 CLEANFILES = so_locations
 all: all-am
@@ -476,6 +480,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzip_la-CRC32.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzip_la-Deflater.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzip_la-Inflater.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libzip_la-ZipFile.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -525,6 +530,13 @@ libzip_la-Inflater.lo: Inflater.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='Inflater.c' object='libzip_la-Inflater.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzip_la_CFLAGS) $(CFLAGS) -c -o libzip_la-Inflater.lo `test -f 'Inflater.c' || echo '$(srcdir)/'`Inflater.c
+
+libzip_la-ZipFile.lo: ZipFile.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzip_la_CFLAGS) $(CFLAGS) -MT libzip_la-ZipFile.lo -MD -MP -MF "$(DEPDIR)/libzip_la-ZipFile.Tpo" -c -o libzip_la-ZipFile.lo `test -f 'ZipFile.c' || echo '$(srcdir)/'`ZipFile.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libzip_la-ZipFile.Tpo" "$(DEPDIR)/libzip_la-ZipFile.Plo"; else rm -f "$(DEPDIR)/libzip_la-ZipFile.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='ZipFile.c' object='libzip_la-ZipFile.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libzip_la_CFLAGS) $(CFLAGS) -c -o libzip_la-ZipFile.lo `test -f 'ZipFile.c' || echo '$(srcdir)/'`ZipFile.c
 
 mostlyclean-libtool:
 	-rm -f *.lo
