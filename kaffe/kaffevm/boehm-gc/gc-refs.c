@@ -219,7 +219,7 @@ KaffeGC_addWeakRef(Collector *collector, void* mem, void** refobj)
   }
 
   /* Not found - create a new one */
-  obj = (weakRefObject*)GC_malloc_uncollectable(sizeof(weakRefObject));
+  obj = (weakRefObject*)GC_malloc_atomic_uncollectable(sizeof(weakRefObject));
   if (obj == NULL)
     {
       unlockStaticMutex(&weakRefLock);
@@ -229,7 +229,7 @@ KaffeGC_addWeakRef(Collector *collector, void* mem, void** refobj)
   obj->mem = mem;
   obj->ref = 1;
   unlockStaticMutex(&weakRefLock);
-  obj->allRefs = (void ***)GC_malloc(sizeof(void ***));
+  obj->allRefs = (void ***)GC_malloc_uncollectable(sizeof(void ***));
   lockStaticMutex(&weakRefLock);
   obj->allRefs[0] = refobj;
   obj->next = weakRefObjects.hash[idx];
