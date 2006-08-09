@@ -14,6 +14,7 @@
 
 #include <assert.h>
 
+#include "config.h"
 #include "gtypes.h"
 #include "machine.h"
 #include "access.h"

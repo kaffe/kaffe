@@ -1,5 +1,73 @@
 2006-08-09  Dalibor Topic  <robilad@kaffe.org>
 
+	Added --disable-native-zip option, which allows to use GNU Classpath's
+	zip instead of Kaffe's and fixes #11. In addition, fixed #52 along the
+	way.
+
+	* Makefile.am (BUILD_ENVIRONMENT-make): Add kaffe-zib.jar
+	to the BOOTCLASSPATH.
+
+	* configure.ac (--disable-zlib-zip): Added new option.
+	(JAVA_LIBS) Only inlcude libzip.la if building with native zip.
+	Output libraries/javalib/zlib-zip/Makefile.
+
+	* external/gcc/fastjar/Makefile.am (LINKED_ZIP_LIBS) Use relative
+	directory instead of absolute path.
+
+	* include/Makefile.am (KAFFEH_JNI_CLASSPATH) Removed. Replaced by
+	(KAFFEH_CLASSPATH). Added libraries/javalib/zlib-zip/lib.
+	(stamp-h0all, stamp-h1all) Use KAFFEH_CLASSPATH.
+
+	* kaffe/kaffevm/baseClasses.c (initialiseKaffe) Initialise threads
+	before initialising security. Security code can end up calling
+	arbitrary java code that tries to access thread local variables,
+	for example.
+
+	* kaffe/kaffevm/classMethod.h: include config.h.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c (jthread_current)
+	Abort if can't find a thread local variable.
+
+	* kaffe/xprof/debugFile.c (dfHandleClass): use getSuperclass to access
+	a superclass.
+
+	* libraries/clib/Makefile.am,
+	libraries/javalib/Makefile.am.in:
+ 	(MAYBE_ZLIB_ZIP) New variable.
+	(SUBDIRS) Add MAYBE_ZLIB_ZIP.
+
+	* libraries/javalib/vmspecific/java/util/zip/Adler32.java,
+	libraries/javalib/vmspecific/java/util/zip/CRC32.java,
+	libraries/javalib/vmspecific/java/util/zip/Deflater.java,
+	libraries/javalib/vmspecific/java/util/zip/DeflaterOutputStream.java,
+	libraries/javalib/vmspecific/java/util/zip/Inflater.java,
+	libraries/javalib/vmspecific/java/util/zip/ZipEntry.java,
+	libraries/javalib/vmspecific/java/util/zip/ZipFile.java,
+	libraries/javalib/vmspecific/java/util/zip/ZipInputStream.java,
+	libraries/javalib/vmspecific/java/util/zip/ZipOutputStream.java,
+	libraries/javalib/vmspecific/org/kaffe/util/Assert.java,
+	libraries/javalib/vmspecific/org/kaffe/util/UTF8.java,
+	libraries/javalib/vmspecific/org/kaffe/util/zip/SwitchInflater.java:
+	Removed. Moved over to ...
+
+	* libraries/javalib/zlib-zip/java/util/zip/Adler32.java,
+	libraries/javalib/zlib-zip/java/util/zip/CRC32.java,
+	libraries/javalib/zlib-zip/java/util/zip/Deflater.java,
+	libraries/javalib/zlib-zip/java/util/zip/DeflaterOutputStream.java,
+	libraries/javalib/zlib-zip/java/util/zip/Inflater.java,
+	libraries/javalib/zlib-zip/java/util/zip/ZipEntry.java,
+	libraries/javalib/zlib-zip/java/util/zip/ZipFile.java,
+	libraries/javalib/zlib-zip/java/util/zip/ZipInputStream.java,
+	libraries/javalib/zlib-zip/java/util/zip/ZipOutputStream.java,
+	libraries/javalib/zlib-zip/org/kaffe/util/Assert.java,
+	libraries/javalib/zlib-zip/org/kaffe/util/UTF8.java,
+	libraries/javalib/zlib-zip/org/kaffe/util/zip/SwitchInflater.java:
+	... here.
+
+	* libraries/javalib/zlib-zip/Makefile.am: New file.
+
+2006-08-09  Dalibor Topic  <robilad@kaffe.org>
+
 	* tools/javatools/javalib/Makefile.in:
 	Removed.
 

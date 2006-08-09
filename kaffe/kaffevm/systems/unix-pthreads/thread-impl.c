@@ -1782,8 +1782,16 @@ jthread_t jthread_current(void)
 {
   if (!jthreadInitialized)
     return NULL;
+  else {
+    void* specific = pthread_getspecific(ntKey);
 
-  return (jthread_t)pthread_getspecific(ntKey);
+    if (specific != NULL)
+      return (jthread_t) specific;
+    else {
+      perror(NULL);
+      abort();
+   }
+  }
 }
 
 /**

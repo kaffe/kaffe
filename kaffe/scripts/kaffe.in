@@ -62,12 +62,12 @@ export KAFFEHOME
 if test x"${BOOTCLASSPATH+set}"x != x"set"x ; then
 	BOOTCLASSPATH=
 fi
-for f in glibj.zip comm.jar pjava.jar servlet.jar microsoft.jar rmi.jar; do
+for f in kaffe-dnsjava.jar  kaffe-tritonus.jar  kaffe-zlib.jar glibj.zip; do
   if test -f "$KAFFE_LIBDIR/$f"; then
     BOOTCLASSPATH="$BOOTCLASSPATH$PATHSEP$KAFFE_LIBDIR/$f"
   fi
   if test -f "$KAFFE_JRELIBDIR/$f"; then
-    BOOTCLASSPATH="$KAFFE_JRELIBDIR/$f$PATHSEP$BOOTCLASSPATH"
+    BOOTCLASSPATH="$BOOTCLASSPATH$PATHSEP$KAFFE_JRELIBDIR/$f"
   fi
 done
 

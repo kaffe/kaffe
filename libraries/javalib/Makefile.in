@@ -85,7 +85,7 @@ DATA = $(jrelib_DATA)
 ETAGS = etags
 CTAGS = ctags
 DIST_SUBDIRS = . external/classpath dnsjava awt-implementations \
-	gmp-math tritonus-sound
+	gmp-math tritonus-sound zlib-zip
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 ALSA_CFLAGS = @ALSA_CFLAGS@
@@ -139,6 +139,8 @@ COND_SOUND_ESD_FALSE = @COND_SOUND_ESD_FALSE@
 COND_SOUND_ESD_TRUE = @COND_SOUND_ESD_TRUE@
 COND_SYSTEM_ZLIB_FALSE = @COND_SYSTEM_ZLIB_FALSE@
 COND_SYSTEM_ZLIB_TRUE = @COND_SYSTEM_ZLIB_TRUE@
+COND_ZLIB_ZIP_FALSE = @COND_ZLIB_ZIP_FALSE@
+COND_ZLIB_ZIP_TRUE = @COND_ZLIB_ZIP_TRUE@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CREATE_ALSA_LIBRARIES_FALSE = @CREATE_ALSA_LIBRARIES_FALSE@
@@ -365,6 +367,7 @@ with_engine = @with_engine@
 # to build the native libraries as well.
 @COND_PURE_JAVA_MATH_FALSE@MAYBE_GMP_JAVA_MATH = gmp-math
 @COND_NATIVE_SOUND_TRUE@MAYBE_TRITONUS_SOUND = tritonus-sound
+@COND_ZLIB_ZIP_TRUE@MAYBE_ZLIB_ZIP = zlib-zip
 @USE_PRECOMPILED_RT_JAR_TRUE@MAYBE_GLIBJ_ZIP = glibj.zip
 SUBDIRS = \
 	. \
@@ -372,7 +375,8 @@ SUBDIRS = \
 	dnsjava \
 	$(MAYBE_PEERLESS_KAFFE_AWT) \
 	$(MAYBE_GMP_JAVA_MATH) \
-	$(MAYBE_TRITONUS_SOUND)
+	$(MAYBE_TRITONUS_SOUND) \
+	$(MAYBE_ZLIB_ZIP)
 
 jrelib_DATA = \
 	     logging.properties \
@@ -534,15 +538,6 @@ EXTRA_DIST = \
 	vmspecific/java/util/mime/MimeType.java \
 	vmspecific/java/util/mime/MimeTypeParameterList.java \
 	vmspecific/java/util/mime/MimeTypeParseException.java \
-	vmspecific/java/util/zip/Adler32.java \
-	vmspecific/java/util/zip/CRC32.java \
-	vmspecific/java/util/zip/Deflater.java \
-	vmspecific/java/util/zip/DeflaterOutputStream.java \
-	vmspecific/java/util/zip/Inflater.java \
-	vmspecific/java/util/zip/ZipEntry.java \
-	vmspecific/java/util/zip/ZipFile.java \
-	vmspecific/java/util/zip/ZipInputStream.java \
-	vmspecific/java/util/zip/ZipOutputStream.java \
 	vmspecific/org/kaffe/jar/ExecJar.java \
 	vmspecific/org/kaffe/jar/ExecJarName.java \
 	vmspecific/org/kaffe/management/Classpath.java \
@@ -559,12 +554,9 @@ EXTRA_DIST = \
 	vmspecific/org/kaffe/security/provider/SHA.java \
 	vmspecific/org/kaffe/security/provider/SHA1PRNG.java \
 	vmspecific/org/kaffe/security/provider/UpdateDigest.java \
-	vmspecific/org/kaffe/util/Assert.java \
 	vmspecific/org/kaffe/util/NotImplemented.java \
 	vmspecific/org/kaffe/util/Ptr.java \
-	vmspecific/org/kaffe/util/SupportDisabled.java \
-	vmspecific/org/kaffe/util/UTF8.java \
-	vmspecific/org/kaffe/util/zip/SwitchInflater.java
+	vmspecific/org/kaffe/util/SupportDisabled.java
 
 all: all-recursive
 
@@ -761,7 +753,7 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/vmspecific/META-INF $(distdir)/vmspecific/gnu/classpath $(distdir)/vmspecific/gnu/classpath/jdwp $(distdir)/vmspecific/gnu/getopt $(distdir)/vmspecific/gnu/inet/comsat $(distdir)/vmspecific/gnu/inet/finger $(distdir)/vmspecific/gnu/inet/gopher $(distdir)/vmspecific/gnu/inet/imap $(distdir)/vmspecific/gnu/inet/ldap $(distdir)/vmspecific/gnu/inet/nntp $(distdir)/vmspecific/gnu/inet/pop3 $(distdir)/vmspecific/gnu/inet/smtp $(distdir)/vmspecific/gnu/inet/util $(distdir)/vmspecific/gnu/java/lang $(distdir)/vmspecific/gnu/java/lang/management $(distdir)/vmspecific/gnu/java/net $(distdir)/vmspecific/gnu/java/nio $(distdir)/vmspecific/java/io $(distdir)/vmspecific/java/lang $(distdir)/vmspecific/java/lang/management $(distdir)/vmspecific/java/lang/ref $(distdir)/vmspecific/java/lang/reflect $(distdir)/vmspecific/java/net $(distdir)/vmspecific/java/nio $(distdir)/vmspecific/java/nio/channels $(distdir)/vmspecific/java/security $(distdir)/vmspecific/java/util $(distdir)/vmspecific/java/util/mime $(distdir)/vmspecific/java/util/zip $(distdir)/vmspecific/org/kaffe/jar $(distdir)/vmspecific/org/kaffe/management $(distdir)/vmspecific/org/kaffe/security $(distdir)/vmspecific/org/kaffe/security/provider $(distdir)/vmspecific/org/kaffe/util $(distdir)/vmspecific/org/kaffe/util/zip
+	$(mkdir_p) $(distdir)/vmspecific/META-INF $(distdir)/vmspecific/gnu/classpath $(distdir)/vmspecific/gnu/classpath/jdwp $(distdir)/vmspecific/gnu/getopt $(distdir)/vmspecific/gnu/inet/comsat $(distdir)/vmspecific/gnu/inet/finger $(distdir)/vmspecific/gnu/inet/gopher $(distdir)/vmspecific/gnu/inet/imap $(distdir)/vmspecific/gnu/inet/ldap $(distdir)/vmspecific/gnu/inet/nntp $(distdir)/vmspecific/gnu/inet/pop3 $(distdir)/vmspecific/gnu/inet/smtp $(distdir)/vmspecific/gnu/inet/util $(distdir)/vmspecific/gnu/java/lang $(distdir)/vmspecific/gnu/java/lang/management $(distdir)/vmspecific/gnu/java/net $(distdir)/vmspecific/gnu/java/nio $(distdir)/vmspecific/java/io $(distdir)/vmspecific/java/lang $(distdir)/vmspecific/java/lang/management $(distdir)/vmspecific/java/lang/ref $(distdir)/vmspecific/java/lang/reflect $(distdir)/vmspecific/java/net $(distdir)/vmspecific/java/nio $(distdir)/vmspecific/java/nio/channels $(distdir)/vmspecific/java/security $(distdir)/vmspecific/java/util $(distdir)/vmspecific/java/util/mime $(distdir)/vmspecific/org/kaffe/jar $(distdir)/vmspecific/org/kaffe/management $(distdir)/vmspecific/org/kaffe/security $(distdir)/vmspecific/org/kaffe/security/provider $(distdir)/vmspecific/org/kaffe/util
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \

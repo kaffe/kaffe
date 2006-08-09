@@ -292,11 +292,11 @@ initialiseKaffe(void)
 	/* Setup exceptions */
 	initExceptions();
 
-	/* Init stuff for the java security model */
-	initialiseSecurity();
-
 	/* Init thread support */
 	initThreads();
+
+	/* Init stuff for the java security model */
+	initialiseSecurity();
 
 	/* Now enable collector */
 	KGC_enable(main_collector);

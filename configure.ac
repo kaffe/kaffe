@@ -2093,6 +2093,13 @@ AM_CONDITIONAL([COND_SOUND_ALSA], [test "$ALSA_DIR" = alsa])
 AM_CONDITIONAL([COND_SOUND_ESD], [test "$ESD_DIR" = esd])
 AM_CONDITIONAL([COND_NATIVE_SOUND], [test x"$enable_sound" != x"no"])
 
+AC_ARG_ENABLE([zlib_zip],
+              AS_HELP_STRING([--disable-zlib-zip],
+                             [Enable java.util.zip implementation using zlib @<:@default=enabled@:>@]),
+                             [], [enable_zlib_zip="yes"])
+
+AM_CONDITIONAL([COND_ZLIB_ZIP], [test x"$enable_zlib_zip" != x"no"])
+
 dnl -----------------------------------------------------------------------
 dnl                 Pure java imlementation of java.math.*
 dnl -----------------------------------------------------------------------
@@ -2169,11 +2176,14 @@ JAVA_LIBS=" \
 \$(top_builddir)/libraries/clib/net/libjavanet.la \
 \$(top_builddir)/libraries/clib/io/libjavaio.la \
 \$(top_builddir)/libraries/clib/nio/libjavanio.la \
-\$(top_builddir)/libraries/clib/zip/libzip.la \
 \$(top_builddir)/libraries/clib/management/libmanagement.la \
 \$(top_builddir)/libraries/clib/security/libsecurity.la \
 $JAVA_LIBS \
 "
+
+if test x"$enable_zlib_zip" != x"no"; then
+  JAVA_LIBS="\$(top_builddir)/libraries/clib/zip/libzip.la $JAVA_LIBS";
+fi
 
 DLOPEN_JAVA_LIBS=
 for lib in $JAVA_LIBS; do
@@ -2516,6 +2526,7 @@ AC_CONFIG_FILES([libraries/javalib/awt-implementations/Makefile])
 AC_CONFIG_FILES([libraries/javalib/awt-implementations/kaffe/Makefile])
 AC_CONFIG_FILES([libraries/javalib/gmp-math/Makefile])
 AC_CONFIG_FILES([libraries/javalib/tritonus-sound/Makefile])
+AC_CONFIG_FILES([libraries/javalib/zlib-zip/Makefile])
 AC_CONFIG_FILES([libraries/javalib/dnsjava/Makefile])
 AC_CONFIG_FILES([libraries/clib/Makefile])
 AC_CONFIG_FILES([libraries/clib/target/Makefile])

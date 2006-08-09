@@ -11,7 +11,7 @@
 # of this file. 
 
 KLASSES_JAR = $(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
-KAFFEH_JNI_CLASSPATH = $(top_builddir)/libraries/javalib/tritonus-sound/lib:$(top_builddir)/libraries/javalib/gmp-math/lib:$(KLASSES_JAR)
+KAFFEH_CLASSPATH = $(top_builddir)/libraries/javalib/zlib-zip/lib:$(top_builddir)/libraries/javalib/tritonus-sound/lib:$(top_builddir)/libraries/javalib/gmp-math/lib:$(KLASSES_JAR)
 
 EXTRA_DIST = distclean-hack \
 		stamp-h2.in
@@ -217,8 +217,8 @@ stamp-h0all: stamp-kaffeh $(KLASSES_JAR)
 ## but if it does not change, do not touch it
 	@set -e; for f in $(DERIVED_HDRS); do \
 	  class=`echo $$f | sed -e 's%.*/%%g' -e 's%\.h$$%%' -e 's%_%/%g'`; \
-	  echo "$(KAFFEH) -classpath $(KLASSES_JAR) -o $$f $$class"; \
-	  $(KAFFEH) -classpath $(KLASSES_JAR) -o stamp-h0$$f $$class; \
+	  echo "$(KAFFEH) -classpath $(KAFFEH_CLASSPATH) -o $$f $$class"; \
+	  $(KAFFEH) -classpath $(KAFFEH_CLASSPATH) -o stamp-h0$$f $$class; \
 	  if test -f $$f && cmp $$f stamp-h0$$f >/dev/null; then \
 	    echo "$$f is already up-to-date"; \
 	    rm -f stamp-h0$$f; \
@@ -234,8 +234,8 @@ stamp-h1all: stamp-kaffeh $(KLASSES_JAR)
 ## but if it does not change, do not touch it
 	@set -e; for f in $(JNI_DERIVED_HDRS); do \
 	  class=`echo $$f | sed -e 's%.*/%%g' -e 's%\.h$$%%' -e 's%_%/%g'`; \
-	  echo "$(KAFFEH) -jni -classpath $(KAFFEH_JNI_CLASSPATH) -o $$f $$class"; \
-	  $(KAFFEH) -jni -classpath $(KAFFEH_JNI_CLASSPATH) -o stamp-h1$$f $$class; \
+	  echo "$(KAFFEH) -jni -classpath $(KAFFEH_CLASSPATH) -o $$f $$class"; \
+	  $(KAFFEH) -jni -classpath $(KAFFEH_CLASSPATH) -o stamp-h1$$f $$class; \
 	  if test -f $$f && cmp $$f stamp-h1$$f >/dev/null; then \
 	    echo "$$f is already up-to-date"; \
 	    rm -f stamp-h1$$f; \

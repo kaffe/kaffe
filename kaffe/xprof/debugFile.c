@@ -201,7 +201,7 @@ static void dfHandleClass(struct debug_file *df, struct Hjava_lang_Class *cl)
 	{
 		fprintf(df->df_file,
 			"!1,020,%d;",
-			cl->superclass->stab_id - 1);
+			getSuperclass(cl)->stab_id - 1);
 	}
 	/* ... fill in the instance fields, */
 	for( lpc = 0; lpc < CLASS_NIFIELDS(cl); lpc++ )

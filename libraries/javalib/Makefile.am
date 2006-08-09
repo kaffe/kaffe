@@ -23,6 +23,10 @@ if COND_NATIVE_SOUND
   MAYBE_TRITONUS_SOUND=tritonus-sound
 endif
 
+if COND_ZLIB_ZIP
+  MAYBE_ZLIB_ZIP=zlib-zip
+endif
+
 if USE_PRECOMPILED_RT_JAR
 stamp-glibj:
 	@echo Importing glibj.zip from $(PATH_TO_RT_JAR)
@@ -47,7 +51,8 @@ SUBDIRS= \
 	dnsjava \
 	$(MAYBE_PEERLESS_KAFFE_AWT) \
 	$(MAYBE_GMP_JAVA_MATH) \
-	$(MAYBE_TRITONUS_SOUND)
+	$(MAYBE_TRITONUS_SOUND) \
+	$(MAYBE_ZLIB_ZIP)
 
 jrelib_DATA= \
 	     logging.properties \
@@ -221,15 +226,6 @@ EXTRA_DIST= \
 	vmspecific/java/util/mime/MimeType.java \
 	vmspecific/java/util/mime/MimeTypeParameterList.java \
 	vmspecific/java/util/mime/MimeTypeParseException.java \
-	vmspecific/java/util/zip/Adler32.java \
-	vmspecific/java/util/zip/CRC32.java \
-	vmspecific/java/util/zip/Deflater.java \
-	vmspecific/java/util/zip/DeflaterOutputStream.java \
-	vmspecific/java/util/zip/Inflater.java \
-	vmspecific/java/util/zip/ZipEntry.java \
-	vmspecific/java/util/zip/ZipFile.java \
-	vmspecific/java/util/zip/ZipInputStream.java \
-	vmspecific/java/util/zip/ZipOutputStream.java \
 	vmspecific/org/kaffe/jar/ExecJar.java \
 	vmspecific/org/kaffe/jar/ExecJarName.java \
 	vmspecific/org/kaffe/management/Classpath.java \
@@ -246,9 +242,6 @@ EXTRA_DIST= \
 	vmspecific/org/kaffe/security/provider/SHA.java \
 	vmspecific/org/kaffe/security/provider/SHA1PRNG.java \
 	vmspecific/org/kaffe/security/provider/UpdateDigest.java \
-	vmspecific/org/kaffe/util/Assert.java \
 	vmspecific/org/kaffe/util/NotImplemented.java \
 	vmspecific/org/kaffe/util/Ptr.java \
-	vmspecific/org/kaffe/util/SupportDisabled.java \
-	vmspecific/org/kaffe/util/UTF8.java \
-	vmspecific/org/kaffe/util/zip/SwitchInflater.java
+	vmspecific/org/kaffe/util/SupportDisabled.java

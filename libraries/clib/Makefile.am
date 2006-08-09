@@ -22,15 +22,19 @@ else
   MAYBE_NATIVE_MATH_DIR = math
 endif
 
+if COND_ZLIB_ZIP
+  MAYBE_ZLIB_ZIP = zip
+endif
+
 SUBDIRS = \
 	target \
 	native \
 	io \
 	nio \
 	net \
-	zip \
 	security \
 	management \
 	$(MAYBE_NATIVE_AWT_DIR) \
 	$(MAYBE_NATIVE_MATH_DIR) \
-	$(MAYBE_NATIVE_SOUND_DIR)
+	$(MAYBE_NATIVE_SOUND_DIR) \
+	$(MAYBE_ZLIB_ZIP)

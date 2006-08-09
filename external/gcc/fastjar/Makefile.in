@@ -68,8 +68,7 @@ am_fastjar_OBJECTS = fastjar-jartool.$(OBJEXT) \
 	fastjar-dostime.$(OBJEXT) fastjar-compress.$(OBJEXT) \
 	fastjar-pushback.$(OBJEXT) fastjar-shift.$(OBJEXT)
 fastjar_OBJECTS = $(am_fastjar_OBJECTS)
-@COND_SYSTEM_ZLIB_FALSE@am__DEPENDENCIES_1 =  \
-@COND_SYSTEM_ZLIB_FALSE@	$(top_builddir)/../zlib/libz.la
+@COND_SYSTEM_ZLIB_FALSE@am__DEPENDENCIES_1 = ../zlib/libz.la
 fastjar_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 	$(top_builddir)/../../../replace/libreplace.la
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I.
@@ -221,7 +220,7 @@ sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 ACLOCAL_AMFLAGS = -I m4
-@COND_SYSTEM_ZLIB_FALSE@LINKED_ZIP_LIBS = $(top_builddir)/../zlib/libz.la
+@COND_SYSTEM_ZLIB_FALSE@LINKED_ZIP_LIBS = ../zlib/libz.la
 @COND_SYSTEM_ZLIB_TRUE@LINKED_ZIP_LIBS = $(ZIP_LIBS)
 @COND_SYSTEM_ZLIB_FALSE@MAYBE_INTERNAL_ZIP_INCLUDES = -I$(srcdir)/../zlib/
 AM_CPPFLAGS = \
