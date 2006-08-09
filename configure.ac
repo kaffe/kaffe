@@ -1316,6 +1316,10 @@ if test x"${GC_NAME}" = x"boehm-gc"; then
 			   fi
 			fi
 			;;
+		darwin*)
+			BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_DARWIN_THREADS"
+			BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DTHREAD_LOCAL_ALLOC"
+			;;
 		*)
 			AC_MSG_ERROR(Threads support for $Khost_os unavailable in the boehm-gc. Please use the standard kaffe's gc.)
 	esac

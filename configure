@@ -34082,6 +34082,10 @@ echo "$as_me: error: BoehmGC only supports unix-pthreads threads. Please switch 
 			   fi
 			fi
 			;;
+		darwin*)
+			BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_DARWIN_THREADS"
+			BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DTHREAD_LOCAL_ALLOC"
+			;;
 		*)
 			{ { echo "$as_me:$LINENO: error: Threads support for $Khost_os unavailable in the boehm-gc. Please use the standard kaffe's gc." >&5
 echo "$as_me: error: Threads support for $Khost_os unavailable in the boehm-gc. Please use the standard kaffe's gc." >&2;}

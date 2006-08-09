@@ -1,3 +1,11 @@
+2006-08-09  Dalibor Topic  <robilad@kaffe.org>
+
+	* configure.ac: Enable support for Darwin for boehm-gc.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c:
+	Include boehm-gc/boehm/include/private/gc_priv.h for
+	declarations of GC_stop_world and GC_start_world.
+
 2006-07-27  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/boehm-gc/gc-refs.c

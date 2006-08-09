@@ -45,6 +45,7 @@
 #include "thread.h"
 #ifdef KAFFE_BOEHM_GC
 #include "boehm-gc/boehm/include/gc.h"
+#include "boehm-gc/boehm/include/private/gc_priv.h"
 #endif
 
 /* define __USE_GNU for pthread_yield on linux */
