@@ -1,5 +1,9 @@
 2006-08-09  Dalibor Topic  <robilad@kaffe.org>
 
+	* WHATSNEW: Added a few new things since 1.1.7.
+
+2006-08-09  Dalibor Topic  <robilad@kaffe.org>
+
 	Added --disable-native-zip option, which allows to use GNU Classpath's
 	zip instead of Kaffe's and fixes #11. In addition, fixed #53 along the
 	way.

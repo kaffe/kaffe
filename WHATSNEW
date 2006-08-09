@@ -1,3 +1,11 @@
+What's New Since Kaffe 1.1.7
+----------------------------
+
+* Fixes for gcc 4.1.x.
+* Added --disable-zlib-zip optin to use GNU Classpath's
+  java.util.zip implementation.
+* Removed comm, servlet, microsoft and pjava extensions.
+
 What's New In Kaffe 1.1.7
 ------------------------------------------------------
 
