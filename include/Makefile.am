@@ -30,6 +30,15 @@ EXTRA_DIST = distclean-hack \
 
 INSTALL_DERIVED_HDRS = 
 
+if COND_ZLIB_ZIP
+MAYBE_ZLIB_ZIP_HDRS = \
+	java_util_zip_Adler32.h \
+	java_util_zip_CRC32.h \
+	java_util_zip_Deflater.h \
+	java_util_zip_Inflater.h \
+	java_util_zip_ZipEntry.h \
+	java_util_zip_ZipFile.h 
+endif
 
 NOINSTALL_DERIVED_HDRS = \
 	java_lang_Object.h \
@@ -70,14 +79,9 @@ NOINSTALL_DERIVED_HDRS = \
 	java_util_Comparator.h \
 	java_util_VMTimeZone.h \
 	java_util_Vector.h \
-	java_util_zip_Adler32.h \
-	java_util_zip_CRC32.h \
-	java_util_zip_Deflater.h \
-	java_util_zip_Inflater.h \
-	java_util_zip_ZipEntry.h \
-	java_util_zip_ZipFile.h \
 	org_kaffe_management_Classpath.h \
-	gnu_classpath_VMStackWalker.h
+	gnu_classpath_VMStackWalker.h \
+	$(MAYBE_ZLIB_ZIP_HDRS)
 
 DERIVED_HDRS = $(INSTALL_DERIVED_HDRS) $(NOINSTALL_DERIVED_HDRS)
 
