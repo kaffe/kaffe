@@ -1,5 +1,21 @@
 2006-08-10  Dalibor Topic  <robilad@kaffe.org>
 
+	* THIRDPARTY: Removed gnu.getopt, since it's no longer used.
+
+	* libraries/javalib/vmspecific/gnu/getopt/Getopt.java,
+	libraries/javalib/vmspecific/gnu/getopt/LongOpt.java,
+	libraries/javalib/vmspecific/gnu/getopt/MessagesBundle.properties,
+	libraries/javalib/vmspecific/gnu/getopt/MessagesBundle_cs.properties,
+	libraries/javalib/vmspecific/gnu/getopt/MessagesBundle_de.properties,
+	libraries/javalib/vmspecific/gnu/getopt/MessagesBundle_fr.properties,
+	libraries/javalib/vmspecific/gnu/getopt/MessagesBundle_hu.properties,
+	libraries/javalib/vmspecific/gnu/getopt/MessagesBundle_ja.properties,
+	libraries/javalib/vmspecific/gnu/getopt/MessagesBundle_nl.properties,
+	libraries/javalib/vmspecific/gnu/getopt/MessagesBundle_no.properties:
+	Removed.
+
+2006-08-10  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/vmspecific/gnu/classpath/Configuration.java.in:
 	Removed unused file.
 

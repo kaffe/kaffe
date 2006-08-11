@@ -80,16 +80,6 @@ EXTRA_DIST= \
 	vmspecific/gnu/classpath/jdwp/VMIdManager.java \
 	vmspecific/gnu/classpath/jdwp/VMMethod.java \
 	vmspecific/gnu/classpath/jdwp/VMVirtualMachine.java \
-	vmspecific/gnu/getopt/Getopt.java \
-	vmspecific/gnu/getopt/LongOpt.java \
-	vmspecific/gnu/getopt/MessagesBundle.properties \
-	vmspecific/gnu/getopt/MessagesBundle_cs.properties \
-	vmspecific/gnu/getopt/MessagesBundle_de.properties \
-	vmspecific/gnu/getopt/MessagesBundle_fr.properties \
-	vmspecific/gnu/getopt/MessagesBundle_hu.properties \
-	vmspecific/gnu/getopt/MessagesBundle_ja.properties \
-	vmspecific/gnu/getopt/MessagesBundle_nl.properties \
-	vmspecific/gnu/getopt/MessagesBundle_no.properties \
 	vmspecific/gnu/inet/comsat/ComsatClient.java \
 	vmspecific/gnu/inet/comsat/ComsatInfo.java \
 	vmspecific/gnu/inet/finger/FingerConnection.java \
