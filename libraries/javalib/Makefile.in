@@ -535,9 +535,6 @@ EXTRA_DIST = \
 	vmspecific/java/security/VMAccessController.java \
 	vmspecific/java/security/VMSecureRandom.java \
 	vmspecific/java/util/VMTimeZone.java \
-	vmspecific/java/util/mime/MimeType.java \
-	vmspecific/java/util/mime/MimeTypeParameterList.java \
-	vmspecific/java/util/mime/MimeTypeParseException.java \
 	vmspecific/org/kaffe/jar/ExecJar.java \
 	vmspecific/org/kaffe/jar/ExecJarName.java \
 	vmspecific/org/kaffe/management/Classpath.java \
@@ -753,7 +750,7 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/vmspecific/META-INF $(distdir)/vmspecific/gnu/classpath $(distdir)/vmspecific/gnu/classpath/jdwp $(distdir)/vmspecific/gnu/getopt $(distdir)/vmspecific/gnu/inet/comsat $(distdir)/vmspecific/gnu/inet/finger $(distdir)/vmspecific/gnu/inet/gopher $(distdir)/vmspecific/gnu/inet/imap $(distdir)/vmspecific/gnu/inet/ldap $(distdir)/vmspecific/gnu/inet/nntp $(distdir)/vmspecific/gnu/inet/pop3 $(distdir)/vmspecific/gnu/inet/smtp $(distdir)/vmspecific/gnu/inet/util $(distdir)/vmspecific/gnu/java/lang $(distdir)/vmspecific/gnu/java/lang/management $(distdir)/vmspecific/gnu/java/net $(distdir)/vmspecific/gnu/java/nio $(distdir)/vmspecific/java/io $(distdir)/vmspecific/java/lang $(distdir)/vmspecific/java/lang/management $(distdir)/vmspecific/java/lang/ref $(distdir)/vmspecific/java/lang/reflect $(distdir)/vmspecific/java/net $(distdir)/vmspecific/java/nio $(distdir)/vmspecific/java/nio/channels $(distdir)/vmspecific/java/security $(distdir)/vmspecific/java/util $(distdir)/vmspecific/java/util/mime $(distdir)/vmspecific/org/kaffe/jar $(distdir)/vmspecific/org/kaffe/management $(distdir)/vmspecific/org/kaffe/security $(distdir)/vmspecific/org/kaffe/security/provider $(distdir)/vmspecific/org/kaffe/util
+	$(mkdir_p) $(distdir)/vmspecific/META-INF $(distdir)/vmspecific/gnu/classpath $(distdir)/vmspecific/gnu/classpath/jdwp $(distdir)/vmspecific/gnu/getopt $(distdir)/vmspecific/gnu/inet/comsat $(distdir)/vmspecific/gnu/inet/finger $(distdir)/vmspecific/gnu/inet/gopher $(distdir)/vmspecific/gnu/inet/imap $(distdir)/vmspecific/gnu/inet/ldap $(distdir)/vmspecific/gnu/inet/nntp $(distdir)/vmspecific/gnu/inet/pop3 $(distdir)/vmspecific/gnu/inet/smtp $(distdir)/vmspecific/gnu/inet/util $(distdir)/vmspecific/gnu/java/lang $(distdir)/vmspecific/gnu/java/lang/management $(distdir)/vmspecific/gnu/java/net $(distdir)/vmspecific/gnu/java/nio $(distdir)/vmspecific/java/io $(distdir)/vmspecific/java/lang $(distdir)/vmspecific/java/lang/management $(distdir)/vmspecific/java/lang/ref $(distdir)/vmspecific/java/lang/reflect $(distdir)/vmspecific/java/net $(distdir)/vmspecific/java/nio $(distdir)/vmspecific/java/nio/channels $(distdir)/vmspecific/java/security $(distdir)/vmspecific/java/util $(distdir)/vmspecific/org/kaffe/jar $(distdir)/vmspecific/org/kaffe/management $(distdir)/vmspecific/org/kaffe/security $(distdir)/vmspecific/org/kaffe/security/provider $(distdir)/vmspecific/org/kaffe/util
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \

@@ -1,3 +1,10 @@
+2006-08-10  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/vmspecific/java/util/mime/MimeType.java,
+	libraries/javalib/vmspecific/java/util/mime/MimeTypeParameterList.java,
+	libraries/javalib/vmspecific/java/util/mime/MimeTypeParseException.java:
+	Removed unused classes.
+
 2006-08-09  Dalibor Topic  <robilad@kaffe.org>
 
 	* include/Makefile.am (MAYBE_ZLIB_ZIP_HDRS): New variable.

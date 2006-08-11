@@ -223,9 +223,6 @@ EXTRA_DIST= \
 	vmspecific/java/security/VMAccessController.java \
 	vmspecific/java/security/VMSecureRandom.java \
 	vmspecific/java/util/VMTimeZone.java \
-	vmspecific/java/util/mime/MimeType.java \
-	vmspecific/java/util/mime/MimeTypeParameterList.java \
-	vmspecific/java/util/mime/MimeTypeParseException.java \
 	vmspecific/org/kaffe/jar/ExecJar.java \
 	vmspecific/org/kaffe/jar/ExecJarName.java \
 	vmspecific/org/kaffe/management/Classpath.java \
