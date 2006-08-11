@@ -74,7 +74,6 @@ EXTRA_DIST= \
 	    Makefile.am.in \
 	    logging.properties \
 	vmspecific/META-INF/MANIFEST.MF \
-	vmspecific/gnu/classpath/Configuration.java.in \
 	vmspecific/gnu/classpath/VMStackWalker.java \
 	vmspecific/gnu/classpath/VMSystemProperties.java \
 	vmspecific/gnu/classpath/jdwp/VMFrame.java \
