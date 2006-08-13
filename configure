@@ -51120,8 +51120,6 @@ subdirs="$subdirs libltdl"
 
           ac_config_files="$ac_config_files libraries/clib/sound/esd/Makefile"
 
-          ac_config_files="$ac_config_files libraries/javalib/rebuildLib"
-
           ac_config_files="$ac_config_files kaffe/man/kaffe.1"
 
           ac_config_files="$ac_config_files kaffe/scripts/install-jar"
@@ -52118,7 +52116,6 @@ do
   "libraries/clib/sound/alsa/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/sound/alsa/Makefile" ;;
   "libraries/clib/sound/common/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/sound/common/Makefile" ;;
   "libraries/clib/sound/esd/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/sound/esd/Makefile" ;;
-  "libraries/javalib/rebuildLib" ) CONFIG_FILES="$CONFIG_FILES libraries/javalib/rebuildLib" ;;
   "kaffe/man/kaffe.1" ) CONFIG_FILES="$CONFIG_FILES kaffe/man/kaffe.1" ;;
   "kaffe/scripts/install-jar" ) CONFIG_FILES="$CONFIG_FILES kaffe/scripts/install-jar" ;;
   "kaffe/scripts/kaffe" ) CONFIG_FILES="$CONFIG_FILES kaffe/scripts/kaffe" ;;

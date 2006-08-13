@@ -1,5 +1,11 @@
 2006-08-13  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac: Don't output libraries/javalib/rebuildLib.
+
+	* libraries/javalib/rebuildLib.in: Removed.
+
+2006-08-13  Dalibor Topic  <robilad@kaffe.org>
+
 	* tools/gjdoc/javalib/Makefile.am: 
 	Replaced by new build system.
 
