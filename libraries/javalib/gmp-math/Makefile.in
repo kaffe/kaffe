@@ -14,15 +14,6 @@
 
 @SET_MAKE@
 
-#
-# Kaffe GNU MP-based BigInteger and BigDecimal implementation.
-#
-# Copyright (c) 2004, 2005
-# 	Kaffe.org contributors. All rights reserved. See ChangeLog for details.
-#
-# See the file "license.terms" for information on usage and redistribution
-# of this file.
-
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
@@ -46,7 +37,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 subdir = libraries/javalib/gmp-math
-DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
+DIST_COMMON = $(dist_gmpjavamath_JAVA) $(srcdir)/Makefile.am \
+	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/acx_pthread.m4 $(top_srcdir)/m4/alsa.m4 \
@@ -75,13 +67,15 @@ CONFIG_HEADER = $(top_builddir)/config/config.h
 CONFIG_CLEAN_FILES =
 SOURCES =
 DIST_SOURCES =
+CLASSPATH_ENV = CLASSPATH=$(JAVAROOT):$(srcdir)/$(JAVAROOT):$$CLASSPATH
+am__installdirs = "$(DESTDIR)$(gmpjavamathdir)" \
+	"$(DESTDIR)$(jrelibdir)"
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
     *) f=$$p;; \
   esac;
 am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
-am__installdirs = "$(DESTDIR)$(jrelibdir)"
 jrelibDATA_INSTALL = $(INSTALL_DATA)
 DATA = $(jrelib_DATA)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -357,20 +351,20 @@ with_engine = @with_engine@
 CLASSFILE = gmpjavamath.jar
 SRCDIRS = java
 jrelib_DATA = $(CLASSFILE)
-gmpjavamath_jar_SRCS = \
-        $(java_math_SRCS)
-
-java_math_SRCS = \
-        java/math/BigDecimal.java \
-        java/math/BigInteger.java
-
-EXTRA_DIST = \
-	$(gmpjavamath_jar_SRCS)
-
-JAR_CMD1 = ($(FASTJAR) cf $(CLASSFILE) -C $(LIBDIR) $(SRCDIRS))
 LIBDIR = lib
-rebuildLib = $(top_builddir)/libraries/javalib/rebuildLib
-Klasses_jar = $(srcdir):$(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
+JAR_CMD1 = ($(FASTJAR) cf $(CLASSFILE) -C $(LIBDIR) $(SRCDIRS))
+CPATH = .:$(srcdir):$(LIBDIR):$(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar:$(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
+AM_JAVACFLAGS = -classpath $(CPATH)
+JAVAC = $(JAVA_COMPILER)
+JAVAROOT = $(LIBDIR)
+
+# Use a fake install class and dir to keep automake's JAVA (un)install tasks happy.
+FAKE = fakeinstall
+gmpjavamathdir = $(FAKE)
+dist_gmpjavamath_JAVA = \
+	java/math/BigDecimal.java \
+	java/math/BigInteger.java
+
 all: all-am
 
 .SUFFIXES:
@@ -413,6 +407,31 @@ clean-libtool:
 distclean-libtool:
 	-rm -f libtool
 uninstall-info-am:
+
+classdist_gmpjavamath.stamp: $(dist_gmpjavamath_JAVA)
+	@if test -n "$?"; then \
+	  echo '$(CLASSPATH_ENV) $(JAVAC) -d $(JAVAROOT) $(AM_JAVACFLAGS) $(JAVACFLAGS) $?' ; \
+	  $(CLASSPATH_ENV) $(JAVAC) -d $(JAVAROOT) \
+	    $(AM_JAVACFLAGS) $(JAVACFLAGS) $?; \
+	else :; fi
+	echo timestamp > classdist_gmpjavamath.stamp
+install-dist_gmpjavamathJAVA: classdist_gmpjavamath.stamp
+	@$(NORMAL_INSTALL)
+	test -z "$(gmpjavamathdir)" || $(mkdir_p) "$(DESTDIR)$(gmpjavamathdir)"
+	@test -z "$(dist_gmpjavamath_JAVA)" || for p in *.class; do \
+	  echo " $(INSTALL_DATA) '$$p' '$(DESTDIR)$(gmpjavamathdir)/$$p'"; \
+	  $(INSTALL_DATA) "$$p" "$(DESTDIR)$(gmpjavamathdir)/$$p"; \
+	done
+
+uninstall-dist_gmpjavamathJAVA:
+	@$(NORMAL_UNINSTALL)
+	@test -z "$(dist_gmpjavamath_JAVA)" || for p in *.class; do \
+	  echo " rm -f '$(DESTDIR)$(gmpjavamathdir)/$$p'"; \
+	  rm -f "$(DESTDIR)$(gmpjavamathdir)/$$p"; \
+	done
+
+clean-dist_gmpjavamathJAVA:
+	-rm -f *.class classdist_gmpjavamath.stamp
 install-jrelibDATA: $(jrelib_DATA)
 	@$(NORMAL_INSTALL)
 	test -z "$(jrelibdir)" || $(mkdir_p) "$(DESTDIR)$(jrelibdir)"
@@ -467,9 +486,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(DATA)
+all-am: Makefile classdist_gmpjavamath.stamp $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(jrelibdir)"; do \
+	for dir in "$(DESTDIR)$(gmpjavamathdir)" "$(DESTDIR)$(jrelibdir)"; do \
 	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
 	done
 install: install-am
@@ -498,7 +517,8 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libtool clean-local mostlyclean-am
+clean-am: clean-dist_gmpjavamathJAVA clean-generic clean-libtool \
+	clean-local mostlyclean-am
 
 distclean: distclean-am
 	-rm -f Makefile
@@ -514,7 +534,8 @@ info: info-am
 
 info-am:
 
-install-data-am: install-jrelibDATA
+install-data-am: install-data-local install-dist_gmpjavamathJAVA \
+	install-jrelibDATA
 
 install-exec-am:
 
@@ -540,41 +561,33 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-info-am uninstall-jrelibDATA
+uninstall-am: uninstall-dist_gmpjavamathJAVA uninstall-info-am \
+	uninstall-jrelibDATA uninstall-local
 
-.PHONY: all all-am check check-am clean clean-generic clean-libtool \
-	clean-local distclean distclean-generic distclean-libtool \
-	distdir dvi dvi-am html html-am info info-am install \
-	install-am install-data install-data-am install-exec \
-	install-exec-am install-info install-info-am \
-	install-jrelibDATA install-man install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am uninstall uninstall-am \
-	uninstall-info-am uninstall-jrelibDATA
+.PHONY: all all-am check check-am clean clean-dist_gmpjavamathJAVA \
+	clean-generic clean-libtool clean-local distclean \
+	distclean-generic distclean-libtool distdir dvi dvi-am html \
+	html-am info info-am install install-am install-data \
+	install-data-am install-data-local \
+	install-dist_gmpjavamathJAVA install-exec install-exec-am \
+	install-info install-info-am install-jrelibDATA install-man \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	uninstall uninstall-am uninstall-dist_gmpjavamathJAVA \
+	uninstall-info-am uninstall-jrelibDATA uninstall-local
 
 
-clean-local:
-	rm -rf $(LIBDIR) $(CLASSFILE)
-
-.PHONY: new-classes
-new-classes: $(top_srcdir)/developers/update-class-list
-	cd $(srcdir) && $(SHELL) $(top_srcdir)/developers/update-class-list
-
-.PHONY: compile-classes classes
-compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(gmpjavamath_jar_SRCS)
-	rm -rf $(LIBDIR)
-	mkdir $(LIBDIR)
-	echo $(SHELL) $(rebuildLib)
-	LIBDIR=$(LIBDIR) CLASSPATH=$(Klasses_jar) $(SHELL) $(rebuildLib) $(gmpjavamath_jar_SRCS)
-	echo timestamp > $(LIBDIR)/stamp
-
-.PHONY: jar-classes
-jar-classes $(CLASSFILE): $(LIBDIR)/stamp
+$(CLASSFILE): classdist_gmpjavamath.stamp
 	rm -f $(CLASSFILE)
 	$(JAR_CMD1)
 
-export JAVA_COMPILER srcdir top_builddir LIBDIR
+clean-local:
+	rm -rf $(LIBDIR) $(CLASSFILE)
+install-data-local: 
+	touch $(FAKE).class
+uninstall-local: 
+	rm $(FAKE).class
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
