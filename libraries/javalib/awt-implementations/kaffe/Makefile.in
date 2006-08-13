@@ -14,15 +14,6 @@
 
 @SET_MAKE@
 
-#
-# Kaffe AWT implementation.
-#
-# Copyright (c) 2004
-# 	Kaffe.org contributors. All rights reserved. See ChageLog for details.
-#
-# See the file "license.terms" for information on usage and redistribution
-# of this file.
-
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
@@ -46,7 +37,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 subdir = libraries/javalib/awt-implementations/kaffe
-DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
+DIST_COMMON = $(dist_kaffeawt_JAVA) $(srcdir)/Makefile.am \
+	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/acx_pthread.m4 $(top_srcdir)/m4/alsa.m4 \
@@ -75,13 +67,14 @@ CONFIG_HEADER = $(top_builddir)/config/config.h
 CONFIG_CLEAN_FILES =
 SOURCES =
 DIST_SOURCES =
+CLASSPATH_ENV = CLASSPATH=$(JAVAROOT):$(srcdir)/$(JAVAROOT):$$CLASSPATH
+am__installdirs = "$(DESTDIR)$(kaffeawtdir)" "$(DESTDIR)$(jrelibdir)"
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
     *) f=$$p;; \
   esac;
 am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
-am__installdirs = "$(DESTDIR)$(jrelibdir)"
 jrelibDATA_INSTALL = $(INSTALL_DATA)
 DATA = $(jrelib_DATA)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -355,90 +348,89 @@ target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 CLASSFILE = kaffeawt.jar
-SRCDIRS = java org
+SRCDIRS = org
 jrelib_DATA = $(CLASSFILE)
-kaffeawt_jar_SRCS = \
-	$(java_applet_SRCS) \
-	$(java_awt_SRCS) \
-	$(java_awt_color_SRCS) \
-	$(java_awt_datatransfer_SRCS) \
-	$(java_awt_event_SRCS) \
-	$(java_awt_font_SRCS) \
-	$(java_awt_geom_SRCS) \
-	$(java_awt_im_SRCS) \
-	$(java_awt_image_SRCS) \
-	$(java_awt_image_renderable_SRCS) \
-	$(org_kaffe_applet_SRCS) \
-	$(org_kaffe_awt_SRCS) \
-	$(org_kaffe_io_SRCS) \
-	$(org_kaffe_util_SRCS) \
-        $(org_kaffe_util_log_SRCS)
+LIBDIR = lib
+JAR_CMD1 = ($(FASTJAR) cf $(CLASSFILE) -C $(LIBDIR) $(SRCDIRS))
+JAR_CMD2 = ($(FASTJAR) uf $(CLASSFILE) -C $(LIBDIR) java)
+CPATH = .:$(srcdir):$(LIBDIR):$(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar:$(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
+AM_JAVACFLAGS = -classpath $(CPATH)
+JAVAC = $(JAVA_COMPILER)
+JAVAROOT = $(LIBDIR)
 
-java_applet_SRCS = \
-	java/applet/AppletContext.java \
+# Use a fake install class and dir to keep automake's JAVA (un)install tasks happy.
+FAKE = fakeinstall
+kaffeawtdir = $(FAKE)
+dist_kaffeawt_JAVA = \
 	java/applet/Applet.java \
+	java/applet/AppletContext.java \
 	java/applet/AppletStub.java \
-	java/applet/AudioClip.java
-
-java_awt_SRCS = \
+	java/applet/AudioClip.java \
+	java/awt/color/CMMException.java \
+	java/awt/color/ColorSpace.java \
+	java/awt/color/ICC_ColorSpace.java \
+	java/awt/color/ICC_Profile.java \
+	java/awt/color/ICC_ProfileGray.java \
+	java/awt/color/ICC_ProfileRGB.java \
+	java/awt/color/ProfileDataException.java \
+	java/awt/AWTError.java \
+	java/awt/AWTEvent.java \
+	java/awt/AWTException.java \
+	java/awt/AWTPermission.java \
 	java/awt/ActionEvt.java \
 	java/awt/ActiveEvent.java \
 	java/awt/Adjustable.java \
 	java/awt/AdjustmentEvt.java \
 	java/awt/AlphaComposite.java \
-	java/awt/AWTError.java \
-	java/awt/AWTEvent.java \
-	java/awt/AWTException.java \
-	java/awt/AWTPermission.java \
 	java/awt/BarMenu.java \
 	java/awt/BasicStroke.java \
 	java/awt/Button.java \
 	java/awt/Canvas.java \
-	java/awt/CheckboxGroup.java \
 	java/awt/Checkbox.java \
+	java/awt/CheckboxGroup.java \
 	java/awt/CheckboxMenuItem.java \
 	java/awt/Choice.java \
 	java/awt/ClassAnalyzer.java \
 	java/awt/ClassProperties.java \
 	java/awt/Color.java \
 	java/awt/ColorPaintContext.java \
-	java/awt/ComponentEvt.java \
 	java/awt/Component.java \
+	java/awt/ComponentEvt.java \
 	java/awt/ComponentOrientation.java \
-	java/awt/CompositeContext.java \
 	java/awt/Composite.java \
-	java/awt/ContainerEvt.java \
+	java/awt/CompositeContext.java \
 	java/awt/Container.java \
+	java/awt/ContainerEvt.java \
 	java/awt/Cursor.java \
-	java/awt/Defaults.java \
 	java/awt/DefKeyFilter.java \
+	java/awt/Defaults.java \
 	java/awt/Dialog.java \
 	java/awt/Dimension.java \
 	java/awt/DisplayMode.java \
-	java/awt/EventDispatchThread.java \
 	java/awt/Event.java \
+	java/awt/EventDispatchThread.java \
 	java/awt/EventQueue.java \
 	java/awt/FileDialog.java \
 	java/awt/FlowLayout.java \
 	java/awt/FocusEvt.java \
 	java/awt/FocusTraversalPolicy.java \
-	java/awt/FontFormatException.java \
 	java/awt/Font.java \
+	java/awt/FontFormatException.java \
 	java/awt/FontMetrics.java \
 	java/awt/Frame.java \
 	java/awt/GradientPaint.java \
+	java/awt/Graphics.java \
 	java/awt/Graphics2D.java \
 	java/awt/GraphicsConfigTemplate.java \
 	java/awt/GraphicsConfiguration.java \
 	java/awt/GraphicsDevice.java \
 	java/awt/GraphicsEnvironment.java \
-	java/awt/Graphics.java \
 	java/awt/GraphicsLink.java \
 	java/awt/HeadlessException.java \
 	java/awt/IllegalComponentStateException.java \
+	java/awt/Image.java \
 	java/awt/ImageCapabilities.java \
 	java/awt/ImageFrameLoader.java \
-	java/awt/Image.java \
 	java/awt/ImageLoader.java \
 	java/awt/ImageNativeProducer.java \
 	java/awt/Insets.java \
@@ -451,21 +443,23 @@ java_awt_SRCS = \
 	java/awt/Label.java \
 	java/awt/List.java \
 	java/awt/MediaTracker.java \
+	java/awt/Menu.java \
 	java/awt/MenuBar.java \
 	java/awt/MenuComponent.java \
 	java/awt/MenuContainer.java \
 	java/awt/MenuItem.java \
-	java/awt/Menu.java \
 	java/awt/MenuShortcut.java \
 	java/awt/MouseEvt.java \
 	java/awt/NativeClipboard.java \
 	java/awt/NativeGraphics.java \
 	java/awt/NativeSelection.java \
 	java/awt/OpaqueComponent.java \
+	java/awt/PSGraphics.java \
+	java/awt/PSPrintJob.java \
 	java/awt/PageAttributes.java \
+	java/awt/Paint.java \
 	java/awt/PaintContext.java \
 	java/awt/PaintEvt.java \
-	java/awt/Paint.java \
 	java/awt/Panel.java \
 	java/awt/Point.java \
 	java/awt/Polygon.java \
@@ -473,15 +467,13 @@ java_awt_SRCS = \
 	java/awt/PopupWindow.java \
 	java/awt/PrintGraphics.java \
 	java/awt/PrintJob.java \
-	java/awt/PSGraphics.java \
-	java/awt/PSPrintJob.java \
 	java/awt/Rectangle.java \
 	java/awt/RenderingHints.java \
 	java/awt/Robot.java \
 	java/awt/RootWindow.java \
 	java/awt/RowCanvas.java \
-	java/awt/Scrollbar.java \
 	java/awt/ScrollPane.java \
+	java/awt/Scrollbar.java \
 	java/awt/Shape.java \
 	java/awt/ShortcutConsumer.java \
 	java/awt/ShortcutHandler.java \
@@ -495,20 +487,9 @@ java_awt_SRCS = \
 	java/awt/TextField.java \
 	java/awt/TexturePaint.java \
 	java/awt/Toolkit.java \
-	java/awt/WindowEvt.java \
+	java/awt/WMEvent.java \
 	java/awt/Window.java \
-	java/awt/WMEvent.java
-
-java_awt_color_SRCS = \
-	java/awt/color/CMMException.java \
-	java/awt/color/ColorSpace.java \
-	java/awt/color/ICC_ColorSpace.java \
-	java/awt/color/ICC_ProfileGray.java \
-	java/awt/color/ICC_Profile.java \
-	java/awt/color/ICC_ProfileRGB.java \
-	java/awt/color/ProfileDataException.java
-
-java_awt_datatransfer_SRCS = \
+	java/awt/WindowEvt.java \
 	java/awt/datatransfer/Clipboard.java \
 	java/awt/datatransfer/ClipboardOwner.java \
 	java/awt/datatransfer/DataFlavor.java \
@@ -518,14 +499,12 @@ java_awt_datatransfer_SRCS = \
 	java/awt/datatransfer/StringSelection.java \
 	java/awt/datatransfer/SystemFlavorMap.java \
 	java/awt/datatransfer/Transferable.java \
-	java/awt/datatransfer/UnsupportedFlavorException.java
-
-java_awt_event_SRCS = \
+	java/awt/datatransfer/UnsupportedFlavorException.java \
+	java/awt/event/AWTEventListener.java \
 	java/awt/event/ActionEvent.java \
 	java/awt/event/ActionListener.java \
 	java/awt/event/AdjustmentEvent.java \
 	java/awt/event/AdjustmentListener.java \
-	java/awt/event/AWTEventListener.java \
 	java/awt/event/ComponentAdapter.java \
 	java/awt/event/ComponentEvent.java \
 	java/awt/event/ComponentListener.java \
@@ -558,9 +537,7 @@ java_awt_event_SRCS = \
 	java/awt/event/WindowEvent.java \
 	java/awt/event/WindowFocusListener.java \
 	java/awt/event/WindowListener.java \
-	java/awt/event/WindowStateListener.java
-
-java_awt_font_SRCS = \
+	java/awt/event/WindowStateListener.java \
 	java/awt/font/FontRenderContext.java \
 	java/awt/font/GlyphJustificationInfo.java \
 	java/awt/font/GlyphMetrics.java \
@@ -577,9 +554,7 @@ java_awt_font_SRCS = \
 	java/awt/font/TextHitInfo.java \
 	java/awt/font/TextLayout.java \
 	java/awt/font/TextMeasurer.java \
-	java/awt/font/TransformAttribute.java
-
-java_awt_geom_SRCS = \
+	java/awt/font/TransformAttribute.java \
 	java/awt/geom/AffineTransform.java \
 	java/awt/geom/Arc2D.java \
 	java/awt/geom/Area.java \
@@ -596,27 +571,30 @@ java_awt_geom_SRCS = \
 	java/awt/geom/QuadCurve2D.java \
 	java/awt/geom/Rectangle2D.java \
 	java/awt/geom/RectangularShape.java \
-	java/awt/geom/RoundRectangle2D.java
-
-java_awt_im_SRCS = \
+	java/awt/geom/RoundRectangle2D.java \
 	java/awt/im/InputMethodHighlight.java \
 	java/awt/im/InputMethodRequests.java \
-	java/awt/im/InputSubset.java
-
-java_awt_image_SRCS = \
+	java/awt/im/InputSubset.java \
+	java/awt/image/renderable/ContextualRenderedImageFactory.java \
+	java/awt/image/renderable/ParameterBlock.java \
+	java/awt/image/renderable/RenderContext.java \
+	java/awt/image/renderable/RenderableImage.java \
+	java/awt/image/renderable/RenderableImageOp.java \
+	java/awt/image/renderable/RenderableImageProducer.java \
+	java/awt/image/renderable/RenderedImageFactory.java \
 	java/awt/image/AreaAveragingScaleFilter.java \
+	java/awt/image/BufferStrategy.java \
 	java/awt/image/BufferedImage.java \
 	java/awt/image/BufferedImageOp.java \
-	java/awt/image/BufferStrategy.java \
 	java/awt/image/ColorModel.java \
 	java/awt/image/ComponentColorModel.java \
 	java/awt/image/ComponentSampleModel.java \
 	java/awt/image/CropImageFilter.java \
+	java/awt/image/DataBuffer.java \
 	java/awt/image/DataBufferByte.java \
 	java/awt/image/DataBufferDouble.java \
 	java/awt/image/DataBufferFloat.java \
 	java/awt/image/DataBufferInt.java \
-	java/awt/image/DataBuffer.java \
 	java/awt/image/DataBufferShort.java \
 	java/awt/image/DataBufferUShort.java \
 	java/awt/image/DirectColorModel.java \
@@ -631,34 +609,21 @@ java_awt_image_SRCS = \
 	java/awt/image/PackedColorModel.java \
 	java/awt/image/PixelGrabber.java \
 	java/awt/image/PixelInterleavedSampleModel.java \
-	java/awt/image/RasterFormatException.java \
+	java/awt/image/RGBImageFilter.java \
 	java/awt/image/Raster.java \
+	java/awt/image/RasterFormatException.java \
 	java/awt/image/RasterOp.java \
 	java/awt/image/RenderedImage.java \
 	java/awt/image/ReplicateScaleFilter.java \
-	java/awt/image/RGBImageFilter.java \
 	java/awt/image/SampleModel.java \
 	java/awt/image/SinglePixelPackedSampleModel.java \
 	java/awt/image/TileObserver.java \
 	java/awt/image/VolatileImage.java \
 	java/awt/image/WritableRaster.java \
-	java/awt/image/WritableRenderedImage.java
-
-java_awt_image_renderable_SRCS = \
-	java/awt/image/renderable/ContextualRenderedImageFactory.java \
-	java/awt/image/renderable/ParameterBlock.java \
-	java/awt/image/renderable/RenderableImage.java \
-	java/awt/image/renderable/RenderableImageOp.java \
-	java/awt/image/renderable/RenderableImageProducer.java \
-	java/awt/image/renderable/RenderContext.java \
-	java/awt/image/renderable/RenderedImageFactory.java
-
-org_kaffe_applet_SRCS = \
+	java/awt/image/WritableRenderedImage.java \
 	org/kaffe/applet/AppletTag.java \
 	org/kaffe/applet/AppletViewer.java \
-	org/kaffe/applet/AudioPlayer.java
-
-org_kaffe_awt_SRCS = \
+	org/kaffe/applet/AudioPlayer.java \
 	org/kaffe/awt/DoNothingPeer.java \
 	org/kaffe/awt/ExportTransferable.java \
 	org/kaffe/awt/FlavorConverter.java \
@@ -672,29 +637,46 @@ org_kaffe_awt_SRCS = \
 	org/kaffe/awt/MouseHook.java \
 	org/kaffe/awt/ObjectSelection.java \
 	org/kaffe/awt/OpaqueComponent.java \
-	org/kaffe/awt/SerializerConverter.java
-
-org_kaffe_io_SRCS = \
-	org/kaffe/io/AccessibleBAOStream.java
-
-org_kaffe_util_SRCS = \
+	org/kaffe/awt/SerializerConverter.java \
+	org/kaffe/io/AccessibleBAOStream.java \
+	org/kaffe/util/log/LogClient.java \
+	org/kaffe/util/log/LogStream.java \
+	org/kaffe/util/log/SimpleLogViewer.java \
 	org/kaffe/util/DoubleLinkedObject.java \
-	org/kaffe/util/TimerClient.java \
 	org/kaffe/util/Timer.java \
-	org/kaffe/util/VectorSnapshot.java
-
-org_kaffe_util_log_SRCS = \
-        org/kaffe/util/log/LogClient.java \
-        org/kaffe/util/log/LogStream.java \
-        org/kaffe/util/log/SimpleLogViewer.java
+	org/kaffe/util/TimerClient.java \
+	org/kaffe/util/VectorSnapshot.java 
 
 EXTRA_DIST = \
-	$(kaffeawt_jar_SRCS)
+	java/awt/win32/ActionEvt.java \
+	java/awt/win32/Button.java \
+	java/awt/win32/Canvas.java \
+	java/awt/win32/Checkbox.java \
+	java/awt/win32/CheckboxMenuItem.java \
+	java/awt/win32/Choice.java \
+	java/awt/win32/Defaults.java \
+	java/awt/win32/FileDialog.java \
+	java/awt/win32/Frame.java \
+	java/awt/win32/Label.java \
+	java/awt/win32/List.java \
+	java/awt/win32/Menu.java \
+	java/awt/win32/MenuBar.java \
+	java/awt/win32/MenuItem.java \
+	java/awt/win32/NativeComponent.java \
+	java/awt/win32/NativeContainer.java \
+	java/awt/win32/NativeGraphics.java \
+	java/awt/win32/Panel.java \
+	java/awt/win32/PopupMenu.java \
+	java/awt/win32/ScrollPane.java \
+	java/awt/win32/Scrollbar.java \
+	java/awt/win32/SystemColor.java \
+	java/awt/win32/TextArea.java \
+	java/awt/win32/TextComponent.java \
+	java/awt/win32/TextField.java \
+	java/awt/win32/Toolkit.java \
+	java/awt/win32/WMEvent.java \
+	java/awt/win32/Window.java 
 
-JAR_CMD1 = (dstdir=`pwd`; cd $(LIBDIR) && $(FASTJAR) -cf $$dstdir/$(CLASSFILE) $(SRCDIRS))
-LIBDIR = lib
-rebuildLib = $(top_builddir)/libraries/javalib/rebuildLib
-Klasses_jar = $(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
 all: all-am
 
 .SUFFIXES:
@@ -737,6 +719,31 @@ clean-libtool:
 distclean-libtool:
 	-rm -f libtool
 uninstall-info-am:
+
+classdist_kaffeawt.stamp: $(dist_kaffeawt_JAVA)
+	@if test -n "$?"; then \
+	  echo '$(CLASSPATH_ENV) $(JAVAC) -d $(JAVAROOT) $(AM_JAVACFLAGS) $(JAVACFLAGS) $?' ; \
+	  $(CLASSPATH_ENV) $(JAVAC) -d $(JAVAROOT) \
+	    $(AM_JAVACFLAGS) $(JAVACFLAGS) $?; \
+	else :; fi
+	echo timestamp > classdist_kaffeawt.stamp
+install-dist_kaffeawtJAVA: classdist_kaffeawt.stamp
+	@$(NORMAL_INSTALL)
+	test -z "$(kaffeawtdir)" || $(mkdir_p) "$(DESTDIR)$(kaffeawtdir)"
+	@test -z "$(dist_kaffeawt_JAVA)" || for p in *.class; do \
+	  echo " $(INSTALL_DATA) '$$p' '$(DESTDIR)$(kaffeawtdir)/$$p'"; \
+	  $(INSTALL_DATA) "$$p" "$(DESTDIR)$(kaffeawtdir)/$$p"; \
+	done
+
+uninstall-dist_kaffeawtJAVA:
+	@$(NORMAL_UNINSTALL)
+	@test -z "$(dist_kaffeawt_JAVA)" || for p in *.class; do \
+	  echo " rm -f '$(DESTDIR)$(kaffeawtdir)/$$p'"; \
+	  rm -f "$(DESTDIR)$(kaffeawtdir)/$$p"; \
+	done
+
+clean-dist_kaffeawtJAVA:
+	-rm -f *.class classdist_kaffeawt.stamp
 install-jrelibDATA: $(jrelib_DATA)
 	@$(NORMAL_INSTALL)
 	test -z "$(jrelibdir)" || $(mkdir_p) "$(DESTDIR)$(jrelibdir)"
@@ -762,7 +769,7 @@ CTAGS:
 
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/java/applet $(distdir)/java/awt $(distdir)/java/awt/color $(distdir)/java/awt/datatransfer $(distdir)/java/awt/event $(distdir)/java/awt/font $(distdir)/java/awt/geom $(distdir)/java/awt/im $(distdir)/java/awt/image $(distdir)/java/awt/image/renderable $(distdir)/org/kaffe/applet $(distdir)/org/kaffe/awt $(distdir)/org/kaffe/io $(distdir)/org/kaffe/util $(distdir)/org/kaffe/util/log
+	$(mkdir_p) $(distdir)/java/applet $(distdir)/java/awt $(distdir)/java/awt/color $(distdir)/java/awt/datatransfer $(distdir)/java/awt/event $(distdir)/java/awt/font $(distdir)/java/awt/geom $(distdir)/java/awt/im $(distdir)/java/awt/image $(distdir)/java/awt/image/renderable $(distdir)/java/awt/win32 $(distdir)/org/kaffe/applet $(distdir)/org/kaffe/awt $(distdir)/org/kaffe/io $(distdir)/org/kaffe/util $(distdir)/org/kaffe/util/log
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -791,9 +798,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(DATA)
+all-am: Makefile classdist_kaffeawt.stamp $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(jrelibdir)"; do \
+	for dir in "$(DESTDIR)$(kaffeawtdir)" "$(DESTDIR)$(jrelibdir)"; do \
 	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
 	done
 install: install-am
@@ -822,7 +829,8 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libtool clean-local mostlyclean-am
+clean-am: clean-dist_kaffeawtJAVA clean-generic clean-libtool \
+	clean-local mostlyclean-am
 
 distclean: distclean-am
 	-rm -f Makefile
@@ -838,7 +846,8 @@ info: info-am
 
 info-am:
 
-install-data-am: install-jrelibDATA
+install-data-am: install-data-local install-dist_kaffeawtJAVA \
+	install-jrelibDATA
 
 install-exec-am:
 
@@ -864,41 +873,34 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-info-am uninstall-jrelibDATA
+uninstall-am: uninstall-dist_kaffeawtJAVA uninstall-info-am \
+	uninstall-jrelibDATA uninstall-local
 
-.PHONY: all all-am check check-am clean clean-generic clean-libtool \
-	clean-local distclean distclean-generic distclean-libtool \
-	distdir dvi dvi-am html html-am info info-am install \
-	install-am install-data install-data-am install-exec \
-	install-exec-am install-info install-info-am \
+.PHONY: all all-am check check-am clean clean-dist_kaffeawtJAVA \
+	clean-generic clean-libtool clean-local distclean \
+	distclean-generic distclean-libtool distdir dvi dvi-am html \
+	html-am info info-am install install-am install-data \
+	install-data-am install-data-local install-dist_kaffeawtJAVA \
+	install-exec install-exec-am install-info install-info-am \
 	install-jrelibDATA install-man install-strip installcheck \
 	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-generic \
 	mostlyclean-libtool pdf pdf-am ps ps-am uninstall uninstall-am \
-	uninstall-info-am uninstall-jrelibDATA
+	uninstall-dist_kaffeawtJAVA uninstall-info-am \
+	uninstall-jrelibDATA uninstall-local
 
+
+$(CLASSFILE): classdist_kaffeawt.stamp
+	rm -f $(CLASSFILE)
+	$(JAR_CMD1)
+	$(JAR_CMD2)
 
 clean-local:
 	rm -rf $(LIBDIR) $(CLASSFILE)
-
-.PHONY: new-classes
-new-classes: $(top_srcdir)/developers/update-class-list
-	cd $(srcdir) && $(SHELL) $(top_srcdir)/developers/update-class-list
-
-.PHONY: compile-classes classes
-compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(kaffeawt_jar_SRCS)
-	rm -rf $(LIBDIR)
-	mkdir $(LIBDIR)
-	echo $(SHELL) $(rebuildLib)
-	CLASSPATH=$(Klasses_jar) $(SHELL) $(rebuildLib) $(kaffeawt_jar_SRCS)
-	echo timestamp > $(LIBDIR)/stamp
-
-.PHONY: jar-classes
-jar-classes $(CLASSFILE): $(LIBDIR)/stamp
-	rm -f $(CLASSFILE)
-	$(JAR_CMD1)
-
-export JAVA_COMPILER top_builddir LIBDIR srcdir
+install-data-local: 
+	touch $(FAKE).class
+uninstall-local: 
+	rm $(FAKE).class
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
