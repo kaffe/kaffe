@@ -1,85 +1,103 @@
-#
-# Javadoc library component.
-#
-# Copyright (c) 2004
-# 	Kaffe.org contributors. All rights reserved. See ChageLog for details.
-#
-# See the file "license.terms" for information on usage and redistribution
-# of this file.
-
 CLASSFILE = gjdoc.jar
-SRCDIRS = antlr com gnu
-
+SRCDIRS = antlr
 toolslib_DATA = $(CLASSFILE)
+LIBDIR = lib
+JAR_CMD1 = ($(FASTJAR) cf $(CLASSFILE) -C $(LIBDIR) $(SRCDIRS))
+JAR_CMD2 = ($(FASTJAR) uf $(CLASSFILE) -C $(LIBDIR) gnu)
+JAR_CMD3 = ($(FASTJAR) uf $(CLASSFILE) -C $(LIBDIR) com)
+JAR_CMD4 = (PWD=`pwd` && cd  $(srcdir) && $(FASTJAR) uf $(PWD)/$(CLASSFILE) $(gjdoc_ressources))
+JAR_CMD5 = ($(FASTJAR) uf $(CLASSFILE) version.properties)
 
-antlr_SRCS = \
+CPATH =  .:$(srcdir):$(LIBDIR):$(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar:$(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
+AM_JAVACFLAGS = -classpath $(CPATH)
+JAVAC = $(JAVA_COMPILER)
+JAVAROOT = $(LIBDIR)
+
+$(CLASSFILE): classdist_gjdoc.stamp
+	rm -f $(CLASSFILE)
+	$(JAR_CMD1)
+	$(JAR_CMD2)
+	$(JAR_CMD3)
+	$(JAR_CMD4)
+	$(JAR_CMD5)
+
+clean-local:
+	rm -rf $(LIBDIR) $(CLASSFILE)
+
+# Use a fake install class and dir to keep automake's JAVA (un)install tasks happy.
+FAKE=fakeinstall
+install-data-local: 
+	touch $(FAKE).class
+uninstall-local: 
+	rm $(FAKE).class
+gjdocdir = $(FAKE)
+
+dist_gjdoc_JAVA = \
 	antlr/collections/impl/ASTArray.java \
-	antlr/collections/impl/BitSet.java \
-	antlr/collections/impl/Vector.java \
-	antlr/collections/impl/IntRange.java \
-	antlr/collections/impl/VectorEnumerator.java \
 	antlr/collections/impl/ASTEnumerator.java \
+	antlr/collections/impl/BitSet.java \
+	antlr/collections/impl/IntRange.java \
+	antlr/collections/impl/Vector.java \
+	antlr/collections/impl/VectorEnumerator.java \
 	antlr/collections/AST.java \
 	antlr/collections/ASTEnumeration.java \
 	antlr/collections/Enumerator.java \
 	antlr/ANTLRException.java \
 	antlr/ANTLRHashString.java \
+	antlr/ANTLRStringBuffer.java \
 	antlr/ASTFactory.java \
+	antlr/ASTNULLType.java \
 	antlr/ASTPair.java \
+	antlr/BaseAST.java \
 	antlr/ByteBuffer.java \
 	antlr/CharBuffer.java \
+	antlr/CharFormatter.java \
+	antlr/CharQueue.java \
 	antlr/CharScanner.java \
 	antlr/CharStreamException.java \
 	antlr/CharStreamIOException.java \
+	antlr/CommonAST.java \
 	antlr/CommonToken.java \
+	antlr/DefaultFileLineFormatter.java \
+	antlr/FileLineFormatter.java \
 	antlr/InputBuffer.java \
-	antlr/LexerSharedInputState.java \
 	antlr/LLkParser.java \
+	antlr/LexerSharedInputState.java \
 	antlr/MismatchedCharException.java \
 	antlr/MismatchedTokenException.java \
 	antlr/NoViableAltException.java \
 	antlr/NoViableAltForCharException.java \
+	antlr/Parser.java \
 	antlr/ParserSharedInputState.java \
 	antlr/RecognitionException.java \
 	antlr/SemanticException.java \
+	antlr/StringUtils.java \
 	antlr/Token.java \
 	antlr/TokenBuffer.java \
+	antlr/TokenQueue.java \
 	antlr/TokenStream.java \
 	antlr/TokenStreamException.java \
 	antlr/TokenStreamIOException.java \
 	antlr/TokenStreamRecognitionException.java \
-	antlr/CharFormatter.java \
-	antlr/CharQueue.java \
-	antlr/ANTLRStringBuffer.java \
-	antlr/CommonAST.java \
-	antlr/Parser.java \
-	antlr/TokenQueue.java \
-	antlr/FileLineFormatter.java \
-	antlr/BaseAST.java \
+	antlr/TreeParser.java \
+	antlr/TreeParserSharedInputState.java \
 	antlr/Utils.java \
-	antlr/debug/MessageListener.java \
-	antlr/debug/ParserListener.java \
-	antlr/debug/ParserMatchListener.java \
-	antlr/debug/ParserTokenListener.java \
-	antlr/debug/SemanticPredicateListener.java \
-	antlr/debug/SyntacticPredicateListener.java \
-	antlr/debug/TraceListener.java \
-	antlr/debug/ListenerBase.java \
-	antlr/debug/TraceEvent.java \
-	antlr/debug/SyntacticPredicateEvent.java \
-	antlr/debug/SemanticPredicateEvent.java \
-	antlr/debug/ParserTokenEvent.java \
-	antlr/debug/ParserMatchEvent.java \
-	antlr/debug/MessageEvent.java \
 	antlr/debug/Event.java \
 	antlr/debug/GuessingEvent.java \
-	antlr/DefaultFileLineFormatter.java \
-	antlr/StringUtils.java \
-	antlr/TreeParser.java \
-	antlr/ASTNULLType.java \
-	antlr/TreeParserSharedInputState.java 
-
-gjdoc_jar_SRCS = \
+	antlr/debug/ListenerBase.java \
+	antlr/debug/MessageEvent.java \
+	antlr/debug/MessageListener.java \
+	antlr/debug/ParserListener.java \
+	antlr/debug/ParserMatchEvent.java \
+	antlr/debug/ParserMatchListener.java \
+	antlr/debug/ParserTokenEvent.java \
+	antlr/debug/ParserTokenListener.java \
+	antlr/debug/SemanticPredicateEvent.java \
+	antlr/debug/SemanticPredicateListener.java \
+	antlr/debug/SyntacticPredicateEvent.java \
+	antlr/debug/SyntacticPredicateListener.java \
+	antlr/debug/TraceEvent.java \
+	antlr/debug/TraceListener.java \
 	com/sun/javadoc/ClassDoc.java \
 	com/sun/javadoc/ConstructorDoc.java \
 	com/sun/javadoc/Doc.java \
@@ -96,42 +114,48 @@ gjdoc_jar_SRCS = \
 	com/sun/javadoc/RootDoc.java \
 	com/sun/javadoc/SeeTag.java \
 	com/sun/javadoc/SerialFieldTag.java \
+	com/sun/javadoc/SourcePosition.java \
 	com/sun/javadoc/Tag.java \
 	com/sun/javadoc/ThrowsTag.java \
 	com/sun/javadoc/Type.java \
 	com/sun/javadoc/TypeVariable.java \
-	com/sun/javadoc/SourcePosition.java \
 	com/sun/tools/doclets/Taglet.java \
-	gnu/classpath/tools/doclets/xmldoclet/doctranslet/DocTranslet.java \
-	gnu/classpath/tools/doclets/xmldoclet/doctranslet/DocTransletConfigurationException.java \
-	gnu/classpath/tools/doclets/xmldoclet/doctranslet/DocTransletException.java \
-	gnu/classpath/tools/doclets/xmldoclet/doctranslet/JarClassLoader.java \
-	gnu/classpath/tools/doclets/xmldoclet/doctranslet/OutputFileInfo.java \
-	gnu/classpath/tools/doclets/xmldoclet/doctranslet/DocTransletOptions.java \
-	gnu/classpath/tools/doclets/xmldoclet/Driver.java \
-	gnu/classpath/tools/doclets/xmldoclet/Driver1_4.java \
-	gnu/classpath/tools/doclets/xmldoclet/HtmlRepairer.java \
-	gnu/classpath/tools/doclets/xmldoclet/TargetContext.java \
-	gnu/classpath/tools/doclets/htmldoclet/CssClass.java \
-	gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java \
-	gnu/classpath/tools/doclets/htmldoclet/HtmlPage.java \
-	gnu/classpath/tools/doclets/htmldoclet/ExternalDocSet.java \
-	gnu/classpath/tools/doclets/htmldoclet/HtmlTagletContext.java \
+	gnu/classpath/tools/doclets/debugdoclet/DebugDoclet.java \
 	gnu/classpath/tools/doclets/AbstractDoclet.java \
 	gnu/classpath/tools/doclets/DocletConfigurationException.java \
 	gnu/classpath/tools/doclets/DocletOption.java \
 	gnu/classpath/tools/doclets/DocletOptionColonSeparated.java \
 	gnu/classpath/tools/doclets/DocletOptionFile.java \
 	gnu/classpath/tools/doclets/DocletOptionFlag.java \
+	gnu/classpath/tools/doclets/DocletOptionPackageWildcard.java \
 	gnu/classpath/tools/doclets/DocletOptionString.java \
+	gnu/classpath/tools/doclets/InlineTagRenderer.java \
 	gnu/classpath/tools/doclets/InvalidPackageWildcardException.java \
 	gnu/classpath/tools/doclets/PackageGroup.java \
 	gnu/classpath/tools/doclets/PackageMatcher.java \
 	gnu/classpath/tools/doclets/StandardTaglet.java \
 	gnu/classpath/tools/doclets/TagletPrinter.java \
-	gnu/classpath/tools/doclets/debugdoclet/DebugDoclet.java \
-	gnu/classpath/tools/doclets/DocletOptionPackageWildcard.java \
-	gnu/classpath/tools/doclets/InlineTagRenderer.java \
+	gnu/classpath/tools/doclets/htmldoclet/CssClass.java \
+	gnu/classpath/tools/doclets/htmldoclet/ExternalDocSet.java \
+	gnu/classpath/tools/doclets/htmldoclet/HtmlDoclet.java \
+	gnu/classpath/tools/doclets/htmldoclet/HtmlPage.java \
+	gnu/classpath/tools/doclets/htmldoclet/HtmlTagletContext.java \
+	gnu/classpath/tools/doclets/xmldoclet/doctranslet/DocTranslet.java \
+	gnu/classpath/tools/doclets/xmldoclet/doctranslet/DocTransletConfigurationException.java \
+	gnu/classpath/tools/doclets/xmldoclet/doctranslet/DocTransletException.java \
+	gnu/classpath/tools/doclets/xmldoclet/doctranslet/DocTransletOptions.java \
+	gnu/classpath/tools/doclets/xmldoclet/doctranslet/JarClassLoader.java \
+	gnu/classpath/tools/doclets/xmldoclet/doctranslet/OutputFileInfo.java \
+	gnu/classpath/tools/doclets/xmldoclet/Driver.java \
+	gnu/classpath/tools/doclets/xmldoclet/Driver1_4.java \
+	gnu/classpath/tools/doclets/xmldoclet/HtmlRepairer.java \
+	gnu/classpath/tools/doclets/xmldoclet/TargetContext.java \
+	gnu/classpath/tools/FileSystemClassLoader.java \
+	gnu/classpath/tools/IOToolkit.java \
+	gnu/classpath/tools/MalformedInputEvent.java \
+	gnu/classpath/tools/MalformedInputListener.java \
+	gnu/classpath/tools/NotifyingInputStreamReader.java \
+	gnu/classpath/tools/StringToolkit.java \
 	gnu/classpath/tools/gjdoc/expr/AdditionExpression.java \
 	gnu/classpath/tools/gjdoc/expr/AndExpression.java \
 	gnu/classpath/tools/gjdoc/expr/BinaryBitwiseExpression.java \
@@ -158,8 +182,8 @@ gjdoc_jar_SRCS = \
 	gnu/classpath/tools/gjdoc/expr/Context.java \
 	gnu/classpath/tools/gjdoc/expr/DivisionExpression.java \
 	gnu/classpath/tools/gjdoc/expr/EqualExpression.java \
-	gnu/classpath/tools/gjdoc/expr/EvaluatorEnvironment.java \
 	gnu/classpath/tools/gjdoc/expr/Evaluator.java \
+	gnu/classpath/tools/gjdoc/expr/EvaluatorEnvironment.java \
 	gnu/classpath/tools/gjdoc/expr/ExclusiveOrExpression.java \
 	gnu/classpath/tools/gjdoc/expr/Expression.java \
 	gnu/classpath/tools/gjdoc/expr/GreaterThanExpression.java \
@@ -167,6 +191,9 @@ gjdoc_jar_SRCS = \
 	gnu/classpath/tools/gjdoc/expr/IdentifierExpression.java \
 	gnu/classpath/tools/gjdoc/expr/IllegalExpressionException.java \
 	gnu/classpath/tools/gjdoc/expr/InclusiveOrExpression.java \
+	gnu/classpath/tools/gjdoc/expr/JavaLexer.java \
+	gnu/classpath/tools/gjdoc/expr/JavaRecognizer.java \
+	gnu/classpath/tools/gjdoc/expr/JavaTokenTypes.java \
 	gnu/classpath/tools/gjdoc/expr/LessThanExpression.java \
 	gnu/classpath/tools/gjdoc/expr/LessThanOrEqualExpression.java \
 	gnu/classpath/tools/gjdoc/expr/LogicalAndExpression.java \
@@ -180,17 +207,15 @@ gjdoc_jar_SRCS = \
 	gnu/classpath/tools/gjdoc/expr/ShiftLeftExpression.java \
 	gnu/classpath/tools/gjdoc/expr/ShiftRightExpression.java \
 	gnu/classpath/tools/gjdoc/expr/SubtractionExpression.java \
-	gnu/classpath/tools/gjdoc/expr/TypeCastExpression.java \
 	gnu/classpath/tools/gjdoc/expr/Type.java \
+	gnu/classpath/tools/gjdoc/expr/TypeCastExpression.java \
 	gnu/classpath/tools/gjdoc/expr/UnaryExpression.java \
 	gnu/classpath/tools/gjdoc/expr/UnknownIdentifierException.java \
-	gnu/classpath/tools/gjdoc/expr/JavaLexer.java \
-	gnu/classpath/tools/gjdoc/expr/JavaRecognizer.java \
-	gnu/classpath/tools/gjdoc/expr/JavaTokenTypes.java \
 	gnu/classpath/tools/gjdoc/AbstractTagImpl.java \
 	gnu/classpath/tools/gjdoc/ArrayCharacterIterator.java \
 	gnu/classpath/tools/gjdoc/ClassDocImpl.java \
 	gnu/classpath/tools/gjdoc/ClassDocProxy.java \
+	gnu/classpath/tools/gjdoc/ClassDocReflectedImpl.java \
 	gnu/classpath/tools/gjdoc/ConstructorDocImpl.java \
 	gnu/classpath/tools/gjdoc/Debug.java \
 	gnu/classpath/tools/gjdoc/DirectoryTree.java \
@@ -198,6 +223,9 @@ gjdoc_jar_SRCS = \
 	gnu/classpath/tools/gjdoc/ErrorReporter.java \
 	gnu/classpath/tools/gjdoc/ExecutableMemberDocImpl.java \
 	gnu/classpath/tools/gjdoc/FieldDocImpl.java \
+	gnu/classpath/tools/gjdoc/GjdocPackageDoc.java \
+	gnu/classpath/tools/gjdoc/GjdocRootDoc.java \
+	gnu/classpath/tools/gjdoc/InheritDocTagImpl.java \
 	gnu/classpath/tools/gjdoc/JavadocWrapper.java \
 	gnu/classpath/tools/gjdoc/LinkTagImpl.java \
 	gnu/classpath/tools/gjdoc/Main.java \
@@ -212,6 +240,8 @@ gjdoc_jar_SRCS = \
 	gnu/classpath/tools/gjdoc/RootDocImpl.java \
 	gnu/classpath/tools/gjdoc/SeeTagImpl.java \
 	gnu/classpath/tools/gjdoc/SerialFieldTagImpl.java \
+	gnu/classpath/tools/gjdoc/SourcePositionImpl.java \
+	gnu/classpath/tools/gjdoc/TagContainer.java \
 	gnu/classpath/tools/gjdoc/TagImpl.java \
 	gnu/classpath/tools/gjdoc/TemporaryStore.java \
 	gnu/classpath/tools/gjdoc/TextTagImpl.java \
@@ -220,33 +250,19 @@ gjdoc_jar_SRCS = \
 	gnu/classpath/tools/gjdoc/TimerDoclet.java \
 	gnu/classpath/tools/gjdoc/TypeImpl.java \
 	gnu/classpath/tools/gjdoc/TypeVariableImpl.java \
-	gnu/classpath/tools/gjdoc/WritableType.java \
-	gnu/classpath/tools/gjdoc/GjdocPackageDoc.java \
-	gnu/classpath/tools/gjdoc/GjdocRootDoc.java \
-	gnu/classpath/tools/gjdoc/SourcePositionImpl.java \
-	gnu/classpath/tools/gjdoc/InheritDocTagImpl.java \
-	gnu/classpath/tools/gjdoc/TagContainer.java \
 	gnu/classpath/tools/gjdoc/ValueTagImpl.java \
-	gnu/classpath/tools/gjdoc/ClassDocReflectedImpl.java \
+	gnu/classpath/tools/gjdoc/WritableType.java \
+	gnu/classpath/tools/java2xhtml/Java2xhtml.java \
+	gnu/classpath/tools/taglets/AuthorTaglet.java \
 	gnu/classpath/tools/taglets/CodeTaglet.java \
 	gnu/classpath/tools/taglets/CopyrightTaglet.java \
-	gnu/classpath/tools/taglets/AuthorTaglet.java \
 	gnu/classpath/tools/taglets/DeprecatedTaglet.java \
 	gnu/classpath/tools/taglets/GenericTaglet.java \
+	gnu/classpath/tools/taglets/GnuExtendedTaglet.java \
 	gnu/classpath/tools/taglets/SinceTaglet.java \
 	gnu/classpath/tools/taglets/TagletContext.java \
-	gnu/classpath/tools/taglets/VersionTaglet.java \
-	gnu/classpath/tools/taglets/GnuExtendedTaglet.java \
 	gnu/classpath/tools/taglets/ValueTaglet.java \
-	gnu/classpath/tools/java2xhtml/Java2xhtml.java \
-	gnu/classpath/tools/FileSystemClassLoader.java \
-	gnu/classpath/tools/IOToolkit.java \
-	gnu/classpath/tools/StringToolkit.java \
-	gnu/classpath/tools/MalformedInputEvent.java \
-	gnu/classpath/tools/MalformedInputListener.java \
-	gnu/classpath/tools/NotifyingInputStreamReader.java 
-
-## Do not delete the previous blank line; update-class-list depends on it
+	gnu/classpath/tools/taglets/VersionTaglet.java 
 
 gjdoc_ressources = \
 	dtd/gjdoc-alphaindex.dtd \
@@ -321,39 +337,3 @@ EXTRA_DIST = \
 	gnu/classpath/tools/doclets/xmldoclet/doctranslet/package.html \
 	gnu/classpath/tools/gjdoc/expr/java-expression.g
 
-JAR_CMD1 = (cd $(LIBDIR) && $(FASTJAR) -cf $(CURDIR)/$@.new $(SRCDIRS))
-JAR_CMD2 = (cd $(srcdir) && $(FASTJAR) -uf $(CURDIR)/$@.new $(gjdoc_ressources))
-JAR_CMD3 = ($(FASTJAR) -uf $(CURDIR)/$@.new version.properties)
-
-LIBDIR = lib
-
-clean-local:
-	rm -rf $(LIBDIR)
-
-.PHONY: new-classes
-new-classes: $(top_srcdir)/developers/update-class-list
-	cd $(srcdir) && $(SHELL) $(top_srcdir)/developers/update-class-list
-
-rebuildLib = $(top_builddir)/libraries/javalib/rebuildLib
-real_builddir = $(shell cd $(top_builddir) && pwd)
-Klasses_jar = $(real_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
-
-.PHONY: compile-classes classes
-## classes is provided for backward compatibility; use compile-classes
-compile-classes $(LIBDIR)/stamp classes: $(rebuildLib) $(antlr_SRCS) $(gjdoc_jar_SRCS) $(gjdoc_jar_GENSOURCES)
-	rm -rf $(LIBDIR)
-	mkdir $(LIBDIR)
-	echo $(SHELL) $(rebuildLib)
-	BOOTCLASSPATH=$(Klasses_jar) $(SHELL) $(rebuildLib) $(antlr_SRCS) $(gjdoc_jar_SRCS) $(gjdoc_jar_GENSOURCES)
-	echo timestamp > $(LIBDIR)/stamp
-
-.PHONY: jar-classes
-jar-classes: $(CLASSFILE)
-$(CLASSFILE): $(LIBDIR)/stamp
-	rm -f $@ $@.new
-	$(JAR_CMD1)
-	$(JAR_CMD2)
-	$(JAR_CMD3)
-	mv $@.new $@
-
-export JAVA_COMPILER top_builddir LIBDIR srcdir
