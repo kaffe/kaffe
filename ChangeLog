@@ -1,3 +1,202 @@
+2006-08-12  Dalibor Topic  <robilad@kaffe.org>
+
+	* Makefile.am (EXTRA_DIST) Removed developers/update-vm-list.
+	(BUILD_ENVIRONMENT-make) Added kaffe-vminterface.jar.
+
+	* configure.ac: Don't compile GNU Classpath with --with-vm-classes
+	from Kaffe. Output libraries/javalib/gnu-inet/Makefile and 
+	libraries/javalib/vmspecific/Makefile.
+
+	* developers/autogen.sh: Don't call update-vm-list.
+
+	* include/Makefile.am (KAFFEH_CLASSPATH) Added kaffe-vminterface.jar.
+
+	* kaffe/scripts/kaffe.in: Added kaffe-vminterface.jar.
+
+	* libraries/javalib/Makefile.am: Replaced by libraries/javalib/Makefile.am.in.
+	(SUBDIRS) Added gnu-inet and vmspecific. 
+	(EXTRA_DIST) Removed vmspecific files and Makefile.am.in.
+
+	* libraries/javalib/zlib-zip/Makefile.am,
+	libraries/javalib/dnsjava/Makefile.am (CPATH): Added kaffe-vminterface.jar.
+
+	* test/regression/TestScript.in: (JAVA_COMPILER) Added kaffe-vminterface.jar
+	to bootclasspath.
+
+	* developers/update-vm-list,
+	libraries/javalib/Makefile.am.in,
+	libraries/javalib/vmspecific/META-INF/MANIFEST.MF:
+	Removed.
+
+	* libraries/javalib/vmspecific/gnu/inet/comsat/ComsatClient.java,
+	libraries/javalib/vmspecific/gnu/inet/comsat/ComsatInfo.java,
+	libraries/javalib/vmspecific/gnu/inet/finger/FingerConnection.java,
+	libraries/javalib/vmspecific/gnu/inet/finger/FingerURLConnection.java,
+	libraries/javalib/vmspecific/gnu/inet/finger/Handler.java,
+	libraries/javalib/vmspecific/gnu/inet/gopher/DirectoryEntry.java,
+	libraries/javalib/vmspecific/gnu/inet/gopher/DirectoryListing.java,
+	libraries/javalib/vmspecific/gnu/inet/gopher/GopherConnection.java,
+	libraries/javalib/vmspecific/gnu/inet/gopher/GopherContentHandler.java,
+	libraries/javalib/vmspecific/gnu/inet/gopher/GopherURLConnection.java,
+	libraries/javalib/vmspecific/gnu/inet/gopher/Handler.java,
+	libraries/javalib/vmspecific/gnu/inet/imap/IMAPConnection.java,
+	libraries/javalib/vmspecific/gnu/inet/imap/IMAPConstants.java,
+	libraries/javalib/vmspecific/gnu/inet/imap/IMAPException.java,
+	libraries/javalib/vmspecific/gnu/inet/imap/IMAPResponse.java,
+	libraries/javalib/vmspecific/gnu/inet/imap/IMAPResponseTokenizer.java,
+	libraries/javalib/vmspecific/gnu/inet/imap/ListEntry.java,
+	libraries/javalib/vmspecific/gnu/inet/imap/MailboxStatus.java,
+	libraries/javalib/vmspecific/gnu/inet/imap/MessageSetTokenizer.java,
+	libraries/javalib/vmspecific/gnu/inet/imap/MessageStatus.java,
+	libraries/javalib/vmspecific/gnu/inet/imap/Namespaces.java,
+	libraries/javalib/vmspecific/gnu/inet/imap/Pair.java,
+	libraries/javalib/vmspecific/gnu/inet/imap/Quota.java,
+	libraries/javalib/vmspecific/gnu/inet/imap/UIDPlusHandler.java,
+	libraries/javalib/vmspecific/gnu/inet/imap/UTF7imap.java,
+	libraries/javalib/vmspecific/gnu/inet/ldap/AttributeValues.java,
+	libraries/javalib/vmspecific/gnu/inet/ldap/BERConstants.java,
+	libraries/javalib/vmspecific/gnu/inet/ldap/BERDecoder.java,
+	libraries/javalib/vmspecific/gnu/inet/ldap/BEREncoder.java,
+	libraries/javalib/vmspecific/gnu/inet/ldap/BERException.java,
+	libraries/javalib/vmspecific/gnu/inet/ldap/LDAPConnection.java,
+	libraries/javalib/vmspecific/gnu/inet/ldap/LDAPResult.java,
+	libraries/javalib/vmspecific/gnu/inet/ldap/Modification.java,
+	libraries/javalib/vmspecific/gnu/inet/ldap/ResultHandler.java,
+	libraries/javalib/vmspecific/gnu/inet/nntp/ActiveTime.java,
+	libraries/javalib/vmspecific/gnu/inet/nntp/ActiveTimesIterator.java,
+	libraries/javalib/vmspecific/gnu/inet/nntp/ArticleNumberIterator.java,
+	libraries/javalib/vmspecific/gnu/inet/nntp/ArticleResponse.java,
+	libraries/javalib/vmspecific/gnu/inet/nntp/ArticleStream.java,
+	libraries/javalib/vmspecific/gnu/inet/nntp/FileNewsrc.java,
+	libraries/javalib/vmspecific/gnu/inet/nntp/Group.java,
+	libraries/javalib/vmspecific/gnu/inet/nntp/GroupIterator.java,
+	libraries/javalib/vmspecific/gnu/inet/nntp/GroupResponse.java,
+	libraries/javalib/vmspecific/gnu/inet/nntp/HeaderEntry.java,
+	libraries/javalib/vmspecific/gnu/inet/nntp/HeaderIterator.java,
+	libraries/javalib/vmspecific/gnu/inet/nntp/LineIterator.java,
+	libraries/javalib/vmspecific/gnu/inet/nntp/NNTPConnection.java,
+	libraries/javalib/vmspecific/gnu/inet/nntp/NNTPConstants.java,
+	libraries/javalib/vmspecific/gnu/inet/nntp/NNTPException.java,
+	libraries/javalib/vmspecific/gnu/inet/nntp/Newsrc.java,
+	libraries/javalib/vmspecific/gnu/inet/nntp/Overview.java,
+	libraries/javalib/vmspecific/gnu/inet/nntp/OverviewIterator.java,
+	libraries/javalib/vmspecific/gnu/inet/nntp/Pair.java,
+	libraries/javalib/vmspecific/gnu/inet/nntp/PairIterator.java,
+	libraries/javalib/vmspecific/gnu/inet/nntp/PendingData.java,
+	libraries/javalib/vmspecific/gnu/inet/nntp/PostStream.java,
+	libraries/javalib/vmspecific/gnu/inet/nntp/Range.java,
+	libraries/javalib/vmspecific/gnu/inet/nntp/StatusResponse.java,
+	libraries/javalib/vmspecific/gnu/inet/pop3/POP3Connection.java,
+	libraries/javalib/vmspecific/gnu/inet/smtp/Parameter.java,
+	libraries/javalib/vmspecific/gnu/inet/smtp/ParameterList.java,
+	libraries/javalib/vmspecific/gnu/inet/smtp/SMTPConnection.java,
+	libraries/javalib/vmspecific/gnu/inet/util/BASE64.java,
+	libraries/javalib/vmspecific/gnu/inet/util/CRLFInputStream.java,
+	libraries/javalib/vmspecific/gnu/inet/util/CRLFOutputStream.java,
+	libraries/javalib/vmspecific/gnu/inet/util/EmptyX509TrustManager.java,
+	libraries/javalib/vmspecific/gnu/inet/util/GetLocalHostAction.java,
+	libraries/javalib/vmspecific/gnu/inet/util/LineInputStream.java,
+	libraries/javalib/vmspecific/gnu/inet/util/MessageInputStream.java,
+	libraries/javalib/vmspecific/gnu/inet/util/MessageOutputStream.java,
+	libraries/javalib/vmspecific/gnu/inet/util/SaslCallbackHandler.java,
+	libraries/javalib/vmspecific/gnu/inet/util/SaslCramMD5.java,
+	libraries/javalib/vmspecific/gnu/inet/util/SaslInputStream.java,
+	libraries/javalib/vmspecific/gnu/inet/util/SaslLogin.java,
+	libraries/javalib/vmspecific/gnu/inet/util/SaslOutputStream.java,
+	libraries/javalib/vmspecific/gnu/inet/util/SaslPlain.java,
+	libraries/javalib/vmspecific/gnu/inet/util/TraceLevel.java: 
+	Removed. Moved over to ...
+
+	* libraries/javalib/gnu-inet/Makefile.am,
+	libraries/javalib/gnu-inet/Makefile.in,
+	libraries/javalib/gnu-inet/gnu/inet/comsat/ComsatClient.java,
+	libraries/javalib/gnu-inet/gnu/inet/comsat/ComsatInfo.java,
+	libraries/javalib/gnu-inet/gnu/inet/finger/FingerConnection.java,
+	libraries/javalib/gnu-inet/gnu/inet/finger/FingerURLConnection.java,
+	libraries/javalib/gnu-inet/gnu/inet/finger/Handler.java,
+	libraries/javalib/gnu-inet/gnu/inet/finger/package.html,
+	libraries/javalib/gnu-inet/gnu/inet/gopher/DirectoryEntry.java,
+	libraries/javalib/gnu-inet/gnu/inet/gopher/DirectoryListing.java,
+	libraries/javalib/gnu-inet/gnu/inet/gopher/GopherConnection.java,
+	libraries/javalib/gnu-inet/gnu/inet/gopher/GopherContentHandler.java,
+	libraries/javalib/gnu-inet/gnu/inet/gopher/GopherURLConnection.java,
+	libraries/javalib/gnu-inet/gnu/inet/gopher/Handler.java,
+	libraries/javalib/gnu-inet/gnu/inet/gopher/package.html,
+	libraries/javalib/gnu-inet/gnu/inet/imap/IMAPConnection.java,
+	libraries/javalib/gnu-inet/gnu/inet/imap/IMAPConstants.java,
+	libraries/javalib/gnu-inet/gnu/inet/imap/IMAPException.java,
+	libraries/javalib/gnu-inet/gnu/inet/imap/IMAPResponse.java,
+	libraries/javalib/gnu-inet/gnu/inet/imap/IMAPResponseTokenizer.java,
+	libraries/javalib/gnu-inet/gnu/inet/imap/ListEntry.java,
+	libraries/javalib/gnu-inet/gnu/inet/imap/MailboxStatus.java,
+	libraries/javalib/gnu-inet/gnu/inet/imap/MessageSetTokenizer.java,
+	libraries/javalib/gnu-inet/gnu/inet/imap/MessageStatus.java,
+	libraries/javalib/gnu-inet/gnu/inet/imap/Namespaces.java,
+	libraries/javalib/gnu-inet/gnu/inet/imap/Pair.java,
+	libraries/javalib/gnu-inet/gnu/inet/imap/Quota.java,
+	libraries/javalib/gnu-inet/gnu/inet/imap/UIDPlusHandler.java,
+	libraries/javalib/gnu-inet/gnu/inet/imap/UTF7imap.java,
+	libraries/javalib/gnu-inet/gnu/inet/imap/package.html,
+	libraries/javalib/gnu-inet/gnu/inet/ldap/AttributeValues.java,
+	libraries/javalib/gnu-inet/gnu/inet/ldap/BERConstants.java,
+	libraries/javalib/gnu-inet/gnu/inet/ldap/BERDecoder.java,
+	libraries/javalib/gnu-inet/gnu/inet/ldap/BEREncoder.java,
+	libraries/javalib/gnu-inet/gnu/inet/ldap/BERException.java,
+	libraries/javalib/gnu-inet/gnu/inet/ldap/LDAPConnection.java,
+	libraries/javalib/gnu-inet/gnu/inet/ldap/LDAPResult.java,
+	libraries/javalib/gnu-inet/gnu/inet/ldap/Modification.java,
+	libraries/javalib/gnu-inet/gnu/inet/ldap/ResultHandler.java,
+	libraries/javalib/gnu-inet/gnu/inet/nntp/ActiveTime.java,
+	libraries/javalib/gnu-inet/gnu/inet/nntp/ActiveTimesIterator.java,
+	libraries/javalib/gnu-inet/gnu/inet/nntp/ArticleNumberIterator.java,
+	libraries/javalib/gnu-inet/gnu/inet/nntp/ArticleResponse.java,
+	libraries/javalib/gnu-inet/gnu/inet/nntp/ArticleStream.java,
+	libraries/javalib/gnu-inet/gnu/inet/nntp/FileNewsrc.java,
+	libraries/javalib/gnu-inet/gnu/inet/nntp/Group.java,
+	libraries/javalib/gnu-inet/gnu/inet/nntp/GroupIterator.java,
+	libraries/javalib/gnu-inet/gnu/inet/nntp/GroupResponse.java,
+	libraries/javalib/gnu-inet/gnu/inet/nntp/HeaderEntry.java,
+	libraries/javalib/gnu-inet/gnu/inet/nntp/HeaderIterator.java,
+	libraries/javalib/gnu-inet/gnu/inet/nntp/LineIterator.java,
+	libraries/javalib/gnu-inet/gnu/inet/nntp/NNTPConnection.java,
+	libraries/javalib/gnu-inet/gnu/inet/nntp/NNTPConstants.java,
+	libraries/javalib/gnu-inet/gnu/inet/nntp/NNTPException.java,
+	libraries/javalib/gnu-inet/gnu/inet/nntp/Newsrc.java,
+	libraries/javalib/gnu-inet/gnu/inet/nntp/Overview.java,
+	libraries/javalib/gnu-inet/gnu/inet/nntp/OverviewIterator.java,
+	libraries/javalib/gnu-inet/gnu/inet/nntp/Pair.java,
+	libraries/javalib/gnu-inet/gnu/inet/nntp/PairIterator.java,
+	libraries/javalib/gnu-inet/gnu/inet/nntp/PendingData.java,
+	libraries/javalib/gnu-inet/gnu/inet/nntp/PostStream.java,
+	libraries/javalib/gnu-inet/gnu/inet/nntp/Range.java,
+	libraries/javalib/gnu-inet/gnu/inet/nntp/StatusResponse.java,
+	libraries/javalib/gnu-inet/gnu/inet/nntp/package.html,
+	libraries/javalib/gnu-inet/gnu/inet/pop3/POP3Connection.java,
+	libraries/javalib/gnu-inet/gnu/inet/pop3/package.html,
+	libraries/javalib/gnu-inet/gnu/inet/smtp/Parameter.java,
+	libraries/javalib/gnu-inet/gnu/inet/smtp/ParameterList.java,
+	libraries/javalib/gnu-inet/gnu/inet/smtp/SMTPConnection.java,
+	libraries/javalib/gnu-inet/gnu/inet/smtp/package.html,
+	libraries/javalib/gnu-inet/gnu/inet/util/BASE64.java,
+	libraries/javalib/gnu-inet/gnu/inet/util/CRLFInputStream.java,
+	libraries/javalib/gnu-inet/gnu/inet/util/CRLFOutputStream.java,
+	libraries/javalib/gnu-inet/gnu/inet/util/EmptyX509TrustManager.java,
+	libraries/javalib/gnu-inet/gnu/inet/util/GetLocalHostAction.java,
+	libraries/javalib/gnu-inet/gnu/inet/util/LineInputStream.java,
+	libraries/javalib/gnu-inet/gnu/inet/util/MessageInputStream.java,
+	libraries/javalib/gnu-inet/gnu/inet/util/MessageOutputStream.java,
+	libraries/javalib/gnu-inet/gnu/inet/util/SaslCallbackHandler.java,
+	libraries/javalib/gnu-inet/gnu/inet/util/SaslCramMD5.java,
+	libraries/javalib/gnu-inet/gnu/inet/util/SaslInputStream.java,
+	libraries/javalib/gnu-inet/gnu/inet/util/SaslLogin.java,
+	libraries/javalib/gnu-inet/gnu/inet/util/SaslOutputStream.java,
+	libraries/javalib/gnu-inet/gnu/inet/util/SaslPlain.java,
+	libraries/javalib/gnu-inet/gnu/inet/util/TraceLevel.java:
+	... here.
+
+	* libraries/javalib/vmspecific/Makefile.am: New file.
+
+
 2006-08-10  Dalibor Topic  <robilad@kaffe.org>
 
 	* THIRDPARTY: Removed gnu.getopt, since it's no longer used.

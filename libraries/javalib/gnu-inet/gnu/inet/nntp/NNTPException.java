@@ -1,5 +1,5 @@
 /*
- * $Id: NNTPException.java,v 1.1 2005/10/19 20:16:01 guilhem Exp $
+ * $Id: NNTPException.java,v 1.1 2006/08/13 01:47:05 robilad Exp $
  * Copyright (C) 2003 The Free Software Foundation
  * 
  * This file is part of GNU inetlib, a library.
@@ -44,7 +44,7 @@ import java.io.IOException;
  * An NNTP exception.
  *
  * @author <a href='mailto:dog@gnu.org'>Chris Burdess</a>
- * @version $Revision: 1.1 $ $Date: 2005/10/19 20:16:01 $
+ * @version $Revision: 1.1 $ $Date: 2006/08/13 01:47:05 $
  */
 public class NNTPException extends IOException
 {

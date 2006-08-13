@@ -2471,9 +2471,6 @@ ac_configure_args="$ac_configure_args --disable-examples"
 ac_configure_args="$ac_configure_args --with-glibj-dir=${jrelibdir}"
 ac_configure_args="$ac_configure_args --with-native-libdir=${nativedir}"
 ac_configure_args="$ac_configure_args --with-fastjar=${FASTJAR}"
-real_srcdir=`cd $srcdir; pwd`
-vmdir=${real_srcdir}/libraries/javalib/vmspecific
-ac_configure_args="$ac_configure_args --with-vm-classes=${vmdir}"
 
 if  test x$use_glibj_zip = xtrue ; then
 	ac_configure_args="$ac_configure_args --with-glibj=none";
@@ -2528,6 +2525,8 @@ AC_CONFIG_FILES([libraries/javalib/gmp-math/Makefile])
 AC_CONFIG_FILES([libraries/javalib/tritonus-sound/Makefile])
 AC_CONFIG_FILES([libraries/javalib/zlib-zip/Makefile])
 AC_CONFIG_FILES([libraries/javalib/dnsjava/Makefile])
+AC_CONFIG_FILES([libraries/javalib/gnu-inet/Makefile])
+AC_CONFIG_FILES([libraries/javalib/vmspecific/Makefile])
 AC_CONFIG_FILES([libraries/clib/Makefile])
 AC_CONFIG_FILES([libraries/clib/target/Makefile])
 AC_CONFIG_FILES([libraries/clib/target/generic/Makefile])

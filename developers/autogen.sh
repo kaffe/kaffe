@@ -102,11 +102,6 @@ rm -f aclocal.m4 ltmain.sh libtool.m4 ltconfig
  rm -f ltdl.h Makefile.in README
 )
 
-(
- cd libraries/javalib
- sh ../../developers/update-vm-list
-)
-
 # autoconf things
 rm -f aclocal.m4 configure
 rm -f config/config.h.in

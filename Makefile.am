@@ -148,7 +148,6 @@ EXTRA_DIST = \
 	developers/sp_offset.c \
 	developers/test-kaffe-sh \
 	developers/update-class-list \
-	developers/update-vm-list \
 	developers/utf8munge.pl \
 	scripts/GCCWarning.pm \
 	scripts/JikesWarning.pm \
@@ -174,7 +173,7 @@ BUILD_ENVIRONMENT: Makefile
 		"DEBUG_ENV=$(DEBUG_ENV)" BUILD_ENVIRONMENT-make
 
 BUILD_ENVIRONMENT-make: Makefile
-	echo BOOTCLASSPATH=$(top_builddir)/libraries/javalib/zlib-zip/kaffe-zlib.jar\''$(PATHSEP)'\'$(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip\''$(PATHSEP)'\'\$${BOOTCLASSPATH}\''$(PATHSEP)'\'$(DNSJAVA_JAR)\''$(PATHSEP)'\'\; export BOOTCLASSPATH | sed 's,/,$(DIRSEP),g;s,\\,\\\\,g' > BUILD_ENVIRONMENT.new; \
+	echo BOOTCLASSPATH=$(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar\''$(PATHSEP)'\'$(top_builddir)/libraries/javalib/zlib-zip/kaffe-zlib.jar\''$(PATHSEP)'\'$(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip\''$(PATHSEP)'\'\$${BOOTCLASSPATH}\''$(PATHSEP)'\'$(DNSJAVA_JAR)\''$(PATHSEP)'\'\; export BOOTCLASSPATH | sed 's,/,$(DIRSEP),g;s,\\,\\\\,g' > BUILD_ENVIRONMENT.new; \
 	echo CLASSPATH=.\''$(PATHSEP)'\'\$${GNU_CRYPTO_JAR}\''$(PATHSEP)'\'\$${JAVAX_SECURITY_JAR}\''$(PATHSEP)'\'$(BCEL_JAR)\''$(PATHSEP)'\'$(GNU_CRYPTO_JAR)\''$(PATHSEP)'\'$(JAVAX_SECURITY_JAR)\; export CLASSPATH | sed 's,/,$(DIRSEP),g;s,\\,\\\\,g' >> BUILD_ENVIRONMENT.new; \
 	echo KAFFELIBRARYPATH=\$${KAFFELIBRARYPATH+\"\$$KAFFELIBRARYPATH\"\''$(PATHSEP)'\'}$(top_builddir)/libraries/clib/native/.libs\''$(PATHSEP)'\'$(top_builddir)/libraries/clib/net/.libs\''$(PATHSEP)'\'$(top_builddir)/libraries/clib/io/.libs\''$(PATHSEP)'\'$(top_builddir)/libraries/clib/nio/.libs\''$(PATHSEP)'\'$(top_builddir)/libraries/clib/zip/.libs\''$(PATHSEP)'\'$(top_builddir)/libraries/clib/management/.libs\''$(PATHSEP)'\'$(top_builddir)/libraries/clib/security/.libs\; export KAFFELIBRARYPATH >> BUILD_ENVIRONMENT.new; \
 	echo JAVA=$(top_builddir)/kaffe/kaffe/kaffe-bin$(EXEEXT)\; export JAVA >> BUILD_ENVIRONMENT.new; \

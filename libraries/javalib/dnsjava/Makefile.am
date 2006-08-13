@@ -5,7 +5,7 @@ LIBDIR = lib
 JAR_CMD1 = ($(FASTJAR) cf $(CLASSFILE) -C $(LIBDIR) $(SRCDIRS))
 JAR_CMD2 = ($(FASTJAR) uf $(CLASSFILE) -C $(LIBDIR) gnu)
 
-CPATH =  .:$(srcdir):$(LIBDIR):$(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
+CPATH =  .:$(srcdir):$(LIBDIR):$(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar:$(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
 AM_JAVACFLAGS = -classpath $(CPATH)
 JAVAC = $(JAVA_COMPILER)
 JAVAROOT = $(LIBDIR)

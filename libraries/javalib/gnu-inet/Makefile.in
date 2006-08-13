@@ -36,8 +36,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = libraries/javalib/dnsjava
-DIST_COMMON = $(dist_dnsjava_JAVA) $(srcdir)/Makefile.am \
+subdir = libraries/javalib/gnu-inet
+DIST_COMMON = $(dist_gnuinet_JAVA) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
@@ -68,7 +68,7 @@ CONFIG_CLEAN_FILES =
 SOURCES =
 DIST_SOURCES =
 CLASSPATH_ENV = CLASSPATH=$(JAVAROOT):$(srcdir)/$(JAVAROOT):$$CLASSPATH
-am__installdirs = "$(DESTDIR)$(dnsjavadir)" "$(DESTDIR)$(jrelibdir)"
+am__installdirs = "$(DESTDIR)$(gnuinetdir)" "$(DESTDIR)$(jrelibdir)"
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -347,139 +347,97 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
-CLASSFILE = kaffe-dnsjava.jar
-SRCDIRS = org
+CLASSFILE = kaffe-gnuinet.jar
+SRCDIRS = gnu
 jrelib_DATA = $(CLASSFILE)
 LIBDIR = lib
 JAR_CMD1 = ($(FASTJAR) cf $(CLASSFILE) -C $(LIBDIR) $(SRCDIRS))
-JAR_CMD2 = ($(FASTJAR) uf $(CLASSFILE) -C $(LIBDIR) gnu)
-CPATH = .:$(srcdir):$(LIBDIR):$(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar:$(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
+CPATH = .:$(srcdir):$(LIBDIR):$(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
 AM_JAVACFLAGS = -classpath $(CPATH)
 JAVAC = $(JAVA_COMPILER)
 JAVAROOT = $(LIBDIR)
 
 # Use a fake install class and dir to keep automake's JAVA (un)install tasks happy.
 FAKE = fakeinstall
-dnsjavadir = $(FAKE)
-dist_dnsjava_JAVA = \
-	org/xbill/DNS/security/CERTConverter.java \
-	org/xbill/DNS/security/DHPubKey.java \
-	org/xbill/DNS/security/DNSSECVerifier.java \
-	org/xbill/DNS/security/DSAPubKey.java \
-	org/xbill/DNS/security/DSASignature.java \
-	org/xbill/DNS/security/KEYConverter.java \
-	org/xbill/DNS/security/RSAPubKey.java \
-	org/xbill/DNS/security/SIG0Signer.java \
-	org/xbill/DNS/A6Record.java \
-	org/xbill/DNS/AAAARecord.java \
-	org/xbill/DNS/AFSDBRecord.java \
-	org/xbill/DNS/APLRecord.java \
-	org/xbill/DNS/ARecord.java \
-	org/xbill/DNS/Address.java \
-	org/xbill/DNS/CERTRecord.java \
-	org/xbill/DNS/CNAMERecord.java \
-	org/xbill/DNS/Cache.java \
-	org/xbill/DNS/Client.java \
-	org/xbill/DNS/Compression.java \
-	org/xbill/DNS/Credibility.java \
-	org/xbill/DNS/DClass.java \
-	org/xbill/DNS/DNAMERecord.java \
-	org/xbill/DNS/DNSInput.java \
-	org/xbill/DNS/DNSKEYRecord.java \
-	org/xbill/DNS/DNSOutput.java \
-	org/xbill/DNS/DNSSEC.java \
-	org/xbill/DNS/DSRecord.java \
-	org/xbill/DNS/EmptyRecord.java \
-	org/xbill/DNS/ExtendedFlags.java \
-	org/xbill/DNS/ExtendedResolver.java \
-	org/xbill/DNS/Flags.java \
-	org/xbill/DNS/FormattedTime.java \
-	org/xbill/DNS/GPOSRecord.java \
-	org/xbill/DNS/Generator.java \
-	org/xbill/DNS/HINFORecord.java \
-	org/xbill/DNS/Header.java \
-	org/xbill/DNS/ISDNRecord.java \
-	org/xbill/DNS/InvalidDClassException.java \
-	org/xbill/DNS/InvalidTTLException.java \
-	org/xbill/DNS/InvalidTypeException.java \
-	org/xbill/DNS/KEYBase.java \
-	org/xbill/DNS/KEYRecord.java \
-	org/xbill/DNS/KXRecord.java \
-	org/xbill/DNS/LOCRecord.java \
-	org/xbill/DNS/Lookup.java \
-	org/xbill/DNS/MBRecord.java \
-	org/xbill/DNS/MDRecord.java \
-	org/xbill/DNS/MFRecord.java \
-	org/xbill/DNS/MGRecord.java \
-	org/xbill/DNS/MINFORecord.java \
-	org/xbill/DNS/MRRecord.java \
-	org/xbill/DNS/MXRecord.java \
-	org/xbill/DNS/Master.java \
-	org/xbill/DNS/Message.java \
-	org/xbill/DNS/Mnemonic.java \
-	org/xbill/DNS/NAPTRRecord.java \
-	org/xbill/DNS/NSAPRecord.java \
-	org/xbill/DNS/NSAP_PTRRecord.java \
-	org/xbill/DNS/NSECRecord.java \
-	org/xbill/DNS/NSRecord.java \
-	org/xbill/DNS/NULLRecord.java \
-	org/xbill/DNS/NXTRecord.java \
-	org/xbill/DNS/Name.java \
-	org/xbill/DNS/NameTooLongException.java \
-	org/xbill/DNS/OPTRecord.java \
-	org/xbill/DNS/Opcode.java \
-	org/xbill/DNS/Options.java \
-	org/xbill/DNS/PTRRecord.java \
-	org/xbill/DNS/PXRecord.java \
-	org/xbill/DNS/RPRecord.java \
-	org/xbill/DNS/RRSIGRecord.java \
-	org/xbill/DNS/RRset.java \
-	org/xbill/DNS/RTRecord.java \
-	org/xbill/DNS/Rcode.java \
-	org/xbill/DNS/Record.java \
-	org/xbill/DNS/RelativeNameException.java \
-	org/xbill/DNS/ResolveThread.java \
-	org/xbill/DNS/Resolver.java \
-	org/xbill/DNS/ResolverConfig.java \
-	org/xbill/DNS/ResolverListener.java \
-	org/xbill/DNS/ReverseMap.java \
-	org/xbill/DNS/SIGBase.java \
-	org/xbill/DNS/SIGRecord.java \
-	org/xbill/DNS/SOARecord.java \
-	org/xbill/DNS/SRVRecord.java \
-	org/xbill/DNS/SSHFPRecord.java \
-	org/xbill/DNS/Section.java \
-	org/xbill/DNS/Serial.java \
-	org/xbill/DNS/SetResponse.java \
-	org/xbill/DNS/SimpleResolver.java \
-	org/xbill/DNS/SingleCompressedNameBase.java \
-	org/xbill/DNS/SingleNameBase.java \
-	org/xbill/DNS/TCPClient.java \
-	org/xbill/DNS/TKEYRecord.java \
-	org/xbill/DNS/TSIG.java \
-	org/xbill/DNS/TSIGRecord.java \
-	org/xbill/DNS/TTL.java \
-	org/xbill/DNS/TXTRecord.java \
-	org/xbill/DNS/TextParseException.java \
-	org/xbill/DNS/Tokenizer.java \
-	org/xbill/DNS/Type.java \
-	org/xbill/DNS/TypedObject.java \
-	org/xbill/DNS/U16NameBase.java \
-	org/xbill/DNS/UDPClient.java \
-	org/xbill/DNS/UNKRecord.java \
-	org/xbill/DNS/Update.java \
-	org/xbill/DNS/Verifier.java \
-	org/xbill/DNS/WKSRecord.java \
-	org/xbill/DNS/WireParseException.java \
-	org/xbill/DNS/X25Record.java \
-	org/xbill/DNS/Zone.java \
-	org/xbill/DNS/ZoneTransferException.java \
-	org/xbill/DNS/ZoneTransferIn.java \
-	org/xbill/DNS/utils/HMAC.java \
-	org/xbill/DNS/utils/base16.java \
-	org/xbill/DNS/utils/base64.java \
-	org/xbill/DNS/utils/hexdump.java \
-	gnu/java/net/DNSJavaInetAddressImpl.java 
+gnuinetdir = $(FAKE)
+dist_gnuinet_JAVA = \
+	gnu/inet/comsat/ComsatClient.java \
+	gnu/inet/comsat/ComsatInfo.java \
+	gnu/inet/finger/FingerConnection.java \
+	gnu/inet/finger/FingerURLConnection.java \
+	gnu/inet/finger/Handler.java \
+	gnu/inet/gopher/DirectoryEntry.java \
+	gnu/inet/gopher/DirectoryListing.java \
+	gnu/inet/gopher/GopherConnection.java \
+	gnu/inet/gopher/GopherContentHandler.java \
+	gnu/inet/gopher/GopherURLConnection.java \
+	gnu/inet/gopher/Handler.java \
+	gnu/inet/imap/IMAPConnection.java \
+	gnu/inet/imap/IMAPConstants.java \
+	gnu/inet/imap/IMAPException.java \
+	gnu/inet/imap/IMAPResponse.java \
+	gnu/inet/imap/IMAPResponseTokenizer.java \
+	gnu/inet/imap/ListEntry.java \
+	gnu/inet/imap/MailboxStatus.java \
+	gnu/inet/imap/MessageSetTokenizer.java \
+	gnu/inet/imap/MessageStatus.java \
+	gnu/inet/imap/Namespaces.java \
+	gnu/inet/imap/Pair.java \
+	gnu/inet/imap/Quota.java \
+	gnu/inet/imap/UIDPlusHandler.java \
+	gnu/inet/imap/UTF7imap.java \
+	gnu/inet/ldap/AttributeValues.java \
+	gnu/inet/ldap/BERConstants.java \
+	gnu/inet/ldap/BERDecoder.java \
+	gnu/inet/ldap/BEREncoder.java \
+	gnu/inet/ldap/BERException.java \
+	gnu/inet/ldap/LDAPConnection.java \
+	gnu/inet/ldap/LDAPResult.java \
+	gnu/inet/ldap/Modification.java \
+	gnu/inet/ldap/ResultHandler.java \
+	gnu/inet/nntp/ActiveTime.java \
+	gnu/inet/nntp/ActiveTimesIterator.java \
+	gnu/inet/nntp/ArticleNumberIterator.java \
+	gnu/inet/nntp/ArticleResponse.java \
+	gnu/inet/nntp/ArticleStream.java \
+	gnu/inet/nntp/FileNewsrc.java \
+	gnu/inet/nntp/Group.java \
+	gnu/inet/nntp/GroupIterator.java \
+	gnu/inet/nntp/GroupResponse.java \
+	gnu/inet/nntp/HeaderEntry.java \
+	gnu/inet/nntp/HeaderIterator.java \
+	gnu/inet/nntp/LineIterator.java \
+	gnu/inet/nntp/NNTPConnection.java \
+	gnu/inet/nntp/NNTPConstants.java \
+	gnu/inet/nntp/NNTPException.java \
+	gnu/inet/nntp/Newsrc.java \
+	gnu/inet/nntp/Overview.java \
+	gnu/inet/nntp/OverviewIterator.java \
+	gnu/inet/nntp/Pair.java \
+	gnu/inet/nntp/PairIterator.java \
+	gnu/inet/nntp/PendingData.java \
+	gnu/inet/nntp/PostStream.java \
+	gnu/inet/nntp/Range.java \
+	gnu/inet/nntp/StatusResponse.java \
+	gnu/inet/pop3/POP3Connection.java \
+	gnu/inet/smtp/Parameter.java \
+	gnu/inet/smtp/ParameterList.java \
+	gnu/inet/smtp/SMTPConnection.java \
+	gnu/inet/util/BASE64.java \
+	gnu/inet/util/CRLFInputStream.java \
+	gnu/inet/util/CRLFOutputStream.java \
+	gnu/inet/util/EmptyX509TrustManager.java \
+	gnu/inet/util/GetLocalHostAction.java \
+	gnu/inet/util/LineInputStream.java \
+	gnu/inet/util/MessageInputStream.java \
+	gnu/inet/util/MessageOutputStream.java \
+	gnu/inet/util/SaslCallbackHandler.java \
+	gnu/inet/util/SaslCramMD5.java \
+	gnu/inet/util/SaslInputStream.java \
+	gnu/inet/util/SaslLogin.java \
+	gnu/inet/util/SaslOutputStream.java \
+	gnu/inet/util/SaslPlain.java \
+	gnu/inet/util/TraceLevel.java 
 
 all: all-am
 
@@ -493,9 +451,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  libraries/javalib/dnsjava/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  libraries/javalib/gnu-inet/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  libraries/javalib/dnsjava/Makefile
+	  $(AUTOMAKE) --gnu  libraries/javalib/gnu-inet/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -524,30 +482,30 @@ distclean-libtool:
 	-rm -f libtool
 uninstall-info-am:
 
-classdist_dnsjava.stamp: $(dist_dnsjava_JAVA)
+classdist_gnuinet.stamp: $(dist_gnuinet_JAVA)
 	@if test -n "$?"; then \
 	  echo '$(CLASSPATH_ENV) $(JAVAC) -d $(JAVAROOT) $(AM_JAVACFLAGS) $(JAVACFLAGS) $?' ; \
 	  $(CLASSPATH_ENV) $(JAVAC) -d $(JAVAROOT) \
 	    $(AM_JAVACFLAGS) $(JAVACFLAGS) $?; \
 	else :; fi
-	echo timestamp > classdist_dnsjava.stamp
-install-dist_dnsjavaJAVA: classdist_dnsjava.stamp
+	echo timestamp > classdist_gnuinet.stamp
+install-dist_gnuinetJAVA: classdist_gnuinet.stamp
 	@$(NORMAL_INSTALL)
-	test -z "$(dnsjavadir)" || $(mkdir_p) "$(DESTDIR)$(dnsjavadir)"
-	@test -z "$(dist_dnsjava_JAVA)" || for p in *.class; do \
-	  echo " $(INSTALL_DATA) '$$p' '$(DESTDIR)$(dnsjavadir)/$$p'"; \
-	  $(INSTALL_DATA) "$$p" "$(DESTDIR)$(dnsjavadir)/$$p"; \
+	test -z "$(gnuinetdir)" || $(mkdir_p) "$(DESTDIR)$(gnuinetdir)"
+	@test -z "$(dist_gnuinet_JAVA)" || for p in *.class; do \
+	  echo " $(INSTALL_DATA) '$$p' '$(DESTDIR)$(gnuinetdir)/$$p'"; \
+	  $(INSTALL_DATA) "$$p" "$(DESTDIR)$(gnuinetdir)/$$p"; \
 	done
 
-uninstall-dist_dnsjavaJAVA:
+uninstall-dist_gnuinetJAVA:
 	@$(NORMAL_UNINSTALL)
-	@test -z "$(dist_dnsjava_JAVA)" || for p in *.class; do \
-	  echo " rm -f '$(DESTDIR)$(dnsjavadir)/$$p'"; \
-	  rm -f "$(DESTDIR)$(dnsjavadir)/$$p"; \
+	@test -z "$(dist_gnuinet_JAVA)" || for p in *.class; do \
+	  echo " rm -f '$(DESTDIR)$(gnuinetdir)/$$p'"; \
+	  rm -f "$(DESTDIR)$(gnuinetdir)/$$p"; \
 	done
 
-clean-dist_dnsjavaJAVA:
-	-rm -f *.class classdist_dnsjava.stamp
+clean-dist_gnuinetJAVA:
+	-rm -f *.class classdist_gnuinet.stamp
 install-jrelibDATA: $(jrelib_DATA)
 	@$(NORMAL_INSTALL)
 	test -z "$(jrelibdir)" || $(mkdir_p) "$(DESTDIR)$(jrelibdir)"
@@ -573,7 +531,7 @@ CTAGS:
 
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/gnu/java/net $(distdir)/org/xbill/DNS $(distdir)/org/xbill/DNS/security $(distdir)/org/xbill/DNS/utils
+	$(mkdir_p) $(distdir)/gnu/inet/comsat $(distdir)/gnu/inet/finger $(distdir)/gnu/inet/gopher $(distdir)/gnu/inet/imap $(distdir)/gnu/inet/ldap $(distdir)/gnu/inet/nntp $(distdir)/gnu/inet/pop3 $(distdir)/gnu/inet/smtp $(distdir)/gnu/inet/util
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -602,9 +560,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile classdist_dnsjava.stamp $(DATA)
+all-am: Makefile classdist_gnuinet.stamp $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(dnsjavadir)" "$(DESTDIR)$(jrelibdir)"; do \
+	for dir in "$(DESTDIR)$(gnuinetdir)" "$(DESTDIR)$(jrelibdir)"; do \
 	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
 	done
 install: install-am
@@ -633,7 +591,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-dist_dnsjavaJAVA clean-generic clean-libtool \
+clean-am: clean-dist_gnuinetJAVA clean-generic clean-libtool \
 	clean-local mostlyclean-am
 
 distclean: distclean-am
@@ -650,7 +608,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-data-local install-dist_dnsjavaJAVA \
+install-data-am: install-data-local install-dist_gnuinetJAVA \
 	install-jrelibDATA
 
 install-exec-am:
@@ -677,27 +635,26 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-dist_dnsjavaJAVA uninstall-info-am \
+uninstall-am: uninstall-dist_gnuinetJAVA uninstall-info-am \
 	uninstall-jrelibDATA uninstall-local
 
-.PHONY: all all-am check check-am clean clean-dist_dnsjavaJAVA \
+.PHONY: all all-am check check-am clean clean-dist_gnuinetJAVA \
 	clean-generic clean-libtool clean-local distclean \
 	distclean-generic distclean-libtool distdir dvi dvi-am html \
 	html-am info info-am install install-am install-data \
-	install-data-am install-data-local install-dist_dnsjavaJAVA \
+	install-data-am install-data-local install-dist_gnuinetJAVA \
 	install-exec install-exec-am install-info install-info-am \
 	install-jrelibDATA install-man install-strip installcheck \
 	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-generic \
 	mostlyclean-libtool pdf pdf-am ps ps-am uninstall uninstall-am \
-	uninstall-dist_dnsjavaJAVA uninstall-info-am \
+	uninstall-dist_gnuinetJAVA uninstall-info-am \
 	uninstall-jrelibDATA uninstall-local
 
 
-$(CLASSFILE): classdist_dnsjava.stamp
+$(CLASSFILE): classdist_gnuinet.stamp
 	rm -f $(CLASSFILE)
 	$(JAR_CMD1)
-	$(JAR_CMD2)
 
 clean-local:
 	rm -rf $(LIBDIR) $(CLASSFILE)

@@ -367,7 +367,7 @@ target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
 KLASSES_JAR = $(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
-KAFFEH_CLASSPATH = $(top_builddir)/libraries/javalib/zlib-zip/lib:$(top_builddir)/libraries/javalib/tritonus-sound/lib:$(top_builddir)/libraries/javalib/gmp-math/lib:$(KLASSES_JAR)
+KAFFEH_CLASSPATH = $(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar:$(top_builddir)/libraries/javalib/zlib-zip/lib:$(top_builddir)/libraries/javalib/tritonus-sound/lib:$(top_builddir)/libraries/javalib/gmp-math/lib:$(KLASSES_JAR)
 EXTRA_DIST = distclean-hack \
 		stamp-h2.in
 

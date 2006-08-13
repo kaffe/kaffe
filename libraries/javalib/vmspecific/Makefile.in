@@ -36,8 +36,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = libraries/javalib/dnsjava
-DIST_COMMON = $(dist_dnsjava_JAVA) $(srcdir)/Makefile.am \
+subdir = libraries/javalib/vmspecific
+DIST_COMMON = $(dist_vminterface_JAVA) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
@@ -68,7 +68,8 @@ CONFIG_CLEAN_FILES =
 SOURCES =
 DIST_SOURCES =
 CLASSPATH_ENV = CLASSPATH=$(JAVAROOT):$(srcdir)/$(JAVAROOT):$$CLASSPATH
-am__installdirs = "$(DESTDIR)$(dnsjavadir)" "$(DESTDIR)$(jrelibdir)"
+am__installdirs = "$(DESTDIR)$(vminterfacedir)" \
+	"$(DESTDIR)$(jrelibdir)"
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -347,139 +348,96 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
 with_engine = @with_engine@
-CLASSFILE = kaffe-dnsjava.jar
+CLASSFILE = kaffe-vminterface.jar
 SRCDIRS = org
 jrelib_DATA = $(CLASSFILE)
 LIBDIR = lib
 JAR_CMD1 = ($(FASTJAR) cf $(CLASSFILE) -C $(LIBDIR) $(SRCDIRS))
 JAR_CMD2 = ($(FASTJAR) uf $(CLASSFILE) -C $(LIBDIR) gnu)
-CPATH = .:$(srcdir):$(LIBDIR):$(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar:$(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
+JAR_CMD3 = ($(FASTJAR) uf $(CLASSFILE) -C $(LIBDIR) java)
+CPATH = .:$(srcdir):$(LIBDIR):$(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
 AM_JAVACFLAGS = -classpath $(CPATH)
 JAVAC = $(JAVA_COMPILER)
 JAVAROOT = $(LIBDIR)
 
 # Use a fake install class and dir to keep automake's JAVA (un)install tasks happy.
 FAKE = fakeinstall
-dnsjavadir = $(FAKE)
-dist_dnsjava_JAVA = \
-	org/xbill/DNS/security/CERTConverter.java \
-	org/xbill/DNS/security/DHPubKey.java \
-	org/xbill/DNS/security/DNSSECVerifier.java \
-	org/xbill/DNS/security/DSAPubKey.java \
-	org/xbill/DNS/security/DSASignature.java \
-	org/xbill/DNS/security/KEYConverter.java \
-	org/xbill/DNS/security/RSAPubKey.java \
-	org/xbill/DNS/security/SIG0Signer.java \
-	org/xbill/DNS/A6Record.java \
-	org/xbill/DNS/AAAARecord.java \
-	org/xbill/DNS/AFSDBRecord.java \
-	org/xbill/DNS/APLRecord.java \
-	org/xbill/DNS/ARecord.java \
-	org/xbill/DNS/Address.java \
-	org/xbill/DNS/CERTRecord.java \
-	org/xbill/DNS/CNAMERecord.java \
-	org/xbill/DNS/Cache.java \
-	org/xbill/DNS/Client.java \
-	org/xbill/DNS/Compression.java \
-	org/xbill/DNS/Credibility.java \
-	org/xbill/DNS/DClass.java \
-	org/xbill/DNS/DNAMERecord.java \
-	org/xbill/DNS/DNSInput.java \
-	org/xbill/DNS/DNSKEYRecord.java \
-	org/xbill/DNS/DNSOutput.java \
-	org/xbill/DNS/DNSSEC.java \
-	org/xbill/DNS/DSRecord.java \
-	org/xbill/DNS/EmptyRecord.java \
-	org/xbill/DNS/ExtendedFlags.java \
-	org/xbill/DNS/ExtendedResolver.java \
-	org/xbill/DNS/Flags.java \
-	org/xbill/DNS/FormattedTime.java \
-	org/xbill/DNS/GPOSRecord.java \
-	org/xbill/DNS/Generator.java \
-	org/xbill/DNS/HINFORecord.java \
-	org/xbill/DNS/Header.java \
-	org/xbill/DNS/ISDNRecord.java \
-	org/xbill/DNS/InvalidDClassException.java \
-	org/xbill/DNS/InvalidTTLException.java \
-	org/xbill/DNS/InvalidTypeException.java \
-	org/xbill/DNS/KEYBase.java \
-	org/xbill/DNS/KEYRecord.java \
-	org/xbill/DNS/KXRecord.java \
-	org/xbill/DNS/LOCRecord.java \
-	org/xbill/DNS/Lookup.java \
-	org/xbill/DNS/MBRecord.java \
-	org/xbill/DNS/MDRecord.java \
-	org/xbill/DNS/MFRecord.java \
-	org/xbill/DNS/MGRecord.java \
-	org/xbill/DNS/MINFORecord.java \
-	org/xbill/DNS/MRRecord.java \
-	org/xbill/DNS/MXRecord.java \
-	org/xbill/DNS/Master.java \
-	org/xbill/DNS/Message.java \
-	org/xbill/DNS/Mnemonic.java \
-	org/xbill/DNS/NAPTRRecord.java \
-	org/xbill/DNS/NSAPRecord.java \
-	org/xbill/DNS/NSAP_PTRRecord.java \
-	org/xbill/DNS/NSECRecord.java \
-	org/xbill/DNS/NSRecord.java \
-	org/xbill/DNS/NULLRecord.java \
-	org/xbill/DNS/NXTRecord.java \
-	org/xbill/DNS/Name.java \
-	org/xbill/DNS/NameTooLongException.java \
-	org/xbill/DNS/OPTRecord.java \
-	org/xbill/DNS/Opcode.java \
-	org/xbill/DNS/Options.java \
-	org/xbill/DNS/PTRRecord.java \
-	org/xbill/DNS/PXRecord.java \
-	org/xbill/DNS/RPRecord.java \
-	org/xbill/DNS/RRSIGRecord.java \
-	org/xbill/DNS/RRset.java \
-	org/xbill/DNS/RTRecord.java \
-	org/xbill/DNS/Rcode.java \
-	org/xbill/DNS/Record.java \
-	org/xbill/DNS/RelativeNameException.java \
-	org/xbill/DNS/ResolveThread.java \
-	org/xbill/DNS/Resolver.java \
-	org/xbill/DNS/ResolverConfig.java \
-	org/xbill/DNS/ResolverListener.java \
-	org/xbill/DNS/ReverseMap.java \
-	org/xbill/DNS/SIGBase.java \
-	org/xbill/DNS/SIGRecord.java \
-	org/xbill/DNS/SOARecord.java \
-	org/xbill/DNS/SRVRecord.java \
-	org/xbill/DNS/SSHFPRecord.java \
-	org/xbill/DNS/Section.java \
-	org/xbill/DNS/Serial.java \
-	org/xbill/DNS/SetResponse.java \
-	org/xbill/DNS/SimpleResolver.java \
-	org/xbill/DNS/SingleCompressedNameBase.java \
-	org/xbill/DNS/SingleNameBase.java \
-	org/xbill/DNS/TCPClient.java \
-	org/xbill/DNS/TKEYRecord.java \
-	org/xbill/DNS/TSIG.java \
-	org/xbill/DNS/TSIGRecord.java \
-	org/xbill/DNS/TTL.java \
-	org/xbill/DNS/TXTRecord.java \
-	org/xbill/DNS/TextParseException.java \
-	org/xbill/DNS/Tokenizer.java \
-	org/xbill/DNS/Type.java \
-	org/xbill/DNS/TypedObject.java \
-	org/xbill/DNS/U16NameBase.java \
-	org/xbill/DNS/UDPClient.java \
-	org/xbill/DNS/UNKRecord.java \
-	org/xbill/DNS/Update.java \
-	org/xbill/DNS/Verifier.java \
-	org/xbill/DNS/WKSRecord.java \
-	org/xbill/DNS/WireParseException.java \
-	org/xbill/DNS/X25Record.java \
-	org/xbill/DNS/Zone.java \
-	org/xbill/DNS/ZoneTransferException.java \
-	org/xbill/DNS/ZoneTransferIn.java \
-	org/xbill/DNS/utils/HMAC.java \
-	org/xbill/DNS/utils/base16.java \
-	org/xbill/DNS/utils/base64.java \
-	org/xbill/DNS/utils/hexdump.java \
-	gnu/java/net/DNSJavaInetAddressImpl.java 
+vminterfacedir = $(FAKE)
+dist_vminterface_JAVA = \
+	gnu/classpath/jdwp/VMFrame.java \
+	gnu/classpath/jdwp/VMIdManager.java \
+	gnu/classpath/jdwp/VMMethod.java \
+	gnu/classpath/jdwp/VMVirtualMachine.java \
+	gnu/classpath/VMStackWalker.java \
+	gnu/classpath/VMSystemProperties.java \
+	gnu/java/lang/management/VMClassLoadingMXBeanImpl.java \
+	gnu/java/lang/management/VMCompilationMXBeanImpl.java \
+	gnu/java/lang/management/VMGarbageCollectorMXBeanImpl.java \
+	gnu/java/lang/management/VMMemoryMXBeanImpl.java \
+	gnu/java/lang/management/VMMemoryManagerMXBeanImpl.java \
+	gnu/java/lang/management/VMMemoryPoolMXBeanImpl.java \
+	gnu/java/lang/management/VMRuntimeMXBeanImpl.java \
+	gnu/java/lang/management/VMThreadMXBeanImpl.java \
+	gnu/java/lang/VMInstrumentationImpl.java \
+	gnu/java/net/InetAddressImpl.java \
+	gnu/java/net/PlainDatagramSocketImpl.java \
+	gnu/java/net/PlainSocketImpl.java \
+	gnu/java/net/SysInetAddressImpl.java \
+	gnu/java/nio/VMChannel.java \
+	gnu/java/nio/VMPipe.java \
+	gnu/java/nio/VMSelector.java \
+	java/io/VMFile.java \
+	java/io/VMObjectInputStream.java \
+	java/io/VMObjectStreamClass.java \
+	java/lang/management/VMManagementFactory.java \
+	java/lang/Runtime.java \
+	java/lang/VMClass.java \
+	java/lang/VMClassLoader.java \
+	java/lang/VMCompiler.java \
+	java/lang/VMDouble.java \
+	java/lang/VMFloat.java \
+	java/lang/VMMath.java \
+	java/lang/VMObject.java \
+	java/lang/VMProcess.java \
+	java/lang/VMRuntime.java \
+	java/lang/VMString.java \
+	java/lang/VMSystem.java \
+	java/lang/VMThread.java \
+	java/lang/VMThrowable.java \
+	java/lang/ref/Reference.java \
+	java/lang/reflect/Constructor.java \
+	java/lang/reflect/Field.java \
+	java/lang/reflect/Method.java \
+	java/lang/reflect/VMArray.java \
+	java/lang/reflect/VMProxy.java \
+	java/net/InetAddress.java \
+	java/net/VMInetAddress.java \
+	java/net/VMNetworkInterface.java \
+	java/net/VMURLConnection.java \
+	java/nio/channels/VMChannels.java \
+	java/nio/VMDirectByteBuffer.java \
+	java/security/VMAccessController.java \
+	java/security/VMSecureRandom.java \
+	java/util/VMTimeZone.java \
+	org/kaffe/jar/ExecJar.java \
+	org/kaffe/jar/ExecJarName.java \
+	org/kaffe/management/Classpath.java \
+	org/kaffe/management/Debug.java \
+	org/kaffe/management/JIT.java \
+	org/kaffe/management/XProfiler.java \
+	org/kaffe/security/provider/Kaffe.java \
+	org/kaffe/security/provider/MD2.java \
+	org/kaffe/security/provider/MD4.java \
+	org/kaffe/security/provider/MD5.java \
+	org/kaffe/security/provider/SHA.java \
+	org/kaffe/security/provider/SHA1PRNG.java \
+	org/kaffe/security/provider/UpdateDigest.java \
+	org/kaffe/security/LameRandomness.java \
+	org/kaffe/security/Randomness.java \
+	org/kaffe/security/UnixRandomness.java \
+	org/kaffe/util/NotImplemented.java \
+	org/kaffe/util/Ptr.java \
+	org/kaffe/util/SupportDisabled.java 
 
 all: all-am
 
@@ -493,9 +451,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  libraries/javalib/dnsjava/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  libraries/javalib/vmspecific/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  libraries/javalib/dnsjava/Makefile
+	  $(AUTOMAKE) --gnu  libraries/javalib/vmspecific/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -524,30 +482,30 @@ distclean-libtool:
 	-rm -f libtool
 uninstall-info-am:
 
-classdist_dnsjava.stamp: $(dist_dnsjava_JAVA)
+classdist_vminterface.stamp: $(dist_vminterface_JAVA)
 	@if test -n "$?"; then \
 	  echo '$(CLASSPATH_ENV) $(JAVAC) -d $(JAVAROOT) $(AM_JAVACFLAGS) $(JAVACFLAGS) $?' ; \
 	  $(CLASSPATH_ENV) $(JAVAC) -d $(JAVAROOT) \
 	    $(AM_JAVACFLAGS) $(JAVACFLAGS) $?; \
 	else :; fi
-	echo timestamp > classdist_dnsjava.stamp
-install-dist_dnsjavaJAVA: classdist_dnsjava.stamp
+	echo timestamp > classdist_vminterface.stamp
+install-dist_vminterfaceJAVA: classdist_vminterface.stamp
 	@$(NORMAL_INSTALL)
-	test -z "$(dnsjavadir)" || $(mkdir_p) "$(DESTDIR)$(dnsjavadir)"
-	@test -z "$(dist_dnsjava_JAVA)" || for p in *.class; do \
-	  echo " $(INSTALL_DATA) '$$p' '$(DESTDIR)$(dnsjavadir)/$$p'"; \
-	  $(INSTALL_DATA) "$$p" "$(DESTDIR)$(dnsjavadir)/$$p"; \
+	test -z "$(vminterfacedir)" || $(mkdir_p) "$(DESTDIR)$(vminterfacedir)"
+	@test -z "$(dist_vminterface_JAVA)" || for p in *.class; do \
+	  echo " $(INSTALL_DATA) '$$p' '$(DESTDIR)$(vminterfacedir)/$$p'"; \
+	  $(INSTALL_DATA) "$$p" "$(DESTDIR)$(vminterfacedir)/$$p"; \
 	done
 
-uninstall-dist_dnsjavaJAVA:
+uninstall-dist_vminterfaceJAVA:
 	@$(NORMAL_UNINSTALL)
-	@test -z "$(dist_dnsjava_JAVA)" || for p in *.class; do \
-	  echo " rm -f '$(DESTDIR)$(dnsjavadir)/$$p'"; \
-	  rm -f "$(DESTDIR)$(dnsjavadir)/$$p"; \
+	@test -z "$(dist_vminterface_JAVA)" || for p in *.class; do \
+	  echo " rm -f '$(DESTDIR)$(vminterfacedir)/$$p'"; \
+	  rm -f "$(DESTDIR)$(vminterfacedir)/$$p"; \
 	done
 
-clean-dist_dnsjavaJAVA:
-	-rm -f *.class classdist_dnsjava.stamp
+clean-dist_vminterfaceJAVA:
+	-rm -f *.class classdist_vminterface.stamp
 install-jrelibDATA: $(jrelib_DATA)
 	@$(NORMAL_INSTALL)
 	test -z "$(jrelibdir)" || $(mkdir_p) "$(DESTDIR)$(jrelibdir)"
@@ -573,7 +531,7 @@ CTAGS:
 
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/gnu/java/net $(distdir)/org/xbill/DNS $(distdir)/org/xbill/DNS/security $(distdir)/org/xbill/DNS/utils
+	$(mkdir_p) $(distdir)/gnu/classpath $(distdir)/gnu/classpath/jdwp $(distdir)/gnu/java/lang $(distdir)/gnu/java/lang/management $(distdir)/gnu/java/net $(distdir)/gnu/java/nio $(distdir)/java/io $(distdir)/java/lang $(distdir)/java/lang/management $(distdir)/java/lang/ref $(distdir)/java/lang/reflect $(distdir)/java/net $(distdir)/java/nio $(distdir)/java/nio/channels $(distdir)/java/security $(distdir)/java/util $(distdir)/org/kaffe/jar $(distdir)/org/kaffe/management $(distdir)/org/kaffe/security $(distdir)/org/kaffe/security/provider $(distdir)/org/kaffe/util
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -602,9 +560,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile classdist_dnsjava.stamp $(DATA)
+all-am: Makefile classdist_vminterface.stamp $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(dnsjavadir)" "$(DESTDIR)$(jrelibdir)"; do \
+	for dir in "$(DESTDIR)$(vminterfacedir)" "$(DESTDIR)$(jrelibdir)"; do \
 	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
 	done
 install: install-am
@@ -633,7 +591,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-dist_dnsjavaJAVA clean-generic clean-libtool \
+clean-am: clean-dist_vminterfaceJAVA clean-generic clean-libtool \
 	clean-local mostlyclean-am
 
 distclean: distclean-am
@@ -650,7 +608,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-data-local install-dist_dnsjavaJAVA \
+install-data-am: install-data-local install-dist_vminterfaceJAVA \
 	install-jrelibDATA
 
 install-exec-am:
@@ -677,27 +635,28 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-dist_dnsjavaJAVA uninstall-info-am \
+uninstall-am: uninstall-dist_vminterfaceJAVA uninstall-info-am \
 	uninstall-jrelibDATA uninstall-local
 
-.PHONY: all all-am check check-am clean clean-dist_dnsjavaJAVA \
+.PHONY: all all-am check check-am clean clean-dist_vminterfaceJAVA \
 	clean-generic clean-libtool clean-local distclean \
 	distclean-generic distclean-libtool distdir dvi dvi-am html \
 	html-am info info-am install install-am install-data \
-	install-data-am install-data-local install-dist_dnsjavaJAVA \
-	install-exec install-exec-am install-info install-info-am \
-	install-jrelibDATA install-man install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am uninstall uninstall-am \
-	uninstall-dist_dnsjavaJAVA uninstall-info-am \
-	uninstall-jrelibDATA uninstall-local
+	install-data-am install-data-local \
+	install-dist_vminterfaceJAVA install-exec install-exec-am \
+	install-info install-info-am install-jrelibDATA install-man \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	uninstall uninstall-am uninstall-dist_vminterfaceJAVA \
+	uninstall-info-am uninstall-jrelibDATA uninstall-local
 
 
-$(CLASSFILE): classdist_dnsjava.stamp
+$(CLASSFILE): classdist_vminterface.stamp
 	rm -f $(CLASSFILE)
 	$(JAR_CMD1)
 	$(JAR_CMD2)
+	$(JAR_CMD3)
 
 clean-local:
 	rm -rf $(LIBDIR) $(CLASSFILE)

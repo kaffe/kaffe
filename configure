@@ -50971,9 +50971,6 @@ ac_configure_args="$ac_configure_args --disable-examples"
 ac_configure_args="$ac_configure_args --with-glibj-dir=${jrelibdir}"
 ac_configure_args="$ac_configure_args --with-native-libdir=${nativedir}"
 ac_configure_args="$ac_configure_args --with-fastjar=${FASTJAR}"
-real_srcdir=`cd $srcdir; pwd`
-vmdir=${real_srcdir}/libraries/javalib/vmspecific
-ac_configure_args="$ac_configure_args --with-vm-classes=${vmdir}"
 
 if  test x$use_glibj_zip = xtrue ; then
 	ac_configure_args="$ac_configure_args --with-glibj=none";
@@ -51078,6 +51075,10 @@ subdirs="$subdirs libltdl"
           ac_config_files="$ac_config_files libraries/javalib/zlib-zip/Makefile"
 
           ac_config_files="$ac_config_files libraries/javalib/dnsjava/Makefile"
+
+          ac_config_files="$ac_config_files libraries/javalib/gnu-inet/Makefile"
+
+          ac_config_files="$ac_config_files libraries/javalib/vmspecific/Makefile"
 
           ac_config_files="$ac_config_files libraries/clib/Makefile"
 
@@ -52095,6 +52096,8 @@ do
   "libraries/javalib/tritonus-sound/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/javalib/tritonus-sound/Makefile" ;;
   "libraries/javalib/zlib-zip/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/javalib/zlib-zip/Makefile" ;;
   "libraries/javalib/dnsjava/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/javalib/dnsjava/Makefile" ;;
+  "libraries/javalib/gnu-inet/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/javalib/gnu-inet/Makefile" ;;
+  "libraries/javalib/vmspecific/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/javalib/vmspecific/Makefile" ;;
   "libraries/clib/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/Makefile" ;;
   "libraries/clib/target/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/target/Makefile" ;;
   "libraries/clib/target/generic/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/target/generic/Makefile" ;;

@@ -1,3 +1,0 @@
-cp Makefile.am.in Makefile.am
-find vmspecific/ -name CVS -prune -o '(' -type f -a ! -name "*~" ')' -print | sort | sed \
-'s/^/\t/g; s/$/ \\/;$s/ \\$//' >> Makefile.am
