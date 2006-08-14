@@ -1180,7 +1180,6 @@ sys/signal.h \
 sys/socket.h \
 sys/sockio.h \
 sys/stat.h \
-sys/sysctl.h \
 sys/sysinfo.h \
 sys/time.h \
 sys/types.h \
@@ -1193,6 +1192,13 @@ utime.h \
 wintypes.h \
 wtypes.h \
 zlib.h])
+
+# check sys/sysctl.h seperately, as it requires other headers on at least OpenBSD
+AC_CHECK_HEADERS([sys/sysctl.h], [], [],
+[[#if HAVE_SYS_PARAM_H
+# include <sys/param.h>
+#endif
+]])
 
 # check net/if.h seperately, as it requrires other headers on OS X
 # and HP-UX 10.20

@@ -1,3 +1,14 @@
+2006-08-13  Kurt Miller <kurt@intricatesoftware.com>
+
+	* configure.ac: Include sys/param.h when testing for 
+	sys/sysctl.h. Needed for OpenBSD.
+
+	Reported by:  Frederick C. Druseikis  <fredd@cse.sc.edu>
+
+2006-08-13  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/xprof/xprofiler.c: Include sys/param.h.
+
 2006-08-13  Dalibor Topic  <robilad@kaffe.org>
 
 	* configure.ac: Don't output libraries/javalib/rebuildLib.

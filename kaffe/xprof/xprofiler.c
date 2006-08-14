@@ -26,6 +26,11 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/gmon.h>
+
+#if defined(HAVE_SYS_PARAM_H)
+#include <sys/param.h>
+#endif
+
 #include <sys/sysctl.h>
 
 #include "gtypes.h"
