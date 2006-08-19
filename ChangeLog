@@ -1,3 +1,46 @@
+2006-08-19  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/vmspecific/gnu/classpath/jdwp/VMFrame.java,
+	libraries/javalib/vmspecific/gnu/classpath/jdwp/VMIdManager.java,
+	libraries/javalib/vmspecific/gnu/classpath/jdwp/VMMethod.java,
+	libraries/javalib/vmspecific/gnu/classpath/jdwp/VMVirtualMachine.java,
+	libraries/javalib/vmspecific/gnu/inet/finger/package.html,
+	libraries/javalib/vmspecific/gnu/inet/gopher/package.html,
+	libraries/javalib/vmspecific/gnu/inet/imap/package.html,
+	libraries/javalib/vmspecific/gnu/inet/nntp/package.html,
+	libraries/javalib/vmspecific/gnu/inet/pop3/package.html,
+	libraries/javalib/vmspecific/gnu/inet/smtp/package.html,
+	libraries/javalib/vmspecific/gnu/java/lang/VMInstrumentationImpl.java,
+	libraries/javalib/vmspecific/gnu/java/lang/management/VMClassLoadingMXBeanImpl.java,
+	libraries/javalib/vmspecific/gnu/java/lang/management/VMCompilationMXBeanImpl.java,
+	libraries/javalib/vmspecific/gnu/java/lang/management/VMGarbageCollectorMXBeanImpl.java,
+	libraries/javalib/vmspecific/gnu/java/lang/management/VMMemoryMXBeanImpl.java,
+	libraries/javalib/vmspecific/gnu/java/lang/management/VMMemoryManagerMXBeanImpl.java,
+	libraries/javalib/vmspecific/gnu/java/lang/management/VMMemoryPoolMXBeanImpl.java,
+	libraries/javalib/vmspecific/gnu/java/lang/management/VMRuntimeMXBeanImpl.java,
+	libraries/javalib/vmspecific/gnu/java/lang/management/VMThreadMXBeanImpl.java,
+	libraries/javalib/vmspecific/gnu/java/nio/VMChannel.java,
+	libraries/javalib/vmspecific/gnu/java/nio/VMPipe.java,
+	libraries/javalib/vmspecific/gnu/java/nio/VMSelector.java,
+	libraries/javalib/vmspecific/java/io/VMFile.java,
+	libraries/javalib/vmspecific/java/io/VMObjectInputStream.java,
+	libraries/javalib/vmspecific/java/io/VMObjectStreamClass.java,
+	libraries/javalib/vmspecific/java/lang/VMClass.java,
+	libraries/javalib/vmspecific/java/lang/VMCompiler.java,
+	libraries/javalib/vmspecific/java/lang/VMDouble.java,
+	libraries/javalib/vmspecific/java/lang/VMFloat.java,
+	libraries/javalib/vmspecific/java/lang/VMMath.java,
+	libraries/javalib/vmspecific/java/lang/VMObject.java,
+	libraries/javalib/vmspecific/java/lang/management/VMManagementFactory.java,
+	libraries/javalib/vmspecific/java/lang/reflect/VMProxy.java,
+	libraries/javalib/vmspecific/java/net/VMNetworkInterface.java,
+	libraries/javalib/vmspecific/java/nio/VMDirectByteBuffer.java,
+	libraries/javalib/vmspecific/java/nio/channels/VMChannels.java:
+	Removed.
+
+	* libraries/javalib/vmspecific/Makefile.am: Removed unimplemented and duplicate 
+	VM interfaces.
+
 2006-08-13  Kurt Miller <kurt@intricatesoftware.com>
 
 	* configure.ac: Include sys/param.h when testing for 

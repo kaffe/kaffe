@@ -29,40 +29,14 @@ uninstall-local:
 vminterfacedir = $(FAKE)
 
 dist_vminterface_JAVA = \
-	gnu/classpath/jdwp/VMFrame.java \
-	gnu/classpath/jdwp/VMIdManager.java \
-	gnu/classpath/jdwp/VMMethod.java \
-	gnu/classpath/jdwp/VMVirtualMachine.java \
 	gnu/classpath/VMStackWalker.java \
 	gnu/classpath/VMSystemProperties.java \
-	gnu/java/lang/management/VMClassLoadingMXBeanImpl.java \
-	gnu/java/lang/management/VMCompilationMXBeanImpl.java \
-	gnu/java/lang/management/VMGarbageCollectorMXBeanImpl.java \
-	gnu/java/lang/management/VMMemoryMXBeanImpl.java \
-	gnu/java/lang/management/VMMemoryManagerMXBeanImpl.java \
-	gnu/java/lang/management/VMMemoryPoolMXBeanImpl.java \
-	gnu/java/lang/management/VMRuntimeMXBeanImpl.java \
-	gnu/java/lang/management/VMThreadMXBeanImpl.java \
-	gnu/java/lang/VMInstrumentationImpl.java \
 	gnu/java/net/InetAddressImpl.java \
 	gnu/java/net/PlainDatagramSocketImpl.java \
 	gnu/java/net/PlainSocketImpl.java \
 	gnu/java/net/SysInetAddressImpl.java \
-	gnu/java/nio/VMChannel.java \
-	gnu/java/nio/VMPipe.java \
-	gnu/java/nio/VMSelector.java \
-	java/io/VMFile.java \
-	java/io/VMObjectInputStream.java \
-	java/io/VMObjectStreamClass.java \
-	java/lang/management/VMManagementFactory.java \
 	java/lang/Runtime.java \
-	java/lang/VMClass.java \
 	java/lang/VMClassLoader.java \
-	java/lang/VMCompiler.java \
-	java/lang/VMDouble.java \
-	java/lang/VMFloat.java \
-	java/lang/VMMath.java \
-	java/lang/VMObject.java \
 	java/lang/VMProcess.java \
 	java/lang/VMRuntime.java \
 	java/lang/VMString.java \
@@ -74,13 +48,9 @@ dist_vminterface_JAVA = \
 	java/lang/reflect/Field.java \
 	java/lang/reflect/Method.java \
 	java/lang/reflect/VMArray.java \
-	java/lang/reflect/VMProxy.java \
 	java/net/InetAddress.java \
 	java/net/VMInetAddress.java \
-	java/net/VMNetworkInterface.java \
 	java/net/VMURLConnection.java \
-	java/nio/channels/VMChannels.java \
-	java/nio/VMDirectByteBuffer.java \
 	java/security/VMAccessController.java \
 	java/security/VMSecureRandom.java \
 	java/util/VMTimeZone.java \
