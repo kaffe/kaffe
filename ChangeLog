@@ -1,3 +1,8 @@
+2006-08-20  Ito Kazumitsu  <kaz@maczuka.gcd>
+
+	* libraries/clib/net/PlainSocketImpl.c: Changed the wrong name
+	"java.net.IOException" to "java.io.IOException".
+
 2006-08-19  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/vmspecific/gnu/classpath/jdwp/VMFrame.java,

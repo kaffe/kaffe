@@ -790,7 +790,7 @@ gnu_java_net_PlainSocketImpl_socketRead(struct Hgnu_java_net_PlainSocketImpl* th
 		   if (unhand(this)->native_fd < 0)
 		     SignalError("java.net.SocketException", "Socket was closed");
 
-		   SignalError("java.net.IOException", SYS_ERROR(rc));
+		   SignalError("java.io.IOException", SYS_ERROR(rc));
 		 } else if (rc == 0 && r == 0 && len > 0) {
 		   releaseFileToSocket(this);
 		   return (-1);
