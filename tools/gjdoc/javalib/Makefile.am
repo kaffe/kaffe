@@ -8,7 +8,7 @@ JAR_CMD3 = ($(FASTJAR) uf $(CLASSFILE) -C $(LIBDIR) com)
 JAR_CMD4 = (PWD=`pwd` && cd  $(srcdir) && $(FASTJAR) uf $(PWD)/$(CLASSFILE) $(gjdoc_ressources))
 JAR_CMD5 = ($(FASTJAR) uf $(CLASSFILE) version.properties)
 
-CPATH =  .:$(srcdir):$(LIBDIR):$(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar:$(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
+CPATH =  .:$(srcdir):$(LIBDIR):$(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar:$(GLIBJ_ZIP)
 AM_JAVACFLAGS = -classpath $(CPATH)
 JAVAC = $(JAVA_COMPILER)
 JAVAROOT = $(LIBDIR)

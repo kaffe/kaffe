@@ -6,7 +6,7 @@ JAR_CMD1 = ($(FASTJAR) cf $(CLASSFILE) -C $(LIBDIR) $(SRCDIRS))
 JAR_CMD2 = ($(FASTJAR) uf $(CLASSFILE) -C $(LIBDIR) gnu)
 JAR_CMD3 = ($(FASTJAR) uf $(CLASSFILE) -C $(LIBDIR) java)
 
-CPATH =  .:$(srcdir):$(LIBDIR):$(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
+CPATH =  .:$(srcdir):$(LIBDIR):$(GLIBJ_ZIP)
 AM_JAVACFLAGS = -classpath $(CPATH)
 JAVAC = $(JAVA_COMPILER)
 JAVAROOT = $(LIBDIR)

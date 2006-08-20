@@ -1,3 +1,23 @@
+2006-08-20  Dalibor Topic  <robilad@kaffe.org>
+
+	* configure.ac: Substitute GLIBJ_ZIP for location of glibj.zip.
+
+	* Makefile.am (BUILD_ENVIRONMENT-make),
+	include/Makefile.am,
+	libraries/javalib/Makefile.am,
+	libraries/javalib/awt-implementations/kaffe/Makefile.am,
+	libraries/javalib/dnsjava/Makefile.am,
+	libraries/javalib/gmp-math/Makefile.am,
+	libraries/javalib/gnu-inet/Makefile.am,
+	libraries/javalib/tritonus-sound/Makefile.am,
+	libraries/javalib/vmspecific/Makefile.am,
+	libraries/javalib/zlib-zip/Makefile.am,
+	test/internal/Makefile.am,
+	test/jni/Makefile.am,
+	tools/gjdoc/javalib/Makefile.am,
+	tools/javatools/Makefile.am:
+	Use GLIBJ_ZIP.
+
 2006-08-20  Ito Kazumitsu  <kaz@maczuka.gcd>
 
 	* libraries/clib/net/PlainSocketImpl.c: Changed the wrong name

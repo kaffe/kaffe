@@ -54,6 +54,7 @@ x/*)
 esac
 AC_SUBST(abssrcdir)
 
+
 dnl =========================================================================
 dnl Allow specification of header-file and library directories
 dnl -------------------------------------------------------------------------
@@ -821,6 +822,9 @@ AC_ARG_WITH([glibj_zip],
 	    AS_HELP_STRING([--with-glibj-zip=ABS.PATH],
 			   [use precompiled kaffe class library]))
 
+
+GLIBJ_ZIP="`pwd`/libraries/javalib/external/classpath/lib/glibj.zip"
+
 case "$with_glibj_zip" in
 "")
 	use_glibj_zip=false
@@ -833,12 +837,12 @@ case "$with_glibj_zip" in
 	;;
 *)
 	use_glibj_zip=true
-	PATH_TO_RT_JAR=$with_glibj_zip
+	GLIBJ_ZIP=$with_glibj_zip
 	;;
 esac;
 
 AM_CONDITIONAL(USE_PRECOMPILED_RT_JAR, test x$use_glibj_zip = xtrue)
-AC_SUBST(PATH_TO_RT_JAR)
+AC_SUBST(GLIBJ_ZIP)
 
 dnl =========================================================================
 dnl Use ecj

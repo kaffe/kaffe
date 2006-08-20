@@ -108,7 +108,7 @@ dist_jitBasic_JAVA = \
 
 TESTS_ENVIRONMENT = env TEST_CLASSES="$(TEST_CLASSES)" `. $(top_builddir)/BUILD_ENVIRONMENT; BOOTCLASSPATH=.:\$${BOOTCLASSPATH}; export BOOTCLASSPATH; sed 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
 
-CPATH =  .:$(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
+CPATH =  .:$(GLIBJ_ZIP)
 AM_JAVACFLAGS = -classpath $(CPATH)
 JAVAC = $(JAVA_COMPILER)
 JAVAROOT = .

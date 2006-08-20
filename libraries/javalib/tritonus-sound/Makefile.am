@@ -5,7 +5,7 @@ LIBDIR = lib
 JAR_CMD1 = ($(FASTJAR) cf $(CLASSFILE) -C $(LIBDIR) $(SRCDIRS))
 JAR_CMD2 = ($(FASTJAR) uf $(CLASSFILE) -C $(srcdir) META-INF)
 
-CPATH =  .:$(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
+CPATH =  .:$(GLIBJ_ZIP)
 AM_JAVACFLAGS = -classpath $(CPATH)
 JAVAC = $(JAVA_COMPILER)
 JAVAROOT = $(LIBDIR)

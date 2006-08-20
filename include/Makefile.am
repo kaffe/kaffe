@@ -10,8 +10,7 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-KLASSES_JAR = $(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
-KAFFEH_CLASSPATH = $(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar:$(top_builddir)/libraries/javalib/zlib-zip/lib:$(top_builddir)/libraries/javalib/tritonus-sound/lib:$(top_builddir)/libraries/javalib/gmp-math/lib:$(KLASSES_JAR)
+KAFFEH_CLASSPATH = $(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar:$(top_builddir)/libraries/javalib/zlib-zip/lib:$(top_builddir)/libraries/javalib/tritonus-sound/lib:$(top_builddir)/libraries/javalib/gmp-math/lib:$(GLIBJ_ZIP)
 
 EXTRA_DIST = distclean-hack \
 		stamp-h2.in
@@ -216,7 +215,7 @@ $(DERIVED_HDRS): stamp-h0all
 	  rm -f stamp-h0all; $(MAKE) DERIVED_HDRS=$@ stamp-h0all; \
 	fi
 
-stamp-h0all: stamp-kaffeh $(KLASSES_JAR)
+stamp-h0all: stamp-kaffeh $(GLIBJ_ZIP)
 ## Then, generate each header file,
 ## but if it does not change, do not touch it
 	@set -e; for f in $(DERIVED_HDRS); do \
@@ -233,7 +232,7 @@ stamp-h0all: stamp-kaffeh $(KLASSES_JAR)
 	@echo timestamp > $@
 
 
-stamp-h1all: stamp-kaffeh $(KLASSES_JAR)
+stamp-h1all: stamp-kaffeh $(GLIBJ_ZIP)
 ## Then, generate each header file,
 ## but if it does not change, do not touch it
 	@set -e; for f in $(JNI_DERIVED_HDRS); do \

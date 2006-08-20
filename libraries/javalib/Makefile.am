@@ -29,8 +29,8 @@ endif
 
 if USE_PRECOMPILED_RT_JAR
 stamp-glibj:
-	@echo Importing glibj.zip from $(PATH_TO_RT_JAR)
-	@cp $(PATH_TO_RT_JAR) external/classpath/lib/glibj.zip
+	@echo Importing glibj.zip from $(GLIBJ_ZIP)
+	@cp $(GLIBJ_ZIP) external/classpath/lib/glibj.zip
 	@$(LN_S) external/classpath/lib/glibj.zip glibj.zip
 	@touch stamp-glibj
 

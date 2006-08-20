@@ -206,6 +206,7 @@ FASTJAR = @FASTJAR@
 FFLAGS = @FFLAGS@
 GC_NAME = @GC_NAME@
 GETOPT_H = @GETOPT_H@
+GLIBJ_ZIP = @GLIBJ_ZIP@
 GMSGFMT = @GMSGFMT@
 HAVE_BCEL_FALSE = @HAVE_BCEL_FALSE@
 HAVE_BCEL_TRUE = @HAVE_BCEL_TRUE@
@@ -280,7 +281,6 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATHSEP = @PATHSEP@
 PATH_SEPARATOR = @PATH_SEPARATOR@
-PATH_TO_RT_JAR = @PATH_TO_RT_JAR@
 POSUB = @POSUB@
 PTHREAD_CC = @PTHREAD_CC@
 PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
@@ -461,7 +461,7 @@ libjniweaklib_la_LDFLAGS = \
 JAVA_CLASSES = \
 	JNIWeakTest.class
 
-CPATH = .:$(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
+CPATH = .:$(GLIBJ_ZIP)
 jniWeakTest_SOURCES = jniWeakTest.c
 jniWeakTest_LDADD = \
 	-dlopen $(top_builddir)/test/jni/libjniweaklib.la \

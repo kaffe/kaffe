@@ -101,7 +101,7 @@ libjniweaklib_la_LDFLAGS = \
 JAVA_CLASSES = \
 	JNIWeakTest.class
 
-CPATH = .:$(top_builddir)/libraries/javalib/external/classpath/lib/glibj.zip
+CPATH = .:$(GLIBJ_ZIP)
 
 JNIWeakTest.class:  $(srcdir)/JNIWeakTest.java
 	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/JNIWeakTest.java
