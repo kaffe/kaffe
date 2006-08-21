@@ -1,3 +1,25 @@
+2006-08-21  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/clib/nio/gnu_java_nio_channels_FileChannelImpl.c,
+	libraries/clib/nio/gnu_java_nio_charset_iconv_IconvDecoder.c,
+	libraries/clib/nio/gnu_java_nio_charset_iconv_IconvEncoder.c,
+	libraries/clib/nio/java_nio_VMDirectByteBuffer.c,
+
+	Resynced with GNU Classpath:
+
+	2006-01-09  Mark Wielaard  <mark@klomp.org>
+
+        * native/jni/java-nio/gnu_java_nio_channels_FileChannelImpl.c
+        (mapImpl): Add PROT_WRITE when mode == 'c' (MAP_PRIVATE). Make sure
+        there is enough space to mmap().
+
+	2006-01-10  Roman Kennke  <kennke@aicas.com>
+
+        * native/jni/java-nio/java_nio_VMDirectByteBuffer.c
+        (get): Release the array with the correct pointer.
+        (put): Release the array with the correct pointer. Copy the array
+        around _before_ releasing it.
+
 2006-08-20  Dalibor Topic  <robilad@kaffe.org>
 
 	* configure.ac: Substitute GLIBJ_ZIP for location of glibj.zip.
