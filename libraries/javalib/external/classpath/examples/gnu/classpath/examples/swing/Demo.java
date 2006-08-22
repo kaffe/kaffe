@@ -30,6 +30,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.tree.*;
 
+import javax.swing.plaf.basic.BasicLookAndFeel;
 import javax.swing.plaf.metal.DefaultMetalTheme;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import javax.swing.plaf.metal.MetalTheme;
@@ -192,6 +193,10 @@ public class Demo
             }
       });
 
+    // Installs the BasicLookAndFeel.
+    UIManager.installLookAndFeel("(Basic Look And Feel)",
+                                 InstantiableBasicLookAndFeel.class.getName());
+    
     // Create L&F menu.
     JMenu lafMenu = new JMenu("Look and Feel");
     ButtonGroup lafGroup = new ButtonGroup();
@@ -662,10 +667,45 @@ public class Demo
         {
           ex.printStackTrace();
         }
+      
       SwingUtilities.updateComponentTreeUI(frame);
       themesMenu.setEnabled(laf.getClassName()
                            .equals("javax.swing.plaf.metal.MetalLookAndFeel"));
     }
-    
   }
+    
+  /**
+   * An implementation of BasicLookAndFeel which can be instantiated.
+   * 
+   * @author Robert Schuster (robertschuster@fsfe.org)
+   *
+   */
+  public static class InstantiableBasicLookAndFeel extends BasicLookAndFeel
+  {
+    public String getDescription()
+    {
+      return "An instantiable implementation of BasicLookAndFeel";
+    }
+    
+    public String getID()
+    { 
+      return "instantiableBasicLookAndFeel";
+    }
+
+    public String getName()
+    {
+      return "Instantiable Basic Look And Feel";
+    }
+    
+    public boolean isNativeLookAndFeel()
+    {
+      return false;
+    }
+    
+    public boolean isSupportedLookAndFeel()
+    {
+      return true;
+    }
+  }
+
 }

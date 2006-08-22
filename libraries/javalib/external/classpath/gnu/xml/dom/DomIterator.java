@@ -253,7 +253,13 @@ public final class DomIterator
       {
         return here.getFirstChild();
       }
-
+    
+    // There's no way up or sideways from the root, so if we
+    // couldn't move down to a child, there's nowhere to go.
+    //
+    if (here == root)
+      return null;
+    
     //
     // Siblings ... if forward, we visit them, if backwards
     // we visit their children first.

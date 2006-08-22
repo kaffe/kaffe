@@ -42,6 +42,8 @@ import gnu.classpath.SystemProperties;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 
+import javax.management.NotCompliantMBeanException;
+
 /**
  * Provides access to information about the threads 
  * of the virtual machine.  An instance of this bean is
@@ -96,9 +98,16 @@ public final class ThreadMXBeanImpl
    * Default constructor to set up flag states.  The
    * VM has to specify whether time monitoring is initially
    * enabled or not.
+   *
+   * @throws NotCompliantMBeanException if this class doesn't implement
+   *                                    the interface or a method appears
+   *                                    in the interface that doesn't comply
+   *                                    with the naming conventions.
    */
   public ThreadMXBeanImpl()
+    throws NotCompliantMBeanException
   {
+    super(ThreadMXBean.class);
     timeEnabled = Boolean.parseBoolean(SystemProperties.getProperty(TIME_ENABLED));
     contentionEnabled = false;
   }

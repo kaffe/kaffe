@@ -39,6 +39,8 @@ package gnu.java.lang.management;
 
 import java.lang.management.GarbageCollectorMXBean;
 
+import javax.management.NotCompliantMBeanException;
+
 /**
  * Provides access to information about one of the garbage 
  * collectors used by the current invocation of the
@@ -58,10 +60,15 @@ public final class GarbageCollectorMXBeanImpl
    * Constructs a new <code>GarbageCollectorMXBeanImpl</code>.
    *
    * @param name the name of the garbage collector this bean represents.
+   * @throws NotCompliantMBeanException if this class doesn't implement
+   *                                    the interface or a method appears
+   *                                    in the interface that doesn't comply
+   *                                    with the naming conventions.
    */
   public GarbageCollectorMXBeanImpl(String name)
+    throws NotCompliantMBeanException
   {
-    super(name);
+    super(name, GarbageCollectorMXBean.class);
   }
 
   public long getCollectionCount()

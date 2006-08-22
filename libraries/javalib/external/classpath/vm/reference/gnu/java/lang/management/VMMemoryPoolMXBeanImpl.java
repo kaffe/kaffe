@@ -106,6 +106,15 @@ final class VMMemoryPoolMXBeanImpl
   static native MemoryUsage getPeakUsage(String name);
 
   /**
+   * Returns the type of memory used by the specified pool. 
+   * The value must be either "HEAP" or "NON_HEAP".
+   *
+   * @param name the name of the pool to obtain statistics on.
+   * @return the type of the given pool.
+   */
+  static native String getType(String name);
+
+  /**
    * Returns the current usage level of the specified pool.
    * This is only called if the pool is valid.
    *

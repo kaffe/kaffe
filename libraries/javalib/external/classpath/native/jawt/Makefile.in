@@ -169,6 +169,8 @@ GCJ = @GCJ@
 GCJX = @GCJX@
 GCONF_CFLAGS = @GCONF_CFLAGS@
 GCONF_LIBS = @GCONF_LIBS@
+GDK_CFLAGS = @GDK_CFLAGS@
+GDK_LIBS = @GDK_LIBS@
 GJDOC = @GJDOC@
 GLIB_CFLAGS = @GLIB_CFLAGS@
 GLIB_LIBS = @GLIB_LIBS@
@@ -311,6 +313,7 @@ vm_classes = @vm_classes@
 nativeexeclib_LTLIBRARIES = libjawt.la
 libjawt_la_SOURCES = jawt.c
 libjawt_la_LIBADD = $(top_builddir)/native/jni/gtk-peer/libgtkpeer.la
+libjawt_la_LDFLAGS = -avoid-version
 AM_LDFLAGS = @CLASSPATH_MODULE@ @GTK_LIBS@ @PANGOFT2_LIBS@ @X_LIBS@ @XTEST_LIBS@
 AM_CPPFLAGS = @CLASSPATH_INCLUDES@
 

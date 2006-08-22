@@ -60,6 +60,10 @@ import java.security.spec.DSAParameterSpec;
  * of the byte sequences and the implementation details are given in each of the
  * relevant <code>getEncoded()</code> methods of each of the private and
  * public keys.
+ * <p>
+ * <b>IMPORTANT</b>: Under certain circumstances (e.g. in an X.509 certificate
+ * with inherited AlgorithmIdentifier's parameters of a SubjectPublicKeyInfo
+ * element) these three MPIs may be <code>null</code>.
  * 
  * @see DSSPrivateKey#getEncoded
  * @see DSSPublicKey#getEncoded
@@ -145,6 +149,11 @@ public abstract class DSSKey
    * Returns <code>true</code> if the designated object is an instance of
    * {@link DSAKey} and has the same DSS (Digital Signature Standard) parameter
    * values as this one.
+   * <p>
+   * Always returns <code>false</code> if the MPIs of this key are
+   * <i>inherited</i>. This may be the case when the key is re-constructed from
+   * an X.509 certificate with absent or NULL AlgorithmIdentifier's parameters
+   * field.
    * 
    * @param obj the other non-null DSS key to compare to.
    * @return <code>true</code> if the designated object is of the same type
@@ -152,6 +161,9 @@ public abstract class DSSKey
    */
   public boolean equals(Object obj)
   {
+    if (hasInheritedParameters())
+      return false;
+
     if (obj == null)
       return false;
 
@@ -168,17 +180,32 @@ public abstract class DSSKey
   {
     if (str == null)
       {
-        String ls = (String) AccessController.doPrivileged
-            (new GetPropertyAction("line.separator"));
-        str = new StringBuilder(ls)
-            .append("defaultFormat=").append(defaultFormat).append(",").append(ls)
-            .append("p=0x").append(p.toString(16)).append(",").append(ls)
-            .append("q=0x").append(q.toString(16)).append(",").append(ls)
-            .append("g=0x").append(g.toString(16))
-            .toString();
+        String ls = (String) AccessController.doPrivileged(new GetPropertyAction("line.separator"));
+        StringBuilder sb = new StringBuilder(ls)
+            .append("defaultFormat=").append(defaultFormat).append(",")
+            .append(ls);
+        if (hasInheritedParameters())
+          sb.append("p=inherited,").append(ls)
+              .append("q=inherited,").append(ls)
+              .append("g=inherited");
+        else
+          sb.append("p=0x").append(p.toString(16)).append(",").append(ls)
+              .append("q=0x").append(q.toString(16)).append(",").append(ls)
+              .append("g=0x").append(g.toString(16));
+        str = sb.toString();
       }
     return str;
   }
 
   public abstract byte[] getEncoded(int format);
+
+  /**
+   * @return <code>true</code> if <code>p</code>, <code>q</code> and
+   *         <code>g</code> are all <code>null</code>. Returns
+   *         <code>false</code> otherwise.
+   */
+  public boolean hasInheritedParameters()
+  {
+    return p == null && q == null && g == null;
+  }
 }

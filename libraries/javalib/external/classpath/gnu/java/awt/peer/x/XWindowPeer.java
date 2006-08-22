@@ -85,7 +85,6 @@ public class XWindowPeer
   XWindowPeer(java.awt.Window window)
   {
     super(window);
-    System.err.println("new XWindowPeer");
     XGraphicsDevice dev = XToolkit.getDefaultDevice();
 
     // TODO: Maybe initialize lazily in show().

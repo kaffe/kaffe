@@ -45,12 +45,15 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.image.ImageObserver;
 import java.awt.image.ImageProducer;
+import java.util.Hashtable;
 
 public class XImage
   extends Image
 {
 
   Pixmap pixmap;
+
+  private Hashtable properties;
 
   XImage(int w, int h)
   {
@@ -89,8 +92,10 @@ public class XImage
 
   public Object getProperty(String name, ImageObserver observer)
   {
-    // TODO: Implement this.
-    throw new UnsupportedOperationException("Not yet implemented.");
+    Object val = null;
+    if (properties != null)
+      val = properties.get(val);
+    return val;
   }
 
   public void flush()

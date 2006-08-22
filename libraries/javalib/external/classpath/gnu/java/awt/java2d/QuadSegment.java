@@ -217,12 +217,12 @@ public class QuadSegment extends Segment
     P2 = p;
   }
 
-  public double[] first()
+  public double[] cp1()
   {
     return new double[]{cp.getX(), cp.getY()}; 
   }
 
-  public double[] last()
+  public double[] cp2()
   {
     return new double[]{cp.getX(), cp.getY()}; 
   }

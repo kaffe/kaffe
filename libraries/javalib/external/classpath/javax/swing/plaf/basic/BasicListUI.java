@@ -479,7 +479,8 @@ public class BasicListUI extends ListUI
      */
     public void mousePressed(MouseEvent event)
     {
-      // TODO: What should be done here, if anything?
+      // We need to explicitly request focus.
+      list.requestFocusInWindow();
     }
 
     /**
@@ -1210,7 +1211,7 @@ public class BasicListUI extends ListUI
     boolean hasFocus = (list.getLeadSelectionIndex() == row) && BasicListUI.this.list.hasFocus();
     Component comp = rend.getListCellRendererComponent(list,
                                                        data.getElementAt(row),
-                                                       0, isSel, hasFocus);
+                                                       row, isSel, hasFocus);
     rendererPane.paintComponent(g, comp, list, bounds);
   }
 

@@ -37,10 +37,10 @@ exception statement from your version. */
 
 package java.lang.management;
 
+import gnu.java.lang.management.MemoryMXBeanImpl;
+
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeType;
-import javax.management.openmbean.OpenDataException;
-import javax.management.openmbean.OpenType;
 import javax.management.openmbean.SimpleType;
 
 /**
@@ -168,31 +168,7 @@ public class MemoryNotificationInfo
       return null;
     CompositeType type = data.getCompositeType();
     ThreadInfo.checkAttribute(type, "poolName", SimpleType.STRING);
-    try
-      {
-	CompositeType uType = 
-	  new CompositeType(MemoryUsage.class.getName(),
-			    "Describes the usage levels of a pool",
-			    new String[] { "init", "used",
-					   "committed", "max"
-			    },
-			    new String[] { "Initial level",
-					   "Used level",
-					   "Committed level",
-					   "Maximum level"
-			    },
-			    new OpenType[] {
-			      SimpleType.LONG, SimpleType.LONG,
-			      SimpleType.LONG, SimpleType.LONG
-			    });
-	ThreadInfo.checkAttribute(type, "usage", uType);
-      }
-    catch (OpenDataException e)
-      {
-	throw new IllegalStateException("Something went wrong in creating " +
-					"the composite data type for the " +
-					"memory usage element.", e);
-      }
+    ThreadInfo.checkAttribute(type, "usage", MemoryMXBeanImpl.usageType);
     ThreadInfo.checkAttribute(type, "count", SimpleType.LONG);
     MemoryUsage usage = MemoryUsage.from((CompositeData) data.get("usage"));
     return new MemoryNotificationInfo(((String) data.get("poolName")),

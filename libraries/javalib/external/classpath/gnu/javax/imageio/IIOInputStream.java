@@ -1,5 +1,5 @@
-/* gnu_java_nio_VMPipe.c - Native methods for PipeImpl class
-   Copyright (C) 2004 Free Software Foundation, Inc.
+/* GIFStream.java --
+   Copyright (C)  2006  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -7,7 +7,7 @@ GNU Classpath is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
 any later version.
- 
+
 GNU Classpath is distributed in the hope that it will be useful, but
 WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -35,22 +35,68 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
-#include <config.h>
-#include <errno.h>
+package gnu.javax.imageio;
 
-#include <jni.h>
-#include <jcl.h>
+import java.io.InputStream;
+import java.io.IOException;
+import javax.imageio.stream.ImageInputStream;
 
-#include "gnu_java_nio_VMPipe.h"
-
-#define IO_EXCEPTION "java/io/IOException"
-
-JNIEXPORT void JNICALL
-Java_gnu_java_nio_VMPipe_init (JNIEnv * env,
-			       jclass cls __attribute__ ((__unused__)),
-			       jobject self __attribute__ ((__unused__)),
-			       jobject provider __attribute__ ((__unused__)))
+/**
+ * Implements InputStream on an ImageInputStream
+ * The purpose of this is to avoid IIO dependencies in the various decoders.
+ * (which only use read() anyway).
+ */
+public class IIOInputStream extends InputStream
 {
-  JCL_ThrowException (env, IO_EXCEPTION,
-		      "gnu.java.nio.VMPipe.init(): not implemented");
+  private ImageInputStream is;
+
+  public IIOInputStream( ImageInputStream is )
+  {
+    this.is = is;
+  }
+
+  public int available()
+  {
+    return 0;
+  }
+
+  public void close() throws IOException
+  {
+    is.close();
+  }
+
+  public void mark(int readlimit)
+  {
+    is.mark();
+  }
+
+  public boolean markSupported()
+  {
+    return true;
+  }
+
+  public int read() throws IOException
+  {
+    return is.read();    
+  }
+
+  public int read(byte[] b) throws IOException
+  {
+    return is.read(b);
+  }
+
+  public int read(byte[] b, int offset, int length) throws IOException
+  {
+    return is.read(b, offset, length);
+  }
+
+  public void reset() throws IOException
+  {
+    is.reset();
+  }
+
+  public long skip(long n) throws IOException
+  {
+    return is.skipBytes(n);
+  }
 }

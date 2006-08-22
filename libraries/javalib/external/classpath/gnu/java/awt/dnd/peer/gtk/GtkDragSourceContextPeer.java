@@ -44,9 +44,11 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Image;
 import java.awt.Point;
-import java.awt.Window;
 import java.awt.dnd.DragGestureEvent;
 import java.awt.dnd.DragSourceContext;
+import java.awt.dnd.DragSourceDragEvent;
+import java.awt.dnd.DragSourceDropEvent;
+import java.awt.dnd.DragSourceEvent;
 import java.awt.dnd.InvalidDnDOperationException;
 import java.awt.dnd.peer.DragSourceContextPeer;
 import java.awt.peer.ComponentPeer;
@@ -56,10 +58,9 @@ public class GtkDragSourceContextPeer
     extends GtkGenericPeer
     implements DragSourceContextPeer
 {
-
-  private DragGestureEvent dge;
   private ComponentPeer peer;
   private Cursor cursor;
+  private DragSourceContext context;
   
   native void nativeStartDrag(Image i, int x, int y, int action, String target);
   native void connectSignals(ComponentPeer comp);
@@ -69,11 +70,9 @@ public class GtkDragSourceContextPeer
   public GtkDragSourceContextPeer(DragGestureEvent e)
   {
     super(e.getComponent());
-    dge = e;
-    
     Component comp = e.getComponent();
-    
     peer = getComponentPeer(comp);
+    
     create(peer);
     connectSignals(peer);
     cursor = comp.getCursor();
@@ -93,6 +92,8 @@ public class GtkDragSourceContextPeer
   public void startDrag(DragSourceContext context, Cursor c, Image i, Point p)
       throws InvalidDnDOperationException
   {   
+    this.context = context;
+    
     if (p == null)
       p = new Point();
     
@@ -120,6 +121,54 @@ public class GtkDragSourceContextPeer
 
   public void transferablesFlavorsChanged()
   {
-    // FIXME: Not Implemented
+    // Nothing to do here.
+  }
+  
+  /**
+   * Called from native code.
+   */
+
+  public void dragEnter(int action, int modifiers)
+  {
+    context.dragEnter(new DragSourceDragEvent(context, action,
+                                              action
+                                                  & context.getSourceActions(),
+                                              modifiers));
+  }
+
+  public void dragExit(int action, int x, int y)
+  {
+    context.dragExit(new DragSourceEvent(context, x, y));
+  }
+
+  public void dragDropEnd(int action, boolean success, int x, int y)
+  {
+    context.dragDropEnd(new DragSourceDropEvent(context, action, success, x, y));
+  }
+
+  public void dragMouseMoved(int action, int modifiers)
+  {
+    context.dragMouseMoved(new DragSourceDragEvent(context,
+                                                   action,
+                                                   action
+                                                       & context.getSourceActions(),
+                                                   modifiers));
+  }
+
+  public void dragOver(int action, int modifiers)
+  {
+    context.dragOver(new DragSourceDragEvent(context, action,
+                                             action
+                                                 & context.getSourceActions(),
+                                             modifiers));
+  }
+
+  public void dragActionChanged(int newAction, int modifiers)
+  {
+    context.dropActionChanged(new DragSourceDragEvent(context,
+                                                      newAction,
+                                                      newAction
+                                                          & context.getSourceActions(),
+                                                      modifiers));
   }
 }

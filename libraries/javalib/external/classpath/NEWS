@@ -1,4 +1,4 @@
-New in release 0.92 (UNRELEASED)
+New in release 0.92 (Aug 9, 2006)
 
 * libjawtgnu.so has been renamed libjawt.so for binary compatibility.
   libjawt.so should be installed in a VM-specific directory rather
@@ -13,8 +13,9 @@ New in release 0.92 (UNRELEASED)
   build the GTK peers.
 * A Mozilla plugin, 'gcjwebplugin', is now included.  It introduces a
   dependency on the Mozilla plugin support headers and libraries.
-* A tools.texinfo document has been created and now includes documentation
-  about:
+* New java implementations of png and gif imageio readers and writers.
+* A tools.texinfo document has been created and now includes
+  documentation about:
   * appletviewer
   * gcjwebplugin
   * jarsigner
@@ -30,7 +31,19 @@ New in release 0.92 (UNRELEASED)
   binaries to be built for VMs that support the JNI Invocation API.
 * javax.sound.midi providers have been added to read and
   write standard MIDI files.
+* A javax.sound.sampled .au and .wav file readers have been added.
 * New Java Virtual Machine Tool Interface header, jvmti.h. 
+* AWT peers for X Windows based on Escher (a pure java X protocol
+  implementation) have been added. So far it supports AWT 1.1 style
+  Graphics, image loading via ImageIO (PNG, GIF and BMP images in this
+  release), top level components as well as mouse and keyboard input.
+  It is capable of running many Swing applications. Graphics2D and
+  AWT widgets are not yet supported with this peer set.
+* GConf based util.peers backend (see the --enable-gconf-peer and
+  --enable-default-preferences-peer configure options).
+* Support for batch importing trusted certificates for use with ssl
+  connections (see script/import-cacerts.sh).
+* NIO scatter-gather channel support.
 
 Runtime interface changes:
 

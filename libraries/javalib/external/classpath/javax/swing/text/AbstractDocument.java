@@ -147,14 +147,19 @@ public abstract class AbstractDocument implements Document, Serializable
   /**
    * A condition variable that readers and writers wait on.
    */
-  Object documentCV = new Object();
+  private Object documentCV = new Object();
 
   /** An instance of a DocumentFilter.FilterBypass which allows calling
    * the insert, remove and replace method without checking for an installed
    * document filter.
    */
-  DocumentFilter.FilterBypass bypass;
-  
+  private DocumentFilter.FilterBypass bypass;
+
+  /**
+   * The bidi root element.
+   */
+  private Element bidiRoot;
+
   /**
    * Creates a new <code>AbstractDocument</code> with the specified
    * {@link Content} model.
@@ -189,6 +194,9 @@ public abstract class AbstractDocument implements Document, Serializable
     // FIXME: This is determined using a Mauve test. Make the document
     // actually use this.
     putProperty("i18n", Boolean.FALSE);
+
+    // FIXME: Fully implement bidi.
+    bidiRoot = new BranchElement(null, null);
   }
   
   /** Returns the DocumentFilter.FilterBypass instance for this
@@ -364,7 +372,7 @@ public abstract class AbstractDocument implements Document, Serializable
    */
   public Element getBidiRootElement()
   {
-    return null;
+    return bidiRoot;
   }
 
   /**
@@ -481,8 +489,9 @@ public abstract class AbstractDocument implements Document, Serializable
    */
   public Element[] getRootElements()
   {
-    Element[] elements = new Element[1];
+    Element[] elements = new Element[2];
     elements[0] = getDefaultRootElement();
+    elements[1] = getBidiRootElement();
     return elements;
   }
 
@@ -743,35 +752,36 @@ public abstract class AbstractDocument implements Document, Serializable
   
   void removeImpl(int offset, int length) throws BadLocationException
   {
-    if (offset < 0 || offset > getLength())
-      throw new BadLocationException("Invalid remove position", offset);
+    // The RI silently ignores all requests that have a negative length.
+    // Don't ask my why, but that's how it is.
+    if (length > 0)
+      {
+        if (offset < 0 || offset > getLength())
+          throw new BadLocationException("Invalid remove position", offset);
 
-    if (offset + length > getLength())
-      throw new BadLocationException("Invalid remove length", offset);
+        if (offset + length > getLength())
+          throw new BadLocationException("Invalid remove length", offset);
 
-    // Prevent some unneccessary method invocation (observed in the RI). 
-    if (length == 0)
-      return;
-
-    DefaultDocumentEvent event =
-      new DefaultDocumentEvent(offset, length,
-			       DocumentEvent.EventType.REMOVE);
+        DefaultDocumentEvent event =
+          new DefaultDocumentEvent(offset, length,
+                                   DocumentEvent.EventType.REMOVE);
     
-    try
-      {
-        writeLock();
+        try
+        {
+          writeLock();
         
-        // The order of the operations below is critical!        
-        removeUpdate(event);
-        UndoableEdit temp = content.remove(offset, length);
+          // The order of the operations below is critical!        
+          removeUpdate(event);
+          UndoableEdit temp = content.remove(offset, length);
         
-        postRemoveUpdate(event);
-        fireRemoveUpdate(event);
+          postRemoveUpdate(event);
+          fireRemoveUpdate(event);
+        }
+        finally
+          {
+            writeUnlock();
+          }
       }
-    finally
-      {
-        writeUnlock();
-      } 
   }
 
   /**
@@ -1695,18 +1705,6 @@ public abstract class AbstractDocument implements Document, Serializable
     private int numChildren;
 
     /**
-     * The cached startOffset value. This is used in the case when a
-     * BranchElement (temporarily) has no child elements.
-     */
-    private int startOffset;
-
-    /**
-     * The cached endOffset value. This is used in the case when a
-     * BranchElement (temporarily) has no child elements.
-     */
-    private int endOffset;
-
-    /**
      * Creates a new <code>BranchElement</code> with the specified
      * parent and attributes.
      *
@@ -1719,8 +1717,6 @@ public abstract class AbstractDocument implements Document, Serializable
       super(parent, attributes);
       children = new Element[1];
       numChildren = 0;
-      startOffset = -1;
-      endOffset = -1;
     }
 
     /**
@@ -1833,15 +1829,11 @@ public abstract class AbstractDocument implements Document, Serializable
      */
     public int getEndOffset()
     {
-      if (numChildren == 0)
-        {
-          if (endOffset == -1)
-            throw new NullPointerException("BranchElement has no children.");
-        }
-      else
-        endOffset = children[numChildren - 1].getEndOffset();
-
-      return endOffset;
+      // This might accss one cached element or trigger an NPE for
+      // numChildren == 0. This is checked by a Mauve test.
+      Element child = numChildren > 0 ? children[numChildren - 1]
+                                      : children[0];
+      return child.getEndOffset();
     }
 
     /**
@@ -1867,15 +1859,13 @@ public abstract class AbstractDocument implements Document, Serializable
      */
     public int getStartOffset()
     {
-      if (numChildren == 0)
-        {
-          if (startOffset == -1)
-            throw new NullPointerException("BranchElement has no children.");
-        }
-      else
-        startOffset = children[0].getStartOffset();
-
-      return startOffset;
+      // Do not explicitly throw an NPE here. If the first element is null
+      // then the NPE gets thrown anyway. If it isn't, then it either
+      // holds a real value (for numChildren > 0) or a cached value
+      // (for numChildren == 0) as we don't fully remove elements in replace()
+      // when removing single elements.
+      // This is checked by a Mauve test.
+      return children[0].getStartOffset();
     }
 
     /**
@@ -1924,27 +1914,26 @@ public abstract class AbstractDocument implements Document, Serializable
      */
     public void replace(int offset, int length, Element[] elements)
     {
-      if (numChildren + elements.length - length > children.length)
+      int delta = elements.length - length;
+      int copyFrom = offset + length; // From where to copy.
+      int copyTo = copyFrom + delta;    // Where to copy to.
+      int numMove = numChildren - copyFrom; // How many elements are moved. 
+      if (numChildren + delta > children.length)
         {
           // Gotta grow the array.
-          int newSize = Math.max(2 * children.length,
-                                 numChildren + elements.length - length);
+          int newSize = Math.max(2 * children.length, numChildren + delta);
           Element[] target = new Element[newSize];
           System.arraycopy(children, 0, target, 0, offset);
           System.arraycopy(elements, 0, target, offset, elements.length);
-          System.arraycopy(children, offset + length, target,
-                           offset + elements.length,
-                           numChildren - offset - length);
+          System.arraycopy(children, copyFrom, target, copyTo, numMove);
           children = target;
         }
       else
         {
-          System.arraycopy(children, offset + length, children,
-                           offset + elements.length,
-                           numChildren - offset - length);
+          System.arraycopy(children, copyFrom, children, copyTo, numMove);
           System.arraycopy(elements, 0, children, offset, elements.length);
         }
-      numChildren += elements.length - length;
+      numChildren += delta;
     }
 
     /**

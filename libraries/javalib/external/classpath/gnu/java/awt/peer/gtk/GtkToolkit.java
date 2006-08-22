@@ -615,8 +615,16 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
                                                            DragGestureListener l)
   {
     if (recognizer.getName().equals("java.awt.dnd.MouseDragGestureRecognizer"))
-      return new GtkMouseDragGestureRecognizer(ds, comp, actions, l);
-    return null;
+      {
+        GtkMouseDragGestureRecognizer gestureRecognizer
+          = new GtkMouseDragGestureRecognizer(ds, comp, actions, l);
+        gestureRecognizer.registerListeners();
+        return gestureRecognizer;
+      }
+    else
+      {
+        return null;
+      }
   }
 
   public Map mapInputMethodHighlight(InputMethodHighlight highlight)

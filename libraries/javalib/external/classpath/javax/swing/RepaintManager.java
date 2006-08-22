@@ -38,7 +38,6 @@ exception statement from your version. */
 
 package javax.swing;
 
-import java.applet.Applet;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -463,8 +462,7 @@ public class RepaintManager
    */
   public void markCompletelyDirty(JComponent component)
   {
-    Rectangle r = component.getBounds();
-    addDirtyRegion(component, 0, 0, r.width, r.height);
+    addDirtyRegion(component, 0, 0, Integer.MAX_VALUE, Integer.MAX_VALUE);
   }
 
   /**
@@ -502,13 +500,11 @@ public class RepaintManager
    */
   public boolean isCompletelyDirty(JComponent component)
   {
-    boolean retVal = false;
-    if (dirtyComponents.containsKey(component))
-      {
-        Rectangle dirtyRegion = (Rectangle) dirtyComponents.get(component);
-        retVal = dirtyRegion.equals(SwingUtilities.getLocalBounds(component));
-      }
-    return retVal;
+    boolean dirty = false;
+    Rectangle r = getDirtyRegion(component);
+    if(r.width == Integer.MAX_VALUE && r.height == Integer.MAX_VALUE)
+      dirty = true;
+    return dirty;
   }
 
   /**
@@ -647,7 +643,7 @@ public class RepaintManager
         width = Math.min(doubleBufferMaximumSize.width, width);
         int height = Math.max(proposedHeight, root.getHeight());
         height = Math.min(doubleBufferMaximumSize.height, height);
-        buffer = component.createImage(width, height);
+        buffer = root.createImage(width, height);
         offscreenBuffers.put(root, buffer);
       }
     return buffer;

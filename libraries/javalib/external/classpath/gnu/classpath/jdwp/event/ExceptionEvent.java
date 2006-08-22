@@ -70,6 +70,9 @@ public class ExceptionEvent
   
   //the location where the exception was caught
   private Location _catchLocation;
+  
+  //the class where the exeption was thrown
+  private Class _klass;
 
   /**
    * Constructs a new <code>ExceptionEvent</code> where the exception was
@@ -82,13 +85,14 @@ public class ExceptionEvent
    * @param instance the instance that threw the exception
    */
   public ExceptionEvent(Throwable exception, Thread thread, Location location,
-                        Location catchLocation, Object instance)
+                        Location catchLocation, Class clazz, Object instance)
   {
     super(JdwpConstants.EventKind.EXCEPTION);
     _exception = exception;
     _thread = thread;
     _location = location;
     _catchLocation = catchLocation;
+    _klass = clazz;
     _instance = instance;
   }
 
@@ -108,16 +112,27 @@ public class ExceptionEvent
     else if (type == EVENT_INSTANCE)
       return _instance;
     else if (type == EVENT_CLASS)
-      return _instance.getClass();
+      return _klass;
     else if (type == EVENT_EXCEPTION_CLASS)
       return _exception.getClass();
     else if (type == EVENT_EXCEPTION_CAUGHT)
-      if (_catchLocation != null)
+      if (_catchLocation.getMethod() != null)
         return new Boolean(true);
       else
         return new Boolean(false);
 
     return null;
+  }
+  
+  /**
+   * Sets the catchLocation, used for exceptions that are caught in different
+   * stack frames from where they are thrown.
+   * 
+   * @param catchLoc the location of the catch
+   */
+  public void setCatchLoc(Location catchLoc)
+  {
+    _catchLocation = catchLoc;
   }
 
   /**
@@ -136,9 +151,7 @@ public class ExceptionEvent
     tid.write(outStream);
     _location.write(outStream);
     oid.writeTagged(outStream);
-    if(_catchLocation != null)
-      _catchLocation.write(outStream);
-    else
-      outStream.write(0);
+    _catchLocation.write(outStream);
+
   }
 }

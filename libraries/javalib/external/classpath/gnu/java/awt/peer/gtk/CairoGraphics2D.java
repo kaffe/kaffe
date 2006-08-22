@@ -683,8 +683,8 @@ public abstract class CairoGraphics2D extends Graphics2D
 	int width = (int) tp.getAnchorRect().getWidth();
 	int height = (int) tp.getAnchorRect().getHeight();
 
-	double scaleX = (width+1) / (double) img.getWidth();
-	double scaleY = (height+1) / (double) img.getHeight();
+	double scaleX = width / (double) img.getWidth();
+	double scaleY = height / (double) img.getHeight();
 
 	AffineTransform at = new AffineTransform(scaleX, 0, 0, scaleY, 0, 0);
 	AffineTransformOp op = new AffineTransformOp(at, getRenderingHints());
@@ -921,21 +921,12 @@ public abstract class CairoGraphics2D extends Graphics2D
   public void draw(Shape s)
   {
     if ((stroke != null && ! (stroke instanceof BasicStroke))
-        || (comp instanceof AlphaComposite
-            && ((AlphaComposite) comp).getAlpha() != 1.0))
+        || (comp instanceof AlphaComposite && ((AlphaComposite) comp).getAlpha() != 1.0))
       {
-        // FIXME: This is a hack to work around BasicStrokes's current
-        // limitations wrt cubic curves.
-        // See CubicSegment.getDisplacedSegments().
-        if (stroke instanceof BasicStroke)
-          {
-            PathIterator flatten = s.getPathIterator(null, 1.0);
-            GeneralPath p = new GeneralPath();
-            p.append(flatten, false);
-            s = p;
-          }
-	fill(stroke.createStrokedShape(s));
-	return;
+        // Cairo doesn't support stroking with alpha, so we create the stroked
+        // shape and fill with alpha instead
+        fill(stroke.createStrokedShape(s));
+        return;
       }
 
     createPath(s);
@@ -1038,9 +1029,13 @@ public abstract class CairoGraphics2D extends Graphics2D
 
   public void drawLine(int x1, int y1, int x2, int y2)
   {
-    cairoDrawLine(nativePointer, shifted(x1, shiftDrawCalls),
-                  shifted(y1, shiftDrawCalls), shifted(x2, shiftDrawCalls),
-                  shifted(y2, shiftDrawCalls));
+    // The coordinates being pairwise identical means one wants
+    // to draw a single pixel. This is emulated by drawing
+    // a one pixel sized rectangle.
+    if (x1 == x2 && y1 == y2)
+      cairoFillRect(nativePointer, x1, y1, 1, 1);
+    else
+      cairoDrawLine(nativePointer, x1 + 0.5, y1 + 0.5, x2 + 0.5, y2 + 0.5);
   }
 
   public void drawRect(int x, int y, int width, int height)
@@ -1238,6 +1233,9 @@ public abstract class CairoGraphics2D extends Graphics2D
     if (img == null)
       return false;
 
+    if (xform == null)
+      xform = new AffineTransform();
+
     // In this case, xform is an AffineTransform that transforms bounding
     // box of the specified image from image space to user space. However
     // when we pass this transform to cairo, cairo will use this transform
@@ -1336,7 +1334,9 @@ public abstract class CairoGraphics2D extends Graphics2D
 
   public void drawImage(BufferedImage image, BufferedImageOp op, int x, int y)
   {
-    Image filtered = op.filter(image, null);
+    Image filtered = image;
+    if (op != null)
+      filtered = op.filter(image, null);
     drawImage(filtered, new AffineTransform(1f, 0f, 0f, 1f, x, y), null, null);
   }
 
@@ -1458,8 +1458,11 @@ public abstract class CairoGraphics2D extends Graphics2D
         float[] positions = gv.getGlyphPositions (0, n, null);
 
         setFont (gv.getFont ());
-        cairoDrawGlyphVector(nativePointer, (GdkFontPeer)getFont().getPeer(),
-                             x, y, n, codes, positions);
+	synchronized( this.font ) 
+	  { 
+	    cairoDrawGlyphVector(nativePointer, (GdkFontPeer)getFont().getPeer(),
+				 x, y, n, codes, positions);
+	  }
       }
     else
       {

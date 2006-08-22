@@ -289,7 +289,7 @@ public class BasicComboBoxUI extends ComboBoxUI
     comboBox.addPropertyChangeListener(propertyChangeListener);
 
     focusListener = createFocusListener();
-    editor.addFocusListener(focusListener);
+    comboBox.addFocusListener(focusListener);
 
     itemListener = createItemListener();
     comboBox.addItemListener(itemListener);
@@ -543,7 +543,9 @@ public class BasicComboBoxUI extends ComboBoxUI
   {
     editor.setFont(comboBox.getFont());
     if (popupKeyListener != null)
-        editor.addKeyListener(popupKeyListener);
+      editor.addKeyListener(popupKeyListener);
+    if (keyListener != null)
+      editor.addKeyListener(keyListener);
     comboBox.configureEditor(comboBox.getEditor(),
                              comboBox.getSelectedItem());
   }
@@ -555,6 +557,8 @@ public class BasicComboBoxUI extends ComboBoxUI
   {
     if (popupKeyListener != null)
       editor.removeKeyListener(popupKeyListener);
+    if (keyListener != null)
+      editor.removeKeyListener(keyListener);
   }
 
   /**
@@ -775,7 +779,9 @@ public class BasicComboBoxUI extends ComboBoxUI
   protected boolean isNavigationKey(int keyCode)
   {
     return keyCode == KeyEvent.VK_UP || keyCode == KeyEvent.VK_DOWN
-           || keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_RIGHT;
+           || keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_RIGHT
+           || keyCode == KeyEvent.VK_ENTER || keyCode == KeyEvent.VK_ESCAPE
+           || keyCode == KeyEvent.VK_TAB;
   }
 
   /**
@@ -796,7 +802,7 @@ public class BasicComboBoxUI extends ComboBoxUI
   protected void selectPreviousPossibleValue()
   {
     int index = comboBox.getSelectedIndex();
-    if (index != 0)
+    if (index > 0)
       comboBox.setSelectedIndex(index - 1);
   }
 
@@ -1201,11 +1207,29 @@ public class BasicComboBoxUI extends ComboBoxUI
      */
     public void keyPressed(KeyEvent e)
     {
-      if (! isNavigationKey(e.getKeyCode()) && comboBox.isEnabled()
-          && comboBox.getModel().getSize() != 0)
+      if (comboBox.getModel().getSize() != 0 && comboBox.isEnabled())
         {
-          if (comboBox.selectWithKeyChar(e.getKeyChar()))
-            e.consume();
+          if (! isNavigationKey(e.getKeyCode()))
+            {
+              if (! comboBox.isEditable())
+                if (comboBox.selectWithKeyChar(e.getKeyChar()))
+                  e.consume();
+            }
+          else
+            {
+              if (e.getKeyCode() == KeyEvent.VK_UP && comboBox.isPopupVisible())
+                selectPreviousPossibleValue();
+              else if (e.getKeyCode() == KeyEvent.VK_DOWN)
+                {
+                  if (comboBox.isPopupVisible())
+                    selectNextPossibleValue();
+                  else
+                    comboBox.showPopup();
+                }
+              else if (e.getKeyCode() == KeyEvent.VK_ENTER
+                       || e.getKeyCode() == KeyEvent.VK_ESCAPE)
+                popup.hide();
+            }
         }
     }
   }
@@ -1370,5 +1394,4 @@ public class BasicComboBoxUI extends ComboBoxUI
       // FIXME: Need to handle changes in other bound properties.       
     }
   }
-
 }

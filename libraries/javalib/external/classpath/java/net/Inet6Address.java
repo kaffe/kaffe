@@ -242,6 +242,7 @@ public final class Inet6Address extends InetAddress
    * Creates a scoped Inet6Address where the scope has an integer id.
    *
    * @throws UnkownHostException if the address is an invalid number of bytes.
+   * @since 1.5
    */  
   public static Inet6Address getByAddress(String host, byte[] addr, 
 					  int scopeId)
@@ -261,6 +262,7 @@ public final class Inet6Address extends InetAddress
    * NetworkInterface.
    *
    * @throws UnkownHostException if the address is an invalid number of bytes.
+   * @since 1.5
    */  
   public static Inet6Address getByAddress(String host, byte[] addr, 
 					  NetworkInterface nif)
@@ -273,6 +275,36 @@ public final class Inet6Address extends InetAddress
     ip.nif = nif;
 
     return ip;
+  }
+
+  /**
+   * Returns the <code>NetworkInterface</code> of the address scope
+   * if it is a scoped address and the scope is given in the form of a
+   * NetworkInterface. 
+   * (I.e. the address was created using  the 
+   * getByAddress(String, byte[], NetworkInterface) method)
+   * Otherwise this method returns <code>null</code>.
+   * @since 1.5
+   */
+  public NetworkInterface getScopedInterface()
+  {
+    return nif;
+  }
+
+  /**
+   * Returns the scope ID of the address scope if it is a scoped adress using
+   * an integer to identify the scope.
+   *
+   * Otherwise this method returns 0.
+   * @since 1.5
+   */
+  public int getScopeId()
+  {
+    // check scope_id_set because some JDK-serialized objects seem to have
+    // scope_id set to a nonzero value even when scope_id_set == false
+    if( scope_id_set )
+      return scope_id; 
+    return 0;
   }
 
   /**

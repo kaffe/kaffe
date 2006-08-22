@@ -93,7 +93,8 @@ am__DEPENDENCIES_1 =
 am__DEPENDENCIES_3 = $(am__DEPENDENCIES_1) $(ENGINE_NAME)/libengine.la \
 	$(am__DEPENDENCIES_2) systems/$(THREAD_SYSTEM)/libkthread.la \
 	verifier/libkaffeverifier.la $(GC_NAME)/libkaffegc.la \
-	jni/libkaffejni.la $(top_builddir)/replace/libreplace.la
+	jni/libkaffejni.la $(top_builddir)/replace/libreplace.la \
+	$(top_builddir)/libraries/javalib/external/classpath/native/jni/classpath/libclasspath.la
 @COND_SYSTEM_ZLIB_FALSE@am__DEPENDENCIES_4 =  \
 @COND_SYSTEM_ZLIB_FALSE@	../../external/gcc/zlib/libz.la
 @COND_SYSTEM_ZLIB_TRUE@am__DEPENDENCIES_4 = $(am__DEPENDENCIES_1)
@@ -114,7 +115,8 @@ am_libkaffevm_la_OBJECTS = libkaffevm_la-access.lo \
 	libkaffevm_la-javacall.lo libkaffevm_la-thread.lo \
 	libkaffevm_la-utf8const.lo libkaffevm_la-gcFuncs.lo \
 	libkaffevm_la-reflect.lo libkaffevm_la-reference.lo \
-	libkaffevm_la-binreloc.lo
+	libkaffevm_la-binreloc.lo \
+	libkaffevm_la-gnu_java_nio_VMSelector.lo
 nodist_libkaffevm_la_OBJECTS = libkaffevm_la-md.lo
 libkaffevm_la_OBJECTS = $(am_libkaffevm_la_OBJECTS) \
 	$(nodist_libkaffevm_la_OBJECTS)
@@ -434,7 +436,8 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/kaffe/kaffevm/jni \
         -I$(top_srcdir)/config/$(Khost_cpu) \
 	-I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os) \
-	$(MAYBE_INTERNAL_ZIP_INCLUDES)
+	$(MAYBE_INTERNAL_ZIP_INCLUDES) \
+        -I$(top_srcdir)/libraries/javalib/external/classpath/native/jni/classpath 
 
 native_LTLIBRARIES = libkaffevm.la
 @HAVE_GCJ_SUPPORT_FALSE@libgcj = #
@@ -461,7 +464,8 @@ libkaffevm_la_DEPENDENCIES = \
 	verifier/libkaffeverifier.la \
 	$(GC_NAME)/libkaffegc.la \
 	jni/libkaffejni.la \
-        $(top_builddir)/replace/libreplace.la 
+        $(top_builddir)/replace/libreplace.la \
+        $(top_builddir)/libraries/javalib/external/classpath/native/jni/classpath/libclasspath.la 
 
 libkaffevm_la_LIBADD = \
 	$(libkaffevm_la_DEPENDENCIES) \
@@ -506,7 +510,8 @@ libkaffevm_la_SOURCES = \
 	gcFuncs.c \
 	reflect.c \
 	reference.c \
-	binreloc.c
+	binreloc.c \
+	$(top_srcdir)/libraries/clib/nio/gnu_java_nio_VMSelector.c
 
 noinst_HEADERS = \
 	access.h \
@@ -632,6 +637,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-fp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-gc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-gcFuncs.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-gnu_java_nio_VMSelector.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-hashtab.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-itypes.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-jar.Plo@am__quote@
@@ -910,6 +916,13 @@ libkaffevm_la-binreloc.lo: binreloc.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='binreloc.c' object='libkaffevm_la-binreloc.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-binreloc.lo `test -f 'binreloc.c' || echo '$(srcdir)/'`binreloc.c
+
+libkaffevm_la-gnu_java_nio_VMSelector.lo: $(top_srcdir)/libraries/clib/nio/gnu_java_nio_VMSelector.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-gnu_java_nio_VMSelector.lo -MD -MP -MF "$(DEPDIR)/libkaffevm_la-gnu_java_nio_VMSelector.Tpo" -c -o libkaffevm_la-gnu_java_nio_VMSelector.lo `test -f '$(top_srcdir)/libraries/clib/nio/gnu_java_nio_VMSelector.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/nio/gnu_java_nio_VMSelector.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libkaffevm_la-gnu_java_nio_VMSelector.Tpo" "$(DEPDIR)/libkaffevm_la-gnu_java_nio_VMSelector.Plo"; else rm -f "$(DEPDIR)/libkaffevm_la-gnu_java_nio_VMSelector.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/libraries/clib/nio/gnu_java_nio_VMSelector.c' object='libkaffevm_la-gnu_java_nio_VMSelector.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-gnu_java_nio_VMSelector.lo `test -f '$(top_srcdir)/libraries/clib/nio/gnu_java_nio_VMSelector.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/nio/gnu_java_nio_VMSelector.c
 
 libkaffevm_la-md.lo: md.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-md.lo -MD -MP -MF "$(DEPDIR)/libkaffevm_la-md.Tpo" -c -o libkaffevm_la-md.lo `test -f 'md.c' || echo '$(srcdir)/'`md.c; \

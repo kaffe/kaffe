@@ -1551,6 +1551,9 @@ of names of memory managers which manage the specified pool.
 @item @code{(getPeakUsage(String))} -- Returns a
 @code{java.lang.management.MemoryUsage} object for the peak
 usage level of the specified pool.
+@item @code{(getType(String))} -- Returns a string containing
+either @code{"HEAP"} or @code{"NON_HEAP"} which indicates the type of
+memory used by the specified pool.
 @item @code{(getUsage(String))} -- Returns a
 @code{java.lang.management.MemoryUsage} object for the current
 usage level of the specified pool.
@@ -1649,6 +1652,26 @@ the group.
 
 @item @code{java.lang.ThreadGroup.removeThread(Thread)}
 Call this method from @code{Thread} when a @code{Thread} is stopped or destroyed.
+
+@item @code{gnu.java.lang.management.MemoryMXBeanImpl.fireThresholdExceededNotification(String, long, long, long, long)}
+If the monitoring of memory usage thresholds is supported, this method
+should be called when the normal usage of a memory pool crosses the
+threshold, in order to emit a notification.  Another notification
+should not be emitted until there is an intermittent period where the
+usage is again below the threshold.  The parameters are the memory
+pool name, the usage levels (init, used, committed and max) and the
+number of times the threshold has been crossed.
+
+@item @code{gnu.java.lang.management.MemoryMXBeanImpl.fireCollectionThresholdExceededNotification(String, long, long, long, long)}
+If the monitoring of memory usage thresholds is supported, this method
+should be called when the usage of a memory pool after a garbage
+collection cycle crosses the threshold, in order to emit a
+notification.  Another notification should not be emitted until there
+is an intermittent period where the usage is again below the
+threshold.  The parameters are the memory pool name, the usage levels
+(init, used, committed and max) and the number of times the threshold
+has been crossed.
+
 @end itemize
 
 @node VM Hooks, JNI Implementation, Classpath Hooks, Top

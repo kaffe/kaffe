@@ -67,6 +67,7 @@ import java.awt.ScrollPane;
 import java.awt.Scrollbar;
 import java.awt.TextArea;
 import java.awt.TextField;
+import java.awt.Transparency;
 import java.awt.Window;
 import java.awt.datatransfer.Clipboard;
 import java.awt.dnd.DragGestureEvent;
@@ -132,6 +133,11 @@ public class XToolkit
   static boolean DEBUG = false;
 
   /**
+   * Maps AWT colors to X colors.
+   */
+  HashMap colorMap = new HashMap();
+
+  /**
    * The system event queue.
    */
   private EventQueue eventQueue;
@@ -160,8 +166,7 @@ public class XToolkit
 
   public GraphicsEnvironment getLocalGraphicsEnvironment()
   {
-    assert false : "Don't call this";
-    return null;
+    return new XGraphicsEnvironment();
   }
 
   /**
@@ -286,8 +291,7 @@ public class XToolkit
 
   protected DialogPeer createDialog(Dialog target)
   {
-    // TODO: Implement this.
-    throw new UnsupportedOperationException("Not yet implemented.");
+    return new XDialogPeer(target);
   }
 
   protected MenuBarPeer createMenuBar(MenuBar target)
@@ -499,8 +503,10 @@ public class XToolkit
 
   public Image createImage(ImageProducer producer)
   {
-    // TODO: Implement this.
-    throw new UnsupportedOperationException("Not yet implemented.");
+    ImageConverter conv = new ImageConverter();
+    producer.startProduction(conv);
+    Image image = conv.getXImage();
+    return image;
   }
 
   public Image createImage(byte[] data, int offset, int len)
@@ -523,12 +529,16 @@ public class XToolkit
   {
     Image image;
     BufferedImage buffered = ImageIO.read(i);
-    if (buffered != null)
+    // If the bufferedimage is opaque, then we can copy it over to an
+    // X Pixmap for faster drawing.
+    if (buffered != null && buffered.getTransparency() == Transparency.OPAQUE)
       {
-        ImageConverter conv = new ImageConverter();
         ImageProducer source = buffered.getSource();
-        source.startProduction(conv);
-        image = conv.getXImage();
+        image = createImage(source);
+      }
+    else if (buffered != null)
+      {
+        image = buffered;
       }
     else
       {

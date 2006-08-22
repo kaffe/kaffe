@@ -1497,79 +1497,86 @@ public abstract class Component
         int oldwidth = this.width;
         int oldheight = this.height;
     
-        if (this.x == x && this.y == y && this.width == width
-            && this.height == height)
-          return;
-
-        invalidate();
-    
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-        if (peer != null)
-          peer.setBounds (x, y, width, height);
-    
-        // Erase old bounds and repaint new bounds for lightweights.
-        if (isLightweight() && isShowing())
-          {
-            if (parent != null)
-              {
-                Rectangle oldBounds = new Rectangle(oldx, oldy, oldwidth,
-                                                    oldheight);
-                Rectangle newBounds = new Rectangle(x, y, width, height);
-                Rectangle destroyed = oldBounds.union(newBounds);
-                if (!destroyed.isEmpty())
-                  parent.repaint(0, destroyed.x, destroyed.y, destroyed.width,
-                                 destroyed.height);
-              }
-          }
-
         boolean resized = oldwidth != width || oldheight != height;
         boolean moved = oldx != x || oldy != y;
-        // Only post an event if this component actually has a listener
-        // or has this event explicitly enabled.
-        if (componentListener != null
-            || (eventMask & AWTEvent.COMPONENT_EVENT_MASK) != 0)
+
+        if (resized || moved)
           {
-            // Fire component event on this component.
-            if (moved)
+            // Update the fields.
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+
+            if (peer != null)
               {
-                ComponentEvent ce = new ComponentEvent(this,
-                                               ComponentEvent.COMPONENT_MOVED);
-                getToolkit().getSystemEventQueue().postEvent(ce);
+                peer.setBounds (x, y, width, height);
+                if (resized)
+                  invalidate();
+                if (parent != null && parent.valid)
+                  parent.invalidate();
               }
-            if (resized)
+
+            // Send some events to interested listeners.
+            notifyReshape(resized, moved);
+
+            // Repaint this component and the parent if appropriate.
+            if (parent != null && peer instanceof LightweightPeer
+                && isShowing())
               {
-                ComponentEvent ce = new ComponentEvent(this,
-                                             ComponentEvent.COMPONENT_RESIZED);
-                getToolkit().getSystemEventQueue().postEvent(ce);
+                // The parent repaints the area that we occupied before.
+                parent.repaint(oldx, oldy, oldwidth, oldheight);
+                // This component repaints the area that we occupy now.
+                repaint();
               }
           }
-        else
+      }
+  }
+
+  private void notifyReshape(boolean resized, boolean moved)
+  {
+    // Only post an event if this component actually has a listener
+    // or has this event explicitly enabled.
+    if (componentListener != null
+        || (eventMask & AWTEvent.COMPONENT_EVENT_MASK) != 0)
+      {
+        // Fire component event on this component.
+        if (moved)
           {
-            // Otherwise we might need to notify child components when this is
-            // a Container.
-            if (this instanceof Container)
+            ComponentEvent ce = new ComponentEvent(this,
+                                           ComponentEvent.COMPONENT_MOVED);
+            getToolkit().getSystemEventQueue().postEvent(ce);
+          }
+        if (resized)
+          {
+            ComponentEvent ce = new ComponentEvent(this,
+                                         ComponentEvent.COMPONENT_RESIZED);
+            getToolkit().getSystemEventQueue().postEvent(ce);
+          }
+      }
+    else
+      {
+        // Otherwise we might need to notify child components when this is
+        // a Container.
+        if (this instanceof Container)
+          {
+            Container cont = (Container) this;
+            if (resized)
               {
-                Container cont = (Container) this;
-                if (resized)
+                for (int i = 0; i < cont.getComponentCount(); i++)
                   {
-                    for (int i = 0; i < cont.getComponentCount(); i++)
-                      {
-                        Component child = cont.getComponent(i);
-                        child.fireHierarchyEvent(HierarchyEvent.ANCESTOR_RESIZED,
-                                                 this, parent, 0);
-                      }
+                    Component child = cont.getComponent(i);
+                    child.fireHierarchyEvent(HierarchyEvent.ANCESTOR_RESIZED,
+                                             this, parent, 0);
                   }
-                if (moved)
+              }
+            if (moved)
+              {
+                for (int i = 0; i < cont.getComponentCount(); i++)
                   {
-                    for (int i = 0; i < cont.getComponentCount(); i++)
-                      {
-                        Component child = cont.getComponent(i);
-                        child.fireHierarchyEvent(HierarchyEvent.ANCESTOR_MOVED,
-                                                 this, parent, 0);
-                      }
+                    Component child = cont.getComponent(i);
+                    child.fireHierarchyEvent(HierarchyEvent.ANCESTOR_MOVED,
+                                             this, parent, 0);
                   }
               }
           }
@@ -2150,11 +2157,9 @@ public abstract class Component
   }
 
   /**
-   * Updates this component. This is called in response to
-   * <code>repaint</code>. This method fills the component with the
-   * background color, then sets the foreground color of the specified
-   * graphics context to the foreground color of this component and calls
-   * the <code>paint()</code> method. The coordinates of the graphics are
+   * Updates this component. This is called for heavyweight components in
+   * response to {@link #repaint()}. The default implementation simply forwards
+   * to {@link #paint(Graphics)}. The coordinates of the graphics are
    * relative to this component. Subclasses should call either
    * <code>super.update(g)</code> or <code>paint(g)</code>.
    *
@@ -2162,27 +2167,17 @@ public abstract class Component
    *
    * @see #paint(Graphics)
    * @see #repaint()
-   *
-   * @specnote In contrast to what the spec says, tests show that the exact
-   *           behaviour is to clear the background on lightweight and
-   *           top-level components only. Heavyweight components are not
-   *           affected by this method and only call paint().
    */
   public void update(Graphics g)
   {
-    // Tests show that the clearing of the background is only done in
-    // two cases:
-    // - If the component is lightweight (yes this is in contrast to the spec).
-    // or
-    // - If the component is a toplevel container.
-    if (isLightweight() || getParent() == null)
-      {
-        Rectangle clip = g.getClipBounds();
-        if (clip == null)
-          g.clearRect(0, 0, width, height);
-        else
-          g.clearRect(clip.x, clip.y, clip.width, clip.height);
-      }
+    // Note 1: We used to clear the background here for lightweights and
+    // toplevel components. Tests show that this is not what the JDK does
+    // here. Note that there is some special handling and background
+    // clearing code in Container.update(Graphics).
+
+    // Note 2 (for peer implementors): The JDK doesn't seem call update() for
+    // toplevel components, even when an UPDATE event is sent (as a result
+    // of repaint).
     paint(g);
   }
 
@@ -2258,11 +2253,46 @@ public abstract class Component
    */
   public void repaint(long tm, int x, int y, int width, int height)
   {
-    if (isShowing())
+    // The repaint() call has previously been delegated to
+    // {@link ComponentPeer.repaint()}. Testing on the JDK using some
+    // dummy peers show that this methods is never called. I think it makes
+    // sense to actually perform the tasks below here, since it's pretty
+    // much peer independent anyway, and makes sure only heavyweights are
+    // bothered by this.
+    ComponentPeer p = peer;
+
+    // Let the nearest heavyweight parent handle repainting for lightweight
+    // components.
+    // This goes up the hierarchy until we hit
+    // a heavyweight component that handles this and translates the
+    // rectangle while doing so.
+
+    // We perform some boundary checking to restrict the paint
+    // region to this component.
+    int px = (x < 0 ? 0 : x);
+    int py = (y < 0 ? 0 : y);
+    int pw = width;
+    int ph = height;
+    Component par = this;
+    while (par != null && p instanceof LightweightPeer)
       {
-        ComponentPeer p = peer;
-        if (p != null)
-          p.repaint(tm, x, y, width, height);
+        px += par.x; 
+        py += par.y; 
+        // We perform some boundary checking to restrict the paint
+        // region to this component.
+        pw = Math.min(pw, par.width);
+        ph = Math.min(ph, par.height);
+        par = par.parent;
+        p = par.peer;
+      }
+
+    // Now send an UPDATE event to the heavyweight component that we've found.
+    if (par != null && par.isVisible() && p != null && pw > 0 && ph > 0)
+      {
+        assert ! (p instanceof LightweightPeer);
+        PaintEvent pe = new PaintEvent(par, PaintEvent.UPDATE,
+                                       new Rectangle(px, py, pw, ph));
+        getToolkit().getSystemEventQueue().postEvent(pe);
       }
   }
 
@@ -2281,10 +2311,7 @@ public abstract class Component
   }
 
   /**
-   * Prints this component, including all sub-components. This method is
-   * provided so that printing can be done in a different manner from
-   * painting. However, the implementation in this class simply calls the
-   * <code>paintAll()</code> method.
+   * Prints this component, including all sub-components. 
    *
    * @param g the graphics context of the print device
    * 
@@ -2292,7 +2319,9 @@ public abstract class Component
    */
   public void printAll(Graphics g)
   {
-    paintAll(g);
+    if( peer != null )
+      peer.print( g );
+    paintAll( g );
   }
 
   /**
@@ -4207,56 +4236,7 @@ public abstract class Component
    */
   public void requestFocus ()
   {
-    if (isDisplayable ()
-	&& isShowing ()
-	&& isFocusable ())
-      {
-        synchronized (getTreeLock ())
-          {
-            // Find this Component's top-level ancestor.            
-            Container parent = (this instanceof Container) ? (Container) this
-                                                          : getParent();            
-            while (parent != null
-                   && !(parent instanceof Window))
-              parent = parent.getParent ();
-
-            if (parent == null)
-              return;
-            
-            Window toplevel = (Window) parent;
-            if (toplevel.isFocusableWindow ())
-              {
-                if (peer != null && !isLightweight())
-                  // This call will cause a FOCUS_GAINED event to be
-                  // posted to the system event queue if the native
-                  // windowing system grants the focus request.
-                  peer.requestFocus ();
-                else
-                  {
-                    // Either our peer hasn't been created yet or we're a
-                    // lightweight component.  In either case we want to
-                    // post a FOCUS_GAINED event.
-                    EventQueue eq = Toolkit.getDefaultToolkit ().getSystemEventQueue ();
-                    synchronized (eq)
-                      {
-                        KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager ();
-                        Component currentFocusOwner = manager.getGlobalPermanentFocusOwner ();
-                        if (currentFocusOwner != null)
-                          {
-                            eq.postEvent (new FocusEvent(currentFocusOwner, FocusEvent.FOCUS_LOST,
-                                                         false, this));
-                            eq.postEvent (new FocusEvent(this, FocusEvent.FOCUS_GAINED, false,
-                                                         currentFocusOwner));
-                          }
-                        else
-                          eq.postEvent (new FocusEvent(this, FocusEvent.FOCUS_GAINED, false));
-                      }
-                  }
-              }
-            else
-              pendingFocusRequest = new FocusEvent(this, FocusEvent.FOCUS_GAINED);
-          }
-      }
+    requestFocusImpl(false, true);
   }
 
   /**
@@ -4296,61 +4276,7 @@ public abstract class Component
    */
   protected boolean requestFocus (boolean temporary)
   {
-    if (isDisplayable ()
-	&& isShowing ()
-	&& isFocusable ())
-      {
-        synchronized (getTreeLock ())
-          {
-            // Find this Component's top-level ancestor.
-            Container parent = getParent ();
-
-            while (parent != null
-                   && !(parent instanceof Window))
-              parent = parent.getParent ();
-
-            Window toplevel = (Window) parent;
-            if (toplevel.isFocusableWindow ())
-              {
-                if (peer != null && !isLightweight())
-                  // This call will cause a FOCUS_GAINED event to be
-                  // posted to the system event queue if the native
-                  // windowing system grants the focus request.
-                  peer.requestFocus ();
-                else
-                  {
-                    // Either our peer hasn't been created yet or we're a
-                    // lightweight component.  In either case we want to
-                    // post a FOCUS_GAINED event.
-                    EventQueue eq = Toolkit.getDefaultToolkit ().getSystemEventQueue ();
-                    synchronized (eq)
-                      {
-                        KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager ();
-                        Component currentFocusOwner = manager.getGlobalPermanentFocusOwner ();
-                        if (currentFocusOwner != null)
-                          {
-                            eq.postEvent (new FocusEvent(currentFocusOwner,
-                                                         FocusEvent.FOCUS_LOST,
-                                                         temporary, this));
-                            eq.postEvent (new FocusEvent(this,
-                                                         FocusEvent.FOCUS_GAINED,
-                                                         temporary,
-                                                         currentFocusOwner));
-                          }
-                        else
-                          eq.postEvent (new FocusEvent(this, FocusEvent.FOCUS_GAINED, temporary));
-                      }
-                  }
-              }
-            else
-              // FIXME: need to add a focus listener to our top-level
-              // ancestor, so that we can post this event when it becomes
-              // the focused window.
-              pendingFocusRequest = new FocusEvent(this, FocusEvent.FOCUS_GAINED, temporary);
-          }
-      }
-    // Always return true.
-    return true;
+    return requestFocusImpl(temporary, true);
   }
 
   /**
@@ -4378,7 +4304,7 @@ public abstract class Component
    */
   public boolean requestFocusInWindow ()
   {
-    return requestFocusInWindow (false);
+    return requestFocusImpl(false, false);
   }
 
   /**
@@ -4409,65 +4335,84 @@ public abstract class Component
    */
   protected boolean requestFocusInWindow (boolean temporary)
   {
-    KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager ();
+    return requestFocusImpl(temporary, false);
+  }
 
-    Window focusedWindow = manager.getFocusedWindow ();
-
-    if (isDisplayable ()
-	&& isShowing ()
-	&& isFocusable ())
+  /**
+   * Helper method for all 4 requestFocus variants.
+   *
+   * @param temporary indicates if the focus change is temporary
+   * @param focusWindow indicates if the window focus may be changed
+   *
+   * @return <code>false</code> if the request has been definitely denied,
+   *         <code>true</code> otherwise
+   */
+  private boolean requestFocusImpl(boolean temporary, boolean focusWindow)
+  {
+    boolean retval = false;
+ 
+    // Don't try to focus non-focusable and non-visible components.
+    if (isFocusable() && isVisible())
       {
-        if (focusedWindow != null)
+        ComponentPeer myPeer = peer;
+        if (peer != null)
           {
-            synchronized (getTreeLock ())
+            // Find Window ancestor and find out if we're showing while
+            // doing this.
+            boolean showing = true;
+            Component window = this;
+            while (! (window instanceof Window))
               {
-                Container parent = getParent ();
+                if (! window.isVisible())
+                  showing = false;
+                window = window.parent;
+              }
+            // Don't allow focus when there is no window or the window
+            // is not focusable.
+            if (window != null && ((Window) window).isFocusableWindow()
+                && showing)
+              {
+                // Search for nearest heavy ancestor (including this
+                // component).
+                Component heavyweightParent = this;
+                while (heavyweightParent.peer instanceof LightweightPeer)
+                  heavyweightParent = heavyweightParent.parent;
 
-                while (parent != null
-                       && !(parent instanceof Window))
-                  parent = parent.getParent ();
-
-                Window toplevel = (Window) parent;
-
-                // Check if top-level ancestor is currently focused window.
-                if (focusedWindow == toplevel)
+                // Don't allow focus on lightweight components without
+                // visible heavyweight ancestor
+                if (heavyweightParent != null && heavyweightParent.isVisible())
                   {
-                    if (peer != null
-                        && !isLightweight()
-                        && !(this instanceof Window))
-                      // This call will cause a FOCUS_GAINED event to be
-                      // posted to the system event queue if the native
-                      // windowing system grants the focus request.
-                      peer.requestFocus ();
-                    else
+                    // Don't allow focus when heavyweightParent has no peer.
+                    myPeer = heavyweightParent.peer;
+                    if (myPeer != null)
                       {
-                        // Either our peer hasn't been created yet or we're a
-                        // lightweight component.  In either case we want to
-                        // post a FOCUS_GAINED event.
-                        EventQueue eq = Toolkit.getDefaultToolkit ().getSystemEventQueue ();
-                        synchronized (eq)
+                        // Register lightweight focus request.
+                        if (heavyweightParent != this)
                           {
-                            Component currentFocusOwner = manager.getGlobalPermanentFocusOwner ();
-                            if (currentFocusOwner != null)
-                              {
-                                eq.postEvent (new FocusEvent(currentFocusOwner, FocusEvent.FOCUS_LOST,
-                                                             temporary, this));
-                                eq.postEvent (new FocusEvent(this, FocusEvent.FOCUS_GAINED, temporary,
-                                                             currentFocusOwner));
-                              }
-                            else
-                              eq.postEvent (new FocusEvent(this, FocusEvent.FOCUS_GAINED, temporary));
+                            KeyboardFocusManager
+                            .addLightweightFocusRequest(heavyweightParent,
+                                                        this);
                           }
+
+                        // Try to focus the component.
+                        long time = EventQueue.getMostRecentEventTime();
+                        boolean success = myPeer.requestFocus(this, temporary,
+                                                              focusWindow,
+                                                              time);
+                        if (! success)
+                          {
+                            // Dequeue key events if focus request failed.
+                            KeyboardFocusManager kfm =
+                              KeyboardFocusManager.getCurrentKeyboardFocusManager();
+                            kfm.dequeueKeyEvents(time, this);
+                          }
+                        retval = success;
                       }
                   }
-                else
-                  return false;
               }
           }
-
-        return true;
       }
-    return false;
+    return retval;
   }
 
   /**
@@ -5459,52 +5404,26 @@ p   * <li>the set of backward traversal keys
 
   void dispatchEventImpl(AWTEvent e)
   {
-    // This boolean tells us not to process focus events when the focus
-    // opposite component is the same as the focus component.
-    boolean ignoreFocus = 
-      (e instanceof FocusEvent && 
-       ((FocusEvent)e).getComponent() == ((FocusEvent)e).getOppositeComponent());
-    
-    if (eventTypeEnabled (e.id))
+    // Retarget focus events before dispatching it to the KeyboardFocusManager
+    // in order to handle lightweight components properly.
+    boolean dispatched = false;
+    if (! e.isFocusManagerEvent)
       {
-        if (e.id != PaintEvent.PAINT && e.id != PaintEvent.UPDATE
-            && !ignoreFocus)
-          processEvent(e);
-        
-        // the trick we use to communicate between dispatch and redispatch
-        // is to have KeyboardFocusManager.redispatch synchronize on the
-        // object itself. we then do not redispatch to KeyboardFocusManager
-        // if we are already holding the lock.
-        if (! Thread.holdsLock(e))
-          {
-            switch (e.id)
-              {
-              case WindowEvent.WINDOW_GAINED_FOCUS:
-              case WindowEvent.WINDOW_LOST_FOCUS:
-              case KeyEvent.KEY_PRESSED:
-              case KeyEvent.KEY_RELEASED:
-              case KeyEvent.KEY_TYPED:
-              case FocusEvent.FOCUS_GAINED:
-              case FocusEvent.FOCUS_LOST:
-                if (KeyboardFocusManager
-                    .getCurrentKeyboardFocusManager()
-                    .dispatchEvent(e))
-                    return;
-              case MouseEvent.MOUSE_PRESSED:
-                // A mouse click on an enabled lightweight component
-                // which has not yet been marked as consumed by any
-                // other mouse listener results in a focus traversal
-                // to that component.
-                if (isLightweight()
-                    && isEnabled() && !e.isConsumed())
-                    requestFocus();
-                break;
-              }
-          }
+        e = KeyboardFocusManager.retargetFocusEvent(e);
+        dispatched = KeyboardFocusManager.getCurrentKeyboardFocusManager()
+                                          .dispatchEvent(e);
       }
 
-    if (peer != null)
-      peer.handleEvent(e);
+    if (! dispatched)
+      {
+        if (eventTypeEnabled (e.id))
+          {
+            if (e.id != PaintEvent.PAINT && e.id != PaintEvent.UPDATE)
+              processEvent(e);
+          }
+        if (peer != null)
+          peer.handleEvent(e);
+      }
   }
 
   /**

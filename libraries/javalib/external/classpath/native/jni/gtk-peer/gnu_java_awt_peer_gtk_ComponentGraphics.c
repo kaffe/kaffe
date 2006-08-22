@@ -276,6 +276,42 @@ Java_gnu_java_awt_peer_gtk_ComponentGraphics_copyAreaNative
   gdk_threads_leave();
 }
 
+JNIEXPORT jobject JNICALL 
+Java_gnu_java_awt_peer_gtk_ComponentGraphics_nativeGrab
+(JNIEnv *env, jclass cls __attribute__((unused)), jobject peer )
+{
+  GdkPixbuf *pixbuf;
+  GdkDrawable *drawable;
+  GdkWindow *win;
+  gint w,h;
+  GtkWidget *widget = NULL;
+  void *ptr = NULL;
+  
+  gdk_threads_enter();
+
+  ptr = NSA_GET_PTR (env, peer);
+  g_assert (ptr != NULL);
+
+  widget = GTK_WIDGET (ptr);
+  g_assert (widget != NULL);
+
+  cp_gtk_grab_current_drawable (widget, &drawable, &win);
+  g_assert (drawable != NULL);
+
+  gdk_drawable_get_size ( drawable, &w, &h );
+
+  pixbuf = gdk_pixbuf_new( GDK_COLORSPACE_RGB, TRUE, 8, w, h );
+  gdk_pixbuf_get_from_drawable( pixbuf, drawable, NULL, 0, 0, 0, 0, w, h );
+  g_object_ref( pixbuf );
+  gdk_draw_pixbuf (drawable, NULL, pixbuf,
+		   0, 0, 0, 0, 
+		   w, h, 
+		   GDK_RGB_DITHER_NORMAL, 0, 0);
+  gdk_threads_leave();
+
+  return JCL_NewRawDataObject (env, pixbuf);
+}
+
 JNIEXPORT void JNICALL 
 Java_gnu_java_awt_peer_gtk_ComponentGraphics_drawVolatile
 (JNIEnv *env, jobject obj __attribute__ ((unused)), jobject peer, 

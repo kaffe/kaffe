@@ -49,6 +49,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.management.NotCompliantMBeanException;
+
 /**
  * Provides access to information about the virtual machine.
  *
@@ -68,6 +70,20 @@ public final class RuntimeMXBeanImpl
   private String bootClassPath = null;
 
   private boolean bootClassPathSupported = true;
+
+  /**
+   * Constructs a new <code>RuntimeMXBeanImpl</code>.
+   *
+   * @throws NotCompliantMBeanException if this class doesn't implement
+   *                                    the interface or a method appears
+   *                                    in the interface that doesn't comply
+   *                                    with the naming conventions.
+   */
+  public RuntimeMXBeanImpl()
+    throws NotCompliantMBeanException
+  {
+    super(RuntimeMXBean.class);
+  }
 
   public String getBootClassPath()
   {

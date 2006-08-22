@@ -157,6 +157,14 @@ public interface MemoryPoolMXBean
   MemoryUsage getPeakUsage();
 
   /**
+   * Returns the type of memory used by this pool.  This can be
+   * either heap or non-heap memory.
+   *
+   * @return the type of this pool.
+   */
+  String getType();
+
+  /**
    * Returns memory usage statistics for the current memory usage
    * of the pool.  The return value may be <code>null</code> if
    * this pool is no longer valid.  Obtaining these values is

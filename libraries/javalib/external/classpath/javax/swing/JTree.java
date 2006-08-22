@@ -1515,6 +1515,9 @@ public class JTree extends JComponent implements Scrollable, Accessible
     // The root node appears expanded by default.
     nodeStates = new Hashtable();
 
+    // The cell renderer gets set by the UI.
+    cellRenderer = null;
+
     // Install the UI before installing the model. This way we avoid double
     // initialization of lots of UI and model stuff inside the UI and related
     // classes. The necessary UI updates are performed via property change

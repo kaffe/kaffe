@@ -65,8 +65,8 @@ import java.awt.Shape;
  * &#x2019;up&#x2019;
  * direction, one in the &#x2019;down&#x2019; direction) Point <b>B</b> in 
  * the image is inside (one intersection &#x2019;down&#x2019;)
- * Point <b>C</b> in the image is outside (two intersections 
- * &#x2019;down&#x2019;)
+ * Point <b>C</b> in the image is inside (two intersections in the 
+ * &#x2019;down&#x2019; direction)
  *
  * @see Line2D
  * @see CubicCurve2D

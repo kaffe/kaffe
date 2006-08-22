@@ -2185,7 +2185,6 @@ JAVA_LIBS=" \
 \$(top_builddir)/libraries/clib/native/libjavalang.la \
 \$(top_builddir)/libraries/clib/net/libjavanet.la \
 \$(top_builddir)/libraries/clib/io/libjavaio.la \
-\$(top_builddir)/libraries/clib/nio/libjavanio.la \
 \$(top_builddir)/libraries/clib/management/libmanagement.la \
 \$(top_builddir)/libraries/clib/security/libsecurity.la \
 $JAVA_LIBS \
@@ -2476,7 +2475,7 @@ if test x"$COMPILE_PLUGIN" = x"no"; then
 fi
 
 ac_configure_args="$ac_configure_args --with-vm=${prefix}/bin/kaffe"
-ac_configure_args="$ac_configure_args --disable-core-jni"
+#ac_configure_args="$ac_configure_args --disable-core-jni"
 ac_configure_args="$ac_configure_args --disable-examples"
 ac_configure_args="$ac_configure_args --with-glibj-dir=${jrelibdir}"
 ac_configure_args="$ac_configure_args --with-native-libdir=${nativedir}"
@@ -2543,7 +2542,6 @@ AC_CONFIG_FILES([libraries/clib/target/generic/Makefile])
 AC_CONFIG_FILES([libraries/clib/target/Linux/Makefile])
 AC_CONFIG_FILES([libraries/clib/native/Makefile])
 AC_CONFIG_FILES([libraries/clib/io/Makefile])
-AC_CONFIG_FILES([libraries/clib/nio/Makefile])
 AC_CONFIG_FILES([libraries/clib/net/Makefile])
 AC_CONFIG_FILES([libraries/clib/zip/Makefile])
 AC_CONFIG_FILES([libraries/clib/math/Makefile])

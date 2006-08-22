@@ -98,6 +98,9 @@ public class RSAKeyPairPKCS8Codec
    *   }
    * </pre>
    * <p>
+   * As indicated in RFC-2459: "The parameters field shall have ASN.1 type NULL
+   * for this algorithm identifier.".
+   * <p>
    * The <i>privateKey</i> field, which is an OCTET STRING, contains the
    * DER-encoded form of the RSA private key defined as:
    * <pre>
@@ -140,8 +143,9 @@ public class RSAKeyPairPKCS8Codec
 
     DERValue derOID = new DERValue(DER.OBJECT_IDENTIFIER, RSA_ALG_OID);
 
-    ArrayList algorithmID = new ArrayList(1);
+    ArrayList algorithmID = new ArrayList(2);
     algorithmID.add(derOID);
+    algorithmID.add(new DERValue(DER.NULL, null));
     DERValue derAlgorithmID = new DERValue(DER.CONSTRUCTED | DER.SEQUENCE,
                                            algorithmID);
 
@@ -238,9 +242,12 @@ public class RSAKeyPairPKCS8Codec
         if (! algOID.equals(RSA_ALG_OID))
           throw new InvalidParameterException("Unexpected OID: " + algOID);
 
+        // rfc-2459 states that this field is OPTIONAL but NULL if/when present
         DERValue val = der.read();
-        byte[] pkBytes = (byte[]) val.getValue();
+        if (val.getTag() == DER.NULL)
+          val = der.read();
 
+        byte[] pkBytes = (byte[]) val.getValue();
         der = new DERReader(pkBytes);
         DERValue derRSAPrivateKey = der.read();
         DerUtil.checkIsConstructed(derRSAPrivateKey, "Wrong RSAPrivateKey field");

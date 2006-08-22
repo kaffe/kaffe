@@ -107,7 +107,7 @@ class MetalUtils
 
             for (int mX = x + xOff; mX < (x + w); mX += 4)
               {
-                g.drawLine(mX, mY, mX, mY);
+                g.fillRect(mX, mY, 1, 1);
               }
 
             // increase x offset

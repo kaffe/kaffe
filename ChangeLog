@@ -1,3 +1,33 @@
+2006-08-22  Dalibor Topic  <robilad@kaffe.org>
+
+	Switched nio libraries to GNU Classpath's version.
+
+	* Makefile.am (BUILD_ENVIRONMENT-make): Set KAFFELIBRARYPATH to GNU Classpath's
+	java-nio native library.
+
+	* configure.ac (JAVA_LIBS) Removed kaffe's native nio library.
+	Dont disable core jni libraries when building GNU Classpath. Don't
+	output Makefile for Kaffe's native nio libraries.
+
+	* kaffe/kaffevm/Makefile.am: Added dependencies for GNU Classpath's
+	classpath utility library. Added Kaffe's gnu_java_nio_VMSelector.c 
+	implementation to the library.
+
+	* libraries/clib/Makefile.am: (SUBDIRS) Removed nio.
+
+	* libraries/clib/nio/Makefile.am,
+	libraries/clib/nio/Makefile.in,
+	libraries/clib/nio/gnu_java_nio_VMChannel.c,
+	libraries/clib/nio/gnu_java_nio_VMPipe.c,
+	libraries/clib/nio/gnu_java_nio_channels_FileChannelImpl.c,
+	libraries/clib/nio/gnu_java_nio_charset_iconv_IconvDecoder.c,
+	libraries/clib/nio/gnu_java_nio_charset_iconv_IconvEncoder.c,
+	libraries/clib/nio/java_nio_MappedByteBufferImpl.c,
+	libraries/clib/nio/java_nio_VMDirectByteBuffer.c:
+	Removed.
+
+	* libraries/javalib/external/classpath: Resynced with 0.92.
+
 2006-08-21  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/clib/nio/gnu_java_nio_channels_FileChannelImpl.c,

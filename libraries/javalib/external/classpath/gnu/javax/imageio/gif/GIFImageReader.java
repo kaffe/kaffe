@@ -37,6 +37,8 @@ exception statement from your version. */
 
 package gnu.javax.imageio.gif;
 
+import gnu.javax.imageio.IIOInputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
 import javax.imageio.*;
@@ -74,7 +76,7 @@ public class GIFImageReader extends ImageReader
 	if( input instanceof InputStream )
 	  file = new GIFFile( (InputStream)input );
 	else
-	  file = new GIFFile( new GIFStream((ImageInputStream)input) );
+	  file = new GIFFile( new IIOInputStream((ImageInputStream)input) );
       }
     catch(GIFFile.GIFException ge)
       {

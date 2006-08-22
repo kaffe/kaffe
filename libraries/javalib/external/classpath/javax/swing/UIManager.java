@@ -616,7 +616,7 @@ public class UIManager implements Serializable
    */
   public static UIDefaults getLookAndFeelDefaults()
   {
-    return currentUIDefaults;
+    return lookAndFeelDefaults;
   }
 
   /**
@@ -714,7 +714,8 @@ public class UIManager implements Serializable
     throws UnsupportedLookAndFeelException
   {
     if (newLookAndFeel != null && ! newLookAndFeel.isSupportedLookAndFeel())
-      throw new UnsupportedLookAndFeelException(newLookAndFeel.getName());
+      throw new UnsupportedLookAndFeelException(newLookAndFeel.getName()
+                                         + " not supported on this platform");
     LookAndFeel oldLookAndFeel = currentLookAndFeel;
     if (oldLookAndFeel != null)
       oldLookAndFeel.uninitialize();

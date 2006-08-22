@@ -863,8 +863,7 @@ class Demo
       extends SubFrame
       implements ActionListener, DropTargetListener
   {
-    DragLabel source = new DragLabel(
-                                     "Drag and drop me to the following JButton",
+    DragLabel source = new DragLabel("Drag and drop me to the following Button",
                                      Label.CENTER);
 
     Button target = new Button();

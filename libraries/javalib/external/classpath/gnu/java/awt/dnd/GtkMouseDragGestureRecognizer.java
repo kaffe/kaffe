@@ -39,7 +39,8 @@ exception statement from your version. */
 package gnu.java.awt.dnd;
 
 import java.awt.Component;
-import java.awt.dnd.DragGestureEvent;
+import java.awt.Point;
+import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragGestureListener;
 import java.awt.dnd.DragSource;
 import java.awt.dnd.MouseDragGestureRecognizer;
@@ -48,63 +49,124 @@ import java.awt.event.MouseEvent;
 public class GtkMouseDragGestureRecognizer
     extends MouseDragGestureRecognizer
 {
-  
-  DragSource ds;
-  Component c;
-  int actions;
-  DragGestureListener dgl;
-  
-  GtkMouseDragGestureRecognizer()
+
+  public GtkMouseDragGestureRecognizer (DragSource ds)
   {
-    super(null);
+    this(ds, null, 0, null);
+  }
+
+  public GtkMouseDragGestureRecognizer (DragSource ds, Component c)
+  {
+    this (ds, c, 0, null);
+  }
+  
+  public GtkMouseDragGestureRecognizer (DragSource ds, Component c, int act)
+  {
+    this(ds, c, act, null);
   }
   
   public GtkMouseDragGestureRecognizer (DragSource ds, Component c, int act,
                                         DragGestureListener dgl)
   {
-    super (ds, c, act, dgl);
-    
-    registerListeners();
-    
-    this.ds = ds;
-    this.c = c;
-    this.actions = act;
-    this.dgl = dgl;
+    super(ds, c, act, dgl);
+  }
+  
+  public void registerListeners ()
+  {
+    super.registerListeners();
+  }
+  
+  public void unregisterListeners ()
+  {
+    super.unregisterListeners();
   }
   
   public void mouseClicked (MouseEvent e)
   {
-    // FIXME: Not Implemented
+    // Nothing to do here.
   }
 
   public void mousePressed (MouseEvent e)
   {
-    // FIXME: Not Implemented
+    events.clear();
+    if (getDropActionFromEvent(e) != DnDConstants.ACTION_NONE)
+      appendEvent(e);
   }
 
   public void mouseReleased (MouseEvent e)
   {
-    // FIXME: Not Implemented
+    events.clear();
   }
 
   public void mouseEntered (MouseEvent e)
   {
-    // FIXME: Not Implemented
+    events.clear();
   }
 
-  public void mouseExited (MouseEvent e)
+  public void mouseExited(MouseEvent e)
   {
-    // FIXME: Not Implemented
+    if (!events.isEmpty())
+      if (getDropActionFromEvent(e) == DnDConstants.ACTION_NONE)
+        events.clear();
   }
 
   public void mouseDragged(MouseEvent e)
   {
-    dgl.dragGestureRecognized(new DragGestureEvent(this, actions, e.getPoint(),
-                                                   events));
-  }
+    if (!events.isEmpty())
+      {
+        int act = getDropActionFromEvent(e);
+        
+        if (act == DnDConstants.ACTION_NONE)
+          return;
 
+        Point origin = ((MouseEvent) events.get(0)).getPoint();
+        Point current = e.getPoint();
+        int dx = Math.abs(origin.x - current.x);
+        int dy = Math.abs(origin.y - current.y);
+        int threshold = DragSource.getDragThreshold();
+        
+        if (dx > threshold || dy > threshold)
+          fireDragGestureRecognized(act, origin);
+        else
+          appendEvent(e);
+      }
+  }
+  
   public void mouseMoved (MouseEvent e)
   {
-    // FIXME: Not Implemented
+    // Nothing to do here.
+  }
+
+  private int getDropActionFromEvent(MouseEvent e)
+  {
+    int modEx = e.getModifiersEx();
+    int buttons =  modEx & (MouseEvent.BUTTON1_DOWN_MASK
+               | MouseEvent.BUTTON2_DOWN_MASK | MouseEvent.BUTTON3_DOWN_MASK);
+    if (!(buttons == MouseEvent.BUTTON1_DOWN_MASK || 
+        buttons == MouseEvent.BUTTON2_DOWN_MASK))
+      return DnDConstants.ACTION_NONE;
+    
+    // Convert modifier to a drop action
+    int sourceActions = getSourceActions();
+    int mod = modEx
+              & (MouseEvent.SHIFT_DOWN_MASK | MouseEvent.CTRL_DOWN_MASK);
+    switch (mod)
+      {
+      case MouseEvent.SHIFT_DOWN_MASK | MouseEvent.CTRL_DOWN_MASK:
+        return DnDConstants.ACTION_LINK & sourceActions;
+      case MouseEvent.CTRL_DOWN_MASK:
+        return DnDConstants.ACTION_COPY & sourceActions;
+      case MouseEvent.SHIFT_DOWN_MASK:
+        return DnDConstants.ACTION_MOVE & sourceActions;
+      default:
+        if ((sourceActions & DnDConstants.ACTION_MOVE) != 0)
+          return DnDConstants.ACTION_MOVE & sourceActions;
+        else if ((sourceActions & DnDConstants.ACTION_COPY) != 0)
+          return DnDConstants.ACTION_COPY & sourceActions;
+        else if ((sourceActions & DnDConstants.ACTION_LINK) != 0)
+          return DnDConstants.ACTION_LINK & sourceActions;
+      }
+
+    return DnDConstants.ACTION_NONE & sourceActions;
   }
 }

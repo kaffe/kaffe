@@ -52,6 +52,8 @@ import gnu.java.lang.management.ThreadMXBeanImpl;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.management.NotCompliantMBeanException;
+
 /**
  * <p>
  * Provides access to the system's management beans via a series
@@ -117,7 +119,16 @@ public class ManagementFactory
   public static OperatingSystemMXBean getOperatingSystemMXBean()
   {
     if (osBean == null)
-      osBean = new OperatingSystemMXBeanImpl();
+      try 
+	{
+	  osBean = new OperatingSystemMXBeanImpl();
+	}
+      catch (NotCompliantMBeanException e)
+	{
+	  throw new InternalError("The GNU implementation of the " +
+				  "operating system bean is not a " +
+				  "compliant management bean.");
+	}
     return osBean;
   }
 
@@ -131,7 +142,16 @@ public class ManagementFactory
   public static RuntimeMXBean getRuntimeMXBean()
   {
     if (runtimeBean == null)
-      runtimeBean = new RuntimeMXBeanImpl();
+      try
+	{
+	  runtimeBean = new RuntimeMXBeanImpl();
+	}
+      catch (NotCompliantMBeanException e)
+	{
+	  throw new InternalError("The GNU implementation of the " +
+				  "runtime bean is not a compliant " +
+				  "management bean.");
+	}
     return runtimeBean;
   }
 
@@ -145,7 +165,16 @@ public class ManagementFactory
   public static ClassLoadingMXBean getClassLoadingMXBean()
   {
     if (classLoadingBean == null)
-      classLoadingBean = new ClassLoadingMXBeanImpl();
+      try
+	{
+	  classLoadingBean = new ClassLoadingMXBeanImpl();
+	}
+      catch (NotCompliantMBeanException e)
+	{
+	  throw new InternalError("The GNU implementation of the " +
+				  "class loading bean is not a " +
+				  "compliant management bean.");
+	}
     return classLoadingBean;
   }
 
@@ -159,7 +188,16 @@ public class ManagementFactory
   public static ThreadMXBean getThreadMXBean()
   {
     if (threadBean == null)
-      threadBean = new ThreadMXBeanImpl();
+      try
+	{
+	  threadBean = new ThreadMXBeanImpl();
+	}
+      catch (NotCompliantMBeanException e)
+	{
+	  throw new InternalError("The GNU implementation of the " +
+				  "thread bean is not a compliant " +
+				  "management bean.");
+	}
     return threadBean;
   }
 
@@ -173,7 +211,16 @@ public class ManagementFactory
   public static MemoryMXBean getMemoryMXBean()
   {
     if (memoryBean == null)
-      memoryBean = new MemoryMXBeanImpl();
+      try
+	{
+	  memoryBean = new MemoryMXBeanImpl();
+	}
+      catch (NotCompliantMBeanException e)
+	{
+	  throw new InternalError("The GNU implementation of the " +
+				  "memory bean is not a compliant " +
+				  "management bean.");
+	}
     return memoryBean;
   }
 
@@ -191,7 +238,16 @@ public class ManagementFactory
   {
     if (compilationBean == null &&
 	SystemProperties.getProperty("gnu.java.compiler.name") != null)
-      compilationBean = new CompilationMXBeanImpl();
+      try
+	{
+	  compilationBean = new CompilationMXBeanImpl();
+	}
+      catch (NotCompliantMBeanException e)
+	{
+	  throw new InternalError("The GNU implementation of the " +
+				  "compilation bean is not a compliant " +
+				  "management bean.");
+	}
     return compilationBean;
   }
 
@@ -207,7 +263,16 @@ public class ManagementFactory
     List poolBeans = new ArrayList();
     String[] names = VMManagementFactory.getMemoryPoolNames();
     for (int a = 0; a < names.length; ++a)
-      poolBeans.add(new MemoryPoolMXBeanImpl(names[a]));
+      try
+	{
+	  poolBeans.add(new MemoryPoolMXBeanImpl(names[a]));
+	}
+      catch (NotCompliantMBeanException e)
+	{
+	  throw new InternalError("The GNU implementation of the " +
+				  "memory pool bean, " + a + ", is " +
+				  "not a compliant management bean.");
+	}
     return poolBeans;
   }
 
@@ -223,7 +288,16 @@ public class ManagementFactory
     List managerBeans = new ArrayList();
     String[] names = VMManagementFactory.getMemoryManagerNames();
     for (int a = 0; a < names.length; ++a)
-      managerBeans.add(new MemoryManagerMXBeanImpl(names[a]));
+      try
+	{
+	  managerBeans.add(new MemoryManagerMXBeanImpl(names[a]));
+	}
+      catch (NotCompliantMBeanException e)
+	{
+	  throw new InternalError("The GNU implementation of the " +
+				  "memory manager bean, " + a + ", is " +
+				  "not a compliant management bean.");
+	}
     managerBeans.addAll(getGarbageCollectorMXBeans());
     return managerBeans;
   }
@@ -240,7 +314,17 @@ public class ManagementFactory
     List gcBeans = new ArrayList();
     String[] names = VMManagementFactory.getGarbageCollectorNames();
     for (int a = 0; a < names.length; ++a)
-      gcBeans.add(new GarbageCollectorMXBeanImpl(names[a]));
+      try
+	{
+	  gcBeans.add(new GarbageCollectorMXBeanImpl(names[a]));
+	}
+      catch (NotCompliantMBeanException e)
+	{
+	  throw new InternalError("The GNU implementation of the " +
+				  "garbage collector bean, " + a + 
+				  ", is not a compliant management " +
+				  "bean.");
+	}
     return gcBeans;
   }
 

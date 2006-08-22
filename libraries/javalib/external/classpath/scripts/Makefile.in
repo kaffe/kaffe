@@ -143,6 +143,8 @@ GCJ = @GCJ@
 GCJX = @GCJX@
 GCONF_CFLAGS = @GCONF_CFLAGS@
 GCONF_LIBS = @GCONF_LIBS@
+GDK_CFLAGS = @GDK_CFLAGS@
+GDK_LIBS = @GDK_LIBS@
 GJDOC = @GJDOC@
 GLIB_CFLAGS = @GLIB_CFLAGS@
 GLIB_LIBS = @GLIB_LIBS@
@@ -282,7 +284,7 @@ target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
 vm_classes = @vm_classes@
-EXTRA_DIST = check_jni_methods.sh generate-locale-list.sh
+EXTRA_DIST = check_jni_methods.sh generate-locale-list.sh import-cacerts.sh
 all: all-am
 
 .SUFFIXES:

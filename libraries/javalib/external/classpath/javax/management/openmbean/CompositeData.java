@@ -73,9 +73,9 @@ public interface CompositeData
   /**
    * Compares the specified object with this object for equality.
    * The object is judged equivalent if it is non-null, and also
-   * an instance of {@link CompositeData} with the same values
-   * and types.  The two compared instances may be equivalent even
-   * if they represent different implementations of
+   * an instance of {@link CompositeData} with the same name-value
+   * mappings and types.  The two compared instances may be
+   * equivalent even if they represent different implementations of
    * {@link CompositeData}.
    *
    * @param obj the object to compare for equality.
@@ -105,7 +105,7 @@ public interface CompositeData
    *                                  empty string.
    * @throws InvalidKeyException if one of the keys does not exist.
    */
-  Object[] getAll(String[] key);
+  Object[] getAll(String[] keys);
 
   /**
    * Returns the composite type which corresponds to this instance

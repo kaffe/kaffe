@@ -180,11 +180,14 @@ public class BasicButtonListener implements MouseListener, MouseMotionListener,
       {
         AbstractButton button = (AbstractButton) e.getSource();
         ButtonModel model = button.getModel();
-        if (e.getButton() == MouseEvent.BUTTON1)
+        if (SwingUtilities.isLeftMouseButton(e))
           {
             // It is important that these transitions happen in this order.
             model.setArmed(true);
             model.setPressed(true);
+
+            if (! button.isFocusOwner() && button.isRequestFocusEnabled())
+              button.requestFocus();
           }
       }
   }

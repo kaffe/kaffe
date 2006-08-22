@@ -63,10 +63,13 @@ import java.security.PrivateKey;
 import java.security.cert.CRLException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateExpiredException;
+import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509CRL;
 import java.security.interfaces.DSAPrivateKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -265,6 +268,30 @@ public class SFHelper
 
     Set signerInfos = new HashSet();
     X509Certificate cert = (X509Certificate) certificates[0];
+    try
+      {
+        cert.checkValidity();
+      }
+    catch (CertificateExpiredException x)
+      {
+        String issuerName = getIssuerName(cert);
+        String subjectName = getSubjectName(cert);
+        Date notAfterDate = getNotAfterDate(cert);
+        System.out.println(Messages.getFormattedString("SFHelper.0", //$NON-NLS-1$
+                                                       new Object[] { issuerName,
+                                                                      subjectName,
+                                                                      notAfterDate }));
+      }
+    catch (CertificateNotYetValidException x)
+      {
+        String issuerName = getIssuerName(cert);
+        String subjectName = getSubjectName(cert);
+        Date notBeforeDate = getNotBeforeDate(cert);
+        System.out.println(Messages.getFormattedString("SFHelper.11", //$NON-NLS-1$
+                                                       new Object[] { issuerName,
+                                                                      subjectName,
+                                                                      notBeforeDate }));
+      }
     X500Principal issuer = cert.getIssuerX500Principal();
     BigInteger serialNumber = cert.getSerialNumber();
     byte[] authenticatedAttributes = null;
@@ -378,5 +405,101 @@ public class SFHelper
     sfMainAttributes.putValue(Main.DIGEST_MANIFEST, manifestHash);
 
     this.state = FINISHED;
+  }
+
+  /**
+   * Given an X.509 certificate this method returns the string representation of
+   * the Issuer Distinguished Name.
+   * 
+   * @param cert an X.509 certificate.
+   * @return the string representation of the Issuer's DN.
+   */
+  private String getIssuerName(X509Certificate cert)
+  {
+    X500Principal xp = cert.getIssuerX500Principal();
+    if (xp == null)
+      {
+        if (Configuration.DEBUG)
+          log.fine("Certiticate, with serial number " + cert.getSerialNumber() //$NON-NLS-1$
+                   + ", has null Issuer. Return [unknown]"); //$NON-NLS-1$
+        return Messages.getString("SFHelper.14"); //$NON-NLS-1$
+      }
+    String result = xp.getName();
+    if (result == null)
+      {
+        if (Configuration.DEBUG)
+          log.fine("Certiticate, with serial number " + cert.getSerialNumber() //$NON-NLS-1$
+                   + ", has an Issuer with null DN. Return [unnamed]"); //$NON-NLS-1$
+        return Messages.getString("SFHelper.17"); //$NON-NLS-1$
+      }
+    return result;
+  }
+
+  /**
+   * Given an X.509 certificate this method returns the string representation of
+   * the Subject Distinguished Name.
+   * 
+   * @param cert an X.509 certificate.
+   * @return the string representation of the Subject's DN.
+   */
+  private String getSubjectName(X509Certificate cert)
+  {
+    X500Principal xp = cert.getSubjectX500Principal();
+    if (xp == null)
+      {
+        if (Configuration.DEBUG)
+          log.fine("Certiticate, with serial number " + cert.getSerialNumber() //$NON-NLS-1$
+                   + ", has null Subject. Return [unknown]"); //$NON-NLS-1$
+        return Messages.getString("SFHelper.14"); //$NON-NLS-1$
+      }
+    String result = xp.getName();
+    if (result == null)
+      {
+        if (Configuration.DEBUG)
+          log.fine("Certiticate, with serial number " + cert.getSerialNumber() //$NON-NLS-1$
+                   + ", has a Subject with null DN. Return [unnamed]"); //$NON-NLS-1$
+        return Messages.getString("SFHelper.17"); //$NON-NLS-1$
+      }
+    return result;
+  }
+
+  /**
+   * Given an X.509 certificate this method returns the end validity date of 
+   * this certificate.
+   * 
+   * @param cert an X.509 certificate.
+   * @return the date when this certificate stops being valid.
+   */
+  private Date getNotAfterDate(X509Certificate cert)
+  {
+    Date result = cert.getNotAfter();
+    if (result == null)
+      {
+        if (Configuration.DEBUG)
+          log.fine("Certiticate, with serial number " + cert.getSerialNumber() //$NON-NLS-1$
+                   + ", has null start-validity date. Return epoch"); //$NON-NLS-1$
+        return new Date(0);
+      }
+    return result;
+  }
+
+  /**
+   * Given an X.509 certificate this method returns the start validity date of
+   * this certificate.
+   * 
+   * @param cert an X.509 certificate.
+   * @return the date when this certificate starts being valid.
+   */
+  private Date getNotBeforeDate(X509Certificate cert)
+  {
+    Date result = cert.getNotBefore();
+    if (result == null)
+      {
+        if (Configuration.DEBUG)
+          log.fine("Certiticate, with serial number " + cert.getSerialNumber() //$NON-NLS-1$
+                   + ", has null end-validity date. Return epoch"); //$NON-NLS-1$
+        return new Date(0);
+      }
+    return result;
   }
 }

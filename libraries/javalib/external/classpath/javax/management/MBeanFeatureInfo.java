@@ -77,6 +77,11 @@ public class MBeanFeatureInfo
   protected String name;
 
   /**
+   * The <code>toString()</code> result of this instance.
+   */
+  protected transient String string;
+
+  /**
    * Constructs a new {@link MBeanFeatureInfo} with the specified
    * name and description.
    *
@@ -148,7 +153,34 @@ public class MBeanFeatureInfo
    */
   public int hashCode()
   {
-    return name.hashCode() + description.hashCode();
+    return (name == null ? -1 : name.hashCode())
+      + (description == null ? -1 : description.hashCode());
+  }
+
+  /**
+   * <p>
+   * Returns a textual representation of this instance.  This
+   * is constructed using the class name
+   * (<code>javax.management.MBeanFeatureInfo</code>) and
+   * the name and description of the feature.
+   * </p>
+   * <p>
+   * As instances of this class are immutable, the return value
+   * is computed just once for each instance and reused
+   * throughout its life.
+   * </p>
+   *
+   * @return a @link{java.lang.String} instance representing
+   *         the instance in textual form.
+   */
+  public String toString()
+  {
+    if (string == null)
+      string = getClass().getName()
+	+ "[name=" + name 
+	+ ",desc=" + description 
+	+ "]";
+    return string;
   }
 
 }

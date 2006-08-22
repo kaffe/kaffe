@@ -551,8 +551,8 @@ throw_exception_by_name (JNIEnv *env, const char *name, const char *msg)
 
 static void init_gconf_client (void)
 {
-  client = gconf_client_get_default ();
   g_type_init ();
+  client = gconf_client_get_default ();
 }
 
 static gboolean set_jlist_class (JNIEnv *env)

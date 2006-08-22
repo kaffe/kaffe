@@ -37,6 +37,8 @@ exception statement from your version. */
 
 package gnu.javax.imageio.gif;
 
+import gnu.javax.imageio.IIOInputStream;
+
 import java.io.InputStream;
 import java.io.IOException;
 import java.util.Locale;
@@ -104,7 +106,7 @@ public class GIFImageReaderSpi extends ImageReaderSpi
     boolean retval;
     InputStream in;
     if( input instanceof ImageInputStream )
-      in = new GIFStream( (ImageInputStream)input );
+      in = new IIOInputStream( (ImageInputStream)input );
     else
       in = (InputStream)input;
 

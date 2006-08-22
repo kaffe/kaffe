@@ -41,6 +41,8 @@ import gnu.classpath.SystemProperties;
 
 import java.lang.management.CompilationMXBean;
 
+import javax.management.NotCompliantMBeanException;
+
 /**
  * Provides access to information about the JIT 
  * compiler of the virtual machine, if one exists.
@@ -66,6 +68,20 @@ public final class CompilationMXBeanImpl
    */
   private static final String COMPILATION_TIME_SUPPORT = 
     "gnu.java.lang.management.CompilationTimeSupport";
+
+  /**
+   * Constructs a new <code>CompilationMXBeanImpl</code>.
+   *
+   * @throws NotCompliantMBeanException if this class doesn't implement
+   *                                    the interface or a method appears
+   *                                    in the interface that doesn't comply
+   *                                    with the naming conventions.
+   */
+  public CompilationMXBeanImpl()
+    throws NotCompliantMBeanException
+  {
+    super(CompilationMXBean.class);
+  }
 
   public String getName()
   {

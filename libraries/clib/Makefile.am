@@ -30,7 +30,6 @@ SUBDIRS = \
 	target \
 	native \
 	io \
-	nio \
 	net \
 	security \
 	management \

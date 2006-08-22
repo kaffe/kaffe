@@ -40,7 +40,8 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/kaffe/kaffevm/jni \
         -I$(top_srcdir)/config/$(Khost_cpu) \
 	-I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os) \
-	$(MAYBE_INTERNAL_ZIP_INCLUDES)
+	$(MAYBE_INTERNAL_ZIP_INCLUDES) \
+        -I$(top_srcdir)/libraries/javalib/external/classpath/native/jni/classpath 
 
 native_LTLIBRARIES = libkaffevm.la
 
@@ -77,7 +78,8 @@ libkaffevm_la_DEPENDENCIES = \
 	verifier/libkaffeverifier.la \
 	$(GC_NAME)/libkaffegc.la \
 	jni/libkaffejni.la \
-        $(top_builddir)/replace/libreplace.la 
+        $(top_builddir)/replace/libreplace.la \
+        $(top_builddir)/libraries/javalib/external/classpath/native/jni/classpath/libclasspath.la 
 
 libkaffevm_la_LIBADD = \
 	$(libkaffevm_la_DEPENDENCIES) \
@@ -122,7 +124,8 @@ libkaffevm_la_SOURCES = \
 	gcFuncs.c \
 	reflect.c \
 	reference.c \
-	binreloc.c
+	binreloc.c \
+	$(top_srcdir)/libraries/clib/nio/gnu_java_nio_VMSelector.c
 
 noinst_HEADERS = \
 	access.h \

@@ -39,6 +39,8 @@ package javax.management;
 
 import java.io.Serializable;
 
+import java.util.Arrays;
+
 /**
  * <p>
  * Describes the interface of a management bean.  This allows
@@ -104,11 +106,76 @@ public class MBeanInfo
   private String className;
 
   /**
+   * Descriptions of the attributes provided by the bean.
+   */
+  private MBeanAttributeInfo[] attributes;
+
+  /**
+   * Descriptions of the operations provided by the bean.
+   */
+  private MBeanOperationInfo[] operations;
+
+  /**
+   * Descriptions of the bean's constructors.
+   */
+  private MBeanConstructorInfo[] constructors;
+
+  /**
    * Descriptions of the notifications emitted by the bean.
    *
    * @serial The bean's notifications.
    */
   private MBeanNotificationInfo[] notifications;
+
+  /**
+   * The <code>toString()</code> result of this instance.
+   */
+  private transient String string;
+
+  /**
+   * Constructs a new {@link MBeanInfo} using the supplied
+   * class name and description with the given attributes,
+   * operations, constructors and notifications.  The class
+   * name does not have to actually specify a valid class that
+   * can be loaded by the MBean server or class loader; it merely
+   * has to be a syntactically correct class name.  Any of the
+   * arrays may be <code>null</code>; this will be treated as if
+   * an empty array was supplied.
+   *
+   * @param name the name of the class this instance describes.
+   * @param desc a description of the bean.
+   * @param attribs the attribute descriptions for the bean,
+   *                or <code>null</code>.
+   * @param cons the constructor descriptions for the bean,
+   *             or <code>null</code>.
+   * @param ops the operation descriptions for the bean,
+   *            or <code>null</code>.
+   * @param notifs the notification descriptions for the bean,
+   *               or <code>null</code>.
+   */
+  public MBeanInfo(String name, String desc, MBeanAttributeInfo[] attribs,
+		   MBeanConstructorInfo[] cons, MBeanOperationInfo[] ops,
+		   MBeanNotificationInfo[] notifs)
+  {
+    className = name;
+    description = desc;
+    if (attribs == null)
+      attributes = new MBeanAttributeInfo[0];
+    else
+      attributes = attribs;
+    if (cons == null)
+      constructors = new MBeanConstructorInfo[0];
+    else
+      constructors = cons;
+    if (ops == null)
+      operations = new MBeanOperationInfo[0];
+    else
+      operations = ops;
+    if (notifs == null)
+      notifications = new MBeanNotificationInfo[0];
+    else
+      notifications = notifs;
+  }
 
   /**
    * Returns a shallow clone of the information.  This is
@@ -137,6 +204,82 @@ public class MBeanInfo
   }
 
   /**
+   * Compares this feature with the supplied object.  This returns
+   * true iff the object is an instance of {@link MBeanInfo} and
+   * {@link Object#equals()} returns true for a comparison of the
+   * class name and description, and the arrays each contain the same
+   * elements in the same order (but one may be longer than the
+   * other).
+   *
+   * @param obj the object to compare.
+   * @return true if the object is a {@link MBeanInfo}
+   *         instance, 
+   *         <code>className.equals(object.getClassName())</code>,
+   *         <code>description.equals(object.getDescription())</code>
+   *         and the corresponding elements of the arrays are
+   *         equal.
+   */
+  public boolean equals(Object obj)
+  {
+    if (!(obj instanceof MBeanInfo))
+      return false;
+    if (!(super.equals(obj)))
+      return false;
+    MBeanInfo o = (MBeanInfo) obj;
+    MBeanAttributeInfo[] attr = o.getAttributes();
+    for (int a = 0; a < attributes.length; ++a)
+      {
+	if (a == attr.length)
+	  return true;
+	if (!(attributes[a].equals(attr[a])))
+	  return false;
+      }
+    MBeanConstructorInfo[] cons = o.getConstructors();
+    for (int a = 0; a < constructors.length; ++a)
+      {
+	if (a == cons.length)
+	  return true;
+	if (!(constructors[a].equals(cons[a])))
+	  return false;
+      }
+    MBeanOperationInfo[] ops = o.getOperations();
+    for (int a = 0; a < operations.length; ++a)
+      {
+	if (a == ops.length)
+	  return true;
+	if (!(operations[a].equals(ops[a])))
+	  return false;
+      }
+    MBeanNotificationInfo[] notifs = o.getNotifications();
+    for (int a = 0; a < notifications.length; ++a)
+      {
+	if (a == notifs.length)
+	  return true;
+	if (!(notifications[a].equals(notifs[a])))
+	  return false;
+      }
+    return (className.equals(o.getClassName()) &&
+	    description.equals(o.getDescription()));
+  }
+
+  /**
+   * Returns descriptions of each of the attributes provided
+   * by this management bean.  The returned value is a shallow
+   * copy of the attribute array maintained by this instance.
+   * Hence, changing the elements of the returned array will not
+   * affect the attribute array, and the elements (instances
+   * of the {@link MBeanAttributeInfo} class) are immutable.
+   *
+   * @return an array of {@link MBeanAttributeInfo} objects,
+   *         representing the attributes emitted by this
+   *         management bean.
+   */
+  public MBeanAttributeInfo[] getAttributes()
+  {
+    return (MBeanAttributeInfo[]) attributes.clone();
+  }
+
+  /**
    * Returns the class name of the management bean.
    *
    * @return the bean's class name.
@@ -144,6 +287,23 @@ public class MBeanInfo
   public String getClassName()
   {
     return className;
+  }
+
+  /**
+   * Returns descriptions of each of the constructors provided
+   * by this management bean.  The returned value is a shallow
+   * copy of the constructor array maintained by this instance.
+   * Hence, changing the elements of the returned array will not
+   * affect the constructor array, and the elements (instances
+   * of the {@link MBeanConstructorInfo} class) are immutable.
+   *
+   * @return an array of {@link MBeanConstructorInfo} objects,
+   *         representing the constructors emitted by this
+   *         management bean.
+   */
+  public MBeanConstructorInfo[] getConstructors()
+  {
+    return (MBeanConstructorInfo[]) constructors.clone();
   }
 
   /**
@@ -171,6 +331,67 @@ public class MBeanInfo
   public MBeanNotificationInfo[] getNotifications()
   {
     return (MBeanNotificationInfo[]) notifications.clone();
+  }
+
+  /**
+   * Returns descriptions of each of the operations provided
+   * by this management bean.  The returned value is a shallow
+   * copy of the operation array maintained by this instance.
+   * Hence, changing the elements of the returned array will not
+   * affect the operation array, and the elements (instances
+   * of the {@link MBeanOperationInfo} class) are immutable.
+   *
+   * @return an array of {@link MBeanOperationInfo} objects,
+   *         representing the operations emitted by this
+   *         management bean.
+   */
+  public MBeanOperationInfo[] getOperations()
+  {
+    return (MBeanOperationInfo[]) operations.clone();
+  }
+
+  /**
+   * Returns the hashcode of the information as the sum of the
+   * hashcode of the classname, description and each array.
+   *
+   * @return the hashcode of the information.
+   */
+  public int hashCode()
+  {
+    return className.hashCode() + description.hashCode()
+      + Arrays.hashCode(attributes) + Arrays.hashCode(constructors)
+      + Arrays.hashCode(operations) + Arrays.hashCode(notifications);
+  }
+
+  /**
+   * <p>
+   * Returns a textual representation of this instance.  This
+   * is constructed using the class name
+   * (<code>javax.management.MBeanInfo</code>),
+   * the name and description of the bean and the contents
+   * of the four arrays.
+   * </p>
+   * <p>
+   * As instances of this class are immutable, the return value
+   * is computed just once for each instance and reused
+   * throughout its life.
+   * </p>
+   *
+   * @return a @link{java.lang.String} instance representing
+   *         the instance in textual form.
+   */
+  public String toString()
+  {
+    if (string == null)
+      string = getClass().getName()
+	+ "[name=" + className 
+	+ ",desc=" + description 
+	+ ",attributes=" + Arrays.toString(attributes)
+	+ ",constructors=" + Arrays.toString(constructors)
+	+ ",operations=" + Arrays.toString(operations)
+	+ ",notifications=" + Arrays.toString(notifications)
+	+ "]";
+    return string;
   }
 
 }

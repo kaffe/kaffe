@@ -53,6 +53,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 import java.awt.image.ImageProducer;
 import java.awt.image.RenderedImage;
+import gnu.classpath.Pointer;
 
 /**
  * ComponentGraphics - context for drawing directly to a component,
@@ -162,6 +163,11 @@ public class ComponentGraphics extends CairoGraphics2D
    */
   public static native boolean hasXRender();
 
+  /**
+   * This is a utility method (used by GtkComponentPeer) for grabbing the
+   * image of a component.
+   */
+  private static native Pointer nativeGrab(GtkComponentPeer component);
 
   private native void copyAreaNative(GtkComponentPeer component, int x, int y, 
 				     int width, int height, int dx, int dy);
@@ -170,6 +176,14 @@ public class ComponentGraphics extends CairoGraphics2D
 				   long vimg, int x, int y, 
 				   int width, int height, int cx, int cy,
                                    int cw, int ch);
+
+  /**
+   * Not really related (moveme?). Utility method used by GtkComponent.
+   */
+  public static GtkImage grab( GtkComponentPeer component )
+  {
+    return new GtkImage( nativeGrab( component ) );
+  }
 
   /**
    * Returns a Graphics2D object for a component, either an instance of this 

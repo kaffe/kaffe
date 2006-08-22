@@ -39,6 +39,9 @@ package gnu.java.lang.management;
 
 import java.lang.management.ManagementPermission;
 
+import javax.management.NotCompliantMBeanException;
+import javax.management.StandardMBean;
+
 /**
  * A common superclass for bean implementations.
  *
@@ -46,7 +49,23 @@ import java.lang.management.ManagementPermission;
  * @since 1.5
  */
 public class BeanImpl
+  extends StandardMBean
 {
+ 
+  /**
+   * Constructs a new <code>BeanImpl</code>.
+   *
+   * @param iface the bean interface being implemented.
+   * @throws NotCompliantMBeanException if this class doesn't implement
+   *                                    the interface or a method appears
+   *                                    in the interface that doesn't comply
+   *                                    with the naming conventions.
+   */
+  protected BeanImpl(Class iface)
+    throws NotCompliantMBeanException
+  {
+    super(iface);
+  }
 
   protected void checkMonitorPermissions()
   {

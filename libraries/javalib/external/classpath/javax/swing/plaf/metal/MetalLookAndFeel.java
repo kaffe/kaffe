@@ -1185,19 +1185,25 @@ public class MetalLookAndFeel extends BasicLookAndFeel
       "SplitPaneDivider.draggingColor", Color.DARK_GRAY,
 
       "TabbedPane.background", getControlShadow(),
+      "TabbedPane.contentBorderInsets", new InsetsUIResource(2, 2, 3, 3),
+      "TabbedPane.contentOpaque", Boolean.TRUE,
       "TabbedPane.darkShadow", getControlDarkShadow(),
       "TabbedPane.focus", getPrimaryControlDarkShadow(),
       "TabbedPane.font", new FontUIResource("Dialog", Font.BOLD, 12),
       "TabbedPane.foreground", getControlTextColor(),
       "TabbedPane.highlight", getControlHighlight(),
       "TabbedPane.light", getControl(),
-      "TabbedPane.selected", getControl(),
+      "TabbedPane.selected", getControl(), // overridden in OceanTheme
       "TabbedPane.selectHighlight", getControlHighlight(),
       "TabbedPane.selectedTabPadInsets", new InsetsUIResource(2, 2, 2, 1),
       "TabbedPane.shadow", getControlShadow(),
-      "TabbedPane.tabAreaBackground", getControl(),
-      "TabbedPane.tabAreaInsets", new InsetsUIResource(4, 2, 0, 6),
+      "TabbedPane.tabAreaBackground", getControl(), // overridden in OceanTheme
+      "TabbedPane.tabAreaInsets", new InsetsUIResource(4, 2, 0, 6), // dito
       "TabbedPane.tabInsets", new InsetsUIResource(0, 9, 1, 9),
+      
+      // new properties in OceanTheme:
+      // TabbedPane.contentAreaColor
+      // TabbedPane.unselectedBackground
       
       "Table.background", getWindowBackground(),
       "Table.focusCellBackground", getWindowBackground(),

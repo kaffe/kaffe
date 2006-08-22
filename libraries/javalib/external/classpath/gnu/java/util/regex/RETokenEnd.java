@@ -43,10 +43,18 @@ final class RETokenEnd extends REToken {
      * Indicates whether this token should match on a line break.
      */
   private String newline;
+  private boolean check_java_line_terminators;
 
   RETokenEnd(int subIndex,String newline) { 
     super(subIndex);
     this.newline = newline;
+    this.check_java_line_terminators = false;
+  }
+
+  RETokenEnd(int subIndex, String newline, boolean b) { 
+    super(subIndex);
+    this.newline = newline;
+    this.check_java_line_terminators = b;
   }
 
   int getMaximumLength() {
@@ -58,6 +66,18 @@ final class RETokenEnd extends REToken {
 	if (ch == CharIndexed.OUT_OF_BOUNDS)
 	    return ((mymatch.eflags & RE.REG_NOTEOL)>0) ? 
 		null : mymatch;
+        if (check_java_line_terminators) {
+	    if (ch == '\n') {
+                char ch1 = input.charAt(mymatch.index - 1);
+		if (ch1 == '\r') return null;
+		return mymatch;
+	    }
+	    if (ch == '\r') return mymatch;
+	    if (ch == '\u0085') return mymatch; // A next-line character
+	    if (ch == '\u2028') return mymatch; // A line-separator character
+	    if (ch == '\u2029') return mymatch; // A paragraph-separator character
+	    return null;
+	}
 	if (newline != null) {
 	    char z;
 	    int i = 0; // position in newline

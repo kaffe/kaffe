@@ -39,6 +39,8 @@ package gnu.java.lang.management;
 
 import java.lang.management.MemoryManagerMXBean;
 
+import javax.management.NotCompliantMBeanException;
+
 /**
  * Provides access to information about one of the memory 
  * managers used by the current invocation of the
@@ -63,9 +65,32 @@ public class MemoryManagerMXBeanImpl
    * Constructs a new <code>MemoryManagerMXBeanImpl</code>.
    *
    * @param name the name of the manager this bean represents.
+   * @throws NotCompliantMBeanException if this class doesn't implement
+   *                                    the interface or a method appears
+   *                                    in the interface that doesn't comply
+   *                                    with the naming conventions.
    */
   public MemoryManagerMXBeanImpl(String name)
+    throws NotCompliantMBeanException
   {
+    this(name, MemoryManagerMXBean.class);
+  }
+
+  /**
+   * Constructs a new <code>MemoryManagerMXBeanImpl</code>
+   * implementing the specified bean interface.
+   *
+   * @param name the name of the manager this bean represents.
+   * @param iface the bean interface being implemented.
+   * @throws NotCompliantMBeanException if this class doesn't implement
+   *                                    the interface or a method appears
+   *                                    in the interface that doesn't comply
+   *                                    with the naming conventions.
+   */
+  protected MemoryManagerMXBeanImpl(String name, Class iface)
+    throws NotCompliantMBeanException
+  {
+    super(iface);
     this.name = name;
   }
 

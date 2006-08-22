@@ -42,6 +42,8 @@ import gnu.classpath.SystemProperties;
 import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryUsage;
 
+import javax.management.NotCompliantMBeanException;
+
 /**
  * Provides access to information about one of the memory 
  * resources or pools used by the current invocation of the
@@ -78,9 +80,15 @@ public final class MemoryPoolMXBeanImpl
    * Constructs a new <code>MemoryPoolMXBeanImpl</code>.
    *
    * @param name the name of the pool this bean represents.
+   * @throws NotCompliantMBeanException if this class doesn't implement
+   *                                    the interface or a method appears
+   *                                    in the interface that doesn't comply
+   *                                    with the naming conventions.
    */
   public MemoryPoolMXBeanImpl(String name)
+    throws NotCompliantMBeanException
   {
+    super(MemoryPoolMXBean.class);
     this.name = name;
   }
 
@@ -123,6 +131,11 @@ public final class MemoryPoolMXBeanImpl
       return VMMemoryPoolMXBeanImpl.getPeakUsage(name);
     else
       return null;
+  }
+
+  public String getType()
+  {
+    return VMMemoryPoolMXBeanImpl.getType(name);
   }
 
   public MemoryUsage getUsage()

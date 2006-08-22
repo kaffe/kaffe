@@ -492,6 +492,8 @@ public class GapContent
     if ((where + len) > length)
       throw new BadLocationException("len plus where cannot be greater"
           + " than the content length", len + where);
+    if (len < 0)
+      throw new BadLocationException("negative length not allowed: ", len);
 
     // check if requested segment is contiguous
     if ((where < gapStart) && ((gapStart - where) < len))
@@ -530,8 +532,10 @@ public class GapContent
    */
   public Position createPosition(final int offset) throws BadLocationException
   {
-    if (offset < 0 || offset > length())
-      throw new BadLocationException("Position offset out of bounds", offset);
+    // Implementation note: We used to perform explicit check on the offset
+    // here. However, this makes some Mauve and Intel/Harmony tests fail
+    // and luckily enough the GapContent can very well deal with offsets
+    // outside the buffer bounds. So I removed that check.
 
     // We try to find a GapContentPosition at the specified offset and return
     // that. Otherwise we must create a new one.
@@ -572,7 +576,7 @@ public class GapContent
 
     int delta = newSize - gapEnd + gapStart;
     // Update the marks after the gapEnd.
-    adjustPositionsInRange(gapEnd, buffer.length, delta);
+    adjustPositionsInRange(gapEnd, -1, delta);
 
     // Copy the data around.
     char[] newBuf = (char[]) allocateArray(length() + newSize);
@@ -787,7 +791,7 @@ public class GapContent
    * the buffer array by <code>increment</code>
    *
    * @param startOffs the start offset of the range to search
-   * @param endOffs the length of the range to search
+   * @param endOffs the length of the range to search, -1 means all to the end
    * @param incr the increment
    */
   private void adjustPositionsInRange(int startOffs, int endOffs, int incr)
@@ -803,9 +807,15 @@ public class GapContent
           startIndex = - startIndex - 1;
 
         m.mark = endOffs;
-        int endIndex = search(marks, m);
-        if (endIndex < 0) // Translate to insertion index - 1, if not found.
-          endIndex = - endIndex - 2;
+        int endIndex;
+        if (endOffs == -1)
+          endIndex = marks.size() - 1;
+        else
+          {
+            endIndex = search(marks, m);
+            if (endIndex < 0) // Translate to insertion index - 1, if not found.
+              endIndex = - endIndex - 2;
+          }
         // Actually adjust the marks.
         for (int i = startIndex; i <= endIndex; i++) {
           ((Mark) marks.get(i)).mark += incr;

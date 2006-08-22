@@ -39,6 +39,8 @@ package gnu.java.lang.management;
 
 import java.lang.management.ClassLoadingMXBean;
 
+import javax.management.NotCompliantMBeanException;
+
 /**
  * Provides access to information about the class loading 
  * behaviour of the current invocation of the virtual
@@ -52,6 +54,20 @@ public final class ClassLoadingMXBeanImpl
   extends BeanImpl
   implements ClassLoadingMXBean
 {
+
+  /**
+   * Constructs a new <code>ClassLoadingMXBeanImpl</code>.
+   *
+   * @throws NotCompliantMBeanException if this class doesn't implement
+   *                                    the interface or a method appears
+   *                                    in the interface that doesn't comply
+   *                                    with the naming conventions.
+   */
+  public ClassLoadingMXBeanImpl()
+    throws NotCompliantMBeanException
+  {
+    super(ClassLoadingMXBean.class);
+  }
 
   public int getLoadedClassCount()
   {

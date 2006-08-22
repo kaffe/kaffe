@@ -40,12 +40,16 @@ package javax.swing.plaf.basic;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 import javax.swing.AbstractListModel;
 import javax.swing.JFileChooser;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ListDataEvent;
 import javax.swing.filechooser.FileSystemView;
 
@@ -63,8 +67,15 @@ public class BasicDirectoryModel extends AbstractListModel
   /** The list of files itself */
   private Vector contents;
 
-  /** The number of directories in the list */
-  private int directories;
+  /**
+   * The directories in the list.
+   */
+  private Vector directories;
+
+  /**
+   * The files in the list.
+   */
+  private Vector files;
 
   /** The listing mode of the associated JFileChooser,
       either FILES_ONLY, DIRECTORIES_ONLY or FILES_AND_DIRECTORIES */
@@ -72,6 +83,251 @@ public class BasicDirectoryModel extends AbstractListModel
 
   /** The JFileCooser associated with this model */
   private JFileChooser filechooser;
+
+  /**
+   * The thread that loads the file view.
+   */
+  private DirectoryLoadThread loadThread;
+
+  /**
+   * This thread is responsible for loading file lists from the
+   * current directory and updating the model.
+   */
+  private class DirectoryLoadThread extends Thread
+  {
+
+    /**
+     * Updates the Swing list model.
+     */
+    private class UpdateSwingRequest
+      implements Runnable
+    {
+
+      private List added;
+      private int addIndex;
+      private List removed;
+      private int removeIndex;
+      private boolean cancel;
+
+      UpdateSwingRequest(List add, int ai, List rem, int ri)
+      {
+        added = add;
+        addIndex = ai;
+        removed = rem;
+        removeIndex = ri;
+        cancel = false;
+      }
+
+      public void run()
+      {
+        if (! cancel)
+          {
+            int numRemoved = removed == null ? 0 : removed.size();
+            int numAdded = added == null ? 0 : added.size();
+            synchronized (contents)
+              {
+                if (numRemoved > 0)
+                  contents.removeAll(removed);
+                if (numAdded > 0)
+                  contents.addAll(added);
+
+                files = null;
+                directories = null;
+              }
+            if (numRemoved > 0 && numAdded == 0)
+              fireIntervalRemoved(BasicDirectoryModel.this, removeIndex,
+                                  removeIndex + numRemoved - 1);
+            else if (numRemoved == 0 && numAdded > 0)
+              fireIntervalAdded(BasicDirectoryModel.this, addIndex,
+                                addIndex + numAdded - 1);
+            else
+              fireContentsChanged();
+          }
+      }
+
+      void cancel()
+      {
+        cancel = true;
+      }
+    }
+
+    /**
+     * The directory beeing loaded.
+     */
+    File directory;
+
+    /**
+     * Stores all UpdateSwingRequests that are sent to the event queue.
+     */
+    private UpdateSwingRequest pending;
+
+    /**
+     * Creates a new DirectoryLoadThread that loads the specified
+     * directory.
+     *
+     * @param dir the directory to load
+     */
+    DirectoryLoadThread(File dir)
+    {
+      super("Basic L&F directory loader");
+      directory = dir;
+    }
+
+    public void run()
+    {
+      FileSystemView fsv = filechooser.getFileSystemView();
+      File[] files = fsv.getFiles(directory,
+                                  filechooser.isFileHidingEnabled());
+
+      // Occasional check if we have been interrupted.
+      if (isInterrupted())
+        return;
+
+      // Check list for accepted files.
+      Vector accepted = new Vector();
+      for (int i = 0; i < files.length; i++)
+        {
+          if (filechooser.accept(files[i]))
+            accepted.add(files[i]);
+        }
+      
+      // Occasional check if we have been interrupted.
+      if (isInterrupted())
+        return;
+
+      // Sort list.
+      sort(accepted);
+
+      // Now split up directories from files so that we get the directories
+      // listed before the files.
+      Vector newFiles = new Vector();
+      Vector newDirectories = new Vector();
+      for (Iterator i = accepted.iterator(); i.hasNext();)
+        {
+          File f = (File) i.next();
+          boolean traversable = filechooser.isTraversable(f);
+          if (traversable)
+            newDirectories.add(f);
+          else if (! traversable && filechooser.isFileSelectionEnabled())
+            newFiles.add(f);
+
+          // Occasional check if we have been interrupted.
+          if (isInterrupted())
+            return;
+
+        }
+
+      // Build up new file cache. Try to update only the changed elements.
+      // This will be important for actions like adding new files or
+      // directories inside a large file list.
+      Vector newCache = new Vector(newDirectories);
+      newCache.addAll(newFiles);
+
+      int newSize = newCache.size();
+      int oldSize = contents.size();
+      if (newSize < oldSize)
+        {
+          // Check for removed interval.
+          int start = -1;
+          int end = -1;
+          boolean found = false;
+          for (int i = 0; i < newSize && !found; i++)
+            {
+              if (! newCache.get(i).equals(contents.get(i)))
+                {
+                  start = i;
+                  end = i + oldSize - newSize;
+                  found = true;
+                }
+            }
+          if (start >= 0 && end > start
+              && contents.subList(end, oldSize)
+                                    .equals(newCache.subList(start, newSize)))
+            {
+              // Occasional check if we have been interrupted.
+              if (isInterrupted())
+                return;
+
+              Vector removed = new Vector(contents.subList(start, end));
+              UpdateSwingRequest r = new UpdateSwingRequest(null, 0,
+                                                            removed, start);
+              invokeLater(r);
+              newCache = null;
+            }
+        }
+      else if (newSize > oldSize)
+        {
+          // Check for inserted interval.
+          int start = oldSize;
+          int end = newSize;
+          boolean found = false;
+          for (int i = 0; i < oldSize && ! found; i++)
+            {
+              if (! newCache.get(i).equals(contents.get(i)))
+                {
+                  start = i;
+                  boolean foundEnd = false;
+                  for (int j = i; j < newSize && ! foundEnd; j++)
+                    {
+                      if (newCache.get(j).equals(contents.get(i)))
+                        {
+                          end = j;
+                          foundEnd = true;
+                        }
+                    }
+                  end = i + oldSize - newSize;
+                }
+            }
+          if (start >= 0 && end > start
+              && newCache.subList(end, newSize)
+                                    .equals(contents.subList(start, oldSize)))
+            {
+              // Occasional check if we have been interrupted.
+              if (isInterrupted())
+                return;
+
+              List added = newCache.subList(start, end);
+              UpdateSwingRequest r = new UpdateSwingRequest(added, start,
+                                                            null, 0); 
+              invokeLater(r);
+              newCache = null;
+            }
+        }
+
+      // Handle complete list changes (newCache != null).
+      if (newCache != null && ! contents.equals(newCache))
+        {
+          // Occasional check if we have been interrupted.
+          if (isInterrupted())
+            return;
+          UpdateSwingRequest r = new UpdateSwingRequest(newCache, 0,
+                                                        contents, 0);
+          invokeLater(r);
+        }
+    }
+
+    /**
+     * Wraps SwingUtilities.invokeLater() and stores the request in
+     * a Vector so that we can still cancel it later.
+     *
+     * @param update the request to invoke
+     */
+    private void invokeLater(UpdateSwingRequest update)
+    {
+      pending = update;
+      SwingUtilities.invokeLater(update);
+    }
+
+    /**
+     * Cancels all pending update requests that might be in the AWT
+     * event queue.
+     */
+    void cancelPending()
+    {
+      if (pending != null)
+        pending.cancel();
+    }
+  }
 
   /** A Comparator class/object for sorting the file list. */
   private Comparator comparator = new Comparator()
@@ -127,10 +383,19 @@ public class BasicDirectoryModel extends AbstractListModel
    */
   public Vector getDirectories()
   {
-    Vector tmp = new Vector();
-    for (int i = 0; i < directories; i++)
-      tmp.add(contents.get(i));
-    return tmp;
+    // Synchronize this with the UpdateSwingRequest for the case when
+    // contents is modified.
+    synchronized (contents)
+      {
+        Vector dirs = directories;
+        if (dirs == null)
+          {
+            // Initializes this in getFiles().
+            getFiles();
+            dirs = directories;
+          }
+        return dirs;
+      }
   }
 
   /**
@@ -155,10 +420,26 @@ public class BasicDirectoryModel extends AbstractListModel
    */
   public Vector getFiles()
   {
-    Vector tmp = new Vector();
-    for (int i = directories; i < getSize(); i++)
-      tmp.add(contents.get(i));
-    return tmp;
+    synchronized (contents)
+      {
+        Vector f = files;
+        if (f == null)
+          {
+            f = new Vector();
+            Vector d = new Vector(); // Directories;
+            for (Iterator i = contents.iterator(); i.hasNext();)
+              {
+                File file = (File) i.next();
+                if (filechooser.isTraversable(file))
+                  d.add(file);
+                else
+                  f.add(file);
+              }
+            files = f;
+            directories = d;
+          }
+        return f;
+      }
   }
 
   /**
@@ -171,8 +452,6 @@ public class BasicDirectoryModel extends AbstractListModel
    */
   public int getSize()
   {
-    if (listingMode == JFileChooser.DIRECTORIES_ONLY)
-      return directories;
     return contents.size();
   }
 
@@ -252,9 +531,14 @@ public class BasicDirectoryModel extends AbstractListModel
    */
   public void propertyChange(PropertyChangeEvent e)
   {
-    if (e.getPropertyName().equals(JFileChooser.FILE_SELECTION_MODE_CHANGED_PROPERTY))
+    String property = e.getPropertyName();
+    if (property.equals(JFileChooser.DIRECTORY_CHANGED_PROPERTY)
+        || property.equals(JFileChooser.FILE_FILTER_CHANGED_PROPERTY)
+        || property.equals(JFileChooser.FILE_HIDING_CHANGED_PROPERTY)
+        || property.equals(JFileChooser.FILE_SELECTION_MODE_CHANGED_PROPERTY)
+        || property.equals(JFileChooser.FILE_VIEW_CHANGED_PROPERTY)
+        )
       {
-	listingMode = filechooser.getFileSelectionMode();
 	validateFileCache();
       }
   }
@@ -281,12 +565,6 @@ public class BasicDirectoryModel extends AbstractListModel
   protected void sort(Vector v)
   {
     Collections.sort(v, comparator);
-    Enumeration e = Collections.enumeration(v);
-    Vector tmp = new Vector();
-    for (; e.hasMoreElements();)
-      tmp.add(e.nextElement());
-
-    contents = tmp;
   }
 
   /**
@@ -294,35 +572,18 @@ public class BasicDirectoryModel extends AbstractListModel
    */
   public void validateFileCache()
   {
-    // FIXME: Get the files and sort them in a seperate thread and deliver
-    // them a few at a time to be filtered, so that the file selector is
-    // responsive even with long file lists.
-    contents.clear();
-    directories = 0;
-    FileSystemView fsv = filechooser.getFileSystemView();
-    File[] list = fsv.getFiles(filechooser.getCurrentDirectory(),
-                               filechooser.isFileHidingEnabled());
-
-    if (list == null)
-      return;
-
-    for (int i = 0; i < list.length; i++)
+    File dir = filechooser.getCurrentDirectory();
+    if (dir != null)
       {
-	if (list[i] == null)
-	  continue;
-	boolean isDir = filechooser.isTraversable(list[i]);
-
-	if( listingMode != JFileChooser.DIRECTORIES_ONLY || isDir )
-	  if (filechooser.accept(list[i]))
-	    {
-	      contents.add(list[i]);
-	      if (isDir)
-		directories++;
-	    }
+        // Cancel all pending requests.
+        if (loadThread != null)
+          {
+            loadThread.interrupt();
+            loadThread.cancelPending();
+          }
+        loadThread = new DirectoryLoadThread(dir);
+        loadThread.start();
       }
-    sort(contents);
-    filechooser.revalidate();
-    filechooser.repaint();
   }
 }
 

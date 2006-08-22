@@ -1045,8 +1045,7 @@ public class SwingUtilities
    */
   public static boolean isLeftMouseButton(MouseEvent event)
   {
-    return ((event.getModifiersEx() & InputEvent.BUTTON1_DOWN_MASK)
-	     == InputEvent.BUTTON1_DOWN_MASK);
+    return ((event.getModifiers() & InputEvent.BUTTON1_MASK) != 0);
   }
 
   /**

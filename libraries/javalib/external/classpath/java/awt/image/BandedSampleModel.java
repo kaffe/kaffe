@@ -36,6 +36,8 @@ exception statement from your version. */
 
 package java.awt.image;
 
+import gnu.java.awt.Buffers;
+
 /**
  * A sample model that reads each sample value from a separate band in the
  * {@link DataBuffer}.
@@ -89,15 +91,31 @@ public final class BandedSampleModel extends ComponentSampleModel
   {
     super(dataType, w, h, 1, scanlineStride, bankIndices, bandOffsets);
   }
+  
+  /**
+   * Creates a new data buffer that is compatible with this sample model.
+   * 
+   * @return The new data buffer.
+   */
+  public DataBuffer createDataBuffer()
+  {
+    int size = scanlineStride * height;
+    return Buffers.createBuffer(getDataType(), size, numBanks);
+  }
 
   /**
    * Creates a new <code>SampleModel</code> that is compatible with this
    * model and has the specified width and height.
    * 
-   * @param w  the width (in pixels).
-   * @param h  the height (in pixels).
+   * @param w  the width (in pixels, must be greater than zero).
+   * @param h  the height (in pixels, must be greater than zero).
    * 
    * @return The new sample model.
+   * 
+   * @throws IllegalArgumentException if <code>w</code> or <code>h</code> is
+   *     not greater than zero.
+   * @throws IllegalArgumentException if <code>w * h</code> exceeds 
+   *     <code>Integer.MAX_VALUE</code>.
    */
   public SampleModel createCompatibleSampleModel(int w, int h)
   {
@@ -112,28 +130,27 @@ public final class BandedSampleModel extends ComponentSampleModel
     // FIXME: This is N^2, but not a big issue, unless there's a lot of
     // bands...
     for (int i = 0; i < bandOffsets.length; i++)
-      for (int j = i + 1; j < bandOffsets.length; i++)
-	if (bankIndices[order[i]] > bankIndices[order[j]]
-	    || (bankIndices[order[i]] == bankIndices[order[j]]
-		&& bandOffsets[order[i]] > bandOffsets[order[j]]))
-	  {
-	    int t = order[i]; order[i] = order[j]; order[j] = t;
-	  }
+      for (int j = i + 1; j < bandOffsets.length; j++)
+        if (bankIndices[order[i]] > bankIndices[order[j]]
+            || (bankIndices[order[i]] == bankIndices[order[j]]
+            && bandOffsets[order[i]] > bandOffsets[order[j]]))
+          {
+            int t = order[i]; order[i] = order[j]; order[j] = t;
+          }
     int bank = 0;
     int offset = 0;
     for (int i = 0; i < bandOffsets.length; i++)
       {
-	if (bankIndices[order[i]] != bank)
-	  {
-	    bank = bankIndices[order[i]];
-	    offset = 0;
-	  }
-	newoffsets[order[i]] = offset;
-	offset += w * scanlineStride;
+        if (bankIndices[order[i]] != bank)
+          {
+            bank = bankIndices[order[i]];
+            offset = 0;
+          }
+        newoffsets[order[i]] = offset;
+        offset += w * scanlineStride;
       }
     
-    return new BandedSampleModel(dataType, w, h, scanlineStride, bankIndices, 
-                                 newoffsets);
+    return new BandedSampleModel(dataType, w, h, w, bankIndices, newoffsets);
   }
 
 
@@ -175,6 +192,9 @@ public final class BandedSampleModel extends ComponentSampleModel
    */
   public Object getDataElements(int x, int y, Object obj, DataBuffer data)
   {
+    if (x < 0 || y < 0)
+      throw new ArrayIndexOutOfBoundsException(
+          "x and y must not be less than 0.");
     int pixel = getSample(x, y, 0, data);
     switch (getTransferType())
     {
@@ -277,6 +297,9 @@ public final class BandedSampleModel extends ComponentSampleModel
   public int[] getPixels(int x, int y, int w, int h, int[] iArray,
 			 DataBuffer data)
   {
+    if (x < 0 || y < 0)
+      throw new ArrayIndexOutOfBoundsException(
+          "x and y must not be less than 0.");
     if (iArray == null) 
       iArray = new int[w * h * numBands];
     int outOffset = 0;
@@ -384,6 +407,9 @@ public final class BandedSampleModel extends ComponentSampleModel
   public int[] getSamples(int x, int y, int w, int h, int b, int[] iArray,
 			  DataBuffer data)
   {
+    if (x < 0 || y < 0)
+      throw new ArrayIndexOutOfBoundsException(
+          "x and y must not be less than 0.");
     if (iArray == null) 
       iArray = new int[w * h];
     int outOffset = 0;
@@ -623,6 +649,9 @@ public final class BandedSampleModel extends ComponentSampleModel
   public void setSamples(int x, int y, int w, int h, int b, int[] iArray,
 			 DataBuffer data)
   {
+    if (x < 0 || y < 0)
+      throw new ArrayIndexOutOfBoundsException(
+          "x and y must not be less than 0.");
     int inOffset = 0;
 
     switch (getTransferType())

@@ -207,9 +207,9 @@ public class XEventPump
             System.err.println("Setting size on AWT window: " + c.width()
                              + ", " + c.height() + ", " + awtWindow.getWidth()
                              + ", " + awtWindow.getHeight());
-          ((XFramePeer) awtWindow.getPeer()).callback = true;
+          ((XWindowPeer) awtWindow.getPeer()).callback = true;
           awtWindow.setSize(c.width(), c.height());
-          ((XFramePeer) awtWindow.getPeer()).callback = false;
+          ((XWindowPeer) awtWindow.getPeer()).callback = false;
         }
       break;
     case Expose.CODE:

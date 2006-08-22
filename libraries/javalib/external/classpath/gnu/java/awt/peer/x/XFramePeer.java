@@ -46,59 +46,34 @@ import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.MenuBar;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.PaintEvent;
 import java.awt.event.WindowEvent;
+import java.awt.peer.FramePeer;
 
 import gnu.java.awt.peer.swing.SwingFramePeer;
 import gnu.x11.Window;
 import gnu.x11.event.Event;
 
 public class XFramePeer
-  extends SwingFramePeer
+  extends XWindowPeer
+  implements FramePeer
 {
 
-  private static int standardSelect = Event.BUTTON_PRESS_MASK
-                                      | Event.BUTTON_RELEASE_MASK
-                                      | Event.POINTER_MOTION_MASK
-                                      //| Event.RESIZE_REDIRECT_MASK
-                                      | Event.EXPOSURE_MASK
-                                      //| Event.PROPERTY_CHANGE_MASK
-                                      | Event.STRUCTURE_NOTIFY_MASK
-                                      | Event.KEY_PRESS_MASK
-                                      | Event.KEY_RELEASE_MASK
-                                      ;
-
-  /**
-   * The X window.
-   */
-  private Window xwindow;
-
-  /**
-   * Indicates if we are in callback mode, that is when a property (like size)
-   * is changed in reponse to a request from the X server and doesn't need
-   * to be propagated back to the X server.
-   */
-  boolean callback = false;
-
-  public XFramePeer(Frame frame)
+  XFramePeer(Frame f)
   {
-    super(frame);
-    XGraphicsDevice dev = XToolkit.getDefaultDevice();
-
-    // TODO: Maybe initialize lazily in show().
-    int x = Math.max(frame.getX(), 0);
-    int y = Math.max(frame.getY(), 0);
-    int w = Math.max(frame.getWidth(), 1);
-    int h = Math.max(frame.getHeight(), 1);
-    xwindow = new Window(dev.getDisplay().default_root, x, y, w, h);
-    xwindow.create();
-    xwindow.select_input(standardSelect);
-    dev.getEventPump().registerWindow(xwindow, frame);
+    super(f);
   }
 
   public void setIconImage(Image image)
+  {
+    // TODO: Implement this.
+    throw new UnsupportedOperationException("Not yet implemented.");
+  }
+
+  public void setMenuBar(MenuBar mb)
   {
     // TODO: Implement this.
     throw new UnsupportedOperationException("Not yet implemented.");
@@ -124,198 +99,42 @@ public class XFramePeer
 
   public void setState(int state)
   {
-    // FIXME: Implement this.
+    // TODO: Implement this.
     throw new UnsupportedOperationException("Not yet implemented.");
   }
 
   public void setMaximizedBounds(Rectangle r)
   {
-    // FIXME: Implement this.
+    // TODO: Implement this.
     throw new UnsupportedOperationException("Not yet implemented.");
   }
-
+  
+  /**
+   * Check if this frame peer supports being restacked.
+   * 
+   * @return true if this frame peer can be restacked,
+   * false otherwise
+   * @since 1.5
+   */
+  public boolean isRestackSupported()
+  {
+    // TODO: Implement this.
+    throw new UnsupportedOperationException("Not yet implemented.");
+  }
+  
+  /**
+   * Sets the bounds of this frame peer.
+   * 
+   * @param x the new x co-ordinate
+   * @param y the new y co-ordinate
+   * @param width the new width
+   * @param height the new height
+   * @since 1.5
+   */
   public void setBoundsPrivate(int x, int y, int width, int height)
   {
-    // FIXME: Implement this.
+    // TODO: Implement this.
     throw new UnsupportedOperationException("Not yet implemented.");
   }
 
-  public void toBack()
-  {
-    // FIXME: Implement this.
-    throw new UnsupportedOperationException("Not yet implemented.");
-  }
-
-  public void toFront()
-  {
-    // FIXME: Implement this.
-    throw new UnsupportedOperationException("Not yet implemented.");
-  }
-
-  public void updateAlwaysOnTop()
-  {
-    // FIXME: Implement this.
-    throw new UnsupportedOperationException("Not yet implemented.");
-  }
-
-  public boolean requestWindowFocus()
-  {
-    // FIXME: Implement this.
-    throw new UnsupportedOperationException("Not yet implemented.");
-  }
-
-  public Point getLocationOnScreen()
-  {
-    return new Point(xwindow.x, xwindow.y);
-  }
-
-  /**
-   * Returns a XGraphics suitable for drawing on this frame.
-   *
-   * @return a XGraphics suitable for drawing on this frame
-   */
-  public Graphics getGraphics()
-  {
-    return new XGraphics(xwindow);
-  }
-
-  public Image createImage(int w, int h)
-  {
-    return new XImage(w, h);
-  }
-
-  /**
-   * Sets the visibility state of the component. This is called by
-   * {@link Component#setVisible(boolean)}.
-   *
-   * This is implemented to call setVisible() on the Swing component.
-   *
-   * @param visible <code>true</code> to make the component visible,
-   *        <code>false</code> to make it invisible
-   */
-  public void setVisible(boolean visible)
-  {
-    if (visible)
-      show();
-    else
-      hide();
-  }
-
-  /**
-   * Makes the component visible. This is called by {@link Component#show()}.
-   *
-   * This is implemented to call setVisible(true) on the Swing component.
-   */
-  public void show()
-  {
-//    // Prevent ResizeRedirect events.
-//    //xwindow.select_input(noResizeRedirectSelect);
-//    Window.Attributes atts = new Window.Attributes();
-//    atts.set_override_redirect(true);
-//    xwindow.change_attributes(atts);
-
-    // Prevent ResizeRedirect events.
-    //xwindow.select_input(Event.NO_EVENT_MASK);
-    //xwindow.select_input(noResizeRedirectSelect);
-
-    xwindow.map();
-    EventQueue eq = XToolkit.getDefaultToolkit().getSystemEventQueue();
-    java.awt.Window w = (java.awt.Window) super.awtComponent;
-    eq.postEvent(new WindowEvent(w, WindowEvent.WINDOW_OPENED));
-    eq.postEvent(new PaintEvent(w, PaintEvent.PAINT,
-                                new Rectangle(0, 0, w.getWidth(),
-                                              w.getHeight())));
-
-//    // Reset input selection.
-//    atts.set_override_redirect(false);
-//    xwindow.change_attributes(atts);
-  }
-
-  /**
-   * Makes the component invisible. This is called from
-   * {@link Component#hide()}.
-   *
-   * This is implemented to call setVisible(false) on the Swing component.
-   */
-  public void hide()
-  {
-    xwindow.unmap();
-  }
-
-  /**
-   * Notifies the peer that the bounds of this component have changed. This
-   * is called by {@link Component#reshape(int, int, int, int)}.
-   *
-   * This is implemented to call setBounds() on the Swing component.
-   *
-   * @param x the X coordinate of the upper left corner of the component
-   * @param y the Y coordinate of the upper left corner of the component
-   * @param width the width of the component
-   * @param height the height of the component
-   */
-  public void reshape(int x, int y, int width, int height)
-  {
-//    if (callback)
-//      return;
-
-    // Prevent ResizeRedirect events.
-//    //xwindow.select_input(noResizeRedirectSelect);
-//    Window.Attributes atts = new Window.Attributes();
-//    atts.set_override_redirect(true);
-//    xwindow.change_attributes(atts);
-
-    // Need to substract insets because AWT size is including insets,
-    // and X size is excuding insets.
-    Insets i = insets();
-    xwindow.move_resize(x - i.left, y - i.right, width - i.left - i.right,
-                        height - i.top - i.bottom);
-
-    // Reset input selection.
-//    atts = new Window.Attributes();
-//    atts.set_override_redirect(false);
-//    xwindow.change_attributes(atts);
-  }
-
-  public Insets insets()
-  {
-    Insets i = new Insets(0, 0, 0, 0);
-//    Window.GeometryReply g = xwindow.geometry();
-//    int b = g.border_width();
-//    Insets i = new Insets(b, b, b, b);
-//    Window.WMSizeHints wmSize = xwindow.wm_normal_hints();
-//    if (wmSize != null)
-//      {
-//        i.left = wmSize.x() - g.x();
-//        i.right = wmSize.width() - g.width() - i.left ;
-//        i.top = wmSize.y() - g.y();
-//        i.bottom = wmSize.height() - g.height() - i.top;
-//      }
-//    System.err.println("insets: " + i);
-    return i;
-  }
-
-  /**
-   * Returns the font metrics for the specified font.
-   *
-   * @return the font metrics for the specified font
-   */
-  public FontMetrics getFontMetrics(Font font)
-  {
-    XFontPeer fontPeer = (XFontPeer) font.getPeer();
-    return fontPeer.getFontMetrics(font);
-  }
-
-  /**
-   * Unregisters the window in the event pump when it is closed.
-   */
-  protected void finalize()
-  {
-    XGraphicsDevice dev = XToolkit.getDefaultDevice();
-    dev.getEventPump().unregisterWindow(xwindow);
-  }
-
-  public Rectangle getBounds()
-  {
-    return new Rectangle(xwindow.x, xwindow.y, xwindow.width, xwindow.height);
-  }
 }

@@ -14,6 +14,7 @@ JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GtkWindowPeer_gtkWindowSetTitl
 JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GtkWindowPeer_gtkWindowSetResizable (JNIEnv *env, jobject, jboolean);
 JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GtkWindowPeer_gtkWindowSetModal (JNIEnv *env, jobject, jboolean);
 JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GtkWindowPeer_gtkWindowSetAlwaysOnTop (JNIEnv *env, jobject, jboolean);
+JNIEXPORT jboolean JNICALL Java_gnu_java_awt_peer_gtk_GtkWindowPeer_gtkWindowHasFocus (JNIEnv *env, jobject);
 JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GtkWindowPeer_realize (JNIEnv *env, jobject);
 JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GtkWindowPeer_create (JNIEnv *env, jobject, jint, jboolean, jobject);
 JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_GtkWindowPeer_setVisibleNative (JNIEnv *env, jobject, jboolean);

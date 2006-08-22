@@ -323,6 +323,6 @@ public class DragSource implements Serializable
     throws NotImplementedException
   {
     // FIXME: Not implemented.
-    return 0;
+    return 4;
   }
 } // class DragSource

@@ -49,6 +49,7 @@ import java.util.Iterator;
 import gnu.javax.imageio.bmp.BMPImageReaderSpi;
 import gnu.javax.imageio.bmp.BMPImageWriterSpi;
 import gnu.javax.imageio.gif.GIFImageReaderSpi;
+import gnu.javax.imageio.png.PNGImageReaderSpi;
 
 public final class IIORegistry extends ServiceRegistry
 {
@@ -85,7 +86,8 @@ public final class IIORegistry extends ServiceRegistry
     super(defaultCategories.iterator());
 
     // XXX: Register built-in Spis here.
-    registerServiceProvider(new GIFImageReaderSpi()); // Register GIF decoder
+    registerServiceProvider(new PNGImageReaderSpi()); // Register PNG decoder.
+    registerServiceProvider(new GIFImageReaderSpi()); // Register GIF decoder.
     registerServiceProvider(new BMPImageReaderSpi());
     registerServiceProvider(new BMPImageWriterSpi());
 

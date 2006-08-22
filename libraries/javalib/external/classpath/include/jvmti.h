@@ -55,6 +55,10 @@ typedef struct _Jv_rawMonitorID *jrawMonitorID;
 
 #endif /* !_CLASSPATH_VM_JVMTI_TYPES_DEFINED */
 
+/* JVMTI Version */
+#define JVMTI_VERSION_1_0 0x30010000
+#define JVMTI_VERSION (JVMTI_VERSION_1_0 + 38)  /* Spec version is 1.0.38 */
+
 #ifdef __cplusplus
 extern "C"
 {

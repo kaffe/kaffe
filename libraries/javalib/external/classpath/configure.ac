@@ -6,7 +6,7 @@ dnl -----------------------------------------------------------
 dnl define([AC_CACHE_LOAD], )dnl
 dnl define([AC_CACHE_SAVE], )dnl
 
-AC_INIT([GNU Classpath],[0.92-pre],[classpath@gnu.org],[classpath])
+AC_INIT([GNU Classpath],[0.92],[classpath@gnu.org],[classpath])
 AC_CONFIG_SRCDIR(java/lang/System.java)
 
 AC_CANONICAL_TARGET
@@ -467,6 +467,10 @@ if test "x${COMPILE_JNI}" = xyes; then
     PKG_CHECK_MODULES(GCONF, gconf-2.0 >= 2.11.2)
     AC_SUBST(GCONF_CFLAGS)
     AC_SUBST(GCONF_LIBS)
+    dnl we also need gdk for locking
+    PKG_CHECK_MODULES(GDK, gdk-2.0 >= 2.8)
+    AC_SUBST(GDK_CFLAGS)
+    AC_SUBST(GDK_LIBS)
     dnl check if the config value was given form the command line,
     dnl if not, overwrite the default if we have the gconf backend
     dnl compiled in
@@ -490,6 +494,7 @@ if test "x${COMPILE_JNI}" = xyes; then
 	QT_CFLAGS="$QT_CFLAGS -I$EXTRA_QT_INCLUDE_DIR",
 	AC_MSG_WARN([QWidget not found])))
 	AC_CHECK_PROG(MOC, [moc], [moc])
+	AC_CHECK_PROG(MOC, [moc-qt4], [moc-qt4])
     fi
     if test "x$HAVE_QT4" = "xno"; then
       AC_MSG_NOTICE([Looking for QT_CFLAGS and QT_LIBS without pkg-config])
@@ -533,6 +538,9 @@ if test "x${COMPILE_JNI}" = xyes; then
     fi
     if test "x${MOZILLA_FOUND}" = xno; then
       PKG_CHECK_MODULES(MOZILLA, xulrunner-plugin, [MOZILLA_FOUND=yes], [MOZILLA_FOUND=no])
+    fi
+    if test "x${MOZILLA_FOUND}" = xno; then
+      PKG_CHECK_MODULES(MOZILLA, mozilla-firefox-plugin, [MOZILLA_FOUND=yes], [MOZILLA_FOUND=no])
     fi
     PKG_CHECK_MODULES(GLIB, glib-2.0)
 

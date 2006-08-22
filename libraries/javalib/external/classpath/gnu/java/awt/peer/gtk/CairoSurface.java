@@ -175,42 +175,36 @@ public class CairoSurface extends DataBuffer
     int[] data = image.getPixels();
 
     // Swap ordering from GdkPixbuf to Cairo
-    for(int i = 0; i < data.length; i++ )
+    if (ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN)
       {
-	if (ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN)
+	for (int i = 0; i < data.length; i++ )
 	  {
 	    // On a big endian system we get a RRGGBBAA data array.
-	    int alpha = (data[i] & 0xFF);
+	    int alpha = data[i] & 0xFF;
 	    if( alpha == 0 ) // I do not know why we need this, but it works.
 	      data[i] = 0;
 	    else
 	      {
-		int r = (((data[i] & 0xFF000000) >> 24));
-		int g = (((data[i] & 0x00FF0000) >> 16));
-		int b = (((data[i] & 0x0000FF00) >> 8));
 		// Cairo needs a ARGB32 native array.
-		data[i] = (( alpha << 24 ) & 0xFF000000)
-		  | (( r << 16 ) & 0x00FF0000)
-		  | (( g << 8 )  & 0x0000FF00)
-		  | ( b  & 0x000000FF);
+		data[i] = (data[i] >>> 8) | (alpha << 24);
 	      }
 	  }
-	else
+      }
+    else
+      {
+	for (int i = 0; i < data.length; i++ )
 	  {
 	    // On a little endian system we get a AABBGGRR data array.
-	    int alpha = (data[i] & 0xFF000000) >> 24;
+	    int alpha = data[i] & 0xFF000000;
 	    if( alpha == 0 ) // I do not know why we need this, but it works.
 	      data[i] = 0;
 	    else
 	      {
-		int b = (((data[i] & 0x00FF0000) >> 16));
-		int g = (((data[i] & 0x0000FF00) >> 8));
-		int r = ((data[i] & 0x000000FF));
+		int b = (data[i] & 0xFF0000) >> 16;
+		int g = (data[i] & 0xFF00);
+		int r = (data[i] & 0xFF) << 16;
 		// Cairo needs a ARGB32 native array.
-		data[i] = (( alpha << 24 ) & 0xFF000000)
-		  | (( r << 16 ) & 0x00FF0000)
-		  | (( g << 8 )  & 0x0000FF00)
-		  | ( b  & 0x000000FF);
+		data[i] = alpha | r | g | b;
 	      }
 	  }
       }

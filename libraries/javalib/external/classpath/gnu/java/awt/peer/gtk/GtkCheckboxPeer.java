@@ -246,6 +246,9 @@ public class GtkCheckboxPeer extends GtkComponentPeer
 
   public void dispose ()
   {
+    groupMap.clear();
+    current_group = null;
+    currentState = false;
     super.dispose ();
   }
 }

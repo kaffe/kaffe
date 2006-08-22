@@ -694,7 +694,8 @@ public class XFontPeer
     }
 
     String protoType = fontProperties.getProperty(key.toString());
-    return protoType.replaceFirst("%d", String.valueOf(size));
+    int s = validSize(size);
+    return protoType.replaceFirst("%d", String.valueOf(s * 10));
   }
 
   /**
@@ -721,6 +722,31 @@ public class XFontPeer
         retVal = "sansserif";
       }
     return retVal;
+  }
+
+  /**
+   * Translates an arbitrary point size to a size that is typically available
+   * on an X server. These are the sizes 8, 10, 12, 14, 18 and 24.
+   *
+   * @param size the queried size
+   * @return the real available size
+   */
+  private static final int validSize(int size)
+  {
+    int val;
+    if (size <= 9)
+      val = 8;
+    else if (size <= 11)
+      val = 10;
+    else if (size <= 13)
+      val = 12;
+    else if (size <= 17)
+      val = 14;
+    else if (size <= 23)
+      val = 18;
+    else
+      val = 24;
+    return val;
   }
 
   /**

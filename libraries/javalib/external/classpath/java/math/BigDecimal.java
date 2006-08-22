@@ -1,5 +1,5 @@
 /* java.math.BigDecimal -- Arbitrary precision decimals.
-   Copyright (C) 1999, 2000, 2001, 2003, 2005 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2000, 2001, 2003, 2005, 2006 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -266,8 +266,10 @@ public class BigDecimal extends Number implements Comparable
     long mantissa = bits & mantMask;
     long exponent = (bits >>> mantissaBits) & expMask;
     boolean denormal = exponent == 0;
+
     // Correct the exponent for the bias.
     exponent -= denormal ? 1022 : 1023;
+
     // Now correct the exponent to account for the bits to the right
     // of the decimal.
     exponent -= mantissaBits;
@@ -748,6 +750,19 @@ public class BigDecimal extends Number implements Comparable
   }
   
   /**
+   * Performs division, if the resulting quotient requires rounding
+   * (has a nonterminating decimal expansion), 
+   * an ArithmeticException is thrown. 
+   * #see divide(BigDecimal, int, int)
+   * @since 1.5
+   */
+  public BigDecimal divide(BigDecimal divisor)
+    throws ArithmeticException, IllegalArgumentException 
+  {
+    return divide(divisor, scale, ROUND_UNNECESSARY);
+  }
+
+  /**
    * Returns a BigDecimal whose value is the remainder in the quotient
    * this / val.  This is obtained by 
    * subtract(divideToIntegralValue(val).multiply(val)).  
@@ -760,7 +775,7 @@ public class BigDecimal extends Number implements Comparable
   {
     return subtract(divideToIntegralValue(val).multiply(val));
   }
-  
+
   /**
    * Returns a BigDecimal array, the first element of which is the integer part
    * of this / val, and the second element of which is the remainder of 
@@ -994,83 +1009,12 @@ public class BigDecimal extends Number implements Comparable
   {
     if (precision == 0)
       {
-        if (intVal.compareTo(BigInteger.TEN.pow(18)) == 1)
-          precision = numDigitsInBigInteger(intVal);
-        else
-          precision = numDigitsInLong(intVal.longValue());
-      }    
+	String s = intVal.toString();
+	precision = s.length() - (( s.charAt(0) == '-' ) ? 1 : 0);
+      }
     return precision;
   }
   
-  /**
-   * This method is used to determine the precision of BigIntegers with 19 or
-   * more digits.
-   * @param b the BigInteger
-   * @return the number of digits in <code>b</code>
-   */
-  int numDigitsInBigInteger(BigInteger b)
-  {
-    int i = 19;
-    BigInteger comp = BigInteger.TEN.pow(i);
-    while (b.compareTo(comp) >= 0)      
-      comp = BigInteger.TEN.pow(++i);
-          
-    return i;
-  }
-
-  /**
-   * This method determines the number of digits in the long value l. 
-   * @param l1 the long value
-   * @return the number of digits in l
-   */
-  private static int numDigitsInLong(long l1)
-  {
-    long l = l1 >= 0 ? l1 : -l1; 
-    // We divide up the range in a binary fashion, this first if
-    // takes care of numbers with 1 to 9 digits.
-    if (l < 1000000000L)
-    {
-      // This if is for numbers with 1 to 5 digits.
-      if (l < 100000L)
-        {
-          if (l < 100L)
-            return (l < 10L) ? 1 : 2;
-          if (l < 10000L)
-            return (l < 1000L) ? 3 : 4;
-          return 5;
-        }
-      // Here we handle numbers with 6 to 9 digits.
-      if (l < 10000000L)
-        return (l < 1000000L) ? 6 : 7;
-      return (l < 100000000L) ? 8 : 9;
-    }
-    // If we are at this point that means we didn't enter the loop for
-    // numbers with 1 to 9 digits, so our number has 10 to 19 digits. 
-    // This first if handles numbers with 10 to 14 digits.
-    if (l < 100000000000000L)
-      {
-        // This handles numbers with 10 to 12 digits.
-        if (l < 1000000000000L)
-          {
-            if (l < 100000000000L)
-              return (l < 10000000000L) ? 10 : 11;
-            return 12;
-          }
-        // This handles numbers with 13 or 14 digits.
-        return (l < 10000000000000L) ? 13 : 14;
-      }
-    // Finally we handle numbers with 15 to 19 digits.
-    if (l < 100000000000000000L)
-      {
-        // 15 to 17 digits.
-        if (l < 1000000000000000L)
-          return 15;
-        return (l < 10000000000000000L) ? 16 : 17;
-      }
-    // 18 or 19 digits.
-    return (l < 1000000000000000000L) ? 18 : 19;
-  }
-
   /**
    * Returns the String representation of this BigDecimal, using scientific
    * notation if necessary.  The following steps are taken to generate
@@ -1097,15 +1041,14 @@ public class BigDecimal extends Number implements Comparable
     if (scale == 0)
       return bigStr;
 
-    // This is the adjusted exponent described above.
-    int adjExp = -scale + (numDigitsInLong(intVal.longValue()) - 1);
+    boolean negative = (bigStr.charAt(0) == '-');
+    int point = bigStr.length() - scale - (negative ? 1 : 0);
+
     StringBuilder val = new StringBuilder();
 
-    if (scale >= 0 && adjExp >= -6)
+    if (scale >= 0 && (point - 1) >= -6)
       {
-        // Convert to character form without scientific notation.
-        boolean negative = (bigStr.charAt(0) == '-');
-        int point = bigStr.length() - scale - (negative ? 1 : 0);
+	// Convert to character form without scientific notation.
         if (point <= 0)
           {
             // Zeros need to be prepended to the StringBuilder.
@@ -1136,12 +1079,12 @@ public class BigDecimal extends Number implements Comparable
         // If there is more than one digit in the unscaled value we put a 
         // decimal after the first digit.
         if (bigStr.length() > 1)
-          val.insert(1, '.');
-        // And then append 'E' and the exponent (adjExp).
+          val.insert( ( negative ? 2 : 1 ), '.');
+        // And then append 'E' and the exponent = (point - 1).
         val.append('E');
-        if (adjExp >= 0)
+        if (point - 1 >= 0)
           val.append('+');
-        val.append(adjExp);
+        val.append( point - 1 );
       }
     return val.toString();
   }
@@ -1163,15 +1106,16 @@ public class BigDecimal extends Number implements Comparable
     if (scale == 0)
       return bigStr;
 
+    boolean negative = (bigStr.charAt(0) == '-');
+    int point = bigStr.length() - scale - (negative ? 1 : 0);
+
     // This is the adjusted exponent described above.
-    int adjExp = -scale + (numDigitsInLong(intVal.longValue()) - 1);
+    int adjExp = point - 1;
     StringBuilder val = new StringBuilder();
 
     if (scale >= 0 && adjExp >= -6)
       {
         // Convert to character form without scientific notation.
-        boolean negative = (bigStr.charAt(0) == '-');
-        int point = bigStr.length() - scale - (negative ? 1 : 0);
         if (point <= 0)
           {
             // Zeros need to be prepended to the StringBuilder.
@@ -1238,7 +1182,7 @@ public class BigDecimal extends Number implements Comparable
               val.append('0');
           }
         else if (bigStr.length() > dot)
-          val.insert(dot, '.');
+          val.insert(dot + (negative ? 1 : 0), '.');
         
         // And then append 'E' and the exponent (adjExp).
         val.append('E');
@@ -1400,6 +1344,10 @@ public class BigDecimal extends Number implements Comparable
   public BigDecimal setScale (int scale, int roundingMode)
     throws ArithmeticException, IllegalArgumentException
   {
+    // NOTE: The 1.5 JRE doesn't throw this, ones prior to it do and
+    // the spec says it should. Nevertheless, if 1.6 doesn't fix this
+    // we should consider removing it.
+    if( scale < 0 ) throw new ArithmeticException("Scale parameter < 0.");
     return divide (ONE, scale, roundingMode);
   }
    

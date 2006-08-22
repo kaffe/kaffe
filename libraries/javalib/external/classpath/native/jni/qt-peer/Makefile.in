@@ -194,6 +194,8 @@ GCJ = @GCJ@
 GCJX = @GCJX@
 GCONF_CFLAGS = @GCONF_CFLAGS@
 GCONF_LIBS = @GCONF_LIBS@
+GDK_CFLAGS = @GDK_CFLAGS@
+GDK_LIBS = @GDK_LIBS@
 GJDOC = @GJDOC@
 GLIB_CFLAGS = @GLIB_CFLAGS@
 GLIB_LIBS = @GLIB_LIBS@
@@ -399,6 +401,7 @@ libqtpeer_la_SOURCES = \
         slotcallbacks.cpp \
         slotcallbacks.h 
 
+libqtpeer_la_LDFLAGS = -avoid-version
 BUILT_SOURCES = $(libqtpeer_la_MOC)
 CLEANFILES = so_locations $(BUILT_SOURCES)
 all: $(BUILT_SOURCES)

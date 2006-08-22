@@ -268,7 +268,14 @@ public class BasicFileChooserUI extends FileChooserUI
      */
     public String getName(File f)
     {
-      return f.getName();
+      String name = null;
+      if (f != null)
+        {
+          JFileChooser c = getFileChooser();
+          FileSystemView v = c.getFileSystemView();
+          name = v.getSystemDisplayName(f);
+        }
+      return name;
     }
 
     /**
@@ -890,7 +897,9 @@ public class BasicFileChooserUI extends FileChooserUI
   protected void installListeners(JFileChooser fc)
   {
     propertyChangeListener = createPropertyChangeListener(filechooser);
-    filechooser.addPropertyChangeListener(propertyChangeListener);
+    if (propertyChangeListener != null)
+      filechooser.addPropertyChangeListener(propertyChangeListener);
+    fc.addPropertyChangeListener(getModel());
   }
 
   /**
@@ -900,8 +909,12 @@ public class BasicFileChooserUI extends FileChooserUI
    */
   protected void uninstallListeners(JFileChooser fc)
   {
-    filechooser.removePropertyChangeListener(propertyChangeListener);
-    propertyChangeListener = null;
+    if (propertyChangeListener != null)
+      {
+        filechooser.removePropertyChangeListener(propertyChangeListener);
+        propertyChangeListener = null;
+      }
+    fc.removePropertyChangeListener(getModel());
   }
 
   /**
@@ -1062,12 +1075,8 @@ public class BasicFileChooserUI extends FileChooserUI
    */
   public PropertyChangeListener createPropertyChangeListener(JFileChooser fc)
   {
-    return new PropertyChangeListener()
-    {
-      public void propertyChange(PropertyChangeEvent e)
-      {
-      }
-    };
+    // The RI returns null here, so do we.
+    return null;
   }
 
   /**

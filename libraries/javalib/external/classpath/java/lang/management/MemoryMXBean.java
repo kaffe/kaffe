@@ -70,6 +70,34 @@ package java.lang.management;
  * either change (either expanding or contracting) or stay
  * the same.
  * </p>
+ * <h2>Notifications</h2>
+ * <p>
+ * Implementations of this interface also conform to the
+ * {@link javax.management.NotificationEmitter} interface,
+ * and supply two notifications reflecting memory usage.
+ * These notifications occur when a usage threshold is
+ * exceeded; for more details of these, see the documentation
+ * of {@link MemoryPoolMXBean}.  If threshold monitoring
+ * is supported, then a notification will be emitted each time
+ * the threshold is crossed.  Another notification will not
+ * be emitted unless the usage level has dropped below the
+ * threshold again in the meantime.
+ * </p>
+ * <p>
+ * The emitted notifications are instances of
+ * {@link javax.management.Notification}, with a type of
+ * either
+ * {@link java.lang.management.MemoryNotificationInfo#MEMORY_THRESHOLD_EXCEEDED}
+ * or
+ * {@link java.lang.management.MemoryNotificationInfo#MEMORY_COLLECTION_THRESHOLD_EXCEEDED}
+ * (depending on whether the notification refers to the general
+ * usage threshold or the garbage collection threshold) and an instance
+ * of {@link java.lang.management.MemoryNotificationInfo} contained
+ * in the user data section.  This is wrapped inside an instance
+ * of {@link javax.management.openmbean.CompositeData}, as explained
+ * in the documentation for
+ * {@link java.lang.management.MemoryNotificationInfo}.
+ * </p>
  *
  * @author Andrew John Hughes (gnu_andrew@member.fsf.org)
  * @since 1.5

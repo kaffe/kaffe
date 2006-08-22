@@ -38,13 +38,12 @@ exception statement from your version. */
 
 package javax.swing.plaf.basic;
 
-import gnu.classpath.NotImplementedException;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -58,10 +57,14 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
+import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -76,6 +79,7 @@ import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
+import javax.swing.plaf.ActionMapUIResource;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.OptionPaneUI;
 
@@ -84,6 +88,21 @@ import javax.swing.plaf.OptionPaneUI;
  */
 public class BasicOptionPaneUI extends OptionPaneUI
 {
+  /**
+   * Implements the "close" keyboard action.
+   */
+  static class OptionPaneCloseAction
+    extends AbstractAction
+  {
+
+    public void actionPerformed(ActionEvent event)
+    {
+      JOptionPane op = (JOptionPane) event.getSource();
+      op.setValue(new Integer(JOptionPane.CLOSED_OPTION));
+    }
+    
+  }
+
   /**
    * This is a helper class that listens to the buttons located at the bottom
    * of the JOptionPane.
@@ -389,36 +408,20 @@ public class BasicOptionPaneUI extends OptionPaneUI
      */
     public void propertyChange(PropertyChangeEvent e)
     {
-      if (e.getPropertyName().equals(JOptionPane.ICON_PROPERTY)
-          || e.getPropertyName().equals(JOptionPane.MESSAGE_TYPE_PROPERTY))
-	addIcon(messageAreaContainer);
-      else if (e.getPropertyName().equals(JOptionPane.INITIAL_SELECTION_VALUE_PROPERTY))
-	resetSelectedValue();
-      else if (e.getPropertyName().equals(JOptionPane.INITIAL_VALUE_PROPERTY)
-               || e.getPropertyName().equals(JOptionPane.OPTIONS_PROPERTY)
-               || e.getPropertyName().equals(JOptionPane.OPTION_TYPE_PROPERTY))
+      String property = e.getPropertyName();
+      if (property.equals(JOptionPane.ICON_PROPERTY)
+          || property.equals(JOptionPane.INITIAL_SELECTION_VALUE_PROPERTY)
+          || property.equals(JOptionPane.INITIAL_VALUE_PROPERTY)
+          || property.equals(JOptionPane.MESSAGE_PROPERTY)
+          || property.equals(JOptionPane.MESSAGE_TYPE_PROPERTY)
+          || property.equals(JOptionPane.OPTION_TYPE_PROPERTY)
+          || property.equals(JOptionPane.OPTIONS_PROPERTY)
+          || property.equals(JOptionPane.WANTS_INPUT_PROPERTY))
         {
-	  Container newButtons = createButtonArea();
-	  optionPane.remove(buttonContainer);
-	  optionPane.add(newButtons);
-	  buttonContainer = newButtons;
+          uninstallComponents();
+          installComponents();
+          optionPane.validate();
         }
-
-      else if (e.getPropertyName().equals(JOptionPane.MESSAGE_PROPERTY)
-               || e.getPropertyName().equals(JOptionPane.WANTS_INPUT_PROPERTY)
-               || e.getPropertyName().equals(JOptionPane.SELECTION_VALUES_PROPERTY))
-        {
-          optionPane.remove(messageAreaContainer);
-          messageAreaContainer = createMessageArea();
-          optionPane.add(messageAreaContainer);
-          Container newButtons = createButtonArea();
-          optionPane.remove(buttonContainer);
-          optionPane.add(newButtons);
-          buttonContainer = newButtons;
-          optionPane.add(buttonContainer);
-        }
-      optionPane.invalidate();
-      optionPane.repaint();
     }
   }
 
@@ -461,15 +464,6 @@ public class BasicOptionPaneUI extends OptionPaneUI
 
   /** The size of the icons. */
   private static final int ICON_SIZE = 36;
-
-  /** The foreground color for the message area. */
-  private transient Color messageForeground;
-
-  /** The border around the message area. */
-  private transient Border messageBorder;
-
-  /** The border around the button area. */
-  private transient Border buttonBorder;
 
   /** The string used to describe OK buttons. */
   private static final String OK_STRING = "OK";
@@ -700,6 +694,7 @@ public class BasicOptionPaneUI extends OptionPaneUI
     if (icon != null)
       {
 	iconLabel = new JLabel(icon);
+        configureLabel(iconLabel);
 	top.add(iconLabel, BorderLayout.WEST);
       }
   }
@@ -761,7 +756,9 @@ public class BasicOptionPaneUI extends OptionPaneUI
       }
     else if (msg instanceof Icon)
       {
-	container.add(new JLabel((Icon) msg), cons);
+        JLabel label = new JLabel((Icon) msg);
+        configureLabel(label);
+	container.add(label, cons);
 	cons.gridy++;
       }
     else
@@ -778,8 +775,11 @@ public class BasicOptionPaneUI extends OptionPaneUI
 	    addMessageComponents(container, cons, tmp, maxll, true);
 	  }
 	else
-	  addMessageComponents(container, cons, new JLabel(msg.toString()),
-	                       maxll, true);
+          {
+            JLabel label = new JLabel(msg.toString());
+            configureLabel(label);
+            addMessageComponents(container, cons, label, maxll, true);
+          }
       }
   }
 
@@ -810,6 +810,7 @@ public class BasicOptionPaneUI extends OptionPaneUI
         remainder = d.substring(maxll);
       }
     JLabel label = new JLabel(line);
+    configureLabel(label);
     c.add(label);
 
     // If there is nothing left to burst, then we can stop.
@@ -820,8 +821,12 @@ public class BasicOptionPaneUI extends OptionPaneUI
     if (remainder.length() > maxll || remainder.contains("\n"))
       burstStringInto(c, remainder, maxll);
     else
-      // Add the remainder to the container and be done.
-      c.add(new JLabel(remainder)); 
+      {
+        // Add the remainder to the container and be done.
+        JLabel l = new JLabel(remainder);
+        configureLabel(l);
+        c.add(l);
+      }
   }
 
   /**
@@ -857,6 +862,9 @@ public class BasicOptionPaneUI extends OptionPaneUI
   protected Container createButtonArea()
   {
     JPanel buttonPanel = new JPanel();
+    Border b = UIManager.getBorder("OptionPane.buttonAreaBorder");
+    if (b != null)
+      buttonPanel.setBorder(b);
 
     buttonPanel.setLayout(createLayoutManager());
     addButtonComponents(buttonPanel, getButtons(), getInitialValueIndex());
@@ -882,6 +890,10 @@ public class BasicOptionPaneUI extends OptionPaneUI
   protected Container createMessageArea()
   {
     JPanel messageArea = new JPanel();
+    Border messageBorder = UIManager.getBorder("OptionPane.messageAreaBorder");
+    if (messageBorder != null)
+      messageArea.setBorder(messageBorder);
+
     messageArea.setLayout(new BorderLayout());
     addIcon(messageArea);
 
@@ -935,10 +947,10 @@ public class BasicOptionPaneUI extends OptionPaneUI
    * @return A Container that will separate the message and button areas.
    */
   protected Container createSeparator()
-    throws NotImplementedException
   {
-    // FIXME: Figure out what this method is supposed to return and where
-    // this should be added to the OptionPane.
+    // The reference implementation returns null here. When overriding
+    // to return something non-null, the component gets added between
+    // the message area and the button area. See installComponents().
     return null;
   }
 
@@ -1139,35 +1151,17 @@ public class BasicOptionPaneUI extends OptionPaneUI
    */
   protected void installComponents()
   {
-    // reset it.
-    hasCustomComponents = false;
-    Container msg = createMessageArea();
-    if (msg != null)
-      {
-	((JComponent) msg).setBorder(messageBorder);
-	msg.setForeground(messageForeground);
-	messageAreaContainer = msg;
-	optionPane.add(msg);
-      }
+    // First thing is the message area.
+    optionPane.add(createMessageArea());
 
-    // FIXME: Figure out if the separator should be inserted here or what
-    // this thing is supposed to do. Note: The JDK does NOT insert another
-    // component at this place. The JOptionPane only has two panels in it
-    // and there actually are applications that depend on this beeing so.
+    // Add separator when createSeparator() is overridden to return
+    // something other than null.
     Container sep = createSeparator();
     if (sep != null)
       optionPane.add(sep);
 
-    Container button = createButtonArea();
-    if (button != null)
-      {
-	((JComponent) button).setBorder(buttonBorder);
-	buttonContainer = button;
-	optionPane.add(button);
-      }
-
-    optionPane.setBorder(BorderFactory.createEmptyBorder(12, 12, 11, 11));
-    optionPane.invalidate();
+    // Last thing is the button area.
+    optionPane.add(createButtonArea());
   }
 
   /**
@@ -1180,10 +1174,6 @@ public class BasicOptionPaneUI extends OptionPaneUI
                                      "OptionPane.font");
     LookAndFeel.installBorder(optionPane, "OptionPane.border");
     optionPane.setOpaque(true);
-
-    messageBorder = UIManager.getBorder("OptionPane.messageAreaBorder");
-    messageForeground = UIManager.getColor("OptionPane.messageForeground");
-    buttonBorder = UIManager.getBorder("OptionPane.buttonAreaBorder");
 
     minimumSize = UIManager.getDimension("OptionPane.minimumSize");
 
@@ -1202,9 +1192,44 @@ public class BasicOptionPaneUI extends OptionPaneUI
    * This method installs keyboard actions for the JOptionpane.
    */
   protected void installKeyboardActions()
-    throws NotImplementedException
   {
-    // FIXME: implement.
+    // Install the input map.
+    Object[] bindings =
+      (Object[]) SharedUIDefaults.get("OptionPane.windowBindings");
+    InputMap inputMap = LookAndFeel.makeComponentInputMap(optionPane,
+                                                          bindings);
+    SwingUtilities.replaceUIInputMap(optionPane,
+                                     JComponent.WHEN_IN_FOCUSED_WINDOW,
+                                     inputMap);
+
+    // FIXME: The JDK uses a LazyActionMap for parentActionMap
+    SwingUtilities.replaceUIActionMap(optionPane, getActionMap());
+  }
+
+  /**
+   * Fetches the action map from  the UI defaults, or create a new one
+   * if the action map hasn't been initialized.
+   *
+   * @return the action map
+   */
+  private ActionMap getActionMap()
+  {
+    ActionMap am = (ActionMap) UIManager.get("OptionPane.actionMap");
+    if (am == null)
+      {
+        am = createDefaultActions();
+        UIManager.getLookAndFeelDefaults().put("OptionPane.actionMap", am);
+      }
+    return am;
+  }
+
+  private ActionMap createDefaultActions()
+  {
+    ActionMapUIResource am = new ActionMapUIResource();
+    Action action = new OptionPaneCloseAction();
+
+    am.put("close", action);
+    return am;
   }
 
   /**
@@ -1317,10 +1342,6 @@ public class BasicOptionPaneUI extends OptionPaneUI
 
     minimumSize = null;
 
-    messageBorder = null;
-    buttonBorder = null;
-    messageForeground = null;
-
     // FIXME: ImageIcons don't seem to work properly
 
     /*
@@ -1335,9 +1356,10 @@ public class BasicOptionPaneUI extends OptionPaneUI
    * This method uninstalls keyboard actions for the JOptionPane.
    */
   protected void uninstallKeyboardActions()
-    throws NotImplementedException
   {
-    // FIXME: implement.
+    SwingUtilities.replaceUIInputMap(optionPane, JComponent.
+                                     WHEN_ANCESTOR_OF_FOCUSED_COMPONENT, null);
+    SwingUtilities.replaceUIActionMap(optionPane, null);
   }
 
   /**
@@ -1362,5 +1384,21 @@ public class BasicOptionPaneUI extends OptionPaneUI
     uninstallDefaults();
 
     optionPane = null;
+  }
+
+  /**
+   * Applies the proper UI configuration to labels that are added to
+   * the OptionPane.
+   *
+   * @param l the label to configure
+   */
+  private void configureLabel(JLabel l)
+  {
+    Color c = UIManager.getColor("OptionPane.messageForeground");
+    if (c != null)
+      l.setForeground(c);
+    Font f = UIManager.getFont("OptionPane.messageFont");
+    if (f != null)
+      l.setFont(f);
   }
 }

@@ -89,14 +89,16 @@ public class Container extends Component
   Dimension maxSize;
 
   /**
-   * Keeps track if the Container was cleared during a paint/update.
-   */
-  private boolean backCleared;
-
-  /**
    * @since 1.4
    */
   boolean focusCycleRoot;
+
+  /**
+   * Indicates if this container provides a focus traversal policy.
+   *
+   * @since 1.5
+   */
+  private boolean focusTraversalPolicyProvider;
 
   int containerSerializedDataVersion;
 
@@ -852,13 +854,10 @@ public class Container extends Component
    */
   public void paint(Graphics g)
   {
-    if (!isShowing())
-      return;
-
-    // Visit heavyweights if the background was cleared
-    // for this container.
-    visitChildren(g, GfxPaintVisitor.INSTANCE, !backCleared);
-    backCleared = false;
+    if (isShowing())
+      {
+        visitChildren(g, GfxPaintVisitor.INSTANCE, true);
+      }
   }
 
   /**
@@ -888,14 +887,15 @@ public class Container extends Component
     // that overrides isLightweight() to return false, the background is
     // also not cleared. So we do a check on !(peer instanceof LightweightPeer)
     // instead.
-    ComponentPeer p = peer;
-    if (p != null && ! (p instanceof LightweightPeer))
+    if (isShowing())
       {
-        g.clearRect(0, 0, getWidth(), getHeight());
-        backCleared = true;
+        ComponentPeer p = peer;
+        if (! (p instanceof LightweightPeer))
+          {
+            g.clearRect(0, 0, getWidth(), getHeight());
+          }
+        paint(g);
       }
-
-    paint(g);
   }
 
   /**
@@ -1607,6 +1607,42 @@ public class Container extends Component
   public void setFocusCycleRoot (boolean focusCycleRoot)
   {
     this.focusCycleRoot = focusCycleRoot;
+  }
+
+  /**
+   * Set to <code>true</code> if this container provides a focus traversal
+   * policy, <code>false</code> when the root container's focus
+   * traversal policy should be used.
+   *
+   * @return <code>true</code> if this container provides a focus traversal
+   *        policy, <code>false</code> when the root container's focus
+   *        traversal policy should be used
+   *
+   * @see #setFocusTraversalPolicyProvider(boolean)
+   *
+   * @since 1.5
+   */
+  public final boolean isFocusTraversalPolicyProvider()
+  {
+    return focusTraversalPolicyProvider;
+  }
+
+  /**
+   * Set to <code>true</code> if this container provides a focus traversal
+   * policy, <code>false</code> when the root container's focus
+   * traversal policy should be used.
+   *
+   * @param b <code>true</code> if this container provides a focus traversal
+   *        policy, <code>false</code> when the root container's focus
+   *        traversal policy should be used
+   * 
+   * @see #isFocusTraversalPolicyProvider()
+   *
+   * @since 1.5
+   */
+  public final void setFocusTraversalPolicyProvider(boolean b)
+  {
+    focusTraversalPolicyProvider = b;
   }
 
   /**

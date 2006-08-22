@@ -545,8 +545,7 @@ public final class URL implements Serializable
    */
   public Object getContent(Class[] classes) throws IOException
   {
-    // FIXME: implement this
-    return getContent();
+    return openConnection().getContent(classes);
   }
 
   /**

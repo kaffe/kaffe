@@ -106,12 +106,12 @@ public class LineSegment extends Segment
     P2 = p;
   }
 
-  public double[] first()
+  public double[] cp1()
   {
     return new double[]{P2.getX(), P2.getY()}; 
   }
 
-  public double[] last()
+  public double[] cp2()
   {
     return new double[]{P1.getX(), P1.getY()}; 
   }
