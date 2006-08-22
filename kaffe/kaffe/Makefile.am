@@ -30,6 +30,10 @@ if COND_KAFFE_NANOX_AWT
 INCLUDE_KAFFE_NANOX_AWT = -DKAFFE_NANOX_AWT_INCLUDED
 endif
 
+if COND_KAFFE_XYNTH_AWT
+INCLUDE_KAFFE_XYNTH_AWT = -DKAFFE_XYNTH_AWT_INCLUDED
+endif
+
 AM_CPPFLAGS = \
 	-I../kaffevm \
 	-I$(srcdir)/../kaffevm \
@@ -42,7 +46,8 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os) \
 	$(INCLUDE_KAFFE_X_AWT) \
 	$(INCLUDE_KAFFE_QT_AWT) \
-	$(INCLUDE_KAFFE_NANOX_AWT)
+	$(INCLUDE_KAFFE_NANOX_AWT) \
+	$(INCLUDE_KAFFE_XYNTH_AWT)
 
 kaffe_bin_SOURCES = \
 	main.c \

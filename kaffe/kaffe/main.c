@@ -375,7 +375,7 @@ setUserProperty(char * propStr)
  */
 
 #if defined (KAFFE_X_AWT_INCLUDED) || defined (KAFFE_QT_AWT_INCLUDED)	\
-  || defined (KAFFE_NANOX_AWT_INCLUDED)
+  || defined (KAFFE_NANOX_AWT_INCLUDED) || defined(KAFFE_XYNTH_AWT_INCLUDED)
 static 
 userProperty*
 setKaffeAWT(const char * propStr)
@@ -532,6 +532,13 @@ options(char** argv, int argc)
 		 */
 		else if (strncmp(argv[i], "-Xkaffe-nanox-awt", (j=17)) == 0) {
 			prop = setKaffeAWT("kaffe.awt.nativelib=nanoxawt");
+		}
+#endif
+#ifdef KAFFE_XYNTH_AWT_INCLUDED
+		/* Extra option to use kaffe's Xynth AWT backend.
+		 */
+		else if (strncmp(argv[i], "-Xkaffe-xynth-awt", (j=17)) == 0) {
+			prop = setKaffeAWT("kaffe.awt.nativelib=xynthawt");
 		}
 #endif
 #if defined(USE_GMP)
@@ -1006,6 +1013,9 @@ usage(void)
 #endif
 #ifdef KAFFE_NANOX_AWT_INCLUDED
 	fprintf(stderr, "%s", _("	-Xkaffe-nanox-awt	 Use Kaffe's Nano-X AWT backend\n"));
+#endif
+#ifdef KAFFE_XYNTH_AWT_INCLUDED
+	fprintf(stderr, _("	-Xkaffe-xynth-awt	 Use Kaffe's Xynth AWT backend\n"));
 #endif
 
 	fprintf(stderr, "%s", _("  * Option currently ignored.\n"

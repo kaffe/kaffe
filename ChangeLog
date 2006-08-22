@@ -1,3 +1,21 @@
+2006-08-22  Alper Akcan <distchx@yahoo.com>
+	* Makefile.am,
+	configure.ac,
+	WHATSNEW,
+	README.xynth,
+	libraries/javalib/Makefile.am,
+	libraries/clib/awt/xynth/graphic.c,
+	libraries/clib/awt/xynth/image.c,
+	libraries/clib/awt/xynth/font.c,
+	libraries/clib/awt/xynth/toolkit.h,
+	libraries/clib/awt/xynth/color.c,
+	libraries/clib/awt/xynth/window.c,
+	libraries/clib/awt/xynth/Makefile.am,
+	libraries/clib/awt/xynth/event.c,
+	libraries/clib/awt/xynth/toolkit.c:
+	
+	new xynth based awt backend.
+
 2006-08-22  Dalibor Topic  <robilad@kaffe.org>
 
 	Switched nio libraries to GNU Classpath's version.

@@ -8,6 +8,10 @@ MAYBE_PEERLESS_KAFFE_AWT=awt-implementations
 else
 if COND_KAFFE_NANOX_AWT
 MAYBE_PEERLESS_KAFFE_AWT=awt-implementations
+else
+if COND_KAFFE_XYNTH_AWT
+MAYBE_PEERLESS_KAFFE_AWT=awt-implementations
+endif
 endif
 endif
 endif

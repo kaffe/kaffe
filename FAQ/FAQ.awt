@@ -164,6 +164,22 @@ So far, you have the following choices:
 
   kaffe -Xkaffe-nanox-awt YourClass
 
+* --with-kaffe-xynth-awt
+
+  an Xynth Windowing System based AWT backend.
+
+  The Xynth based AWT backend has been written by Alper Akcan from
+  Xynth Team.
+
+  See http://www.xynth.org for information on Xynth Window System.
+  Additional url: http://gsulinux.org/~distch/projects/xynth
+
+  You need to run kaffe with -Xkaffe-xynth-awt option, in order for it
+  to load the correct classes for this AWT. So you should run your
+  code with
+
+  kaffe -Xkaffe-xynth-awt YourClass
+
 Troubleshooting
 ---------------
 

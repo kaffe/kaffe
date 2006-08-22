@@ -240,6 +240,9 @@ if COND_NATIVE_AWT
 if COND_KAFFE_X_AWT
 DIRECTORIES_AFTER_RTJAR += libraries/clib/awt/X
 endif
+if COND_KAFFE_XYNTH_AWT
+DIRECTORIES_AFTER_RTJAR += libraries/clib/awt/xynth
+endif
 endif
 
 check-local:

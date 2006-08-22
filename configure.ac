@@ -2015,6 +2015,30 @@ if test x"$enable_native_awt" = x"yes"; then
    fi
 fi
 
+AC_ARG_WITH([kaffe-xynth-awt],
+	AS_HELP_STRING([--with-kaffe-xynth-awt],
+			[enable build of Kaffe's Xynth AWT engine (not built by default)]),
+	[],
+	[with_kaffe_xynth_awt=no]
+)
+
+AM_CONDITIONAL(COND_KAFFE_XYNTH_AWT, test x"$with_kaffe_xynth_awt" != x"no")
+
+if test x"$enable_native_awt" = x"yes"; then
+   if test x"$with_kaffe_xynth_awt" = x"yes"; then
+
+   	dnl -----------------------------------------------------------------------
+	dnl 	Xynth AWT support
+	dnl -----------------------------------------------------------------------
+
+	AWT_LIBS="-lxynth"
+	AWT_LIBS="$CTLIBS $AWT_LIBS"
+	AC_SUBST(AWT_LIBS)
+			
+	AWT_LIB="$AWT_LIB \$(top_builddir)/libraries/clib/awt/xynth/libxynthawt.la"
+   fi
+fi
+
 dnl -------------------------------------------------------------------------
 dnl Configure sound backend
 dnl -------------------------------------------------------------------------
@@ -2551,6 +2575,7 @@ AC_CONFIG_FILES([libraries/clib/awt/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/X/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/qt/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/nano-X/Makefile])
+AC_CONFIG_FILES([libraries/clib/awt/xynth/Makefile])
 AC_CONFIG_FILES([libraries/clib/sound/Makefile])
 AC_CONFIG_FILES([libraries/clib/sound/alsa/Makefile])
 AC_CONFIG_FILES([libraries/clib/sound/common/Makefile])
