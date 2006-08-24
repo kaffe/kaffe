@@ -130,7 +130,10 @@ libkaffevm_la_SOURCES = \
 	$(top_srcdir)/libraries/clib/net/InetAddressImpl.c \
 	$(top_srcdir)/libraries/clib/net/NetworkInterface.c \
 	$(top_srcdir)/libraries/clib/net/PlainDatagramSocketImpl.c \
-	$(top_srcdir)/libraries/clib/net/PlainSocketImpl.c
+	$(top_srcdir)/libraries/clib/net/PlainSocketImpl.c \
+	$(top_srcdir)/libraries/clib/io/File.c \
+	$(top_srcdir)/libraries/clib/io/java_io_VMFile.c
+
 
 noinst_HEADERS = \
 	access.h \

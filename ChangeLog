@@ -1,3 +1,24 @@
+2006-08-24  Dalibor Topic  <robilad@kaffe.org>
+
+        Switched io libraries to GNU Classpath's version.
+
+	* libraries/clib/io/Makefile.am,
+	libraries/clib/io/Makefile.in,
+	libraries/clib/io/java_io_VMObjectInputStream.c,
+	libraries/clib/io/java_io_VMObjectStreamClass.c:
+	Removed.
+
+        * Makefile.am (BUILD_ENVIRONMENT-make): Set KAFFELIBRARYPATH to GNU Classpath's
+        java-io native library.
+
+        * configure.ac (JAVA_LIBS) Removed kaffe's native io library.
+        Don't output Makefile for Kaffe's native io libraries.
+
+        * kaffe/kaffevm/Makefile.am: Added Kaffe's native io code
+        implementation to the library.
+
+        * libraries/clib/Makefile.am: (SUBDIRS) Removed io.
+
 2006-08-23  Dalibor Topic  <robilad@kaffe.org>
 
 	Switched net libraries to GNU Classpath's version.
