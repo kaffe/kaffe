@@ -30,7 +30,6 @@ SUBDIRS = \
 	target \
 	native \
 	io \
-	net \
 	security \
 	management \
 	$(MAYBE_NATIVE_AWT_DIR) \

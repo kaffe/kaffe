@@ -1,3 +1,23 @@
+2006-08-23  Dalibor Topic  <robilad@kaffe.org>
+
+	Switched net libraries to GNU Classpath's version.
+
+	* libraries/clib/net/Makefile.am,
+	libraries/clib/net/Makefile.in,
+	libraries/clib/net/java_net_VMURLConnection.c:
+	Removed.
+
+	* Makefile.am (BUILD_ENVIRONMENT-make): Set KAFFELIBRARYPATH to GNU Classpath's
+        java-net native library.
+
+        * configure.ac (JAVA_LIBS) Removed kaffe's native net library.
+        Don't output Makefile for Kaffe's native net libraries.
+
+        * kaffe/kaffevm/Makefile.am: Added Kaffe's native networking code
+        implementation to the library, and added dependency on NET_LIBS.
+
+        * libraries/clib/Makefile.am: (SUBDIRS) Removed net.
+
 2006-08-22  Alper Akcan <distchx@yahoo.com>
 	* Makefile.am,
 	configure.ac,

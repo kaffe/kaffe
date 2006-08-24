@@ -83,6 +83,7 @@ libkaffevm_la_DEPENDENCIES = \
 
 libkaffevm_la_LIBADD = \
 	$(libkaffevm_la_DEPENDENCIES) \
+	$(NET_LIBS) \
 	$(VM_LIBS) \
 	$(M_LIBS) \
 	$(LINKED_ZIP_LIBS)
@@ -125,7 +126,11 @@ libkaffevm_la_SOURCES = \
 	reflect.c \
 	reference.c \
 	binreloc.c \
-	$(top_srcdir)/libraries/clib/nio/gnu_java_nio_VMSelector.c
+	$(top_srcdir)/libraries/clib/nio/gnu_java_nio_VMSelector.c \
+	$(top_srcdir)/libraries/clib/net/InetAddressImpl.c \
+	$(top_srcdir)/libraries/clib/net/NetworkInterface.c \
+	$(top_srcdir)/libraries/clib/net/PlainDatagramSocketImpl.c \
+	$(top_srcdir)/libraries/clib/net/PlainSocketImpl.c
 
 noinst_HEADERS = \
 	access.h \
