@@ -42,12 +42,6 @@ LANG_SRCS = \
 		Thread.c \
 		Throwable.c 
 
-REFLECT_SRCS = \
-		java_lang_reflect_VMArray.c \
-		Constructor.c \
-		Field.c \
-		Method.c
-
 TEST_SRCS = \
 		TestNative.c
 
@@ -77,7 +71,6 @@ libjavalang_la_LIBADD = \
 
 libjavalang_la_SOURCES = \
 	$(LANG_SRCS) \
-	$(REFLECT_SRCS) \
 	$(TEST_SRCS) \
 	$(UTIL_SRCS) 
 
