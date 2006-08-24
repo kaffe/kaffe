@@ -42,9 +42,6 @@ LANG_SRCS = \
 		Thread.c \
 		Throwable.c 
 
-REF_SRCS= \
-	  java_lang_ref_Reference.c
-
 REFLECT_SRCS = \
 		java_lang_reflect_VMArray.c \
 		Constructor.c \
@@ -82,7 +79,6 @@ libjavalang_la_SOURCES = \
 	$(LANG_SRCS) \
 	$(REFLECT_SRCS) \
 	$(TEST_SRCS) \
-	$(UTIL_SRCS) \
-	$(REF_SRCS)
+	$(UTIL_SRCS) 
 
 CLEANFILES = so_locations

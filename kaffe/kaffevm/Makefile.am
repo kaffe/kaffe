@@ -133,7 +133,8 @@ libkaffevm_la_SOURCES = \
 	$(top_srcdir)/libraries/clib/net/PlainSocketImpl.c \
 	$(top_srcdir)/libraries/clib/io/File.c \
 	$(top_srcdir)/libraries/clib/io/java_io_VMFile.c \
-	$(top_srcdir)/libraries/clib/native/AccessController.c
+	$(top_srcdir)/libraries/clib/native/AccessController.c \
+	$(top_srcdir)/libraries/clib/native/java_lang_ref_Reference.c
 
 noinst_HEADERS = \
 	access.h \

@@ -103,9 +103,8 @@ am__objects_2 = libjavalang_la-java_lang_reflect_VMArray.lo \
 	libjavalang_la-Method.lo
 am__objects_3 = libjavalang_la-TestNative.lo
 am__objects_4 = libjavalang_la-TimeZone.lo
-am__objects_5 = libjavalang_la-java_lang_ref_Reference.lo
 am_libjavalang_la_OBJECTS = $(am__objects_1) $(am__objects_2) \
-	$(am__objects_3) $(am__objects_4) $(am__objects_5)
+	$(am__objects_3) $(am__objects_4)
 libjavalang_la_OBJECTS = $(am_libjavalang_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
@@ -423,9 +422,6 @@ LANG_SRCS = \
 		Thread.c \
 		Throwable.c 
 
-REF_SRCS = \
-	  java_lang_ref_Reference.c
-
 REFLECT_SRCS = \
 		java_lang_reflect_VMArray.c \
 		Constructor.c \
@@ -463,8 +459,7 @@ libjavalang_la_SOURCES = \
 	$(LANG_SRCS) \
 	$(REFLECT_SRCS) \
 	$(TEST_SRCS) \
-	$(UTIL_SRCS) \
-	$(REF_SRCS)
+	$(UTIL_SRCS) 
 
 CLEANFILES = so_locations
 all: all-am
@@ -557,7 +552,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjavalang_la-java_lang_VMMath.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjavalang_la-java_lang_VMProcess.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjavalang_la-java_lang_VMSystem.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjavalang_la-java_lang_ref_Reference.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjavalang_la-java_lang_reflect_VMArray.Plo@am__quote@
 
 .c.o:
@@ -734,13 +728,6 @@ libjavalang_la-TimeZone.lo: TimeZone.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='TimeZone.c' object='libjavalang_la-TimeZone.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libjavalang_la_CFLAGS) $(CFLAGS) -c -o libjavalang_la-TimeZone.lo `test -f 'TimeZone.c' || echo '$(srcdir)/'`TimeZone.c
-
-libjavalang_la-java_lang_ref_Reference.lo: java_lang_ref_Reference.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libjavalang_la_CFLAGS) $(CFLAGS) -MT libjavalang_la-java_lang_ref_Reference.lo -MD -MP -MF "$(DEPDIR)/libjavalang_la-java_lang_ref_Reference.Tpo" -c -o libjavalang_la-java_lang_ref_Reference.lo `test -f 'java_lang_ref_Reference.c' || echo '$(srcdir)/'`java_lang_ref_Reference.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjavalang_la-java_lang_ref_Reference.Tpo" "$(DEPDIR)/libjavalang_la-java_lang_ref_Reference.Plo"; else rm -f "$(DEPDIR)/libjavalang_la-java_lang_ref_Reference.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='java_lang_ref_Reference.c' object='libjavalang_la-java_lang_ref_Reference.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libjavalang_la_CFLAGS) $(CFLAGS) -c -o libjavalang_la-java_lang_ref_Reference.lo `test -f 'java_lang_ref_Reference.c' || echo '$(srcdir)/'`java_lang_ref_Reference.c
 
 mostlyclean-libtool:
 	-rm -f *.lo
