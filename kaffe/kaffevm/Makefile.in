@@ -121,7 +121,8 @@ am_libkaffevm_la_OBJECTS = libkaffevm_la-access.lo \
 	libkaffevm_la-NetworkInterface.lo \
 	libkaffevm_la-PlainDatagramSocketImpl.lo \
 	libkaffevm_la-PlainSocketImpl.lo libkaffevm_la-File.lo \
-	libkaffevm_la-java_io_VMFile.lo
+	libkaffevm_la-java_io_VMFile.lo \
+	libkaffevm_la-AccessController.lo
 nodist_libkaffevm_la_OBJECTS = libkaffevm_la-md.lo
 libkaffevm_la_OBJECTS = $(am_libkaffevm_la_OBJECTS) \
 	$(nodist_libkaffevm_la_OBJECTS)
@@ -525,7 +526,8 @@ libkaffevm_la_SOURCES = \
 	$(top_srcdir)/libraries/clib/net/PlainDatagramSocketImpl.c \
 	$(top_srcdir)/libraries/clib/net/PlainSocketImpl.c \
 	$(top_srcdir)/libraries/clib/io/File.c \
-	$(top_srcdir)/libraries/clib/io/java_io_VMFile.c
+	$(top_srcdir)/libraries/clib/io/java_io_VMFile.c \
+	$(top_srcdir)/libraries/clib/native/AccessController.c
 
 noinst_HEADERS = \
 	access.h \
@@ -635,6 +637,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-AccessController.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-File.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-InetAddressImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-NetworkInterface.Plo@am__quote@
@@ -985,6 +988,13 @@ libkaffevm_la-java_io_VMFile.lo: $(top_srcdir)/libraries/clib/io/java_io_VMFile.
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/libraries/clib/io/java_io_VMFile.c' object='libkaffevm_la-java_io_VMFile.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-java_io_VMFile.lo `test -f '$(top_srcdir)/libraries/clib/io/java_io_VMFile.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/io/java_io_VMFile.c
+
+libkaffevm_la-AccessController.lo: $(top_srcdir)/libraries/clib/native/AccessController.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-AccessController.lo -MD -MP -MF "$(DEPDIR)/libkaffevm_la-AccessController.Tpo" -c -o libkaffevm_la-AccessController.lo `test -f '$(top_srcdir)/libraries/clib/native/AccessController.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/native/AccessController.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libkaffevm_la-AccessController.Tpo" "$(DEPDIR)/libkaffevm_la-AccessController.Plo"; else rm -f "$(DEPDIR)/libkaffevm_la-AccessController.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/libraries/clib/native/AccessController.c' object='libkaffevm_la-AccessController.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-AccessController.lo `test -f '$(top_srcdir)/libraries/clib/native/AccessController.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/native/AccessController.c
 
 libkaffevm_la-md.lo: md.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-md.lo -MD -MP -MF "$(DEPDIR)/libkaffevm_la-md.Tpo" -c -o libkaffevm_la-md.lo `test -f 'md.c' || echo '$(srcdir)/'`md.c; \

@@ -101,13 +101,11 @@ am__objects_1 = libjavalang_la-gnu_classpath_VMStackWalker.lo \
 am__objects_2 = libjavalang_la-java_lang_reflect_VMArray.lo \
 	libjavalang_la-Constructor.lo libjavalang_la-Field.lo \
 	libjavalang_la-Method.lo
-am__objects_3 = libjavalang_la-AccessController.lo
-am__objects_4 = libjavalang_la-TestNative.lo
-am__objects_5 = libjavalang_la-TimeZone.lo
-am__objects_6 = libjavalang_la-java_lang_ref_Reference.lo
+am__objects_3 = libjavalang_la-TestNative.lo
+am__objects_4 = libjavalang_la-TimeZone.lo
+am__objects_5 = libjavalang_la-java_lang_ref_Reference.lo
 am_libjavalang_la_OBJECTS = $(am__objects_1) $(am__objects_2) \
-	$(am__objects_3) $(am__objects_4) $(am__objects_5) \
-	$(am__objects_6)
+	$(am__objects_3) $(am__objects_4) $(am__objects_5)
 libjavalang_la_OBJECTS = $(am_libjavalang_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/config
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
@@ -434,9 +432,6 @@ REFLECT_SRCS = \
 		Field.c \
 		Method.c
 
-SECURITY_SRCS = \
-		AccessController.c
-
 TEST_SRCS = \
 		TestNative.c
 
@@ -467,7 +462,6 @@ libjavalang_la_LIBADD = \
 libjavalang_la_SOURCES = \
 	$(LANG_SRCS) \
 	$(REFLECT_SRCS) \
-	$(SECURITY_SRCS) \
 	$(TEST_SRCS) \
 	$(UTIL_SRCS) \
 	$(REF_SRCS)
@@ -542,7 +536,6 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjavalang_la-AccessController.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjavalang_la-Class.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjavalang_la-ClassLoader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libjavalang_la-Constructor.Plo@am__quote@
@@ -727,13 +720,6 @@ libjavalang_la-Method.lo: Method.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='Method.c' object='libjavalang_la-Method.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libjavalang_la_CFLAGS) $(CFLAGS) -c -o libjavalang_la-Method.lo `test -f 'Method.c' || echo '$(srcdir)/'`Method.c
-
-libjavalang_la-AccessController.lo: AccessController.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libjavalang_la_CFLAGS) $(CFLAGS) -MT libjavalang_la-AccessController.lo -MD -MP -MF "$(DEPDIR)/libjavalang_la-AccessController.Tpo" -c -o libjavalang_la-AccessController.lo `test -f 'AccessController.c' || echo '$(srcdir)/'`AccessController.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libjavalang_la-AccessController.Tpo" "$(DEPDIR)/libjavalang_la-AccessController.Plo"; else rm -f "$(DEPDIR)/libjavalang_la-AccessController.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='AccessController.c' object='libjavalang_la-AccessController.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libjavalang_la_CFLAGS) $(CFLAGS) -c -o libjavalang_la-AccessController.lo `test -f 'AccessController.c' || echo '$(srcdir)/'`AccessController.c
 
 libjavalang_la-TestNative.lo: TestNative.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libjavalang_la_CFLAGS) $(CFLAGS) -MT libjavalang_la-TestNative.lo -MD -MP -MF "$(DEPDIR)/libjavalang_la-TestNative.Tpo" -c -o libjavalang_la-TestNative.lo `test -f 'TestNative.c' || echo '$(srcdir)/'`TestNative.c; \

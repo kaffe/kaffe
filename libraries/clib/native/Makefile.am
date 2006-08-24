@@ -51,9 +51,6 @@ REFLECT_SRCS = \
 		Field.c \
 		Method.c
 
-SECURITY_SRCS = \
-		AccessController.c
-
 TEST_SRCS = \
 		TestNative.c
 
@@ -84,7 +81,6 @@ libjavalang_la_LIBADD = \
 libjavalang_la_SOURCES = \
 	$(LANG_SRCS) \
 	$(REFLECT_SRCS) \
-	$(SECURITY_SRCS) \
 	$(TEST_SRCS) \
 	$(UTIL_SRCS) \
 	$(REF_SRCS)

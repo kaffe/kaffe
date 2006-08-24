@@ -1,5 +1,13 @@
 2006-08-24  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/Makefile.am:
+	Added AccessController.c to the library.
+
+	* libraries/clib/native/Makefile.am:
+	Removed AccessController.c from the library.
+
+2006-08-24  Dalibor Topic  <robilad@kaffe.org>
+
         Switched io libraries to GNU Classpath's version.
 
 	* libraries/clib/io/Makefile.am,
