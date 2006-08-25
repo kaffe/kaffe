@@ -42,9 +42,6 @@ LANG_SRCS = \
 		Thread.c \
 		Throwable.c 
 
-TEST_SRCS = \
-		TestNative.c
-
 UTIL_SRCS = \
 		TimeZone.c
 
@@ -71,7 +68,6 @@ libjavalang_la_LIBADD = \
 
 libjavalang_la_SOURCES = \
 	$(LANG_SRCS) \
-	$(TEST_SRCS) \
 	$(UTIL_SRCS) 
 
 CLEANFILES = so_locations
