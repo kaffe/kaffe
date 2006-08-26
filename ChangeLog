@@ -1,3 +1,16 @@
+2006-08-26  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/vmspecific/java/util/VMTimeZone.java:
+	Removed.
+
+	* Makefile.am (BUILD_ENVIRONMENT-make): Added classpath java-util 
+	to KAFFELIBRARYPATH.
+
+	* kaffe/kaffevm/Makefile.am: Added TimeZone.c.
+
+	* libraries/clib/native/Makefile.am: (UTIL_SRCS) Removed.
+	(libjavalang_la_SOURCES) Removed UTIL_SRCS.
+
 2006-08-25  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/clib/native/Makefile.am (TEST_SRCS): Removed.

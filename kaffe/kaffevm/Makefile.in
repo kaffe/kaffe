@@ -126,7 +126,7 @@ am_libkaffevm_la_OBJECTS = libkaffevm_la-access.lo \
 	libkaffevm_la-java_lang_ref_Reference.lo \
 	libkaffevm_la-java_lang_reflect_VMArray.lo \
 	libkaffevm_la-Constructor.lo libkaffevm_la-Field.lo \
-	libkaffevm_la-Method.lo
+	libkaffevm_la-Method.lo libkaffevm_la-TimeZone.lo
 nodist_libkaffevm_la_OBJECTS = libkaffevm_la-md.lo
 libkaffevm_la_OBJECTS = $(am_libkaffevm_la_OBJECTS) \
 	$(nodist_libkaffevm_la_OBJECTS)
@@ -536,7 +536,8 @@ libkaffevm_la_SOURCES = \
         $(top_srcdir)/libraries/clib/native/java_lang_reflect_VMArray.c \
         $(top_srcdir)/libraries/clib/native/Constructor.c \
         $(top_srcdir)/libraries/clib/native/Field.c \
-        $(top_srcdir)/libraries/clib/native/Method.c
+        $(top_srcdir)/libraries/clib/native/Method.c \
+        $(top_srcdir)/libraries/clib/native/TimeZone.c
 
 noinst_HEADERS = \
 	access.h \
@@ -655,6 +656,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-NetworkInterface.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-PlainDatagramSocketImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-PlainSocketImpl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-TimeZone.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-access.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-baseClasses.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-binreloc.Plo@am__quote@
@@ -1044,6 +1046,13 @@ libkaffevm_la-Method.lo: $(top_srcdir)/libraries/clib/native/Method.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/libraries/clib/native/Method.c' object='libkaffevm_la-Method.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-Method.lo `test -f '$(top_srcdir)/libraries/clib/native/Method.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/native/Method.c
+
+libkaffevm_la-TimeZone.lo: $(top_srcdir)/libraries/clib/native/TimeZone.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-TimeZone.lo -MD -MP -MF "$(DEPDIR)/libkaffevm_la-TimeZone.Tpo" -c -o libkaffevm_la-TimeZone.lo `test -f '$(top_srcdir)/libraries/clib/native/TimeZone.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/native/TimeZone.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libkaffevm_la-TimeZone.Tpo" "$(DEPDIR)/libkaffevm_la-TimeZone.Plo"; else rm -f "$(DEPDIR)/libkaffevm_la-TimeZone.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/libraries/clib/native/TimeZone.c' object='libkaffevm_la-TimeZone.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-TimeZone.lo `test -f '$(top_srcdir)/libraries/clib/native/TimeZone.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/native/TimeZone.c
 
 libkaffevm_la-md.lo: md.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-md.lo -MD -MP -MF "$(DEPDIR)/libkaffevm_la-md.Tpo" -c -o libkaffevm_la-md.lo `test -f 'md.c' || echo '$(srcdir)/'`md.c; \

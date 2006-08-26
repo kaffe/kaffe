@@ -390,7 +390,6 @@ dist_vminterface_JAVA = \
 	java/net/VMURLConnection.java \
 	java/security/VMAccessController.java \
 	java/security/VMSecureRandom.java \
-	java/util/VMTimeZone.java \
 	org/kaffe/jar/ExecJar.java \
 	org/kaffe/jar/ExecJarName.java \
 	org/kaffe/management/Classpath.java \
@@ -503,7 +502,7 @@ CTAGS:
 
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/gnu/classpath $(distdir)/gnu/java/net $(distdir)/java/lang $(distdir)/java/lang/ref $(distdir)/java/lang/reflect $(distdir)/java/net $(distdir)/java/security $(distdir)/java/util $(distdir)/org/kaffe/jar $(distdir)/org/kaffe/management $(distdir)/org/kaffe/security $(distdir)/org/kaffe/security/provider $(distdir)/org/kaffe/util
+	$(mkdir_p) $(distdir)/gnu/classpath $(distdir)/gnu/java/net $(distdir)/java/lang $(distdir)/java/lang/ref $(distdir)/java/lang/reflect $(distdir)/java/net $(distdir)/java/security $(distdir)/org/kaffe/jar $(distdir)/org/kaffe/management $(distdir)/org/kaffe/security $(distdir)/org/kaffe/security/provider $(distdir)/org/kaffe/util
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \

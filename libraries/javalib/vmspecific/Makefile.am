@@ -53,7 +53,6 @@ dist_vminterface_JAVA = \
 	java/net/VMURLConnection.java \
 	java/security/VMAccessController.java \
 	java/security/VMSecureRandom.java \
-	java/util/VMTimeZone.java \
 	org/kaffe/jar/ExecJar.java \
 	org/kaffe/jar/ExecJarName.java \
 	org/kaffe/management/Classpath.java \

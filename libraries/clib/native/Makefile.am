@@ -42,9 +42,6 @@ LANG_SRCS = \
 		Thread.c \
 		Throwable.c 
 
-UTIL_SRCS = \
-		TimeZone.c
-
 libjavalang_la_CFLAGS = \
 	$(AM_CFLAGS) \
 	$(CFLAGS_PG)
@@ -67,7 +64,6 @@ libjavalang_la_LIBADD = \
 	$(libjavalang_la_DEPENDENCIES)
 
 libjavalang_la_SOURCES = \
-	$(LANG_SRCS) \
-	$(UTIL_SRCS) 
+	$(LANG_SRCS) 
 
 CLEANFILES = so_locations
