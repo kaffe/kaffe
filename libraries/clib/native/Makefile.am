@@ -26,12 +26,8 @@ AM_CPPFLAGS = \
 
 LANG_SRCS = \
 		gnu_classpath_VMStackWalker.c \
-		gnu_classpath_VMSystemProperties.c \
 		java_lang_VMMath.c \
-		java_lang_VMFloat.c \
-		java_lang_VMDouble.c \
-		java_lang_VMProcess.c \
-		java_lang_VMSystem.c 
+		java_lang_VMFloat.c 
 
 libjavalang_la_CFLAGS = \
 	$(AM_CFLAGS) \

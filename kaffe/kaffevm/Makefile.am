@@ -41,6 +41,8 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/config/$(Khost_cpu) \
 	-I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os) \
 	$(MAYBE_INTERNAL_ZIP_INCLUDES) \
+	$(CLASSPATH_INCLUDES) \
+        -I$(top_srcdir)/libraries/javalib/external/classpath/native/fdlibm \
         -I$(top_srcdir)/libraries/javalib/external/classpath/native/jni/classpath 
 
 native_LTLIBRARIES = libkaffevm.la
@@ -79,6 +81,7 @@ libkaffevm_la_DEPENDENCIES = \
 	$(GC_NAME)/libkaffegc.la \
 	jni/libkaffejni.la \
         $(top_builddir)/replace/libreplace.la \
+        $(top_builddir)/libraries/javalib/external/classpath/native/fdlibm/libfdlibm.la \
         $(top_builddir)/libraries/javalib/external/classpath/native/jni/classpath/libclasspath.la 
 
 libkaffevm_la_LIBADD = \
@@ -148,7 +151,11 @@ libkaffevm_la_SOURCES = \
         $(top_srcdir)/libraries/clib/native/String.c \
         $(top_srcdir)/libraries/clib/native/System.c \
         $(top_srcdir)/libraries/clib/native/Thread.c \
-        $(top_srcdir)/libraries/clib/native/Throwable.c
+        $(top_srcdir)/libraries/clib/native/Throwable.c \
+	$(top_srcdir)/libraries/clib/native/gnu_classpath_VMSystemProperties.c \
+        $(top_srcdir)/libraries/clib/native/java_lang_VMDouble.c \
+        $(top_srcdir)/libraries/clib/native/java_lang_VMProcess.c \
+        $(top_srcdir)/libraries/clib/native/java_lang_VMSystem.c
 
 noinst_HEADERS = \
 	access.h \

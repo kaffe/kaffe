@@ -1,5 +1,14 @@
 2006-08-27  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/Makefile.am: Added gnu_classpath_VMSystemProperties.c,
+	java_lang_VMDouble.c, java_lang_VMProcess.c and java_lang_VMSystem.c.
+	Include CLASSPATH_INCLUDES and fdlibm. Add fdlibm to dependencies.
+
+	* libraries/clib/native/Makefile.am: Removed gnu_classpath_VMSystemProperties.c,
+        java_lang_VMDouble.c, java_lang_VMProcess.c and java_lang_VMSystem.c.
+
+2006-08-27  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/Makefile.am: Added Class.c, ClassLoader.c,
 	Object.c, Runtime.c, VMRuntime.c, String.c, System.c, 
 	Thread.c and Throwable.c.
