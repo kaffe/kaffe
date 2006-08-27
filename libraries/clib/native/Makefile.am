@@ -25,7 +25,6 @@ AM_CPPFLAGS = \
 
 
 LANG_SRCS = \
-		gnu_classpath_VMStackWalker.c \
 		java_lang_VMMath.c \
 		java_lang_VMFloat.c 
 

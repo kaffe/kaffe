@@ -133,6 +133,7 @@ am_libkaffevm_la_OBJECTS = libkaffevm_la-access.lo \
 	libkaffevm_la-VMRuntime.lo libkaffevm_la-String.lo \
 	libkaffevm_la-System.lo libkaffevm_la-Thread.lo \
 	libkaffevm_la-Throwable.lo \
+	libkaffevm_la-gnu_classpath_VMStackWalker.lo \
 	libkaffevm_la-gnu_classpath_VMSystemProperties.lo \
 	libkaffevm_la-java_lang_VMDouble.lo \
 	libkaffevm_la-java_lang_VMProcess.lo \
@@ -560,6 +561,7 @@ libkaffevm_la_SOURCES = \
         $(top_srcdir)/libraries/clib/native/System.c \
         $(top_srcdir)/libraries/clib/native/Thread.c \
         $(top_srcdir)/libraries/clib/native/Throwable.c \
+	$(top_srcdir)/libraries/clib/native/gnu_classpath_VMStackWalker.c \
 	$(top_srcdir)/libraries/clib/native/gnu_classpath_VMSystemProperties.c \
         $(top_srcdir)/libraries/clib/native/java_lang_VMDouble.c \
         $(top_srcdir)/libraries/clib/native/java_lang_VMProcess.c \
@@ -708,6 +710,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-fp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-gc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-gcFuncs.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-gnu_classpath_VMStackWalker.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-gnu_classpath_VMSystemProperties.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-gnu_java_nio_VMSelector.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-hashtab.Plo@am__quote@
@@ -1155,6 +1158,13 @@ libkaffevm_la-Throwable.lo: $(top_srcdir)/libraries/clib/native/Throwable.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/libraries/clib/native/Throwable.c' object='libkaffevm_la-Throwable.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-Throwable.lo `test -f '$(top_srcdir)/libraries/clib/native/Throwable.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/native/Throwable.c
+
+libkaffevm_la-gnu_classpath_VMStackWalker.lo: $(top_srcdir)/libraries/clib/native/gnu_classpath_VMStackWalker.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-gnu_classpath_VMStackWalker.lo -MD -MP -MF "$(DEPDIR)/libkaffevm_la-gnu_classpath_VMStackWalker.Tpo" -c -o libkaffevm_la-gnu_classpath_VMStackWalker.lo `test -f '$(top_srcdir)/libraries/clib/native/gnu_classpath_VMStackWalker.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/native/gnu_classpath_VMStackWalker.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libkaffevm_la-gnu_classpath_VMStackWalker.Tpo" "$(DEPDIR)/libkaffevm_la-gnu_classpath_VMStackWalker.Plo"; else rm -f "$(DEPDIR)/libkaffevm_la-gnu_classpath_VMStackWalker.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/libraries/clib/native/gnu_classpath_VMStackWalker.c' object='libkaffevm_la-gnu_classpath_VMStackWalker.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-gnu_classpath_VMStackWalker.lo `test -f '$(top_srcdir)/libraries/clib/native/gnu_classpath_VMStackWalker.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/native/gnu_classpath_VMStackWalker.c
 
 libkaffevm_la-gnu_classpath_VMSystemProperties.lo: $(top_srcdir)/libraries/clib/native/gnu_classpath_VMSystemProperties.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-gnu_classpath_VMSystemProperties.lo -MD -MP -MF "$(DEPDIR)/libkaffevm_la-gnu_classpath_VMSystemProperties.Tpo" -c -o libkaffevm_la-gnu_classpath_VMSystemProperties.lo `test -f '$(top_srcdir)/libraries/clib/native/gnu_classpath_VMSystemProperties.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/native/gnu_classpath_VMSystemProperties.c; \

@@ -152,6 +152,7 @@ libkaffevm_la_SOURCES = \
         $(top_srcdir)/libraries/clib/native/System.c \
         $(top_srcdir)/libraries/clib/native/Thread.c \
         $(top_srcdir)/libraries/clib/native/Throwable.c \
+	$(top_srcdir)/libraries/clib/native/gnu_classpath_VMStackWalker.c \
 	$(top_srcdir)/libraries/clib/native/gnu_classpath_VMSystemProperties.c \
         $(top_srcdir)/libraries/clib/native/java_lang_VMDouble.c \
         $(top_srcdir)/libraries/clib/native/java_lang_VMProcess.c \
