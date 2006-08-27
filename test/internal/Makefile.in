@@ -81,8 +81,7 @@ am__objects_1 = jit_stub.$(OBJEXT)
 am_jitBasic_OBJECTS = jitBasic.$(OBJEXT) stringParsing.$(OBJEXT) \
 	$(am__objects_1)
 jitBasic_OBJECTS = $(am_jitBasic_OBJECTS)
-am__DEPENDENCIES_1 =  \
-	$(top_builddir)/libraries/clib/native/libjavalang.la
+am__DEPENDENCIES_1 = $(top_builddir)/libraries/javalib/external/classpath/native/jni/java-lang/libjavalang.la
 @ENABLE_JVMPI_TRUE@am__DEPENDENCIES_2 =  \
 @ENABLE_JVMPI_TRUE@	../../kaffe/jvmpi/libkaffejvmpi.la
 am__DEPENDENCIES_3 = ../../kaffe/kaffevm/libkaffevm.la \
@@ -396,7 +395,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/kaffe \
         -I$(top_srcdir)/config/$(Khost_cpu) \
         -I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os)
 
-LIBNATIVE = $(top_builddir)/libraries/clib/native/libjavalang.la
+LIBNATIVE = $(top_builddir)/libraries/javalib/external/classpath/native/jni/java-lang/libjavalang.la
 LIBREPLACE = $(top_builddir)/replace/libreplace.la
 LIBKAFFEVM = ../../kaffe/kaffevm/libkaffevm.la $(libjvmpi)
 jitBasic_LDFLAGS = -export-dynamic

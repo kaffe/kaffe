@@ -50089,7 +50089,6 @@ fi
 
 
 JAVA_LIBS=" \
-\$(top_builddir)/libraries/clib/native/libjavalang.la \
 \$(top_builddir)/libraries/clib/management/libmanagement.la \
 \$(top_builddir)/libraries/clib/security/libsecurity.la \
 $JAVA_LIBS \
@@ -51188,8 +51187,6 @@ subdirs="$subdirs libltdl"
 
           ac_config_files="$ac_config_files libraries/clib/target/Linux/Makefile"
 
-          ac_config_files="$ac_config_files libraries/clib/native/Makefile"
-
           ac_config_files="$ac_config_files libraries/clib/zip/Makefile"
 
           ac_config_files="$ac_config_files libraries/clib/math/Makefile"
@@ -52203,7 +52200,6 @@ do
   "libraries/clib/target/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/target/Makefile" ;;
   "libraries/clib/target/generic/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/target/generic/Makefile" ;;
   "libraries/clib/target/Linux/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/target/Linux/Makefile" ;;
-  "libraries/clib/native/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/native/Makefile" ;;
   "libraries/clib/zip/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/zip/Makefile" ;;
   "libraries/clib/math/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/math/Makefile" ;;
   "libraries/clib/management/Makefile" ) CONFIG_FILES="$CONFIG_FILES libraries/clib/management/Makefile" ;;

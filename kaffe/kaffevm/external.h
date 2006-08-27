@@ -23,7 +23,7 @@
 #if !defined(LIBRARYPATH)
 #define	LIBRARYPATH	"KAFFELIBRARYPATH"
 #endif
-#define	NATIVELIBRARY	"libjavalang"
+#define	NATIVELIBRARY	"libkaffevm"
 
 struct _jmethodID;
 struct _errorInfo;

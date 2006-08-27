@@ -1,5 +1,24 @@
 2006-08-27  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/clib/native/Makefile.am,
+	libraries/clib/native/Makefile.in,
+	libraries/clib/native/java_lang_VMFloat.c,
+	libraries/clib/native/java_lang_VMMath.c:
+	Removed.
+
+	* kaffe/kaffevm/external.h (NATIVELIBRARY): Set to libkaffevm.
+
+	* Makefile.am: (BUILD_ENVIRONMENT-make) Replaced libnative with libkaffevm.
+
+	* configure.ac: (JAVA_LIBS) removed libjavalang.la. Don't output native
+	Makefile.
+
+	* libraries/clib/Makefile.am: (SUBDIRS) Removed native.
+
+	* test/internal/Makefile.am: (LIBNATIVE) Set to classpath's javalang.
+
+2006-08-27  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/Makefile.am: Added gnu_classpath_VMStackWalker.c.
 
 	* libraries/clib/native/Makefile.am: Removed gnu_classpath_VMStackWalker.c.

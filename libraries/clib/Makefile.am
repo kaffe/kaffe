@@ -28,7 +28,6 @@ endif
 
 SUBDIRS = \
 	target \
-	native \
 	security \
 	management \
 	$(MAYBE_NATIVE_AWT_DIR) \

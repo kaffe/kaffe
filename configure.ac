@@ -2206,7 +2206,6 @@ AC_ARG_ENABLE([classpath-tools],
 AM_CONDITIONAL([COND_CLASSPATH_TOOLS], [test x"$enable_classpath_tools" = x"yes"])
 
 JAVA_LIBS=" \
-\$(top_builddir)/libraries/clib/native/libjavalang.la \
 \$(top_builddir)/libraries/clib/management/libmanagement.la \
 \$(top_builddir)/libraries/clib/security/libsecurity.la \
 $JAVA_LIBS \
@@ -2562,7 +2561,6 @@ AC_CONFIG_FILES([libraries/clib/Makefile])
 AC_CONFIG_FILES([libraries/clib/target/Makefile])
 AC_CONFIG_FILES([libraries/clib/target/generic/Makefile])
 AC_CONFIG_FILES([libraries/clib/target/Linux/Makefile])
-AC_CONFIG_FILES([libraries/clib/native/Makefile])
 AC_CONFIG_FILES([libraries/clib/zip/Makefile])
 AC_CONFIG_FILES([libraries/clib/math/Makefile])
 AC_CONFIG_FILES([libraries/clib/management/Makefile])
