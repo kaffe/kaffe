@@ -139,8 +139,16 @@ libkaffevm_la_SOURCES = \
         $(top_srcdir)/libraries/clib/native/Constructor.c \
         $(top_srcdir)/libraries/clib/native/Field.c \
         $(top_srcdir)/libraries/clib/native/Method.c \
-        $(top_srcdir)/libraries/clib/native/TimeZone.c
-
+        $(top_srcdir)/libraries/clib/native/TimeZone.c \
+        $(top_srcdir)/libraries/clib/native/Class.c \
+        $(top_srcdir)/libraries/clib/native/ClassLoader.c \
+        $(top_srcdir)/libraries/clib/native/Object.c \
+        $(top_srcdir)/libraries/clib/native/Runtime.c \
+        $(top_srcdir)/libraries/clib/native/VMRuntime.c \
+        $(top_srcdir)/libraries/clib/native/String.c \
+        $(top_srcdir)/libraries/clib/native/System.c \
+        $(top_srcdir)/libraries/clib/native/Thread.c \
+        $(top_srcdir)/libraries/clib/native/Throwable.c
 
 noinst_HEADERS = \
 	access.h \

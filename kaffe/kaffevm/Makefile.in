@@ -126,7 +126,12 @@ am_libkaffevm_la_OBJECTS = libkaffevm_la-access.lo \
 	libkaffevm_la-java_lang_ref_Reference.lo \
 	libkaffevm_la-java_lang_reflect_VMArray.lo \
 	libkaffevm_la-Constructor.lo libkaffevm_la-Field.lo \
-	libkaffevm_la-Method.lo libkaffevm_la-TimeZone.lo
+	libkaffevm_la-Method.lo libkaffevm_la-TimeZone.lo \
+	libkaffevm_la-Class.lo libkaffevm_la-ClassLoader.lo \
+	libkaffevm_la-Object.lo libkaffevm_la-Runtime.lo \
+	libkaffevm_la-VMRuntime.lo libkaffevm_la-String.lo \
+	libkaffevm_la-System.lo libkaffevm_la-Thread.lo \
+	libkaffevm_la-Throwable.lo
 nodist_libkaffevm_la_OBJECTS = libkaffevm_la-md.lo
 libkaffevm_la_OBJECTS = $(am_libkaffevm_la_OBJECTS) \
 	$(nodist_libkaffevm_la_OBJECTS)
@@ -537,7 +542,16 @@ libkaffevm_la_SOURCES = \
         $(top_srcdir)/libraries/clib/native/Constructor.c \
         $(top_srcdir)/libraries/clib/native/Field.c \
         $(top_srcdir)/libraries/clib/native/Method.c \
-        $(top_srcdir)/libraries/clib/native/TimeZone.c
+        $(top_srcdir)/libraries/clib/native/TimeZone.c \
+        $(top_srcdir)/libraries/clib/native/Class.c \
+        $(top_srcdir)/libraries/clib/native/ClassLoader.c \
+        $(top_srcdir)/libraries/clib/native/Object.c \
+        $(top_srcdir)/libraries/clib/native/Runtime.c \
+        $(top_srcdir)/libraries/clib/native/VMRuntime.c \
+        $(top_srcdir)/libraries/clib/native/String.c \
+        $(top_srcdir)/libraries/clib/native/System.c \
+        $(top_srcdir)/libraries/clib/native/Thread.c \
+        $(top_srcdir)/libraries/clib/native/Throwable.c
 
 noinst_HEADERS = \
 	access.h \
@@ -648,15 +662,24 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-AccessController.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-Class.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-ClassLoader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-Constructor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-Field.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-File.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-InetAddressImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-Method.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-NetworkInterface.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-Object.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-PlainDatagramSocketImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-PlainSocketImpl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-Runtime.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-String.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-System.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-Thread.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-Throwable.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-TimeZone.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-VMRuntime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-access.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-baseClasses.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-binreloc.Plo@am__quote@
@@ -1053,6 +1076,69 @@ libkaffevm_la-TimeZone.lo: $(top_srcdir)/libraries/clib/native/TimeZone.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/libraries/clib/native/TimeZone.c' object='libkaffevm_la-TimeZone.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-TimeZone.lo `test -f '$(top_srcdir)/libraries/clib/native/TimeZone.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/native/TimeZone.c
+
+libkaffevm_la-Class.lo: $(top_srcdir)/libraries/clib/native/Class.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-Class.lo -MD -MP -MF "$(DEPDIR)/libkaffevm_la-Class.Tpo" -c -o libkaffevm_la-Class.lo `test -f '$(top_srcdir)/libraries/clib/native/Class.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/native/Class.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libkaffevm_la-Class.Tpo" "$(DEPDIR)/libkaffevm_la-Class.Plo"; else rm -f "$(DEPDIR)/libkaffevm_la-Class.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/libraries/clib/native/Class.c' object='libkaffevm_la-Class.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-Class.lo `test -f '$(top_srcdir)/libraries/clib/native/Class.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/native/Class.c
+
+libkaffevm_la-ClassLoader.lo: $(top_srcdir)/libraries/clib/native/ClassLoader.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-ClassLoader.lo -MD -MP -MF "$(DEPDIR)/libkaffevm_la-ClassLoader.Tpo" -c -o libkaffevm_la-ClassLoader.lo `test -f '$(top_srcdir)/libraries/clib/native/ClassLoader.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/native/ClassLoader.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libkaffevm_la-ClassLoader.Tpo" "$(DEPDIR)/libkaffevm_la-ClassLoader.Plo"; else rm -f "$(DEPDIR)/libkaffevm_la-ClassLoader.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/libraries/clib/native/ClassLoader.c' object='libkaffevm_la-ClassLoader.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-ClassLoader.lo `test -f '$(top_srcdir)/libraries/clib/native/ClassLoader.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/native/ClassLoader.c
+
+libkaffevm_la-Object.lo: $(top_srcdir)/libraries/clib/native/Object.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-Object.lo -MD -MP -MF "$(DEPDIR)/libkaffevm_la-Object.Tpo" -c -o libkaffevm_la-Object.lo `test -f '$(top_srcdir)/libraries/clib/native/Object.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/native/Object.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libkaffevm_la-Object.Tpo" "$(DEPDIR)/libkaffevm_la-Object.Plo"; else rm -f "$(DEPDIR)/libkaffevm_la-Object.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/libraries/clib/native/Object.c' object='libkaffevm_la-Object.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-Object.lo `test -f '$(top_srcdir)/libraries/clib/native/Object.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/native/Object.c
+
+libkaffevm_la-Runtime.lo: $(top_srcdir)/libraries/clib/native/Runtime.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-Runtime.lo -MD -MP -MF "$(DEPDIR)/libkaffevm_la-Runtime.Tpo" -c -o libkaffevm_la-Runtime.lo `test -f '$(top_srcdir)/libraries/clib/native/Runtime.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/native/Runtime.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libkaffevm_la-Runtime.Tpo" "$(DEPDIR)/libkaffevm_la-Runtime.Plo"; else rm -f "$(DEPDIR)/libkaffevm_la-Runtime.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/libraries/clib/native/Runtime.c' object='libkaffevm_la-Runtime.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-Runtime.lo `test -f '$(top_srcdir)/libraries/clib/native/Runtime.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/native/Runtime.c
+
+libkaffevm_la-VMRuntime.lo: $(top_srcdir)/libraries/clib/native/VMRuntime.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-VMRuntime.lo -MD -MP -MF "$(DEPDIR)/libkaffevm_la-VMRuntime.Tpo" -c -o libkaffevm_la-VMRuntime.lo `test -f '$(top_srcdir)/libraries/clib/native/VMRuntime.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/native/VMRuntime.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libkaffevm_la-VMRuntime.Tpo" "$(DEPDIR)/libkaffevm_la-VMRuntime.Plo"; else rm -f "$(DEPDIR)/libkaffevm_la-VMRuntime.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/libraries/clib/native/VMRuntime.c' object='libkaffevm_la-VMRuntime.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-VMRuntime.lo `test -f '$(top_srcdir)/libraries/clib/native/VMRuntime.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/native/VMRuntime.c
+
+libkaffevm_la-String.lo: $(top_srcdir)/libraries/clib/native/String.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-String.lo -MD -MP -MF "$(DEPDIR)/libkaffevm_la-String.Tpo" -c -o libkaffevm_la-String.lo `test -f '$(top_srcdir)/libraries/clib/native/String.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/native/String.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libkaffevm_la-String.Tpo" "$(DEPDIR)/libkaffevm_la-String.Plo"; else rm -f "$(DEPDIR)/libkaffevm_la-String.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/libraries/clib/native/String.c' object='libkaffevm_la-String.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-String.lo `test -f '$(top_srcdir)/libraries/clib/native/String.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/native/String.c
+
+libkaffevm_la-System.lo: $(top_srcdir)/libraries/clib/native/System.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-System.lo -MD -MP -MF "$(DEPDIR)/libkaffevm_la-System.Tpo" -c -o libkaffevm_la-System.lo `test -f '$(top_srcdir)/libraries/clib/native/System.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/native/System.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libkaffevm_la-System.Tpo" "$(DEPDIR)/libkaffevm_la-System.Plo"; else rm -f "$(DEPDIR)/libkaffevm_la-System.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/libraries/clib/native/System.c' object='libkaffevm_la-System.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-System.lo `test -f '$(top_srcdir)/libraries/clib/native/System.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/native/System.c
+
+libkaffevm_la-Thread.lo: $(top_srcdir)/libraries/clib/native/Thread.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-Thread.lo -MD -MP -MF "$(DEPDIR)/libkaffevm_la-Thread.Tpo" -c -o libkaffevm_la-Thread.lo `test -f '$(top_srcdir)/libraries/clib/native/Thread.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/native/Thread.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libkaffevm_la-Thread.Tpo" "$(DEPDIR)/libkaffevm_la-Thread.Plo"; else rm -f "$(DEPDIR)/libkaffevm_la-Thread.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/libraries/clib/native/Thread.c' object='libkaffevm_la-Thread.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-Thread.lo `test -f '$(top_srcdir)/libraries/clib/native/Thread.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/native/Thread.c
+
+libkaffevm_la-Throwable.lo: $(top_srcdir)/libraries/clib/native/Throwable.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-Throwable.lo -MD -MP -MF "$(DEPDIR)/libkaffevm_la-Throwable.Tpo" -c -o libkaffevm_la-Throwable.lo `test -f '$(top_srcdir)/libraries/clib/native/Throwable.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/native/Throwable.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libkaffevm_la-Throwable.Tpo" "$(DEPDIR)/libkaffevm_la-Throwable.Plo"; else rm -f "$(DEPDIR)/libkaffevm_la-Throwable.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/libraries/clib/native/Throwable.c' object='libkaffevm_la-Throwable.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-Throwable.lo `test -f '$(top_srcdir)/libraries/clib/native/Throwable.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/native/Throwable.c
 
 libkaffevm_la-md.lo: md.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-md.lo -MD -MP -MF "$(DEPDIR)/libkaffevm_la-md.Tpo" -c -o libkaffevm_la-md.lo `test -f 'md.c' || echo '$(srcdir)/'`md.c; \

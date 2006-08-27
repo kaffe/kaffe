@@ -31,16 +31,7 @@ LANG_SRCS = \
 		java_lang_VMFloat.c \
 		java_lang_VMDouble.c \
 		java_lang_VMProcess.c \
-		java_lang_VMSystem.c \
-		Class.c \
-		ClassLoader.c \
-		Object.c \
-		Runtime.c \
-		VMRuntime.c \
-		String.c \
-		System.c \
-		Thread.c \
-		Throwable.c 
+		java_lang_VMSystem.c 
 
 libjavalang_la_CFLAGS = \
 	$(AM_CFLAGS) \
