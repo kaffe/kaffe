@@ -1,7 +1,7 @@
 # Xynth-based AWT support for standard Java libraries
 #
 # Copyright (c) 2006
-#       Alper Akcan <distchx@yahoo.com>
+#       Alper Akcan <alper@kaffe.org>
 #
 
 native_LTLIBRARIES = libxynthawt.la

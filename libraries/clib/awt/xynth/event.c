@@ -1,7 +1,7 @@
 
 /*
  * Copyright (c) 2006
- *	Alper Akcan <distchx@yahoo.com>, All rights reserved.
+ *	Alper Akcan <alper@kaffe.org>, All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
@@ -76,11 +76,35 @@ jobject event_handler_quit (JNIEnv *env, xynth_event_t *xevent)
 	return jevent;
 }
 
+static inline int key_mod (int keyState)
+{
+	int mod = 0;
+	if (keyState & KEYCODE_SHIFTF)   mod |= 1;
+	if (keyState & KEYCODE_CTRLF)    mod |= 2;
+	if (keyState & KEYCODE_ALTGRF)   mod |= 4;
+	if (keyState & KEYCODE_ALTF)     mod |= 8;
+	return mod;
+}
+
 jobject event_handler_keybd (JNIEnv *env, xynth_event_t *xevent)
 {
+	int idx;
+	jobject jevent;
+	s_event_t *event;
 	DEBUGF("Enter");
+	idx = source_idx_get(xynth, xevent->window);
+	if (idx < 0) {
+		return NULL;
+	}
+	jevent = NULL;
+	event = xevent->event;
+	jevent = (*env)->CallStaticObjectMethod(env, KeyEvent, getKeyEvent, idx,
+	                                        (event->type & KEYBD_PRESSED) ? JKEY_PRESSED : JKEY_RELEASED,
+						xynth->keymap[event->keybd->keycode],
+						event->keybd->ascii,
+						key_mod(event->keybd->flag));
 	DEBUGF("Leave");
-	return NULL;
+	return jevent;
 }
 
 jobject event_handler_mouse (JNIEnv *env, xynth_event_t *xevent)
