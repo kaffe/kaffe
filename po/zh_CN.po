@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Kaffe Virtual Machine 1.1.x-cvs\n"
 "Report-Msgid-Bugs-To: kaffe@kaffe.org\n"
-"POT-Creation-Date: 2006-06-17 18:13+0200\n"
+"POT-Creation-Date: 2006-08-28 00:28+0200\n"
 "PO-Revision-Date: 2005-04-13 07:39+0800\n"
 "Last-Translator: DexterK Kidd <dexterkidd@gmail.com>\n"
 "Language-Team: Simplified Chinese <kaffe@kaffe.org>\n"
@@ -14,86 +14,86 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: kaffe/kaffe/main.c:407 kaffe/kaffe/main.c:501 kaffe/kaffe/main.c:564
-#: kaffe/kaffe/main.c:591 kaffe/kaffe/main.c:616 kaffe/kaffe/main.c:641
-#: kaffe/kaffe/main.c:752
+#: kaffe/kaffe/main.c:407 kaffe/kaffe/main.c:501 kaffe/kaffe/main.c:571
+#: kaffe/kaffe/main.c:598 kaffe/kaffe/main.c:623 kaffe/kaffe/main.c:648
+#: kaffe/kaffe/main.c:759
 msgid "Error: out of memory.\n"
 msgstr "错误：内存不足\n"
 
-#: kaffe/kaffe/main.c:656
+#: kaffe/kaffe/main.c:663
 msgid "Error: No stack size found for -ss option.\n"
 msgstr "错误：在 -ss 选项中沒有指定堆叠空间\n"
 
-#: kaffe/kaffe/main.c:664
+#: kaffe/kaffe/main.c:671
 #, c-format
 msgid "Warning: Attempt to set stack size smaller than %d - ignored.\n"
 msgstr "警告：尝试设定少于 %d 的堆叠空间 - 忽略\n"
 
-#: kaffe/kaffe/main.c:675
+#: kaffe/kaffe/main.c:682
 msgid "Error: No heap size found for -mx option.\n"
 msgstr "错误：在 -mx 选项中沒有指定 heap 空间\n"
 
-#: kaffe/kaffe/main.c:694
+#: kaffe/kaffe/main.c:701
 msgid "Error: No heap size found for -ms option.\n"
 msgstr "错误：在 -ms 选项中沒有指定 heap 空间\n"
 
-#: kaffe/kaffe/main.c:706
+#: kaffe/kaffe/main.c:713
 msgid "Error: No heap size found for -as option.\n"
 msgstr "错误：在 -as 选项中沒有指定 heap 空间\n"
 
-#: kaffe/kaffe/main.c:804
+#: kaffe/kaffe/main.c:811
 msgid "Error: -Xxprof_syms option requires a file name.\n"
 msgstr "错误：-Xxprof_syms 选项需要提供文件名\n"
 
-#: kaffe/kaffe/main.c:810
+#: kaffe/kaffe/main.c:817
 #, c-format
 msgid "Unable to create profiler symbol file %s.\n"
 msgstr "无法建立 profiler 符号资讯文件：%s\n"
 
-#: kaffe/kaffe/main.c:819
+#: kaffe/kaffe/main.c:826
 msgid "Error: -Xxprof_gmon option requires a file name.\n"
 msgstr "错误：-Xxprof_gmon 选项需要提供文件名\n"
 
-#: kaffe/kaffe/main.c:825
+#: kaffe/kaffe/main.c:832
 #, c-format
 msgid "Unable to create gmon file %s.\n"
 msgstr "无法建立 gmon 文件： %s\n"
 
-#: kaffe/kaffe/main.c:839
+#: kaffe/kaffe/main.c:846
 msgid "Error: -Xxdebug_file option requires a file name.\n"
 msgstr "错误：-Xxdebug_file 选项需要提供文件名\n"
 
-#: kaffe/kaffe/main.c:853
+#: kaffe/kaffe/main.c:860
 msgid "Error: -Xfeedback option requires a file name.\n"
 msgstr "错误：-Xfeedback 选项需要提供文件名\n"
 
-#: kaffe/kaffe/main.c:871
+#: kaffe/kaffe/main.c:878
 msgid "Error: -vmstats option requires a second arg.\n"
 msgstr "错误：-vmstats 选项需要额外的参数\n"
 
-#: kaffe/kaffe/main.c:883
+#: kaffe/kaffe/main.c:890
 msgid "Error: -vmdebug option requires a debug flag. Use `list' for a list.\n"
 msgstr "错误：-vmdebug 选项需要侦错旗标，请用 -vmdebug list 取得旗标列表\n"
 
-#: kaffe/kaffe/main.c:896
+#: kaffe/kaffe/main.c:903
 msgid "Error: -debug-fd an open descriptor.\n"
 msgstr "错误： -debug-fd 后面应该有个 file descriptor\n"
 
-#: kaffe/kaffe/main.c:902
+#: kaffe/kaffe/main.c:909
 msgid "Error: -debug-fd requires an integer.\n"
 msgstr "错误：-debug-fd 需要给定一个整数。\n"
 
-#: kaffe/kaffe/main.c:914
+#: kaffe/kaffe/main.c:921
 #, c-format
 msgid "Error: Unrecognized JVM specific option `%s'.\n"
 msgstr "错误：无法辨认的 JVM 选项： '%s'\n"
 
-#: kaffe/kaffe/main.c:929
+#: kaffe/kaffe/main.c:936
 #, c-format
 msgid "Unknown flag: %s\n"
 msgstr "未知的旗标：%s\n"
 
-#: kaffe/kaffe/main.c:945
+#: kaffe/kaffe/main.c:952
 msgid ""
 "usage: kaffe [-options] class\n"
 "Options are:\n"
@@ -107,11 +107,11 @@ msgstr ""
 "\t-version\t\t 印列版本号码\n"
 "\t-fullversion\t\t 印列详细的版本资讯\n"
 
-#: kaffe/kaffe/main.c:951
+#: kaffe/kaffe/main.c:958
 msgid "\t-ia32\t\t\t Execute the ia32 version of Kaffe\n"
 msgstr "\t-ia32\t\t\t 执行 ia32 版本的 Kaffe\n"
 
-#: kaffe/kaffe/main.c:953
+#: kaffe/kaffe/main.c:960
 msgid ""
 "\t-ss <size>\t\t Maximum native stack size\n"
 "\t-mx <size> \t\t Maximum heap size\n"
@@ -153,11 +153,11 @@ msgstr ""
 "\t-verbosecall\t\t 印列详细呼叫流程资讯\n"
 "\t-nodeadlock\t\t 关闭死结 (deadlock) 侦测\n"
 
-#: kaffe/kaffe/main.c:973
+#: kaffe/kaffe/main.c:980
 msgid "\t-prof\t\t\t Enable profiling of Java methods\n"
 msgstr "\t-prof\t\t\t 开启 Java method 的 profiling\n"
 
-#: kaffe/kaffe/main.c:976
+#: kaffe/kaffe/main.c:983
 msgid ""
 "\t-Xxprof\t\t\t Enable cross language profiling\n"
 "\t-Xxprof_syms <file>\t Name of the profiling symbols file [Default: kaffe-"
@@ -169,15 +169,15 @@ msgstr ""
 "symbols.s]\n"
 "\t-Xxprof_gmon <文件名>\t 指定 gmon 文件名 [预设值：xgmon.out]\n"
 
-#: kaffe/kaffe/main.c:981
+#: kaffe/kaffe/main.c:988
 msgid "\t-Xxdebug_file <file>\t Name of the debugging symbols file\n"
 msgstr "\t-Xxdebug_file <文件名>\t 指定 debugging symbol 文件名\n"
 
-#: kaffe/kaffe/main.c:984
+#: kaffe/kaffe/main.c:991
 msgid "\t-Xfeedback <file>\t The file name to write feedback data to\n"
 msgstr "\t-Xfeedback <文件名>\t 指定输出 feedback 资料的文件名\n"
 
-#: kaffe/kaffe/main.c:986
+#: kaffe/kaffe/main.c:993
 msgid ""
 "\t-debug * \t\t Trace method calls\n"
 "\t-noasyncgc *\t\t Do not garbage collect asynchronously\n"
@@ -191,39 +191,44 @@ msgstr ""
 "\t-oss <空间> *\t\t 指定最大 Java 堆叠空间\n"
 "\t-jar                     执行 JAR\n"
 
-#: kaffe/kaffe/main.c:992
+#: kaffe/kaffe/main.c:999
 msgid ""
 "\t-vmdebug <flag{,flag}>\t Internal VM debugging.  Set flag=list for a list\n"
 msgstr ""
 "\t-vmdebug <旗标{,旗标}>\t 内部 VM 侦錯，設定 flag=list 可取得侦错项目清单\n"
 
-#: kaffe/kaffe/main.c:994
+#: kaffe/kaffe/main.c:1001
 msgid "\t-debug-fd <descriptor>\t Descriptor to send debug info to\n"
 msgstr "\t-debug-fd <descriptor>\t 所要传送侦错讯息的 descriptor\n"
 
-#: kaffe/kaffe/main.c:996
+#: kaffe/kaffe/main.c:1003
 msgid "\t-vmstats <flag{,flag}>\t Print VM statistics.  Set flag=all for all\n"
 msgstr ""
 "\t-vmstats <旗标{,旗标}>\t 印列 VM 统计数据，特定 flag=all 可取得全部項目\n"
 
-#: kaffe/kaffe/main.c:999
+#: kaffe/kaffe/main.c:1006
 msgid "\t-Xnative-big-math\t Use GMP for faster, native bignum calculations\n"
 msgstr ""
 "\t-Xnative-big-math\t 使用 GMP 作为原生的大数运算，以获取更快的执行速度\n"
 
-#: kaffe/kaffe/main.c:1002
+#: kaffe/kaffe/main.c:1009
 msgid "\t-Xkaffe-xlib-awt\t Use Kaffe's Xlib AWT backend\n"
 msgstr "\t-Xkaffe-xlib-awt\t 使用 Kaffe 的 Xlib AWT backend\n"
 
-#: kaffe/kaffe/main.c:1005
+#: kaffe/kaffe/main.c:1012
 msgid "\t-Xkaffe-qt-awt\t\t Use Kaffe's Qt2/3/Embedded AWT backend\n"
 msgstr "\t-Xkaffe-qt-awt\t\t 使用 Kaffe 的 Qt2/3/Embedded AWT backend\n"
 
-#: kaffe/kaffe/main.c:1008
+#: kaffe/kaffe/main.c:1015
 msgid "\t-Xkaffe-nanox-awt\t Use Kaffe's Nano-X AWT backend\n"
 msgstr "\t-Xkaffe-nanox-awt\t 使用 Kaffe 的 Nano-X AWT backend\n"
 
-#: kaffe/kaffe/main.c:1011
+#: kaffe/kaffe/main.c:1018
+#, fuzzy, c-format
+msgid "\t-Xkaffe-xynth-awt\t Use Kaffe's Xynth AWT backend\n"
+msgstr "\t-Xkaffe-xlib-awt\t 使用 Kaffe 的 Xlib AWT backend\n"
+
+#: kaffe/kaffe/main.c:1021
 msgid ""
 "  * Option currently ignored.\n"
 "\n"

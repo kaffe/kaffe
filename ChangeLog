@@ -1,3 +1,12 @@
+2006-08-30  Dalibor Topic  <robilad@kaffe.org>
+
+	Fix for #57
+
+	* configure.ac: Rewritten fastjar handling to use locally built fastjar
+	when possible. Introduced FASTJAR_BINARY.
+
+	* kaffe/scripts/jar.in: Use FASTJAR_BINARY.
+
 2006-08-28  Alper Akcan  <alper@kaffe.org>
 	* libraries/clib/awt/xynth/Makefile.am,
 	libraries/clib/awt/xynth/Makefile.in,

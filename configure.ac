@@ -2347,14 +2347,26 @@ AC_SUBST([kaffe_builddir])
 
 AC_PATH_PROGS([FASTJAR], [fastjar jar])
 
-if test -z "${FASTJAR}"; then
-  if test x"$cross_compiling" = x"yes"; then
+if test x"$cross_compiling" = x"yes"; then
+  if test -z "${FASTJAR}"; then
     AC_MSG_ERROR([please set FASTJAR to the full pathname of a locally executable fastjar])
-  else
+  fi
+else
+  # if we are not cross-compiling, and fastjar is being built
+  # then use it instead of the one on the path. 
+  if test x"$enable_fastjar" = x"yes"; then
     FASTJAR="${kaffe_builddir}/external/gcc/fastjar/fastjar"
-    AC_SUBST([FASTJAR])
   fi
 fi
+
+if test x"$enable_fastjar" = x"yes"; then
+  FASTJAR_BINARY="${bindir}/fastjar"
+else
+  FASTJAR_BINARY="${FASTJAR}"
+fi
+
+AC_SUBST([FASTJAR])
+AC_SUBST([FASTJAR_BINARY])
 
 dnl =========================================================================
 dnl Define directory to put native library support
