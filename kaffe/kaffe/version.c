@@ -54,13 +54,8 @@ printShortVersion(void)
 
 	fprintf(versionfd, _("Engine: %s   Version: %s   Java Version: %s\n"),
 		engine_name, PACKAGE_VERSION, JAVA_VERSION_STRING);
-	if (MAX_HEAPSIZE == UNLIMITED_HEAP) {
-		fprintf(versionfd, _("Heap defaults: minimum size: %d MB, maximum size: unlimited\n"),
-			MIN_HEAPSIZE / (1024*1024)); 
-	} else {
-		fprintf(versionfd, _("Heap defaults: minimum size: %d MB, maximum size: %lu MB\n"),
-			MIN_HEAPSIZE / (1024*1024), MAX_HEAPSIZE / (1024*1024));
-	}
+	fprintf(versionfd, _("Heap defaults: minimum size: %d MB, maximum size: unlimited\n"),
+		MIN_HEAPSIZE / (1024*1024)); 
 	fprintf(versionfd, _("Stack default size: %d KB\n"), THREADSTACKSIZE / 1024);
 }
 

@@ -16,6 +16,8 @@
 #include "config.h"
 #endif
 
+#include "config-int.h"
+
 #if defined(HAVE_LIMITS_H)
 #include <limits.h>
 #endif
@@ -25,7 +27,7 @@
 /*
  * Default values for initial and maximum heap size and heap increment.
  */
-#define UNLIMITED_HEAP  (ULONG_MAX)
+#define UNLIMITED_HEAP  (INT32_MAX)
 #define	MIN_HEAPSIZE	(5*1024*1024)
 #define	MAX_HEAPSIZE	(UNLIMITED_HEAP)
 #define	ALLOC_HEAPSIZE	(1024*1024)

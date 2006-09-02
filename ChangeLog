@@ -1,5 +1,14 @@
 2006-09-02  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffe/version.c (printShortVersion): Removed
+	unused code.
+
+	* kaffe/kaffevm/gc.h: Include config-int.h. 
+	Define UNLIMITED_HEAP as INT32_MAX, since it is assigned to
+	a jint. That fixes four warnings on alpha-linux.
+
+2006-09-02  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac: Temporarily set CFLAGS to 
 	KAFFE_CFLAGS before checking for function pthread_getattr_np,
 	to make sure that the right compiler flags are used and the 
