@@ -382,7 +382,7 @@ setKaffeAWT(const char * propStr)
 {
 	char    *newbootcpath;
 	unsigned int      bootcpathlength;
-	const char *prefix = 
+	char    *prefix = 
 #if defined(ENABLE_BINRELOC)
 		br_find_lib_dir(NULL)
 #else /* !defined(ENABLE_BINRELOC) */
