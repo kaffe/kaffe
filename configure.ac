@@ -690,8 +690,11 @@ if test x$with_threads = xunix-pthreads ; then
                      CC="$PTHREAD_CC"])
 	OLD_LIBS="$LIBS"
 	LIBS="$LIBS $THREADLIBS"
+	OLD_CFLAGS="$CFLAGS"
+	CFLAGS="$KAFFE_CFLAGS"
 	AC_CHECK_FUNCS([pthread_getattr_np])
 	LIBS="$OLD_LIBS"
+	CFLAGS="$OLD_CFLAGS"
 	AC_CHECK_LIB(semaphore,sem_init,SEMAPHORE_LIB="-lsemaphore")
 	AC_SUBST(SEMAPHORE_LIB)
 	KAFFE_LIB_SOLARIS_PTHREAD

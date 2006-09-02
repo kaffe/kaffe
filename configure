@@ -24300,6 +24300,8 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 	OLD_LIBS="$LIBS"
 	LIBS="$LIBS $THREADLIBS"
+	OLD_CFLAGS="$CFLAGS"
+	CFLAGS="$KAFFE_CFLAGS"
 
 for ac_func in pthread_getattr_np
 do
@@ -24403,6 +24405,7 @@ fi
 done
 
 	LIBS="$OLD_LIBS"
+	CFLAGS="$OLD_CFLAGS"
 	echo "$as_me:$LINENO: checking for sem_init in -lsemaphore" >&5
 echo $ECHO_N "checking for sem_init in -lsemaphore... $ECHO_C" >&6
 if test "${ac_cv_lib_semaphore_sem_init+set}" = set; then
