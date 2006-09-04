@@ -1,3 +1,9 @@
+2006-09-04  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/intrp/icode.h (UNINITIALIZED_STACK_SLOT):
+	Changed type to uintptr_t to fix compiler warning on 
+	alpha-linux.
+	
 2006-09-02  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffe/version.c (printShortVersion): Removed

@@ -21,7 +21,7 @@
 #define  JLONG_MIN       INT64_MIN
 
 #if defined(KAFFE_VMDEBUG)
-static const int32 UNINITIALIZED_STACK_SLOT = 0x00c0ffee;
+static const uintptr_t UNINITIALIZED_STACK_SLOT = 0x00c0ffee;
 #endif
 
 #define	move_long_const(t, c)			(t)[0].v.tlong = (c)
