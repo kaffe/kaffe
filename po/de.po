@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: de\n"
 "Report-Msgid-Bugs-To: kaffe@kaffe.org\n"
-"POT-Creation-Date: 2006-08-28 00:28+0200\n"
+"POT-Creation-Date: 2006-09-08 02:10+0200\n"
 "PO-Revision-Date: 2005-07-18 23:27+0200\n"
 "Last-Translator: \n"
 "Language-Team:  <de@li.org>\n"
@@ -289,17 +289,16 @@ msgstr ""
 msgid "Engine: %s   Version: %s   Java Version: %s\n"
 msgstr "Engine: %s   Version: %s   Java Version: %s\n"
 
-#: kaffe/kaffe/version.c:58
+#: kaffe/kaffe/version.c:57
 #, fuzzy, c-format
 msgid "Heap defaults: minimum size: %d MB, maximum size: unlimited\n"
 msgstr "Heap-Standards: minimale Größe: %d MB, maximale Größe: %d MB\n"
 
-#: kaffe/kaffe/version.c:61
-#, fuzzy, c-format
-msgid "Heap defaults: minimum size: %d MB, maximum size: %lu MB\n"
-msgstr "Heap-Standards: minimale Größe: %d MB, maximale Größe: %d MB\n"
-
-#: kaffe/kaffe/version.c:64
+#: kaffe/kaffe/version.c:59
 #, c-format
 msgid "Stack default size: %d KB\n"
 msgstr "Stack Standardgröße: %d KB\n"
+
+#, fuzzy
+#~ msgid "Heap defaults: minimum size: %d MB, maximum size: %lu MB\n"
+#~ msgstr "Heap-Standards: minimale Größe: %d MB, maximale Größe: %d MB\n"

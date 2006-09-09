@@ -112,7 +112,7 @@ public class wc {
 
 
 
-// java args: wc < $1
+// java args: wc ../../config/stamp-h1
 /* Expected Output:
-118	321	2379	
+1	3	30	../../config/stamp-h1
 */

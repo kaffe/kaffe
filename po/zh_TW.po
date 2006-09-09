@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Kaffe Virtual Machine 1.1.x-cvs\n"
 "Report-Msgid-Bugs-To: kaffe@kaffe.org\n"
-"POT-Creation-Date: 2006-08-28 00:28+0200\n"
+"POT-Creation-Date: 2006-09-08 02:10+0200\n"
 "PO-Revision-Date: 2005-03-06 07:39+0800\n"
 "Last-Translator: Jim Huang <jserv@kaffe.org>\n"
 "Language-Team: Traditional Chinese <kaffe@kaffe.org>\n"
@@ -276,17 +276,16 @@ msgstr ""
 msgid "Engine: %s   Version: %s   Java Version: %s\n"
 msgstr "執行引擎： %s   版本： %s   Java版本： %s\n"
 
-#: kaffe/kaffe/version.c:58
+#: kaffe/kaffe/version.c:57
 #, fuzzy, c-format
 msgid "Heap defaults: minimum size: %d MB, maximum size: unlimited\n"
 msgstr "預設 Heap 空間： (最小) %d Mb   (最大) 無限制\n"
 
-#: kaffe/kaffe/version.c:61
-#, fuzzy, c-format
-msgid "Heap defaults: minimum size: %d MB, maximum size: %lu MB\n"
-msgstr "預設 Heap 空間： (最小) %d Mb   (最大) %d Mb\n"
-
-#: kaffe/kaffe/version.c:64
+#: kaffe/kaffe/version.c:59
 #, c-format
 msgid "Stack default size: %d KB\n"
 msgstr "預設堆疊空間： %d Kb\n"
+
+#, fuzzy
+#~ msgid "Heap defaults: minimum size: %d MB, maximum size: %lu MB\n"
+#~ msgstr "預設 Heap 空間： (最小) %d Mb   (最大) %d Mb\n"

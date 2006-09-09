@@ -1,3 +1,18 @@
+2006-09-09  Dalibor Topic  <robilad@kaffe.org>
+
+	* include/Makefile.am (stamp-h0all, stamp-h1all): Set bootclasspath
+	instead of classpath for kaffeh invocations to make sure the VM 
+	interface jars are picked up and the right headers are generated.
+	This fixes cross-compilation.
+
+	* libraries/clib/native/Object.c (java_lang_VMObject_wait): Use 
+	PRIi64 modifier to print out the timeout jlong. Include the 
+	necessary headers. This fixes a warning on alpha-linux.
+
+	* test/regression/wc.java: run wc on ../../config/stamp-h1
+	which fixes it on Ubuntu Edgy Eft. Adapted expected result
+	accordingly.
+
 2006-09-04  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/intrp/icode.h (UNINITIALIZED_STACK_SLOT):

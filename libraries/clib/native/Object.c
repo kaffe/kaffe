@@ -12,6 +12,7 @@
  */
 
 #include "config.h"
+#include "config-int.h"
 #include "config-std.h"
 #include "config-mem.h"
 #include "classMethod.h"
@@ -28,6 +29,10 @@
 #include "thread.h"
 #include "jvmpi_kaffe.h"
 #include "debug.h"
+
+#if defined(HAVE_INTTYPES_H)
+#include <inttypes.h>
+#endif
 
 /*
  * Return class object for this object.
@@ -102,7 +107,7 @@ java_lang_VMObject_wait(struct Hjava_lang_Object* o, jlong timeout, UNUSED jint 
       throwException(InterruptedException);
     }
 
-DBG(VMTHREAD, dprintf ("%p (%p) waiting for %p, %lli\n",
+DBG(VMTHREAD, dprintf ("%p (%p) waiting for %p, %" PRIi64 "\n",
 			cur, KTHREAD(get_data)(cur)->jlThread,
 			o, timeout); );
 

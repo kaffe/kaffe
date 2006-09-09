@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Kaffe Virtual Machine 1.1.x-cvs\n"
 "Report-Msgid-Bugs-To: kaffe@kaffe.org\n"
-"POT-Creation-Date: 2006-08-28 00:28+0200\n"
+"POT-Creation-Date: 2006-09-08 02:10+0200\n"
 "PO-Revision-Date: 2004-06-03 22:00+0200\n"
 "Last-Translator: Guilhem Lavaux <guilhem.lavaux@free.fr>\n"
 "Language-Team: French <kaffe@kaffe.org>\n"
@@ -300,21 +300,20 @@ msgstr ""
 msgid "Engine: %s   Version: %s   Java Version: %s\n"
 msgstr "Moteur: %s   Version: %s    Version Java: %s\n"
 
-#: kaffe/kaffe/version.c:58
+#: kaffe/kaffe/version.c:57
 #, fuzzy, c-format
 msgid "Heap defaults: minimum size: %d MB, maximum size: unlimited\n"
 msgstr ""
 "Paramètres par défaut du tas: taille minimale: %d MB, taille maximale: %d "
 "MB\n"
 
-#: kaffe/kaffe/version.c:61
-#, fuzzy, c-format
-msgid "Heap defaults: minimum size: %d MB, maximum size: %lu MB\n"
-msgstr ""
-"Paramètres par défaut du tas: taille minimale: %d MB, taille maximale: %d "
-"MB\n"
-
-#: kaffe/kaffe/version.c:64
+#: kaffe/kaffe/version.c:59
 #, c-format
 msgid "Stack default size: %d KB\n"
 msgstr "Taille par défault de la pile: %d KB\n"
+
+#, fuzzy
+#~ msgid "Heap defaults: minimum size: %d MB, maximum size: %lu MB\n"
+#~ msgstr ""
+#~ "Paramètres par défaut du tas: taille minimale: %d MB, taille maximale: %d "
+#~ "MB\n"
