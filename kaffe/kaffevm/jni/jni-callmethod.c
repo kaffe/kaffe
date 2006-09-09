@@ -36,7 +36,7 @@ getMethodFunc (Method* meth, Hjava_lang_Object *obj)
     implementors = meth->class->implementors;
     clazz = OBJECT_CLASS(obj);
 
-    assert (implementors != NULL && clazz->impl_index <= (int)implementors[0]);
+    assert (implementors != NULL && clazz->impl_index <= (uintptr_t) implementors[0]);
 
     return implementors[clazz->impl_index][meth->idx + 1]; 	
   } else {

@@ -1,5 +1,14 @@
 2006-09-09  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/classMethod.h (struct Hjava_lang_Class):
+	Changed type of impl_index to unsigned int as its used as 
+	an array index.
+
+	* kaffe/kaffevm/jni/jni-callmethod.c (getMethodFunc):
+	Cast implementors to uintptr_t to fix warning on alpha-linux.
+
+2006-09-09  Dalibor Topic  <robilad@kaffe.org>
+
 	* include/Makefile.am (stamp-h0all, stamp-h1all): Set bootclasspath
 	instead of classpath for kaffeh invocations to make sure the VM 
 	interface jars are picked up and the right headers are generated.
