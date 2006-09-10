@@ -1,3 +1,8 @@
+2006-09-10  Jim Huang  <jserv@kaffe.org>
+
+	* po/zh_TW.po,
+	po/zh_CN.po: Updated. Due to Xynth AWT changes.
+
 2006-09-09  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/classMethod.h (struct Hjava_lang_Class):
@@ -59,6 +64,7 @@
 	* kaffe/scripts/jar.in: Use FASTJAR_BINARY.
 
 2006-08-28  Alper Akcan  <alper@kaffe.org>
+
 	* libraries/clib/awt/xynth/Makefile.am,
 	libraries/clib/awt/xynth/Makefile.in,
 	libraries/clib/awt/xynth/color.c,
@@ -68,8 +74,7 @@
 	libraries/clib/awt/xynth/image.c,
 	libraries/clib/awt/xynth/toolkit.c,
 	libraries/clib/awt/xynth/toolkit.h,
-	libraries/clib/awt/xynth/window.c :
-	
+	libraries/clib/awt/xynth/window.c:
 	Added simple keyboard support, updated mail address.
 
 2006-08-27  Dalibor Topic  <robilad@kaffe.org>
@@ -208,7 +213,8 @@
 
         * libraries/clib/Makefile.am: (SUBDIRS) Removed net.
 
-2006-08-22  Alper Akcan <distchx@yahoo.com>
+2006-08-22  Alper Akcan  <distchx@yahoo.com>
+
 	* Makefile.am,
 	configure.ac,
 	WHATSNEW,
@@ -223,8 +229,7 @@
 	libraries/clib/awt/xynth/Makefile.am,
 	libraries/clib/awt/xynth/event.c,
 	libraries/clib/awt/xynth/toolkit.c:
-	
-	new xynth based awt backend.
+	New xynth based awt backend.
 
 2006-08-22  Dalibor Topic  <robilad@kaffe.org>
 

@@ -224,9 +224,9 @@ msgid "\t-Xkaffe-nanox-awt\t Use Kaffe's Nano-X AWT backend\n"
 msgstr "\t-Xkaffe-nanox-awt\t 使用 Kaffe 的 Nano-X AWT backend\n"
 
 #: kaffe/kaffe/main.c:1018
-#, fuzzy, c-format
+#, c-format
 msgid "\t-Xkaffe-xynth-awt\t Use Kaffe's Xynth AWT backend\n"
-msgstr "\t-Xkaffe-xlib-awt\t 使用 Kaffe 的 Xlib AWT backend\n"
+msgstr "\t-Xkaffe-xynth-awt\t 使用 Kaffe 的 Xynth AWT backend\n"
 
 #: kaffe/kaffe/main.c:1021
 msgid ""
