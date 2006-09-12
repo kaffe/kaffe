@@ -1,3 +1,38 @@
+2006-09-13  Dalibor Topic  <robilad@kaffe.org>
+
+	* include/jsyscall.h (SystemCallInterface):
+	Removed _mmap and _msync. (KMMAP, KMSYNC, 
+	KAFFE_MMAP_READ, KAFFE_MMAP_WRITE, 
+	KAFFE_MMAP_PRIVATE) Removed, since they are
+	currently unused.
+
+	* kaffe/kaffeh/support.c (Kaffe_SystemCallInterface):
+	Removed mmap and msync entries.
+
+	* kaffe/kaffevm/systems/beos-native/syscalls.c
+	(beos_native_mmap): Removed.
+	(Kaffe_SystemCallInterface): Removed mmap entry.
+
+	* kaffe/kaffevm/systems/drops-l4threads/syscalls.c
+	(drops_mmap, drops_msync): Removed.
+	(Kaffe_SystemCallInterface): Removed drops_mmap 
+	and drops_msync entry.
+
+	* kaffe/kaffevm/systems/oskit-pthreads/syscalls.c
+	(oskit_pthread_mmap) Removed.
+	(Kaffe_SystemCallInterface): Removed 
+	oskit_pthread_mmap entry.
+
+	* kaffe/kaffevm/systems/unix-jthreads/syscalls.c
+	(jthreadedMmap, jthreadedMsync) Removed.
+	(Kaffe_SystemCallInterface): Removed jthreadedMmap
+	and jthreadedMsync entries.
+
+	* kaffe/kaffevm/systems/unix-pthreads/syscalls.c
+        (jthreadedMmap, jthreadedMsync) Removed.
+        (Kaffe_SystemCallInterface): Removed jthreadedMmap 
+        and jthreadedMsync entries.
+
 2006-09-10  Jim Huang  <jserv@kaffe.org>
 
 	* po/zh_TW.po,

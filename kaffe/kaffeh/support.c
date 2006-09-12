@@ -144,9 +144,7 @@ SystemCallInterface Kaffe_SystemCallInterface =
         NULL,		/* forkexec */
         NULL,		/* waitpid */
         NULL,		/* kill */
-	NULL,           /* mmap */
         NULL,           /* munmap */
-        NULL,           /* msync */
         NULL,           /* pipecreate */
         NULL,           /* piperead */
         NULL            /* pipewrite */

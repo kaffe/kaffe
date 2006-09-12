@@ -341,22 +341,9 @@ static int drops_kill(int a UNUSED, int b UNUSED) {
   return -1;
 }
 
-static int drops_mmap(void **memory UNUSED, size_t *size UNUSED,
-                      int mode UNUSED, int fd UNUSED,
-                      off_t *offset UNUSED) {
-  unimp("mmap() not implemented");
-  return -1;
-}
-
 static int drops_munmap(void *memory UNUSED,
                         size_t size UNUSED) {
   unimp("munmap() not implemented");
-  return -1;
-}
-
-static int drops_msync(void *memory UNUSED,
-                       size_t length UNUSED) {
-  unimp("msync() not implemented");
   return -1;
 }
 
@@ -414,9 +401,7 @@ SystemCallInterface Kaffe_SystemCallInterface = {
 	drops_forkexec,
 	drops_waitpid,
 	drops_kill,
-	drops_mmap,
         drops_munmap,
-        drops_msync,
         drops_pipecreate,
         drops_piperead,
         drops_pipewrite
