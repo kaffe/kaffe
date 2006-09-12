@@ -478,11 +478,11 @@ KaffePThread_detectStackBoundaries(jthread_t jtid, size_t mainThreadStackSize)
 	 * may guess the other boundary.
 	 */
 #if defined(STACK_GROWS_UP)
-	jtid->stackMin = guessPointer;
+	jtid->stackMin = (void *)guessPointer;
 	jtid->stackMax = (char *)jtid->stackMin + mainThreadStackSize;
 	jtid->stackCur = jtid->stackMax;
 #else
-	jtid->stackMax = guessPointer;
+	jtid->stackMax = (void *)guessPointer;
 	jtid->stackMin = (char *)jtid->stackMax - mainThreadStackSize;
 	jtid->stackCur = jtid->stackMin;
 #endif

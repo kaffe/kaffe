@@ -1,5 +1,11 @@
 2006-09-13  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/systems/unix-pthreads/signal.c 
+	(KaffePThread_detectStackBoundaries): Added missing 
+	casts to fix compiler warning on alpha-linux.
+
+2006-09-13  Dalibor Topic  <robilad@kaffe.org>
+
 	* include/jsyscall.h (SystemCallInterface):
 	Removed _mmap and _msync. (KMMAP, KMSYNC, 
 	KAFFE_MMAP_READ, KAFFE_MMAP_WRITE, 
