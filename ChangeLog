@@ -1,3 +1,11 @@
+2006-09-16  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/vmspecific/Makefile.am (AM_JAVACFLAGS):
+	Set -bootclasspath instead of -classpath to make sure it works
+	with compilers configured to use a different class library.
+
+        Reported by Riccardo Mottola <mottola@kaffe.org>
+
 2006-09-13  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/systems/unix-pthreads/signal.c 

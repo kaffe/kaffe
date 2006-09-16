@@ -7,7 +7,7 @@ JAR_CMD2 = ($(FASTJAR) uf $(CLASSFILE) -C $(LIBDIR) gnu)
 JAR_CMD3 = ($(FASTJAR) uf $(CLASSFILE) -C $(LIBDIR) java)
 
 CPATH =  .:$(srcdir):$(LIBDIR):$(GLIBJ_ZIP)
-AM_JAVACFLAGS = -classpath $(CPATH)
+AM_JAVACFLAGS = -bootclasspath $(CPATH)
 JAVAC = $(JAVA_COMPILER)
 JAVAROOT = $(LIBDIR)
 
