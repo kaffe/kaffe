@@ -771,6 +771,14 @@ then
 fi
 AM_CONDITIONAL(ENABLE_LOCAL_SOCKETS, test "x$ENABLE_LOCAL_SOCKETS" = "xyes")
 
+AC_MSG_CHECKING([for socklen_t in sys/socket.h])
+AC_TRY_COMPILE([#define _POSIX_PII_SOCKET
+		#include <sys/types.h>
+		#include <sys/socket.h>], [socklen_t x = 5;],
+		[AC_DEFINE(HAVE_SOCKLEN_T, 1, [Define it socklen_t typedef is in sys/socket.h.])
+		 AC_MSG_RESULT(yes)],
+		[AC_MSG_RESULT(no)])
+
 dnl -----------------------------------------------------------
 dnl Add the default preference peer
 dnl -----------------------------------------------------------

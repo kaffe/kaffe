@@ -166,5 +166,4 @@ autoconf # -Wall
 
 (
   cd external/gcc/fastjar/scripts
-  patch -N -p0 <../../../../developers/config4.patch
 )

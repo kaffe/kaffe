@@ -1,3 +1,22 @@
+2006-09-16  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* developers/autogen.sh,
+	developers/config4.patch: Removed config4.patch
+
+	* libraries/javalib/external/classpath/configure.ac:
+	Added checking for declaration of socklen_t in sys/socket.h
+
+	*
+	libraries/javalib/external/classpath/native/target/generic/target_generic_network.h:
+	Added some replacement code for missing socklen_t.
+
+	* libraries/javalib/external/classpath/config.guess,
+	libraries/javalib/external/classpath/configure,
+	libraries/javalib/external/classpath/ltmain.sh,
+	libraries/javalib/external/classpath/include/config.h.in: Regenerated.
+
+	Fix bug #62
+
 2006-09-16  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/vmspecific/Makefile.am (AM_JAVACFLAGS):
