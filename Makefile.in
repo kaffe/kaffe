@@ -432,6 +432,7 @@ EXTRA_DIST = \
 	THIRDPARTY \
 	WHATSNEW \
 	RELEASE-NOTES \
+	autobuild.sh \
 	license.terms \
 	license-lesser.terms \
 	license-w3c.terms \
@@ -489,42 +490,7 @@ EXTRA_DIST = \
 	compat-include/eh-common.h \
 	compat-include/frame.h \
 	compat-include/gansidecl.h \
-	developers/boehm-with-kaffe.patch \
-	developers/build_mathnamespace \
-	developers/check-classpath-unmerged \
-	developers/math_symbols \
-	developers/check-classpath-merge-status \
-	developers/FullTest.sh \
-	developers/GCJ.note.1 \
-	developers/JavaClass.pm \
-	developers/README \
-	developers/README.EUC_JP \
-	developers/alignment_of_size.c \
-	developers/autogen.sh \
-	developers/createLdScript.pl \
-	developers/dumpClass.pl \
-	developers/gdbinit \
-	developers/fixup.c \
-	developers/geteh_from_libgcc2 \
-	developers/glibc-2.1.1-signal.patch \
-	developers/mangleNative.pl \
-	developers/mauve-html-gen.pl \
-	developers/mauve-kaffe \
-	developers/mauve-results.sh \
-	developers/mnemonicizer.awk \
-	developers/resync-classpath.sh \
-	developers/rpm-kaffe.spec \
-	developers/sp_offset.c \
-	developers/test-kaffe-sh \
-	developers/update-class-list \
-	developers/utf8munge.pl \
-	scripts/GCCWarning.pm \
-	scripts/JikesWarning.pm \
-	scripts/LogWarning.pm \
-	scripts/Registry.pm \
-	scripts/sort-warnings.pl \
-	scripts/SparseWarning.pm \
-	scripts/WarningDescription.pm
+	developers/auto-build.conf
 
 CLEANFILES = BUILD_ENVIRONMENT
 noinst_SCRIPTS = libtool BUILD_ENVIRONMENT
@@ -974,6 +940,42 @@ uninstall-info: uninstall-info-recursive
 	mostlyclean-libtool mostlyclean-recursive pdf pdf-am ps ps-am \
 	tags tags-recursive uninstall uninstall-am uninstall-info-am
 
+	developers/boehm-with-kaffe.patch \
+	developers/build_mathnamespace \
+	developers/check-classpath-unmerged \
+	developers/math_symbols \
+	developers/check-classpath-merge-status \
+	developers/FullTest.sh \
+	developers/GCJ.note.1 \
+	developers/JavaClass.pm \
+	developers/README \
+	developers/README.EUC_JP \
+	developers/alignment_of_size.c \
+	developers/autogen.sh \
+	developers/createLdScript.pl \
+	developers/dumpClass.pl \
+	developers/gdbinit \
+	developers/fixup.c \
+	developers/geteh_from_libgcc2 \
+	developers/glibc-2.1.1-signal.patch \
+	developers/mangleNative.pl \
+	developers/mauve-html-gen.pl \
+	developers/mauve-kaffe \
+	developers/mauve-results.sh \
+	developers/mnemonicizer.awk \
+	developers/resync-classpath.sh \
+	developers/rpm-kaffe.spec \
+	developers/sp_offset.c \
+	developers/test-kaffe-sh \
+	developers/update-class-list \
+	developers/utf8munge.pl \
+	scripts/GCCWarning.pm \
+	scripts/JikesWarning.pm \
+	scripts/LogWarning.pm \
+	scripts/Registry.pm \
+	scripts/sort-warnings.pl \
+	scripts/SparseWarning.pm \
+	scripts/WarningDescription.pm
 
 depend:
 	@echo \`make depend\' is no longer needed

@@ -63,6 +63,7 @@ EXTRA_DIST = \
 	THIRDPARTY \
 	WHATSNEW \
 	RELEASE-NOTES \
+	autobuild.sh \
 	license.terms \
 	license-lesser.terms \
 	license-w3c.terms \
@@ -120,6 +121,7 @@ EXTRA_DIST = \
 	compat-include/eh-common.h \
 	compat-include/frame.h \
 	compat-include/gansidecl.h \
+	developers/auto-build.conf
 	developers/boehm-with-kaffe.patch \
 	developers/build_mathnamespace \
 	developers/check-classpath-unmerged \

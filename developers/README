@@ -1,6 +1,10 @@
 
 This directory contains various files useful for Kaffe developers.
 
+auto-build.conf: a configuration file for Test-Autobuild from autobuild.sh.
+		It goes into /etc/auto-build.d/ once you install 
+		Test-Autobuild.
+
 sp_offset.c:	a program that guesses the correct offset of the sp in a
 		jmpbuf for the jthread threading system.
 

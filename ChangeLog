@@ -1,3 +1,17 @@
+2006-09-18  Dalibor Topic  <robilad@kaffe.org>
+
+	* autobuild.sh: New file. Adds support for Test-Autobuild,
+	an autobuilder from autobuild.org.
+
+	* developers/auto-build.conf: New file. Configuration for 
+	the autobuilder.
+
+	* developers/README: Added information on 
+	developers/auto-build.conf.
+
+	* Makefile.am (EXTRA_DIST): Added autobuild.sh and 
+	developers/auto-build.conf.
+
 2006-09-16  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* developers/autogen.sh,
