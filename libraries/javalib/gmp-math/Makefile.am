@@ -5,7 +5,7 @@ LIBDIR = lib
 JAR_CMD1 = ($(FASTJAR) cf $(CLASSFILE) -C $(LIBDIR) $(SRCDIRS))
 
 CPATH =  .:$(srcdir):$(LIBDIR):$(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar:$(GLIBJ_ZIP)
-AM_JAVACFLAGS = -classpath $(CPATH)
+AM_JAVACFLAGS = -bootclasspath $(CPATH)
 JAVAC = $(JAVA_COMPILER)
 JAVAROOT = $(LIBDIR)
 
