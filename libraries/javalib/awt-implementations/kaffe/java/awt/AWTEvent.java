@@ -66,7 +66,12 @@ public class AWTEvent
    */
   byte[] bdata;
   
-    /** Mask for selecting component events. */
+  /**
+   * Indicates if this event is dispatched by the KeyboardFocusManager.
+   */
+  boolean isFocusManagerEvent = false;
+  
+  /** Mask for selecting component events. */
   public static final long COMPONENT_EVENT_MASK = 0x00001;
 
   /** Mask for selecting container events. */
