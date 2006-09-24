@@ -1,3 +1,22 @@
+2006-09-24  Dalibor Topic  <robilad@kaffe.org>
+
+	* include/jsyscall.h, kaffe/kaffeh/support.c,
+	kaffe/kaffevm/systems/beos-native/syscalls.c, 
+	kaffe/kaffevm/systems/drops-l4threads/syscalls.c,
+	kaffe/kaffevm/systems/oskit-pthreads/syscalls.c,
+	kaffe/kaffevm/systems/unix-jthreads/syscalls.c,
+	kaffe/kaffevm/systems/unix-pthreads/syscalls.c:
+	Reverted patch from 2006-09-13.
+
+	* libraries/clib/nio/gnu_java_nio_channels_FileChannelImpl.c:
+	Reverted patch from 2006-08-22.
+
+	* kaffe/kaffevm/Makefile.am: Added 
+	libraries/clib/nio/gnu_java_nio_channels_FileChannelImpl.c
+	to libkaffevm.
+
+	Fix for #68, #67.
+
 2006-09-22  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/jni/jni.c

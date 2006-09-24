@@ -117,6 +117,7 @@ am_libkaffevm_la_OBJECTS = libkaffevm_la-access.lo \
 	libkaffevm_la-utf8const.lo libkaffevm_la-gcFuncs.lo \
 	libkaffevm_la-reflect.lo libkaffevm_la-reference.lo \
 	libkaffevm_la-binreloc.lo \
+	libkaffevm_la-gnu_java_nio_channels_FileChannelImpl.lo \
 	libkaffevm_la-gnu_java_nio_VMSelector.lo \
 	libkaffevm_la-InetAddressImpl.lo \
 	libkaffevm_la-NetworkInterface.lo \
@@ -539,6 +540,7 @@ libkaffevm_la_SOURCES = \
 	reflect.c \
 	reference.c \
 	binreloc.c \
+	$(top_srcdir)/libraries/clib/nio/gnu_java_nio_channels_FileChannelImpl.c \
 	$(top_srcdir)/libraries/clib/nio/gnu_java_nio_VMSelector.c \
 	$(top_srcdir)/libraries/clib/net/InetAddressImpl.c \
 	$(top_srcdir)/libraries/clib/net/NetworkInterface.c \
@@ -714,6 +716,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-gnu_classpath_VMStackWalker.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-gnu_classpath_VMSystemProperties.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-gnu_java_nio_VMSelector.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-gnu_java_nio_channels_FileChannelImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-hashtab.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-itypes.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-jar.Plo@am__quote@
@@ -998,6 +1001,13 @@ libkaffevm_la-binreloc.lo: binreloc.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='binreloc.c' object='libkaffevm_la-binreloc.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-binreloc.lo `test -f 'binreloc.c' || echo '$(srcdir)/'`binreloc.c
+
+libkaffevm_la-gnu_java_nio_channels_FileChannelImpl.lo: $(top_srcdir)/libraries/clib/nio/gnu_java_nio_channels_FileChannelImpl.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-gnu_java_nio_channels_FileChannelImpl.lo -MD -MP -MF "$(DEPDIR)/libkaffevm_la-gnu_java_nio_channels_FileChannelImpl.Tpo" -c -o libkaffevm_la-gnu_java_nio_channels_FileChannelImpl.lo `test -f '$(top_srcdir)/libraries/clib/nio/gnu_java_nio_channels_FileChannelImpl.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/nio/gnu_java_nio_channels_FileChannelImpl.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libkaffevm_la-gnu_java_nio_channels_FileChannelImpl.Tpo" "$(DEPDIR)/libkaffevm_la-gnu_java_nio_channels_FileChannelImpl.Plo"; else rm -f "$(DEPDIR)/libkaffevm_la-gnu_java_nio_channels_FileChannelImpl.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/libraries/clib/nio/gnu_java_nio_channels_FileChannelImpl.c' object='libkaffevm_la-gnu_java_nio_channels_FileChannelImpl.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-gnu_java_nio_channels_FileChannelImpl.lo `test -f '$(top_srcdir)/libraries/clib/nio/gnu_java_nio_channels_FileChannelImpl.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/nio/gnu_java_nio_channels_FileChannelImpl.c
 
 libkaffevm_la-gnu_java_nio_VMSelector.lo: $(top_srcdir)/libraries/clib/nio/gnu_java_nio_VMSelector.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-gnu_java_nio_VMSelector.lo -MD -MP -MF "$(DEPDIR)/libkaffevm_la-gnu_java_nio_VMSelector.Tpo" -c -o libkaffevm_la-gnu_java_nio_VMSelector.lo `test -f '$(top_srcdir)/libraries/clib/nio/gnu_java_nio_VMSelector.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/nio/gnu_java_nio_VMSelector.c; \

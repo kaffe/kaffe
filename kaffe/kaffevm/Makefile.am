@@ -129,6 +129,7 @@ libkaffevm_la_SOURCES = \
 	reflect.c \
 	reference.c \
 	binreloc.c \
+	$(top_srcdir)/libraries/clib/nio/gnu_java_nio_channels_FileChannelImpl.c \
 	$(top_srcdir)/libraries/clib/nio/gnu_java_nio_VMSelector.c \
 	$(top_srcdir)/libraries/clib/net/InetAddressImpl.c \
 	$(top_srcdir)/libraries/clib/net/NetworkInterface.c \
