@@ -318,6 +318,12 @@ oskit_pthread_kill(int a, int b)
 }
 
 static int
+oskit_pthread_mmap(void **memory, size_t *size, )
+{
+	return (EOPNOTSUPP);
+}
+
+static int
 oskit_pthread_munmap(void *memory, size_t size)
 {
 	return (EOPNOTSUPP);
@@ -356,5 +362,6 @@ SystemCallInterface Kaffe_SystemCallInterface = {
 	oskit_pthread_forkexec,
 	oskit_pthread_waitpid,
 	oskit_pthread_kill,
+	oskit_pthread_mmap,
 	oskit_pthread_munmap
 };

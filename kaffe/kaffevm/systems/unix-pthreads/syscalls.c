@@ -790,6 +790,47 @@ jthreadedWaitpid(int wpid, int* status, int options, int *outpid)
 }
 
 static int
+jthreadedMmap(void **memory, size_t *size, int mode, int fd, off_t *offset)
+{
+#if defined(HAVE_MMAP)
+	size_t pages_sz;
+	off_t pages_offset;
+	int sysmode, sysflags;
+	int rc = 0;
+
+	pages_sz = (*size)/getpagesize();
+	*size = (pages_sz+1)*getpagesize();
+  
+	pages_offset = (*offset)/getpagesize();
+	*offset = pages_offset*getpagesize();
+
+	switch (mode) {
+		case KAFFE_MMAP_READ:
+			sysflags = MAP_SHARED;
+			sysmode = PROT_READ;
+			break;
+		case KAFFE_MMAP_WRITE:
+			sysflags = MAP_SHARED;
+			sysmode = PROT_WRITE | PROT_READ;
+			break;
+		case KAFFE_MMAP_PRIVATE:
+			sysflags = MAP_PRIVATE;
+			sysmode = PROT_WRITE | PROT_READ;
+			break;
+		default:
+			return -EINVAL;
+	}
+
+	*memory = mmap(*memory, *size, sysmode, sysflags, fd, *offset);
+
+	return (rc);
+#else
+	return (ENOTSUP);
+#endif
+}
+
+
+static int
 jthreadedMunmap(void *memory, size_t size)
 {
 #if defined(HAVE_MMAP)
@@ -801,6 +842,25 @@ jthreadedMunmap(void *memory, size_t size)
 	return (rc);
 #else
 	return (ENOTSUP);
+#endif
+}
+
+static int
+jthreadedMsync(void *memory, size_t size)
+{
+#if defined(HAVE_MMAP)
+        int rc = 0;
+
+        memory = (void *)(((size_t)memory/getpagesize()) * getpagesize());
+        size += getpagesize();
+        /* TODO: Try not to freeze the entire VM. */
+        if (msync(memory, size, MS_SYNC | MS_INVALIDATE) < 0) {
+            rc = errno;
+        }
+
+        return rc;
+#else
+        return (ENOTSUP);
 #endif
 }
 
@@ -859,7 +919,9 @@ SystemCallInterface Kaffe_SystemCallInterface = {
         jthreadedForkExec,
         jthreadedWaitpid,
         jthreadedKill,
+        jthreadedMmap,
         jthreadedMunmap,
+	jthreadedMsync,
 	jthreadedPipeCreate,
 	jthreadedTimedRead,
 	jthreadedTimedWrite

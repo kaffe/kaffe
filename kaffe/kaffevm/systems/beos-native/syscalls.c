@@ -500,6 +500,12 @@ beos_native_kill(int a, int b)
 }
 
 static int
+beos_native_mmap(void **memory, size_t *size, int mode, int fd, off_t *offset)
+{
+	return B_UNSUPPORTED;
+}
+
+static int
 beos_native_munmap(void *memory, size_t size)
 {
 	return B_UNSUPPORTED;
@@ -538,5 +544,6 @@ SystemCallInterface Kaffe_SystemCallInterface = {
 	beos_native_forkexec,
 	beos_native_waitpid,
 	beos_native_kill,
+	beos_native_mmap,
 	beos_native_munmap
 };

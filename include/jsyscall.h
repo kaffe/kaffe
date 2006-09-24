@@ -95,7 +95,9 @@ typedef struct SystemCallInterface {
 	int	(*_waitpid)(int, int *, int, int *);
 	int	(*_kill)(int, int);
 
+	int	(*_mmap)(void **, size_t *, int, int fd, off_t *);
 	int	(*_munmap)(void *, size_t);
+	int	(*_msync)(void *, size_t);
 
 	int	(*_pipecreate)(int *, int *);
 	int	(*_piperead)(int, void *, size_t, int, ssize_t *);
@@ -250,13 +252,19 @@ extern SystemCallInterface Kaffe_SystemCallInterface;
 #define	KFORKEXEC(A,B,C,D,E) \
 			(*Kaffe_SystemCallInterface._forkexec)(A,B,C,D,E)
 #define	KKILL(A,B)	(*Kaffe_SystemCallInterface._kill)(A,B)
+#define KMMAP(A,B,C,D,E) (*Kaffe_SystemCallInterface._mmap)(A,B,C,D,E)
 #define KMUNMAP(A,B)  (*Kaffe_SystemCallInterface._munmap)(A,B)
+#define KMSYNC(A,B)  (*Kaffe_SystemCallInterface._msync)(A,B)
 
 #define KPIPECREATE(A,B)   (*Kaffe_SystemCallInterface._pipecreate)(A,B)
 #define KPIPEREAD(A,B,C,D,E) (*Kaffe_SystemCallInterface._piperead)(A,B,C,D,E)
 #define KPIPEWRITE(A,B,C,D,E) (*Kaffe_SystemCallInterface._pipewrite)(A,B,C,D,E)
 
 #define KSOCKSHUTDOWN(A) (*Kaffe_SystemCallInterface._sockShutdown)(A)
+
+#define KAFFE_MMAP_READ 0
+#define KAFFE_MMAP_WRITE 1
+#define KAFFE_MMAP_PRIVATE 2
 
 #define NOTIMEOUT (-1)
 
