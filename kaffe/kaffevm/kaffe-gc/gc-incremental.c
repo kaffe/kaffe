@@ -247,7 +247,7 @@ gc_heap_isobject(gc_block *info, gc_unit *unit)
 		uint16 idx = GCMEM2IDX(info, unit);
 		if (idx < info->nr &&
 		    GCBLOCK2MEM(info, idx) == unit &&
-		    (KGC_GET_COLOUR(info, idx) & KGC_COLOUR_INUSE) == KGC_COLOUR_INUSE) {
+		    ((KGC_GET_COLOUR(info, idx) & KGC_COLOUR_INUSE) == KGC_COLOUR_INUSE || KGC_GET_COLOUR(info, idx) == KGC_COLOUR_FIXED)) {
 			return 1;
 		}
 	}

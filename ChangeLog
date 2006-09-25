@@ -1,3 +1,15 @@
+2006-09-25  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/jni/jni-refs.c
+	(KaffeJNI_NewWeakGlobalRef): Fixed allocation of the weak reference.
+	(KaffeJNI_DeleteWeakGlobalRef): Fixed deletion of the weak
+	reference.
+
+	* kaffe/kaffevm/kaffe-gc/gc-incremental.c: 
+	(gc_heap_isobject): Consider FIXED object as a member of the heap.
+	
+	Reported by Tim Bevan <tim.bevan@laser-scan.com>
+
 2006-09-24  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/external/classpath/native/jni/java-nio/gnu_java_nio_VMSelector.c:

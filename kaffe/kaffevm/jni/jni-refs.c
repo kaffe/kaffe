@@ -258,7 +258,7 @@ jweak KaffeJNI_NewWeakGlobalRef(JNIEnv *env UNUSED, jobject obj)
 
   obj_local = unveil(obj);
 
-  ref = KGC_malloc(main_collector, KGC_ALLOC_VMWEAKREF, sizeof(jobject));
+  ref = KGC_malloc(main_collector, sizeof(jobject), KGC_ALLOC_VMWEAKREF);
 
   *((jobject *)ref) = obj_local;
   KGC_addWeakRef(main_collector, ref, obj_local);
@@ -287,7 +287,8 @@ void KaffeJNI_DeleteWeakGlobalRef(JNIEnv *env UNUSED, jweak ref)
 
   BEGIN_EXCEPTION_HANDLING_VOID();
 
-  assert(KGC_getObjectIndex(main_collector, ref) == KGC_ALLOC_VMWEAKREF);
+  void *ref2 = (void*)(((uintp)ref) & (~(uintp)1));
+  assert(KGC_getObjectIndex(main_collector, ref2) == KGC_ALLOC_VMWEAKREF);
 
 #if defined(ENABLE_JVMPI)
   if( JVMPI_EVENT_ISENABLED(JVMPI_EVENT_JNI_WEAK_GLOBALREF_FREE) )
@@ -302,8 +303,8 @@ void KaffeJNI_DeleteWeakGlobalRef(JNIEnv *env UNUSED, jweak ref)
 
   obj = unveil(ref);
 
-  KGC_rmWeakRef(main_collector, ref, obj);
-  KFREE(obj);
+  KGC_rmWeakRef(main_collector, ref2, obj);
+  KFREE(ref2);
 
   END_EXCEPTION_HANDLING();
 }
