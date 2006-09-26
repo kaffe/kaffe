@@ -1,3 +1,9 @@
+2006-09-26  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/jni/jni-refs.c:
+	(KaffeJNI_DeleteWeakGlobalRef): Moved variable declaration out to
+	be able to compile kaffe on standard C compiler.
+
 2006-09-25  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/jni/jni-refs.c

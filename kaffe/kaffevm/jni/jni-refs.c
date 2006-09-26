@@ -284,10 +284,10 @@ jweak KaffeJNI_NewWeakGlobalRef(JNIEnv *env UNUSED, jobject obj)
 void KaffeJNI_DeleteWeakGlobalRef(JNIEnv *env UNUSED, jweak ref)
 {
   jobject obj;
+  void *ref2 = (void*)(((uintp)ref) & (~(uintp)1));
 
   BEGIN_EXCEPTION_HANDLING_VOID();
 
-  void *ref2 = (void*)(((uintp)ref) & (~(uintp)1));
   assert(KGC_getObjectIndex(main_collector, ref2) == KGC_ALLOC_VMWEAKREF);
 
 #if defined(ENABLE_JVMPI)
