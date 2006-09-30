@@ -62,6 +62,12 @@ static const char * JAR_ERROR_TRUNCATED_FILE               = "Truncated file";
 static const char * JAR_ERROR_UNSUPPORTED_COMPRESSION      = "Unsupported compression in JAR file";
 
 /*
+ * This constant determines how large is the block in which we must
+ * look for the central directory end.
+ */
+#define MAX_CENTRAL_END_DISPLACEMENT 65536
+
+/*
  * The jarCache keeps a list of all the jarFiles cached in the system.
  * However, since some JAR files are opened and closed frequently we don't
  * actively flush unused files from the system unless there are more than
@@ -768,38 +774,48 @@ static int getCentralDirCount(jarFile *jf, unsigned int *out_dir_size)
 	/* The central directory end is at the end of the file */
 	if( (pos = jarSeek(jf, (off_t)-FILE_SIZEOF_CENTRALEND, SEEK_END)) > 0 )
 	{
-		jarCentralDirectoryEnd cde;
+	  jarCentralDirectoryEnd cde;
+	  int displacement;
 
-		if( readJarHeader(jf, CENTRAL_END_SIGNATURE,
-				  &cde, FILE_SIZEOF_CENTRALEND) )
+	  displacement = FILE_SIZEOF_CENTRALEND;
+	  while (!readJarHeader(jf, CENTRAL_END_SIGNATURE,
+				&cde, FILE_SIZEOF_CENTRALEND) )
+	    {
+	      if (displacement == MAX_CENTRAL_END_DISPLACEMENT)
 		{
-			jarInstantiate(jf, (uint8 *)&cde,
-				       instantiateCentralDirEnd);
-			if( cde.nrOfEntriesInDirectory >
-			    (cde.sizeOfDirectory / FILE_SIZEOF_CENTRALDIR) )
-			{
-				jf->error = JAR_ERROR_ENTRY_COUNT_MISMATCH;
-			}
-			else if( cde.sizeOfDirectory > (unsigned)pos )
-			{
-				jf->error = JAR_ERROR_IMPOSSIBLY_LARGE_DIRECTORY;
-			}
-			else if( jarSeek(jf,
-					 (off_t)cde.offsetOfDirectory,
-					 SEEK_SET) >= 0 )
-			{
-				*out_dir_size = cde.sizeOfDirectory;
-				retval = cde.nrOfEntriesInDirectory;
-			}
+		  jf->error = JAR_ERROR_NO_END;
+		  return retval;
 		}
-		else
-		{
-			jf->error = JAR_ERROR_NO_END;
-		}
+	      
+	      displacement++;
+	      jarSeek(jf, (off_t)-displacement, SEEK_END);
+	    }
+
+	  jf->error = NULL;
+	  
+	  jarInstantiate(jf, (uint8 *)&cde,
+			 instantiateCentralDirEnd);
+	  if( cde.nrOfEntriesInDirectory >
+	      (cde.sizeOfDirectory / FILE_SIZEOF_CENTRALDIR) )
+	    {
+	      jf->error = JAR_ERROR_ENTRY_COUNT_MISMATCH;
+	    }
+	  else if( cde.sizeOfDirectory > (unsigned)pos )
+	    {
+	      jf->error = JAR_ERROR_IMPOSSIBLY_LARGE_DIRECTORY;
+	    }
+	  else if( jarSeek(jf,
+			   (off_t)cde.offsetOfDirectory,
+			   SEEK_SET) >= 0 )
+	    {
+	      *out_dir_size = cde.sizeOfDirectory;
+	      retval = cde.nrOfEntriesInDirectory;
+	    }
+	  
 	}
 	return( retval );
 }
-
+	
 /*
  * Read the central directory records from the file
  */

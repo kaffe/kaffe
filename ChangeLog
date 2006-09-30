@@ -1,3 +1,11 @@
+2006-09-30  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/jar.c
+	(getCentralDirCount): Look for the last signature into a larger block
+	at the end of the file.
+
+	Fix bug #55
+
 2006-09-26  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/jni/jni-refs.c:
