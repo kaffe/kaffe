@@ -155,16 +155,22 @@ KaffeJNI_ToReflectedMethod (JNIEnv *env UNUSED, jclass cls, jmethodID mid, jbool
 	cls_local = unveil(cls);
 	clazz = (Hjava_lang_Class *)cls_local;
 	refMeth = NULL;
-	for (allMethods = Kaffe_get_class_methods(clazz), i = 0;
-	     i < CLASS_NMETHODS(clazz); 
-	     i++, allMethods++)
+	do
 	  {
-	    if (allMethods == (Method *)mid)
+	    for (allMethods = Kaffe_get_class_methods(clazz), i = 0;
+		 i < CLASS_NMETHODS(clazz); 
+		 i++, allMethods++)
 	      {
-		refMeth = KaffeVM_makeReflectMethod(clazz, i);
-		break;
+		if (allMethods == (Method *)mid)
+		  {
+		    refMeth = KaffeVM_makeReflectMethod(clazz, i);
+		    break;
+		  }
 	      }
+	    clazz = clazz->superclass;
 	  }
+	while (clazz != NULL && refMeth == NULL);
+
 	END_EXCEPTION_HANDLING();
 	
 	return (jobject) refMeth;
@@ -184,16 +190,21 @@ KaffeJNI_ToReflectedField (JNIEnv *env UNUSED, jclass cls, jfieldID fid, jboolea
 	cls_local = unveil(cls);
 	clazz = (Hjava_lang_Class *)cls_local;
 	refField = NULL;
-	for (allFields = CLASS_FIELDS(clazz), i = 0;
-	     i < CLASS_NFIELDS(clazz);
-	     i++, allFields++)
+	do
 	  {
-	    if (allFields == (Field *)fid)
+	    for (allFields = CLASS_FIELDS(clazz), i = 0;
+		 i < CLASS_NFIELDS(clazz);
+		 i++, allFields++)
 	      {
-		refField = KaffeVM_makeReflectField(clazz, i);
-		break;
+		if (allFields == (Field *)fid)
+		  {
+		    refField = KaffeVM_makeReflectField(clazz, i);
+		    break;
+		  }
 	      }
+	    clazz = clazz->superclass;
 	  }
+	while (clazz != NULL && refField == NULL);
 
 	END_EXCEPTION_HANDLING();
 	
