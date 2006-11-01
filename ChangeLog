@@ -1,5 +1,9 @@
 2006-11-01  Dalibor Topic  <robilad@kaffe.org>
 
+	* WHATSNEW: Added boehmgc update.
+
+2006-11-01  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/boehm-gc/boehm/configure.ac: Removed, since 
 	boehm uses configure.in. That fixes a warning during 
 	autogen.sh.
