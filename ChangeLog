@@ -1,3 +1,25 @@
+2006-11-01  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/boehm-gc/boehm/configure.ac: Removed, since 
+	boehm uses configure.in. That fixes a warning during 
+	autogen.sh.
+
+	* kaffe/kaffevm/boehm-gc/boehm/configure.in
+	kaffe/kaffevm/boehm-gc/boehm/darwin_stop_world.c
+	kaffe/kaffevm/boehm-gc/boehm/dyn_load.c
+	kaffe/kaffevm/boehm-gc/boehm/malloc.c
+	kaffe/kaffevm/boehm-gc/boehm/os_dep.c
+	kaffe/kaffevm/boehm-gc/boehm/pthread_support.c
+	kaffe/kaffevm/boehm-gc/boehm/version.h
+	kaffe/kaffevm/boehm-gc/boehm/doc/Makefile.in
+	kaffe/kaffevm/boehm-gc/boehm/doc/README
+	kaffe/kaffevm/boehm-gc/boehm/doc/README.changes
+	kaffe/kaffevm/boehm-gc/boehm/include/Makefile.in
+	kaffe/kaffevm/boehm-gc/boehm/include/gc.h
+	kaffe/kaffevm/boehm-gc/boehm/include/gc_config_macros.h
+	kaffe/kaffevm/boehm-gc/boehm/include/private/gcconfig.h:
+	Updated to boehm gc 6.8.
+
 2006-10-06  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/jni/jni-helpers.c
