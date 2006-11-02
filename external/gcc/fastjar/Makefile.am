@@ -14,13 +14,25 @@ AM_CPPFLAGS = \
 	-I. \
 	-I$(top_srcdir) \
 	$(MAYBE_INTERNAL_ZIP_INCLUDES) \
-	-I$(top_srcdir)/../include
+	-I$(top_srcdir)/../include \
+	-DWITH_SHIFT_DOWN
 
 bin_PROGRAMS = fastjar 
-fastjar_SOURCES = jartool.c dostime.c compress.c pushback.c shift.c jartool.h \
-zipfile.h dostime.h compress.h pushback.h shift.h 
-fastjar_LDADD = $(LINKED_ZIP_LIBS) $(top_builddir)/../../../replace/libreplace.la
-fastjar_CPPFLAGS = $(AM_CPPFLAGS) -DWITH_SHIFT_DOWN
+fastjar_SOURCES = \
+	compress.c \
+	compress.h \
+	dostime.c \
+	dostime.h \
+	jartool.c \
+	jartool.h \
+	pushback.c \
+	pushback.h \
+	shift.c \
+	shift.h \
+	zipfile.h 
+fastjar_LDADD = \
+	$(LINKED_ZIP_LIBS) \
+	$(top_builddir)/../../../replace/libreplace.la
 
 AM_CFLAGS = \
 	-I$(top_srcdir)/../../../replace \

@@ -6,7 +6,9 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-AM_CFLAGS= $(KAFFE_CFLAGS)
+AM_CFLAGS= \
+	$(KAFFE_CFLAGS) \
+	$(CFLAGS_PG)
 
 if COND_SYSTEM_ZLIB
 LINKED_ZIP_LIBS=$(ZIP_LIBS)
@@ -27,10 +29,6 @@ AM_CPPFLAGS = \
 	$(MAYBE_INTERNAL_ZIP_INCLUDES)
 
 bin_PROGRAMS = kaffeh
-
-kaffeh_CFLAGS = \
-	$(AM_CFLAGS) \
-	$(CFLAGS_PG)
 
 kaffeh_LDADD = \
 	$(LTLIBINTL) \

@@ -1,3 +1,22 @@
+2006-11-02  Dalibor Topic  <robilad@kaffe.org>
+
+	Regenerated build system with autoconf 2.60 and automake 1.10.
+
+	* FAQ/FAQ.automake: Updated to autoconf 2.60 and automake 1.10.
+
+	* developers/autogen.sh: Updated to use autoconf 2.60 and automake 1.10.
+	Always use -i -f with autoreconf. Run autoreconf -i -f for classpath, 
+	as well, rather than it's internal, older requirements.
+
+	* external/gcc/fastjar/Makefile.am: (fastjar_SOURCES) Reindent.
+	(fastjar_CPPFLAGS) Fold into AM_CPPFLAGS to fix an automake warning.
+
+	* kaffe/kaffeh/Makefile.am (kaffeh_CFLAGS): Fold into AM_CFLAGS to
+	fix an automake warning.
+
+	* kaffe/kaffevm/boehm-gc/boehm/acinclude.m4 (GC_SET_VERSION): Add
+	missing quotes to fix autoreconf warning.
+
 2006-11-01  Dalibor Topic  <robilad@kaffe.org>
 
 	* WHATSNEW: Added boehmgc update.

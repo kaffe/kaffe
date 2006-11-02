@@ -16,8 +16,8 @@ export LC_ALL=C
 
 if [ "$1" != "--override" ]; then
 
-WANTED_AUTOMAKE_VERS="1.9.6"
-WANTED_AUTOCONF_VERS="2.59"
+WANTED_AUTOMAKE_VERS="1.10"
+WANTED_AUTOCONF_VERS="2.60"
 WANTED_LIBTOOL_VERS="1.5.22"
 WANTED_AUTOPOINT_VERS="0.14.6"
 
@@ -126,26 +126,26 @@ autoconf # -Wall
  cd libltdl
  # Need to regenerate things because patching 	 
  # screws up timestamps 	 
- autoreconf -i # -Wall
+ autoreconf -i -f # -Wall
  touch config-h.in
 ) 	 
 
 (
  cd libraries/javalib/external/classpath
 
- sh ./autogen.sh
+ autoreconf -i -f
 )
 
 (
   cd kaffe/kaffevm/boehm-gc/boehm
 
-  autoreconf -i # -Wall
+  autoreconf -i -f # -Wall
 )
 
 (
   cd external/gcc/fastjar
 
-  autoreconf -f
+  autoreconf -i -f
 )
 
 # drops specific patches
