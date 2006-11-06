@@ -1146,7 +1146,7 @@ dnl -------------------------------------------------------------------------
 
 AC_HEADER_STDC
 
-AC_CHECK_HEADERS([stdarg.h \
+AC_CHECK_HEADERS_ONCE([stdarg.h \
 alloca.h \
 bsd/libc.h \
 crt_externs.h \
@@ -1225,22 +1225,22 @@ AC_CHECK_HEADERS([net/if.h], [], [],
 ])
 
 dnl GNU/Linux sigcontext headers
-AC_CHECK_HEADERS([asm/sigcontext.h])
+AC_CHECK_HEADERS_ONCE([asm/sigcontext.h])
 AC_CHECK_HEADERS([asm/signal.h], [], [], [
 #include <linux/types.h>
 ])
 
 dnl needed for common ppc asm syntax on GNU/Linux
-AC_CHECK_HEADERS([asm/ppc_asm.h])
+AC_CHECK_HEADERS_ONCE([asm/ppc_asm.h])
 
 dnl needed for MIPS cache flushing on GNU/Linux
-AC_CHECK_HEADERS([asm/cachectl.h])
+AC_CHECK_HEADERS_ONCE([asm/cachectl.h])
 
 dnl needed for ia64
-AC_CHECK_HEADERS([ia64intrin.h])
+AC_CHECK_HEADERS_ONCE([ia64intrin.h])
 
 dnl needed to check for Linux 2.0
-AC_CHECK_HEADERS([linux/socket.h])
+AC_CHECK_HEADERS_ONCE([linux/socket.h])
 AC_CHECK_HEADERS([linux/netlink.h], [], [],[
 #if defined(HAVE_LINUX_SOCKET_H)
 #include <linux/socket.h>
@@ -1251,7 +1251,7 @@ AC_CHECK_HEADERS([linux/rtnetlink.h], [], [], [
 #include <linux/socket.h>
 #endif /* HAVE_LINUX_SOCKET_H */
 ])
-AC_CHECK_HEADERS([netpacket/packet.h])
+AC_CHECK_HEADERS_ONCE([netpacket/packet.h])
 
 AC_HEADER_SYS_WAIT
 AC_HEADER_DIRENT
@@ -1278,7 +1278,7 @@ if test x"$ac_cv_func_mprotect" = x"yes"; then
 fi
 
 dnl needed for valgrind
-AC_CHECK_HEADERS([valgrind/memcheck.h])
+AC_CHECK_HEADERS_ONCE([valgrind/memcheck.h])
 
 gl_SIZE_MAX
 
@@ -1540,7 +1540,7 @@ fi
 dnl pthread_attr_setschedpolicy in not implemented on NetBSD <= 1.6
 dnl pthread_yield is not implemented on any systems.
 AC_CHECK_FUNCS_ONCE([pthread_attr_setschedpolicy pthread_yield sched_yield])
-AC_CHECK_HEADERS(sched.h)
+AC_CHECK_HEADERS_ONCE(sched.h)
 
 dnl getifaddrs replacement for linux
 AC_REPLACE_FUNCS([getifaddrs])
@@ -1550,7 +1550,7 @@ AM_CONDITIONAL(USE_COMPAT_IFADDRS, test "$use_compat_ifaddrs" = "yes")
 dnl inet_ntop and inet_pton replacement for cygwin
 AC_REPLACE_FUNCS([inet_ntop])
 AC_REPLACE_FUNCS([inet_pton])
-AC_CHECK_HEADERS([arpa/nameser.h])
+AC_CHECK_HEADERS_ONCE([arpa/nameser.h])
 
 dnl getaddrinfo replacement for Linux 2.0.x
 AC_REPLACE_FUNCS([memset])
@@ -2303,7 +2303,7 @@ dnl =========================================================================
 dnl Configure Binreloc support
 dnl -------------------------------------------------------------------------
 
-AC_CHECK_HEADERS([pthread.h])
+AC_CHECK_HEADERS_ONCE([pthread.h])
 if test x"$ac_cv_header_pthread_h" = x"yes"; then
   dnl We can now check whether we want binreloc
   if test x"$cross_compiling" = x"yes"; then
