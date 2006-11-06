@@ -1,3 +1,8 @@
+2006-11-06  Dalibor Topic  <robilad@kaffe.org>
+
+	* configure.ac: Use AC_CHECK_FUNC_ONCE instead of AC_CHECK_FUNC
+	to speed up configure's function checks where possible.
+
 2006-11-02  Dalibor Topic  <robilad@kaffe.org>
 
 	Regenerated build system with autoconf 2.60 and automake 1.10.

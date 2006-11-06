@@ -88,6 +88,9 @@
 /* Does mprotect support protecting region not covered by mmap ? */
 #undef HAVE_COMPATIBLE_MPROTECT
 
+/* Define to 1 if you have the `connect' function. */
+#undef HAVE_CONNECT
+
 /* Define to 1 if you have the <crt_externs.h> header file. */
 #undef HAVE_CRT_EXTERNS_H
 
@@ -168,6 +171,12 @@
 
 /* Define to 1 if you have the `getcwd' function. */
 #undef HAVE_GETCWD
+
+/* Define to 1 if you have the `gethostbyname' function. */
+#undef HAVE_GETHOSTBYNAME
+
+/* Define to 1 if you have the `gethostname' function. */
+#undef HAVE_GETHOSTNAME
 
 /* Define to 1 if you have the `getifaddrs' function. */
 #undef HAVE_GETIFADDRS

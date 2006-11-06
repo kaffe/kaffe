@@ -1109,15 +1109,15 @@ dnl Check for libraries for native library.
 dnl None required.
 
 dnl Check for libraries for net library.
-AC_CHECK_FUNC(gethostname)
+AC_CHECK_FUNCS_ONCE(gethostname)
 if test $ac_cv_func_gethostname = no; then
       AC_CHECK_LIBRARY(nsl, gethostname, NET_LIBS)
 fi
-AC_CHECK_FUNC(gethostbyname)
+AC_CHECK_FUNCS_ONCE(gethostbyname)
 if test $ac_cv_func_gethostbyname = no; then
       AC_CHECK_LIBRARY(nsl, gethostbyname, NET_LIBS)
 fi
-AC_CHECK_FUNC(connect)
+AC_CHECK_FUNCS_ONCE(connect)
 if test $ac_cv_func_connect = no; then
   AC_CHECK_LIBRARY(socket, connect, NET_LIBS)
 fi
@@ -1131,7 +1131,7 @@ AC_SUBST(ZIP_LIBS)
 m4_LIB_GMP
 
 dnl Check for libraries for security library.
-AC_CHECK_FUNCS(MD2Init MD4Init MD5Init)
+AC_CHECK_FUNCS_ONCE(MD2Init MD4Init MD5Init)
 if test $ac_cv_func_MD5Init = no; then
   AC_CHECK_LIBRARY(md, MD5Init, SECURITY_LIBS)
 fi
@@ -1267,7 +1267,7 @@ fi
 dnl Check whether there exists mprotect. If it exists and we are
 dnl on HPUX, then prevent kaffe from using it when the pointer does not
 dnl come from mmap.
-AC_CHECK_FUNCS(mprotect)
+AC_CHECK_FUNCS_ONCE(mprotect)
 if test x"$ac_cv_func_mprotect" = x"yes"; then
    case "$Khost_os" in
 	hpux*)
@@ -1511,12 +1511,12 @@ AC_FUNC_MEMCMP
 AC_FUNC_MMAP
 AC_FUNC_UTIME_NULL
 
-AC_CHECK_FUNCS([select socket getsockname getpagesize fstat])
-AC_CHECK_FUNCS([memcpy memmove])
-AC_CHECK_FUNCS([mkdir rmdir])
-AC_CHECK_FUNCS([getcwd chdir getwd gettimeofday ftime time uname getuid])
-AC_CHECK_FUNCS([localtime get_nprocs_conf])
-AC_CHECK_FUNCS([munmap mincore msync madvise getpagesize sysconf])
+AC_CHECK_FUNCS_ONCE([select socket getsockname getpagesize fstat
+memcpy memmove 
+mkdir rmdir
+getcwd chdir getwd gettimeofday ftime time uname getuid
+localtime get_nprocs_conf
+munmap mincore msync madvise getpagesize sysconf])
 
 AM_ICONV
 
@@ -1539,7 +1539,7 @@ fi
 
 dnl pthread_attr_setschedpolicy in not implemented on NetBSD <= 1.6
 dnl pthread_yield is not implemented on any systems.
-AC_CHECK_FUNCS([pthread_attr_setschedpolicy pthread_yield sched_yield])
+AC_CHECK_FUNCS_ONCE([pthread_attr_setschedpolicy pthread_yield sched_yield])
 AC_CHECK_HEADERS(sched.h)
 
 dnl getifaddrs replacement for linux
@@ -1560,7 +1560,7 @@ AC_DECL_H_ERRNO
 
 saved_LIBS="$LIBS"
 LIBS="$LIBS $NET_LIBS"
-AC_CHECK_FUNCS([getaddrinfo getnameinfo])
+AC_CHECK_FUNCS_ONCE([getaddrinfo getnameinfo])
 LIBS="$saved_LIBS"
 if test "$ac_cv_func_getaddrinfo$ac_cv_func_getnameinfo" != yesyes ; then
    AC_LIBOBJ(getaddrinfo)
@@ -1595,9 +1595,9 @@ AC_CHECK_MEMBERS([struct sockaddr_in6.sin6_flowinfo, struct sockaddr_in6.sin6_sc
 
 KSAVE_LIBS="$LIBS"
 LIBS="$M_LIBS $LIBS"
-AC_CHECK_FUNCS([remainder remainderf fmod fmodf drem])
-AC_CHECK_FUNCS([rint floor ceil strtod mergesort])
-AC_CHECK_FUNCS([strdup strstr strtod strtol strtoul strtouq strtoull])
+AC_CHECK_FUNCS([remainder remainderf fmod fmodf drem \
+rint floor ceil strtod mergesort \
+strdup strstr strtod strtol strtoul strtouq strtoull])
 
 dnl isinf, isnan, finite checking code taken from Sablotron 1.0,
 dnl dually licensed licensed under MPL 1.1 and GPL
@@ -1701,15 +1701,15 @@ if test x"$ac_cv_strtod_m0_broken" = x"yes"; then
   AC_DEFINE(STRTOD_m0_BROKEN, 1, [Define if strtod(\"-0.0\") is broken])
 fi
 
-AC_CHECK_FUNCS([strerror hstrerror strerror_r])
-AC_CHECK_FUNCS([fcntl ioctl])
-AC_CHECK_FUNCS([alarm setitimer])
-AC_CHECK_FUNCS([sigprocmask sigsetmask sigemptyset sigaddset signal sigaction])
-AC_CHECK_FUNCS([sbrk valloc memalign mallopt getrlimit setrlimit sigaltstack])
-AC_CHECK_FUNCS([madvise])
-AC_CHECK_FUNCS([waitpid kill fork execve execvp])
-AC_CHECK_FUNCS([sync fsync ftruncate])
-AC_CHECK_FUNCS([atexit on_exit vsnprintf snprintf])
+AC_CHECK_FUNCS_ONCE([strerror hstrerror strerror_r
+fcntl ioctl
+alarm setitimer
+sigprocmask sigsetmask sigemptyset sigaddset signal sigaction
+sbrk valloc memalign mallopt getrlimit setrlimit sigaltstack
+madvise
+waitpid kill fork execve execvp
+sync fsync ftruncate
+atexit on_exit vsnprintf snprintf])
 
 if test x"$Khost_cpu" = x"alpha" ; then
   AC_CACHE_CHECK([for alpha support of amask instruction],
