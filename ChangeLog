@@ -1,5 +1,22 @@
 2006-11-07  Dalibor Topic  <robilad@kaffe.org>
 
+	Fixed boehm-gc build.
+
+        * developers/autogen.sh: Always update libtool.m4 in boehm.gc as well.
+
+        * external/gcc/fastjar/scripts/ltmain.sh,
+        kaffe/kaffevm/boehm-gc/boehm/Makefile.in,
+        kaffe/kaffevm/boehm-gc/boehm/configure,
+        kaffe/kaffevm/boehm-gc/boehm/doc/Makefile.in,
+        kaffe/kaffevm/boehm-gc/boehm/include/Makefile.in,
+        kaffe/kaffevm/boehm-gc/boehm/libtool.m4,
+        kaffe/kaffevm/boehm-gc/boehm/ltmain.sh,
+        libltdl/ltmain.sh,
+        libraries/javalib/external/classpath/ltmain.sh,
+        scripts/ltmain.sh: Regenerated.
+
+2006-11-07  Dalibor Topic  <robilad@kaffe.org>
+
 	* developers/update-class-list: Removed unused file.
 
 	* Makefile.am (EXTRA_DIST): Removed developers/update-class-list.

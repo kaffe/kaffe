@@ -94,15 +94,15 @@ am_libgc_la_OBJECTS = allchblk.lo alloc.lo blacklst.lo checksums.lo \
 	backgraph.lo win32_threads.lo pthread_support.lo \
 	pthread_stop_world.lo darwin_stop_world.lo $(am__objects_1)
 libgc_la_OBJECTS = $(am_libgc_la_OBJECTS)
-libgc_la_LINK = $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+libgc_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(libgc_la_LDFLAGS) \
 	$(LDFLAGS) -o $@
 libgccpp_la_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 am_libgccpp_la_OBJECTS = gc_cpp.lo
 libgccpp_la_OBJECTS = $(am_libgccpp_la_OBJECTS)
-libgccpp_la_LINK = $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
-	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) \
-	$(libgccpp_la_LDFLAGS) $(LDFLAGS) -o $@
+libgccpp_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
+	$(CXXFLAGS) $(libgccpp_la_LDFLAGS) $(LDFLAGS) -o $@
 @CPLUSPLUS_TRUE@am_libgccpp_la_rpath = -rpath $(libdir)
 @CPLUSPLUS_TRUE@am__EXEEXT_1 = test_cpp$(EXEEXT)
 am_gctest_OBJECTS = test.$(OBJEXT)
@@ -127,13 +127,13 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 CCLD = $(CC)
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
-LTCXXCOMPILE = $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+LTCXXCOMPILE = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 CXXLD = $(CXX)
-CXXLINK = $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link \
-	$(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
-	-o $@
+CXXLINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=link $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
+	$(LDFLAGS) -o $@
 CCASCOMPILE = $(CCAS) $(AM_CCASFLAGS) $(CCASFLAGS)
 LTCCASCOMPILE = $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=compile $(CCAS) $(AM_CCASFLAGS) $(CCASFLAGS)
@@ -182,6 +182,7 @@ CFLAGS = @CFLAGS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CXX = @CXX@
+CXXCPP = @CXXCPP@
 CXXDEPMODE = @CXXDEPMODE@
 CXXFLAGS = @CXXFLAGS@
 CXXINCLUDES = @CXXINCLUDES@
@@ -195,6 +196,8 @@ ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
 EXTRA_TEST_LIBS = @EXTRA_TEST_LIBS@
+F77 = @F77@
+FFLAGS = @FFLAGS@
 GC_CFLAGS = @GC_CFLAGS@
 GC_VERSION = @GC_VERSION@
 GREP = @GREP@
@@ -235,6 +238,7 @@ abs_top_builddir = @abs_top_builddir@
 abs_top_srcdir = @abs_top_srcdir@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
+ac_ct_F77 = @ac_ct_F77@
 addincludes = @addincludes@
 addlibs = @addlibs@
 addobjs = @addobjs@

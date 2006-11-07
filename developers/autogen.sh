@@ -111,6 +111,7 @@ find . -type f -name 'Makefile.in' | xargs rm -f
 libtoolize --automake --ltdl --copy --force
 # add some libtool patches if necessary here
 cp libltdl/acinclude.m4 m4/libtool.m4
+cp libltdl/acinclude.m4 kaffe/kaffevm/boehm-gc/boehm/libtool.m4
 
 # gettextize kaffe
 # commented out due to bugs in gettextize
