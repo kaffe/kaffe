@@ -60,6 +60,10 @@ exception statement from your version. */
 #include <sys/mman.h>
 #endif /* HAVE_SYS_MMAN_H */
 
+#if defined(HAVE_SYS_TYPES_H)
+#include <sys/types.h>
+#endif /* defined(HAVE_SYS_TYPES_H) */
+
 /* These values must be kept in sync with FileChannelImpl.java.  */
 #define FILECHANNELIMPL_READ   1
 #define FILECHANNELIMPL_WRITE  2

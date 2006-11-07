@@ -5,6 +5,9 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2006
+ *      Kaffe.org contributors. See ChangeLog for details.
+ *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  *
@@ -13,6 +16,12 @@
 
 #ifndef __m68k_sunos4_md_h
 #define __m68k_sunos4_md_h
+
+#include "config.h"
+
+#if defined(HAVE_SYS_TYPES_H)
+#include <sys/types.h>
+#endif /* defined(HAVE_SYS_TYPES_H) */
 
 #include "m68k/common.h"
 #include "m68k/threads.h"

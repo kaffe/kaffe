@@ -34,6 +34,10 @@
 #include "jthread.h"
 #include "jsyscall.h"
 
+#if defined(HAVE_SYS_TYPES_H)
+#include <sys/types.h>
+#endif /* defined(HAVE_SYS_TYPES_H) */
+
 #include <sys/wait.h>
 #include <stdlib.h>
 #include <errno.h>

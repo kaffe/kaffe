@@ -1050,11 +1050,7 @@ if test x"$kaffe_cv_signal_one_shot" != x"no"; then
 fi
 
 AC_TYPE_SIZE_T
-pushdef([AC_DEFINE_SAVED],defn([AC_DEFINE]))
-pushdef([AC_DEFINE],[AC_DEFINE_SAVED([$1],[$2],[Define to $2 if $1 is not defined])])
-AC_CHECK_TYPE(ssize_t, int)
-popdef([AC_DEFINE])
-popdef([AC_DEFINE_SAVED])
+AC_TYPE_SSIZE_T
 
 dnl -------------------------------------------------------------------------
 

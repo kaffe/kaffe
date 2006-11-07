@@ -18,6 +18,10 @@
 #include "jsyscall.h"
 #include "nets.h"
 
+#if defined(HAVE_SYS_TYPES_H)
+#include <sys/types.h>
+#endif /* defined(HAVE_SYS_TYPES_H) */
+
 /*
  * This file contains thread-safe version of various POSIXy functions.
  * Other functions that use or interact with asynchronous I/O, are in jthread.c.

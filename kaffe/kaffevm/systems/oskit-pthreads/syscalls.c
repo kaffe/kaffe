@@ -27,6 +27,10 @@
 #include "jthread.h"
 #include "jsyscall.h"
 
+#if defined(HAVE_SYS_TYPES_H)
+#include <sys/types.h>
+#endif /* defined(HAVE_SYS_TYPES_H) */
+
 #include <oskit/time.h>
 #include <oskit/com/listener.h>
 #include <oskit/dev/clock.h>

@@ -31410,8 +31410,6 @@ _ACEOF
 
 fi
 
-
-
 { echo "$as_me:$LINENO: checking for ssize_t" >&5
 echo $ECHO_N "checking for ssize_t... $ECHO_C" >&6; }
 if test "${ac_cv_type_ssize_t+set}" = set; then
@@ -31491,8 +31489,6 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 fi
-
-
 
 
 

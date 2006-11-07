@@ -40,6 +40,10 @@
 #include "binreloc.h"
 #endif
 
+#if defined(HAVE_SYS_TYPES_H)
+#include <sys/types.h>
+#endif /* defined(HAVE_SYS_TYPES_H) */
+
 #ifdef __riscos__
 #include <unixlib/local.h>
 #endif

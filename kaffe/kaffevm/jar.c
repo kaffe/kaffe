@@ -24,6 +24,10 @@
 
 #include <zlib.h>
 
+#if defined(HAVE_SYS_TYPES_H)
+#include <sys/types.h>
+#endif /* defined(HAVE_SYS_TYPES_H) */
+
 /* Undefine this to make jar files mutable during the vm lifetime */
 /* #define STATIC_JAR_FILES */
 

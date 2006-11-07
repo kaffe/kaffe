@@ -29,6 +29,10 @@
 #include "kaffeh-support.h"
 #include "utf8const.h"
 
+#if defined(HAVE_SYS_TYPES_H)
+#include <sys/types.h>
+#endif /* defined(HAVE_SYS_TYPES_H) */
+
 #if defined(__WIN32__) || defined (__amigaos__)
 #define	PATHSEP	';'
 #else

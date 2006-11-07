@@ -34,6 +34,10 @@
 #include "gc-refs.h"
 #include "jvmpi_kaffe.h"
 
+#if defined(HAVE_SYS_TYPES_H)
+#include <sys/types.h>
+#endif /* defined(HAVE_SYS_TYPES_H) */
+
 static struct _gcStats {
         uint32  totalmem;
         uint32  totalobj;

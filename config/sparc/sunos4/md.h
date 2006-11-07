@@ -12,6 +12,12 @@
 #ifndef __sparc_sunos_md_h
 #define __sparc_sunos_md_h
 
+#include "config.h"
+
+#if defined(HAVE_SYS_TYPES_H)
+#include <sys/types.h>
+#endif /* defined(HAVE_SYS_TYPES_H) */
+
 #include "sparc/common.h"
 #include "sparc/threads.h"
 #if defined(HAVE_SYS_RESOURCE_H)

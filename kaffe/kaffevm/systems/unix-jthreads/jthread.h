@@ -41,6 +41,10 @@
 #include "md.h"
 #include "threadData.h"
 
+#if defined(HAVE_SYS_TYPES_H)
+#include <sys/types.h>
+#endif /* defined(HAVE_SYS_TYPES_H) */
+
 #include <sys/resource.h>
 
 #if defined (HAVE_SYS_POLL_H) || defined(HAVE_POLL_H)

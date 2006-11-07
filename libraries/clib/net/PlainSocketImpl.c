@@ -31,6 +31,10 @@
 
 #include "dummyin6.h"
 
+#if defined(HAVE_SYS_TYPES_H)
+#include <sys/types.h>
+#endif /* defined(HAVE_SYS_TYPES_H) */
+
 #define IPV4_ADDRESS_SIZE 4
 #define IPV6_ADDRESS_SIZE 16
 

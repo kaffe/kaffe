@@ -1,5 +1,28 @@
 2006-11-06  Dalibor Topic  <robilad@kaffe.org>
 
+        * configure.ac: Use AC_TYPE_SSIZE_T instead of checking for
+	ssize_t manually.
+
+	* config/m68k/sunos4/md.h,
+        config/sparc/sunos4/md.h,
+        kaffe/kaffeh/support.c,
+        kaffe/kaffevm/debug.c,
+        kaffe/kaffevm/findInJar.c,
+        kaffe/kaffevm/jar.c,
+        kaffe/kaffevm/kaffe-gc/gc-incremental.c,
+        kaffe/kaffevm/systems/beos-native/syscalls.c,
+        kaffe/kaffevm/systems/drops-l4threads/syscalls.c,
+        kaffe/kaffevm/systems/oskit-pthreads/syscalls.c,
+        kaffe/kaffevm/systems/unix-jthreads/jthread.h,
+        kaffe/kaffevm/systems/unix-jthreads/syscalls.c,
+        kaffe/kaffevm/systems/unix-pthreads/syscalls.c,
+        libraries/clib/net/PlainDatagramSocketImpl.c,
+        libraries/clib/net/PlainSocketImpl.c,
+        libraries/clib/nio/gnu_java_nio_channels_FileChannelImpl.c:
+	Make sure sys/types.h is included for ssize_t.
+
+2006-11-06  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac: Use AC_CHECK_HEADERS_ONCE instead of AC_CHECK_HEADERS
 	to speed up configure's function checks where possible.
 
