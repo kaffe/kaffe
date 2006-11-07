@@ -149,7 +149,6 @@ EXTRA_DIST = \
 	developers/rpm-kaffe.spec \
 	developers/sp_offset.c \
 	developers/test-kaffe-sh \
-	developers/update-class-list \
 	developers/utf8munge.pl \
 	scripts/GCCWarning.pm \
 	scripts/JikesWarning.pm \

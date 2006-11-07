@@ -1,5 +1,11 @@
 2006-11-07  Dalibor Topic  <robilad@kaffe.org>
 
+	* developers/update-class-list: Removed unused file.
+
+	* Makefile.am (EXTRA_DIST): Removed developers/update-class-list.
+
+2006-11-07  Dalibor Topic  <robilad@kaffe.org>
+
         * configure.ac: Use AC_PROG_SED.
 
         * Makefile.am,
