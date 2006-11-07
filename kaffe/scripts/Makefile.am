@@ -55,18 +55,18 @@ install-exec-local:
 	$(mkinstalldirs) $(DESTDIR)$(bindir)
 	@list='$(jrebin_SCRIPTS)'; for p in $$list; do \
 	  if test -f $$p; then \
-	    echo " $(INSTALL_SCRIPT) $$p $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`"; \
-	    $(INSTALL_SCRIPT) $$p $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`; \
+	    echo " $(INSTALL_SCRIPT) $$p $(DESTDIR)$(bindir)/`echo $$p|$(SED) '$(transform)'`"; \
+	    $(INSTALL_SCRIPT) $$p $(DESTDIR)$(bindir)/`echo $$p|$(SED) '$(transform)'`; \
 	  else if test -f $(srcdir)/$$p; then \
-	    echo " $(INSTALL_SCRIPT) $(srcdir)/$$p $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`"; \
-	    $(INSTALL_SCRIPT) $(srcdir)/$$p $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`; \
+	    echo " $(INSTALL_SCRIPT) $(srcdir)/$$p $(DESTDIR)$(bindir)/`echo $$p|$(SED) '$(transform)'`"; \
+	    $(INSTALL_SCRIPT) $(srcdir)/$$p $(DESTDIR)$(bindir)/`echo $$p|$(SED) '$(transform)'`; \
 	  else :; fi; fi; \
 	done
 
 uninstall-local:
 	@$(NORMAL_UNINSTALL)
 	list='$(jrebin_SCRIPTS)'; for p in $$list; do \
-	  rm -f $(DESTDIR)$(bindir)/`echo $$p|sed '$(transform)'`; \
+	  rm -f $(DESTDIR)$(bindir)/`echo $$p|$(SED) '$(transform)'`; \
 	done
 
 

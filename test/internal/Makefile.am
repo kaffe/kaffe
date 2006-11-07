@@ -106,7 +106,7 @@ dist_jitBasic_JAVA = \
 	java/lang/System.java \
 	java/lang/VMSystem.java
 
-TESTS_ENVIRONMENT = env TEST_CLASSES="$(TEST_CLASSES)" `. $(top_builddir)/BUILD_ENVIRONMENT; BOOTCLASSPATH=.:\$${BOOTCLASSPATH}; export BOOTCLASSPATH; sed 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
+TESTS_ENVIRONMENT = env TEST_CLASSES="$(TEST_CLASSES)" `. $(top_builddir)/BUILD_ENVIRONMENT; BOOTCLASSPATH=.:\$${BOOTCLASSPATH}; export BOOTCLASSPATH; $(SED) 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
 
 CPATH =  .:$(GLIBJ_ZIP)
 AM_JAVACFLAGS = -classpath $(CPATH)

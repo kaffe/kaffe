@@ -219,7 +219,7 @@ stamp-h0all: stamp-kaffeh $(GLIBJ_ZIP)
 ## Then, generate each header file,
 ## but if it does not change, do not touch it
 	@set -e; for f in $(DERIVED_HDRS); do \
-	  class=`echo $$f | sed -e 's%.*/%%g' -e 's%\.h$$%%' -e 's%_%/%g'`; \
+	  class=`echo $$f | $(SED) -e 's%.*/%%g' -e 's%\.h$$%%' -e 's%_%/%g'`; \
 	  echo "$(KAFFEH) -bootclasspath $(KAFFEH_CLASSPATH) -o $$f $$class"; \
 	  $(KAFFEH) -bootclasspath $(KAFFEH_CLASSPATH) -o stamp-h0$$f $$class; \
 	  if test -f $$f && cmp $$f stamp-h0$$f >/dev/null; then \
@@ -236,7 +236,7 @@ stamp-h1all: stamp-kaffeh $(GLIBJ_ZIP)
 ## Then, generate each header file,
 ## but if it does not change, do not touch it
 	@set -e; for f in $(JNI_DERIVED_HDRS); do \
-	  class=`echo $$f | sed -e 's%.*/%%g' -e 's%\.h$$%%' -e 's%_%/%g'`; \
+	  class=`echo $$f | $(SED) -e 's%.*/%%g' -e 's%\.h$$%%' -e 's%_%/%g'`; \
 	  echo "$(KAFFEH) -jni -bootclasspath $(KAFFEH_CLASSPATH) -o $$f $$class"; \
 	  $(KAFFEH) -jni -bootclasspath $(KAFFEH_CLASSPATH) -o stamp-h1$$f $$class; \
 	  if test -f $$f && cmp $$f stamp-h1$$f >/dev/null; then \

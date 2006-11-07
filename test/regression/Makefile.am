@@ -8,7 +8,7 @@
 
 SUBDIRS = compile_time run_time compiler
 
-SETUP_ENVIRONMENT = env `. $(top_builddir)/BUILD_ENVIRONMENT; sed 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
+SETUP_ENVIRONMENT = env `. $(top_builddir)/BUILD_ENVIRONMENT; $(SED) 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
 
 # Redirect errors to /dev/null to avoid annoying job control
 # messages from shell when killing tests due to timeouts

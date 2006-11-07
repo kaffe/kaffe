@@ -123,7 +123,7 @@ jniWeakTest.o: JNIWeakTest.class
 EXTRA_DIST = \
 	JNIWeakTest.java
 
-TESTS_ENVIRONMENT = env `BOOTCLASSPATH="."; export BOOTCLASSPATH; KAFFELIBRARYPATH=".libs/" ; export KAFFELIBRARYPATH ; .  $(top_builddir)/BUILD_ENVIRONMENT; sed  's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
+TESTS_ENVIRONMENT = env `BOOTCLASSPATH="."; export BOOTCLASSPATH; KAFFELIBRARYPATH=".libs/" ; export KAFFELIBRARYPATH ; .  $(top_builddir)/BUILD_ENVIRONMENT; $(SED)  's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
 TESTS = $(check_PROGRAMS)
 
 CLEANFILES = *.fail *.out core *.core *.class

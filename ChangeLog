@@ -1,3 +1,19 @@
+2006-11-07  Dalibor Topic  <robilad@kaffe.org>
+
+        * configure.ac: Use AC_PROG_SED.
+
+        * Makefile.am,
+        include/Makefile.am,
+        kaffe/kaffe/Makefile.am,
+        kaffe/scripts/Makefile.am,
+        kaffe/scripts/compat/Makefile.am,
+        test/internal/Makefile.am,
+        test/jni/Makefile.am,
+        test/regression/Makefile.am,
+        test/regression/compile_time/Makefile.am,
+        test/regression/compiler/Makefile.am,
+        test/regression/run_time/Makefile.am: Use $(SED) instead of sed.
+
 2006-11-06  Dalibor Topic  <robilad@kaffe.org>
 
         * configure.ac: Use AC_TYPE_SSIZE_T instead of checking for

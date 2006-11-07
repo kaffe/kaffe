@@ -15,7 +15,7 @@ CLASS_FILES = \
 	InnerTest1_A$$X.class \
 	InnerTest1_B$$X.class
 
-SETUP_ENVIRONMENT = env `. $(top_builddir)/BUILD_ENVIRONMENT; sed 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
+SETUP_ENVIRONMENT = env `. $(top_builddir)/BUILD_ENVIRONMENT; $(SED) 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
 
 ## We have to list the dependencies explicitely for those make programs
 ## that don't support GNU make's %.suffix target extension.

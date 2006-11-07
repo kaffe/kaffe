@@ -981,6 +981,7 @@ dnl -------------------------------------------------------------------------
 
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
+AC_PROG_SED
 AC_CHECK_PROG(MKTEMP, mktemp, mktemp)
 if test  x"$MKTEMP" = x"" ; then
    AC_MSG_WARN([mktemp not found. You need mktemp to be able to debug kaffe.])

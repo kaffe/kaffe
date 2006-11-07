@@ -201,6 +201,7 @@ QT_GUILINK = @QT_GUILINK@
 QT_LDADD = @QT_LDADD@
 RANLIB = @RANLIB@
 SECURITY_LIBS = @SECURITY_LIBS@
+SED = @SED@
 SEMAPHORE_LIB = @SEMAPHORE_LIB@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
@@ -298,7 +299,7 @@ CLASS_FILES = \
 	PublicToPrivate.class \
 	StaticToInst.class
 
-SETUP_ENVIRONMENT = env `. $(top_builddir)/BUILD_ENVIRONMENT; sed 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
+SETUP_ENVIRONMENT = env `. $(top_builddir)/BUILD_ENVIRONMENT; $(SED) 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
 CLEANFILES = $(CLASS_FILES)
 EXTRA_DIST = \
 	ClassToInterface.java \
