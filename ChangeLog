@@ -1,5 +1,10 @@
 2006-11-10  Riccardo Mottola <riccardo@kaffe.org>
 
+	* libraries/javalib/awt-implementations/kaffe/java/awt/Component.java:
+	check for null peer
+
+2006-11-10  Riccardo Mottola <riccardo@kaffe.org>
+
 	Implemented isLightweight for our AWT (returns false except for
 	Container, Canvas and Component)
 

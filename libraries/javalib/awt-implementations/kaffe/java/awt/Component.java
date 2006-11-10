@@ -3790,7 +3790,7 @@ implements ComponentListener
     public void componentMoved(ComponentEvent event)
     {
         if (peer != null)
-            peer.setBounds(x, y, width, height);
+            peer.setBounds(x, y, width, height); // TODO implement this without the peer
     }
 
     /**
@@ -3800,8 +3800,11 @@ implements ComponentListener
      */
     public void componentShown(ComponentEvent event)
     {
-        if (isShowing())
-            peer.show();
+    	if (peer != null)
+        {
+	    if (isShowing())
+                peer.show(); //TODO implement this without the peer
+	}
     }
 
     /**
@@ -3811,8 +3814,11 @@ implements ComponentListener
      */
     public void componentHidden(ComponentEvent event)
     {
-        if (!isShowing())
-            peer.hide();
+        if (peer != null)
+	{
+            if (!isShowing())
+                peer.hide(); // TODO implement this without the peer
+        }
     }
 }
 
