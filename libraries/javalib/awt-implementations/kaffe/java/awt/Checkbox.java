@@ -282,4 +282,9 @@ public void setState ( boolean state) {
 		notifyItem();
 	}
 }
+
+public boolean isLightweight()
+{
+        return false;
+}
 }

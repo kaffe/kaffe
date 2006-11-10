@@ -572,4 +572,10 @@ void updateValue () {
 		notifyAdjust();
 	}
 }
+
+public boolean isLightweight()
+{
+        return false;
+}
+
 }

@@ -516,5 +516,11 @@ public void setScrollPosition ( int x, int y ) {
 	hScroll.setValue( x);
 	vScroll.setValue( y);
 }
+
+public boolean isLightweight()
+{
+	return false;
+}
+
 }
 

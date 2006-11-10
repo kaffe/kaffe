@@ -285,4 +285,10 @@ public void setLabel ( String label) {
 	if ( isShowing() )
 		repaint();
 }
+
+public boolean isLightweight()
+{
+	return false;
+}
+
 }

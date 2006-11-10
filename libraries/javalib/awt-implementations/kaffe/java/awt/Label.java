@@ -147,4 +147,10 @@ public void setText( String labelP) {
 		}
 	}
 }
+
+public boolean isLightweight()
+{
+        return false;
+}
+
 }

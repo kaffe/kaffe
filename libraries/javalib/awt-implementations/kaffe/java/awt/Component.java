@@ -1645,13 +1645,15 @@ public Dimension getMaximumSize() {
    * no native peer, but is displayable. This applies to subclasses of
    * Component not in this package, such as javax.swing.
    *
+   * Kaffe AWT: we have no peer, so we just choose to return true.
+   *
    * @return true if the component has a lightweight peer
    * @see #isDisplayable()
    * @since 1.2
    */
   public boolean isLightweight()
   {
-    return peer instanceof LightweightPeer;
+    return true; 
   }
 
 public Dimension getMinimumSize() {

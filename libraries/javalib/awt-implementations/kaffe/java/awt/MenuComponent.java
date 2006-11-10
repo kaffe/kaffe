@@ -111,4 +111,10 @@ public void setName( String name) {
 public String toString() {
 	return getClass().getName() + '[' + paramString() + ']';
 }
+
+public boolean isLightweight()
+{
+        return false;
+}
+
 }

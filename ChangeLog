@@ -1,3 +1,18 @@
+2006-11-10  Riccardo Mottola <riccardo@kaffe.org>
+
+	Implemented isLightweight for our AWT (returns false except for
+	Container, Canvas and Component)
+
+	* libraries/javalib/awt-implementations/kaffe/java/awt/Button.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/Checkbox.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/Component.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/Label.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/MenuComponent.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/ScrollPane.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/Scrollbar.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/TextComponent.java,
+	libraries/javalib/awt-implementations/kaffe/java/awt/Window.java,
+
 2006-11-07  Dalibor Topic  <robilad@kaffe.org>
 
 	Fixed boehm-gc build.

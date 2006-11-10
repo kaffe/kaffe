@@ -167,4 +167,10 @@ abstract public void setSelectionEnd( int end);
 abstract public void setSelectionStart( int start);
 
 abstract public void setText( String text);
+
+public boolean isLightweight()
+{
+        return false;
+}
+
 }

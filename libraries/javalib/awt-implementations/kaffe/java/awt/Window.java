@@ -568,4 +568,9 @@ public void setFocusableWindowState (boolean focusableWindowState)
     this.focusableWindowState = focusableWindowState;
 }
 
+public boolean isLightweight()
+{
+        return false;
+}
+
 }
