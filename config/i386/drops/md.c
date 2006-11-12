@@ -2,21 +2,29 @@
  * Getenv hack
  * Mockup implementations of unimplemented/unsupported functions in DROPS
  * 
- * Copyright (c) 2004, 2005
+ * Copyright (c) 2004 - 2006
  *	TU Dresden, Operating System Group.  All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  *
- * written by Alexander Boettcher <ab764283@os.inf.tu-dresden.de>
+ * written by Alexander Boettcher <boettcher@os.inf.tu-dresden.de>
  */
 
 #include <stdio.h>      /* printf */
+#include <string.h>     /* memcpy, str* */
 #include <stdlib.h>     /* malloc, free */
 #include <fcntl.h>      /* O_RDONLY */
 #include <netdb.h>      /* gethostname, getservbyname, ... */
-#include <arpa/inet.h>  /* inet_addr */
-#include <sys/socket.h> /* getnameinfo */
+#include <signal.h>	/* kill */
+#ifdef USE_UCLIBC
+#include <unistd.h>     /* environ */
+#endif
+#include <sys/socket.h> /* getnameinfo, getaddrinfo, freeaddrinfo */
+#include <sys/types.h>  /* utime */
+#include <utime.h>      /* utime */
+#include <sys/wait.h>	/* waitpid */
+#include <sys/stat.h>	/* chmod */
 
 #include <l4/l4vfs/basic_name_server.h>
 #include <l4/log/l4log.h> /* LOG */
@@ -36,9 +44,15 @@ char LOG_tag[9] = "kaffe";
 const int l4thread_max_threads = 128;
 
 /**
- * following functions and variables not implemented by dietlibc
+ * functions and variables not implemented by dietlibc or by uclibc
  */
-int h_errno;  
+#ifdef USE_UCLIBC
+char **environ = NULL;
+#endif
+#ifdef USE_DIETLIBC
+int h_errno = 0;
+#endif
+
 int gethostname(char *name, size_t len)
 {
   LOG("to do : len=%d name=%s ", len, name);
@@ -58,7 +72,11 @@ struct servent *getservbyport (UNUSED int __port,
   return 0;
 }
 
+#ifdef USE_UCLIBC
+int utime(const char* filename UNUSED, const struct utimbuf* buf UNUSED) {
+#else
 int utime(const char* filename UNUSED, struct utimbuf* buf UNUSED) {
+#endif
   LOG("to do");
   return 0;
 }
@@ -95,7 +113,7 @@ int execvp(const char *file UNUSED,
   return 0;
 }
 
-long sysconf(int name) {
+long sysconf(int name UNUSED) {
   LOG("to do");
   return 0;
 }
@@ -114,24 +132,28 @@ struct hostent *gethostbyaddr (UNUSED const void *__addr,
   return 0;
 }
 
-unsigned long int inet_addr(UNUSED const char* cp)
-{
-  LOG("to do");
-  return 0;
-}
-
 int fsync(int fd UNUSED) {
   LOG("to do");
   return 0;
 }
 
+#ifdef USE_UCLIBC
+int getnameinfo (const struct sockaddr *sa,
+		 socklen_t salen,
+		 char *host,
+		 socklen_t hostlen,
+		 UNUSED char *serv,
+	 	 UNUSED socklen_t servlen,
+		 UNUSED unsigned int flags)
+#else
 int getnameinfo(const struct sockaddr *sa,
-                socklen_t salen,
-                char *host,
-                size_t hostlen,
-                UNUSED char *serv,
-                UNUSED size_t servlen,
-                UNUSED int flags)
+		socklen_t salen,
+	       	char *host,
+		size_t hostlen,
+	       	UNUSED char *serv,
+	       	UNUSED size_t servlen,
+	       	UNUSED int flags)
+#endif
 {
   unsigned long iaddr = *(const unsigned long *)&sa->sa_data[2];
 
@@ -236,14 +258,6 @@ void drops_kaffe_main(UNUSED int argc,
    area_immortal_init();
  #endif
 
-}
-
-void *CORBA_alloc(unsigned long size){
-  return malloc(size);
-}
-
-void CORBA_free(void * prt){
-  free(prt);
 }
 
 char * getenv(const char*env){

@@ -684,6 +684,11 @@ jthread_alive(jthread_t tid UNUSED)
   return 0;
 }
 
+int jthread_get_status(jthread_t jt)
+{
+  printf("jthread_get_status todo\n");
+  return 0;
+}
 /*
  * Stop a thread
  */
