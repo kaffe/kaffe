@@ -60,7 +60,7 @@
 
 #define SP_OFFSET		14
 
-#elif defined(__linux__) && defined(i386)
+#elif (defined(__linux__) || (defined(__FreeBSD_kernel__) && defined (__GLIBC__))) && defined(i386)
 
 #define SP_OFFSET		4
 

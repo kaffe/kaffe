@@ -1,3 +1,18 @@
+2006-11-17  Petr Salinger  <Petr.Salinger@seznam.cz>
+
+	Added port to GNU/kFreeBSD.
+
+	* config/config.alias: Added kfreebsd.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c:
+	(SCHEDULE_POLICY) Leave undefined for GNU/kFreeBSD.
+
+	* config/i386/freebsd2/md.h: Add a little initialisation
+	code for GNU/kFreeBSD.
+
+	* kaffe/kaffevm/systems/unix-jthreads/config-jthreads.h:
+	Set SP_OFFSET for GNU/kFreeBSD.
+
 2006-11-12  Alexander Boettcher <alex@kaffe.org>
 
 	* config/i386/drops/config.frag,

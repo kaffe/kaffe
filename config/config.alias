@@ -31,6 +31,7 @@ bsdi*)		Khost_os=bsdi ;;
 cygwin*)	Khost_os=cygwin32 ;;
 darwin*)	Khost_os=darwin ;;
 freebsd*)	Khost_os=freebsd2 ;;
+kfreebsd*)	Khost_os=freebsd2 ;;
 dragonfly*)	Khost_os=freebsd2 ;;
 hpux*)		Khost_os=hpux ;;
 gnu*)		Khost_os=gnu ;;

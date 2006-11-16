@@ -31,6 +31,13 @@
 #include <unistd.h>
 #endif
 
+
+#if defined(__GLIBC__)
+/* GNU/kFreeBSD requires a little initialisation */
+#include "i386/fpu-set.h"
+#define INIT_MD set_fpu_precision
+
+#else
 /*
  * Redefine stack pointer offset.
  */
@@ -42,6 +49,7 @@
  */
 #undef  BP_OFFSET
 #define BP_OFFSET	3
+#endif
 
 /*
  * FreeBSD does not save the floating point registers in the signal

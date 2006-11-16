@@ -97,7 +97,7 @@ static char stat_block[] = { ' ', 'T', 'm', ' ', 'c', ' ', ' ', ' ', 't', ' ', '
  * stringent priorities), but it usually isn't available on desktop
  * OSes (or imposes certain restrictions, e.g. root privileges).
  */
-#if defined(HAVE_SCHED_OTHER_IN_SCHED)
+#if defined(HAVE_SCHED_OTHER_IN_SCHED) && !(defined(__FreeBSD_kernel__) && defined(__GLIBC__))
 #define SCHEDULE_POLICY     SCHED_OTHER
 #else
 #undef SCHEDULE_POLICY
