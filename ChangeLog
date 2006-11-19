@@ -1,5 +1,11 @@
 2006-11-19  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/boehm-gc/gc-kaffe.c (maybe_finalize): 
+	Changed type of last_finalized_no to GC_word to fix
+	compiler warning.
+	
+2006-11-19  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/boehm-gc/gc-kaffe.c: Changed type
 	of GC_kaffe_freelist to void ** to fix compiler warning.
 	(GC_kaffe_malloc) Changed types of op and opp to void* and

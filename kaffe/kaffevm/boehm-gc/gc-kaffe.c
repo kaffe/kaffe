@@ -39,7 +39,7 @@ extern ptr_t GC_clear_stack();
 /* FIXME - Consider doing the same elsewhere?				*/
 static void maybe_finalize()
 {
-   static int last_finalized_no = 0;
+   static GC_word last_finalized_no = 0;
 
    if (GC_gc_no == last_finalized_no) return;
    if (!GC_is_initialized) return;
