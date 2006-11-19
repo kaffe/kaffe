@@ -26,7 +26,7 @@
 
 static int GC_kaffe_proc;
 static int GC_kaffe_kind;
-static ptr_t * GC_kaffe_freelist;
+static void ** GC_kaffe_freelist;
 
 extern ptr_t GC_clear_stack();
 
@@ -55,8 +55,8 @@ static void maybe_finalize()
 /* Allocate an object, clear it */
 void * GC_kaffe_malloc(size_t lb)
 {
-register ptr_t op;
-register ptr_t * opp;
+register void * op;
+register void ** opp;
 register word lw;
 DCL_LOCK_STATE;
 
@@ -99,7 +99,7 @@ DCL_LOCK_STATE;
 
 void GC_kaffe_init(GC_mark_proc proc)
 {
-  GC_kaffe_freelist = (ptr_t *)GC_new_free_list();
+  GC_kaffe_freelist = GC_new_free_list();
   GC_kaffe_proc = GC_new_proc(proc);
   GC_kaffe_kind = GC_new_kind(GC_kaffe_freelist,
 			      GC_MAKE_PROC(GC_kaffe_proc, 0),

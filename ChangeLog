@@ -1,5 +1,13 @@
 2006-11-19  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/boehm-gc/gc-kaffe.c: Changed type
+	of GC_kaffe_freelist to void ** to fix compiler warning.
+	(GC_kaffe_malloc) Changed types of op and opp to void* and
+	void ** to fix compiler warnings. 
+	(GC_kaffe_init) Removed no longer necessary cast.
+
+2006-11-19  Dalibor Topic  <robilad@kaffe.org>
+
 	Fix for #76.
 
 	* configure.ac: Check if lib(un)gif header is installed,
