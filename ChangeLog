@@ -1,3 +1,27 @@
+2006-11-19  Guilhem Lavaux  <guilhem@kaffe.org>,
+	Riccardo Mottola <riccardo@kaffe.org>
+
+	*
+	libraries/javalib/awt-implementations/kaffe/java/awt/Component.java
+	(dispatchEventImpl): Imported GNU Classpath's logic. Use event
+	dispatcher to process the event.
+
+	*
+	libraries/javalib/awt-implementations/kaffe/java/awt/EventDispatchThread.java:
+	Large code importation from GNU Classpath. First try to dispatch 
+	to FocusManager and then dispatch explicitly to the destination.
+	
+	*
+	libraries/javalib/awt-implementations/kaffe/java/awt/KeyEvt.java
+	(dispatch) Dispatch the synthetic event first through the FocusManager and
+	then directly to the destination.
+	
+	*
+	libraries/javalib/awt-implementations/kaffe/java/awt/MenuComponent.java:
+	(dispatchEventImpl): New internal method. It calls directly
+	AWTEvent.dispatch()
+	(dispatchEvent): Delegate to dispatchEventImpl.
+
 2006-11-19  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/boehm-gc/gc-refs.c (KaffeGC_rmRef),

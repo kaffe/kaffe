@@ -1221,45 +1221,26 @@ void dispatchEventImpl(AWTEvent e)
 {
     // This boolean tells us not to process focus events when the focus
     // opposite component is the same as the focus component.
-    boolean ignoreFocus =
-    (e instanceof FocusEvent &&
-     ((FocusEvent)e).getComponent() == ((FocusEvent)e).getOppositeComponent());
-
-    if (eventTypeEnabled (e.id))
-    {
-        if (e.id != PaintEvent.PAINT && e.id != PaintEvent.UPDATE
-            && !ignoreFocus)
-            processEvent(e);
-
-        // the trick we use to communicate between dispatch and redispatch
-        // is to have KeyboardFocusManager.redispatch synchronize on the
-        // object itself. we then do not redispatch to KeyboardFocusManager
-        // if we are already holding the lock.
-        if (! Thread.holdsLock(e))
-        {
-            switch (e.id)
-            {
-                case WindowEvent.WINDOW_GAINED_FOCUS:
-                case WindowEvent.WINDOW_LOST_FOCUS:
-                case KeyEvent.KEY_PRESSED:
-                case KeyEvent.KEY_RELEASED:
-                case KeyEvent.KEY_TYPED:
-                case FocusEvent.FOCUS_GAINED:
-                case FocusEvent.FOCUS_LOST:
-                    if (KeyboardFocusManager
-                        .getCurrentKeyboardFocusManager()
-                        .dispatchEvent(e))
-                        return;
-                case MouseEvent.MOUSE_PRESSED:
-                    if (isLightweight() && !e.isConsumed())
-                        requestFocus();
-                    break;
-            }
-        }
-    }
-
-    // here we differ from classpath since we have no peers
-    e.dispatch();
+    // Retarget focus events before dispatching it to the KeyboardFocusManager
+    // in order to handle lightweight components properly.
+    boolean dispatched = false;
+    if (! e.isFocusManagerEvent)
+      {
+ 	e = KeyboardFocusManager.retargetFocusEvent(e);
+	dispatched = KeyboardFocusManager.getCurrentKeyboardFocusManager()
+	    .dispatchEvent(e);
+      }
+	
+    if (! dispatched)
+      {
+	if (eventTypeEnabled (e.id))
+	    {
+		if (e.id != PaintEvent.PAINT && e.id != PaintEvent.UPDATE)
+		processEvent(e);
+	    }
+	// here we differ from classpath since we have no peers
+	e.dispatch();
+      }
 }
 
 
@@ -2950,7 +2931,7 @@ public void requestFocus ()
             Window toplevel = (Window) parent;
 // we can't check for that or  choice windows won't get focus
 //            if (toplevel.isFocusableWindow ())
-//            {
+            {
                 //if (peer != null && !isLightweight()) { // we don't have a peer
                 if (!isLightweight()) {
                     // This call will cause a FOCUS_GAINED event to be
@@ -2985,9 +2966,9 @@ public void requestFocus ()
                             eq.postEvent (new FocusEvent(this, FocusEvent.FOCUS_GAINED, false));
                     }
                 }
-            //}
-            //else
-            //    pendingFocusRequest = new FocusEvent(this, FocusEvent.FOCUS_GAINED);
+	    }
+	    //	    else
+	    //		pendingFocusRequest = new FocusEvent(this, FocusEvent.FOCUS_GAINED);
     }
     }
 }

@@ -39,7 +39,9 @@ protected void dispatch () {
 				if ( keyChar != 0 ) {         // printable key
 					if ( AWTEvent.keyTgt != null ) {     // maybe a fast finger pulled the keyTgt under our feet
 						KeyEvt typedEvt = getEvent((Component)source, KEY_TYPED, 0, keyChar, modifiers);
-						AWTEvent.keyTgt.process(typedEvt);
+						
+						if (!KeyboardFocusManager.getCurrentKeyboardFocusManager ().dispatchEvent(typedEvt))
+						  AWTEvent.keyTgt.process(typedEvt);
 					}
 				}
 			}

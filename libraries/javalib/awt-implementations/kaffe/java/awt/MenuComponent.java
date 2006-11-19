@@ -29,6 +29,11 @@ public MenuComponent () {
 }
 
 final public void dispatchEvent( AWTEvent e) {
+	dispatchEventImpl(e);
+}
+
+void dispatchEventImpl (AWTEvent e) {
+	e.dispatch();
 }
 
 ClassProperties getClassProperties () {
