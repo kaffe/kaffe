@@ -1,3 +1,10 @@
+2006-11-19  Dalibor Topic  <robilad@kaffe.org>
+
+	Fix for #76.
+
+	* configure.ac: Check if lib(un)gif header is installed,
+	when building kaffe X AWT and error out if it isn't.
+
 2006-11-17  Dalibor Topic  <robilad@kaffe.org>
 
 	* WHATSNEW: Added port to GNU/kFreeBSD.
