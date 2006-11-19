@@ -1,5 +1,12 @@
 2006-11-19  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/boehm-gc/gc-refs.c (KaffeGC_rmRef),
+	kaffe/kaffevm/boehm-gc/gc-refs.h (KaffeGC_initRefs):
+	Removed const qualifier from mem parameter to fix
+	compiler warning.	
+
+2006-11-19  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/boehm-gc/gc-refs.c (KaffeGC_clearWeakRef): 
 	Mark collector parameter as unused to fix compiler warning.
 

@@ -161,7 +161,7 @@ resizeWeakReferenceObject(Collector *collector, weakRefObject *obj, unsigned int
  * zero then the reference is removed.
  */
 bool
-KaffeGC_rmRef(Collector *collector UNUSED, const void* mem)
+KaffeGC_rmRef(Collector *collector UNUSED, void* mem)
 {
   uint32 idx;
   strongRefObject** objp;
