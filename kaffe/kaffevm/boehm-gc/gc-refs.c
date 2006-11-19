@@ -301,7 +301,7 @@ KaffeGC_rmWeakRef(Collector *collector UNUSED, void* mem, void** refobj)
  * @param mem a valid memory object.
  */
 void
-KaffeGC_clearWeakRef(Collector *collector, void* mem)
+KaffeGC_clearWeakRef(Collector *collector UNUSED, void* mem)
 { 
   uint32 idx;
   weakRefObject** objp;
