@@ -1,3 +1,22 @@
+2006-11-27  Dalibor Topic  <robilad@kaffe.org>
+
+	Fixed the build on Mac OS X 10.4.8.
+	Reported by:  Jim Pick  <jim@kaffe.org>
+
+	* libraries/clib/io/File.c: Renamed to 
+	* libraries/clib/io/java_io_File.c: this one.
+
+	* libraries/clib/native/Object.c: Renamed to
+	* libraries/clib/native/java_lang_Object.c: this one.
+
+	* libraries/clib/native/String.c: Renamed to
+	* libraries/clib/native/java_lang_String.c: this one.
+
+	* libraries/clib/native/Thread.c: Renamed to
+	* libraries/clib/native/java_lang_Thread.c: this one.
+
+	* kaffe/kaffevm/Makefile.am: Updated to use the new names.
+
 2006-11-19  Guilhem Lavaux  <guilhem@kaffe.org>,
 	Riccardo Mottola <riccardo@kaffe.org>
 

@@ -135,7 +135,7 @@ libkaffevm_la_SOURCES = \
 	$(top_srcdir)/libraries/clib/net/NetworkInterface.c \
 	$(top_srcdir)/libraries/clib/net/PlainDatagramSocketImpl.c \
 	$(top_srcdir)/libraries/clib/net/PlainSocketImpl.c \
-	$(top_srcdir)/libraries/clib/io/File.c \
+	$(top_srcdir)/libraries/clib/io/java_io_File.c \
 	$(top_srcdir)/libraries/clib/io/java_io_VMFile.c \
 	$(top_srcdir)/libraries/clib/native/AccessController.c \
 	$(top_srcdir)/libraries/clib/native/java_lang_ref_Reference.c \
@@ -146,12 +146,12 @@ libkaffevm_la_SOURCES = \
         $(top_srcdir)/libraries/clib/native/TimeZone.c \
         $(top_srcdir)/libraries/clib/native/Class.c \
         $(top_srcdir)/libraries/clib/native/ClassLoader.c \
-        $(top_srcdir)/libraries/clib/native/Object.c \
+        $(top_srcdir)/libraries/clib/native/java_lang_Object.c \
         $(top_srcdir)/libraries/clib/native/Runtime.c \
         $(top_srcdir)/libraries/clib/native/VMRuntime.c \
-        $(top_srcdir)/libraries/clib/native/String.c \
+        $(top_srcdir)/libraries/clib/native/java_lang_String.c \
         $(top_srcdir)/libraries/clib/native/System.c \
-        $(top_srcdir)/libraries/clib/native/Thread.c \
+        $(top_srcdir)/libraries/clib/native/java_lang_Thread.c \
         $(top_srcdir)/libraries/clib/native/Throwable.c \
 	$(top_srcdir)/libraries/clib/native/gnu_classpath_VMStackWalker.c \
 	$(top_srcdir)/libraries/clib/native/gnu_classpath_VMSystemProperties.c \
