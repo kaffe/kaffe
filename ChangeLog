@@ -1,3 +1,19 @@
+2006-11-28  Dalibor Topic  <robilad@kaffe.org>
+
+	* librariec/clib/native/java_lang_VMDouble.c,
+	libraries/javalib/external/classpath/native/fdlibm/mprec.h:
+	Resynced with changes from GNU Classpath.
+
+	2006-09-14  Christian Thalinger  <twisti@complang.tuwien.ac.at>
+
+        Fixes PR22800
+        * native/fdlibm/mprec.h (Storeinc): Define correctly for LE
+        architectures (like Arm).
+        * native/jni/java-lang/java_lang_VMDouble.c (doubleToLongBits):
+        Reverted SWAP_DOUBLE patch.
+        (doubleToRawLongBits): Likewise.
+        (longBitsToDouble): Likewise.
+
 2006-11-27  Dalibor Topic  <robilad@kaffe.org>
 
 	Fixed the build on Mac OS X 10.4.8.
