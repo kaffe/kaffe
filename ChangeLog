@@ -1,3 +1,9 @@
+2006-12-03  Riccardo Mottola <riccardo@kaffe.org>
+
+	Hint by Guilhem, draw the focus border according to the focus manager
+	and not ketTgt:
+	* libraries/javalib/awt-implementations/kaffe/java/awt/Component.java
+	
 2006-11-28  Dalibor Topic  <robilad@kaffe.org>
 
 	* librariec/clib/native/java_lang_VMDouble.c,

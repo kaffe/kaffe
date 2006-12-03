@@ -2423,7 +2423,7 @@ void kaffePaintBorder ( Graphics g, int left, int top, int right, int bottom ) {
 	int w = width - (left + right);
 	int h = height - (top + bottom);
 
-	if ( this == AWTEvent.keyTgt )
+	if ( hasFocus() )
 		g.setColor( Defaults.FocusClr);
 	else
 		g.setColor( Defaults.BorderClr);
