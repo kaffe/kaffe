@@ -1,5 +1,5 @@
 /* java.math.BigInteger -- Arbitary precision integers
-   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2005  Free Software Foundation, Inc.
+   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2003, 2005, 2006  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -197,8 +197,20 @@ public class BigInteger extends Number implements Comparable
   private void init(int numBits, Random rnd)
   {
     int highbits = numBits & 31;
+    // minimum number of bytes to store the above number of bits
+    int highBitByteCount = (highbits + 7) / 8;
+    // number of bits to discard from the last byte
+    int discardedBitCount = highbits % 8;
+    if (discardedBitCount != 0)
+      discardedBitCount = 8 - discardedBitCount;
+    byte[] highBitBytes = new byte[highBitByteCount];
     if (highbits > 0)
-      highbits = rnd.nextInt() >>> (32 - highbits);
+      {
+        rnd.nextBytes(highBitBytes);
+        highbits = (highBitBytes[highBitByteCount - 1] & 0xFF) >>> discardedBitCount;
+        for (int i = highBitByteCount - 2; i >= 0; i--)
+          highbits = (highbits << 8) | (highBitBytes[i] & 0xFF);
+      }
     int nwords = numBits / 32;
 
     while (highbits == 0 && nwords > 0)
@@ -225,8 +237,13 @@ public class BigInteger extends Number implements Comparable
     this(bitLength, rnd);
 
     // Keep going until we find a probable prime.
+    BigInteger result;
     while (true)
       {
+        // ...but first ensure that BI has bitLength bits
+        result = setBit(bitLength - 1);
+        this.ival = result.ival;
+        this.words = result.words;
 	if (isProbablePrime(certainty))
 	  return;
 
@@ -1589,24 +1606,31 @@ public class BigInteger extends Number implements Comparable
     // but slightly more expensive, for little practical gain.
     if (len <= 15 && radix <= 16)
       return valueOf(Long.parseLong(s, radix));
-    
-    int byte_len = 0;
-    byte[] bytes = new byte[len];
-    boolean negative = false;
-    for (int i = 0;  i < len;  i++)
+
+    int i, digit;
+    boolean negative;
+    byte[] bytes;
+    char ch = s.charAt(0);
+    if (ch == '-')
       {
-	char ch = s.charAt(i);
-	if (ch == '-')
-	  negative = true;
-	else if (ch == '_' || (byte_len == 0 && (ch == ' ' || ch == '\t')))
-	  continue;
-	else
-	  {
-	    int digit = Character.digit(ch, radix);
-	    if (digit < 0)
-	      break;
-	    bytes[byte_len++] = (byte) digit;
-	  }
+        negative = true;
+        i = 1;
+        bytes = new byte[len - 1];
+      }
+    else
+      {
+        negative = false;
+        i = 0;
+        bytes = new byte[len];
+      }
+    int byte_len = 0;
+    for ( ; i < len;  i++)
+      {
+        ch = s.charAt(i);
+        digit = Character.digit(ch, radix);
+        if (digit < 0)
+          throw new NumberFormatException();
+        bytes[byte_len++] = (byte) digit;
       }
     return valueOf(bytes, byte_len, negative, radix);
   }

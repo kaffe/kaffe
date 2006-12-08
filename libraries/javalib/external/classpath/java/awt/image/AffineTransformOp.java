@@ -1,6 +1,6 @@
 /* AffineTransformOp.java --  This class performs affine 
    transformation between two images or rasters in 2 dimensions.
-   Copyright (C) 2004 Free Software Foundation
+   Copyright (C) 2004, 2006 Free Software Foundation
 
 This file is part of GNU Classpath.
 
@@ -52,6 +52,7 @@ import java.util.Arrays;
  * rasters in 2 dimensions. 
  *
  * @author Olga Rodimina (rodimina@redhat.com) 
+ * @author Francis Kung (fkung@redhat.com)
  */
 public class AffineTransformOp implements BufferedImageOp, RasterOp
 {
@@ -74,6 +75,7 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp
      *
      * @param xform AffineTransform that will applied to the source image 
      * @param interpolationType type of interpolation used
+     * @throws ImagingOpException if the transform matrix is noninvertible
      */
     public AffineTransformOp (AffineTransform xform, int interpolationType)
     {
@@ -102,6 +104,7 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp
      * 
      * @param xform AffineTransform that will applied to the source image
      * @param hints rendering hints that will be used during transformation
+     * @throws ImagingOpException if the transform matrix is noninvertible
      */
     public AffineTransformOp (AffineTransform xform, RenderingHints hints)
     {
@@ -115,8 +118,7 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp
      * Creates empty BufferedImage with the size equal to that of the 
      * transformed image and correct number of bands. The newly created 
      * image is created with the specified ColorModel. 
-     * If the ColorModel is equal to null, then image is created 
-     * with the ColorModel of the source image.
+     * If the ColorModel is equal to null, an appropriate ColorModel is used.
      *
      * @param src source image
      * @param destCM color model for the destination image
@@ -125,17 +127,21 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp
     public BufferedImage createCompatibleDestImage (BufferedImage src,
                                                     ColorModel destCM)
     {
+      if (destCM != null)
+        return new BufferedImage(destCM,
+                                 createCompatibleDestRaster(src.getRaster()),
+                                 src.isAlphaPremultiplied(), null);
 
-      // if destCm is not specified, use color model of the source image
+      // This behaviour was determined by Mauve testcases, and is compatible
+      // with the reference implementation
+      if (src.getType() == BufferedImage.TYPE_INT_ARGB_PRE
+          || src.getType() == BufferedImage.TYPE_4BYTE_ABGR
+          || src.getType() == BufferedImage.TYPE_4BYTE_ABGR_PRE)
+        return new BufferedImage(src.getWidth(), src.getHeight(), src.getType());
 
-      if (destCM == null) 
-        destCM = src.getColorModel ();
-
-      return new BufferedImage (destCM, 
-                                createCompatibleDestRaster (src.getRaster ()),
-                                src.isAlphaPremultiplied (),
-                                null);		             
-
+      else
+        return new BufferedImage(src.getWidth(), src.getHeight(),
+                                 BufferedImage.TYPE_INT_ARGB);
     }
 
     /**
@@ -148,7 +154,7 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp
      */
     public WritableRaster createCompatibleDestRaster (Raster src)
     {
-      Rectangle rect = (Rectangle) getBounds2D (src);
+      Rectangle2D rect = getBounds2D(src);
       
       // throw RasterFormatException if resulting width or height of the
       // transformed raster is 0
@@ -156,33 +162,31 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp
       if (rect.getWidth () == 0 || rect.getHeight () == 0) 
         throw new RasterFormatException("width or height is 0");
 
-      return src.createCompatibleWritableRaster ((int) rect.getWidth (), 
-                                                (int) rect.getHeight ());
+      return src.createCompatibleWritableRaster((int) rect.getWidth(), 
+                                                (int) rect.getHeight());
     }
 
     /**
      * Transforms source image using transform specified at the constructor.
-     * The resulting transformed image is stored in the destination image. 
+     * The resulting transformed image is stored in the destination image if one
+     * is provided; otherwise a new BufferedImage is created and returned. 
      *
      * @param src source image
      * @param dst destination image
+     * @throws IllegalArgumentException if the source and destination image are
+     *          the same
      * @return transformed source image
      */
     public final BufferedImage filter (BufferedImage src, BufferedImage dst)
     {
 
       if (dst == src)
-        throw new IllegalArgumentException ("src image cannot be the same as the dst image");
+        throw new IllegalArgumentException ("src image cannot be the same as " +
+                "the dst image");
 
-      // If the destination image is null, then BufferedImage is 
-      // created with ColorModel of the source image
-
+      // If the destination image is null, then use a compatible BufferedImage  
       if (dst == null)
-        dst = createCompatibleDestImage(src, src.getColorModel ());
-
-      // FIXME: Must check if color models of src and dst images are the same.
-      // If it is not, then source image should be converted to color model
-      // of the destination image
+        dst = createCompatibleDestImage(src, null);
 
       Graphics2D gr = (Graphics2D) dst.createGraphics ();
       gr.setRenderingHints (hints);	
@@ -193,10 +197,13 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp
 
     /**
      * Transforms source raster using transform specified at the constructor.
-     * The resulting raster is stored in the destination raster.
+     * The resulting raster is stored in the destination raster if it is not
+     * null, otherwise a new raster is created and returned.
      *
      * @param src source raster
      * @param dst destination raster
+     * @throws IllegalArgumentException if the source and destination are not
+     *          compatible
      * @return transformed raster
      */
     public final WritableRaster filter (Raster src, WritableRaster dst)
@@ -212,85 +219,47 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp
         throw new IllegalArgumentException("src and dst must have same number"
 					   + " of bands");
       
-      double[] dpts = new double[dst.getWidth() * 2];
-      double[] pts = new double[dst.getWidth() * 2];
+      // Create arrays to hold all the points
+      double[] dstPts = new double[dst.getHeight() * dst.getWidth() * 2];
+      double[] srcPts = new double[dst.getHeight() * dst.getWidth() * 2];
+
+      // Populate array with all points in the *destination* raster
+      int i = 0;
       for (int x = 0; x < dst.getWidth(); x++)
-      {
-	dpts[2 * x] = x + dst.getMinX();
-	dpts[2 * x + 1] = x;
-      }
-      Rectangle srcbounds = src.getBounds();
-      if (hints.containsValue(RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR))
-      {
-	for (int y = dst.getMinY(); y < dst.getMinY() + dst.getHeight(); y++)
-	  {
-	    try {
-	      transform.inverseTransform(dpts, 0, pts, 0, dst.getWidth() * 2);
-	    } catch (NoninvertibleTransformException e) {
-	      // Can't happen since the constructor traps this
-	      e.printStackTrace();
-	    }
-        
-	    for (int x = 0; x < dst.getWidth(); x++)
-	      {
-		if (!srcbounds.contains(pts[2 * x], pts[2 * x + 1]))
-		  continue;
-		dst.setDataElements(x + dst.getMinX(), y,
-				    src.getDataElements((int)pts[2 * x],
-							(int)pts[2 * x + 1],
-							null));
-	      }
-	  }
-      }
-      else if (hints.containsValue(RenderingHints.VALUE_INTERPOLATION_BILINEAR))
-      {
-        double[] tmp = new double[4 * src.getNumBands()];
-        for (int y = dst.getMinY(); y < dst.getMinY() + dst.getHeight(); y++)
         {
-          try {
-            transform.inverseTransform(dpts, 0, pts, 0, dst.getWidth() * 2);
-          } catch (NoninvertibleTransformException e) {
-            // Can't happen since the constructor traps this
-            e.printStackTrace();
-          }
-	    
-          for (int x = 0; x < dst.getWidth(); x++)
-          {
-            if (!srcbounds.contains(pts[2 * x], pts[2 * x + 1]))
-              continue;
-            int xx = (int)pts[2 * x];
-            int yy = (int)pts[2 * x + 1];
-            double dx = (pts[2 * x] - xx);
-            double dy = (pts[2 * x + 1] - yy);
-		
-            // TODO write this more intelligently
-            if (xx == src.getMinX() + src.getWidth() - 1 ||
-                yy == src.getMinY() + src.getHeight() - 1)
+          for (int y = 0; y < dst.getHeight(); y++)
             {
-              // bottom or right edge
-              Arrays.fill(tmp, 0);
-              src.getPixel(xx, yy, tmp);
+              dstPts[i++] = x;
+              dstPts[i++] = y;
             }
-            else
-	    {
-              // Normal case
-              src.getPixels(xx, yy, 2, 2, tmp);
-	      for (int b = 0; b < src.getNumBands(); b++)
-		tmp[b] = dx * dy * tmp[b]
-		  + (1 - dx) * dy * tmp[b + src.getNumBands()]
-		  + dx * (1 - dy) * tmp[b + 2 * src.getNumBands()]
-		  + (1 - dx) * (1 - dy) * tmp[b + 3 * src.getNumBands()];
-	    }
-            dst.setPixel(x, y, tmp);
-          }
         }
-      }
-      else
-      {
-        // Bicubic
-        throw new UnsupportedOperationException("not implemented yet");
-      }
+      Rectangle srcbounds = src.getBounds();
+
+      // Use an inverse transform to map each point in the destination to
+      // a point in the source.  Note that, while all points in the destination
+      // matrix are integers, this is not necessarily true for points in the
+      // source (hence why interpolation is required) 
+      try
+        {
+          AffineTransform inverseTx = transform.createInverse();
+          inverseTx.transform(dstPts, 0, srcPts, 0, dstPts.length / 2);
+        }
+      catch (NoninvertibleTransformException e)
+        {
+          // Shouldn't happen since the constructor traps this
+          throw new ImagingOpException(e.getMessage());
+        }
+
+      // Different interpolation methods...
+      if (hints.containsValue(RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR))
+        filterNearest(src, dst, dstPts, srcPts);
       
+      else if (hints.containsValue(RenderingHints.VALUE_INTERPOLATION_BILINEAR))
+        filterBilinear(src, dst, dstPts, srcPts);
+    
+      else          // bicubic
+        filterBicubic(src, dst, dstPts, srcPts);
+
       return dst;  
     }
 
@@ -314,16 +283,7 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp
      */
     public final Rectangle2D getBounds2D (Raster src)
     {
-      // determine new size for the transformed raster.
-      // Need to calculate transformed coordinates of the lower right
-      // corner of the raster. The upper left corner is always (0,0)
-              
-      double x2 = (double) src.getWidth () + src.getMinX ();
-      double y2 = (double) src.getHeight () + src.getMinY ();
-      Point2D p2 = getPoint2D (new Point2D.Double (x2,y2), null);
-
-      Rectangle2D rect = new Rectangle (0, 0, (int) p2.getX (), (int) p2.getY ());
-      return rect.getBounds ();
+      return transform.createTransformedShape(src.getBounds()).getBounds2D();
     }
 
     /**
@@ -333,8 +293,12 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp
      */
     public final int getInterpolationType ()
     {
-      if(hints.containsValue (RenderingHints.VALUE_INTERPOLATION_BILINEAR))
+      if (hints.containsValue(RenderingHints.VALUE_INTERPOLATION_BILINEAR))
         return TYPE_BILINEAR;
+      
+      else if (hints.containsValue(RenderingHints.VALUE_INTERPOLATION_BICUBIC))
+        return TYPE_BICUBIC;
+      
       else 
         return TYPE_NEAREST_NEIGHBOR;
     }
@@ -371,5 +335,192 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp
     public final AffineTransform getTransform ()
     {
       return transform;
+    }
+    
+    /**
+     * Perform nearest-neighbour filtering
+     * 
+     * @param src the source raster
+     * @param dst the destination raster
+     * @param dpts array of points on the destination raster
+     * @param pts array of corresponding points on the source raster
+     */
+    private void filterNearest(Raster src, WritableRaster dst, double[] dpts,
+                               double[] pts)
+    {
+      Rectangle srcbounds = src.getBounds();
+  
+      // For all points on the destination raster, copy the value from the
+      // corrosponding (rounded) source point
+      for (int i = 0; i < dpts.length; i += 2)
+        {
+          int srcX = (int) Math.round(pts[i]) + src.getMinX();
+          int srcY = (int) Math.round(pts[i + 1]) + src.getMinY();
+          
+          if (srcbounds.contains(srcX, srcY))
+            dst.setDataElements((int) dpts[i] + dst.getMinX(),
+                                (int) dpts[i + 1] + dst.getMinY(),
+                                src.getDataElements(srcX, srcY, null));
+        }
+    }
+
+    /**
+     * Perform bilinear filtering
+     * 
+     * @param src the source raster
+     * @param dst the destination raster
+     * @param dpts array of points on the destination raster
+     * @param pts array of corresponding points on the source raster
+     */
+    private void filterBilinear(Raster src, WritableRaster dst, double[] dpts,
+                              double[] pts)
+    {
+      Rectangle srcbounds = src.getBounds();
+  
+      // For all points in the destination raster, use bilinear interpolation
+      // to find the value from the corrosponding source points
+      for (int i = 0; i < dpts.length; i += 2)
+        {
+          int srcX = (int) Math.round(pts[i]) + src.getMinX();
+          int srcY = (int) Math.round(pts[i + 1]) + src.getMinY();
+          
+          if (srcbounds.contains(srcX, srcY))
+            {
+              // Corner case at the bottom or right edge; use nearest neighbour
+              if (pts[i] >= src.getWidth() - 1
+                  || pts[i + 1] >= src.getHeight() - 1)
+                dst.setDataElements((int) dpts[i] + dst.getMinX(),
+                                    (int) dpts[i + 1] + dst.getMinY(),
+                                    src.getDataElements(srcX, srcY, null));
+  
+              // Standard case, apply the bilinear formula
+              else
+                {
+                  int x = (int) Math.floor(pts[i] + src.getMinX());
+                  int y = (int) Math.floor(pts[i + 1] + src.getMinY());
+                  double xdiff = pts[i] + src.getMinX() - x;
+                  double ydiff = pts[i + 1] + src.getMinY() - y;
+  
+                  // Run the interpolation for each band
+                  for (int j = 0; j < src.getNumBands(); j++)
+                    {
+                      double result = (src.getSampleDouble(x, y, j) * (1 - xdiff)
+                                         + src.getSampleDouble(x + 1, y, j) * xdiff)
+                                       * (1 - ydiff)
+                                       + (src.getSampleDouble(x, y + 1, j)
+                                          * (1 - xdiff)
+                                          + src.getSampleDouble(x + 1, y + 1, j)
+                                          * xdiff)
+                                       * ydiff;
+                      dst.setSample((int) dpts[i] + dst.getMinX(),
+                                    (int) dpts[i + 1] + dst.getMinY(),
+                                    j, result);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Perform bicubic filtering
+     * based on http://local.wasp.uwa.edu.au/~pbourke/colour/bicubic/
+     * 
+     * @param src the source raster
+     * @param dst the destination raster
+     * @param dpts array of points on the destination raster
+     * @param pts array of corresponding points on the source raster
+     */
+    private void filterBicubic(Raster src, WritableRaster dst, double[] dpts,
+                               double[] pts)
+    {
+      Rectangle srcbounds = src.getBounds();
+  
+      // For all points on the destination raster, perform bicubic interpolation
+      // from corrosponding source points
+      double[] result = new double[src.getNumBands()];
+      for (int i = 0; i < dpts.length; i += 2)
+        {
+          if (srcbounds.contains((int) Math.round(pts[i]) + src.getMinX(),
+                                 (int) Math.round(pts[i + 1]) + src.getMinY()))
+            {
+              int x = (int) Math.floor(pts[i] + src.getMinX());
+              int y = (int) Math.floor(pts[i + 1] + src.getMinY());
+              double dx = pts[i] + src.getMinX() - x;
+              double dy = pts[i + 1] + src.getMinY() - y;
+              Arrays.fill(result, 0);
+  
+              for (int m = - 1; m < 3; m++)
+                {
+                  for (int n = - 1; n < 3; n++)
+                    {
+                      // R(x) = ( P(x+2)^3 - 4 P(x+1)^3 + 6 P(x)^3 - 4 P(x-1)^3 ) / 6
+                      double r1 = 0;
+                      double r2 = 0;
+  
+                      // Calculate R(m - dx)
+                      double rx = m - dx + 2;
+                      if (rx > 0)
+                        r1 += rx * rx * rx;
+  
+                      rx = m - dx + 1;
+                      if (rx > 0)
+                        r1 -= 4 * rx * rx * rx;
+  
+                      rx = m - dx;
+                      if (rx > 0)
+                        r1 += 6 * rx * rx * rx;
+  
+                      rx = m - dx - 1;
+                      if (rx > 0)
+                        r1 -= 4 * rx * rx * rx;
+  
+                      r1 /= 6;
+  
+                      // Calculate R(dy - n);
+                      rx = dy - n + 2;
+                      if (rx > 0)
+                        r2 += rx * rx * rx;
+  
+                      rx = dy - n + 1;
+                      if (rx > 0)
+                        r2 -= 4 * rx * rx * rx;
+  
+                      rx = dy - n;
+                      if (rx > 0)
+                        r2 += 6 * rx * rx * rx;
+  
+                      rx = dy - n - 1;
+                      if (rx > 0)
+                        r2 -= 4 * rx * rx * rx;
+  
+                      r2 /= 6;
+  
+                      // Calculate F(i+m, j+n) R(m - dx) R(dy - n)
+                      // Check corner cases
+                      int srcX = x + m;
+                      if (srcX >= src.getMinX() + src.getWidth())
+                        srcX = src.getMinX() + src.getWidth() - 1;
+                      else if (srcX < src.getMinX())
+                        srcX = src.getMinX();
+
+                      int srcY = y + n;
+                      if (srcY >= src.getMinY() + src.getHeight())
+                        srcY = src.getMinY() + src.getHeight() - 1;
+                      else if (srcY < src.getMinY())
+                        srcY = src.getMinY();
+
+                      // Calculate once for each band
+                      for (int j = 0; j < result.length; j++)
+                        result[j] += src.getSample(srcX, srcY, j) * r1 * r2;
+                    }
+                }
+  
+              // Put it all together
+              for (int j = 0; j < result.length; j++)
+                dst.setSample((int) dpts[i] + dst.getMinX(),
+                              (int) dpts[i + 1] + dst.getMinY(),
+                              j, result[j]);
+            }
+        }
     }
 }

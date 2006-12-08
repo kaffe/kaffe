@@ -105,16 +105,15 @@ public class DragSource implements Serializable
         ds = null;
         throw new HeadlessException();
       }
-    
+
     if (ds == null)
       ds = new DragSource();
     return ds;
   }
 
   public static boolean isDragImageSupported()
-    throws NotImplementedException
   {
-    // FIXME: Implement this
+    // In all cases, Sun returns false here.
     return false;
   }
 
@@ -140,8 +139,6 @@ public class DragSource implements Serializable
     // This function sends the same message to the context, which then forwards
     // it to the peer, passing itself as a parameter. Now, the native system has
     // access to the Transferable through the context.
-
-    // FIXME: Add check to determine if dragging.
     
     try
       {
@@ -315,7 +312,7 @@ public class DragSource implements Serializable
   
   /**
    * TODO
-   * @return
+   * @return TODO
    * 
    * @since 1.5
    */
@@ -323,6 +320,6 @@ public class DragSource implements Serializable
     throws NotImplementedException
   {
     // FIXME: Not implemented.
-    return 4;
+    return 8;
   }
 } // class DragSource

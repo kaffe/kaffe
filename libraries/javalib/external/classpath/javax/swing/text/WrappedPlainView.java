@@ -300,8 +300,8 @@ public class WrappedPlainView extends BoxView implements TabExpander
       }
 
     if (wordWrap)
-      return Utilities.getBreakLocation(lineBuffer, metrics, alloc.x,
-                                          alloc.x + alloc.width, this, p0);
+      return p0 + Utilities.getBreakLocation(lineBuffer, metrics, alloc.x,
+                                          alloc.x + alloc.width, this, 0);
     else
       return p0 + Utilities.getTabbedTextOffset(lineBuffer, metrics, alloc.x,
                                              alloc.x + alloc.width, this, 0,
@@ -449,10 +449,34 @@ public class WrappedPlainView extends BoxView implements TabExpander
       int currStart = getStartOffset();
       int currEnd;
       int count = 0;
+
+      // Determine layered highlights.
+      Container c = getContainer();
+      LayeredHighlighter lh = null;
+      JTextComponent tc = null;
+      if (c instanceof JTextComponent)
+        {
+          tc = (JTextComponent) c;
+          Highlighter h = tc.getHighlighter();
+          if (h instanceof LayeredHighlighter)
+            lh = (LayeredHighlighter) h;
+        }
+
       while (currStart < end)
         {
           currEnd = calculateBreakPosition(currStart, end);
 
+          // Paint layered highlights, if any.
+          if (lh != null)
+            {
+              // Exclude trailing newline in last line.
+              if (currEnd == end)
+                lh.paintLayeredHighlights(g, currStart, currEnd - 1, s, tc,
+                                          this);
+              else
+                lh.paintLayeredHighlights(g, currStart, currEnd, s, tc, this);
+                
+            }
           drawLine(currStart, currEnd, g, rect.x, rect.y + metrics.getAscent());
           
           rect.y += lineHeight;          
@@ -547,7 +571,7 @@ public class WrappedPlainView extends BoxView implements TabExpander
       // Throwing a BadLocationException is an observed behavior of the RI.
       if (rect.isEmpty())
         throw new BadLocationException("Unable to calculate view coordinates "
-                                       + "when allocation area is empty.", 5);
+                                       + "when allocation area is empty.", pos);
       
       Segment s = getLineBuffer();
       int lineHeight = metrics.getHeight();

@@ -111,28 +111,10 @@ public class ObjectStreamField implements Comparable
   {
     this.name = name;
     this.typename = typename;
-    try
-      {
-        type = TypeSignature.getClassForEncoding(typename);
-      }
-    catch(ClassNotFoundException e)
-      {
-      }
   }
-  
-  /**
-   * There are many cases you can not get java.lang.Class from typename 
-   * if your context class loader cann not load it, then use typename to
-   * construct the field.
-   *
-   * @param name Name of the field to export.
-   * @param typename The coded name of the type for this field.
-   * @param loader The class loader to use to resolve class names.
-   */
-  ObjectStreamField (String name, String typename, ClassLoader loader)
+
+  void resolveType(ClassLoader loader)
   {
-    this.name = name;
-    this.typename = typename;
     try
       {
         type = TypeSignature.getClassForEncoding(typename, true, loader);
@@ -141,7 +123,7 @@ public class ObjectStreamField implements Comparable
       {
       }
   }
-
+  
   /**
    * This method returns the name of the field represented by the
    * ObjectStreamField instance.

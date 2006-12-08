@@ -71,32 +71,6 @@ public class ComponentGraphics extends CairoGraphics2D
   private static ThreadLocal hasLock = new ThreadLocal();
   private static Integer ONE = Integer.valueOf(1);
 
-  private void lock()
-  {
-    Integer i = (Integer) hasLock.get();
-    if (i == null)
-      {
-	start_gdk_drawing();
-	hasLock.set(ONE);
-      }
-    else
-      hasLock.set(Integer.valueOf(i.intValue() + 1));
-  }
-
-  private void unlock()
-  {
-    Integer i = (Integer) hasLock.get();
-    if (i == null)
-      throw new IllegalStateException();
-    if (i == ONE)
-      {
-	hasLock.set(null);
-	end_gdk_drawing();
-      }
-    else
-      hasLock.set(Integer.valueOf(i.intValue() - 1));
-  }
-
   ComponentGraphics()
   {
   }
@@ -127,6 +101,32 @@ public class ComponentGraphics extends CairoGraphics2D
    * Creates a cairo_t for the component surface and return it.
    */
   private native long initState(GtkComponentPeer component);
+
+  private void lock()
+  {
+    Integer i = (Integer) hasLock.get();
+    if (i == null)
+      {
+	start_gdk_drawing();
+	hasLock.set(ONE);
+      }
+    else
+      hasLock.set(Integer.valueOf(i.intValue() + 1));
+  }
+
+  private void unlock()
+  {
+    Integer i = (Integer) hasLock.get();
+    if (i == null)
+      throw new IllegalStateException();
+    if (i == ONE)
+      {
+	hasLock.set(null);
+	end_gdk_drawing();
+      }
+    else
+      hasLock.set(Integer.valueOf(i.intValue() - 1));
+  }
 
   /**
    * Destroys the component surface and calls dispose on the cairo

@@ -476,8 +476,8 @@ public class BoxView
       {
         View child = getView(i);
         min += child.getMinimumSpan(axis);
-        pref = child.getPreferredSpan(axis);
-        max = child.getMaximumSpan(axis);
+        pref += child.getPreferredSpan(axis);
+        max += child.getMaximumSpan(axis);
       }
 
     res.minimum = (int) min;
@@ -568,9 +568,9 @@ public class BoxView
     boolean result = false;
 
     if (myAxis == X_AXIS)
-      result = x > r.x;
+      result = x > r.x + r.width;
     else
-      result = y > r.y;
+      result = y > r.y + r.height;
 
     return result;
   }
@@ -623,9 +623,6 @@ public class BoxView
    */
   protected void childAllocation(int index, Rectangle a)
   {
-    if (! isAllocationValid())
-      layout(a.width, a.height);
-
     a.x += offsets[X_AXIS][index];
     a.y += offsets[Y_AXIS][index];
     a.width = spans[X_AXIS][index];
@@ -776,7 +773,7 @@ public class BoxView
         View child = getView(i);
         int max = (int) child.getMaximumSpan(axis);
         if (max < targetSpan)
-          {System.err.println("align: " + child);
+          {
             // Align child when it can't be made as wide as the target span.
             float align = child.getAlignment(axis);
             offsets[i] = (int) ((targetSpan - max) * align);
@@ -811,7 +808,7 @@ public class BoxView
    */
   public int getWidth()
   {
-    return span[X_AXIS];
+    return span[X_AXIS] + getLeftInset() - getRightInset();
   }
 
   /**
@@ -821,7 +818,7 @@ public class BoxView
    */
   public int getHeight()
   {
-    return span[Y_AXIS];
+    return span[Y_AXIS] + getTopInset() - getBottomInset();
   }
 
   /**
@@ -833,7 +830,8 @@ public class BoxView
    */
   public void setSize(float width, float height)
   {
-    layout((int) width, (int) height);
+    layout((int) (width - getLeftInset() - getRightInset()),
+           (int) (height - getTopInset() - getBottomInset()));
   }
 
   /**
@@ -1024,6 +1022,8 @@ public class BoxView
    */
   private void updateRequirements(int axis)
   {
+    if (axis != Y_AXIS && axis != X_AXIS)
+      throw new IllegalArgumentException("Illegal axis: " + axis);
     if (! requirementsValid[axis])
       {
         if (axis == myAxis)

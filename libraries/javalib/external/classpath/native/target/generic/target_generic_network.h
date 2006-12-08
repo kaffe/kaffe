@@ -56,10 +56,6 @@ Systems    : all
 
 #include "target_native.h"
 
-#ifndef HAVE_SOCKLEN_T
-#define socklen_t int
-#endif
-
 /****************** Conditional compilation switches *******************/
 
 /***************************** Constants *******************************/

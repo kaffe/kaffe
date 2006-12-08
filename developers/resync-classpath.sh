@@ -6,7 +6,7 @@
 ## Invoke from a directory at same level as
 ## Kaffe's top source directory.
 
-WORKDIR=/tmp/classpath-merge-work
+WORKDIR=/tmp
 
 
 echo "Building file/directories listing for new classpath"
@@ -15,7 +15,7 @@ echo "Building file/directories listing for new classpath"
     cd ${WORKDIR};
 
     echo "Extracting classpath from CVS"
-     cvs -z3 -d:pserver:anonymous@cvs.sv.gnu.org:/sources/classpath co -P classpath;
+     cvs -z3 -d:pserver:anonymous@cvs.sv.gnu.org:/sources/classpath co $CVSFLAGS -P classpath;
     
     cd classpath;
 
@@ -25,7 +25,7 @@ echo "Building file/directories listing for new classpath"
     cd build
     rm -rf ../build/*
     echo "building classpath distribution"
-    ../classpath/configure --with-jikes && make && make dist
+    ../classpath/configure --with-jikes --disable-Werror && make && make dist
     tar zxf classpath-*tar.gz
     cd classpath-*
 

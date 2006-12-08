@@ -451,8 +451,8 @@ public class VariableHeightLayoutCache
   {
     if (y < r.y)
       return r.y - y;
-    else if (y > r.y + r.height)
-      return y - (r.y + r.height);
+    else if (y > r.y + r.height - 1)
+      return y - (r.y + r.height - 1);
     else
       return 0;
   }

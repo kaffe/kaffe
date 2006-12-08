@@ -63,6 +63,7 @@ import javax.swing.JSlider;
 import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
 import javax.swing.LookAndFeel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.plaf.ActionMapUIResource;
@@ -107,13 +108,34 @@ public class BasicSplitPaneUI extends SplitPaneUI
     protected int[] sizes = new int[3];
 
     /**
+     * This is used to determine if we are vertical or horizontal layout.
+     * In the JDK, the BasicVerticalLayoutManager seems to have no more
+     * methods implemented (as of JDK5), so we keep this state here.
+     */
+    private int axis;
+
+    /**
      * Creates a new instance. This is package private because the reference
      * implementation has no public constructor either. Still, we need to
      * call it from BasicVerticalLayoutManager.
      */
     BasicHorizontalLayoutManager()
     {
-      // Nothing to do here.
+      this(SwingConstants.HORIZONTAL);
+    }
+
+    /**
+     * Creates a new instance for a specified axis. This is provided for
+     * compatibility, since the BasicVerticalLayoutManager seems to have
+     * no more implementation in the RI, according to the specs. So
+     * we handle all the axis specific stuff here.
+     *
+     * @param a the axis, either SwingConstants#HORIZONTAL,
+     *        or SwingConstants#VERTICAL
+     */
+    BasicHorizontalLayoutManager(int a)
+    {
+      axis = a;
     }
 
     /**
@@ -167,7 +189,12 @@ public class BasicSplitPaneUI extends SplitPaneUI
      */
     protected int getAvailableSize(Dimension containerSize, Insets insets)
     {
-      return containerSize.width - insets.left - insets.right;
+      int size;
+      if (axis == SwingConstants.HORIZONTAL)
+        size = containerSize.width - insets.left - insets.right;
+      else
+        size = containerSize.height - insets.top - insets.bottom;
+      return size;
     }
 
     /**
@@ -180,9 +207,15 @@ public class BasicSplitPaneUI extends SplitPaneUI
      */
     protected int getInitialLocation(Insets insets)
     {
+      int loc = 0;
       if (insets != null)
-        return insets.left;
-      return 0;
+        {
+          if (axis == SwingConstants.HORIZONTAL)
+            loc = insets.left;
+          else
+            loc = insets.top;
+        }
+      return loc;
     }
 
     /**
@@ -220,10 +253,19 @@ public class BasicSplitPaneUI extends SplitPaneUI
      */
     protected int getPreferredSizeOfComponent(Component c)
     {
+      int size = 0;
       Dimension dims = c.getPreferredSize();
-      if (dims != null)
-        return dims.width;
-      return 0;
+      if (axis == SwingConstants.HORIZONTAL)
+        {
+          if (dims != null)
+            size = dims.width;
+        }
+      else
+        {
+          if (dims != null)
+            size = dims.height;
+        }
+      return size;
     }
 
     /**
@@ -235,7 +277,12 @@ public class BasicSplitPaneUI extends SplitPaneUI
      */
     protected int getSizeOfComponent(Component c)
     {
-      return c.getWidth();
+      int size;
+      if (axis == SwingConstants.HORIZONTAL)
+        size = c.getHeight();
+      else
+        size = c.getWidth();
+      return size;
     }
 
     /**
@@ -313,27 +360,31 @@ public class BasicSplitPaneUI extends SplitPaneUI
      */
     public Dimension minimumLayoutSize(Container target)
     {
+      Dimension dim = new Dimension();
       if (target instanceof JSplitPane)
         {
           JSplitPane split = (JSplitPane) target;
-          Insets insets = target.getInsets();
-
-          int height = 0;
-          int width = 0;
+          int primary = 0;
+          int secondary = 0;
           for (int i = 0; i < components.length; i++)
             {
-              if (components[i] == null)
-                continue;
-              Dimension dims = components[i].getMinimumSize();
-              if (dims != null)
+              if (components[i] != null)
                 {
-                  width += dims.width;
-                  height = Math.max(height, dims.height);
+                  Dimension dims = components[i].getMinimumSize();
+                  primary += axis == SwingConstants.HORIZONTAL ? dims.width
+                                                               : dims.height;
+                  int sec = axis == SwingConstants.HORIZONTAL ? dims.height
+                                                              : dims.width;
+                  secondary = Math.max(sec, secondary);
                 }
             }
-          return new Dimension(width, height);
+          int width = axis == SwingConstants.HORIZONTAL ? primary : secondary;
+          int height = axis == SwingConstants.VERTICAL ? secondary : primary;
+
+          Insets i = splitPane.getInsets();
+          dim.setSize(width + i.left + i.right, height + i.top + i.bottom);
         }
-      return null;
+      return dim;
     }
 
     /**
@@ -347,28 +398,31 @@ public class BasicSplitPaneUI extends SplitPaneUI
      */
     public Dimension preferredLayoutSize(Container target)
     {
+      Dimension dim = new Dimension();
       if (target instanceof JSplitPane)
         {
           JSplitPane split = (JSplitPane) target;
-          Insets insets = target.getInsets();
-
-          int height = 0;
-          int width = 0;
+          int primary = 0;
+          int secondary = 0;
           for (int i = 0; i < components.length; i++)
             {
-              if (components[i] == null)
-                continue;
-              Dimension dims = components[i].getPreferredSize();
-              if (dims != null)
+              if (components[i] != null)
                 {
-                  width += dims.width;
-                  if (!(components[i] instanceof BasicSplitPaneDivider))
-                    height = Math.max(height, dims.height);
+                  Dimension dims = components[i].getPreferredSize();
+                  primary += axis == SwingConstants.HORIZONTAL ? dims.width
+                                                               : dims.height;
+                  int sec = axis == SwingConstants.HORIZONTAL ? dims.height
+                                                              : dims.width;
+                  secondary = Math.max(sec, secondary);
                 }
             }
-          return new Dimension(width, height);
+          int width = axis == SwingConstants.HORIZONTAL ? primary : secondary;
+          int height = axis == SwingConstants.VERTICAL ? secondary : primary;
+
+          Insets i = splitPane.getInsets();
+          dim.setSize(width + i.left + i.right, height + i.top + i.bottom);
         }
-      return null;
+      return dim;
     }
 
     /**
@@ -425,11 +479,23 @@ public class BasicSplitPaneUI extends SplitPaneUI
     protected void setComponentToSize(Component c, int size, int location,
                                       Insets insets, Dimension containerSize)
     { 
-      int w = size;
-      int h = containerSize.height - insets.top - insets.bottom;
-      int x = location;
-      int y = insets.top;
-      c.setBounds(x, y, w, h);
+      if (insets != null)
+        {
+          if (axis == SwingConstants.HORIZONTAL)
+            c.setBounds(location, insets.top, size,
+                        containerSize.height - insets.top - insets.bottom);
+          else
+            c.setBounds(insets.left, location,
+                        containerSize.width - insets.left - insets.right,
+                        size);
+        }
+      else
+        {
+          if (axis == SwingConstants.HORIZONTAL)
+            c.setBounds(location, 0, size, containerSize.height);
+          else
+            c.setBounds(0, location, containerSize.width, size);
+        }
     }
 
     /**
@@ -462,7 +528,6 @@ public class BasicSplitPaneUI extends SplitPaneUI
           resetSizeAt(1);
         }
       components[2] = divider;
-      resetSizeAt(2);
     }
 
     /**
@@ -485,10 +550,13 @@ public class BasicSplitPaneUI extends SplitPaneUI
     int minimumSizeOfComponent(int index)
     {
       Dimension dims = components[index].getMinimumSize();
+      int size = 0;
       if (dims != null)
-        return dims.width;
-      else
-        return 0;
+        if (axis == SwingConstants.HORIZONTAL)
+          size = dims.width;
+        else
+          size = dims.height;
+        return size;
     }
   } //end BasicHorizontalLayoutManager
 
@@ -504,163 +572,11 @@ public class BasicSplitPaneUI extends SplitPaneUI
     extends BasicHorizontalLayoutManager
   {
     /**
-     * This method returns the height of the container minus the top and
-     * bottom inset.
-     *
-     * @param containerSize The size of the container.
-     * @param insets The insets of the container.
-     *
-     * @return The height minus top and bottom inset.
+     * Creates a new instance.
      */
-    protected int getAvailableSize(Dimension containerSize, Insets insets)
+    public BasicVerticalLayoutManager()
     {
-      return containerSize.height - insets.top - insets.bottom;
-    }
-
-    /**
-     * This method returns the top inset.
-     *
-     * @param insets The Insets to use.
-     *
-     * @return The top inset.
-     */
-    protected int getInitialLocation(Insets insets)
-    {
-      return insets.top;
-    }
-
-    /**
-     * This method returns the preferred height of the component.
-     *
-     * @param c The component to measure.
-     *
-     * @return The preferred height of the component.
-     */
-    protected int getPreferredSizeOfComponent(Component c)
-    {
-      Dimension dims = c.getPreferredSize();
-      if (dims != null)
-        return dims.height;
-      return 0;
-    }
-
-    /**
-     * This method returns the current height of the component.
-     *
-     * @param c The component to measure.
-     *
-     * @return The current height of the component.
-     */
-    protected int getSizeOfComponent(Component c)
-    {
-      return c.getHeight();
-    }
-
-    /**
-     * This method returns the minimum layout size. The minimum height is the
-     * sum of all the components' minimum heights. The minimum width is the
-     * maximum of all the  components' minimum widths.
-     *
-     * @param container The container to measure.
-     *
-     * @return The minimum size.
-     */
-    public Dimension minimumLayoutSize(Container container)
-    {
-      if (container instanceof JSplitPane)
-        {
-          JSplitPane split = (JSplitPane) container;
-          Insets insets = container.getInsets();
-
-          int height = 0;
-          int width = 0;
-          for (int i = 0; i < components.length; i++)
-            {
-              if (components[i] == null)
-                continue;
-              Dimension dims = components[i].getMinimumSize();
-              if (dims != null)
-                {
-                  height += dims.height;
-                  width = Math.max(width, dims.width);
-                }
-            }
-          return new Dimension(width, height);
-        }
-      return null;
-    }
-
-    /**
-     * This method returns the preferred layout size. The preferred height is
-     * the sum of all the components'  preferred heights. The preferred width
-     * is the maximum of  all the components' preferred widths.
-     *
-     * @param container The container to measure.
-     *
-     * @return The preferred size.
-     */
-    public Dimension preferredLayoutSize(Container container)
-    {
-      if (container instanceof JSplitPane)
-        {
-          JSplitPane split = (JSplitPane) container;
-          Insets insets = container.getInsets();
-
-          int height = 0;
-          int width = 0;
-          for (int i = 0; i < components.length; i++)
-            {
-              if (components[i] == null)
-                continue;
-              Dimension dims = components[i].getPreferredSize();
-              if (dims != null)
-                {
-                  height += dims.height;
-                  width = Math.max(width, dims.width);
-                }
-            }
-          return new Dimension(width, height);
-        }
-      return null;
-    }
-
-    /**
-     * This method sets the bounds of the given component. The y coordinate is
-     * the location given. The x coordinate is the left inset. The height is
-     * the size given. The width is the container size minus the left and
-     * right inset.
-     *
-     * @param c The component to set bounds for.
-     * @param size The height.
-     * @param location The y coordinate.
-     * @param insets The insets to use.
-     * @param containerSize The container's size.
-     */
-    protected void setComponentToSize(Component c, int size, int location,
-                                      Insets insets, Dimension containerSize)
-    {
-      int y = location;
-      int x = insets.left;
-      int h = size;
-      int w = containerSize.width - insets.left - insets.right;
-      c.setBounds(x, y, w, h);
-    }
-
-    /**
-     * This method returns the minimum height of the component at the given
-     * index.
-     *
-     * @param index The index of the component to check.
-     *
-     * @return The minimum height of the given component.
-     */
-    int minimumSizeOfComponent(int index)
-    {
-      Dimension dims = components[index].getMinimumSize();
-      if (dims != null)
-        return dims.height;
-      else
-        return 0;
+      super(SwingConstants.VERTICAL);
     }
   }
 
@@ -1007,8 +923,10 @@ public class BasicSplitPaneUI extends SplitPaneUI
     nonContinuousLayoutDivider = createDefaultNonContinuousLayoutDivider();
     splitPane.add(divider, JSplitPane.DIVIDER);
 
-    // There is no need to add the nonContinuousLayoutDivider
-    splitPane.setDividerSize(UIManager.getInt("SplitPane.dividerSize"));
+    // There is no need to add the nonContinuousLayoutDivider.
+    dividerSize = UIManager.getInt("SplitPane.dividerSize");
+    splitPane.setDividerSize(dividerSize);
+    divider.setDividerSize(dividerSize);
     splitPane.setOpaque(true);
   }
 

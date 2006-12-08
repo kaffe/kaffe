@@ -1,6 +1,6 @@
 ## Input file for automake to generate the Makefile.in used by configure
 
-GLIBJ_CLASSPATH='$(top_builddir)/lib':'$(top_builddir)/lib/glibj.zip'
+GLIBJ_CLASSPATH='$(top_builddir)/lib':'$(top_builddir)/lib/glibj.zip':$(PATH_TO_ASM)
 
 # Setup the compiler to use the GNU Classpath library we just build
 if FOUND_GCJ
@@ -13,7 +13,7 @@ if FOUND_GCJX
 JCOMPILER = $(GCJX) -encoding UTF-8 -bootclasspath '' -sourcepath '' -classpath $(GLIBJ_CLASSPATH):.
 else
 if FOUND_ECJ
-JCOMPILER = $(ECJ) -encoding UTF-8 -bootclasspath $(GLIBJ_CLASSPATH) -classpath .
+JCOMPILER = $(ECJ) -source 1.4 -encoding UTF-8 -bootclasspath $(GLIBJ_CLASSPATH) -classpath .
 else
 error dunno how to setup the JCOMPILER and compile
 endif
@@ -21,10 +21,14 @@ endif
 endif
 endif
 
+if USE_ASM
+javah = gjavah
+endif
+
 if CREATE_WRAPPERS
 bin_SCRIPTS =
 bin_PROGRAMS = gappletviewer gjarsigner gkeytool \
-	gjar gnative2ascii gserialver
+	gjar gnative2ascii gserialver $(javah)
 
 if FOUND_GCJ
 LIBJVM = -lgcj
@@ -76,13 +80,21 @@ gserialver_CFLAGS = \
 	-DTOOLNAME="\"gserialver\""
 gserialver_LDFLAGS = -L$(libdir) $(LIBJVM)
 
+if USE_ASM
+gjavah_SOURCES = toolwrapper.c
+gjavah_CFLAGS = \
+	-DTOOLPACKAGE="\"javah\"" \
+	-DTOOLNAME="\"gjavah\""
+gjavah_LDFLAGS = -L$(libdir) $(LIBJVM)
+endif
+
 else
 bin_SCRIPTS = gappletviewer gjarsigner gkeytool \
-	gjar gnative2ascii gserialver
+	gjar gnative2ascii gserialver $(javah)
 bin_PROGRAMS =
 endif
 EXTRA_DIST = toolwrapper.c gappletviewer.in gjarsigner.in gkeytool.in \
-	gjar.in gnative2ascii.in gserialver.in
+	gjar.in gnative2ascii.in gserialver.in gjavah.in
 
 # All our example java source files
 TOOLS_JAVA_FILES = $(srcdir)/gnu/classpath/tools/*.java $(srcdir)/gnu/classpath/tools/*/*.java $(srcdir)/gnu/classpath/tools/*/*/*.java
@@ -145,12 +157,18 @@ $(TOOLS_ZIP): $(TOOLS_JAVA_FILES)
 	cp $(GRMIC_TEMPLATES) classes/gnu/classpath/tools/giop/grmic/templates
 	cp $(RMI_HELPS) classes/gnu/classpath/tools/rmi/
 	cp $(GIOP_HELPS) classes/gnu/classpath/tools/giop/
-	$(JCOMPILER) -d classes $(TOOLS_JAVA_FILES)
+	find $(srcdir)/gnu/classpath/tools -name '*.java' -print > classes.lst
+	if test -z "$(PATH_TO_ASM)"; then \
+	  mv classes.lst classes.tmp; \
+	  fgrep -v /javah/ classes.tmp > classes.lst; \
+	  rm -f classes.tmp;\
+	fi
+	$(JCOMPILER) -d classes @classes.lst
 	(cd classes; \
 	if test "$(ZIP)" != ""; then $(ZIP) -r ../$(TOOLS_ZIP) .; fi; \
 	if test "$(FASTJAR)" != ""; then $(FASTJAR) cf ../$(TOOLS_ZIP) .; fi; \
 	cd ..)
-	rm -rf classes
+	rm -rf classes classes.lst
 
 # Zip file be gone! (and make sure the classes are gone too)
 clean-local:

@@ -1,3 +1,11 @@
+New in release 0.93 (UNRELEASED)
+
+* The 'javah' tool has been added.  It requires the ASM library
+  (see asm.objectweb.org); it can be enabled with the --with-asm
+  option to configure
+* Added the rmi and corbaname URL context factories for JNDI.
+* Fixes in the JNDI InitialContext now allows to plug-in user implementation.
+
 New in release 0.92 (Aug 9, 2006)
 
 * libjawtgnu.so has been renamed libjawt.so for binary compatibility.
@@ -32,7 +40,7 @@ New in release 0.92 (Aug 9, 2006)
 * javax.sound.midi providers have been added to read and
   write standard MIDI files.
 * A javax.sound.sampled .au and .wav file readers have been added.
-* New Java Virtual Machine Tool Interface header, jvmti.h. 
+* New Java Virtual Machine Tool Interface header, jvmti.h.
 * AWT peers for X Windows based on Escher (a pure java X protocol
   implementation) have been added. So far it supports AWT 1.1 style
   Graphics, image loading via ImageIO (PNG, GIF and BMP images in this

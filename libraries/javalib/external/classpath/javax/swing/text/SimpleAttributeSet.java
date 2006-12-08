@@ -123,9 +123,17 @@ public class SimpleAttributeSet
    */
   public Object clone()
   {
-    SimpleAttributeSet s = new SimpleAttributeSet();
-    s.tab = (Hashtable) tab.clone();
-    return s;
+    SimpleAttributeSet attr = null;
+    try
+      {
+        attr = (SimpleAttributeSet) super.clone();
+        attr.tab = (Hashtable) tab.clone();
+      }
+    catch (CloneNotSupportedException ex)
+      {
+        assert false;
+      }
+    return attr;
   }
 
   /**

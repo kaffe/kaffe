@@ -48,6 +48,7 @@ import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferInt;
 import java.awt.image.ColorModel;
@@ -128,17 +129,17 @@ public class BufferedImageGraphics extends CairoGraphics2D
 
     cairo_t = surface.newCairoContext();
 
-    DataBuffer db = bi.getRaster().getDataBuffer();
+    Raster raster = bi.getRaster();
     int[] pixels;
     // get pixels
 
-    if(db instanceof CairoSurface)
-      pixels = ((CairoSurface)db).getPixels(imageWidth * imageHeight);
+    if(raster instanceof CairoSurface)
+      pixels = ((CairoSurface)raster).getPixels(imageWidth * imageHeight);
     else
       {
 	if( hasFastCM )
 	  {
-	    pixels = ((DataBufferInt)db).getData();
+	    pixels = ((DataBufferInt)raster.getDataBuffer()).getData();
 	    if( !hasAlpha )
 	      for(int i = 0; i < pixels.length; i++)
 		pixels[i] &= 0xFFFFFFFF;

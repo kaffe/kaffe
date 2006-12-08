@@ -820,7 +820,14 @@ public class JPopupMenu extends JComponent implements Accessible, MenuElement
    */
   public void menuSelectionChanged(boolean changed)
   {
-    if (! changed)
+    if (invoker instanceof JMenu)
+      {
+        // We need to special case this since the JMenu calculates the
+        // position etc of the popup.
+        JMenu menu = (JMenu) invoker;
+        menu.setPopupMenuVisible(changed);
+      }
+    else if (! changed)
       setVisible(false);
   }
 

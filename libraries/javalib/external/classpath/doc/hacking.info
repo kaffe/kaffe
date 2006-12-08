@@ -1,5 +1,5 @@
-This is hacking.info, produced by makeinfo version 4.8 from
-hacking.texinfo.
+This is ../../classpath/doc/hacking.info, produced by makeinfo version
+4.8 from ../../classpath/doc/hacking.texinfo.
 
    This file contains important information you will need to know if you
 are going to hack on the GNU Classpath project code.
@@ -1649,34 +1649,34 @@ a `Character' object.
 
 
 Tag Table:
-Node: Top430
-Node: Introduction2737
-Node: Requirements3640
-Node: Volunteering7300
-Node: Project Goals9419
-Node: Needed Tools and Libraries12450
-Node: Programming Standards17331
-Node: Source Code Style Guide18358
-Node: Hacking Code25632
-Node: Branches30496
-Node: Writing ChangeLogs33109
-Node: Programming Goals36058
-Node: Portability37027
-Node: Utility Classes38050
-Node: Robustness39006
-Node: Java Efficiency40339
-Node: Native Efficiency41225
-Node: Security44318
-Node: API Compatibility44966
-Node: Serialization45228
-Node: Deprecated Methods46825
-Node: Specification Sources49256
-Node: Naming Conventions51695
-Node: Character Conversions55197
-Node: Localization60825
-Node: String Collation65076
-Node: Break Iteration65805
-Node: Date Formatting and Parsing66457
-Node: Decimal/Currency Formatting and Parsing68566
+Node: Top470
+Node: Introduction2777
+Node: Requirements3680
+Node: Volunteering7340
+Node: Project Goals9459
+Node: Needed Tools and Libraries12490
+Node: Programming Standards17371
+Node: Source Code Style Guide18398
+Node: Hacking Code25672
+Node: Branches30536
+Node: Writing ChangeLogs33149
+Node: Programming Goals36098
+Node: Portability37067
+Node: Utility Classes38090
+Node: Robustness39046
+Node: Java Efficiency40379
+Node: Native Efficiency41265
+Node: Security44358
+Node: API Compatibility45006
+Node: Serialization45268
+Node: Deprecated Methods46865
+Node: Specification Sources49296
+Node: Naming Conventions51735
+Node: Character Conversions55237
+Node: Localization60865
+Node: String Collation65116
+Node: Break Iteration65845
+Node: Date Formatting and Parsing66497
+Node: Decimal/Currency Formatting and Parsing68606
 
 End Tag Table

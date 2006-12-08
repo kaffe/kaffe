@@ -1775,4 +1775,14 @@ public class OrbFunctional extends OrbRestricted
     running = false;
     super.finalize();
   }
+  
+  /**
+   * Get the number of objects that are connected to this ORB.
+   * 
+   * @return the number of objects, connected to this ORB.
+   */
+  public int countConnectedObjects()
+  { 
+    return connected_objects.size();
+  }
 }

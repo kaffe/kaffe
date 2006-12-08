@@ -107,6 +107,7 @@ public class BasicHTML
       editorKit = kit;
       document = doc;
       setView(view);
+      setSize(view.getPreferredSpan(X_AXIS), view.getPreferredSpan(Y_AXIS));
     }
 
     /**
@@ -148,6 +149,14 @@ public class BasicHTML
         v.setParent(this);
 
       view = v;
+    }
+
+    /**
+     * Overridden to forward to real view.
+     */
+    public void setSize(float w, float h)
+    {
+      view.setSize(w, h);
     }
 
     /**

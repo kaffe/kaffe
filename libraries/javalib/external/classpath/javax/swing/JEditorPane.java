@@ -717,7 +717,8 @@ public class JEditorPane extends JTextComponent
     // and has a height > minimum UI height.
     Container parent = getParent();
     return parent instanceof JViewport
-           && parent.getHeight() > getUI().getMinimumSize(this).height;
+           && parent.getHeight() >= getUI().getMinimumSize(this).height
+           && parent.getHeight() <= getUI().getMaximumSize(this).height;
   }
 
   /**

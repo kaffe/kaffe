@@ -42,6 +42,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Insets;
 import java.awt.Rectangle;
 
 import javax.swing.AbstractButton;
@@ -56,12 +57,31 @@ import javax.swing.UIManager;
 import javax.swing.plaf.ButtonUI;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.UIResource;
+import javax.swing.text.View;
 
 /**
  * A UI delegate for the {@link JButton} component.
  */
 public class BasicButtonUI extends ButtonUI
 {
+  /**
+   * Cached rectangle for layouting the label. Used in paint() and
+   * BasicGraphicsUtils.getPreferredButtonSize().
+   */
+  static Rectangle viewR = new Rectangle();
+
+  /**
+   * Cached rectangle for layouting the label. Used in paint() and
+   * BasicGraphicsUtils.getPreferredButtonSize().
+   */
+  static Rectangle iconR = new Rectangle();
+
+  /**
+   * Cached rectangle for layouting the label. Used in paint() and
+   * BasicGraphicsUtils.getPreferredButtonSize().
+   */
+  static Rectangle textR = new Rectangle();
+
   /**
    * A constant used to pad out elements in the button's layout and
    * preferred size calculations.
@@ -255,7 +275,69 @@ public class BasicButtonUI extends ButtonUI
         installDefaults(b);
         installListeners(b);
         installKeyboardActions(b);
+        BasicHTML.updateRenderer(b, b.getText());
       }
+  }
+
+  /**
+   * Uninstalls the UI from the component.
+   *
+   * @param c the component from which to uninstall the UI
+   */
+  public void uninstallUI(JComponent c)
+  {
+    if (c instanceof AbstractButton)
+      {
+        AbstractButton b = (AbstractButton) c;
+        uninstallKeyboardActions(b);
+        uninstallListeners(b);
+        uninstallDefaults(b);
+        BasicHTML.updateRenderer(b, "");
+      }
+  }
+
+  /**
+   * Calculates the minimum size for the specified component.
+   *
+   * @param c the component for which to compute the minimum size
+   *
+   * @return the minimum size for the specified component
+   */
+  public Dimension getMinimumSize(JComponent c)
+  {
+    Dimension size = getPreferredSize(c);
+    // When the HTML view has a minimum width different from the preferred
+    // width, then substract this here accordingly. The height is not
+    // affected by that.
+    View html = (View) c.getClientProperty(BasicHTML.propertyKey);
+    if (html != null)
+      {
+        size.width -= html.getPreferredSpan(View.X_AXIS)
+                      - html.getPreferredSpan(View.X_AXIS);
+      }
+    return size;
+  }
+
+  /**
+   * Calculates the maximum size for the specified component.
+   *
+   * @param c the component for which to compute the maximum size
+   *
+   * @return the maximum size for the specified component
+   */
+  public Dimension getMaximumSize(JComponent c)
+  {
+    Dimension size = getPreferredSize(c);
+    // When the HTML view has a maximum width different from the preferred
+    // width, then add this here accordingly. The height is not
+    // affected by that.
+    View html = (View) c.getClientProperty(BasicHTML.propertyKey);
+    if (html != null)
+      {
+        size.width += html.getMaximumSpan(View.X_AXIS)
+                      - html.getPreferredSpan(View.X_AXIS);
+      }
+    return size;
   }
 
   /**
@@ -269,8 +351,8 @@ public class BasicButtonUI extends ButtonUI
   public Dimension getPreferredSize(JComponent c) 
   {
     AbstractButton b = (AbstractButton) c;
-    Dimension d = BasicGraphicsUtils.getPreferredButtonSize(b, 
-        defaultTextIconGap + defaultTextShiftOffset);
+    Dimension d = BasicGraphicsUtils.getPreferredButtonSize(b,
+                                                           b.getIconTextGap());
     return d;
   }
 
@@ -315,38 +397,50 @@ public class BasicButtonUI extends ButtonUI
   {
     AbstractButton b = (AbstractButton) c;
 
-    Rectangle tr = new Rectangle();
-    Rectangle ir = new Rectangle();
-    Rectangle vr = new Rectangle();
+    Insets i = c.getInsets();
+    viewR.x = i.left;
+    viewR.y = i.top;
+    viewR.width = c.getWidth() - i.left - i.right;
+    viewR.height = c.getHeight() - i.top - i.bottom;
+    textR.x = 0;
+    textR.y = 0;
+    textR.width = 0;
+    textR.height = 0;
+    iconR.x = 0;
+    iconR.y = 0;
+    iconR.width = 0;
+    iconR.height = 0;
 
     Font f = c.getFont();
-
     g.setFont(f);
+    Icon icon = b.getIcon();
+    String text = b.getText();
+    text = SwingUtilities.layoutCompoundLabel(c, g.getFontMetrics(f), 
+                                              text, icon,
+                                              b.getVerticalAlignment(), 
+                                              b.getHorizontalAlignment(),
+                                              b.getVerticalTextPosition(), 
+                                              b.getHorizontalTextPosition(),
+                                              viewR, iconR, textR, 
+                                              text == null ? 0
+                                                         : b.getIconTextGap());
 
-    if (b.isBorderPainted())
-      SwingUtilities.calculateInnerArea(b, vr);
-    else
-      vr = SwingUtilities.getLocalBounds(b);
-    String text = SwingUtilities.layoutCompoundLabel(c, g.getFontMetrics(f), 
-                                                     b.getText(),
-                                                     currentIcon(b),
-                                                     b.getVerticalAlignment(), 
-                                                     b.getHorizontalAlignment(),
-                                                     b.getVerticalTextPosition(), 
-                                                     b.getHorizontalTextPosition(),
-                                                     vr, ir, tr, 
-                                                     b.getIconTextGap() 
-                                                     + defaultTextShiftOffset);
-    
-    if ((b.getModel().isArmed() && b.getModel().isPressed()) 
-        || b.isSelected())
+    ButtonModel model = b.getModel();
+    if (model.isArmed() && model.isPressed())
       paintButtonPressed(g, b);
-	
-    paintIcon(g, c, ir);
+
+    if (icon != null)
+      paintIcon(g, c, iconR);
     if (text != null)
-      paintText(g, b, tr, text);
+      {
+        View html = (View) b.getClientProperty(BasicHTML.propertyKey);
+        if (html != null)
+          html.paint(g, textR);
+        else
+          paintText(g, b, textR, text);
+      }
     if (b.isFocusOwner() && b.isFocusPainted())
-      paintFocus(g, b, vr, tr, ir);
+      paintFocus(g, b, viewR, textR, iconR);
   }
 
   /**

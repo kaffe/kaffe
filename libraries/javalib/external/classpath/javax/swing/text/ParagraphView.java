@@ -192,11 +192,14 @@ public class ParagraphView extends FlowView implements TabExpander
    *
    * @param ev the document event
    * @param a the allocation of this view
-   * @param fv the view factory to use for creating new child views
+   * @param vf the view factory to use for creating new child views
    */
-  public void changedUpdate(DocumentEvent ev, Shape a, ViewFactory fv)
+  public void changedUpdate(DocumentEvent ev, Shape a, ViewFactory vf)
   {
     setPropertiesFromAttributes();
+    layoutChanged(X_AXIS);
+    layoutChanged(Y_AXIS);
+    super.changedUpdate(ev, a, vf);
   }
 
   /**

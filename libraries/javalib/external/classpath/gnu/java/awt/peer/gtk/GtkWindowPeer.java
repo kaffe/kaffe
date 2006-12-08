@@ -75,6 +75,12 @@ public class GtkWindowPeer extends GtkContainerPeer
   native boolean gtkWindowHasFocus();
   native void realize ();
 
+  public void dispose()
+  {
+    super.dispose();
+    GtkMainThread.destroyWindow();
+  }
+
   /** Returns the cached width of the AWT window component. */
   int getX ()
   {

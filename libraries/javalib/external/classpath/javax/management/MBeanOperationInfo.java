@@ -140,7 +140,8 @@ public class MBeanOperationInfo
    * Constructs a @link{MBeanOperationInfo} with the specified name,
    * description, parameter information, return type and impact. A
    * <code>null</code> value for the parameter information is the same
-   * as passing in an empty array.
+   * as passing in an empty array.  A copy of the parameter array is
+   * taken, so later changes have no effect.
    *
    * @param name the name of the constructor.
    * @param desc a description of the attribute.
@@ -158,7 +159,10 @@ public class MBeanOperationInfo
     if (sig == null)
       signature = new MBeanParameterInfo[0];
     else
-      signature = sig;
+      {
+	signature = new MBeanParameterInfo[sig.length];
+	System.arraycopy(sig, 0, signature, 0, sig.length);
+      }
     this.type = type;
     this.impact = impact;
   }

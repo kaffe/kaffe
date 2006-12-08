@@ -1,4 +1,5 @@
-This is tools.info, produced by makeinfo version 4.8 from tools.texinfo.
+This is ../../classpath/doc/tools.info, produced by makeinfo version
+4.8 from ../../classpath/doc/tools.texinfo.
 
    This file documents the Tools included in a standard distribution of
 the GNU Classpath project deliverables.
@@ -1386,49 +1387,49 @@ alter text between curly braces.
 
 
 Tag Table:
-Node: Top373
-Node: Applet Tools3240
-Node: appletviewer Tool3810
-Node: gcjwebplugin7174
-Node: Security Tools7483
-Node: jarsigner Tool8129
-Node: Common jarsigner Options9176
-Node: Signing Options10478
-Node: Verification Options13053
-Node: keytool Tool13634
-Node: Getting Help18060
-Node: Common keytool Options18801
-Ref: alias19071
-Ref: keyalg19451
-Ref: keysize19679
-Ref: validity19942
-Ref: storetype20155
-Ref: storepass20484
-Ref: keystore20679
-Ref: provider21220
-Ref: file21625
-Ref: verbose22094
-Node: Distinguished Names22184
-Ref: dn22375
-Node: Add/Update Commands23438
-Node: Command -genkey23963
-Node: Command -import26336
-Node: Command -selfcert29449
-Node: Command -cacert31597
-Node: Command -identitydb32627
-Node: Export Commands33262
-Node: Command -certreq33575
-Node: Command -export35950
-Node: Display Commands37120
-Node: Command -list37449
-Node: Command -printcert38557
-Node: Management Commands38926
-Node: Command -keyclone39355
-Node: Command -storepasswd40729
-Node: Command -keypasswd41435
-Node: Command -delete42604
-Node: I18N Issues43204
-Node: Language Resources43705
-Node: Message Formats47365
+Node: Top413
+Node: Applet Tools3280
+Node: appletviewer Tool3850
+Node: gcjwebplugin7214
+Node: Security Tools7523
+Node: jarsigner Tool8169
+Node: Common jarsigner Options9216
+Node: Signing Options10518
+Node: Verification Options13093
+Node: keytool Tool13674
+Node: Getting Help18100
+Node: Common keytool Options18841
+Ref: alias19111
+Ref: keyalg19491
+Ref: keysize19719
+Ref: validity19982
+Ref: storetype20195
+Ref: storepass20524
+Ref: keystore20719
+Ref: provider21260
+Ref: file21665
+Ref: verbose22134
+Node: Distinguished Names22224
+Ref: dn22415
+Node: Add/Update Commands23478
+Node: Command -genkey24003
+Node: Command -import26376
+Node: Command -selfcert29489
+Node: Command -cacert31637
+Node: Command -identitydb32667
+Node: Export Commands33302
+Node: Command -certreq33615
+Node: Command -export35990
+Node: Display Commands37160
+Node: Command -list37489
+Node: Command -printcert38597
+Node: Management Commands38966
+Node: Command -keyclone39395
+Node: Command -storepasswd40769
+Node: Command -keypasswd41475
+Node: Command -delete42644
+Node: I18N Issues43244
+Node: Language Resources43745
+Node: Message Formats47405
 
 End Tag Table

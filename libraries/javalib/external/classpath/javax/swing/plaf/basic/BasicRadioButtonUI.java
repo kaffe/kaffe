@@ -129,9 +129,22 @@ public class BasicRadioButtonUI extends BasicToggleButtonUI
   {
     AbstractButton b = (AbstractButton) c;
 
-    Rectangle tr = new Rectangle();
-    Rectangle ir = new Rectangle();
-    Rectangle vr = new Rectangle();
+    Insets i = b.getInsets();
+    Rectangle tr = textR;
+    textR.x = 0;
+    textR.y = 0;
+    textR.width = 0;
+    textR.height = 0;
+    Rectangle ir = iconR;
+    iconR.x = 0;
+    iconR.y = 0;
+    iconR.width = 0;
+    iconR.height = 0;
+    Rectangle vr = viewR;
+    viewR.x = i.left;
+    viewR.y = i.right;
+    viewR.width = b.getWidth() - i.left - i.right;
+    viewR.height = b.getHeight() - i.top - i.bottom;
 
     Font f = c.getFont();
 
@@ -149,13 +162,12 @@ public class BasicRadioButtonUI extends BasicToggleButtonUI
         currentIcon = getDefaultIcon();
       }
     
-    SwingUtilities.calculateInnerArea(b, vr);
     String text = SwingUtilities.layoutCompoundLabel(c, g.getFontMetrics(f), 
        b.getText(), currentIcon,
        b.getVerticalAlignment(), b.getHorizontalAlignment(),
        b.getVerticalTextPosition(), b.getHorizontalTextPosition(),
        vr, ir, tr, b.getIconTextGap() + defaultTextShiftOffset);
-    
+
     currentIcon.paintIcon(c, g, ir.x, ir.y);
     
     if (text != null)
@@ -174,17 +186,25 @@ public class BasicRadioButtonUI extends BasicToggleButtonUI
     // The other icon properties are ignored.
     AbstractButton b = (AbstractButton) c;
     
-    Rectangle contentRect;
-    Rectangle viewRect;
-    Rectangle iconRect = new Rectangle();
-    Rectangle textRect = new Rectangle();
     Insets insets = b.getInsets();
-    
+
+    String text = b.getText();
     Icon i = b.getIcon();
     if (i == null)
       i = getDefaultIcon(); 
     
-    viewRect = new Rectangle();
+    textR.x = 0;
+    textR.y = 0;
+    textR.width = 0;
+    textR.height = 0;
+    iconR.x = 0;
+    iconR.y = 0;
+    iconR.width = 0;
+    iconR.height = 0;
+    viewR.x = 0;
+    viewR.y = 0;
+    viewR.width = Short.MAX_VALUE;
+    viewR.height = Short.MAX_VALUE;
 
     SwingUtilities.layoutCompoundLabel(
       b, // for the component orientation
@@ -195,17 +215,14 @@ public class BasicRadioButtonUI extends BasicToggleButtonUI
       b.getHorizontalAlignment(),
       b.getVerticalTextPosition(),
       b.getHorizontalTextPosition(),
-      viewRect, iconRect, textRect,
+      viewR, iconR, textR,
       defaultTextIconGap + defaultTextShiftOffset);
 
-    contentRect = textRect.union(iconRect);
-    
-    return new Dimension(insets.left
-                         + contentRect.width 
-                         + insets.right + b.getHorizontalAlignment(),
-                         insets.top
-                         + contentRect.height 
-                         + insets.bottom);
+    Rectangle r = SwingUtilities.computeUnion(textR.x, textR.y, textR.width,
+                                              textR.height, iconR);
+
+    return new Dimension(insets.left + r.width + insets.right,
+                         insets.top + r.height + insets.bottom);
   }
 
   /**

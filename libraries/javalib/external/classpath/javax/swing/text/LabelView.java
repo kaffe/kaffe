@@ -39,9 +39,11 @@ exception statement from your version. */
 package javax.swing.text;
 
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Shape;
+import java.awt.Toolkit;
 
 import javax.swing.event.DocumentEvent;
 
@@ -90,6 +92,11 @@ public class LabelView extends GlyphView
   boolean superscript;
 
   /**
+   * Indicates if the attributes must be refetched.
+   */
+  private boolean valid;
+
+  /**
    * Creates a new <code>GlyphView</code> for the given <code>Element</code>.
    *
    * @param element the element that is rendered by this GlyphView
@@ -97,7 +104,7 @@ public class LabelView extends GlyphView
   public LabelView(Element element)
   {
     super(element);
-    setPropertiesFromAttributes();
+    valid = false;
   }
 
   /**
@@ -115,10 +122,10 @@ public class LabelView extends GlyphView
     // when background == null anyway.
     background = (Color) atts.getAttribute(StyleConstants.Background);
     foreground = StyleConstants.getForeground(atts);
-    strikeThrough = StyleConstants.isStrikeThrough(atts);
-    subscript = StyleConstants.isSubscript(atts);
-    superscript = StyleConstants.isSuperscript(atts);
-    underline = StyleConstants.isUnderline(atts);
+    setStrikeThrough(StyleConstants.isStrikeThrough(atts));
+    setSubscript(StyleConstants.isSubscript(atts));
+    setSuperscript(StyleConstants.isSuperscript(atts));
+    setUnderline(StyleConstants.isUnderline(atts));
 
     // Determine the font.
     String family = StyleConstants.getFontFamily(atts);
@@ -129,6 +136,7 @@ public class LabelView extends GlyphView
     if (StyleConstants.isItalic(atts))
       style |= Font.ITALIC;
     font = new Font(family, style, size);
+    valid = true;
   }
 
   /**
@@ -142,7 +150,8 @@ public class LabelView extends GlyphView
    */
   public void changedUpdate(DocumentEvent e, Shape a, ViewFactory vf)
   {
-    setPropertiesFromAttributes();
+    valid = false;
+    super.changedUpdate(e, a, vf);
   }
 
   /**
@@ -152,6 +161,8 @@ public class LabelView extends GlyphView
    */
   public Color getBackground()
   {
+    if (! valid)
+      setPropertiesFromAttributes();
     return background;
   }
 
@@ -175,6 +186,8 @@ public class LabelView extends GlyphView
    */
   public Color getForeground()
   {
+    if (! valid)
+      setPropertiesFromAttributes();
     return foreground;
   }
 
@@ -185,6 +198,8 @@ public class LabelView extends GlyphView
    */
   public Font getFont()
   {
+    if (! valid)
+      setPropertiesFromAttributes();
     return font;
   }
 
@@ -197,7 +212,16 @@ public class LabelView extends GlyphView
    */
   protected FontMetrics getFontMetrics()
   {
-    return getContainer().getGraphics().getFontMetrics(font);
+    if (! valid)
+      setPropertiesFromAttributes();
+
+    Container c = getContainer();
+    FontMetrics fm;
+    if (c != null)
+      fm = c.getFontMetrics(font);
+    else
+      fm = Toolkit.getDefaultToolkit().getFontMetrics(font);
+    return fm;
   }
 
   /**
@@ -209,6 +233,8 @@ public class LabelView extends GlyphView
    */
   public boolean isUnderline()
   {
+    if (! valid)
+      setPropertiesFromAttributes();
     return underline;
   }
 
@@ -255,6 +281,8 @@ public class LabelView extends GlyphView
    */
   public boolean isSuperscript()
   {
+    if (! valid)
+      setPropertiesFromAttributes();
     return superscript;
   }
 
@@ -278,6 +306,8 @@ public class LabelView extends GlyphView
    */
   public boolean isStrikeThrough()
   {
+    if (! valid)
+      setPropertiesFromAttributes();
     return strikeThrough;
   }
 

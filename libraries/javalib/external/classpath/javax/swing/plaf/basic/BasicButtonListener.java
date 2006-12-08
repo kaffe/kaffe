@@ -73,12 +73,12 @@ public class BasicButtonListener implements MouseListener, MouseMotionListener,
     // Store the TextLayout for this in a client property for speed-up
     // painting of the label.
     String property = e.getPropertyName();
+    AbstractButton b = (AbstractButton) e.getSource();
     if ((property.equals(AbstractButton.TEXT_CHANGED_PROPERTY)
          || property.equals("font"))
         && SystemProperties.getProperty("gnu.javax.swing.noGraphics2D")
         == null)
       {
-        AbstractButton b = (AbstractButton) e.getSource();
         String text = b.getText();
         if (text == null)
           text = "";
@@ -86,6 +86,10 @@ public class BasicButtonListener implements MouseListener, MouseMotionListener,
                                                       false, false);
         TextLayout layout = new TextLayout(text, b.getFont(), frc);
         b.putClientProperty(BasicGraphicsUtils.CACHED_TEXT_LAYOUT, layout);
+      }
+    if (property.equals(AbstractButton.TEXT_CHANGED_PROPERTY))
+      {
+        BasicHTML.updateRenderer(b, b.getText());
       }
   }
   

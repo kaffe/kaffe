@@ -729,6 +729,7 @@ public class StyleConstants
    */
   public static void setIcon(MutableAttributeSet a, Icon c)
   {
+    a.addAttribute(AbstractDocument.ElementNameAttribute, IconElementName);
     a.addAttribute(IconAttribute, c);
   }
  

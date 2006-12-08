@@ -38,8 +38,11 @@ exception statement from your version. */
 
 package javax.swing.text;
 
+import java.awt.font.TextAttribute;
 import java.io.PrintStream;
 import java.io.Serializable;
+import java.text.Bidi;
+import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.EventListener;
@@ -105,6 +108,21 @@ public abstract class AbstractDocument implements Document, Serializable
   public static final String ElementNameAttribute = "$ename";
 
   /**
+   * Standard name for the bidi root element.
+   */
+  private static final String BidiRootName = "bidi root";
+
+  /**
+   * Key for storing the asynchronous load priority.
+   */
+  private static final String AsyncLoadPriority = "load priority";
+
+  /**
+   * Key for storing the I18N state.
+   */
+  private static final String I18N = "i18n";
+
+  /**
    * The actual content model of this <code>Document</code>.
    */
   Content content;
@@ -158,7 +176,7 @@ public abstract class AbstractDocument implements Document, Serializable
   /**
    * The bidi root element.
    */
-  private Element bidiRoot;
+  private BidiRootElement bidiRoot;
 
   /**
    * Creates a new <code>AbstractDocument</code> with the specified
@@ -191,12 +209,25 @@ public abstract class AbstractDocument implements Document, Serializable
     content = doc;
     context = ctx;
 
+    // FIXME: Fully implement bidi.
+    bidiRoot = new BidiRootElement();
+
     // FIXME: This is determined using a Mauve test. Make the document
     // actually use this.
-    putProperty("i18n", Boolean.FALSE);
+    putProperty(I18N, Boolean.FALSE);
 
-    // FIXME: Fully implement bidi.
-    bidiRoot = new BranchElement(null, null);
+    // Add one child to the bidi root.
+    writeLock();
+    try
+      {
+        Element[] children = new Element[1];
+        children[0] = new BidiElement(bidiRoot, 0, 1, 0);
+        bidiRoot.replace(0, 0, children);
+      }
+    finally
+      {
+        writeUnlock();
+      }
   }
   
   /** Returns the DocumentFilter.FilterBypass instance for this
@@ -352,7 +383,11 @@ public abstract class AbstractDocument implements Document, Serializable
    */
   public int getAsynchronousLoadPriority()
   {
-    return 0;
+    Object val = getProperty(AsyncLoadPriority);
+    int prio = -1;
+    if (val != null)
+      prio = ((Integer) val).intValue(); 
+    return prio;
   }
 
   /**
@@ -425,14 +460,17 @@ public abstract class AbstractDocument implements Document, Serializable
    */
   public final Position getEndPosition()
   {
-    // FIXME: Properly implement this by calling Content.createPosition().
-    return new Position() 
-      {        
-        public int getOffset() 
-        { 
-          return getLength(); 
-        } 
-      };
+    Position p;
+    try
+      {
+        p = createPosition(content.length());
+      }
+    catch (BadLocationException ex)
+      {
+        // Shouldn't really happen.
+        p = null;
+      }
+    return p;
   }
 
   /**
@@ -504,14 +542,17 @@ public abstract class AbstractDocument implements Document, Serializable
    */
   public final Position getStartPosition()
   {
-    // FIXME: Properly implement this using Content.createPosition().
-    return new Position() 
-      {        
-        public int getOffset() 
-        { 
-          return 0; 
-        } 
-      };
+    Position p;
+    try
+      {
+        p = createPosition(0);
+      }
+    catch (BadLocationException ex)
+      {
+        // Shouldn't really happen.
+        p = null;
+      }
+    return p;
   }
 
   /**
@@ -574,11 +615,19 @@ public abstract class AbstractDocument implements Document, Serializable
     // Bail out if we have a bogus insertion (Behavior observed in RI).
     if (text == null || text.length() == 0)
       return;
-    
-    if (documentFilter == null)
-      insertStringImpl(offset, text, attributes);
-    else
-      documentFilter.insertString(getBypass(), offset, text, attributes);
+
+    writeLock();
+    try
+      {
+        if (documentFilter == null)
+          insertStringImpl(offset, text, attributes);
+        else
+          documentFilter.insertString(getBypass(), offset, text, attributes);
+      }
+    finally
+      {
+        writeUnlock();
+      }
   }
 
   void insertStringImpl(int offset, String text, AttributeSet attributes)
@@ -591,23 +640,30 @@ public abstract class AbstractDocument implements Document, Serializable
       new DefaultDocumentEvent(offset, text.length(),
 			       DocumentEvent.EventType.INSERT);
 
-    try
-      {
-        writeLock();
-        UndoableEdit undo = content.insertString(offset, text);
-        if (undo != null)
-          event.addEdit(undo);
+    UndoableEdit undo = content.insertString(offset, text);
+    if (undo != null)
+      event.addEdit(undo);
 
-        insertUpdate(event, attributes);
-
-        fireInsertUpdate(event);
-        if (undo != null)
-          fireUndoableEditUpdate(new UndoableEditEvent(this, undo));
-      }
-    finally
+    // Check if we need bidi layout.
+    if (getProperty(I18N).equals(Boolean.FALSE))
       {
-        writeUnlock();
+        Object dir = getProperty(TextAttribute.RUN_DIRECTION);
+        if (TextAttribute.RUN_DIRECTION_RTL.equals(dir))
+          putProperty(I18N, Boolean.TRUE);
+        else
+          {
+            char[] chars = text.toCharArray();
+            if (Bidi.requiresBidi(chars, 0, chars.length))
+              putProperty(I18N, Boolean.TRUE);
+          }
       }
+
+    insertUpdate(event, attributes);
+
+    fireInsertUpdate(event);
+
+    if (undo != null)
+      fireUndoableEditUpdate(new UndoableEditEvent(this, undo));
   }
 
   /**
@@ -620,7 +676,8 @@ public abstract class AbstractDocument implements Document, Serializable
    */
   protected void insertUpdate(DefaultDocumentEvent chng, AttributeSet attr)
   {
-    // Do nothing here. Subclasses may want to override this.
+    if (Boolean.TRUE.equals(getProperty(I18N)))
+      updateBidi(chng);
   }
 
   /**
@@ -632,7 +689,8 @@ public abstract class AbstractDocument implements Document, Serializable
    */
   protected void postRemoveUpdate(DefaultDocumentEvent chng)
   {
-    // Do nothing here. Subclasses may want to override this.
+    if (Boolean.TRUE.equals(getProperty(I18N)))
+      updateBidi(chng);
   }
 
   /**
@@ -647,7 +705,317 @@ public abstract class AbstractDocument implements Document, Serializable
     if (properties == null)
       properties = new Hashtable();
 
-    properties.put(key, value);
+    if (value == null)
+      properties.remove(key);
+    else
+      properties.put(key, value);
+
+    // Update bidi structure if the RUN_DIRECTION is set.
+    if (TextAttribute.RUN_DIRECTION.equals(key))
+      {
+        if (TextAttribute.RUN_DIRECTION_RTL.equals(value)
+            && Boolean.FALSE.equals(getProperty(I18N)))
+          putProperty(I18N, Boolean.TRUE);
+
+        if (Boolean.TRUE.equals(getProperty(I18N)))
+          {
+            writeLock();
+            try
+              {
+                DefaultDocumentEvent ev =
+                  new DefaultDocumentEvent(0, getLength(),
+                                           DocumentEvent.EventType.INSERT);
+                updateBidi(ev);
+              }
+            finally
+              {
+                writeUnlock();
+              }
+          }
+      }
+  }
+
+  /**
+   * Updates the bidi element structure.
+   *
+   * @param ev the document event for the change
+   */
+  private void updateBidi(DefaultDocumentEvent ev)
+  {
+    // Determine start and end offset of the paragraphs to be scanned.
+    int start = 0;
+    int end = 0;
+    DocumentEvent.EventType type = ev.getType();
+    if (type == DocumentEvent.EventType.INSERT
+        || type == DocumentEvent.EventType.CHANGE)
+      {
+        int offs = ev.getOffset();
+        int endOffs = offs + ev.getLength();
+        start = getParagraphElement(offs).getStartOffset();
+        end = getParagraphElement(endOffs).getEndOffset();
+      }
+    else if (type == DocumentEvent.EventType.REMOVE)
+      {
+        Element par = getParagraphElement(ev.getOffset());
+        start = par.getStartOffset();
+        end = par.getEndOffset();
+      }
+    else
+      assert false : "Unknown event type";
+
+    // Determine the bidi levels for the affected range.
+    Bidi[] bidis = getBidis(start, end);
+
+    int removeFrom = 0;
+    int removeTo = 0;
+
+    int offs = 0;
+    int lastRunStart = 0;
+    int lastRunEnd = 0;
+    int lastRunLevel = 0;
+    ArrayList newEls = new ArrayList();
+    for (int i = 0; i < bidis.length; i++)
+      {
+        Bidi bidi = bidis[i];
+        int numRuns = bidi.getRunCount();
+        for (int r = 0; r < numRuns; r++)
+          {
+            if (r == 0 && i == 0)
+              {
+                if (start > 0)
+                  {
+                    // Try to merge with the previous element if it has the
+                    // same bidi level as the first run.
+                    int prevElIndex = bidiRoot.getElementIndex(start - 1);
+                    removeFrom = prevElIndex;
+                    Element prevEl = bidiRoot.getElement(prevElIndex);
+                    AttributeSet atts = prevEl.getAttributes();
+                    int prevElLevel = StyleConstants.getBidiLevel(atts);
+                    if (prevElLevel == bidi.getRunLevel(r))
+                      {
+                        // Merge previous element with current run.
+                        lastRunStart = prevEl.getStartOffset() - start;
+                        lastRunEnd = bidi.getRunLimit(r);
+                        lastRunLevel  = bidi.getRunLevel(r);
+                      }
+                    else if (prevEl.getEndOffset() > start)
+                      {
+                        // Split previous element and replace by 2 new elements.
+                        lastRunStart = 0;
+                        lastRunEnd = bidi.getRunLimit(r);
+                        lastRunLevel = bidi.getRunLevel(r);
+                        newEls.add(new BidiElement(bidiRoot,
+                                                   prevEl.getStartOffset(),
+                                                   start, prevElLevel));
+                      }
+                    else
+                      {
+                        // Simply start new run at start location.
+                        lastRunStart = 0;
+                        lastRunEnd = bidi.getRunLimit(r);
+                        lastRunLevel = bidi.getRunLevel(r);
+                        removeFrom++;
+                      }
+                  }
+                else
+                  {
+                    // Simply start new run at start location.
+                    lastRunStart = 0;
+                    lastRunEnd = bidi.getRunLimit(r);
+                    lastRunLevel = bidi.getRunLevel(r);
+                    removeFrom = 0;
+                  }
+              }
+            if (i == bidis.length - 1 && r == numRuns - 1)
+              {
+                if (end <= getLength())
+                  {
+                    // Try to merge last element with next element.
+                    int nextIndex = bidiRoot.getElementIndex(end);
+                    Element nextEl = bidiRoot.getElement(nextIndex);
+                    AttributeSet atts = nextEl.getAttributes();
+                    int nextLevel = StyleConstants.getBidiLevel(atts);
+                    int level = bidi.getRunLevel(r);
+                    if (lastRunLevel == level && level == nextLevel)
+                      {
+                        // Merge runs together.
+                        if (lastRunStart + start == nextEl.getStartOffset())
+                          removeTo = nextIndex - 1;
+                        else
+                          {
+                            newEls.add(new BidiElement(bidiRoot, start + lastRunStart,
+                                                       nextEl.getEndOffset(), level));
+                            removeTo = nextIndex;
+                          }
+                      }
+                    else if (lastRunLevel == level)
+                      {
+                        // Merge current and last run.
+                        int endOffs = offs + bidi.getRunLimit(r);
+                        newEls.add(new BidiElement(bidiRoot, start + lastRunStart,
+                                                   start + endOffs, level));
+                        if (start + endOffs == nextEl.getStartOffset())
+                          removeTo = nextIndex - 1;
+                        else
+                          {
+                            newEls.add(new BidiElement(bidiRoot, start + endOffs,
+                                                       nextEl.getEndOffset(),
+                                                       nextLevel));
+                            removeTo = nextIndex;
+                          }
+                      }
+                    else if (level == nextLevel)
+                      {
+                        // Merge current and next run.
+                        newEls.add(new BidiElement(bidiRoot, start + lastRunStart,
+                                                   start + lastRunEnd,
+                                                   lastRunLevel));
+                        newEls.add(new BidiElement(bidiRoot, start + lastRunEnd,
+                                                   nextEl.getEndOffset(), level));
+                        removeTo = nextIndex;
+                      }
+                    else
+                      {
+                        // Split next element.
+                        int endOffs = offs + bidi.getRunLimit(r);
+                        newEls.add(new BidiElement(bidiRoot, start + lastRunStart,
+                                                   start + lastRunEnd,
+                                                   lastRunLevel));
+                        newEls.add(new BidiElement(bidiRoot, start + lastRunEnd,
+                                                   start + endOffs, level));
+                        newEls.add(new BidiElement(bidiRoot, start + endOffs,
+                                                   nextEl.getEndOffset(),
+                                                   nextLevel));
+                        removeTo = nextIndex;
+                      }
+                  }
+                else
+                  {
+                    removeTo = bidiRoot.getElementIndex(end);
+                    int level = bidi.getRunLevel(r);
+                    int runEnd = offs + bidi.getRunLimit(r);
+
+                    if (level == lastRunLevel)
+                      {
+                        // Merge with previous.
+                        lastRunEnd = offs + runEnd;
+                        newEls.add(new BidiElement(bidiRoot,
+                                                  start + lastRunStart,
+                                                  start + runEnd, level));
+                      }
+                    else
+                      {
+                        // Create element for last run and current run.
+                        newEls.add(new BidiElement(bidiRoot, start + lastRunStart,
+                                                   start + lastRunEnd,
+                                                   lastRunLevel));
+                        newEls.add(new BidiElement(bidiRoot,
+                                                   start + lastRunEnd,
+                                                   start + runEnd,
+                                                   level));
+                       }
+                  }
+              }
+            else
+              {
+                int level = bidi.getRunLevel(r);
+                int runEnd = bidi.getRunLimit(r);
+
+                if (level == lastRunLevel)
+                  {
+                    // Merge with previous.
+                    lastRunEnd = offs + runEnd;
+                  }
+                else
+                  {
+                    // Create element for last run and update values for
+                    // current run.
+                    newEls.add(new BidiElement(bidiRoot, start + lastRunStart,
+                                               start + lastRunEnd,
+                                               lastRunLevel));
+                    lastRunStart = lastRunEnd;
+                    lastRunEnd = offs + runEnd;
+                    lastRunLevel = level;
+                  }
+              }
+          }
+        offs += bidi.getLength();
+      }
+
+    // Determine the bidi elements which are to be removed.
+    int numRemoved = 0;
+    if (bidiRoot.getElementCount() > 0)
+      numRemoved = removeTo - removeFrom + 1;
+    Element[] removed = new Element[numRemoved];
+    for (int i = 0; i < numRemoved; i++)
+      removed[i] = bidiRoot.getElement(removeFrom + i);
+
+    Element[] added = new Element[newEls.size()];
+    added = (Element[]) newEls.toArray(added);
+
+    // Update the event.
+    ElementEdit edit = new ElementEdit(bidiRoot, removeFrom, removed, added);
+    ev.addEdit(edit);
+
+    // Update the structure.
+    bidiRoot.replace(removeFrom, numRemoved, added);
+  }
+
+  /**
+   * Determines the Bidi objects for the paragraphs in the specified range.
+   *
+   * @param start the start of the range
+   * @param end the end of the range
+   *
+   * @return the Bidi analysers for the paragraphs in the range
+   */
+  private Bidi[] getBidis(int start, int end)
+  {
+    // Determine the default run direction from the document property.
+    Boolean defaultDir = null;
+    Object o = getProperty(TextAttribute.RUN_DIRECTION);
+    if (o instanceof Boolean)
+      defaultDir = (Boolean) o;
+
+    // Scan paragraphs and add their level arrays to the overall levels array.
+    ArrayList bidis = new ArrayList();
+    Segment s = new Segment();
+    for (int i = start; i < end;)
+      {
+        Element par = getParagraphElement(i);
+        int pStart = par.getStartOffset();
+        int pEnd = par.getEndOffset();
+
+        // Determine the default run direction of the paragraph.
+        Boolean dir = defaultDir;
+        o = par.getAttributes().getAttribute(TextAttribute.RUN_DIRECTION);
+        if (o instanceof Boolean)
+          dir = (Boolean) o;
+
+        // Bidi over the paragraph.
+        try
+          {
+            getText(pStart, pEnd - pStart, s);
+          }
+        catch (BadLocationException ex)
+          {
+            assert false : "Must not happen";
+          }
+        int flag = Bidi.DIRECTION_DEFAULT_LEFT_TO_RIGHT;
+        if (dir != null)
+          {
+            if (TextAttribute.RUN_DIRECTION_LTR.equals(dir))
+              flag = Bidi.DIRECTION_LEFT_TO_RIGHT;
+            else
+              flag = Bidi.DIRECTION_RIGHT_TO_LEFT;
+          }
+        Bidi bidi = new Bidi(s.array, s.offset, null, 0, s.count, flag);
+        bidis.add(bidi);
+        i = pEnd;
+      }
+    Bidi[] ret = new Bidi[bidis.size()];
+    ret = (Bidi[]) bidis.toArray(ret);
+    return ret;
   }
 
   /**
@@ -662,6 +1030,7 @@ public abstract class AbstractDocument implements Document, Serializable
       {
         while (currentWriter != null || numWritersWaiting > 0)
           {
+            
             try
               {
                 documentCV.wait();
@@ -814,21 +1183,28 @@ public abstract class AbstractDocument implements Document, Serializable
     if (length == 0 
         && (text == null || text.length() == 0))
       return;
-    
-    if (documentFilter == null)
+
+    writeLock();
+    try
       {
-        // It is important to call the methods which again do the checks
-        // of the arguments and the DocumentFilter because subclasses may
-        // have overridden these methods and provide crucial behavior
-        // which would be skipped if we call the non-checking variants.
-        // An example for this is PlainDocument where insertString can
-        // provide a filtering of newlines.
-        remove(offset, length);
-        insertString(offset, text, attributes);
+        if (documentFilter == null)
+          {
+            // It is important to call the methods which again do the checks
+            // of the arguments and the DocumentFilter because subclasses may
+            // have overridden these methods and provide crucial behavior
+            // which would be skipped if we call the non-checking variants.
+            // An example for this is PlainDocument where insertString can
+            // provide a filtering of newlines.
+            remove(offset, length);
+            insertString(offset, text, attributes);
+          }
+        else
+          documentFilter.replace(getBypass(), offset, length, text, attributes);
       }
-    else
-      documentFilter.replace(getBypass(), offset, length, text, attributes);
-    
+    finally
+      {
+        writeUnlock();
+      }
   }
   
   void replaceImpl(int offset, int length, String text,
@@ -948,7 +1324,8 @@ public abstract class AbstractDocument implements Document, Serializable
    */
   public void setAsynchronousLoadPriority(int p)
   {
-    // TODO: Implement this properly.
+    Integer val = p >= 0 ? new Integer(p) : null;
+    putProperty(AsyncLoadPriority, val);
   }
 
   /**
@@ -1039,6 +1416,7 @@ public abstract class AbstractDocument implements Document, Serializable
   public void dump(PrintStream out)
   {
     ((AbstractElement) getDefaultRootElement()).dump(out, 0);
+    ((AbstractElement) getBidiRootElement()).dump(out, 0);
   }
 
   /**
@@ -1255,7 +1633,7 @@ public abstract class AbstractDocument implements Document, Serializable
       AttributeContext ctx = getAttributeContext();
       attributes = ctx.getEmptySet();
       if (s != null)
-        attributes = ctx.addAttributes(attributes, s);
+        addAttributes(s);
     }
 
     /**
@@ -1567,7 +1945,7 @@ public abstract class AbstractDocument implements Document, Serializable
      */
     public String getName()
     {
-      return (String) getAttribute(NameAttribute);
+      return (String) attributes.getAttribute(ElementNameAttribute);
     }
 
     /**
@@ -1644,6 +2022,11 @@ public abstract class AbstractDocument implements Document, Serializable
               b.append('\n');
             }
         }
+      if (getAttributeCount() > 0)
+        {
+          for (int i = 0; i < indent; ++i)
+            b.append(' ');
+        }
       b.append(">\n");
 
       // Dump element content for leaf elements.
@@ -1705,6 +2088,11 @@ public abstract class AbstractDocument implements Document, Serializable
     private int numChildren;
 
     /**
+     * The last found index in getElementIndex(). Used for faster searching.
+     */
+    private int lastIndex;
+
+    /**
      * Creates a new <code>BranchElement</code> with the specified
      * parent and attributes.
      *
@@ -1717,6 +2105,7 @@ public abstract class AbstractDocument implements Document, Serializable
       super(parent, attributes);
       children = new Element[1];
       numChildren = 0;
+      lastIndex = -1;
     }
 
     /**
@@ -1726,7 +2115,7 @@ public abstract class AbstractDocument implements Document, Serializable
      */
     public Enumeration children()
     {
-      if (children.length == 0)
+      if (numChildren == 0)
         return null;
 
       Vector tmp = new Vector();
@@ -1785,35 +2174,73 @@ public abstract class AbstractDocument implements Document, Serializable
      */
     public int getElementIndex(int offset)
     {
-      // If offset is less than the start offset of our first child,
-      // return 0
-      if (offset < getStartOffset())
-        return 0;
+      // Implemented using an improved linear search.
+      // This makes use of the fact that searches are not random but often
+      // close to the previous search. So we try to start the binary
+      // search at the last found index.
 
-      // XXX: There is surely a better algorithm
-      // as beginning from first element each time.
-      for (int index = 0; index < numChildren - 1; ++index)
+      int i0 = 0; // The lower bounds.
+      int i1 = numChildren - 1; // The upper bounds.
+      int index = -1; // The found index.
+
+      int p0 = getStartOffset();
+      int p1; // Start and end offset local variables.
+
+      if (numChildren == 0)
+        index = 0;
+      else if (offset >= getEndOffset())
+        index = numChildren - 1;
+      else
         {
-          Element elem = children[index];
-
-          if ((elem.getStartOffset() <= offset)
-               && (offset < elem.getEndOffset()))
-            return index;
-          // If the next element's start offset is greater than offset
-          // then we have to return the closest Element, since no Elements
-          // will contain the offset
-          if (children[index + 1].getStartOffset() > offset)
+          // Try lastIndex.
+          if (lastIndex >= i0 && lastIndex <= i1)
             {
-              if ((offset - elem.getEndOffset()) > (children[index + 1].getStartOffset() - offset))
-                return index + 1;
+              Element last = getElement(lastIndex);
+              p0 = last.getStartOffset();
+              p1 = last.getEndOffset();
+              if (offset >= p0 && offset < p1)
+                index = lastIndex;
               else
-                return index;
+                {
+                  // Narrow the search bounds using the lastIndex, even
+                  // if it hasn't been a hit.
+                  if (offset < p0)
+                    i1 = lastIndex;
+                  else
+                    i0 = lastIndex;
+                }
             }
-        }
+          // The actual search.
+          int i = 0;
+          while (i0 <= i1 && index == -1)
+            {
+              i = i0 + (i1 - i0) / 2;
+              Element el = getElement(i);
+              p0 = el.getStartOffset();
+              p1 = el.getEndOffset();
+              if (offset >= p0 && offset < p1)
+                {
+                  // Found it!
+                  index = i;
+                }
+              else if (offset < p0)
+                i1 = i - 1;
+              else
+                i0 = i + 1;
+            }
 
-      // If offset is greater than the index of the last element, return
-      // the index of the last element.
-      return getElementCount() - 1;
+          if (index == -1)
+            {
+              // Didn't find it. Return the boundary index.
+              if (offset < p0)
+                index = i;
+              else
+                index = i + 1;
+            }
+
+          lastIndex = index;
+        }
+      return index;
     }
 
     /**
@@ -2333,7 +2760,63 @@ public abstract class AbstractDocument implements Document, Serializable
 	      + getStartOffset() + "," + getEndOffset() + "\n");
     }
   }
-  
+
+  /**
+   * The root element for bidirectional text.
+   */
+  private class BidiRootElement
+    extends BranchElement
+  {
+    /**
+     * Creates a new bidi root element.
+     */
+    BidiRootElement()
+    {
+      super(null, null);
+    }
+
+    /**
+     * Returns the name of the element.
+     *
+     * @return the name of the element
+     */
+    public String getName()
+    {
+      return BidiRootName;
+    }
+  }
+
+  /**
+   * A leaf element for the bidi structure.
+   */
+  private class BidiElement
+    extends LeafElement
+  {
+    /**
+     * Creates a new BidiElement.
+     *
+     * @param parent the parent element
+     * @param start the start offset
+     * @param end the end offset
+     * @param level the bidi level
+     */
+    BidiElement(Element parent, int start, int end, int level)
+    {
+      super(parent, new SimpleAttributeSet(), start, end);
+      addAttribute(StyleConstants.BidiLevel, new Integer(level));
+    }
+
+    /**
+     * Returns the name of the element.
+     *
+     * @return the name of the element
+     */
+    public String getName()
+    {
+      return BidiElementName;
+    }
+  }
+
   /** A class whose methods delegate to the insert, remove and replace methods
    * of this document which do not check for an installed DocumentFilter.
    */

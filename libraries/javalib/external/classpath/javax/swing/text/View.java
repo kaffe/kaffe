@@ -429,12 +429,18 @@ public abstract class View implements SwingConstants
    */
   public void changedUpdate(DocumentEvent ev, Shape shape, ViewFactory vf)
   {
-    Element el = getElement();
-    DocumentEvent.ElementChange ec = ev.getChange(el);
-    if (ec != null)
-      updateChildren(ec, ev, vf);
-    forwardUpdate(ec, ev, shape, vf);
-    updateLayout(ec, ev, shape);
+    if (getViewCount() > 0)
+      {
+        Element el = getElement();
+        DocumentEvent.ElementChange ec = ev.getChange(el);
+        if (ec != null)
+          {
+            if (! updateChildren(ec, ev, vf))
+              ec = null;
+          }
+        forwardUpdate(ec, ev, shape, vf);
+        updateLayout(ec, ev, shape);
+      }
   }
 
   /**

@@ -38,8 +38,6 @@ exception statement from your version. */
 
 package javax.swing.plaf.basic;
 
-import gnu.classpath.NotImplementedException;
-
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -54,7 +52,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
@@ -69,11 +66,13 @@ import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.ActionMapUIResource;
 import javax.swing.plaf.ComponentUI;
 import javax.swing.plaf.ScrollPaneUI;
+import javax.swing.plaf.UIResource;
 
 /**
  * A UI delegate for the {@link JScrollPane} component.
@@ -281,7 +280,7 @@ public class BasicScrollPaneUI extends ScrollPaneUI
               // Scroll non scrollables.
               delta = wheel * SCROLL_NON_SCROLLABLES;
             }
-          scroll(bar, delta);
+          scroll(bar, wheel > 0 ? delta : -delta);
         }
       // If not, try to scroll horizontally
       else
@@ -436,16 +435,24 @@ public class BasicScrollPaneUI extends ScrollPaneUI
                                      "ScrollPane.foreground",
                                      "ScrollPane.font");
     LookAndFeel.installBorder(p, "ScrollPane.border");
+
+    // Install Viewport border.
+    Border vpBorder = p.getViewportBorder();
+    if (vpBorder == null || vpBorder instanceof UIResource)
+      {
+        vpBorder = UIManager.getBorder("ScrollPane.viewportBorder");
+        p.setViewportBorder(vpBorder);
+      }
+
     p.setOpaque(true);
   }
 
   protected void uninstallDefaults(JScrollPane p)
   {
-    p.setForeground(null);
-    p.setBackground(null);
-    p.setFont(null);
-    p.setBorder(null);
-    scrollpane = null;
+    LookAndFeel.uninstallBorder(p);
+    Border vpBorder = p.getViewportBorder();
+    if (vpBorder != null && vpBorder instanceof UIResource)
+      p.setViewportBorder(null);
   }
     
   public void installUI(final JComponent c) 
@@ -809,8 +816,12 @@ public class BasicScrollPaneUI extends ScrollPaneUI
 
   public void paint(Graphics g, JComponent c)
   {      
-    // do nothing; the normal painting-of-children algorithm, along with
-    // ScrollPaneLayout, does all the relevant work.
+    Border vpBorder = scrollpane.getViewportBorder();
+    if (vpBorder != null)
+      {
+        Rectangle r = scrollpane.getViewportBorderBounds();
+        vpBorder.paintBorder(scrollpane, g, r.x, r.y, r.width, r.height);
+      }
   }
 
   /**

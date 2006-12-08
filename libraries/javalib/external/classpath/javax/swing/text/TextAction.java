@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package javax.swing.text;
 
+import java.awt.Component;
+import java.awt.KeyboardFocusManager;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
@@ -45,7 +47,6 @@ import java.util.HashSet;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.SwingConstants;
 
 /**
  * TextAction
@@ -108,7 +109,13 @@ public abstract class TextAction extends AbstractAction
    */
   protected final JTextComponent getFocusedComponent()
   {
-    return null; // TODO
+    KeyboardFocusManager kfm =
+      KeyboardFocusManager.getCurrentKeyboardFocusManager();
+    Component focused = kfm.getPermanentFocusOwner();
+    JTextComponent textComp = null;
+    if (focused instanceof JTextComponent)
+      textComp = (JTextComponent) focused;
+    return textComp;
   }
   
   /** Abstract helper class which implements everything needed for an

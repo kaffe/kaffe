@@ -296,14 +296,6 @@ public class Main
       log.exiting(this.getClass().getName(), "teardown"); //$NON-NLS-1$
   }
 
-  private void printHelp()
-  {
-    if (helpPrinted)
-      return;
-
-    helpPrinted = true;
-  }
-
   // Inner class(es)
   // ==========================================================================
 

@@ -67,7 +67,7 @@ public class PrintStream extends FilterOutputStream
 
   // Line separator string.
   private static final char[] line_separator
-    = SystemProperties.getProperty("line.separator").toCharArray();
+    = SystemProperties.getProperty("line.separator", "\n").toCharArray();
 
   /**
    *  Encoding name

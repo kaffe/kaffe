@@ -39,6 +39,7 @@ exception statement from your version. */
 
 package java.io;
 
+import gnu.classpath.VMStackWalker;
 import gnu.java.io.ObjectIdentityWrapper;
 
 import java.lang.reflect.Array;
@@ -539,8 +540,6 @@ public class ObjectInputStream extends InputStream
 						  flags, fields);
     assignNewHandle(osc);
 
-    ClassLoader callersClassLoader = currentLoader();
-	      
     for (int i = 0; i < field_count; i++)
       {
 	if(dump) dumpElement("  TYPE CODE=");
@@ -560,12 +559,17 @@ public class ObjectInputStream extends InputStream
 	  class_name = String.valueOf(type_code);
 		  
 	fields[i] =
-	  new ObjectStreamField(field_name, class_name, callersClassLoader);
+	  new ObjectStreamField(field_name, class_name);
       }
 	      
     /* Now that fields have been read we may resolve the class
      * (and read annotation if needed). */
     Class clazz = resolveClass(osc);
+    ClassLoader loader = clazz.getClassLoader();
+    for (int i = 0; i < field_count; i++)
+      {
+        fields[i].resolveType(loader);
+      }
     boolean oldmode = setBlockDataMode(true);
     osc.setClass(clazz, lookupClass(clazz.getSuperclass()));
     classLookupTable.put(clazz, osc);
@@ -814,7 +818,7 @@ public class ObjectInputStream extends InputStream
    */
   private ClassLoader currentLoader()
   {
-    return VMObjectInputStream.currentClassLoader();
+    return VMStackWalker.firstNonNullClassLoader();
   }
 
   /**

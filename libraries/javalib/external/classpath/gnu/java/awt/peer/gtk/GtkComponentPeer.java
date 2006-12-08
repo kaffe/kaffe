@@ -514,7 +514,7 @@ public class GtkComponentPeer extends GtkGenericPeer
 	y = 0;
       }
 
-    if (Thread.currentThread() == GtkToolkit.mainThread)
+    if (Thread.currentThread() == GtkMainThread.mainThread)
       gtkWidgetSetCursorUnlocked(cursor.getType(), image, x, y);
     else
       gtkWidgetSetCursor(cursor.getType(), image, x, y);
@@ -562,7 +562,7 @@ public class GtkComponentPeer extends GtkGenericPeer
 	b = (bounds.width > 0) && (bounds.height > 0);
       }
 
-    if (Thread.currentThread() == GtkToolkit.mainThread)
+    if (Thread.currentThread() == GtkMainThread.mainThread)
       setVisibleNativeUnlocked (b);
     else
       setVisibleNative (b);

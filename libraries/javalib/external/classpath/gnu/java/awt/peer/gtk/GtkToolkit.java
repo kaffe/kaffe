@@ -131,37 +131,30 @@ import javax.imageio.spi.IIORegistry;
 
 public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
 {
-  Hashtable containers = new Hashtable();
-  static EventQueue q;
-  static Thread mainThread;
+  private static EventQueue q;
 
   static native void gtkInit(int portableNativeSync);
+
+  static native void gtkMain();
+
+  static native void gtkQuit();
 
   static
   {
     System.loadLibrary("gtkpeer");
-
+      
     int portableNativeSync;     
     String portNatSyncProp = 
       System.getProperty("gnu.classpath.awt.gtk.portable.native.sync");
-    
+      
     if (portNatSyncProp == null)
       portableNativeSync = -1;  // unset
     else if (Boolean.valueOf(portNatSyncProp).booleanValue())
       portableNativeSync = 1;   // true
     else
       portableNativeSync = 0;   // false
-
+      
     gtkInit(portableNativeSync);
-
-    mainThread = new Thread ("GTK main thread")
-      {
-        public void run ()
-        {
-          gtkMain ();
-        }
-      };
-    mainThread.start ();
   }
 
   public GtkToolkit ()
@@ -169,6 +162,7 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
   }
 
   public native void beep();
+
   private native void getScreenSizeDimensions(int[] xy);
   
   public int checkImage (Image image, int width, int height, 
@@ -462,6 +456,7 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
 
   protected DialogPeer createDialog (Dialog d)
   {
+    GtkMainThread.createWindow();
     return new GtkDialogPeer (d);
   }
 
@@ -472,6 +467,7 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
 
   protected FramePeer createFrame (Frame f)
   {
+    GtkMainThread.createWindow();
     return new GtkFramePeer (f);
   }
 
@@ -532,11 +528,13 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
 
   protected WindowPeer createWindow (Window w)
   {
+    GtkMainThread.createWindow();
     return new GtkWindowPeer (w);
   }
 
   public EmbeddedWindowPeer createEmbeddedWindow (EmbeddedWindow w)
   {
+    GtkMainThread.createWindow();
     return new GtkEmbeddedWindowPeer (w);
   }
 
@@ -660,8 +658,6 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
   {
     GdkPixbufDecoder.registerSpis(reg);
   }
-
-  public static native void gtkMain();
 
   protected MouseInfoPeer getMouseInfoPeer()
   {

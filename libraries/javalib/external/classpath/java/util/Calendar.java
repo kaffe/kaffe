@@ -1,5 +1,6 @@
 /* Calendar.java --
-   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2004, 2005  Free Software Foundation, Inc.
+   Copyright (C) 1998, 1999, 2000, 2001, 2002, 2004, 2005, 2006,  
+   Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -483,6 +484,8 @@ public abstract class Calendar implements Serializable, Cloneable
   /**
    * Creates a calendar representing the actual time, using the default
    * time zone and locale.
+   * 
+   * @return The new calendar.
    */
   public static synchronized Calendar getInstance()
   {
@@ -492,7 +495,12 @@ public abstract class Calendar implements Serializable, Cloneable
   /**
    * Creates a calendar representing the actual time, using the given
    * time zone and the default locale.
-   * @param zone a time zone.
+   * 
+   * @param zone a time zone (<code>null</code> not permitted).
+   * 
+   * @return The new calendar.
+   * 
+   * @throws NullPointerException if <code>zone</code> is <code>null</code>.
    */
   public static synchronized Calendar getInstance(TimeZone zone)
   {
@@ -502,7 +510,12 @@ public abstract class Calendar implements Serializable, Cloneable
   /**
    * Creates a calendar representing the actual time, using the default
    * time zone and the given locale.
-   * @param locale a locale.
+   * 
+   * @param locale a locale (<code>null</code> not permitted).
+   * 
+   * @return The new calendar.
+   * 
+   * @throws NullPointerException if <code>locale</code> is <code>null</code>.
    */
   public static synchronized Calendar getInstance(Locale locale)
   {
@@ -524,8 +537,14 @@ public abstract class Calendar implements Serializable, Cloneable
   /**
    * Creates a calendar representing the actual time, using the given
    * time zone and locale.
-   * @param zone a time zone.
-   * @param locale a locale.
+   * 
+   * @param zone a time zone (<code>null</code> not permitted).
+   * @param locale a locale (<code>null</code> not permitted).
+   * 
+   * @return The new calendar.
+   * 
+   * @throws NullPointerException if <code>zone</code> or <code>locale</code>
+   *     is <code>null</code>.
    */
   public static synchronized Calendar getInstance(TimeZone zone, Locale locale)
   {
@@ -617,6 +636,10 @@ public abstract class Calendar implements Serializable, Cloneable
   /**
    * Sets this Calendar's time to the given Date.  All time fields
    * are invalidated by this method.
+   * 
+   * @param date  the date (<code>null</code> not permitted).
+   * 
+   * @throws NullPointerException if <code>date</code> is <code>null</code>.
    */
   public final void setTime(Date date)
   {

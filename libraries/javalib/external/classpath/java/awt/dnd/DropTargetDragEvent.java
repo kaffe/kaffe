@@ -147,7 +147,6 @@ public class DropTargetDragEvent extends DropTargetEvent
    */
   public Transferable getTransferable()
   {
-    // FIXME: Not implemented
-    return null;
+    return context.getTransferable();
   }
 } // class DropTargetDragEvent

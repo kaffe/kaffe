@@ -2577,7 +2577,7 @@ public abstract class JComponent extends Container implements Serializable
                                       KeyEvent e,
                                       int condition,
                                       boolean pressed)
-  { 
+  {
     if (isEnabled())
       {
         Action act = null;
@@ -2741,9 +2741,25 @@ public abstract class JComponent extends Container implements Serializable
    */
   public void scrollRectToVisible(Rectangle r)
   {
-    Component p = getParent();
-    if (p instanceof JComponent)
-      ((JComponent) p).scrollRectToVisible(r);
+    // Search nearest JComponent.
+    int xOffs = getX();
+    int yOffs = getY();
+    Component p;
+    for (p = getParent(); p != null && ! (p instanceof JComponent);
+         p = p.getParent())
+      {
+        xOffs += p.getX();
+        yOffs += p.getY();
+      }
+    if (p != null)
+      {
+        r.x += xOffs;
+        r.y += yOffs;
+        JComponent jParent = (JComponent) p;
+        jParent.scrollRectToVisible(r);
+        r.x -= xOffs;
+        r.y -= yOffs;
+      }
   }
 
   /**

@@ -241,6 +241,12 @@ public abstract class BasicTextUI extends TextUI
       return Integer.MAX_VALUE;
     }
 
+    public void setSize(float w, float h)
+    {
+      if (view != null)
+        view.setSize(w, h);
+    }
+
     /**
      * Paints the view. This is delegated to the real root view.
      *
@@ -860,6 +866,7 @@ public abstract class BasicTextUI extends TextUI
   protected void uninstallListeners()
   {
     textComponent.removeFocusListener(focuslistener);
+    textComponent.getDocument().removeDocumentListener(documentHandler);
   }
 
   /**
@@ -891,14 +898,19 @@ public abstract class BasicTextUI extends TextUI
    */
   public Dimension getPreferredSize(JComponent c)
   {
-    View v = getRootView(textComponent);
-
-    float w = v.getPreferredSpan(View.X_AXIS);
-    float h = v.getPreferredSpan(View.Y_AXIS);
-
+    Dimension d = c.getSize();
     Insets i = c.getInsets();
-    return new Dimension((int) w + i.left + i.right,
+    if (d.width > (i.left + i.right) && d.height > (i.top + i.bottom))
+      {
+        rootView.setSize(d.width - i.left - i.right,
+                         d.height - i.top - i.bottom);
+      }
+    float w = rootView.getPreferredSpan(View.X_AXIS);
+    float h = rootView.getPreferredSpan(View.Y_AXIS);
+
+    Dimension size =  new Dimension((int) w + i.left + i.right,
                          (int) h + i.top + i.bottom);
+    return size;
   }
 
   /**
@@ -1224,7 +1236,7 @@ public abstract class BasicTextUI extends TextUI
    */
   public int viewToModel(JTextComponent t, Point pt)
   {
-    return viewToModel(t, pt, null);
+    return viewToModel(t, pt, new Position.Bias[1]);
   }
 
   /**

@@ -133,7 +133,8 @@ public final class FileDescriptor
    * native file handle, <code>false</code> otherwise
    */
   public boolean valid ()
-  {
-    return channel != null && channel.isOpen();
+  { 
+    ByteChannel c = channel;
+    return (c != null) && (c.isOpen());
   }
 }

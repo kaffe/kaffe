@@ -164,6 +164,7 @@ public abstract class DragGestureRecognizer implements Serializable
     if(dragGestureListener != null)
       dragGestureListener.dragGestureRecognized
 	(new DragGestureEvent(this, dragAction, p, events));
+    resetRecognizer();
   }
 
   protected void appendEvent(InputEvent e)

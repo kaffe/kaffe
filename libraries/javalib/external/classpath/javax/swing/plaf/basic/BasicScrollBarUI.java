@@ -1228,8 +1228,12 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
    */
   protected void scrollByBlock(int direction)
   {
+    if (direction > 0)
     scrollbar.setValue(scrollbar.getValue()
                        + scrollbar.getBlockIncrement(direction));
+    else
+      scrollbar.setValue(scrollbar.getValue()
+                         - scrollbar.getBlockIncrement(direction));
   }
 
   /**
@@ -1239,8 +1243,12 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
    */
   protected void scrollByUnit(int direction)
   {
-    scrollbar.setValue(scrollbar.getValue()
-                       + scrollbar.getUnitIncrement(direction));
+    if (direction > 0)
+      scrollbar.setValue(scrollbar.getValue()
+                         + scrollbar.getUnitIncrement(direction));
+    else
+      scrollbar.setValue(scrollbar.getValue()
+                         - scrollbar.getUnitIncrement(direction));
   }
 
   /**

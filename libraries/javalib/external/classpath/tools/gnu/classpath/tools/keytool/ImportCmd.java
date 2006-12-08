@@ -207,7 +207,6 @@ class ImportCmd extends Command
   protected String _ksPassword;
   protected String _providerClassName;
   private CertificateFactory x509Factory;
-  private boolean imported;
   /**
    * Pathname to a GKR-type cacerts file to use when trustCACerts is true. This
    * is usually a file named "cacerts.gkr" located in lib/security in the folder

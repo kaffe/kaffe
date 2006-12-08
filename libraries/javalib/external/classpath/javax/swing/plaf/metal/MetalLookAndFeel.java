@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package javax.swing.plaf.metal;
 
+import gnu.classpath.SystemProperties;
+
 import java.awt.Color;
 import java.awt.Font;
 
@@ -81,16 +83,15 @@ public class MetalLookAndFeel extends BasicLookAndFeel
    */
   public MetalLookAndFeel()
   {
-    createDefaultTheme();
+    // Nothing to do here.
   }
 
   /**
-   * Sets the current theme to a new instance of {@link OceanTheme}.
+   * Sets the current theme to a new instance of {@link DefaultMetalTheme}.
    */
   protected void createDefaultTheme()
   {
-    if (theme == null)
-      setCurrentTheme(new OceanTheme());
+    getCurrentTheme();
   }
 
   /**
@@ -149,6 +150,7 @@ public class MetalLookAndFeel extends BasicLookAndFeel
 
   public UIDefaults getDefaults()
   {
+    createDefaultTheme();
     if (LAF_defaults == null)
       {
         LAF_defaults = super.getDefaults();
@@ -1354,7 +1356,14 @@ public class MetalLookAndFeel extends BasicLookAndFeel
   public static MetalTheme getCurrentTheme()
   {
     if (theme == null)
-      theme = new OceanTheme();
+      {
+        // swing.metalTheme property documented here:
+        // http://java.sun.com/j2se/1.5.0/docs/guide/swing/1.5/index.html
+        if ("steel".equals(SystemProperties.getProperty("swing.metalTheme")))
+          theme = new DefaultMetalTheme();
+        else
+          theme = new OceanTheme();
+      }
     return theme;
   }
 

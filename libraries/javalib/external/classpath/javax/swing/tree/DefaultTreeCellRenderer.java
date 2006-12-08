@@ -547,19 +547,9 @@ public class DefaultTreeCellRenderer
    */
   public Dimension getPreferredSize()
   {
-    Rectangle vr = new Rectangle();
-    Rectangle ir = new Rectangle();
-    Rectangle tr = new Rectangle();
-
-    FontMetrics fm = getToolkit().getFontMetrics(getFont());
-    SwingUtilities.layoutCompoundLabel((JLabel) this, fm, getText(),
-                                       getIcon(), getVerticalAlignment(),
-                                       getHorizontalAlignment(),
-                                       getVerticalTextPosition(),
-                                       getHorizontalTextPosition(), vr, ir, tr,
-                                       getIconTextGap());
-    Rectangle cr = ir.union(tr);
-    return new Dimension(cr.width, cr.height);
+    Dimension size = super.getPreferredSize();
+    size.width += 3;
+    return size;
   } 
 
   /**

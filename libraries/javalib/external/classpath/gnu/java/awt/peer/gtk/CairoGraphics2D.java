@@ -1269,7 +1269,7 @@ public abstract class CairoGraphics2D extends Graphics2D
       }
 
     BufferedImage b = (BufferedImage) img;
-    DataBuffer db;
+    Raster raster;
     double[] i2u = new double[6];
     int width = b.getWidth();
     int height = b.getHeight();
@@ -1278,9 +1278,9 @@ public abstract class CairoGraphics2D extends Graphics2D
     // use the cached CairoSurface that BIG is drawing onto
     
     if( BufferedImageGraphics.bufferedImages.get( b ) != null )
-      db = (DataBuffer)BufferedImageGraphics.bufferedImages.get( b );
+      raster = (Raster)BufferedImageGraphics.bufferedImages.get( b );
     else
-      db = b.getRaster().getDataBuffer();
+      raster = b.getRaster();
 
     invertedXform.getMatrix(i2u);
 
@@ -1288,9 +1288,9 @@ public abstract class CairoGraphics2D extends Graphics2D
     if (comp instanceof AlphaComposite)
       alpha = ((AlphaComposite) comp).getAlpha();
 
-    if(db instanceof CairoSurface)
+    if(raster instanceof CairoSurface)
       {
-	((CairoSurface)db).drawSurface(nativePointer, i2u, alpha);
+	((CairoSurface)raster).drawSurface(nativePointer, i2u, alpha);
         updateColor();
 	return true;
       }

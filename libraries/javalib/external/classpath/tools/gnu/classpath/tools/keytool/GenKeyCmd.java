@@ -217,7 +217,6 @@ class GenKeyCmd extends Command
   protected String _providerClassName;
   private int keySize;
   private X500DistinguishedName distinguishedName;
-  private Parser cmdOptionsParser;
 
   // default 0-arguments constructor
 

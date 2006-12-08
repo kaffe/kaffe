@@ -208,10 +208,12 @@ public class Container extends Component
    */
   public Insets insets()
   {
-    if (peer == null)
-      return new Insets (0, 0, 0, 0);
-
-    return ((ContainerPeer) peer).getInsets ();
+    Insets i;
+    if (peer == null || peer instanceof LightweightPeer)
+      i = new Insets (0, 0, 0, 0);
+    else
+      i = ((ContainerPeer) peer).getInsets ();
+    return i;
   }
 
   /**
@@ -506,26 +508,43 @@ public class Container extends Component
             
             r.removeNotify();
 
+            // Update the counter for Hierarchy(Bounds)Listeners.
+            int childHierarchyListeners = r.numHierarchyListeners;
+            if (childHierarchyListeners > 0)
+              updateHierarchyListenerCount(AWTEvent.HIERARCHY_EVENT_MASK,
+                                           -childHierarchyListeners);
+            int childHierarchyBoundsListeners = r.numHierarchyBoundsListeners;
+            if (childHierarchyBoundsListeners > 0)
+              updateHierarchyListenerCount(AWTEvent.HIERARCHY_BOUNDS_EVENT_MASK,
+                                           -childHierarchyListeners);
+
             if (layoutMgr != null)
               layoutMgr.removeLayoutComponent(r);
 
             r.parent = null;
 
-            if (isShowing ())
+            // Send ContainerEvent if necessary.
+            if (containerListener != null
+                || (eventMask & AWTEvent.CONTAINER_EVENT_MASK) != 0)
               {
                 // Post event to notify of removing the component.
                 ContainerEvent ce
                   = new ContainerEvent(this,
                                        ContainerEvent.COMPONENT_REMOVED,
                                        r);
-                
-                getToolkit().getSystemEventQueue().postEvent(ce);
+                dispatchEvent(ce);
               }
-            }
-          
+
+            // Send HierarchyEvent if necessary.
+            fireHierarchyEvent(HierarchyEvent.HIERARCHY_CHANGED, r, this,
+                               HierarchyEvent.PARENT_CHANGED);
+
+          }
+
+        if (valid)
           invalidate();
         
-          ncomponents = 0;
+        ncomponents = 0;
       }
   }
 
@@ -2002,6 +2021,43 @@ public class Container extends Component
 
     if (parent != null)
       parent.updateHierarchyListenerCount(type, delta);
+  }
+
+  /**
+   * Notifies interested listeners about resizing or moving the container.
+   * This performs the super behaviour (sending component events) and
+   * additionally notifies any hierarchy bounds listeners on child components.
+   *
+   * @param resized true if the component has been resized, false otherwise
+   * @param moved true if the component has been moved, false otherwise
+   */
+  void notifyReshape(boolean resized, boolean moved)
+  {
+    // Notify component listeners.
+    super.notifyReshape(resized, moved);
+
+    if (ncomponents > 0)
+      {
+        // Notify hierarchy bounds listeners.
+        if (resized)
+          {
+            for (int i = 0; i < getComponentCount(); i++)
+              {
+                Component child = getComponent(i);
+                child.fireHierarchyEvent(HierarchyEvent.ANCESTOR_RESIZED,
+                                         this, parent, 0);
+              }
+          }
+        if (moved)
+          {
+            for (int i = 0; i < getComponentCount(); i++)
+              {
+                Component child = getComponent(i);
+                child.fireHierarchyEvent(HierarchyEvent.ANCESTOR_MOVED,
+                                         this, parent, 0);
+              }
+          }
+      }
   }
 
   private void addNotifyContainerChildren()

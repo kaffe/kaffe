@@ -1,5 +1,5 @@
 /* VMStackWalker.java -- Reference implementation of VM hooks for stack access
-   Copyright (C) 2005 Free Software Foundation
+   Copyright (C) 2005, 2006 Free Software Foundation
 
 This file is part of GNU Classpath.
 
@@ -52,25 +52,6 @@ package gnu.classpath;
 public final class VMStackWalker
 {
   /**
-   * When calling <code>getCallingClass()</code> and 
-   * <code>getCallingClassLoader()</code>, the minimal number of frames 
-   * on the stack needs to be 4. The frames on the stack look like this:
-   *
-   * <ul>
-   * <li><code>getClassContext()</code>
-   * <li><code>getCallingClass()</code> | <code>getCallingClassLoader()</code>
-   * <li>method invoking it
-   * <li>method whose <code>Class</code> or <code>ClassLoader</code> we need
-   * </ul>
-   */
-  private static final int MINIMAL_NUMBER_OF_FRAMES = 4;
-
-  /**
-   * The frame of the caller's caller.
-   */
-  private static final int CALLERS_CALLER_FRAME = MINIMAL_NUMBER_OF_FRAMES - 1;
-
-  /**
    * Get a list of all the classes currently executing methods on the
    * Java stack. <code>getClassContext()[0]</code> is the class associated
    * with the currently executing method, i.e., the method that called
@@ -101,9 +82,9 @@ public final class VMStackWalker
 
   /**
    * Get the class loader associated with the Class returned by
-   * <code>getCallingClass()</code>, or <code>null</code> if no
-   * such class exists or it is the boot loader. This method is an optimization
-   * for the expression <code>getClassContext()[1].getClassLoader()</code>
+   * <code>getCallingClass()</code>, or <code>null</code> if no such class
+   * exists or it is the boot loader. This method is an optimization for the
+   * expression <code>VMStackWalker.getClassLoader(getClassContext()[1])</code>
    * and should return the same result.
    *
    * <p>
@@ -111,4 +92,28 @@ public final class VMStackWalker
    * version of this method.
    */
   public static native ClassLoader getCallingClassLoader();
+
+  /**
+   * Retrieve the class's ClassLoader, or <code>null</code> if loaded
+   * by the bootstrap loader. I.e., this should return the same thing
+   * as {@link java.lang.VMClass#getClassLoader}. This duplicate version
+   * is here to work around access permissions.
+   */
+  public static native ClassLoader getClassLoader(Class cl);
+
+  /**
+   * Walk up the stack and return the first non-null class loader.
+   * If there aren't any non-null class loaders on the stack, return null.
+   */
+  public static ClassLoader firstNonNullClassLoader()
+  {
+    Class[] stack = getClassContext();
+    for (int i = 0; i < stack.length; i++)
+      {
+        ClassLoader loader = getClassLoader(stack[i]);
+        if (loader != null)
+          return loader;
+      }
+    return null;
+  }
 }

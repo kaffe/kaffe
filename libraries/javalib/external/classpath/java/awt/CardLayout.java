@@ -361,7 +361,7 @@ public class CardLayout implements LayoutManager2, Serializable
    */
   public String toString ()
   {
-    return getClass ().getName () + "[" + hgap + "," + vgap + "]";
+    return getClass ().getName () + "[hgap=" + hgap + ",vgap=" + vgap + "]";
   }
 
   /**
@@ -401,11 +401,11 @@ public class CardLayout implements LayoutManager2, Serializable
 	  {
 	    if (comps[i].isVisible ())
 	      {
-		if (what == NEXT)
+		if (choice == i)
 		  {
-		    choice = i + 1;
-		    if (choice == num)
-		      choice = 0;
+		    // Do nothing if we're already looking at the right
+                    // component.
+                    return;
 		  }
 		else if (what == PREV)
 		  {
@@ -413,11 +413,11 @@ public class CardLayout implements LayoutManager2, Serializable
 		    if (choice < 0)
 		      choice = num - 1;
 		  }
-		else if (choice == i)
+		else if (what == NEXT)
 		  {
-		    // Do nothing if we're already looking at the right
-		    // component.
-		    return;
+                    choice = i + 1;
+                    if (choice == num)
+                      choice = 0;
 		  }
 		comps[i].setVisible (false);
  

@@ -628,7 +628,7 @@ public abstract class ColorModel implements Transparency
   public ColorModel coerceData(WritableRaster raster,
 			       boolean isAlphaPremultiplied)
   {
-    if (this.isAlphaPremultiplied == isAlphaPremultiplied)
+    if (this.isAlphaPremultiplied == isAlphaPremultiplied || ! hasAlpha)
       return this;
 
     int w = raster.getWidth();

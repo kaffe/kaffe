@@ -48,6 +48,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -516,6 +519,16 @@ public class ZipFile implements ZipConstants
 
   private static final class PartialInputStream extends InputStream
   {
+    /**
+     * The UTF-8 charset use for decoding the filenames.
+     */
+    private static final Charset UTF8CHARSET = Charset.forName("UTF-8");
+
+    /**
+     * The actual UTF-8 decoder. Created on demand. 
+     */
+    private CharsetDecoder utf8Decoder;
+
     private final RandomAccessFile raf;
     private final byte[] buffer;
     private long bufferOffset;
@@ -652,23 +665,86 @@ public class ZipFile implements ZipConstants
 
     int readLeShort() throws IOException
     {
-      int b0 = read();
-      int b1 = read();
-      if (b1 == -1)
-        throw new EOFException();
-      return (b0 & 0xff) | (b1 & 0xff) << 8;
+      int result;
+      if(pos + 1 < buffer.length)
+        {
+          result = ((buffer[pos + 0] & 0xff) | (buffer[pos + 1] & 0xff) << 8);
+          pos += 2;
+        }
+      else
+        {
+          int b0 = read();
+          int b1 = read();
+          if (b1 == -1)
+            throw new EOFException();
+          result = (b0 & 0xff) | (b1 & 0xff) << 8;
+        }
+      return result;
     }
 
     int readLeInt() throws IOException
     {
-      int b0 = read();
-      int b1 = read();
-      int b2 = read();
-      int b3 = read();
-      if (b3 == -1)
-        throw new EOFException();
-      return ((b0 & 0xff) | (b1 & 0xff) << 8)
-            | ((b2 & 0xff) | (b3 & 0xff) << 8) << 16;
+      int result;
+      if(pos + 3 < buffer.length)
+        {
+          result = (((buffer[pos + 0] & 0xff) | (buffer[pos + 1] & 0xff) << 8)
+                   | ((buffer[pos + 2] & 0xff)
+                       | (buffer[pos + 3] & 0xff) << 8) << 16);
+          pos += 4;
+        }
+      else
+        {
+          int b0 = read();
+          int b1 = read();
+          int b2 = read();
+          int b3 = read();
+          if (b3 == -1)
+            throw new EOFException();
+          result =  (((b0 & 0xff) | (b1 & 0xff) << 8) | ((b2 & 0xff)
+                    | (b3 & 0xff) << 8) << 16);
+        }
+      return result;
+    }
+
+    /**
+     * Decode chars from byte buffer using UTF8 encoding.  This
+     * operation is performance-critical since a jar file contains a
+     * large number of strings for the name of each file in the
+     * archive.  This routine therefore avoids using the expensive
+     * utf8Decoder when decoding is straightforward.
+     *
+     * @param buffer the buffer that contains the encoded character
+     *        data
+     * @param pos the index in buffer of the first byte of the encoded
+     *        data
+     * @param length the length of the encoded data in number of
+     *        bytes.
+     *
+     * @return a String that contains the decoded characters.
+     */
+    private String decodeChars(byte[] buffer, int pos, int length)
+      throws IOException
+    {
+      String result;
+      int i=length - 1;
+      while ((i >= 0) && (buffer[i] <= 0x7f))
+        {
+          i--;
+        }
+      if (i < 0)
+        {
+          result = new String(buffer, 0, pos, length);
+        }
+      else
+        {
+          ByteBuffer bufferBuffer = ByteBuffer.wrap(buffer, pos, length);
+          if (utf8Decoder == null)
+            utf8Decoder = UTF8CHARSET.newDecoder();
+          utf8Decoder.reset();
+          char [] characters = utf8Decoder.decode(bufferBuffer).array();
+          result = String.valueOf(characters);
+        }
+      return result;
     }
 
     String readString(int length) throws IOException
@@ -676,25 +752,26 @@ public class ZipFile implements ZipConstants
       if (length > end - (bufferOffset + pos))
         throw new EOFException();
 
+      String result = null;
       try
         {
           if (buffer.length - pos >= length)
             {
-              String s = new String(buffer, pos, length, "UTF-8");
+              result = decodeChars(buffer, pos, length);
               pos += length;
-              return s;
             }
           else
             {
               byte[] b = new byte[length];
               readFully(b);
-              return new String(b, 0, length, "UTF-8");
+              result = decodeChars(b, 0, length);
             }
         }
       catch (UnsupportedEncodingException uee)
         {
           throw new AssertionError(uee);
         }
+      return result;
     }
 
     public void addDummyByte()

@@ -411,10 +411,6 @@ public class BasicMenuItemUI extends MenuItemUI
   {
     ArrayList path = new ArrayList();
 
-    // Path to menu should also include its popup menu.
-    if (menuItem instanceof JMenu)
-      path.add(((JMenu) menuItem).getPopupMenu());
-
     Component c = menuItem;
     while (c instanceof MenuElement)
       {
@@ -453,6 +449,7 @@ public class BasicMenuItemUI extends MenuItemUI
 
     // Layout the menu item. The result gets stored in the rectangle
     // fields of this class.
+    resetRectangles(null);
     layoutMenuItem(m, accelText);
 
     // The union of the text and icon areas is the label area.
@@ -704,6 +701,8 @@ public class BasicMenuItemUI extends MenuItemUI
 
     // Layout menu item. The result gets stored in the rectangle fields
     // of this class.
+    resetRectangles(m);
+
     layoutMenuItem(m, accelText);
 
     // Paint the background.
@@ -1275,6 +1274,33 @@ public class BasicMenuItemUI extends MenuItemUI
   }
 
   /**
+   * Resets the cached layout rectangles. If <code>i</code> is not null, then
+   * the view rectangle is set to the inner area of the component, otherwise
+   * it is set to (0, 0, Short.MAX_VALUE, Short.MAX_VALUE), this is needed
+   * for layouting.
+   *
+   * @param i the component for which to initialize the rectangles
+   */
+  private void resetRectangles(JMenuItem i)
+  {
+    // Reset rectangles.
+    iconRect.setBounds(0, 0, 0, 0);
+    textRect.setBounds(0, 0, 0, 0);
+    accelRect.setBounds(0, 0, 0, 0);
+    checkIconRect.setBounds(0, 0, 0, 0);
+    arrowIconRect.setBounds(0, 0, 0, 0);
+    if (i == null)
+      viewRect.setBounds(0, 0, Short.MAX_VALUE, Short.MAX_VALUE);
+    else
+      {
+        Insets insets = i.getInsets();
+        viewRect.setBounds(insets.left, insets.top,
+                           i.getWidth() - insets.left - insets.right,
+                           i.getHeight() - insets.top - insets.bottom);
+      }
+  }
+
+  /**
    * A helper method that lays out the menu item. The layout is stored
    * in the fields of this class.
    *
@@ -1285,21 +1311,6 @@ public class BasicMenuItemUI extends MenuItemUI
   {
     int width = m.getWidth();
     int height = m.getHeight();
-
-    // Reset rectangles.
-    iconRect.setBounds(0, 0, 0, 0);
-    textRect.setBounds(0, 0, 0, 0);
-    accelRect.setBounds(0, 0, 0, 0);
-    checkIconRect.setBounds(0, 0, 0, 0);
-    arrowIconRect.setBounds(0, 0, 0, 0);
-    viewRect.setBounds(0, 0, width, height);
-
-    // Substract insets to the view rect.
-    Insets insets = m.getInsets();
-    viewRect.x += insets.left;
-    viewRect.y += insets.top;
-    viewRect.width -= insets.left + insets.right;
-    viewRect.height -= insets.top + insets.bottom;
 
     // Fetch the fonts.
     Font font = m.getFont();

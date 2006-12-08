@@ -219,7 +219,7 @@ Java_gnu_java_nio_VMSelector_select (JNIEnv * env,
   fd_set except_fds;
   struct timeval real_time_data;
   struct timeval *time_data = NULL;
-  char *message;
+  char message_buf[BUF_SIZE + 1];
 
   /* If a legal timeout value isn't given, use NULL.
    * This means an infinite timeout. The specification
@@ -270,8 +270,7 @@ Java_gnu_java_nio_VMSelector_select (JNIEnv * env,
 
   if (result < 0)
     {
-#if defined(HAVE_STRERROR_R)
-      char message_buf[BUF_SIZE+1];
+
       int errorcode = -result;
 
       if (strerror_r (errorcode, message_buf, BUF_SIZE))
@@ -284,12 +283,7 @@ Java_gnu_java_nio_VMSelector_select (JNIEnv * env,
 	  return 0;
 	}
 
-      message = message_buf;
-#else
-      message = strerror(errno);
-#endif
-
-      JCL_ThrowException (env, "java/io/IOException", message);
+      JCL_ThrowException (env, "java/io/IOException", message_buf);
       return 0;
     }
 

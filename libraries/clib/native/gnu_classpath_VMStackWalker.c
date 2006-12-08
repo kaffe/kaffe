@@ -23,6 +23,7 @@
 #include "stackTrace.h"
 #include "support.h"
 #include "gnu_classpath_VMStackWalker.h"
+#include "java_lang_VMClass.h"
 
 static int findCallingMethod (stackTraceInfo *info);
 
@@ -142,3 +143,10 @@ gnu_classpath_VMStackWalker_getCallingClassLoader(void)
 
 	return (info[start].meth == ENDOFSTACK) ? NULL : info[start].meth->class->loader;
 }
+
+struct Hjava_lang_ClassLoader* 
+gnu_classpath_VMStackWalker_getClassLoader(struct Hjava_lang_Class* clazz)
+{
+	return java_lang_VMClass_getClassLoader(clazz);
+}
+

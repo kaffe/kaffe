@@ -39,6 +39,7 @@ exception statement from your version. */
 package javax.swing.text;
 
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -354,11 +355,14 @@ public class GlyphView extends View implements TabableView, Cloneable
       Font font = view.getFont();
       FontMetrics fm = view.getContainer().getFontMetrics(font);
       Segment txt = view.getText(el.getStartOffset(), pos);
-      int width = fm.charsWidth(txt.array, txt.offset, txt.count);
+      Rectangle bounds = a instanceof Rectangle ? (Rectangle) a
+                                                : a.getBounds();
+      TabExpander expander = view.getTabExpander();
+      int width = Utilities.getTabbedTextWidth(txt, fm, bounds.x, expander,
+                                               view.getStartOffset());
       int height = fm.getHeight();
-      Rectangle bounds = a.getBounds();
       Rectangle result = new Rectangle(bounds.x + width, bounds.y,
-                                       bounds.x + width, height);
+                                       0, height);
       return result;
     }
 
@@ -536,9 +540,24 @@ public class GlyphView extends View implements TabableView, Cloneable
    */
   public void paint(Graphics g, Shape a)
   {
-    Element el = getElement();
     checkPainter();
-    getGlyphPainter().paint(this, g, a, getStartOffset(), getEndOffset());
+    int p0 = getStartOffset();
+    int p1 = getEndOffset();
+
+    Container c = getContainer();
+    // Paint layered highlights if there are any.
+    if (c instanceof JTextComponent)
+      {
+        JTextComponent tc = (JTextComponent) c;
+        Highlighter h = tc.getHighlighter();
+        if (h instanceof LayeredHighlighter)
+          {
+            LayeredHighlighter lh = (LayeredHighlighter) h;
+            lh.paintLayeredHighlights(g, p0, p1, a, tc, this);
+          }
+      }
+
+    getGlyphPainter().paint(this, g, a, p0, p1);
   }
 
 

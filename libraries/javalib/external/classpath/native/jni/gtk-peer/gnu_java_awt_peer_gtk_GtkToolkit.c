@@ -329,6 +329,17 @@ Java_gnu_java_awt_peer_gtk_GtkToolkit_gtkMain
   gdk_threads_leave ();
 }
 
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_GtkToolkit_gtkQuit
+(JNIEnv *env __attribute__((unused)), jobject obj __attribute__((unused)))
+{
+  gdk_threads_enter ();
+
+  gtk_main_quit ();
+
+  gdk_threads_leave ();
+}
+
 
 static jint gdk_color_to_java_color (GdkColor color);
 

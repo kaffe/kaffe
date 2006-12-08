@@ -190,9 +190,12 @@ public class NamingManager
                                String scheme, Hashtable environment)
       throws NamingException
   {
-    // Specified as the default in the docs. Unclear if this is
-    // right for us.
-    String defaultPrefix = "com.sun.jndi.url";
+    // Doc specifies com.sun.jndi.url as the final destination, but we cannot
+    // put our classes into such namespace.
+    String defaultPrefix = "gnu.javax.naming.jndi.url";
+
+    // The final default location, as specified in the documentation.
+    String finalPrefix = "com.sun.jndi.url";
 
     StringBuffer allPrefixes = new StringBuffer();
 
@@ -215,6 +218,8 @@ public class NamingManager
     if (allPrefixes.length() > 0)
       allPrefixes.append(':');
     allPrefixes.append(defaultPrefix);
+    allPrefixes.append(':');
+    allPrefixes.append(finalPrefix);
 
     scheme = scheme + "." + scheme + "URLContextFactory";
 
@@ -228,12 +233,21 @@ public class NamingManager
             Class factoryClass = forName(tryClass);
             if (factoryClass != null)
               {
-                ObjectFactory factory = (ObjectFactory) factoryClass.newInstance();
-                Object obj = factory.getObjectInstance(refInfo, name, nameCtx,
-                                                       environment);
-                Context ctx = (Context) obj;
-                if (ctx != null)
-                  return ctx;
+                Object obj;
+                try
+                  {
+                    ObjectFactory factory = (ObjectFactory) factoryClass.newInstance();
+                    obj = factory.getObjectInstance(refInfo, name, nameCtx,
+                                                    environment);
+                    Context ctx = (Context) obj;
+                    if (ctx != null)
+                      return ctx;
+                  }
+                catch (RuntimeException e)
+                  {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                  }
               }
           }
         catch (ClassNotFoundException _1)

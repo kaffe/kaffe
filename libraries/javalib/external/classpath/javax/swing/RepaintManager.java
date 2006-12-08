@@ -38,6 +38,7 @@ exception statement from your version. */
 
 package javax.swing;
 
+import java.applet.Applet;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -49,7 +50,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
@@ -568,7 +568,6 @@ public class RepaintManager
       }
     dirtyComponentsWork.clear();
     repaintUnderway = false;
-    commitRemainingBuffers();
   }
   
   /**
@@ -643,130 +642,37 @@ public class RepaintManager
         width = Math.min(doubleBufferMaximumSize.width, width);
         int height = Math.max(proposedHeight, root.getHeight());
         height = Math.min(doubleBufferMaximumSize.height, height);
-        buffer = root.createImage(width, height);
+        buffer = component.createImage(width, height);
         offscreenBuffers.put(root, buffer);
       }
     return buffer;
   }
 
   /**
-   * Blits the back buffer of the specified root component to the screen. If
-   * the RepaintManager is currently working on a paint request, the commit
-   * requests are queued up and committed at once when the paint request is
-   * done (by {@link #commitRemainingBuffers}). This is package private because
-   * it must get called by JComponent.
+   * Blits the back buffer of the specified root component to the screen.
+   * This is package private because it must get called by JComponent.
    *
    * @param comp the component to be painted
    * @param area the area to paint on screen, in comp coordinates
    */
   void commitBuffer(Component comp, Rectangle area)
   {
-    // Determine the component that we finally paint the buffer upon.
-    // We need to paint on the nearest heavyweight component, so that Swing
-    // hierarchies inside (non-window) heavyweights get painted correctly.
-    // Otherwise we would end up blitting the backbuffer behind the heavyweight
-    // which is wrong.
-    Component root = getHeavyweightParent(comp);
-    // FIXME: Optimize this.
-    Rectangle rootRect = SwingUtilities.convertRectangle(comp, area, root);
-
-    // We synchronize on dirtyComponents here because that is what
-    // paintDirtyRegions also synchronizes on while painting.
-    synchronized (dirtyComponents)
+    Component root = comp;
+    while (root != null
+	   && ! (root instanceof Window || root instanceof Applet))
       {
-        // If the RepaintManager is not currently painting, then directly
-        // blit the requested buffer on the screen.
-        if (true || ! repaintUnderway)
-          {
-            blitBuffer(root, rootRect);
-          }
-
-        // Otherwise queue this request up, until all the RepaintManager work
-        // is done.
-        else
-          {
-            if (commitRequests.containsKey(root))
-              SwingUtilities.computeUnion(rootRect.x, rootRect.y,
-                                          rootRect.width, rootRect.height,
-                                         (Rectangle) commitRequests.get(root));
-            else
-              commitRequests.put(root, rootRect);
-          }
-      }
-  }
-
-  /**
-   * Copies the buffer to the screen. Note that the root component here is
-   * not necessarily the component with which the offscreen buffer is
-   * associated. The offscreen buffers are always allocated for the toplevel
-   * windows. However, painted is performed on lower-level heavyweight
-   * components too, if they contain Swing components.
-   *
-   * @param root the heavyweight component to blit upon
-   * @param rootRect the rectangle in the root component's coordinate space
-   */
-  private void blitBuffer(Component root, Rectangle rootRect)
-  {
-    if (! root.isShowing())
-      return;
-
-    // Find the Window from which we use the backbuffer.
-    Component bufferRoot = root;
-    Rectangle bufferRect = rootRect.getBounds();
-    if (!(bufferRoot instanceof Window))
-      {
-        bufferRoot = SwingUtilities.getWindowAncestor(bufferRoot);
-        SwingUtilities.convertRectangleToAncestor(root, rootRect, bufferRoot);
+	area.x += root.getX();
+	area.y += root.getY();
+	root = root.getParent();
       }
 
     Graphics g = root.getGraphics();
-    Image buffer = (Image) offscreenBuffers.get(bufferRoot);
+    Image buffer = (Image) offscreenBuffers.get(root);
 
     // Make sure we have a sane clip at this point.
-    g.clipRect(rootRect.x, rootRect.y, rootRect.width, rootRect.height);
-    g.drawImage(buffer, rootRect.x - bufferRect.x, rootRect.y - bufferRect.y,
-                root);
+    g.clipRect(area.x, area.y, area.width, area.height);
+    g.drawImage(buffer, 0, 0, root);
     g.dispose();
-
-  }
-
-  /**
-   * Finds and returns the nearest heavyweight parent for the specified
-   * component. If the component isn't contained inside a heavyweight parent,
-   * this returns null.
-   *
-   * @param comp the component
-   *
-   * @return the nearest heavyweight parent for the specified component or
-   *         null if the component has no heavyweight ancestor
-   */
-  private Component getHeavyweightParent(Component comp)
-  {
-    while (comp != null && comp.isLightweight())
-      comp = comp.getParent();
-    return comp;
-  }
-
-  /**
-   * Commits the queued up back buffers to screen all at once.
-   */
-  private void commitRemainingBuffers()
-  {
-    // We synchronize on dirtyComponents here because that is what
-    // paintDirtyRegions also synchronizes on while painting.
-    synchronized (dirtyComponents)
-      {
-        Set entrySet = commitRequests.entrySet();
-        Iterator i = entrySet.iterator();
-        while (i.hasNext())
-          {
-            Map.Entry entry = (Map.Entry) i.next();
-            Component root = (Component) entry.getKey();
-            Rectangle area = (Rectangle) entry.getValue();
-            blitBuffer(root, area);
-            i.remove();
-          }
-      }
   }
 
   /**

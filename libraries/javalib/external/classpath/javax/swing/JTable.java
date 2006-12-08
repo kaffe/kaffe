@@ -3303,10 +3303,21 @@ public class JTable
   
   public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction)
   {
-    if (orientation == SwingConstants.VERTICAL)
-      return visibleRect.height * direction;
+    int block;
+    if (orientation == SwingConstants.HORIZONTAL)
+      {
+        block = visibleRect.width;
+      }
     else
-      return visibleRect.width * direction;
+      {
+        int rowHeight = getRowHeight();
+        if (rowHeight > 0)
+          block = Math.max(rowHeight, // Little hack for useful rounding.
+                           (visibleRect.height / rowHeight) * rowHeight);
+        else
+          block = visibleRect.height;
+      }
+    return block;
   }
 
   /**
@@ -3345,24 +3356,40 @@ public class JTable
    *          The values greater than one means that more mouse wheel or similar
    *          events were generated, and hence it is better to scroll the longer
    *          distance.
-   * @author Audrius Meskauskas (audriusa@bioinformatics.org)
+   *          
+   * @author Roman Kennke (kennke@aicas.com)
    */
   public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation,
                                         int direction)
   {
-    int h = (rowHeight + rowMargin);
-    int delta = h * direction;
-
-    // Round so that the top would start from the row boundary
-    if (orientation == SwingConstants.VERTICAL)
+    int unit;
+    if (orientation == SwingConstants.HORIZONTAL)
+      unit = 100;
+    else
       {
-        // Completely expose the top row
-        int near = ((visibleRect.y + delta + h / 2) / h) * h;
-        int diff = visibleRect.y + delta - near;
-        delta -= diff;
+        unit = getRowHeight();
+        // The following adjustment doesn't work for variable height rows.
+        // It fully exposes partially visible rows in the scrolling direction.
+        if (rowHeights == null)
+          {
+            if (direction > 0)
+              {
+                // Scroll down.
+                // How much pixles are exposed from the last item?
+                int exposed = (visibleRect.y + visibleRect.height) % unit;
+                if (exposed > 0 && exposed < unit - 1)
+                  unit = unit - exposed - 1;
+              }
+            else
+              {
+                // Scroll up.
+                int exposed = visibleRect.y % unit;
+                if (exposed > 0 && exposed < unit)
+                  unit = exposed;
+              }
+          }
       }
-    return delta;
-    // TODO when scrollng horizontally, scroll into the column boundary.
+    return unit;
   }
 
   /**

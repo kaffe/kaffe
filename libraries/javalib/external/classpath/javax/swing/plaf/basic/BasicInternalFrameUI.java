@@ -459,18 +459,12 @@ public class BasicInternalFrameUI extends InternalFrameUI
     {
       if (frame.isMaximum())
         {
-          JDesktopPane pane = (JDesktopPane) e.getSource();
-          Insets insets = pane.getInsets();
-          Rectangle bounds = pane.getBounds();
-
-          frame.setBounds(bounds.x + insets.left, bounds.y + insets.top,
-                          bounds.width - insets.left - insets.right,
-                          bounds.height - insets.top - insets.bottom);
-          frame.revalidate();
-          frame.repaint();
+          Container parent = frame.getParent();
+          Insets i = parent.getInsets();
+          int width = parent.getWidth() - i.left - i.right;
+          int height = parent.getHeight() - i.top - i.bottom;
+          frame.setBounds(0, 0, width, height);
         }
-
-      // Sun also resizes the icons. but it doesn't seem to do anything.
     }
 
     /**
@@ -949,17 +943,25 @@ public class BasicInternalFrameUI extends InternalFrameUI
         {
           if (evt.getNewValue() == Boolean.TRUE)
             {
+              Container parent = frame.getParent();
+              if (parent != null)
+                parent.removeComponentListener(componentListener);
               closeFrame(frame);
             }
         }
-      /*
-       * FIXME: need to add ancestor properties to JComponents. else if
-       * (evt.getPropertyName().equals(JComponent.ANCESTOR_PROPERTY)) { if
-       * (desktopPane != null)
-       * desktopPane.removeComponentListener(componentListener); desktopPane =
-       * frame.getDesktopPane(); if (desktopPane != null)
-       * desktopPane.addComponentListener(componentListener); }
-       */
+      else if (property.equals("ancestor"))
+        {
+          Container newParent = (Container) evt.getNewValue();
+          Container oldParent = (Container) evt.getOldValue();
+          if (newParent != null)
+            {
+              newParent.addComponentListener(componentListener);
+            }
+          else if (oldParent != null)
+            {
+              oldParent.removeComponentListener(componentListener);
+            }
+        }
     }
   }
 
@@ -1258,6 +1260,12 @@ public class BasicInternalFrameUI extends InternalFrameUI
     frame.addPropertyChangeListener(propertyChangeListener);
     frame.getRootPane().getGlassPane().addMouseListener(glassPaneDispatcher);
     frame.getRootPane().getGlassPane().addMouseMotionListener(glassPaneDispatcher);
+
+    Container parent = frame.getParent();
+    if (parent != null)
+      {
+        parent.addComponentListener(componentListener);
+      }
   }
 
   /**
@@ -1286,8 +1294,13 @@ public class BasicInternalFrameUI extends InternalFrameUI
    */
   protected void uninstallListeners()
   {
-    if (desktopPane != null)
-      desktopPane.removeComponentListener(componentListener);
+
+    Container parent = frame.getParent();
+    if (parent != null)
+      {
+        parent.removeComponentListener(componentListener);
+      }
+    componentListener = null;
 
     frame.getRootPane().getGlassPane().removeMouseMotionListener(glassPaneDispatcher);
     frame.getRootPane().getGlassPane().removeMouseListener(glassPaneDispatcher);
@@ -1298,7 +1311,7 @@ public class BasicInternalFrameUI extends InternalFrameUI
     frame.removeMouseListener(borderListener);
 
     propertyChangeListener = null;
-    componentListener = null;
+
     borderListener = null;
     internalFrameListener = null;
     glassPaneDispatcher = null;
