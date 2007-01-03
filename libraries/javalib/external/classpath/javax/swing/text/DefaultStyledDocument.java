@@ -497,11 +497,6 @@ public class DefaultStyledDocument extends AbstractDocument implements
     private int pos;
 
     /**
-     * The ElementChange that describes the latest changes.
-     */
-    private DefaultDocumentEvent documentEvent;
-
-    /**
      * The parent of the fracture.
      */
     private Element fracturedParent;
@@ -835,13 +830,9 @@ public class DefaultStyledDocument extends AbstractDocument implements
      */
     public void change(int offset, int length, DefaultDocumentEvent ev)
     {
-      if (length == 0)
-        return;
-      this.offset = offset;
-      this.pos = offset;
-      this.length = length;
-      documentEvent = ev;
+      prepareEdit(offset, length);
       changeUpdate();
+      finishEdit(ev);
     }
 
     /**
@@ -1258,8 +1249,6 @@ public class DefaultStyledDocument extends AbstractDocument implements
     {
       int len = tag.getLength();
       int dir = tag.getDirection();
-      AttributeSet tagAtts = tag.getAttributes();
-      
       if (dir == ElementSpec.JoinNextDirection)
         {
           if (! edit.isFracture)
@@ -1603,56 +1592,6 @@ public class DefaultStyledDocument extends AbstractDocument implements
       
     }
 
-    /**
-     * Recreates all the elements from the parent to the element on the top of
-     * the stack, starting from startFrom with the starting offset of
-     * startOffset.
-     * 
-     * @param recreate -
-     *          the elements to recreate
-     * @param parent -
-     *          the element to add the new elements to
-     * @param startFrom -
-     *          where to start recreating from
-     * @param startOffset -
-     *          the offset of the first element
-     * @return the array of added elements         
-     */
-    private Element[] recreateAfterFracture(Element[] recreate,
-                                       BranchElement parent, int startFrom,
-                                       int startOffset)
-    {
-      Element[] added = new Element[recreate.length - startFrom];
-      int j = 0;
-      for (int i = startFrom; i < recreate.length; i++)
-        {
-          Element curr = recreate[i];
-          int len = curr.getEndOffset() - curr.getStartOffset();
-          if (curr instanceof LeafElement)
-            added[j] = createLeafElement(parent, curr.getAttributes(),
-                                         startOffset, startOffset + len);
-          else
-            {
-              BranchElement br =
-                (BranchElement) createBranchElement(parent,
-                                                    curr.getAttributes());
-              int bSize = curr.getElementCount();
-              for (int k = 0; k < bSize; k++)
-                {
-                  Element bCurr = curr.getElement(k);
-                  Element[] add = recreateAfterFracture(new Element[] { bCurr }, br, 0,
-                                        startOffset);
-                  br.replace(0, 0, add);
-                  
-                }
-              added[j] = br;
-            }
-          startOffset += len;
-          j++;
-        }
-
-      return added;
-    }
   }
 
 
@@ -1985,7 +1924,6 @@ public class DefaultStyledDocument extends AbstractDocument implements
         // start and ends at an element end.
         buffer.change(offset, length, ev);
 
-        Element root = getDefaultRootElement();
         // Visit all paragraph elements within the specified interval
         int end = offset + length;
         Element curr;

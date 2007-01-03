@@ -83,7 +83,7 @@ RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
   distclean-recursive maintainer-clean-recursive
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = target security management awt math sound zip
+DIST_SUBDIRS = security management awt math sound zip
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 ALSA_CFLAGS = @ALSA_CFLAGS@
@@ -109,7 +109,6 @@ CCLD = @CCLD@
 CFLAGS = @CFLAGS@
 CFLAGS_PG = @CFLAGS_PG@
 CFLAGS_WITHOUT_PG = @CFLAGS_WITHOUT_PG@
-CLASSPATH_INCLUDES = @CLASSPATH_INCLUDES@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CXX = @CXX@
@@ -301,7 +300,6 @@ with_engine = @with_engine@
 @COND_PURE_JAVA_MATH_FALSE@MAYBE_NATIVE_MATH_DIR = math
 @COND_ZLIB_ZIP_TRUE@MAYBE_ZLIB_ZIP = zip
 SUBDIRS = \
-	target \
 	security \
 	management \
 	$(MAYBE_NATIVE_AWT_DIR) \

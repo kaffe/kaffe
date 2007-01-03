@@ -114,28 +114,24 @@ public class LabelView extends GlyphView
    */
   protected void setPropertiesFromAttributes()
   {
-    Element el = getElement();
-    AttributeSet atts = el.getAttributes();
-    // We cannot use StyleConstants.getBackground() here, because that returns
-    // BLACK as default (when background == null). What we need is the
-    // background setting of the text component instead, which is what we get
-    // when background == null anyway.
-    background = (Color) atts.getAttribute(StyleConstants.Background);
-    foreground = StyleConstants.getForeground(atts);
+    AttributeSet atts = getAttributes();
     setStrikeThrough(StyleConstants.isStrikeThrough(atts));
     setSubscript(StyleConstants.isSubscript(atts));
     setSuperscript(StyleConstants.isSuperscript(atts));
     setUnderline(StyleConstants.isUnderline(atts));
 
-    // Determine the font.
-    String family = StyleConstants.getFontFamily(atts);
-    int size = StyleConstants.getFontSize(atts);
-    int style = Font.PLAIN;
-    if (StyleConstants.isBold(atts))
-        style |= Font.BOLD;
-    if (StyleConstants.isItalic(atts))
-      style |= Font.ITALIC;
-    font = new Font(family, style, size);
+    // Determine the font and colors.
+    Document d = getDocument();
+    if (d instanceof StyledDocument)
+      {
+        StyledDocument doc = (StyledDocument) d;
+        font = doc.getFont(atts);
+        if (atts.isDefined(StyleConstants.Background))
+          background = doc.getBackground(atts);
+        else
+          background = null;
+        foreground = doc.getForeground(atts);
+      }
     valid = true;
   }
 
@@ -258,6 +254,8 @@ public class LabelView extends GlyphView
    */
   public boolean isSubscript()
   {
+    if (! valid)
+      setPropertiesFromAttributes();
     return subscript;
   }
 

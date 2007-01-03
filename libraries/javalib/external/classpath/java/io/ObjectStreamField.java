@@ -58,7 +58,7 @@ public class ObjectStreamField implements Comparable
   private boolean unshared;
   private boolean persistent = false;
   private boolean toset = true;
-  private Field field;
+  Field field;
 
   ObjectStreamField (Field field)
   {

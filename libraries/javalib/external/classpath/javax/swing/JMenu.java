@@ -39,7 +39,14 @@ exception statement from your version. */
 package javax.swing;
 
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Insets;
 import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -119,8 +126,10 @@ public class JMenu extends JMenuItem implements Accessible, MenuElement
   /* PopupListener */
   protected WinListener popupListener;
 
-  /** Location at which popup menu associated with this menu will be
-     displayed */
+  /**
+   * Location at which popup menu associated with this menu will be
+   * displayed
+   */
   private Point menuLocation;
 
   /**
@@ -366,16 +375,16 @@ public class JMenu extends JMenuItem implements Accessible, MenuElement
   public void setModel(ButtonModel model)
   {
     ButtonModel oldModel = getModel();
-    if (oldModel != null && changeListener != null)
-      oldModel.removeChangeListener(changeListener);
+    if (oldModel != null && menuChangeListener != null)
+      oldModel.removeChangeListener(menuChangeListener);
 
     super.setModel(model);
 
     if (model != null)
       {
-        if (changeListener == null)
-          changeListener = new MenuChangeListener();
-        model.addChangeListener(changeListener);
+        if (menuChangeListener == null)
+          menuChangeListener = new MenuChangeListener();
+        model.addChangeListener(menuChangeListener);
       }
   }
 
@@ -425,7 +434,8 @@ public class JMenu extends JMenuItem implements Accessible, MenuElement
         if (popup && isShowing())
           {
             // Set location as determined by getPopupLocation().
-            Point loc = getPopupMenuOrigin();
+            Point loc = menuLocation == null ? getPopupMenuOrigin()
+                                             : menuLocation;
             getPopupMenu().show(this, loc.x, loc.y);
           }
         else
@@ -434,26 +444,109 @@ public class JMenu extends JMenuItem implements Accessible, MenuElement
   }
 
   /**
-   * Returns origin point of the popup menu
+   * Returns origin point of the popup menu. This takes the screen bounds
+   * into account and places the popup where it fits best. 
    *
-   * @return Point containing
+   * @return the origin of the popup menu
    */
   protected Point getPopupMenuOrigin()
   {
-    Point point;
+    // The menu's screen location and size.
+    Point screenLoc = getLocationOnScreen();
+    Dimension size = getSize();
 
-    // if menu in the menu bar
+    // Determine the popup's size.
+    JPopupMenu popup = getPopupMenu();
+    Dimension popupSize = popup.getSize();
+    if (popupSize.width == 0 || popupSize.height == 0)
+      popupSize = popup.getPreferredSize(); 
+
+    // Determine screen bounds.
+    Toolkit tk = Toolkit.getDefaultToolkit();
+    Rectangle screenBounds = new Rectangle(tk.getScreenSize());
+    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+    GraphicsDevice gd = ge.getDefaultScreenDevice();
+    GraphicsConfiguration gc = gd.getDefaultConfiguration();
+    Insets screenInsets = tk.getScreenInsets(gc);
+    screenBounds.x -= screenInsets.left;
+    screenBounds.width -= screenInsets.left + screenInsets.right;
+    screenBounds.y -= screenInsets.top;
+    screenBounds.height -= screenInsets.top + screenInsets.bottom;
+    screenLoc.x -= screenInsets.left;
+    screenLoc.y -= screenInsets.top;
+
+    Point point = new Point();
     if (isTopLevelMenu())
-      point = new Point(0, this.getHeight());
-
-    // if submenu
+      {
+        // If menu in the menu bar.
+        int xOffset = UIManager.getInt("Menu.menuPopupOffsetX");
+        int yOffset = UIManager.getInt("Menu.menuPopupOffsetY");
+        // Determine X location.
+        if (getComponentOrientation().isLeftToRight())
+          {
+            // Prefer popup to the right.
+            point.x = xOffset;
+            // Check if it fits, otherwise place popup wherever it fits.
+            if (screenLoc.x + point.x + popupSize.width
+                > screenBounds.width + screenBounds.width
+                && screenBounds.width - size.width
+                   < 2 * (screenLoc.x - screenBounds.x))
+              // Popup to the right if there's not enough room.
+              point.x = size.width - xOffset - popupSize.width;
+          }
+        else
+          {
+            // Prefer popup to the left.
+            point.x = size.width - xOffset - popupSize.width;
+            if (screenLoc.x + point.x < screenBounds.x
+                && screenBounds.width - size.width
+                   > 2 * (screenLoc.x - screenBounds.x))
+              // Popup to the left if there's not enough room.
+              point.x = xOffset;
+          }
+        // Determine Y location. Prefer popping down.
+        point.y = size.height + yOffset;
+        if (screenLoc.y + point.y + popupSize.height >= screenBounds.height
+            && screenBounds.height - size.height
+               < 2 * (screenLoc.y - screenBounds.y))
+          // Position above if there's not enough room below.
+          point.y = - yOffset - popupSize.height;
+      }
     else
       {
+        // If submenu.
         int xOffset = UIManager.getInt("Menu.submenuPopupOffsetX");
         int yOffset = UIManager.getInt("Menu.submenuPopupOffsetY");
-        int x = getWidth() + xOffset;
-        int y = yOffset;
-        point = new Point(x, y);
+        // Determine X location.
+        if (getComponentOrientation().isLeftToRight())
+          {
+            // Prefer popup to the right.
+            point.x = size.width + xOffset;
+            if (screenLoc.x + point.x + popupSize.width
+                >= screenBounds.x + screenBounds.width
+                && screenBounds.width - size.width
+                   < 2 * (screenLoc.x - screenBounds.x))
+              // Position to the left if there's not enough room on the right.
+              point.x = - xOffset - popupSize.width;
+          }
+        else
+          {
+            // Prefer popup on the left side.
+            point.x = - xOffset - popupSize.width;
+            if (screenLoc.x + point.x < screenBounds.x
+                && screenBounds.width - size.width
+                > 2 * (screenLoc.x - screenBounds.x))
+              // Popup to the right if there's not enough room.
+              point.x = size.width + xOffset;
+          }
+        // Determine Y location. Prefer popping down.
+        point.y = yOffset;
+        if (screenLoc.y + point.y + popupSize.height
+            >= screenBounds.y + screenBounds.height
+            && screenBounds.height - size.height
+            < 2 * (screenLoc.y - screenBounds.y))
+          // Pop up if there's not enough room below.
+          point.y = size.height - yOffset - popupSize.height;
       }
     return point;
   }
@@ -495,6 +588,8 @@ public class JMenu extends JMenuItem implements Accessible, MenuElement
   public void setMenuLocation(int x, int y)
   {
     menuLocation = new Point(x, y);
+    if (popupMenu != null)
+      popupMenu.setLocation(x, y);
   }
 
   /**
@@ -612,7 +707,7 @@ public class JMenu extends JMenuItem implements Accessible, MenuElement
     if (getPopupMenu() == null || getMenuComponentCount() == 0)
       return null;
     
-    return (Component) popupMenu.getComponentAtIndex(index);
+    return popupMenu.getComponentAtIndex(index);
   }
 
   /**

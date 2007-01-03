@@ -45,13 +45,10 @@ exception statement from your version. */
 #include <jni.h>
 #include <jcl.h>
 
+#include "cpnative.h"
+#include "cpnet.h"
+
 #include "javanet.h"
-
-#include "target_native.h"
-#ifndef WITHOUT_NETWORK
-  #include "target_native_network.h"
-#endif /* WITHOUT_NETWORK */
-
 
 #include "gnu_java_net_VMPlainDatagramSocketImpl.h"
 
@@ -188,19 +185,20 @@ Java_gnu_java_net_VMPlainDatagramSocketImpl_nativeReceive(JNIEnv     *env,
                                                           jintArray  receivedLength)
 {
 #ifndef WITHOUT_NETWORK
-  int           addr, *port, *bytes_read;
-  char          *addressBytes;
+  jint          *port, *bytes_read;
+  cpnet_address *addr;
+  jbyte          *addressBytes;
 
   addr = 0;
     
-  port = (int*)(*env)->GetIntArrayElements(env, receivedFromPort, NULL);
+  port = (jint*)(*env)->GetIntArrayElements(env, receivedFromPort, NULL);
   if (port == NULL)
     {
       JCL_ThrowException(env, IO_EXCEPTION, "Internal error: could not access receivedFromPort array");
       return;
     }
   
-  bytes_read = (int*)(*env)->GetIntArrayElements(env, receivedLength, NULL);
+  bytes_read = (jint*)(*env)->GetIntArrayElements(env, receivedLength, NULL);
   if (bytes_read == NULL)
     {
       (*env)->ReleaseIntArrayElements(env, receivedFromPort, (jint*)port, 0);
@@ -210,7 +208,7 @@ Java_gnu_java_net_VMPlainDatagramSocketImpl_nativeReceive(JNIEnv     *env,
 
   /* Receive the packet */
   /* should we try some sort of validation on the length? */
-  (*bytes_read) = _javanet_recvfrom(env, obj, arr, offset, length, &addr, port);
+  (*bytes_read) = _javanet_recvfrom(env, obj, arr, offset, length, &addr);
 
   /* Special case the strange situation where the receiver didn't want any
      bytes. */
@@ -225,27 +223,23 @@ Java_gnu_java_net_VMPlainDatagramSocketImpl_nativeReceive(JNIEnv     *env,
       return;
     }
 
+  if ((*env)->ExceptionOccurred(env))
+    return;
+
+  *port = cpnet_addressGetPort (addr);
+  
+  /* Store the address */
+  addressBytes = (jbyte*)(*env)->GetPrimitiveArrayCritical(env, receivedFromAddress, NULL);
+  cpnet_IPV4AddressToBytes (addr, addressBytes);
+  (*env)->ReleasePrimitiveArrayCritical(env, receivedFromAddress, addressBytes, 0);
+  
+  cpnet_freeAddress (env, addr);
+  
   (*env)->ReleaseIntArrayElements(env, receivedFromPort, (jint*)port, 0);
   (*env)->ReleaseIntArrayElements(env, receivedLength, (jint*)bytes_read, 0);
 
-  if ((*env)->ExceptionOccurred(env))
-    {
-      return;
-    }
-
   DBG("PlainDatagramSocketImpl.receive(): Received packet\n");
   
-  
-  /* Store the address */
-  addressBytes = (char*)(*env)->GetPrimitiveArrayCritical(env, receivedFromAddress, NULL);
-  TARGET_NATIVE_NETWORK_INT_TO_IPADDRESS_BYTES(addr,
-                                               addressBytes[0],
-                                               addressBytes[1],
-                                               addressBytes[2],
-                                               addressBytes[3]
-                                              );
-  (*env)->ReleasePrimitiveArrayCritical(env, receivedFromAddress, addressBytes, 0);
-    
 #else /* not WITHOUT_NETWORK */
 #endif /* not WITHOUT_NETWORK */
 }
@@ -266,25 +260,35 @@ Java_gnu_java_net_VMPlainDatagramSocketImpl_nativeSendTo(JNIEnv  *env,
                                                          jint    len)
 {
 #ifndef WITHOUT_NETWORK
-  jint netAddress;
+  cpnet_address *netAddress;
 
   /* check if address given, tr 7.3.2005 */
-  if (addr != NULL)
+  if (addr != NULL )
     {
-      netAddress = _javanet_get_netaddr(env, addr);
+      netAddress = _javanet_get_ip_netaddr(env, addr);
       if ((*env)->ExceptionOccurred(env))
-        {
+        {	  
           return;
         }
+      if (port == 0)
+	{
+	  JCL_ThrowException(env, IO_EXCEPTION,
+			     "Invalid port number");
+	  cpnet_freeAddress(env, netAddress);
+	  return;
+	}
+      cpnet_addressSetPort (netAddress, port);
     }
   else
     {
-      netAddress = 0;
+      netAddress = NULL;
     }
 
   DBG("PlainDatagramSocketImpl.sendto(): have addr\n");
 
-  _javanet_sendto(env, obj, buf, offset, len, netAddress, port);
+  _javanet_sendto(env, obj, buf, offset, len, netAddress);
+  if (netAddress != NULL)
+    cpnet_freeAddress(env, netAddress);
   if ((*env)->ExceptionOccurred(env))
     {
       return;
@@ -307,14 +311,14 @@ Java_gnu_java_net_VMPlainDatagramSocketImpl_join(JNIEnv *env,
 						 jobject addr)
 {
 #ifndef WITHOUT_NETWORK
-  jint netAddress;
+  cpnet_address *netAddress;
   int  fd;
   int  result;
 
   /* check if address given, tr 7.3.2005 */
   if (addr != NULL)
     {
-      netAddress = _javanet_get_netaddr(env, addr);
+      netAddress = _javanet_get_ip_netaddr(env, addr);
       if ((*env)->ExceptionOccurred(env))
         {
           JCL_ThrowException(env, IO_EXCEPTION, "Internal error");
@@ -323,7 +327,7 @@ Java_gnu_java_net_VMPlainDatagramSocketImpl_join(JNIEnv *env,
     }
   else
     {
-      netAddress = 0;
+      netAddress = NULL;
     }
 
   fd = _javanet_get_int_field(env, obj, "native_fd");
@@ -335,11 +339,11 @@ Java_gnu_java_net_VMPlainDatagramSocketImpl_join(JNIEnv *env,
 
   DBG("PlainDatagramSocketImpl.join(): have native fd\n");
 
-  TARGET_NATIVE_NETWORK_SOCKET_SET_OPTION_ADD_MEMBERSHIP(fd,netAddress,result);
-
-  if (result != TARGET_NATIVE_OK)
+  result = cpnet_addMembership (env, fd, netAddress);
+  if (result != CPNATIVE_OK)
     {
-      JCL_ThrowException(env, IO_EXCEPTION, TARGET_NATIVE_LAST_ERROR_STRING());
+      JCL_ThrowException(env, IO_EXCEPTION, 
+			 cpnative_getErrorString (result));
       return;
     }
 
@@ -360,14 +364,14 @@ Java_gnu_java_net_VMPlainDatagramSocketImpl_leave(JNIEnv *env,
 						  jobject addr)
 {
 #ifndef WITHOUT_NETWORK
-  jint netAddress;
+  cpnet_address *netAddress;
   int  fd;
   int  result;
 
   /* check if address given, tr 7.3.2005 */
   if (addr != NULL)
     {
-      netAddress = _javanet_get_netaddr(env, addr);
+      netAddress = _javanet_get_ip_netaddr(env, addr);
       if ((*env)->ExceptionOccurred(env))
         {
           JCL_ThrowException(env, IO_EXCEPTION, "Internal error");
@@ -381,14 +385,17 @@ Java_gnu_java_net_VMPlainDatagramSocketImpl_leave(JNIEnv *env,
 
   fd = _javanet_get_int_field(env, obj, "native_fd");
   if ((*env)->ExceptionOccurred(env))
-    { JCL_ThrowException(env, IO_EXCEPTION, "Internal error"); return; }
+    {
+      JCL_ThrowException(env, IO_EXCEPTION, "Internal error"); 
+      return; 
+    }
 
   DBG("PlainDatagramSocketImpl.leave(): have native fd\n");
 
-  TARGET_NATIVE_NETWORK_SOCKET_SET_OPTION_DROP_MEMBERSHIP(fd,netAddress,result);
-  if (result!=TARGET_NATIVE_OK)
+  result = cpnet_dropMembership (env, fd, netAddress);
+  if (result != CPNATIVE_OK)
     {
-      JCL_ThrowException(env, IO_EXCEPTION, TARGET_NATIVE_LAST_ERROR_STRING());
+      JCL_ThrowException(env, IO_EXCEPTION, cpnative_getErrorString (result));
       return;
     }
 

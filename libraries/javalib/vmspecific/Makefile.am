@@ -32,8 +32,6 @@ dist_vminterface_JAVA = \
 	gnu/classpath/VMStackWalker.java \
 	gnu/classpath/VMSystemProperties.java \
 	gnu/java/net/InetAddressImpl.java \
-	gnu/java/net/PlainDatagramSocketImpl.java \
-	gnu/java/net/PlainSocketImpl.java \
 	gnu/java/net/SysInetAddressImpl.java \
 	java/lang/Runtime.java \
 	java/lang/VMClassLoader.java \
@@ -48,9 +46,7 @@ dist_vminterface_JAVA = \
 	java/lang/reflect/Field.java \
 	java/lang/reflect/Method.java \
 	java/lang/reflect/VMArray.java \
-	java/net/InetAddress.java \
 	java/net/VMInetAddress.java \
-	java/net/VMURLConnection.java \
 	java/security/VMAccessController.java \
 	java/security/VMSecureRandom.java \
 	org/kaffe/jar/ExecJar.java \

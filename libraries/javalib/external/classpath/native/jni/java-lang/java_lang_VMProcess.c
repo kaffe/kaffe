@@ -50,10 +50,8 @@ exception statement from your version. */
 #include <fcntl.h>
 #include <stdio.h>
 
-#include <jcl.h>
-
-#include "target_native.h"
-#include "target_native_misc.h"
+#include "cpnative.h"
+#include "cpproc.h"
 
 /* Internal functions */
 static char *copy_string (JNIEnv * env, jobject string);
@@ -65,7 +63,6 @@ static char *copy_elem (JNIEnv * env, jobject stringArray, jint i);
 static char *
 copy_string (JNIEnv * env, jobject string)
 {
-  char errbuf[64];
   const char *utf;
   jclass clazz;
   char *copy;
@@ -89,12 +86,10 @@ copy_string (JNIEnv * env, jobject string)
   /* Copy it */
   if ((copy = strdup (utf)) == NULL)
     {
-      TARGET_NATIVE_MISC_FORMAT_STRING1 (errbuf, sizeof (errbuf),
-					 "strdup: %s", strerror (errno));
       clazz = (*env)->FindClass (env, "java/lang/InternalError");
       if ((*env)->ExceptionOccurred (env))
 	return NULL;
-      (*env)->ThrowNew (env, clazz, errbuf);
+      (*env)->ThrowNew (env, clazz, "strdup returned NULL");
       (*env)->DeleteLocalRef (env, clazz);
     }
 
@@ -131,8 +126,8 @@ Java_java_lang_VMProcess_nativeSpawn (JNIEnv * env, jobject this,
 				      jobjectArray envArray, jobject dirFile,
 				      jboolean redirect)
 {
-  int fds[3][2] = { {-1, -1}, {-1, -1}, {-1, -1} };
-  jobject streams[3] = { NULL, NULL, NULL };
+  int fds[CPIO_EXEC_NUM_PIPES];
+  jobject streams[CPIO_EXEC_NUM_PIPES] = { NULL, NULL, NULL };
   jobject dirString = NULL;
   char **newEnviron = NULL;
   jsize cmdArrayLen = 0;
@@ -146,6 +141,7 @@ Java_java_lang_VMProcess_nativeSpawn (JNIEnv * env, jobject this,
   jclass clazz;
   int i;
   int pipe_count = redirect ? 2 : 3;
+  int err;
 
   /* Check for null */
   if (cmdArray == NULL)
@@ -182,9 +178,7 @@ Java_java_lang_VMProcess_nativeSpawn (JNIEnv * env, jobject this,
 			  + (dirString !=
 			     NULL ? 1 : 0)) * sizeof (*strings))) == NULL)
     {
-      TARGET_NATIVE_MISC_FORMAT_STRING1 (errbuf,
-					 sizeof (errbuf), "malloc: %s",
-					 strerror (errno));
+      strncpy (errbuf, "malloc failed", sizeof(errbuf));
       goto out_of_memory;
     }
 
@@ -209,101 +203,14 @@ Java_java_lang_VMProcess_nativeSpawn (JNIEnv * env, jobject this,
     {
       if ((dir = copy_string (env, dirString)) == NULL)
 	goto done;
-      strings[num_strings++] = dir;
     }
 
   /* Create inter-process pipes */
-  for (i = 0; i < pipe_count; i++)
+  err = cpproc_forkAndExec(strings, newEnviron, fds, pipe_count, &pid, dir);
+  if (err != 0)
     {
-      if (pipe (fds[i]) == -1)
-	{
-	  TARGET_NATIVE_MISC_FORMAT_STRING1 (errbuf,
-					     sizeof (errbuf), "pipe: %s",
-					     strerror (errno));
-	  goto system_error;
-	}
-    }
-
-  /* Set close-on-exec flag for parent's ends of pipes */
-  (void) fcntl (fds[0][1], F_SETFD, 1);
-  (void) fcntl (fds[1][0], F_SETFD, 1);
-  if (pipe_count == 3)
-    (void) fcntl (fds[2][0], F_SETFD, 1);
-
-  /* Fork into parent and child processes */
-  if ((pid = fork ()) == (pid_t) - 1)
-    {
-      TARGET_NATIVE_MISC_FORMAT_STRING1 (errbuf,
-					 sizeof (errbuf), "fork: %s",
-					 strerror (errno));
+      strncpy(errbuf, cpnative_getErrorString (err), sizeof(errbuf));
       goto system_error;
-    }
-
-  /* Child becomes the new process */
-  if (pid == 0)
-    {
-      char *const path = strings[0];
-
-      /* Move file descriptors to standard locations */
-      if (fds[0][0] != 0)
-	{
-	  if (dup2 (fds[0][0], 0) == -1)
-	    {
-	      fprintf (stderr, "dup2: %s", strerror (errno));
-	      exit (127);
-	    }
-	  close (fds[0][0]);
-	}
-      if (fds[1][1] != 1)
-	{
-	  if (dup2 (fds[1][1], 1) == -1)
-	    {
-	      fprintf (stderr, "dup2: %s", strerror (errno));
-	      exit (127);
-	    }
-	  close (fds[1][1]);
-	}
-      if (pipe_count == 2)
-	{
-	  /* Duplicate stdout to stderr.  */
-	  if (dup2 (1, 2) == -1)
-	    {
-	      fprintf (stderr, "dup2: %s", strerror (errno));
-	      exit (127);
-	    }
-	}
-      else if (fds[2][1] != 2)
-	{
-	  if (dup2 (fds[2][1], 2) == -1)
-	    {
-	      fprintf (stderr, "dup2: %s", strerror (errno));
-	      exit (127);
-	    }
-	  close (fds[2][1]);
-	}
-
-      /* Change into destination directory */
-      if (dir != NULL && chdir (dir) == -1)
-	{
-	  fprintf (stderr, "%s: %s", dir, strerror (errno));
-	  exit (127);
-	}
-
-      /* Make argv[0] last component of executable pathname */
-      /* XXX should use "file.separator" property here XXX */
-      for (i = strlen (path); i > 0 && path[i - 1] != '/'; i--);
-      strings[0] = path + i;
-
-      /* Set new environment */
-      if (newEnviron != NULL)
-	environ = newEnviron;
-
-      /* Execute new program (this will close the parent end of the pipes) */
-      execvp (path, strings);
-
-      /* Failed */
-      fprintf (stderr, "%s: %s", path, strerror (errno));
-      exit (127);
     }
 
   /* Create Input/OutputStream objects around parent file descriptors */
@@ -316,10 +223,8 @@ Java_java_lang_VMProcess_nativeSpawn (JNIEnv * env, jobject this,
   for (i = 0; i < pipe_count; i++)
     {
       /* Mode is WRITE (2) for in and READ (1) for out and err. */
-      const int fd = fds[i][i == 0];
-      const int mode = ((i == 0)
-			? gnu_java_nio_channels_FileChannelImpl_WRITE
-			: gnu_java_nio_channels_FileChannelImpl_READ);
+      const int fd = fds[i];
+      const int mode = ((i == CPIO_EXEC_STDIN) ? 2 : 1);
       jclass sclazz;
       jmethodID smethod;
 
@@ -355,7 +260,10 @@ Java_java_lang_VMProcess_nativeSpawn (JNIEnv * env, jobject this,
   if ((*env)->ExceptionOccurred (env))
     goto done;
   (*env)->CallVoidMethod (env, this, method,
-			  streams[0], streams[1], streams[2], (jlong) pid);
+			  streams[CPIO_EXEC_STDIN],
+			  streams[CPIO_EXEC_STDOUT],
+			  streams[CPIO_EXEC_STDERR],
+			  (jlong) pid);
   if ((*env)->ExceptionOccurred (env))
     goto done;
 
@@ -365,15 +273,6 @@ done:
    * parent process. Our goal is to clean up the mess we created.
    */
 
-  /* Close child's ends of pipes */
-  for (i = 0; i < pipe_count; i++)
-    {
-      const int fd = fds[i][i != 0];
-
-      if (fd != -1)
-	close (fd);
-    }
-
   /*
    * Close parent's ends of pipes if Input/OutputStreams never got created.
    * This can only happen in a failure case. If a Stream object
@@ -382,7 +281,7 @@ done:
    */
   for (i = 0; i < pipe_count; i++)
     {
-      const int fd = fds[i][i == 0];
+      const int fd = fds[i];
 
       if (fd != -1 && streams[i] == NULL)
 	close (fd);
@@ -392,7 +291,8 @@ done:
   while (num_strings > 0)
     free (strings[--num_strings]);
   free (strings);
-
+  if (dir != NULL)
+    free(dir);
   /* Done */
   return;
 
@@ -431,19 +331,20 @@ Java_java_lang_VMProcess_nativeReap (JNIEnv * env, jclass clazz)
   jfieldID field;
   jint status;
   pid_t pid;
+  int err;
 
   /* Try to reap a child process, but don't block */
-  if ((pid = waitpid ((pid_t) - 1, &status, WNOHANG)) == 0)
+  err = cpproc_waitpid((pid_t)-1, &status, &pid, WNOHANG);
+  if (err == 0 && pid == 0)
     return JNI_FALSE;
 
   /* Check result from waitpid() */
-  if (pid == (pid_t) - 1)
+  if (err != 0)
     {
-      if (errno == ECHILD || errno == EINTR)
+      if (err == ECHILD || err == EINTR)
 	return JNI_FALSE;
-      TARGET_NATIVE_MISC_FORMAT_STRING2 (ebuf,
-					 sizeof (ebuf), "waitpid(%ld): %s",
-					 (long) pid, strerror (errno));
+      snprintf(ebuf, sizeof (ebuf), "waitpid(%ld): %s",
+	       (long) pid, cpnative_getErrorString(errno));
       clazz = (*env)->FindClass (env, "java/lang/InternalError");
       if ((*env)->ExceptionOccurred (env))
 	return JNI_FALSE;
@@ -485,12 +386,13 @@ JNIEXPORT void JNICALL
 Java_java_lang_VMProcess_nativeKill (JNIEnv * env, jclass clazz, jlong pid)
 {
   char ebuf[64];
-
-  if (kill ((pid_t) pid, SIGKILL) == -1)
+  int err;
+  
+  err = cpproc_kill((pid_t) pid, SIGKILL);
+  if (err != 0)
     {
-      TARGET_NATIVE_MISC_FORMAT_STRING2 (ebuf,
-					 sizeof (ebuf), "kill(%ld): %s",
-					 (long) pid, strerror (errno));
+      snprintf (ebuf, sizeof (ebuf), "kill(%ld): %s",
+		(long) pid, cpnative_getErrorString (err));
       clazz = (*env)->FindClass (env, "java/lang/InternalError");
       if ((*env)->ExceptionOccurred (env))
 	return;

@@ -287,7 +287,11 @@ dnl -----------------------------------------------------------
 AC_ARG_ENABLE([tool-wrappers],
               [AS_HELP_STRING(--enable-tool-wrappers,create tool wrapper binaries [default=no])],
               [case x"${enableval}" in
-                xyes) COMPILE_WRAPPERS=yes ;;
+                xyes)
+                  COMPILE_WRAPPERS=yes;
+                  AC_CHECK_HEADERS([ltdl.h],, [AC_MSG_ERROR(cannot find ltdl.h)])
+                  AC_CHECK_LIB(ltdl, lt_dlopen,, [AC_MSG_ERROR(cannot find libltdl)])
+                  ;;
                 xno) COMPILE_WRAPPERS=no ;;
 		x) COMPILE_WRAPPERS=yes ;;
                 *) COMPILE_WRAPPERS=yes ;;
@@ -329,6 +333,8 @@ if test "x${COMPILE_COLLECTIONS}" = xyes; then
 fi
 
 if test "x${COMPILE_JNI}" = xyes; then
+  GCC_ATTRIBUTE_UNUSED
+
   AC_HEADER_STDC
 
   dnl Checking sizeof void * is needed for fdlibm to work properly on ppc64, 
@@ -362,11 +368,12 @@ if test "x${COMPILE_JNI}" = xyes; then
 		  lseek fstat read write htonl memset htons connect \
 		  getsockname getpeername bind listen accept \
 		  recvfrom send sendto setsockopt getsockopt time mktime \
-		  localtime_r \
+		  gethostbyname_r localtime_r \
 		  strerror_r \
                   fcntl \
 		  mmap munmap mincore msync madvise getpagesize sysconf \
 		  lstat readlink \
+		  inet_aton inet_addr inet_pton \
 		  ])
 
   LIBMAGIC=
@@ -544,6 +551,28 @@ if test "x${COMPILE_JNI}" = xyes; then
     AC_SUBST(QT_CFLAGS)
     AC_SUBST(QT_LIBS)
   fi
+  dnl **********************************************************************
+  dnl Check for MSG_NOSIGNAL
+  dnl **********************************************************************
+  AC_MSG_CHECKING(for MSG_NOSIGNAL)
+  AC_TRY_COMPILE([#include <sys/socket.h>],
+   [ int f = MSG_NOSIGNAL; ],
+   [ AC_MSG_RESULT(yes)
+     AC_DEFINE(HAVE_MSG_NOSIGNAL, 1,
+     	       [Define this symbol if you have MSG_NOSIGNAL]) ],
+   [ AC_MSG_RESULT(no)]
+  )
+ dnl **********************************************************************
+ dnl Check for SO_NOSIGPIPE (Darwin equivalent for MSG_NOSIGNAL)
+ dnl **********************************************************************
+ AC_MSG_CHECKING(for SO_NOSIGPIPE )
+ AC_TRY_COMPILE([#include <sys/socket.h>],
+  [ int f = SO_NOSIGPIPE; ],
+  [ AC_MSG_RESULT(yes)
+    AC_DEFINE(HAVE_SO_NOSIGPIPE, 1,
+    	      [Define this symbol if you have SO_NOSIGPIPE]) ],
+  [ AC_MSG_RESULT(no)]
+ )
 
   dnl Check for plugin support headers and libraries.
   if test "x${COMPILE_PLUGIN}" = xyes; then
@@ -577,7 +606,7 @@ dnl -----------------------------------------------------------
 dnl Add the include files for the native abstraction layer.
 dnl Used by AM_CPPFLAGS in the different modules.
 dnl -----------------------------------------------------------
-CLASSPATH_INCLUDES="-I\$(top_srcdir)/include -I\$(top_srcdir)/native/jni/classpath -I\$(top_srcdir)/native/target/Linux -I\$(top_srcdir)/native/target/generic"
+CLASSPATH_INCLUDES="-I\$(top_srcdir)/include -I\$(top_srcdir)/native/jni/classpath -I\$(top_srcdir)/native/jni/native-lib"
 AC_SUBST(CLASSPATH_INCLUDES)
 
 dnl -----------------------------------------------------------
@@ -848,10 +877,8 @@ native/jni/qt-peer/Makefile
 native/jni/xmlj/Makefile
 native/jni/midi-alsa/Makefile
 native/jni/midi-dssi/Makefile
+native/jni/native-lib/Makefile
 native/plugin/Makefile
-native/target/Makefile
-native/target/Linux/Makefile
-native/target/generic/Makefile
 resource/Makefile
 resource/META-INF/services/java.util.prefs.PreferencesFactory
 scripts/Makefile

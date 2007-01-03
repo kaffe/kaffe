@@ -59,7 +59,6 @@ import java.security.Security;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Hashtable;
-import java.util.Vector;
 
 public class ObjectStreamClass implements Serializable
 {
@@ -236,36 +235,45 @@ public class ObjectStreamClass implements Serializable
   }
 
 
-  // returns an array of ObjectStreamClasses that represent the super
-  // classes of CLAZZ and CLAZZ itself in order from most super to
-  // CLAZZ.  ObjectStreamClass[0] is the highest superclass of CLAZZ
-  // that is serializable.
-  static ObjectStreamClass[] getObjectStreamClasses(Class clazz)
+  /**
+   * returns an array of ObjectStreamClasses that represent the super
+   * classes of the class represented by this and the class
+   * represented by this itself in order from most super to this.
+   * ObjectStreamClass[0] is the highest superclass of this that is
+   * serializable.
+   *
+   * The result of consecutive calls this hierarchy() will be the same
+   * array instance.
+   *
+   * @return an array of ObjectStreamClass representing the
+   * super-class hierarchy of serializable classes.
+   */
+  ObjectStreamClass[] hierarchy()
   {
-    ObjectStreamClass osc = ObjectStreamClass.lookup(clazz);
-
-    if (osc == null)
-      return new ObjectStreamClass[0];
-    else
+    ObjectStreamClass[] result = hierarchy; 
+    if (result == null)
       {
-	Vector oscs = new Vector();
+        int d = 0; 
 
-	while (osc != null)
-	  {
-	    oscs.addElement (osc);
-	    osc = osc.getSuper();
-	  }
+        for(ObjectStreamClass osc = this; osc != null; osc = osc.getSuper())
+          d++;
 
-	int count = oscs.size();
-	ObjectStreamClass[] sorted_oscs = new ObjectStreamClass[ count ];
+        result = new ObjectStreamClass[d];
 
-	for (int i = count - 1; i >= 0; i--)
-	  sorted_oscs[ count - i - 1 ] = (ObjectStreamClass) oscs.elementAt(i);
+        for (ObjectStreamClass osc = this; osc != null; osc = osc.getSuper())
+          {
+            result[--d] = osc;
+          }
 
-	return sorted_oscs;
+        hierarchy = result; 
       }
+    return result; 
   }
 
+  /**
+   * Cache for hierarchy() result.
+   */
+  private ObjectStreamClass[] hierarchy = null;
 
   // Returns an integer that consists of bit-flags that indicate
   // properties of the class represented by this ObjectStreamClass.
@@ -298,7 +306,7 @@ public class ObjectStreamClass implements Serializable
    * already set UID is found.
    */
   void setClass(Class cl, ObjectStreamClass superClass) throws InvalidClassException
-  {
+  {hierarchy = null;
     this.clazz = cl;
 
     cacheMethods();
@@ -425,6 +433,7 @@ public class ObjectStreamClass implements Serializable
   void setSuperclass (ObjectStreamClass osc)
   {
     superClass = osc;
+    hierarchy = null;
   }
 
   void calculateOffsets()
@@ -547,21 +556,62 @@ outer:
     return null;
   }
 
+  /**
+   * Helper routine to check if a class was loaded by boot or
+   * application class loader.  Classes for which this is not the case
+   * should not be cached since caching prevent class file garbage
+   * collection.
+   *
+   * @param cl a class
+   *
+   * @return true if cl was loaded by boot or application class loader,
+   *         false if cl was loaded by a user class loader.
+   */
+  private static boolean loadedByBootOrApplicationClassLoader(Class cl)
+  {
+    ClassLoader l = cl.getClassLoader();
+    return 
+      (   l == null                             /* boot loader */       ) 
+      || (l == ClassLoader.getSystemClassLoader() /* application loader */);
+  } 
+
+  static Hashtable methodCache = new Hashtable(); 
+  
+  static final Class[] readObjectSignature  = { ObjectInputStream.class };
+  static final Class[] writeObjectSignature = { ObjectOutputStream.class };
+
   private void cacheMethods()
   {
-    Method[] methods = forClass().getDeclaredMethods();
+    Class cl = forClass(); 
+    Method[] cached = (Method[]) methodCache.get(cl); 
+    if (cached == null)
+      {
+        cached = new Method[4];
+        Method[] methods = cl.getDeclaredMethods();
+        
+        cached[0] = findMethod(methods, "readObject",
+                               readObjectSignature, 
+                               Void.TYPE, true);
+        cached[1] = findMethod(methods, "writeObject",
+                               writeObjectSignature, 
+                               Void.TYPE, true);
 
-    readObjectMethod = findMethod(methods, "readObject",
-				  new Class[] { ObjectInputStream.class },
-				  Void.TYPE, true);
-    writeObjectMethod = findMethod(methods, "writeObject",
-                                   new Class[] { ObjectOutputStream.class },
-                                   Void.TYPE, true);
-
-    // readResolve and writeReplace can be in parent classes, as long as they
-    // are accessible from this class.
-    readResolveMethod = findAccessibleMethod("readResolve", forClass());
-    writeReplaceMethod = findAccessibleMethod("writeReplace", forClass());
+        // readResolve and writeReplace can be in parent classes, as long as they
+        // are accessible from this class.
+        cached[2] = findAccessibleMethod("readResolve", cl);
+        cached[3] = findAccessibleMethod("writeReplace", cl);
+        
+        /* put in cache if classes not loaded by user class loader.
+         * For a user class loader, the cache may otherwise grow
+         * without limit.
+         */
+        if (loadedByBootOrApplicationClassLoader(cl))
+          methodCache.put(cl,cached);
+      }
+    readObjectMethod   = cached[0];
+    writeObjectMethod  = cached[1];
+    readResolveMethod  = cached[2];
+    writeReplaceMethod = cached[3];
   }
 
   private ObjectStreamClass(Class cl)
@@ -713,152 +763,208 @@ outer:
     calculateOffsets();
   }
 
+  static Hashtable uidCache = new Hashtable();
+
   // Returns the serial version UID defined by class, or if that
   // isn't present, calculates value of serial version UID.
   private long getClassUID(Class cl)
   {
+    long result = 0;
+    Long cache = (Long) uidCache.get(cl);
+    if (cache != null)
+      result = cache.longValue(); 
+    else
+      {
+        try
+          {
+            result = getClassUIDFromField(cl);
+          }
+        catch (NoSuchFieldException ignore)
+          {
+            try
+              {
+                result = calculateClassUID(cl);
+              }
+            catch (NoSuchAlgorithmException e)
+              {
+                throw new RuntimeException
+                  ("The SHA algorithm was not found to use in computing the Serial Version UID for class "
+                   + cl.getName(), e);
+              }
+            catch (IOException ioe)
+              {
+                throw new RuntimeException(ioe);
+              }
+          }
+
+        if (loadedByBootOrApplicationClassLoader(cl))
+          uidCache.put(cl,new Long(result));
+      }
+    return result;
+  }
+
+  /**
+   * Search for a serialVersionUID field in the given class and read
+   * its value.
+   *
+   * @return the contents of the serialVersionUID field
+   *
+   * @throws NoSuchFieldException if such a field does not exist or is
+   * not static, not final, not of type Long or not accessible.
+   */
+  long getClassUIDFromField(Class cl) 
+    throws NoSuchFieldException
+  {
+    long result;
+    
     try
       {
-	// Use getDeclaredField rather than getField, since serialVersionUID
-	// may not be public AND we only want the serialVersionUID of this
-	// class, not a superclass or interface.
-	final Field suid = cl.getDeclaredField("serialVersionUID");
-	SetAccessibleAction setAccessible = new SetAccessibleAction(suid);
-	AccessController.doPrivileged(setAccessible);
-	int modifiers = suid.getModifiers();
-
-	if (Modifier.isStatic(modifiers)
-	    && Modifier.isFinal(modifiers)
-	    && suid.getType() == Long.TYPE)
-	  return suid.getLong(null);
-      }
-    catch (NoSuchFieldException ignore)
-      {
+        // Use getDeclaredField rather than getField, since serialVersionUID
+        // may not be public AND we only want the serialVersionUID of this
+        // class, not a superclass or interface.
+        final Field suid = cl.getDeclaredField("serialVersionUID");
+        SetAccessibleAction setAccessible = new SetAccessibleAction(suid);
+        AccessController.doPrivileged(setAccessible);
+        int modifiers = suid.getModifiers();
+        
+        if (Modifier.isStatic(modifiers)
+            && Modifier.isFinal(modifiers)
+            && suid.getType() == Long.TYPE)
+          result = suid.getLong(null);
+        else
+          throw new NoSuchFieldException();
       }
     catch (IllegalAccessException ignore)
       {
+        throw new NoSuchFieldException();
       }
 
-    // cl didn't define serialVersionUID, so we have to compute it
-    try
+    return result;
+  }
+
+  /**
+   * Calculate class serial version UID for a class that does not
+   * define serialVersionUID:
+   *
+   * @param cl a class
+   *
+   * @return the calculated serial varsion UID.
+   *
+   * @throws NoSuchAlgorithmException if SHA algorithm not found
+   *
+   * @throws IOException if writing to the DigestOutputStream causes
+   * an IOException.
+   */
+  long calculateClassUID(Class cl) 
+    throws NoSuchAlgorithmException, IOException
+  {
+    long result; 
+    MessageDigest md;
+    try 
       {
-	MessageDigest md;
-	try 
-	  {
-	    md = MessageDigest.getInstance("SHA");
-	  }
-	catch (NoSuchAlgorithmException e)
-	  {
-	    // If a provider already provides SHA, use it; otherwise, use this.
-	    Gnu gnuProvider = new Gnu();
-	    Security.addProvider(gnuProvider);
-	    md = MessageDigest.getInstance("SHA");
-	  }
-
-	DigestOutputStream digest_out =
-	  new DigestOutputStream(nullOutputStream, md);
-	DataOutputStream data_out = new DataOutputStream(digest_out);
-
-	data_out.writeUTF(cl.getName());
-
-	int modifiers = cl.getModifiers();
-	// just look at interesting bits
-	modifiers = modifiers & (Modifier.ABSTRACT | Modifier.FINAL
-				 | Modifier.INTERFACE | Modifier.PUBLIC);
-	data_out.writeInt(modifiers);
-
-	// Pretend that an array has no interfaces, because when array
-	// serialization was defined (JDK 1.1), arrays didn't have it.
-	if (! cl.isArray())
-	  {
-	    Class[] interfaces = cl.getInterfaces();
-	    Arrays.sort(interfaces, interfaceComparator);
-	    for (int i = 0; i < interfaces.length; i++)
-	      data_out.writeUTF(interfaces[i].getName());
-	  }
-
-	Field field;
-	Field[] fields = cl.getDeclaredFields();
-	Arrays.sort(fields, memberComparator);
-	for (int i = 0; i < fields.length; i++)
-	  {
-	    field = fields[i];
-	    modifiers = field.getModifiers();
-	    if (Modifier.isPrivate(modifiers)
-		&& (Modifier.isStatic(modifiers)
-		    || Modifier.isTransient(modifiers)))
-	      continue;
-
-	    data_out.writeUTF(field.getName());
-	    data_out.writeInt(modifiers);
-	    data_out.writeUTF(TypeSignature.getEncodingOfClass (field.getType()));
-	  }
-
-	// write class initializer method if present
-	if (VMObjectStreamClass.hasClassInitializer(cl))
-	  {
-	    data_out.writeUTF("<clinit>");
-	    data_out.writeInt(Modifier.STATIC);
-	    data_out.writeUTF("()V");
-	  }
-
-	Constructor constructor;
-	Constructor[] constructors = cl.getDeclaredConstructors();
-	Arrays.sort (constructors, memberComparator);
-	for (int i = 0; i < constructors.length; i++)
-	  {
-	    constructor = constructors[i];
-	    modifiers = constructor.getModifiers();
-	    if (Modifier.isPrivate(modifiers))
-	      continue;
-
-	    data_out.writeUTF("<init>");
-	    data_out.writeInt(modifiers);
-
-	    // the replacement of '/' with '.' was needed to make computed
-	    // SUID's agree with those computed by JDK
-	    data_out.writeUTF 
-	      (TypeSignature.getEncodingOfConstructor(constructor).replace('/','.'));
-	  }
-
-	Method method;
-	Method[] methods = cl.getDeclaredMethods();
-	Arrays.sort(methods, memberComparator);
-	for (int i = 0; i < methods.length; i++)
-	  {
-	    method = methods[i];
-	    modifiers = method.getModifiers();
-	    if (Modifier.isPrivate(modifiers))
-	      continue;
-
-	    data_out.writeUTF(method.getName());
-	    data_out.writeInt(modifiers);
-
-	    // the replacement of '/' with '.' was needed to make computed
-	    // SUID's agree with those computed by JDK
-	    data_out.writeUTF
-	      (TypeSignature.getEncodingOfMethod(method).replace('/', '.'));
-	  }
-
-	data_out.close();
-	byte[] sha = md.digest();
-	long result = 0;
-	int len = sha.length < 8 ? sha.length : 8;
-	for (int i = 0; i < len; i++)
-	  result += (long) (sha[i] & 0xFF) << (8 * i);
-
-	return result;
+        md = MessageDigest.getInstance("SHA");
       }
     catch (NoSuchAlgorithmException e)
       {
-	throw new RuntimeException
-	  ("The SHA algorithm was not found to use in computing the Serial Version UID for class "
-	   + cl.getName(), e);
+        // If a provider already provides SHA, use it; otherwise, use this.
+        Gnu gnuProvider = new Gnu();
+        Security.addProvider(gnuProvider);
+        md = MessageDigest.getInstance("SHA");
       }
-    catch (IOException ioe)
+    
+    DigestOutputStream digest_out =
+      new DigestOutputStream(nullOutputStream, md);
+    DataOutputStream data_out = new DataOutputStream(digest_out);
+    
+    data_out.writeUTF(cl.getName());
+    
+    int modifiers = cl.getModifiers();
+    // just look at interesting bits
+    modifiers = modifiers & (Modifier.ABSTRACT | Modifier.FINAL
+                             | Modifier.INTERFACE | Modifier.PUBLIC);
+    data_out.writeInt(modifiers);
+    
+    // Pretend that an array has no interfaces, because when array
+    // serialization was defined (JDK 1.1), arrays didn't have it.
+    if (! cl.isArray())
       {
-	throw new RuntimeException(ioe);
+        Class[] interfaces = cl.getInterfaces();
+        Arrays.sort(interfaces, interfaceComparator);
+        for (int i = 0; i < interfaces.length; i++)
+          data_out.writeUTF(interfaces[i].getName());
       }
+    
+    Field field;
+    Field[] fields = cl.getDeclaredFields();
+    Arrays.sort(fields, memberComparator);
+    for (int i = 0; i < fields.length; i++)
+      {
+        field = fields[i];
+        modifiers = field.getModifiers();
+        if (Modifier.isPrivate(modifiers)
+            && (Modifier.isStatic(modifiers)
+                || Modifier.isTransient(modifiers)))
+          continue;
+        
+        data_out.writeUTF(field.getName());
+        data_out.writeInt(modifiers);
+        data_out.writeUTF(TypeSignature.getEncodingOfClass (field.getType()));
+      }
+    
+    // write class initializer method if present
+    if (VMObjectStreamClass.hasClassInitializer(cl))
+      {
+        data_out.writeUTF("<clinit>");
+        data_out.writeInt(Modifier.STATIC);
+        data_out.writeUTF("()V");
+      }
+    
+    Constructor constructor;
+    Constructor[] constructors = cl.getDeclaredConstructors();
+    Arrays.sort (constructors, memberComparator);
+    for (int i = 0; i < constructors.length; i++)
+      {
+        constructor = constructors[i];
+        modifiers = constructor.getModifiers();
+        if (Modifier.isPrivate(modifiers))
+          continue;
+        
+        data_out.writeUTF("<init>");
+        data_out.writeInt(modifiers);
+        
+        // the replacement of '/' with '.' was needed to make computed
+        // SUID's agree with those computed by JDK
+        data_out.writeUTF 
+          (TypeSignature.getEncodingOfConstructor(constructor).replace('/','.'));
+      }
+    
+    Method method;
+    Method[] methods = cl.getDeclaredMethods();
+    Arrays.sort(methods, memberComparator);
+    for (int i = 0; i < methods.length; i++)
+      {
+        method = methods[i];
+        modifiers = method.getModifiers();
+        if (Modifier.isPrivate(modifiers))
+          continue;
+        
+        data_out.writeUTF(method.getName());
+        data_out.writeInt(modifiers);
+        
+        // the replacement of '/' with '.' was needed to make computed
+        // SUID's agree with those computed by JDK
+        data_out.writeUTF
+          (TypeSignature.getEncodingOfMethod(method).replace('/', '.'));
+      }
+    
+    data_out.close();
+    byte[] sha = md.digest();
+    result = 0;
+    int len = sha.length < 8 ? sha.length : 8;
+    for (int i = 0; i < len; i++)
+      result += (long) (sha[i] & 0xFF) << (8 * i);
+
+    return result;
   }
 
   /**

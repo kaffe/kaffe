@@ -64,6 +64,9 @@
 /* Define to 1 if you have the `ftruncate' function. */
 #undef HAVE_FTRUNCATE
 
+/* Define to 1 if you have the `gethostbyname_r' function. */
+#undef HAVE_GETHOSTBYNAME_R
+
 /* Define to 1 if you have the `gethostname' function. */
 #undef HAVE_GETHOSTNAME
 
@@ -79,6 +82,12 @@
 /* Define to 1 if you have the `getsockopt' function. */
 #undef HAVE_GETSOCKOPT
 
+/* Define if function attributes a la GCC 2.5 and higher are available. */
+#undef HAVE_GNUC25_ATTRIB
+
+/* Define if unused variables la GCC 2.5 and higher are available. */
+#undef HAVE_GNUC25_UNUSED
+
 /* Define to 1 if you have the `htonl' function. */
 #undef HAVE_HTONL
 
@@ -88,11 +97,23 @@
 /* Define if you have the iconv() function. */
 #undef HAVE_ICONV
 
+/* Define to 1 if you have the `inet_addr' function. */
+#undef HAVE_INET_ADDR
+
+/* Define to 1 if you have the `inet_aton' function. */
+#undef HAVE_INET_ATON
+
+/* Define to 1 if you have the `inet_pton' function. */
+#undef HAVE_INET_PTON
+
 /* Define to 1 if you have uint32_t */
 #undef HAVE_INT32_DEFINED
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
+
+/* Define to 1 if you have the `ltdl' library (-lltdl). */
+#undef HAVE_LIBLTDL
 
 /* Define to 1 if you have the `listen' function. */
 #undef HAVE_LISTEN
@@ -105,6 +126,9 @@
 
 /* Define to 1 if you have the `lstat' function. */
 #undef HAVE_LSTAT
+
+/* Define to 1 if you have the <ltdl.h> header file. */
+#undef HAVE_LTDL_H
 
 /* Define to 1 if you have the `madvise' function. */
 #undef HAVE_MADVISE
@@ -126,6 +150,9 @@
 
 /* Define to 1 if you have the `mmap' function. */
 #undef HAVE_MMAP
+
+/* Define this symbol if you have MSG_NOSIGNAL */
+#undef HAVE_MSG_NOSIGNAL
 
 /* Define to 1 if you have the `msync' function. */
 #undef HAVE_MSYNC
@@ -165,6 +192,9 @@
 
 /* Define to 1 if you have the `socket' function. */
 #undef HAVE_SOCKET
+
+/* Define this symbol if you have SO_NOSIGPIPE */
+#undef HAVE_SO_NOSIGPIPE
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
@@ -322,3 +352,24 @@
 
 /* Define to empty if `const' does not conform to ANSI C. */
 #undef const
+
+/* GNU C attributes. */
+#ifndef FUNCATTR
+#ifdef HAVE_GNUC25_ATTRIB
+#define FUNCATTR(x) __attribute__(x)
+#else
+#define FUNCATTR(x)
+#endif
+#endif
+
+/* GNU C unused functions, or null. */
+#ifndef ATTRUNUSED
+#ifdef HAVE_GNUC25_UNUSED
+#define ATTRUNUSED unused
+#else
+#define ATTRUNUSED
+#endif
+#endif
+#ifndef UNUSED
+#define UNUSED FUNCATTR((ATTRUNUSED))
+#endif

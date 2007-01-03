@@ -37,6 +37,9 @@ exception statement from your version. */
 
 package javax.swing.event;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.EventListener;
@@ -303,5 +306,52 @@ public class EventListenerList
         buf.append(listenerList[i + 1]);
       }
     return buf.toString();
+  }
+
+  /**
+   * Serializes an instance to an ObjectOutputStream.
+   *
+   * @param out the stream to serialize to
+   *
+   * @throws IOException if something goes wrong
+   */
+  private void writeObject(ObjectOutputStream out)
+    throws IOException
+  {
+    out.defaultWriteObject();
+    for (int i = 0; i < listenerList.length; i += 2)
+      {
+        Class cl = (Class) listenerList[i];
+        EventListener l = (EventListener) listenerList[i + 1];
+        if (l != null && l instanceof Serializable)
+          {
+            out.writeObject(cl.getName());
+            out.writeObject(l);
+          }
+      }
+    // Write end marker.
+    out.writeObject(null);
+  }
+
+  /**
+   * Deserializes an instance from an ObjectInputStream.
+   *
+   * @param in the input stream
+   *
+   * @throws ClassNotFoundException if a serialized class can't be found
+   * @throws IOException if something goes wrong
+   */
+  private void readObject(ObjectInputStream in)
+    throws ClassNotFoundException, IOException
+  {
+    listenerList = NO_LISTENERS;
+    in.defaultReadObject();
+    Object type;
+    ClassLoader cl = Thread.currentThread().getContextClassLoader();
+    while ((type = in.readObject()) != null)
+      {
+        EventListener l = (EventListener) in.readObject();
+        add(Class.forName((String) type, true, cl), l);
+      }
   }
 }

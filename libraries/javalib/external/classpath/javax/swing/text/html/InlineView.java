@@ -60,6 +60,11 @@ public class InlineView
 {
 
   /**
+   * The attributes used by this view.
+   */
+  private AttributeSet attributes;
+
+  /**
    * Creates a new <code>InlineView</code> that renders the specified element.
    *
    * @param element the element for this view
@@ -115,7 +120,9 @@ public class InlineView
   public void changedUpdate(DocumentEvent e, Shape a, ViewFactory f)
   {
     super.changedUpdate(e, a, f);
-    setPropertiesFromAttributes();
+    StyleSheet ss = getStyleSheet();
+    attributes = ss.getViewAttributes(this);
+    preferenceChanged(null, true, true);
   }
 
   /**
@@ -126,8 +133,12 @@ public class InlineView
    */
   public AttributeSet getAttributes()
   {
-    // FIXME: Implement this.
-    return super.getAttributes();
+    if (attributes == null)
+      {
+        StyleSheet ss = getStyleSheet();
+        attributes = ss.getViewAttributes(this);
+      }
+    return attributes;
   }
 
   
@@ -143,10 +154,43 @@ public class InlineView
     return super.breakView(axis, offset, pos, len);
   }
 
+  /**
+   * Loads the character style properties from the stylesheet.
+   */
   protected void setPropertiesFromAttributes()
   {
-    // FIXME: Implement this.
     super.setPropertiesFromAttributes();
+    AttributeSet atts = getAttributes();
+    Object o = atts.getAttribute(CSS.Attribute.TEXT_DECORATION);
+
+    // Check for underline.
+    boolean b = false;
+    if (o != null && o.toString().contains("underline"))
+      b = true;
+    setUnderline(b);
+
+    // Check for line-through.
+    b = false;
+    if (o != null && o.toString().contains("line-through"))
+      b = true;
+    setStrikeThrough(b);
+
+    // Check for vertical alignment (subscript/superscript).
+    o = atts.getAttribute(CSS.Attribute.VERTICAL_ALIGN);
+
+    // Subscript.
+    b = false;
+    if (o != null && o.toString().contains("sub"))
+      b = true;
+    setSubscript(b);
+
+    // Superscript.
+    b = false;
+    if (o != null && o.toString().contains("sup"))
+      b = true;
+    setSuperscript(b);
+
+    // TODO: Handle white-space: nowrap property.
   }
 
   /**

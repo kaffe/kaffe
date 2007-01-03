@@ -216,7 +216,7 @@ public class DefaultFormatter extends JFormattedTextField.AbstractFormatter
    */
   public DefaultFormatter()
   {
-    commitsOnValidEdit = true;
+    commitsOnValidEdit = false;
     overwriteMode = true;
     allowsInvalid = true;
   }

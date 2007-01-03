@@ -54,10 +54,6 @@ import javax.swing.text.Position.Bias;
  */
 public class Utilities
 {
-  /**
-   * The length of the char buffer that holds the characters to be drawn.
-   */
-  private static final int BUF_LENGTH = 64;
 
   /**
    * Creates a new <code>Utilities</code> object.
@@ -125,8 +121,8 @@ public class Utilities
 	    // In case we have a tab, we just 'jump' over the tab.
 	    // When we have no tab expander we just use the width of ' '.
 	    if (e != null)
-	      pixelX = (int) e.nextTabStop((float) pixelX,
-					   startOffset + offset - s.offset);
+	      pixelX = (int) e.nextTabStop(pixelX,
+                                           startOffset + offset - s.offset);
 	    else
 	      pixelX += metrics.charWidth(' ');
 	    break;
@@ -176,7 +172,7 @@ public class Utilities
 	    // In case we have a tab, we just 'jump' over the tab.
 	    // When we have no tab expander we just use the width of 'm'.
 	    if (e != null)
-	      pixelX = (int) e.nextTabStop((float) pixelX,
+	      pixelX = (int) e.nextTabStop(pixelX,
 					   startOffset + offset - s.offset);
 	    else
 	      pixelX += metrics.charWidth(' ');
@@ -537,28 +533,39 @@ public class Utilities
                                            int x0, int x, TabExpander e,
                                            int startOffset)
   {
-    int mark = Utilities.getTabbedTextOffset(s, metrics, x0, x, e, startOffset, false);
-    BreakIterator breaker = BreakIterator.getWordInstance();
-    breaker.setText(s);
-
-    // If startOffset and s.offset differ then we need to use
-    // that difference two convert the offset between the two metrics. 
-    int shift = startOffset - s.offset;
-    
+    int mark = Utilities.getTabbedTextOffset(s, metrics, x0, x, e, startOffset,
+                                             false);
+    int breakLoc = mark;
     // If mark is equal to the end of the string, just use that position.
-    if (mark >= shift + s.count)
-      return mark;
-    
-    // Try to find a word boundary previous to the mark at which we 
-    // can break the text.
-    int preceding = breaker.preceding(mark + 1 - shift);
-    
-    if (preceding != 0)
-      return preceding + shift;
-    
-    // If preceding is 0 we couldn't find a suitable word-boundary so
-    // just break it on the character boundary
-    return mark;
+    if (mark < s.count - 1)
+      {
+        for (int i = s.offset + mark; i >= s.offset; i--)
+          {
+            char ch = s.array[i];
+            if (ch < 256)
+              {
+                // For ASCII simply scan backwards for whitespace.
+                if (Character.isWhitespace(ch))
+                  {
+                    breakLoc = i - s.offset + 1;
+                    break;
+                  }
+              }
+            else
+              {
+                // Only query BreakIterator for complex chars.
+                BreakIterator bi = BreakIterator.getLineInstance();
+                bi.setText(s);
+                int pos = bi.preceding(i + 1);
+                if (pos > s.offset)
+                  {
+                    breakLoc = breakLoc - s.offset;
+                  }
+                break;
+              }
+          }
+      }
+    return breakLoc;
   }
 
   /**

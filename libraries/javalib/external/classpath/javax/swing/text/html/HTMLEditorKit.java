@@ -48,6 +48,8 @@ import java.awt.event.MouseMotionListener;
 import java.awt.Cursor;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.StringReader;
@@ -64,7 +66,6 @@ import javax.swing.text.EditorKit;
 import javax.swing.text.Element;
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.StyleConstants;
-import javax.swing.text.StyleContext;
 import javax.swing.text.StyledEditorKit;
 import javax.swing.text.TextAction;
 import javax.swing.text.View;
@@ -804,7 +805,7 @@ public class HTMLEditorKit
   /**
    * The current style sheet.
    */
-  StyleSheet styleSheet;
+  private StyleSheet styleSheet;
   
   /**
    * The ViewFactory for HTMLFactory.
@@ -831,11 +832,6 @@ public class HTMLEditorKit
    */
   LinkController mouseListener;
   
-  /**
-   * Style context for this editor.
-   */
-  StyleContext styleContext;
-  
   /** The content type */
   String contentType = "text/html";
   
@@ -850,11 +846,7 @@ public class HTMLEditorKit
    */
   public HTMLEditorKit()
   {
-    super();    
-    styleContext = new StyleContext();
-    styleSheet = new StyleSheet();
-    styleSheet.importStyleSheet(getClass().getResource(DEFAULT_CSS));
-    // FIXME: Set inputAttributes with default.css    
+    // Nothing to do here.
   }
   
   /**
@@ -923,8 +915,7 @@ public class HTMLEditorKit
     if (parser == null)
       throw new IOException("Parser is null.");
 
-    ParserCallback pc = ((HTMLDocument) doc).getReader
-                          (offset, popDepth, pushDepth, insertTag);
+    ParserCallback pc = doc.getReader(offset, popDepth, pushDepth, insertTag);
 
     // FIXME: What should ignoreCharSet be set to?
     
@@ -1154,8 +1145,18 @@ public class HTMLEditorKit
   {
     if (styleSheet == null)
       {
-        styleSheet = new StyleSheet();
-        styleSheet.importStyleSheet(getClass().getResource(DEFAULT_CSS));
+        try
+          {
+            styleSheet = new StyleSheet();
+            InputStream in = getClass().getResourceAsStream(DEFAULT_CSS);
+            InputStreamReader r = new InputStreamReader(in);
+            styleSheet.loadRules(r,  null);
+            r.close();
+          }
+        catch (IOException ex)
+          {
+            // No style available.
+          }
       }
     return styleSheet;
   }

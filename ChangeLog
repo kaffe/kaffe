@@ -1,3 +1,63 @@
+2007-01-03  Dalibor Topic  <robilad@kaffe.org>
+
+	* configure.ac: Removed CLASSPATH_INCLUDES. Removed
+	libraries/clib/target/Makefile, libraries/clib/target/generic/Makefile,
+	libraries/clib/target/Linux/Makefile from the list of files to output 
+	since the target directory has been removed.
+
+	* kaffe/kaffevm/Makefile.am (AM_CPPFLAGS): Removed CLASSPATH_INCLUDES.
+	(libkaffevm_la_SOURCES) Removed gnu_java_nio_channels_FileChannelImpl.c,
+	PlainDatagramSocketImpl.c, PlainSocketImpl.c, java_io_File.c, 
+	java_io_VMFile.c and java_lang_VMProcess.c.
+
+	* libraries/clib/Makefile.am (SUBDIRS): Removed target.
+
+	* libraries/javalib/external/classpath/ : Resynced with GNU Classpath until
+	2006-09-09.
+
+	* libraries/javalib/vmspecific/Makefile.am (dist_vminterface_JAVA):
+	Removed gnu/java/net/PlainDatagramSocketImpl.java, gnu/java/net/PlainSocketImpl.java,
+	java/net/InetAddress.java and java/net/VMURLConnection.java.
+
+	* libraries/javalib/vmspecific/java/lang/ref/Reference.java,
+	libraries/javalib/vmspecific/java/net/VMInetAddress.java:
+	Resynced with GNU Classpath.
+
+	* libraries/clib/io/java_io_File.c,
+	libraries/clib/io/java_io_VMFile.c,
+	libraries/clib/native/java_lang_VMProcess.c,
+	libraries/clib/net/PlainDatagramSocketImpl.c,
+	libraries/clib/net/PlainSocketImpl.c,
+	libraries/clib/nio/gnu_java_nio_channels_FileChannelImpl.c,
+	raries/clib/target/Makefile.am,
+	libraries/clib/target/Makefile.in,
+	libraries/clib/target/readme.txt,
+	libraries/clib/target/Linux/.cvsignore,
+	libraries/clib/target/Linux/Makefile.am,
+	libraries/clib/target/Linux/Makefile.in,
+	libraries/clib/target/Linux/target_native.h,
+	libraries/clib/target/Linux/target_native_file.h,
+	libraries/clib/target/Linux/target_native_io.h,
+	libraries/clib/target/Linux/target_native_math_float.h,
+	libraries/clib/target/Linux/target_native_math_int.h,
+	libraries/clib/target/Linux/target_native_misc.h,
+	libraries/clib/target/Linux/target_native_network.h,
+	libraries/clib/target/generic/.cvsignore,
+	libraries/clib/target/generic/Makefile.am,
+	libraries/clib/target/generic/Makefile.in,
+	libraries/clib/target/generic/target_generic.h,
+	libraries/clib/target/generic/target_generic_file.h,
+	libraries/clib/target/generic/target_generic_io.h,
+	libraries/clib/target/generic/target_generic_math_float.h,
+	libraries/clib/target/generic/target_generic_math_int.h,
+	libraries/clib/target/generic/target_generic_misc.h,
+	libraries/clib/target/generic/target_generic_network.h,
+	libraries/javalib/vmspecific/gnu/java/net/PlainDatagramSocketImpl.java,
+	libraries/javalib/vmspecific/gnu/java/net/PlainSocketImpl.java,
+	libraries/javalib/vmspecific/java/net/InetAddress.java,
+	libraries/javalib/vmspecific/java/net/VMURLConnection.java:
+	Removed.
+
 2006-12-08  Dalibor Topic  <robilad@kaffe.org>
 
 	* developers/resync-classpath.sh: Build classpath with Werror disabled.

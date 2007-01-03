@@ -38,7 +38,6 @@ exception statement from your version. */
 
 package javax.swing.text;
 
-import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.Shape;
 
@@ -57,7 +56,12 @@ public abstract class CompositeView
   /**
    * The child views of this <code>CompositeView</code>.
    */
-  View[] children;
+  private View[] children;
+
+  /**
+   * The number of child views.
+   */
+  private int numChildren;
 
   /**
    * The allocation of this <code>View</code> minus its insets. This is
@@ -70,7 +74,10 @@ public abstract class CompositeView
    * The insets of this <code>CompositeView</code>. This is initialized
    * in {@link #setInsets}.
    */
-  Insets insets;
+  private short top;
+  private short bottom;
+  private short left;
+  private short right;
 
   /**
    * Creates a new <code>CompositeView</code> for the given
@@ -82,7 +89,10 @@ public abstract class CompositeView
   {
     super(element);
     children = new View[0];
-    insets = new Insets(0, 0, 0, 0);
+    top = 0;
+    bottom = 0;
+    left = 0;
+    right = 0;
   }
 
   /**
@@ -96,16 +106,22 @@ public abstract class CompositeView
    */
   protected void loadChildren(ViewFactory f)
   {
-    Element el = getElement();
-    int count = el.getElementCount();
-    View[] newChildren = new View[count];
-    for (int i = 0; i < count; ++i)
+    if (f != null)
       {
-        Element child = el.getElement(i);
-        View view = f.create(child);
-        newChildren[i] = view;
+        Element el = getElement();
+        int count = el.getElementCount();
+        View[] newChildren = new View[count];
+        for (int i = 0; i < count; ++i)
+          {
+            Element child = el.getElement(i);
+            View view = f.create(child);
+            newChildren[i] = view;
+          }
+        // I'd have called replace(0, getViewCount(), newChildren) here
+        // in order to replace all existing views. However according to
+        // Harmony's tests this is not what the RI does.
+        replace(0, 0, newChildren);
       }
-    replace(0, getViewCount(), newChildren);
   }
 
   /**
@@ -129,7 +145,7 @@ public abstract class CompositeView
    */
   public int getViewCount()
   {
-    return children.length;
+    return numChildren;
   }
 
   /**
@@ -156,24 +172,42 @@ public abstract class CompositeView
    */
   public void replace(int offset, int length, View[] views)
   {
-    // Check for null views to add.
-    for (int i = 0; i < views.length; ++i)
-      if (views[i] == null)
-        throw new NullPointerException("Added views must not be null");
-
-    int endOffset = offset + length;
+    // Make sure we have an array. The Harmony testsuite indicates that we
+    // have to do something like this.
+    if (views == null)
+      views = new View[0];
 
     // First we set the parent of the removed children to null.
+    int endOffset = offset + length;
     for (int i = offset; i < endOffset; ++i)
-      children[i].setParent(null);
+      {
+        if (children[i].getParent() == this)
+          children[i].setParent(null);
+        children[i] = null;
+      }
 
-    View[] newChildren = new View[children.length - length + views.length];
-    System.arraycopy(children, 0, newChildren, 0, offset);
-    System.arraycopy(views, 0, newChildren, offset, views.length);
-    System.arraycopy(children, offset + length, newChildren,
-                     offset + views.length,
-                     children.length - (offset + length));
-    children = newChildren;
+    // Update the children array.
+    int delta = views.length - length;
+    int src = offset + length;
+    int numMove = numChildren - src;
+    int dst = src + delta;
+    if (numChildren + delta > children.length)
+      {
+        // Grow array.
+        int newLength = Math.max(2 * children.length, numChildren + delta);
+        View[] newChildren = new View[newLength];
+        System.arraycopy(children, 0, newChildren, 0, offset);
+        System.arraycopy(views, 0, newChildren, offset, views.length);
+        System.arraycopy(children, src, newChildren, dst, numMove);
+        children = newChildren;
+      }
+    else
+      {
+        // Patch existing array.
+        System.arraycopy(children, src, children, dst, numMove);
+        System.arraycopy(views, 0, children, offset, views.length);
+      }
+    numChildren += delta;
 
     // Finally we set the parent of the added children to this.
     for (int i = 0; i < views.length; ++i)
@@ -255,27 +289,6 @@ public abstract class CompositeView
           }    
       }
     return ret;
-  }
-
-  /**
-   * A helper method for {@link #modelToView(int, Position.Bias, int,
-   * Position.Bias, Shape)}. This creates a default location when there is
-   * no child view that can take responsibility for mapping the position to
-   * view coordinates. Depending on the specified bias this will be the
-   * left or right edge of this view's allocation.
-   *
-   * @param a the allocation for this view
-   * @param bias the bias
-   *
-   * @return a default location
-   */
-  private Shape createDefaultLocation(Shape a, Position.Bias bias)
-  {
-    Rectangle alloc = a.getBounds();
-    Rectangle location = new Rectangle(alloc.x, alloc.y, 1, alloc.height);
-    if (bias == Position.Bias.Forward)
-      location.x = alloc.x + alloc.width;
-    return location;
   }
 
   /**
@@ -394,7 +407,7 @@ public abstract class CompositeView
    */
   public int getViewIndex(int pos, Position.Bias b)
   {
-    if (b == Position.Bias.Backward && pos != 0)
+    if (b == Position.Bias.Backward)
       pos -= 1;
     int i = -1;
     if (pos >= getStartOffset() && pos < getEndOffset())
@@ -528,10 +541,10 @@ public abstract class CompositeView
             insideAllocation = inside;
           }
       }
-    inside.x = alloc.x + insets.left;
-    inside.y = alloc.y + insets.top;
-    inside.width = alloc.width - insets.left - insets.right;
-    inside.height = alloc.height - insets.top - insets.bottom;
+    inside.x = alloc.x + left;
+    inside.y = alloc.y + top;
+    inside.width = alloc.width - left - right;
+    inside.height = alloc.height - top - bottom;
     return inside;
   }
 
@@ -546,39 +559,26 @@ public abstract class CompositeView
    */
   protected void setParagraphInsets(AttributeSet attributes)
   {
-    Float l = (Float) attributes.getAttribute(StyleConstants.LeftIndent);
-    short left = 0;
-    if (l != null)
-      left = l.shortValue();
-    Float r = (Float) attributes.getAttribute(StyleConstants.RightIndent);
-    short right = 0;
-    if (r != null)
-      right = r.shortValue();
-    Float t = (Float) attributes.getAttribute(StyleConstants.SpaceAbove);
-    short top = 0;
-    if (t != null)
-      top = t.shortValue();
-    Float b = (Float) attributes.getAttribute(StyleConstants.SpaceBelow);
-    short bottom = 0;
-    if (b != null)
-      bottom = b.shortValue();
-    setInsets(top, left, bottom, right);
+    top = (short) StyleConstants.getSpaceAbove(attributes);
+    bottom = (short) StyleConstants.getSpaceBelow(attributes);
+    left = (short) StyleConstants.getLeftIndent(attributes);
+    right = (short) StyleConstants.getRightIndent(attributes);
   }
 
   /**
    * Sets the insets of this <code>CompositeView</code>.
    *
-   * @param top the top inset
-   * @param left the left inset
-   * @param bottom the bottom inset
-   * @param right the right inset
+   * @param t the top inset
+   * @param l the left inset
+   * @param b the bottom inset
+   * @param r the right inset
    */
-  protected void setInsets(short top, short left, short bottom, short right)
+  protected void setInsets(short t, short l, short b, short r)
   {
-    insets.top = top;
-    insets.left = left;
-    insets.bottom = bottom;
-    insets.right = right;
+    top = t;
+    left = l;
+    bottom = b;
+    right = r;
   }
 
   /**
@@ -588,7 +588,7 @@ public abstract class CompositeView
    */
   protected short getLeftInset()
   {
-    return (short) insets.left;
+    return left;
   }
 
   /**
@@ -598,7 +598,7 @@ public abstract class CompositeView
    */
   protected short getRightInset()
   {
-    return (short) insets.right;
+    return right;
   }
 
   /**
@@ -608,7 +608,7 @@ public abstract class CompositeView
    */
   protected short getTopInset()
   {
-    return (short) insets.top;
+    return top;
   }
 
   /**
@@ -618,7 +618,7 @@ public abstract class CompositeView
    */
   protected short getBottomInset()
   {
-    return (short) insets.bottom;
+    return bottom;
   }
 
   /**

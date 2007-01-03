@@ -44,11 +44,8 @@ exception statement from your version. */
 #include <jni.h>
 #include <jcl.h>
 
-#include "target_native.h"
-#ifndef WITHOUT_FILESYSTEM
-#include "target_native_file.h"
-#endif
-#include "target_native_math_int.h"
+#include "cpnative.h"
+#include "cpio.h"
 
 #include "gnu_java_nio_channels_FileChannelImpl.h"
 
@@ -59,6 +56,10 @@ exception statement from your version. */
 #ifdef HAVE_SYS_MMAN_H
 #include <sys/mman.h>
 #endif /* HAVE_SYS_MMAN_H */
+
+#if defined(HAVE_UNISTD_H)
+#include <unistd.h>
+#endif
 
 /* These values must be kept in sync with FileChannelImpl.java.  */
 #define FILECHANNELIMPL_READ   1
@@ -78,22 +79,6 @@ exception statement from your version. */
 #define FILECHANNELIMPL_FILEOPEN_FLAG_DSYNC  32
 
 #define IO_EXCEPTION "java/io/IOException"
-
-/* FIXME: This can't be right.  Need converter macros. */
-#define CONVERT_JLONG_TO_INT(x) TARGET_NATIVE_MATH_INT_INT64_TO_INT32(x)
-#define CONVERT_INT_TO_JLONG(x) TARGET_NATIVE_MATH_INT_INT32_TO_INT64(x)
-
-/* FIXME: This can't be right.  Need converter macros. */
-#define CONVERT_JLONG_TO_OFF_T(x) TARGET_NATIVE_MATH_INT_INT64_TO_INT32(x)
-#define CONVERT_OFF_T_TO_JLONG(x) TARGET_NATIVE_MATH_INT_INT32_TO_INT64(x)
-
-/* FIXME: This can't be right.  Need converter macros */
-#define CONVERT_JINT_TO_INT(x) ((int)(x & 0xFFFFFFFF))
-#define CONVERT_INT_TO_JINT(x) ((int)(x & 0xFFFFFFFF))
-
-/* FIXME: This can't be right.  Need converter macros. */
-#define CONVERT_SSIZE_T_TO_JINT(x) ((jint)(x & 0xFFFFFFFF))
-#define CONVERT_JINT_TO_SSIZE_T(x) (x)
 
 /* Align a value up or down to a multiple of the pagesize. */
 #define ALIGN_DOWN(p,s) ((p) - ((p) % (s)))
@@ -162,53 +147,46 @@ Java_gnu_java_nio_channels_FileChannelImpl_open (JNIEnv * env,
       && (mode & FILECHANNELIMPL_FILEOPEN_FLAG_WRITE))
     {
       /* read/write */
-      flags =
-	TARGET_NATIVE_FILE_FILEFLAG_CREATE |
-	TARGET_NATIVE_FILE_FILEFLAG_READWRITE;
-      permissions = TARGET_NATIVE_FILE_FILEPERMISSION_NORMAL;
+      flags = CPFILE_FLAG_CREATE | CPFILE_FLAG_READWRITE;
+      permissions = CPFILE_PERMISSION_NORMAL;
     }
   else if ((mode & FILECHANNELIMPL_FILEOPEN_FLAG_READ))
     {
       /* read */
-      flags = TARGET_NATIVE_FILE_FILEFLAG_READ;
-      permissions = TARGET_NATIVE_FILE_FILEPERMISSION_NORMAL;
+      flags = CPFILE_FLAG_READ;
+      permissions = CPFILE_PERMISSION_NORMAL;
     }
   else
     {
       /* write */
-      flags =
-	TARGET_NATIVE_FILE_FILEFLAG_CREATE |
-	TARGET_NATIVE_FILE_FILEFLAG_WRITE;
+      flags = CPFILE_FLAG_CREATE | CPFILE_FLAG_WRITE;
       if ((mode & FILECHANNELIMPL_FILEOPEN_FLAG_APPEND))
 	{
-	  flags |= TARGET_NATIVE_FILE_FILEFLAG_APPEND;
+	  flags |= CPFILE_FLAG_APPEND;
 	}
       else
 	{
-	  flags |= TARGET_NATIVE_FILE_FILEFLAG_TRUNCATE;
+	  flags |= CPFILE_FLAG_TRUNCATE;
 	}
-      permissions = TARGET_NATIVE_FILE_FILEPERMISSION_NORMAL;
+      permissions = CPFILE_PERMISSION_NORMAL;
     }
 
   if ((mode & FILECHANNELIMPL_FILEOPEN_FLAG_SYNC))
     {
-      flags |= TARGET_NATIVE_FILE_FILEFLAG_SYNC;
+      flags |= CPFILE_FLAG_SYNC;
     }
 
   if ((mode & FILECHANNELIMPL_FILEOPEN_FLAG_DSYNC))
     {
-      flags |= TARGET_NATIVE_FILE_FILEFLAG_DSYNC;
+      flags |= CPFILE_FLAG_DSYNC;
     }
-#ifdef O_BINARY
-  flags |= TARGET_NATIVE_FILE_FILEFLAG_BINARY;
-#endif
+  flags |= CPFILE_FLAG_BINARY;
 
-  TARGET_NATIVE_FILE_OPEN (filename, native_fd, flags, permissions, result);
-
-  if (result != TARGET_NATIVE_OK)
+  result = cpio_openFile (filename, &native_fd, flags, permissions);
+  if (result != CPNATIVE_OK)
     {
       char message[256]; /* Fixed size we don't need to malloc. */
-      char *error_string = TARGET_NATIVE_LAST_ERROR_STRING ();
+      const char *error_string = cpnative_getErrorString (result);
 
       snprintf(message, 256, "%s: %s", error_string, filename);
       /* We are only allowed to throw FileNotFoundException.  */
@@ -216,7 +194,7 @@ Java_gnu_java_nio_channels_FileChannelImpl_open (JNIEnv * env,
 			  "java/io/FileNotFoundException",
 			  message);
       JCL_free_cstring (env, name, filename);
-      return TARGET_NATIVE_MATH_INT_INT64_CONST_MINUS_1;
+      return -1;
     }
 
   JCL_free_cstring (env, name, filename);
@@ -238,17 +216,15 @@ Java_gnu_java_nio_channels_FileChannelImpl_implCloseChannel (JNIEnv * env,
 
   do
     {
-      TARGET_NATIVE_FILE_CLOSE (native_fd, result);
-      if (result != TARGET_NATIVE_OK
-	  && (TARGET_NATIVE_LAST_ERROR ()
-	      != TARGET_NATIVE_ERROR_INTERRUPT_FUNCTION_CALL))
+      result = cpio_closeFile (native_fd);
+      if (result != CPNATIVE_OK && result != CPNATIVE_EINTR)
 	{
 	  JCL_ThrowException (env, IO_EXCEPTION,
-			      TARGET_NATIVE_LAST_ERROR_STRING ());
+			      cpnative_getErrorString (result));
 	  return;
 	}
     }
-  while (result != TARGET_NATIVE_OK);
+  while (result != CPNATIVE_OK);
 }
 
 /*
@@ -267,20 +243,18 @@ Java_gnu_java_nio_channels_FileChannelImpl_available (JNIEnv * env,
 
   do
     {
-      TARGET_NATIVE_FILE_AVAILABLE (native_fd, bytes_available, result);
-      if (result != TARGET_NATIVE_OK
-	  && (TARGET_NATIVE_LAST_ERROR ()
-	      != TARGET_NATIVE_ERROR_INTERRUPT_FUNCTION_CALL))
+      result = cpio_availableBytes (native_fd, &bytes_available);
+      if (result != CPNATIVE_OK && result != CPNATIVE_EINTR)
 	{
 	  JCL_ThrowException (env, IO_EXCEPTION,
-			      TARGET_NATIVE_LAST_ERROR_STRING ());
+			      cpnative_getErrorString (result));
 	  return 0;
 	}
     }
-  while (result != TARGET_NATIVE_OK);
+  while (result != CPNATIVE_OK);
 
   /* FIXME NYI ??? why only jint and not jlong? */
-  return TARGET_NATIVE_MATH_INT_INT64_TO_INT32 (bytes_available);
+  return (jint)bytes_available;
 }
 
 JNIEXPORT jlong JNICALL
@@ -292,12 +266,12 @@ Java_gnu_java_nio_channels_FileChannelImpl_size (JNIEnv * env, jobject obj)
 
   native_fd = get_native_fd (env, obj);
 
-  TARGET_NATIVE_FILE_SIZE (native_fd, file_size, result);
-  if (result != TARGET_NATIVE_OK)
+  result = cpio_getFileSize (native_fd, &file_size);
+  if (result != CPNATIVE_OK)
     {
       JCL_ThrowException (env, IO_EXCEPTION,
-			  TARGET_NATIVE_LAST_ERROR_STRING ());
-      return TARGET_NATIVE_MATH_INT_INT64_CONST_MINUS_1;
+			  cpnative_getErrorString (result));
+      return -1;
     }
 
   return file_size;
@@ -317,12 +291,12 @@ Java_gnu_java_nio_channels_FileChannelImpl_implPosition (JNIEnv * env,
 
   native_fd = get_native_fd (env, obj);
 
-  TARGET_NATIVE_FILE_TELL (native_fd, current_offset, result);
-  if (result != TARGET_NATIVE_OK)
+  result = cpio_getFilePosition (native_fd, &current_offset);
+  if (result != CPNATIVE_OK)
     {
       JCL_ThrowException (env, IO_EXCEPTION,
-			  TARGET_NATIVE_LAST_ERROR_STRING ());
-      return TARGET_NATIVE_MATH_INT_INT64_CONST_MINUS_1;
+			  cpnative_getErrorString (result));
+      return -1;
     }
 
   return current_offset;
@@ -337,7 +311,6 @@ Java_gnu_java_nio_channels_FileChannelImpl_seek (JNIEnv * env, jobject obj,
 						 jlong offset)
 {
   int native_fd;
-  jlong new_offset;
   int result;
 
   native_fd = get_native_fd (env, obj);
@@ -362,14 +335,11 @@ Java_gnu_java_nio_channels_FileChannelImpl_seek (JNIEnv * env, jobject obj,
     }
 #endif /* 0 */
 
-  result = TARGET_NATIVE_ERROR;
-  new_offset = TARGET_NATIVE_MATH_INT_INT64_CONST_MINUS_1;
-  TARGET_NATIVE_FILE_SEEK_BEGIN (native_fd, offset, new_offset, result);
-
-  if (result != TARGET_NATIVE_OK)
+  result = cpio_setFilePosition (native_fd, offset);
+  if (result != CPNATIVE_OK)
     {
       JCL_ThrowException (env, IO_EXCEPTION,
-			  TARGET_NATIVE_LAST_ERROR_STRING ());
+			  cpnative_getErrorString (result));
     }
 }
 
@@ -383,10 +353,6 @@ Java_gnu_java_nio_channels_FileChannelImpl_implTruncate (JNIEnv * env,
 							 jlong len)
 {
   int native_fd;
-  jlong file_size;
-  int bytes_written;
-  jlong save_offset, new_offset;
-  char data;
   int result;
 
   native_fd = get_native_fd (env, obj);
@@ -412,97 +378,11 @@ Java_gnu_java_nio_channels_FileChannelImpl_implTruncate (JNIEnv * env,
     }
 #endif /* 0 */
 
-  /* get file size */
-  TARGET_NATIVE_FILE_SIZE (native_fd, file_size, result);
-  if (result != TARGET_NATIVE_OK)
+  result = cpio_setFileSize (native_fd, len);
+  if (result != CPNATIVE_OK)
     {
       JCL_ThrowException (env, IO_EXCEPTION,
-			  TARGET_NATIVE_LAST_ERROR_STRING ());
-      return;
-    }
-
-  /* Save off current position */
-  TARGET_NATIVE_FILE_TELL (native_fd, save_offset, result);
-  if (result != TARGET_NATIVE_OK)
-    {
-      JCL_ThrowException (env, IO_EXCEPTION,
-			  TARGET_NATIVE_LAST_ERROR_STRING ());
-      return;
-    }
-
-  if (TARGET_NATIVE_MATH_INT_INT64_LT (file_size, len))
-    {
-      /* File is too short -- seek to one byte short of where we want,
-       * then write a byte */
-
-      /* move to position n-1 */
-      TARGET_NATIVE_FILE_SEEK_BEGIN (native_fd,
-				     TARGET_NATIVE_MATH_INT_INT64_SUB (len,
-								       1),
-				     new_offset, result);
-      if (result != TARGET_NATIVE_OK)
-	{
-	  JCL_ThrowException (env, IO_EXCEPTION,
-			      TARGET_NATIVE_LAST_ERROR_STRING ());
-	  return;
-	}
-
-      /* write a byte
-         Note: This will fail if we somehow get here in read only mode
-         * That shouldn't happen */
-      data = '\0';
-      TARGET_NATIVE_FILE_WRITE (native_fd, &data, 1, bytes_written, result);
-      if (result != TARGET_NATIVE_OK)
-	{
-	  JCL_ThrowException (env, IO_EXCEPTION,
-			      TARGET_NATIVE_LAST_ERROR_STRING ());
-	  return;
-	}
-
-      /* Reposition file pointer to where we started if not beyond new len. */
-      if (TARGET_NATIVE_MATH_INT_INT64_LT (save_offset, len))
-	{
-	  TARGET_NATIVE_FILE_SEEK_BEGIN (native_fd, save_offset,
-					 new_offset, result);
-	  if (result != TARGET_NATIVE_OK)
-	    {
-	      JCL_ThrowException (env, IO_EXCEPTION,
-				  TARGET_NATIVE_LAST_ERROR_STRING ());
-	      return;
-	    }
-	}
-    }
-  else if (TARGET_NATIVE_MATH_INT_INT64_GT (file_size, len))
-    {
-      /* File is too long - use ftruncate if available */
-#ifdef HAVE_FTRUNCATE
-      TARGET_NATIVE_FILE_TRUNCATE (native_fd, len, result);
-      if (result != TARGET_NATIVE_OK)
-	{
-	  JCL_ThrowException (env, IO_EXCEPTION,
-			      TARGET_NATIVE_LAST_ERROR_STRING ());
-	  return;
-	}
-#else /* HAVE_FTRUNCATE */
-      /* FIXME: Probably operation isn't supported, but this exception
-       * is too harsh as it will probably crash the program without need
-       JCL_ThrowException(env, "java/lang/UnsupportedOperationException",
-       "not implemented - can't shorten files on this platform");
-       */
-      JCL_ThrowException (env, IO_EXCEPTION, "Unable to shorten file length");
-#endif /* HAVE_FTRUNCATE */
-
-      /* Reposition file pointer when it now is beyond the end of file. */
-      if (TARGET_NATIVE_MATH_INT_INT64_GT (save_offset, len))
-	{
-	  TARGET_NATIVE_FILE_SEEK_BEGIN (native_fd, len, new_offset, result);
-	  if (result != TARGET_NATIVE_OK)
-	    {
-	      JCL_ThrowException (env, IO_EXCEPTION,
-				  TARGET_NATIVE_LAST_ERROR_STRING ());
-	      return;
-	    }
-	}
+			  cpnative_getErrorString (result));
     }
 }
 
@@ -563,7 +443,7 @@ Java_gnu_java_nio_channels_FileChannelImpl_mapImpl (JNIEnv *env, jobject obj,
 	    fd, ALIGN_DOWN (position, pagesize));
   if (p == MAP_FAILED)
     {
-      JCL_ThrowException (env, IO_EXCEPTION, strerror (errno));
+      JCL_ThrowException (env, IO_EXCEPTION, cpnative_getErrorString (errno));
       return NULL;
     }
 
@@ -619,7 +499,7 @@ Java_gnu_java_nio_channels_FileChannelImpl_read__ (JNIEnv * env, jobject obj)
 {
   int native_fd;
   char data;
-  ssize_t bytes_read;
+  jint bytes_read;
   int result;
 
   native_fd = get_native_fd (env, obj);
@@ -627,21 +507,18 @@ Java_gnu_java_nio_channels_FileChannelImpl_read__ (JNIEnv * env, jobject obj)
   bytes_read = 0;
   do
     {
-      TARGET_NATIVE_FILE_READ (native_fd, &data, 1, bytes_read, result);
-      if ((result == TARGET_NATIVE_OK) && (bytes_read == 0))
-	{
-	  return (-1);
-	}
-      if ((result != TARGET_NATIVE_OK)
-	  && (TARGET_NATIVE_LAST_ERROR () !=
-	      TARGET_NATIVE_ERROR_INTERRUPT_FUNCTION_CALL))
+      result = cpio_read (native_fd, &data, 1, &bytes_read);
+      if ((result == CPNATIVE_OK) && (bytes_read == 0))
+	  return -1;
+
+      if ((result != CPNATIVE_OK) && (result != CPNATIVE_EINTR))
 	{
 	  JCL_ThrowException (env, IO_EXCEPTION,
-			      TARGET_NATIVE_LAST_ERROR_STRING ());
-	  return (-1);
+			      cpnative_getErrorString (result));
+	  return -1;
 	}
     }
-  while (result != TARGET_NATIVE_OK);
+  while (result != CPNATIVE_OK);
 
   return ((jint) (data & 0xFF));
 }
@@ -659,8 +536,8 @@ Java_gnu_java_nio_channels_FileChannelImpl_read___3BII (JNIEnv * env,
 {
   int native_fd;
   jbyte *bufptr;
-  ssize_t bytes_read;
-  ssize_t n;
+  jint bytes_read;
+  jint n;
   int result;
 
   native_fd = get_native_fd (env, obj);
@@ -692,32 +569,30 @@ Java_gnu_java_nio_channels_FileChannelImpl_read___3BII (JNIEnv * env,
   bytes_read = 0;
   do
     {
-      TARGET_NATIVE_FILE_READ (native_fd, (bufptr + offset + bytes_read),
-			       (length - bytes_read), n, result);
-      if ((result == TARGET_NATIVE_OK) && (n == 0))
+      result = cpio_read (native_fd, (bufptr + offset + bytes_read),
+			  (length - bytes_read), &n);
+      if ((result == CPNATIVE_OK) && (n == 0))
 	{
 	  (*env)->ReleaseByteArrayElements (env, buffer, bufptr, 0);
 	  if (bytes_read == 0)
 	    return -1;		/* Signal end of file to Java */
 	  else
-	    return CONVERT_SSIZE_T_TO_JINT (bytes_read);
+	    return bytes_read;
 	}
-      if ((result != TARGET_NATIVE_OK)
-	  && (TARGET_NATIVE_LAST_ERROR () !=
-	      TARGET_NATIVE_ERROR_INTERRUPT_FUNCTION_CALL))
+      if ((result != CPNATIVE_OK) && (result != CPNATIVE_EINTR))
 	{
 	  JCL_ThrowException (env, IO_EXCEPTION,
-			      TARGET_NATIVE_LAST_ERROR_STRING ());
+			      cpnative_getErrorString (result));
 	  (*env)->ReleaseByteArrayElements (env, buffer, bufptr, 0);
 	  return -1;
 	}
-      if (result == TARGET_NATIVE_OK)
+      if (result == CPNATIVE_OK)
 	bytes_read += n;
     }
   while (bytes_read < 1);
 
   (*env)->ReleaseByteArrayElements (env, buffer, bufptr, 0);
-  return CONVERT_SSIZE_T_TO_JINT (bytes_read);
+  return bytes_read;
 }
 
 /*
@@ -730,26 +605,23 @@ Java_gnu_java_nio_channels_FileChannelImpl_write__I (JNIEnv * env,
 {
   int native_fd;
   char native_data;
-  ssize_t bytes_written;
+  jint bytes_written;
   int result;
 
   native_fd = get_native_fd (env, obj);
-  native_data = (char) (CONVERT_JINT_TO_INT (b) & 0xFF);
+  native_data = (char) (b & 0xFF);
 
   do
     {
-      TARGET_NATIVE_FILE_WRITE (native_fd, &native_data, 1, bytes_written,
-				result);
-      if ((result != TARGET_NATIVE_OK)
-	  && (TARGET_NATIVE_LAST_ERROR () !=
-	      TARGET_NATIVE_ERROR_INTERRUPT_FUNCTION_CALL))
+      result = cpio_write (native_fd, &native_data, 1, &bytes_written);
+      if ((result != CPNATIVE_OK) && (result != CPNATIVE_EINTR))
 	{
 	  JCL_ThrowException (env, IO_EXCEPTION,
-			      TARGET_NATIVE_LAST_ERROR_STRING ());
+			      cpnative_getErrorString (result));
 	  return;
 	}
     }
-  while (result != TARGET_NATIVE_OK);
+  while (result != CPNATIVE_OK);
 }
 
 /*
@@ -762,10 +634,11 @@ Java_gnu_java_nio_channels_FileChannelImpl_force (JNIEnv * env,
   int native_fd;
   int result;
   native_fd = get_native_fd (env, obj);
-  TARGET_NATIVE_FILE_FSYNC (native_fd, result);
-  if (result != TARGET_NATIVE_OK)
+
+  result = cpio_fsync (native_fd);
+  if (result != CPNATIVE_OK)
     JCL_ThrowException (env, IO_EXCEPTION,
-			TARGET_NATIVE_LAST_ERROR_STRING ());
+			cpnative_getErrorString (result));
 }
 
 /*
@@ -781,8 +654,8 @@ Java_gnu_java_nio_channels_FileChannelImpl_write___3BII (JNIEnv * env,
 {
   int native_fd;
   jbyte *bufptr;
-  ssize_t bytes_written;
-  ssize_t n;
+  jint bytes_written;
+  jint n;
   int result;
 
   native_fd = get_native_fd (env, obj);
@@ -799,20 +672,18 @@ Java_gnu_java_nio_channels_FileChannelImpl_write___3BII (JNIEnv * env,
     }
 
   bytes_written = 0;
-  while (bytes_written < CONVERT_JINT_TO_SSIZE_T (length))
+  while (bytes_written < length)
     {
-      TARGET_NATIVE_FILE_WRITE (native_fd, (bufptr + offset + bytes_written),
-				(length - bytes_written), n, result);
-      if ((result != TARGET_NATIVE_OK)
-	  && (TARGET_NATIVE_LAST_ERROR () !=
-	      TARGET_NATIVE_ERROR_INTERRUPT_FUNCTION_CALL))
+      result = cpio_write (native_fd, (bufptr + offset + bytes_written),
+			   (length - bytes_written), &n);
+      if ((result != CPNATIVE_OK) && (result != CPNATIVE_EINTR))
 	{
 	  JCL_ThrowException (env, IO_EXCEPTION,
-			      TARGET_NATIVE_LAST_ERROR_STRING ());
+			      cpnative_getErrorString (result));
 	  (*env)->ReleaseByteArrayElements (env, buffer, bufptr, 0);
 	  return;
 	}
-      if (result == TARGET_NATIVE_OK)
+      if (result == CPNATIVE_OK)
 	bytes_written += n;
     }
 
@@ -849,7 +720,7 @@ Java_gnu_java_nio_channels_FileChannelImpl_lock (JNIEnv *env, jobject obj,
       if (errno != EACCES && errno != EAGAIN)
         {
           JCL_ThrowException (env, "java/lang/InternalError",
-			      strerror (errno));
+			      cpnative_getErrorString (errno));
         }
       return JNI_FALSE;
     }
@@ -890,7 +761,7 @@ Java_gnu_java_nio_channels_FileChannelImpl_unlock (JNIEnv *env,
   if (ret)
     {
       JCL_ThrowException (env, "java/lang/InternalError",
-			  strerror (errno));
+			  cpnative_getErrorString (errno));
     }
 #else
   (void) obj;

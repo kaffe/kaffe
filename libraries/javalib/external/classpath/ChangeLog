@@ -1,3 +1,1756 @@
+2006-09-09  Chris Burdess  <dog@gnu.org>
+
+	* gnu/xml/xpath/Expr.java: Ensure that node-set evaluation returns
+	  an instance of org.w3c.dom.NodeList.
+
+2006-09-08  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* tools/gnu/classpath/tools/appletviewer/Main.java: Warn about
+	missing security manager when run in standalone mode.
+
+2006-09-08  Francis Kung  <fkung@redhat.com>
+
+	* java/awt/image/AffineTransformOp.java: Updated documentation.
+	(createCompatibleDestRaster): Updated formatting.
+	(filter(BufferedImage, BufferedImage)): Updated formatting.
+	(filter(Raster, WritableRaster)): Delegated processing to native peers for
+	if colour model is compatible.
+	(filterBicubic): Get entire pixel at once, and use appropriate array type.
+	(filterBilinear): Get entire pixel at once, and use appropriate array type.
+
+2006-09-08  Gary Benson  <gbenson@redhat.com>
+
+	* java/net/InetAddress.java
+	(family): Updated javadoc and made private.
+	(<init>): Add an address family argument.
+	(readObject): Don't overwrite family.
+	* java/net/Inet4Address.java
+	(AF_INET): New constant.
+	(<init>): Use AF_INET as the family.
+	(writeReplace): Likewise.
+	* java/net/Inet6Address.java
+	(AF_INET6): New constant.
+	(<init>): Use AF_INET6 as the family.
+
+2006-09-08  Gary Benson  <gbenson@redhat.com>
+
+	* java/net/InetAddress.java
+	(getHostName): Move lookup into getCanonicalHostName.
+	(getCanonicalHostName): Move lookup from getHostName,
+	Perform security check on canonical name (ie after lookup).
+
+2006-09-08  Gary Benson  <gbenson@redhat.com>
+
+	* java/net/Inet4Address.java (isMulticastAddress,
+	isLoopbackAddress, isAnyLocalAddress, isLinkLocalAddress,
+	isSiteLocalAddress, isMCGlobal, isMCNodeLocal, isMCLinkLocal,
+	isMCSiteLocal, isMCOrgLocal, getHostAddress): Moved
+	implementations from InetAddress.
+	* java/net/InetAddress.java (isMulticastAddress,
+	isLoopbackAddress, isAnyLocalAddress, isLinkLocalAddress,
+	isSiteLocalAddress, isMCGlobal, isMCNodeLocal, isMCLinkLocal,
+	isMCSiteLocal, isMCOrgLocal, getHostAddress): Replace
+	implementations with UnsupportedOperationExceptions.
+	
+2006-09-08  Gary Benson  <gbenson@redhat.com>
+
+	* java/net/InetAddress.java
+	(inaddr_any): Removed.
+	(ANY_IF, LOCALHOST): Create using getByAddress.
+	(<init>): Updated javadoc.
+	(getHostName): Cache hostname even if the lookup failed.
+	(getByAddress): Create Inet4Address objects when passed
+	IPv4-mapped IPv6 addresses.
+	(aton): Removed.
+	(getAllByName): Create address objects using getByAddress.
+	Do not perform security checks unless actually required.
+	Do not strip whitespace from the hostname.
+	(getInaddrAny): Removed.
+	(getLocalHost): Return the loopback address if getByName
+	throws a SecurityException.
+	(readResolve): Updated javadoc.
+	* vm/reference/java/net/VMInetAddress.java (aton): Declared.
+	* include/java_net_VMInetAddress.h
+	(Java_java_net_VMInetAddress_aton): Likewise.
+	* native/jni/java-net/java_net_VMInetAddress.c
+	(Java_java_net_VMInetAddress_aton): New method.
+	* native/jni/native-lib/cpnet.h (cpnet_aton): Declared.
+	* native/jni/native-lib/cpnet.c (cpnet_aton): New method.
+	* configure.ac (AC_CHECK_FUNCS): Checks for cpnet_aton.
+	* java/net/Inet4Address.java (writeReplace): Updated javadoc.
+	* NEWS: Added note about updated VM interface.
+
+2006-09-07  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/plaf/basic/BasicInternalFrameUI.java
+	(setNorthPane): Assign component to titlePane.
+
+2006-09-07  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* gnu/CORBA/NamingService/NameParser.java (corbaloc):
+	Remove unused variable alt_addr.
+	* gnu/CORBA/NamingService/NameTransformer.java (toName):
+	Remove unused variables.
+
+2006-09-07  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/plaf/metal/MetalScrollBarUI.java
+	(installDefaults): Initialise scrollBarWidth from UI defaults here,
+	(createDecreaseButton): Don't fetch scrollBarWidth here, 
+	(createIncreaseButton): Likewise.
+
+2006-09-07  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/awt/image/MemoryImageSource.java: Added API docs.
+
+2006-09-06  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/plaf/basic/BasicScrollBarUI.java
+	(installDefaults): Call configureScrollBarColors().
+
+2006-09-06  Francis Kung  <fkung@redhat.com>
+
+	* java/awt/image/RescaleOp.java: Updated documentation and formatting.
+	(constructor): Make copy of arrays.
+	(createCompatibleDestImage): Changed treatment of null ColorModel.
+	(filter(BufferedImage, BufferedImage)): Re-implemented.
+	(filter(Raster, WritableRaster, boolean[])): New method.
+	(filter(Raster, WritableRaster)): Re-implemented.
+	(getOffsets): Prevent ArrayIndexOutOfBoundsException.
+	(getPoint2D): Cleaned up formatting.
+	(getScaleFactors): Prevent ArrayIndexOutOfBoundsException.
+
+2006-09-06  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/UIManager.java
+	(getBoolean(Object)): Reimplemented,
+	(getBoolean(Object, Locale)): Likewise,
+	(getBorder(Object)): Likewise,
+	(getBorder(Object, Locale)): Likewise,
+	(getColor(Object)): Likewise,
+	(getColor(Object, Locale)): Likewise,
+	(getDimension(Object)): Likewise,
+	(getDimension(Object, Locale)): Likewise,
+	(getFont(Object)): Likewise,
+	(getFont(Object, Locale)): Likewise,
+	(getIcon(Object)): Likewise,
+	(getIcon(Object, Locale)): Likewise,
+	(getInsets(Object)): Updated API docs,
+	(getInsets(Object, Locale)): Likewise,
+	(getInt(Object)): Reimplemented,
+	(getInt(Object, Locale)): Likewise,
+	(getString(Object)): Likewise,
+	(getString(Object, Locale)): Likewise.
+
+2006-09-06  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/UIManager.java
+	(MultiplexUIDefaults.MultiplexUIDefaults()): Don't allow null fallback,
+	(getDefaults): Initialise MultiplexUIDefaults with empty fallback.
+
+2006-09-06  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/plaf/metal/MetalLookAndFeel.java
+	(initComponentDefaults): Corrected various font defaults.
+
+2006-09-05  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/awt/List.java: Added @since to various methods.
+
+2006-09-05  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* native/jni/native-lib/cpprocess.c:
+	(forkAndExec(char*,char*,int,int,pid_t,char*)):
+	Add redirection of stdout to stderr.
+	* native/jni/native-lib/cpprocess.h:
+	Added redirect argument.
+	* native/jni/java-lang/java_lang_VMProcess.c
+	(Java_java_lang_VMProcess_nativeSpawn): Readd redirect argument.
+	* vm/reference/java/lang/VMProcess.java: Likewise.
+	* include/java_lang_VMProcess.h: Regenerated.
+	
+2006-09-05  Andreas Tobler  <a.tobler@schweiz.ch>
+
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkVolatileImage.c: Adjust
+	__attribute to __attribute__.
+
+	* native/jni/java-nio/java_nio_MappedByteBufferImpl.c: Remove duplicate
+	header include.
+
+2006-09-05  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/awt/List.java: Source code reformatted.
+
+2006-09-05  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* gnu/CORBA/CollocatedOrbs.java,
+	gnu/CORBA/SafeForDirectCalls.java: New files.
+	* gnu/CORBA/NamingService/Binding_iterator_impl.java:
+	Implement gnu.CORBA.SafeForDirectCalls.
+	* gnu/CORBA/NamingService/Ext.java: Likewise.
+	* gnu/CORBA/NamingService/TransientContext.java: Likewise.
+	* gnu/CORBA/OrbFunctional.java (createIor):Cache the address
+	of the local host. (ior_to_object): Return the local object
+	where possible. (run): Register/unregister this ORB.
+	* gnu/CORBA/Poa/LocalRequest.java (v_invoke): Call gnuPOA.checkDiscarding.	
+	* gnu/CORBA/Poa/gnuPOA.java (checkDiscarding): Made package private.
+	* gnu/CORBA/Poa/gnuServantObject.java (noRetain): New field.
+	(constructors): Initialize noRetain. (_invoke): Drop servant
+	if noRetain is true. (getHandler): Always seach for the new servant
+	if noRetain is true.
+	* gnu/CORBA/SimpleDelegate.java (create_request): Implemented.
+	* NEWS: Added note about the new feature.
+
+2006-09-05  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/awt/Choice.java
+	(addItem): Fixed API doc glitch.
+
+2006-09-05  Francis Kung  <fkung@redhat.com>
+
+	* java/awt/image/LookupOp.java: Updated documentation & formatting.
+	(createCompatibleDestImage): Re-implemented.
+	(filter(BufferedImage, BufferedImage)): Added check for src/dest image
+	compatibility, and use ColorConvertOp for color conversion if needed.
+	(filter(Raster, WritableRaster)): Made exceptions more descriptive.
+
+2006-09-05  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	gnu/CORBA/CDR/Vio.java,
+	org/omg/CORBA_2_3/ORB.java,
+	org/omg/CORBA_2_3/portable/InputStream.java,
+	org/omg/CORBA_2_3/portable/OutputStream.java,
+	org/omg/CosNaming/BindingIteratorHelper.java,
+	org/omg/CosNaming/BindingTypeHelper.java,
+	org/omg/CosNaming/NameComponentHelper.java,
+	org/omg/CosNaming/NameHelper.java,
+	org/omg/CosNaming/NamingContextExtHelper.java,
+	org/omg/CosNaming/NamingContextExtPackage/AddressHelper.java,
+	org/omg/CosNaming/NamingContextExtPackage/InvalidAddressHelper.java,
+	org/omg/CosNaming/NamingContextExtPackage/InvalidAddressHolder.java,
+	org/omg/CosNaming/NamingContextExtPackage/StringNameHelper.java,
+	org/omg/CosNaming/NamingContextExtPackage/URLStringHelper.java,
+	org/omg/CosNaming/NamingContextHelper.java,
+	org/omg/CosNaming/NamingContextPackage/AlreadyBoundHelper.java,
+	org/omg/CosNaming/NamingContextPackage/InvalidName.java,
+	org/omg/CosNaming/NamingContextPackage/InvalidNameHelper.java,
+	org/omg/CosNaming/NamingContextPackage/NotEmptyHelper.java,
+	org/omg/CosNaming/NamingContextPackage/NotFoundReasonHelper.java,
+	org/omg/CosNaming/NamingContextPackage/NotFoundReasonHolder.java,
+	org/omg/DynamicAny/AnySeqHelper.java,
+	org/omg/DynamicAny/DynAnyFactoryHelper.java,
+	org/omg/DynamicAny/DynAnyFactoryOperations.java,
+	org/omg/DynamicAny/DynAnyFactoryPackage/InconsistentTypeCodeHelper.java,
+	org/omg/DynamicAny/DynAnyHelper.java,
+	org/omg/DynamicAny/DynAnyOperations.java,
+	org/omg/DynamicAny/DynAnyPackage/InvalidValueHelper.java,
+	org/omg/DynamicAny/DynAnyPackage/TypeMismatchHelper.java,
+	org/omg/DynamicAny/DynAnySeqHelper.java,
+	org/omg/DynamicAny/DynArrayHelper.java,
+	org/omg/DynamicAny/DynEnumHelper.java,
+	org/omg/DynamicAny/DynFixedHelper.java,
+	org/omg/DynamicAny/DynSequenceHelper.java,
+	org/omg/DynamicAny/DynStructHelper.java,
+	org/omg/DynamicAny/DynStructOperations.java,
+	org/omg/DynamicAny/DynUnionHelper.java,
+	org/omg/DynamicAny/DynValueHelper.java,
+	org/omg/DynamicAny/NameDynAnyPairHelper.java,
+	org/omg/DynamicAny/NameDynAnyPairSeqHelper.java,
+	org/omg/IOP/CodecFactoryHelper.java,
+	org/omg/IOP/CodecFactoryPackage/UnknownEncodingHelper.java,
+	org/omg/IOP/CodecOperations.java,
+	org/omg/IOP/CodecPackage/FormatMismatchHelper.java,
+	org/omg/IOP/CodecPackage/InvalidTypeForEncodingHelper.java,
+	org/omg/IOP/CodecPackage/TypeMismatchHelper.java,
+	org/omg/IOP/ComponentIdHelper.java,
+	org/omg/IOP/ExceptionDetailMessage.java,
+	org/omg/IOP/MultipleComponentProfileHelper.java,
+	org/omg/IOP/ProfileIdHelper.java,
+	org/omg/IOP/ServiceContextListHelper.java,
+	org/omg/IOP/ServiceIdHelper.java,
+	org/omg/IOP/TAG_CODE_SETS.java,
+	org/omg/PortableInterceptor/ClientRequestInfoOperations.java,
+	org/omg/PortableInterceptor/ClientRequestInterceptorOperations.java,
+	org/omg/PortableInterceptor/CurrentHelper.java,
+	org/omg/PortableInterceptor/IORInfo.java,
+	org/omg/PortableInterceptor/IORInterceptor_3_0Helper.java,
+	org/omg/PortableInterceptor/ORBIdHelper.java,
+	org/omg/PortableInterceptor/ORBInitInfoOperations.java,
+	org/omg/PortableInterceptor/ORBInitInfoPackage/InvalidNameHelper.java,
+	org/omg/PortableInterceptor/ORBInitializerOperations.java,
+	org/omg/PortableInterceptor/ObjectReferenceFactoryHelper.java,
+	org/omg/PortableInterceptor/ObjectReferenceTemplateHelper.java,
+	org/omg/PortableInterceptor/RequestInfoOperations.java,
+	org/omg/PortableInterceptor/ServerIdHelper.java,
+	org/omg/PortableInterceptor/ServerRequestInfoOperations.java,
+	org/omg/PortableInterceptor/ServerRequestInterceptorOperations.java,
+	org/omg/PortableServer/AdapterActivatorOperations.java,
+	org/omg/PortableServer/CurrentHelper.java,
+	org/omg/PortableServer/CurrentPackage/NoContextHelper.java,
+	org/omg/PortableServer/ForwardRequestHelper.java,
+	org/omg/PortableServer/IdAssignmentPolicyValue.java,
+	org/omg/PortableServer/IdUniquenessPolicyValue.java,
+	org/omg/PortableServer/ImplicitActivationPolicyValue.java,
+	org/omg/PortableServer/LifespanPolicyValue.java,
+	org/omg/PortableServer/POA.java,
+	org/omg/PortableServer/POAHelper.java,
+	org/omg/PortableServer/POAManagerPackage/AdapterInactiveHelper.java,
+	org/omg/PortableServer/POAManagerPackage/State.java,
+	org/omg/PortableServer/POAOperations.java,
+	org/omg/PortableServer/POAPackage/AdapterAlreadyExistsHelper.java,
+	org/omg/PortableServer/POAPackage/AdapterNonExistentHelper.java,
+	org/omg/PortableServer/POAPackage/InvalidPolicy.java,
+	org/omg/PortableServer/POAPackage/NoServantHelper.java,
+	org/omg/PortableServer/POAPackage/ObjectAlreadyActiveHelper.java,
+	org/omg/PortableServer/POAPackage/ObjectNotActiveHelper.java,
+	org/omg/PortableServer/POAPackage/ServantAlreadyActiveHelper.java,
+	org/omg/PortableServer/POAPackage/ServantNotActiveHelper.java,
+	org/omg/PortableServer/POAPackage/WrongAdapterHelper.java,
+	org/omg/PortableServer/POAPackage/WrongPolicyHelper.java,
+	org/omg/PortableServer/RequestProcessingPolicyValue.java,
+	org/omg/PortableServer/ServantActivatorHelper.java,
+	org/omg/PortableServer/ServantLocatorHelper.java,
+	org/omg/PortableServer/ServantLocatorOperations.java,
+	org/omg/PortableServer/ServantRetentionPolicyValue.java,
+	org/omg/PortableServer/ThreadPolicyValue.java,
+	org/omg/PortableServer/_ServantActivatorStub.java,
+	org/omg/PortableServer/_ServantLocatorStub.java,
+	org/omg/PortableServer/portable/Delegate.java: Documentation fixes.
+
+2006-09-05  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* javax/rmi/CORBA/Tie.java,
+	org/omg/CORBA/AnyHolder.java,
+	org/omg/CORBA/AnySeqHelper.java,
+	org/omg/CORBA/AnySeqHolder.java,
+	org/omg/CORBA/BooleanHolder.java,
+	org/omg/CORBA/BooleanSeqHelper.java,
+	org/omg/CORBA/BooleanSeqHolder.java,
+	org/omg/CORBA/ByteHolder.java,
+	org/omg/CORBA/CharHolder.java,
+	org/omg/CORBA/CharSeqHelper.java,
+	org/omg/CORBA/CharSeqHolder.java,
+	org/omg/CORBA/Context.java,
+	org/omg/CORBA/CurrentHelper.java,
+	org/omg/CORBA/CustomValue.java,
+	org/omg/CORBA/DataOutputStream.java,
+	org/omg/CORBA/DefinitionKindHelper.java,
+	org/omg/CORBA/DomainManagerOperations.java,
+	org/omg/CORBA/DoubleHolder.java,
+	org/omg/CORBA/DoubleSeqHelper.java,
+	org/omg/CORBA/DoubleSeqHolder.java,
+	org/omg/CORBA/DynAny.java,
+	org/omg/CORBA/DynSequence.java,
+	org/omg/CORBA/DynValue.java,
+	org/omg/CORBA/DynamicImplementation.java,
+	org/omg/CORBA/FieldNameHelper.java,
+	org/omg/CORBA/FixedHolder.java,
+	org/omg/CORBA/FloatHolder.java,
+	org/omg/CORBA/FloatSeqHelper.java,
+	org/omg/CORBA/FloatSeqHolder.java,
+	org/omg/CORBA/IdentifierHelper.java,
+	org/omg/CORBA/IntHolder.java,
+	org/omg/CORBA/LocalObject.java,
+	org/omg/CORBA/LongHolder.java,
+	org/omg/CORBA/LongLongSeqHelper.java,
+	org/omg/CORBA/LongLongSeqHolder.java,
+	org/omg/CORBA/LongSeqHelper.java,
+	org/omg/CORBA/LongSeqHolder.java,
+	org/omg/CORBA/ORB.java,
+	org/omg/CORBA/ObjectHelper.java,
+	org/omg/CORBA/ObjectHolder.java,
+	org/omg/CORBA/OctetSeqHelper.java,
+	org/omg/CORBA/OctetSeqHolder.java,
+	org/omg/CORBA/PolicyErrorCodeHelper.java,
+	org/omg/CORBA/PolicyErrorHelper.java,
+	org/omg/CORBA/PolicyHelper.java,
+	org/omg/CORBA/PolicyListHelper.java,
+	org/omg/CORBA/PolicyTypeHelper.java,
+	org/omg/CORBA/PrincipalHolder.java,
+	org/omg/CORBA/RepositoryIdHelper.java,
+	org/omg/CORBA/Request.java,
+	org/omg/CORBA/ShortHolder.java,
+	org/omg/CORBA/ShortSeqHelper.java,
+	org/omg/CORBA/ShortSeqHolder.java,
+	org/omg/CORBA/StringSeqHelper.java,
+	org/omg/CORBA/StringSeqHolder.java,
+	org/omg/CORBA/ULongLongSeqHelper.java,
+	org/omg/CORBA/ULongLongSeqHolder.java,
+	org/omg/CORBA/ULongSeqHelper.java,
+	org/omg/CORBA/ULongSeqHolder.java,
+	org/omg/CORBA/UShortSeqHelper.java,
+	org/omg/CORBA/UShortSeqHolder.java,
+	org/omg/CORBA/ValueBaseHelper.java,
+	org/omg/CORBA/ValueBaseHolder.java,
+	org/omg/CORBA/VersionSpecHelper.java,
+	org/omg/CORBA/WCharSeqHelper.java,
+	org/omg/CORBA/WCharSeqHolder.java,
+	org/omg/CORBA/WStringSeqHelper.java,
+	org/omg/CORBA/WStringSeqHolder.java,
+	org/omg/CORBA/WrongTransactionHelper.java,
+	org/omg/CORBA/_IDLTypeStub.java,
+	org/omg/CORBA/_PolicyStub.java,
+	org/omg/CORBA/portable/BoxedValueHelper.java,
+	org/omg/CORBA/portable/Delegate.java,
+	org/omg/CORBA/portable/ObjectImpl.java,
+	org/omg/CORBA/portable/ServantObject.java,
+	org/omg/CORBA/portable/StreamableValue.java,
+	org/omg/CosNaming/BindingType.java,
+	org/omg/CosNaming/IstringHelper.java,
+	org/omg/DynamicAny/FieldNameHelper.java,
+	org/omg/PortableServer/Servant.java: Documentation fixes.
+
+2006-09-04  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/awt/Rectangle.java
+	(setRect(double, double, double, double)): Modified rounding of input
+	values.
+
+2006-09-03  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* gnu/javax/swing/text/html/parser/HTML_401F.java (defineElements):
+	Disallow H1 - H6 in the paragraphs.
+	* gnu/javax/swing/text/html/parser/support/textPreProcessor.java
+	(preprocess): Leave at most one leading and/or trailing space.
+	* javax/swing/text/html/HTMLDocument.java (HTMLReader.handleText):
+	Do not add any text after closing the HTML tag.
+
+2006-09-02  Roman Kennke  <kennke@aicas.com>
+
+	PR 28928
+	* javax/swing/plaf/basic/BasicTextUI.java
+	(RootView.getPreferredSpan): Default to 10 when there is no
+	real view.
+	(RootView.getMinimumSpan): Forward to view and default to 10
+	when there is no real view.
+	(RootView.getMaximumSpan): Return Integer.MAX_VALUE.
+	(getMaximumSize): Check for overflow.
+	* javax/swing/text/FieldView.java
+	(getResizeWeight): Removed unneeded assignment.
+
+2006-09-01  Francis Kung  <fkung@redhat.com>
+	* java/awt/image/ColorConvertOp.java
+	(copyImage): Updated javadoc and comments.
+	(copyRaster): Add javadoc.
+	(createCompatibleColorModel): Add javadocs and comments.
+	(createCompatibleDestImage): Use correct transfer type.
+	(createCompatibleDestRaster): Add new parameter for transfer type.
+	(filter): Use correct transfer type.
+	* java/awt/image/ConvolveOp.java: Updated javadocs.
+	(createCompatibleDestImage): Set new image properties correctly.
+	(filter(BufferedImage, BufferedImage): Correct handling of premultiplication.
+	(filter(WritableRaster, Raster): Clip sample values to [0-255].
+
+2006-09-01  Robert Schuster  <robertschuster@fsfe.org>
+
+	* javax/swing/table/DefaultTableModel.java:
+	(checkSize): Added null check for dataVector.
+
+2006-09-01  Robert Schuster  <robertschuster@fsfe.org>
+
+        * javax/swing/plaf/basic/BasicSplitPaneUI.java:
+        (BasicHorizontalLayout.getAlignmentX): Return fixed value.
+        (BasicHorizontalLayout.getAlignmentY): Return fixed value.
+
+2006-09-01  Robert Schuster  <robertschuster@fsfe.org>
+
+	* javax/swing/plaf/metal/MetalCheckBoxIcon.java:
+	(paintIcon): Removed unused import statements, lowered cast requirement
+	from JCheckBox to AbstractButton.
+
+2006-09-01  Robert Schuster  <robertschuster@fsfe.org>
+
+	* javax/swing/plaf/basic/BasicLookAndFeel.java:
+	(initComponentDefaults): Added, changed and removed some
+	tabbed pane properties.
+
+2006-09-01  Robert Schuster  <robertschuster@fsfe.org>
+
+	* examples/gnu/classpath/examples/swing/TabbedPaneDemo.java:
+	(createContent): Changed menu item name and tab naming.
+
+2006-09-01  Roman Kennke  <kennke@aicas.com>
+
+	PR 28922
+	* javax/swing/plaf/basic/BasicHTML.java
+	(HTMLRootView.getAttributes): Overridden to return null.
+	(HTMLRootView.getElement): Overridden to return the view's
+	element.
+
+2006-09-01  Robert Schuster  <robertschuster@fsfe.org>
+
+	* javax/swing/plaf/basic/BasicTabbedPaneUI.java:
+	(calculateTabAreaHeight): Use getTabRunOverlay method instead
+	of accessing variable directly.
+	(calculateTabAreaWidth): Dito.
+
+2006-08-31  Keith Seitz  <keiths@redhat.com>
+
+	* include/jvmti.h: Include jvmti_md.h.
+
+2006-08-31  Keith Seitz  <keiths@redhat.com>
+
+	From Martin Platter  <motse@complang.tuwien.ac.at>:
+	* Makefile.am (include_HEADERS): Include jvmti.h.
+	* include/jvmti.h (jvmtiEnv) [!__cplusplus]: Add missing '*'.
+	(jvmtiError): Remove superfluous comma after last entry.
+	(jvmtiEvent): It's "BREAKPOINT" not "BERAKPOINT".
+	(_Jv_jvmtiEnv.StopThread): Add missing exception parameter.
+	(_Jv_jvmtiEnv.RawMonitorWait): Add missing millis parameter.
+	(_Jv_jvmtiEnv.GetSourceFileName): source_name_ptr is pointer to
+	character pointer.
+	(_Jv_JVMTIEnv::StopThread): Add missing exception parameter.
+	(_Jv_JVMTIEnv::RawMonitorWait): Add missing millis parameter.
+	(_Jv_JVMTIEnv::GetSourceFileName): source_name_ptr is pointer to
+	character pointer.
+
+2006-08-31  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/BoxView.java
+	(getWidth): Return the width with insets added, not with one
+	added and one removed.
+	(getHeight): Return the height with insets added, not with one
+	added and one removed.
+	* javax/swing/text/GlyphView.java
+	(DefaultGlyphPainter.viewToModel): Need to add the start offset.
+	* javax/swing/text/ParagraphView.java
+	(Row.getAlignment): Adjust alignment with respect to
+	the justification attribute.
+	(Row.getLeftInset): Overridden to adjust for firstLineIndent
+	attribute.
+	* javax/swing/text/html/CSS.java
+	(getValue): Convert length values.
+	* javax/swing/text/html/Paragraph.java
+	(painter): New field.
+	(paint): Implemented to delegate painting to the BoxPainter too.
+	(setPropertiesFromAttributes): Implemented to load attributes
+	from CSS.
+	* javax/swing/text/html/StyleSheet.java
+	(BoxPainter.as): Removed field.
+	(BoxPainter.leftInset): New field.
+	(BoxPainter.bottomInset): New field.
+	(BoxPainter.rightInset): New field.
+	(BoxPainter.topInset): New field.
+	(BoxPainter.BoxPainter): Implemented to load the insets from
+	CSS.
+	(BoxPainter.getInset): Implemented.
+	* gnu/javax/swing/text/html/Length.java: New class.
+	Converts CSS length units to usable values.
+
+2006-08-31  Andreas Tobler  <a.tobler@schweiz.ch>
+
+	* configure.ac: Add check for gethostbyname_r.
+	Add check for MSG_NOSIGNAL and SO_NOSIGPIPE.
+	* native/jni/native-lib/cpnet.c (SOCKET_NOSIGNAL): Define
+	SOCKET_NOSIGNAL according to the configure check.
+	(cpnet_send): Use SOCKET_NOSIGNAL.
+	(cpnet_sendTo): Likewise.
+	(cpnet_getHostByName): Use gethostbyname in case gethostbyname_r is not
+	defined.
+	* native/jni/native-lib/cpio.c: Define O_SYNC and O_DSYNC in case they
+	are not available.
+
+	* lib/Makefile.am (cssfiles): Add new rule to install css files.
+
+2006-08-31  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JEditorPane.java
+	(getPreferredSize): Replace preferred size with minimum
+	UI size only if the scrollable does _not_ track the viewport
+	size and only if the viewport's size is smaller than the
+	scrollable's size.
+	(getScrollableTracksViewportWidth): Avoid unnecessary multiple
+	method calls.
+	* javax/swing/plaf/basic/BasicTextUI.java
+	(getPreferredSize): Read-lock the document to avoid
+	concurrency problems.
+	(getMaximumSize): Return maximum size of the view.
+	Read-lock the document to avoid	concurrency problems.
+	(getMinimumSize): Return minimum size of the view.
+	Read-lock the document to avoid	concurrency problems.
+
+2006-08-31  Gary Benson  <gbenson@redhat.com>
+
+	* java/net/SocketPermission.java
+	(maybeBracketIPv6Address): Renamed to processHostport.
+	(processHostport): Also translate "" to "localhost".
+	(setHostPort): Remove special cases for empty hostport and for
+	extra colons in hostport (processHostport handles these now).
+
+2006-08-31  Mark Wielaard  <mark@klomp.org>
+
+	* javax/swing/text/ZoneView.java (Zone): Make static class.
+	Constructor takes axis parameter.
+	(createZone): Create Zone with getAxis() as major axis.
+
+2006-08-30  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/ZoneView.java
+	(loadChildren): Implemented.
+	(getViewIndexAtPosition): Implemented.
+	(checkZoneAt): New helper method.
+	(splitZone): New helper method.
+	(getPreferredZoneEnd): New helper method.
+
+2006-08-30  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/ZoneView.java: New class.
+
+2006-08-30  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JMenu.java
+	(getMenu): Removed unneeded cast.
+	(getPopupMenuOrigin): Made positioning algorithm better respect
+	the screen bounds.
+	(setMenuLocation): Also set the location on the popup if it's
+	not null.
+	(setModel): Use menuChangeListener so that we don't override
+	the changeListener field from AbstractButton.
+	(setPopupMenuVisible): Use custom location if set, otherwise
+	fallback to getPopupMenuOrigin().
+
+2006-08-29  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/InternationalFormatter.java
+	(stringToValue): Fixed bounds check.
+	* javax/swing/text/MaskFormatter.java
+	(MaskFormatter): Don't explicitly set allosInvalid property.
+	(convertStringToValue): New helper method.
+	(convertValueToString): New helper method.
+	(convertValue): Removed. Replaced by the 2 convert* methods
+	above.
+	(getPadCharAt): Removed.
+	(isCharValid): Removed.
+	(pad): Removed.
+	(stringToValue): Fixed stringToValue conversion.
+	(stripLiterals): Removed.
+	(valueToString): Fixed valueToString conversion.
+	* javax/swing/text/DefaultFormatter.java
+	(DefaultFormatter): Default to commitsOnValidEdit = false.
+
+2006-08-29  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/TextAction.java
+	(getTextComponent): Check event for null and return null in
+	this case.
+	(augmentList): Augment Actions based on their names.
+	* javax/swing/text/DefaultEditorKit.java
+	(BeginAction.actionPerformed): Check target for null.
+	(BeginLineAction.actionPerformed): Check target for null.
+	(CopyAction.actionPerformed): Check target for null.
+	(CutAction.actionPerformed): Check target for null.
+	(EndAction.actionPerformed): Check target for null.
+	(EndLineAction.actionPerformed): Check target for null.
+	(InsertBreakAction.actionPerformed): Check target for null.
+	(InsertTabAction.actionPerformed): Check target for null.
+	(PasteAction.actionPerformed): Check target for null.
+	(SelectAllAction.actionPerformed): Check target for null.
+	(SelectionBeginAction.actionPerformed): Check target for null.
+	(SelectionBeginLineAction.actionPerformed): Check target for null.
+	(SelectionEndAction.actionPerformed): Check target for null.
+	(SelectionEndLineAction.actionPerformed): Check target for null.
+	(SelectLineAction.actionPerformed): Check target for null.
+	(SelectWordAction.actionPerformed): Check target for null.
+
+2006-08-29  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/basic/BasicTextUI.java
+	(FocusHandler): New class. This is moved from the anonymous
+	inner focus listener class to a static member class, and
+	is now shared between components.
+	(DocumentHandler): This class is combined with the PropertyHandler
+	into the Handler class.
+	(PropertyChangeHandler): This class is combined with the
+	DocumentHandler into the Handler class.
+	(Handler): New class. This combines the Property and Document
+	handler into one class.
+	(RootView.changedUpdate): Only forward if real view != null.
+	(RootView.insertUpdate): Only forward if real view != null.
+	(RootView.removeUpdate): Only forward if real view != null.
+	(documentHandler): Removed field and replaced by handler.
+	(focuslistener): Made field static and renamed to focusListener.
+	(handler): New field.
+	(kit): Lazily initialize field.
+	(rootView): Lazily initialize field.
+	(updateHandler): Removed and replaced by handler.
+	(getEditorKit): Lazily instantiate field.
+	(installDefaults): Don't set margin twice. Install correct
+	property for disabledTextColor. Moved caret and highlighter
+	initialization to installFixedDefaults.
+	(installFixedDefaults): New method. Installs defaults that
+	can't be overridden by subclasses.
+	(installListeners): Only install focus handler when new
+	system property gnu.swing.text.no-xlike-clipboard is not set.
+	Lazily initialize focus handler.
+	(installUI): Lazily initialize rootView. Install handler
+	both for property and document changes.
+	(uninstallDefaults): Uninstall the UI defaults.
+	(uninstallFixedDefaults): New method. Uninstalls the fixed
+	defaults.
+	(installListeners): Only uninstall focus handler when not null.
+	(uninstallUI): Uninstall property and document listener here.
+
+2006-08-29  Gary Benson  <gbenson@redhat.com>
+
+	* java/net/SocketPermission.java
+	(maybeBracketIPv6Address): New method.
+	(<init>): Pass the hostport argument through the above.
+
+	* java/net/NetworkInterface.java (getInetAddresses):
+	Don't bracket IPv6 addresses.
+
+2006-08-28  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/BoxView.java
+	(calculateMinorAxisRequirements): Initialize max size
+	with Integer.MAX_VALUE.
+	* javax/swing/text/Utilities.java
+	(getBreakLocation): For simple chars, scan the text directly.
+	* javax/swing/text/WrappedPlainView.java
+	(tabBase): New field.
+	(tabSize): New field.
+	(calculateBreakPosition): Use Utilities. Fixed for correct
+	break calculation.
+	(changedUpdate): Update children directly.
+	(insertUpdate): Update children directly. Notify children.
+	(removeUpdate): Update children directly. Notify children.
+	(updateChildren): New helper method.
+	(nextTabStop): Fixed to return correct results.
+	(paint): Update tabBase.
+	(updateMetrics): Update tab size.
+
+2006-08-28  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/Position.java
+	(Bias.Forward): Initialize with 'Forward' rather then 'forward'.
+	(Bias.Backward): Initialize with 'Backward' rather then 'backward'.
+
+2006-08-28  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/View.java
+	(height): Removed unneeded field.
+	(width): Removed unneeded field.
+	(getBreakWeight): Return GoodBreakWeight when pos is after
+	the view's span.
+	(getToolTipText): Check view index more carefully. Avoid
+	Rectangle creation.
+	(insertUpdate): Only execute method body if view count > 0.
+	When updateChildren returns false, clear the ec variable.
+	(updateChildren): Added null checks.
+	(viewToModel): Initialize bias array correctly.
+	* javax/swing/text/CompositeView.java
+	(children): Made private.
+	(numChildren): New field.
+	(loadChildren): Check factory for null. Don't load children
+	when factory is null.
+	(replace): Removed null check. Nullify removed children. Made
+	growing the array more efficient.
+	(getViewCount): Return numChildren rather then the real array
+	size.
+	* javax/swing/text/BoxView.java
+	(getViewAtPoint): Fixed algorithm for finding the view.
+	(replace): Made array growing more efficient.
+	(replaceLayoutArray): New helper method for growing/patching
+	the layout arrays.
+	(viewToModel): Make sure we have a valid layout.
+
+2006-08-28  Tania Bento  <tbento@redhat.com>
+
+	* java/awt/MenuShortcut.java
+	(MenuShortcut (int, boolean)): Set keyName.
+	(toString): Modified string output.
+	(setKeyName): New private method.
+
+2006-08-28  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/GapContent.java
+	(Mark.getOffset): Made assert less strict, include boundary.
+	(search): Made package private to avoid accessor method.
+
+2006-08-28  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/StringContent.java
+	(InsertUndo.positions): New field.
+	(InsertUndo.redo): Update the undo positions.
+	(InsertUndo.undo): Fetch the undo positions.
+	(Mark): New class. Layer of indirection to allow Positions
+	to be GC'ed while we still hold references to the Mark.
+	(RemoveUndo.len): New field.
+	(RemoveUndo.positions): New field.
+	(RemoveUndo.RemoveUndo): Fetch undo positions.
+	(RemoveUndo.redo): Re-fetch positions and string.
+	(RemoveUndo.undo): Update undo positions.
+	(StickyPosition.mark): New field.
+	(StickyPosition.offset): Removed field.
+	(StickyPosition.StickyPosition): Create new Mark. Register
+	Position in queueOfDeath. Update reference count on mark.
+	(StickyPosition.getOffset): Return offset stored in mark.
+	(StickyPosition.setOffset): Removed unneeded method.
+	(UndoPosRef): New class. Handles undo/redo on positions/marks.
+	(EMPTY): New field.
+	(marks): New field. Stores the marks.
+	(positions): Removed field.
+	(queueOfDeath): New field. Used for GCing the positions.
+	(StringContent): Initialize queueOfDeath.
+	(createPosition): Lazily create marks vector.
+	(garbageCollect): New helper method. Collects positions
+	to be GCed and updates their marks.
+	(getChars): Fixed bounds check.
+	(getPositionsInRange): When v == null, create new Vector,
+	otherwise use v. Store UndoPosRefs in vector.
+	(getString): Added comment about bug in RI.
+	(insertString): Use new helper method for replacing the array.
+	Correctly update positions.
+	(length): Removed this qualifier.
+	(remove): Use new helper method for replacing the array.
+	Correctly update positions.
+	(replace): New helper method for growing or patching the array.
+	(updateUndoPositions): Implemented. Updates the positions
+	for undo/redo operations.
+
+2006-08-27  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/StyleContext.java
+	(NamedStyle.attributes): Made field transient.
+	(NamedStyle.changeEvent): Made field transient.
+	(NamedStyle.name): Removed field. The name is stored as
+	attribute.
+	(NamedStyle.NamedStyle(String,Style)): Call setName() for
+	storing the name and check for null name and resolveParent.
+	Don't initialize changeEvent.
+	(NamedStyle.copyAttributes): Return a new NamedStyle,
+	rather than a plain copy of the attributes field.
+	(NamedStyle.fireStateChange): Lazily create changeEvent
+	field.
+	(NamedStyle.getName): Fetch name from attributes.
+	(NamedStyle.setName): Store name from attributes.
+	(NamedStyle.readObject): Implemented for correct
+	deserialization.
+	(NamedStyle.writeObject): Implemented for correct
+	serialization.
+	(NamedStyle.setResolveParent): When new parent is null,
+	remove resolveParent attribute. Use addAttribute() method
+	rather than StyleContext addAttribute().
+	(NamedStyle.toString): Fixed to produce output equal to the
+	RI.
+	(SmallAttributeSet.resolveParent): New field.
+	(SmallAttributeSet.SmallAttributeSet(AttributeSet)): Update
+	the resolveParent field correctly.
+	(SmallAttributeSet.SmallAttributeSet(Object[])): Don't copy
+	array but store it directly. Update
+	the resolveParent field correctly.
+	(SmallAttributeSet.clone): Return this as the object is
+	immutable.
+	(SmallAttributeSet.containsAttributes): Make sure that keys
+	and values are the same.
+	(SmallAttributeSet.containsAttribute):  Make sure that keys
+	and values are the same.
+	(SmallAttributeSet.copyAttributes): Return this as the object is
+	immutable.
+	(SmallAttributeSet.equals): Fixed comparison. Two AttributeSet
+	are equal if they have the same number of attributes and
+	one contains the other.
+	(SmallAttributeSet.getAttribute): Improved lookup of
+	resolveParent.
+	(SmallAttributeSet.getResolveParent): Improved lookup of
+	resolveParent.
+	(SmallAttributeSet.isEqual): When comparing object is a
+	SmallAttributeSet, consider them equal only if they are the
+	same object.
+	(SmallAttributeSet.toString): Fixed to produce output equal to the
+	RI.
+	(attributeSetPool): New field.
+	(defaultStyleContext): Initialize lazily.
+	(defaultStyle): Removed field. This is stored in the style context
+	as attribute.
+	(listenerList): Removed field. The NamedStyle stores the
+	listeners.
+	(readAttributeKeys): New static field. Used for looking up
+	the serialization mappings when reading.
+	(search): New field. Used as search key.
+	(staticAttributeKeys): Replaced by read/writeAttributeKeys.
+	(styles): New field. Stores the styles and listeners.
+	(styleTable): Removed field. Replaced by styles field.
+	(writeAttributeKeys): New static field. Used for looking up
+	the serialization mappings when writing.
+	(static_initializer): Register mappings for all keys in
+	StyleConstants.
+	(StyleContext): Initialize styles correctly.
+	(addAttributes): Fixed caching of immutable attributes.
+	(addAttribute): Fixed caching of immutable attributes.
+	(removeAttributes): Fixed caching of immutable attributes.
+	(removeAttribute): Fixed caching of immutable attributes.
+	(addChangeListener): Add listener to styles field.
+	(removeChangeListener): Remove listener from styles field.
+	(getChangeListeners): Fetch listeners from styles field.
+	(addStyle): Add style to styles field.
+	(cleanupPool): New method.
+	(getDefaultStyleContext): Lazily create context.
+	(getEmptySet): Simply return SimpleAttributeSet.EMPTY.
+	(getMutableAttributeSet): New helper method. Used for
+	caching.
+	(getStaticAttribute): Fetch key from readAttributeKeys.
+	(getStyleNames): Return names from styles field.
+	(getStyle): Lookup style in styles field.
+	(removeStyle): Remove style from styles field.
+	(readAttributeSet): Fixed deserialization.
+	(writeAttributeSet): Fixed serialization.
+	(readObject): Fixed deserialization.
+	(writeObject): Fixed serialization.
+	(reclaim): Simply cleanup the pool.
+	(registerStaticAttributeKey): Store mapping in both ways.
+	(searchImmutableSet): New helper method for caching.
+	(toString): Fixed for output like the RI.
+	* javax/swing/text/StyleConstants.java
+	(keys): New field. Stores all known keys.
+	(StyleConstants): Store created key in keys list.
+	* javax/swing/event/EventListenerList.java
+	(readObject): Fixed deserialization.
+	(writeObject): Fixed serialization.
+
+2006-08-25  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/CompositeView.java
+	(insets): Removed. Replaced by single short fields.
+	(top): New field. Replaces insets.
+	(bottom): New field. Replaces insets.
+	(left): New field. Replaces insets.
+	(right): New field. Replaces insets.
+	(CompositeView): Initialize insets fields.
+	(createDefaultLocation): Removed unneeded method.
+	(getBottomInset): Return field directly.
+	(getTopInset): Return field directly.
+	(getLeftInset): Return field directly.
+	(getRightInset): Return field directly.
+	(getInsideAllocation): Adjusted to work on new insets fields.
+	(getViewIndex): Fixed check.
+	(loadChildren): Don't replace the old children.
+	(replace): Make sure that there is an array to operate on.
+	Only set parent to null, when it is this View.
+	(setInsets): Adjusted to work with new insets fields.
+	(setParagraphInsets): Fixed to pull insets directly from
+	StyleConstants.
+
+2006-08-25  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/ComponentView.java
+	(Interceptor): New inner helper class. Used to propagate
+	invalidate requests and cache component layout sizes.
+	(interceptor): New field.
+	(getAlignment): Fetch alignment from interceptor container.
+	(getComponent): Don't create component here. This is done
+	in setParent().
+	(getMaximumSpan): Fetch layout info from interceptor. Check
+	for illegal axis.
+	(getMinimumSpan): Fetch layout info from interceptor. Check
+	for illegal axis.
+	(getPreferredSpan): Fetch layout info from interceptor. Check
+	for illegal axis.
+	(modelToView): Fixed model to view mapping.
+	(viewToModel): Fixed view to model mapping.
+	(paint): Check for null. Set bounds on interceptor rather
+	then component.
+	(setParentImpl): Install interceptor between component
+	and hosting container.
+	(setParent): Call super.setParent() immediately.
+
+2006-08-25  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/LabelView.java
+	(setPropertiesFromAttributes): Only set background when
+	the corresponding attribute is actually defined, otherwise
+	set to null, as the StyleConstants would return black.
+	* javax/swing/text/DefaultStyledDocument.java
+	(ElementBuffer.documentEvent): Removed obsolete field.
+	(ElementBuffer.change): Do prepareEdits() and finishEdits()
+	to correctly update the element structure.
+	(ElementBuffer.insertContentTag): Removed unused statement.
+	(ElementBuffer.recreateAfterFracture): Removed
+	unused obsolete method.
+	(setCharacterAttributes): Removed unused statement.
+
+2006-08-25  Roman Kennke  <kennke@aicas.com>
+
+	* examples/gnu/classpath/examples/swing/Demo.java
+	(LaterMain.run): Removed unused local variable.
+	(Demo): Don't put desktop in scrollpane.
+	(addChildren): Removed unused method.
+	(mkButtonBar): Added HTML demo.
+	(mkMenuBar): Added HTML demo.
+	(mkPanel): Removed unused method.
+	(mkScrollPane): Removed unused method.
+	(mkTree): Removed unused method.
+	(valign2str): Removed unused method.
+	* examples/gnu/classpath/examples/swing/HtmlDemo.java:
+	Initialize text field with some HTML that already works.
+	(DEBUG): New field. Set to true for debugging output.
+	(createContent): Dump element tree after parsing.
+
+2006-08-25  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/html/CSS.java
+	(getValue): Added color value conversion.
+	* javax/swing/text/html/HTMLDocument.java
+	(HTMLReader.ConvertAction): New class, converts HTML style tags
+	to CSS attributes.
+	(HTMLReader.initTags): Register ConvertAction for <font> tag.
+	* javax/swing/text/html/InlineView.java
+	(setPropertiesFromAttributes): Implemented to fetch
+	CSS character attributes.
+	* javax/swing/text/html/StyleSheet.java
+	(addCSSAttribute): Convert value.
+	(getBackground): Implemented to fetch CSS background color
+	attribute.
+	(getForeground): Implemented to fetch CSS color
+	attribute.
+	(getFont): Adjust font size for superscript and subscript.
+	(translateHTMLToCSS): Rudimentary implementation that
+	copies the original attributes, so that any CSS attributes in
+	there are preserved.
+	(stringToColor): Use CSSColor for conversion.
+	* gnu/javax/swing/text/html/css/CSSColor.java:
+	New class. Converts CSS color values to RGB color values.
+	* gnu/javax/swing/text/html/CharacterAttributeTranslator.java:
+	Removed. This is more or less replaced by CSSColor and the
+	ConvertAction in HTMLReader.
+
+2006-08-25  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/BoxView.java
+	(childReqs): Removed obsolete field.
+	(baselineLayout): Reimplemented for correct baseline layout.
+	(baselineRequirements): Reimplemented for correct baseline
+	layout.
+	(updateChildRequirements): Removed obsolete method.
+	* javax/swing/text/GlyphView.java
+	(DefaultGlyphPainter.getSpan): Removed unused statement.
+	(DefaultGlyphPainter.paint): Dont paint subscript/superscript
+	specially. The subscript/superscript layout is performed
+	via the alignment, the font is supplied by the StyleContext.
+	(breakView): Removed unused statements.
+	(getAlignment): Adjust alignment according to the
+	superscript/subscript setting.
+	(getFont): Reimplemented to fetch the font from the style
+	context, or from the document if the stylecontext is not
+	available.
+	(getPreferredSpan): Adjust span for superscript. Use switch
+	instead of if-else.
+	* javax/swing/text/LabelView.java
+	(setPropertiesFromAttributes): Fetch background and foreground
+	from document / style context.
+	(isSubscript): Resync properties if needed.
+	* javax/swing/text/ParagraphView.java
+	(Row.calculateMinorAxisRequirements): Overridden to perform
+	a baseline layout.
+	(Row.layoutMinorAxis): Overridden to perform a baseline layout.
+
+2006-08-24  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/Utilities.java
+	(BUF_LENGTH): Removed unused field.
+	(drawTabbedText): Removed unneeded cast.
+	(getBreakLocation): Removed unneeded cast.
+	Fixed offset to account for Segments not starting at 0.
+
+2006-08-24  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/basic/BasicTabbedPaneUI.java
+	(TabbedPaneLayout.normalizeTabRuns): Removed unused statement.
+	(TabbedPaneScrollLayout.layoutContainer): Likewise.
+	(ScrollingPane.updateUI): Likewise.
+	(calculateTabWidth): Rewritten to correctly and efficiently
+	layout the tab width.
+	(layoutLabel): Call SwingUtilities method with the tabPane
+	as argument.
+	(paintContentBorderLeftEdge): Removed unused statement.
+	(paintContentBorderRightEdge): Removed unused statement.
+	(paintContentBorder): Removed unused statement.
+
+2006-08-24  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/basic/BasicTextUI.java
+	(RootView.getAttributes): Overridden to return null,
+	as the RootView has no parent.
+
+2006-08-24  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/html/CSSParser.java: Removed.
+	* javax/swing/text/html/CSS.java
+	(getValue): New helper method. Returns special converter
+	instances for certain kinds of property values.
+	* javax/swing/text/html/HTMLDocument.java
+	(HTMLReader.CharacterAction.start): Don't translate tags
+	here. Instead, store the attributes directly with the tag
+	as key.
+	(content): Removed field. The Content object is handled
+	by AbstractDocument.
+	(styleSheet): Removed field. The styleSheet is the styleContext
+	of this document and handled by the DefaultStyledDocument already.
+	(HTMLDocument(Content,StyleSheet): Simply call super here.
+	The super classes already handle the content and styleContext.
+	(HTMLDocument()): Call this() with a default GapContent and
+	StyleSheet.
+	(getStyleSheet): Return the styleContext here.
+	(insertUpdate): New method. Overridden to add the
+	CONTENT dummy tag to the element's attributes.
+	(setBase): Set the base on the styleContext.
+	* javax/swing/text/html/HTMLEditorKit.java
+	(styleContext): Removed unneeded field.
+	(styleSheet): Made field private.
+	(HTMLEditorKit): Do nothing here. The StyleSheet is
+	created lazily in getStyleSheet(). A styleContext is not
+	needed here.
+	(getStyleSheet): Create StyleSheet correctly.
+	(insertHTML): Removed unneeded cast.
+	* javax/swing/text/html/InlineView.java
+	(attributes): New field.
+	(changedUpdate): Reload attributes. Trigger preferenceChanged.
+	(getAttributes): Implemented to fetch the attributes from
+	the stylesheet.
+	* javax/swing/text/html/MultiAttributeSet.java: New class.
+	Multiplexes between several AttributeSets.
+	* javax/swing/text/html/MultiStyle.java: New class.
+	Multiplexes between several Styles.
+	* javax/swing/text/html/ParagraphView.java
+	(attributes): New field.
+	(getAttributes): Implemented to fetch the attributes from
+	the stylesheet.
+	* javax/swing/text/html/StyleSheet.java
+	(CssParser): Removed inner class.
+	(CSSStyle): New inner class. Represents a style defined
+	by a CSS rule.
+	(CSSStyleSheetParserCallback): New class, for parsing
+	CSS stylesheets.
+	(css): New field. Stores the CSS rules.
+	(resolvedStyles): New field. Stores resolved styles.
+	(StyleSheet): Initialize resolvedStyles map.
+	(addRule): Removed bogus impl.
+	(getFont): Implemented to fetch font, based on CSS rules.
+	(getResolvedStyle): New helper method. Looks up resolved
+	styles, and resolves a style if necessary.
+	(resolveStyle): New pair of helper methods. Resolves
+	CSS style rules.
+	(getRule(String)): Provide rudimentary implementation.
+	(getRule(Tag,Element)): Implemented.
+	(getViewAttributes): Implemented.
+	(loadRules): Implemented.
+	(translateHTMLToCSS): Tagged as not implemented.
+	* javax/swing/text/html/ViewAttributeSet.java: New class.
+
+2006-08-24  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/FlowView.java:
+	(LogicalView.getAttributes): New method. Overrides super
+	impl to return the attributes of the FlowView instance.
+	* javax/swing/text/LabelView.java:
+	(setPropertiesFromAttributes): Fetch attributes from
+	View, rather then from the Element. (In the HTML
+	package the getAttributes() method is overridden to
+	return different attributes). Fetch font from the StyledDocument.
+
+2006-08-24  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/DefaultEditorKit.java:
+	(DefaultKeyTypedAction.actionPerform): Also filter
+	ALT and CTRL modifiers.
+
+2006-08-24  Roman Kennke  <kennke@aicas.com>
+
+	* gnu/javax/swing/text/html/css/FontSize.java,
+	* gnu/javax/swing/text/html/css/FontStyle.java,
+	* gnu/javax/swing/text/html/css/FontWeight.java:
+	New classes. Used to convert CSS font attributes to AWT/Swing
+	Font constants.
+
+2006-08-24  Francis Kung  <fkung@redhat.com>
+	* gnu/java/awt/color/PyccConverter.java: Throw UnsupportedOperationExceptions.
+	* java/awt/image/ColorConvertOp.java: Updated javadocs.
+	(srccs, dstcs, rasterValid): Variables removed.
+	(ColorConvertOp(RenderingHints)): Initialize spaces to empty array.
+	(copyRaster): Check for null rendering hints
+	(createCompatibleColorModel): New private method.
+	(createCompatibleDestImage): Re-implemented.
+	(createCompatibleDestRaster(Raster, ColorSpace, boolean)): New private method.
+	(createCompatibleDestRaster(Raster)): Re-implemented.
+	(filter(BufferedImage, BufferedImage)): Add checks; fix temp image creation.
+	(filter(Raster, WritableRaster)): Add checks; fix temp raster creation.
+	(getPoint2D): Clean up formatting.
+	* java/awt/image/ComponentColorModel.java
+	(constructor): use findBits method instead of passing null.
+	(findBits): New method.
+
+2006-08-24  Gary Benson  <gbenson@redhat.com>
+
+	* java/net/NetworkInterface.java (getInetAddresses): Bracket IPv6
+	addresses.
+
+2006-08-24  Jeroen Frijters  <jeroen@frijters.net>
+
+	* java/lang/ref/Reference.java
+	(queue, nextOnQueue): Made volatile.
+	(enqueue): Made thread safe.
+	* java/lang/ref/ReferenceQueue.java
+	(lock): New field.
+	(poll): Removed synchronized.
+	(enqueue): Changed to synchronize on lock object, to update Reference
+	state and return success status.
+	(dequeue, remove): Synchronize on lock object.
+
+2006-08-24  Jeroen Frijters  <jeroen@frijters.net>
+
+	* java/security/SecureClassLoader.java
+	(protectionDomainCache): Changed to HashMap.
+	(SecureClassLoader): Removed redundant security check.
+	(defineClass(String,byte[],int,int,CodeSource): Moved
+	protection domain lookup/construction to new method.
+	(defineClass(String,ByteBuffer,CodeSource): New method.
+	(getProtectionDomain): New method.
+
+2006-08-23  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JComponent.java
+	(isRepainting): Made package private.
+	(paintChild): New field.
+	(findOpaqueParent): Removed method. This is now in
+	paintImmediately().
+	(findOverlapFreeParent): Removed method. This is now
+	in paintImmediately2().
+	(findPaintRoot): Removed method. This is now
+	in paintImmediately2().
+	(isCompletelyObscured): Changed to take rectangle as single
+	ints as argument.
+	(isPaintingDoubleBuffered): Removed method. This is now
+	in paintImmediately2().
+	(isPartiallyObscured): New helper method.
+	(onTop): New helper method for optimization.
+	(paintChildren): Paint only to specific child when
+	requested like this from paintImmediately2().
+	(paintDoubleBuffered): Changed to take rectangle as single int
+	arguments.
+	(paintImmediately2): Changed to take rectangle as single int
+	arguments. Optimized determination of paint root.
+	(paintImmediately(Rectangle)): Change to delegate to
+	paintImmediately(int,int,int,int).
+	(paintImmediately(int,int,int,int)): Look for opaque ancestor
+	and start painting there.
+	(paint): Call paintDoubleBuffered() with int arguments. Only
+	paint component, when not completely occupied by opaque child.
+	(processKeyBinding): Removed unnecessary cast.
+	(isOccupiedByChild): New helper method.
+	* javax/swing/RepaintManager.java
+	(repaintUnderway): Removed obsolete field.
+	(commitRequests): Removed obsolete field.
+	(RepaintManager): Removed initialization of obsolete fields.
+	(addDirtyRegion): Removed unused statement.
+	(commitBuffer): Changed to take plain ints as argument.
+	(compileRepaintRoots): Optimized to avoid use of Rectangle.
+	Compute offsets in place, rather than using SwingUtilities.
+	(paintDirtyRegions): Removed unused field.
+	* javax/swing/JMenuItem.java
+	(onTop): Return true when not descendant of JInternalFrame.
+	* javax/swing/JPopupMenu.java
+	(onTop): Return true.
+	* javax/swing/JToolTip.java
+	(onTop): Return true.
+	* javax/swing/JViewport.java
+	(paintImmediately2): Change signature to match the
+	corresponding JComponent method.
+
+2006-08-23  Tania Bento  <tbento@redhat.com>
+
+	* java/awt/Color.java
+	(brighter): Modified algorithm to correctly determine the
+	new brighter colour.
+
+2006-08-23  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/Container.java
+	(maxSize): Removed field. This is already declared in Component.
+	(validateTree): Check for ContainerPeer. Don't addNotify here.
+	Only validate Component instances if they are invalid.
+
+2006-08-22  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JComponent.java
+	(preferredSize): Removed field.
+	(maximumSize): Removed field.
+	(minimumSize): Removed field.
+	(getMaximumSize): Adjusted to delegate to Component, rather
+	then managing the size in JComponent.
+	(getMinimumSize): Adjusted to delegate to Component, rather
+	then managing the size in JComponent.
+	(getPreferredSize): Adjusted to delegate to Component, rather
+	then managing the size in JComponent.
+	(isMaximumSizeSet): Removed.
+	(isMinimumSizeSet): Removed.
+	(isPreferredSizeSet): Removed.
+	(setMaximumSize): Removed.
+	(setMinimumSize): Removed
+	(setPreferredSize): Removed.
+
+2006-08-22  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/AbstractButton.java
+	(ButtonChangeListener.stateChanged): Delegate to combined
+	handler.
+	(EventHandler): New inner class. Handles all three types
+	of events on the model.
+	(eventHandler): New field. Stores the combined event
+	handler.
+	(AbstractButton): Moved listener initialization to
+	setModel().
+	(createActionListener): Return combined handler.
+	(createChangeListener): Return combined handler.
+	(createItemListener): Return combined handler.
+	(getEventHandler): New helper method for creating the combined
+	handler.
+	(setModel): Initialize listeners here.
+	* javax/swing/plaf/basic/BasicButtonListener.java
+	(ButtonAction): New class. Implements the keyboard action
+	for buttons.
+	(checkOpacity): Implemented.
+	(createDefaultActionMap): New helper method.
+	(installKeyboardActions): Rewritten to install InputMap
+	and ActionMap according to 'new' keyboard input method.
+	(mouseClicked): Commented as no-op.
+	(mouseDragged): Commented as no-op.
+	(mouseMoved): Commented as no-op.
+	(propertyChange): Check for contentAreaFilled change and
+	update opacity. Pull handling of HTLM in font and text handler.
+	(stateChanged): Repaint button.
+	(uninstallKeyboardActions): Properly uninstall keyboard actions.
+	* javax/swing/plaf/basic/BasicButtonUI.java
+	(listener): Removed.
+	(sharedListener): New static field. Stores the shared listener.
+	(sharedUI): New static field. Stores the shared UI.
+	(createButtonListener): Return shared instance here.
+	(createUI): Return shared instance here.
+	(getButtonListener): New helper method. Looks for the
+	BasicButtonListener installed on a button and returns it.
+	(installDefaults): Correctly install rollover property here.
+	Fetch defaultTextShiftOffset. Initialize opaqueness correctly.
+	(installKeyboardActions): Fetch listener with new helper method.
+	(installListeners): Don't use removed field. Check for null.
+	(installUI): Added comment about order of method invocations.
+	(uninstallDefaults): Don't uninstall non-uninstallable properties.
+	(uninstallKeyboardActions): Fetch listener with new helper method.
+	(uninstallListeners): Fetch listener with new helper method.
+	(paintIcon): Paint icon offset when pressed and armed.
+	* javax/swing/plaf/metal/MetalButtonListener.java: Removed.
+	* javax/swing/plaf/metal/MetalButtonUI.java
+	(sharedUI): New field. Stores the shared UI.
+	(MetalButtonUI): Don't initialize fields here.
+	(createButtonListener): Removed method. Use super impl.
+	(createUI): Return shared instance.
+	(getDisabledTextColor): Update field here.
+	(getFocusColor): Update field here.
+	(getSelectColor): Update field here.
+	(installDefaults): Don't handle rollover property here.
+	(uninstallDefaults): Don't handle rollover property here.
+	(paintButtonPressed): Use accessor method to update the
+	field value.
+
+2006-08-21  Mark Wielaard  <mark@klomp.org>
+
+	Merge NATIVE_LAYER branch.
+
+	2006-08-20  Mark Wielaard  <mark@klomp.org>
+
+	* doc/tools.texinfo: Add file from trunk.
+	* native/jni/Makefile.am (DIST_SUBDIRS): Add native-lib.
+	* native/jni/java-io/java_io_VMFile.c: Include lstat and readlink
+	headers.
+	* native/jni/java-lang/java_lang_VMProcess.c
+	(Java_java_lang_VMProcess_nativeSpawn): Remove redirect argument.
+	* native/jni/java-net/java_net_VMInetAddress.c
+	(Java_java_net_VMInetAddress_getHostByName): Remove unused variable.
+	* native/jni/native-lib/Makefile.am: Remove empty and nonexisting
+	files.
+	* native/jni/native-lib/cpio.c (cpio_setFileReadonly): Use correct
+	mask.
+	* native/jni/native-lib/cpnet.c (cpnet_connect): Removed unused
+	theaddr.
+	* native/jni/native-lib/cpnet.h (cpnet_freeAddresses): Moved from
+	cpnet.h.
+	* native/jni/native-lib/cpnet.h (cpnet_freeAddresses): Declare,
+	don't implement.
+	* vm/reference/java/lang/VMProcess.java: Removed unused redirect
+	argument.
+	* include/java_lang_VMProcess.h: Regenerated.
+
+	2006-07-09  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* native/jni/java-net/gnu_java_net_VMPlainDatagramSocketImpl.c
+	(nativeReceive): Fixed the type of the arrays (use java types).
+	(nativeSendTo): Force throwing an exception if port is 0.
+
+	* native/jni/java-net/javanet.c:
+	(_javanet_accept): Throw SocketTimeoutException if ETIMEDOUT is
+	returned.
+	(_javanet_recvfrom): Likewise.
+	(_javanet_sendto): Throw a NullPointerException if the socket is
+	not connected and no address is given.
+	
+	* native/jni/java-net/javanet.h
+	(NULL_EXCEPTION): Defined.
+
+	2006-06-16  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* native/jni/java-net/java_net_VMInetAddress.c
+	(Java_java_net_VMInetAddress_getHostByName): Fix detection of
+	error.
+
+	* native/jni/java-net/javanet.c
+	(_javanet_accept): Fixed bogus call to TARGET.
+	(_javanet_create_inetaddress): Fixed address generation. Fixed
+	bogus memory free.
+	(_javanet_bind): set "Reuse address" flag.
+
+	* native/jni/native-lib/cpio.c
+	(cpio_getModificationTime): Fixed type.
+	(cpio_removeFile): Use rmdir too.
+
+	* native/jni/native-lib/cpnet.c
+	(cpnet_getHostByName): Fixed error detection.
+
+	* native/jni/native-lib/cpnet.h
+	(cpnet_newIPV4address, cpnet_newIPV6address): Put zero in the
+	memory.
+	(cpnet_IPV4AddressToBytes): Fixed types.
+	
+	2006-06-10  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* native/jni/native-lib/cpio.c
+	(cpio_openDir, cpio_closeDir, cpio_readDir): Implemented.
+
+	* native/jni/native-lib/cpnet.h:
+	(cpnet_bytesToIPV4Address): Fixed type casting to avoid being
+	messed by signs in jbyte.
+	
+	* native/jni/native-lib/cpproc.h
+	(CPIO_EXEC_NUM_PIPES): Compilation fix.
+
+	2006-05-09  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* native/jni/native-lib/cpnet.c
+	(cpnet_getSocketTimeout, cpnet_setSocketTimeout): Reimplemented.
+	(waitForWritable, waitForReadable): New functions.
+	(socketTimeouts): New static global table to hold timeouts for all
+	socket fds.
+	(cpnet_accept,cpnet_bind,cpnet_sendTo,cpnet_recv,cpnet_recvFrom):
+	Added waitForXXXX safeguards to handle socket timeouts.
+
+	* native/jni/java-net/javanet.c
+	(_javanet_accept): Check for the right error value when a timeout
+	occurs.
+	
+	2006-03-25  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* native/jni/java-io/Makefile.am,
+	native/jni/java-lang/Makefile.am,
+	native/jni/java-net/Makefile.am,
+	native/jni/java-nio/Makefile.am: Link to libclasspathnative.la now.
+
+	* native/jni/native-lib/Makefile.am: Added cpproc.c
+
+	* native/jni/native-lib/cpio.c: Implemented missing functions for
+	CPIO.
+
+	* native/jni/native-lib/cpnet.c
+	(cpnet_getHostByName): Fixed address array initialization.
+	
+	* native/jni/native-lib/cpproc.c: Implemented.
+	
+	2006-02-19  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* configure.ac: Invoke GCC_ATTRIBUTE_UNUSED.
+
+	* m4/gcc_attribute.m4: New file from ac_archive.
+	
+	* native/jni/java-net/javanet.c: Adapted to cpnet API
+	modification.
+
+	* native/jni/native-lib/cpnet.c: Implemented.
+
+	* native/jni/native-lib/cpnet.h
+	(cpnet_openSocketDatagram,
+	cpnet_openSocketStream): These calls need an address family now.
+	(cpnet_IPV4AddressToBytes,
+	cpnet_bytesToIPV4Address): Convert the address to network order.
+	
+	2006-02-19  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* native/jni/java-io/java_io_VMFile.c,
+	native/jni/java-nio/gnu_java_nio_channels_FileChannelImpl.c,
+	native/jni/midi-dssi/dssi_data.h,
+	native/jni/native-lib/cpio.c,
+	native/jni/native-lib/cpmath.h: Removed cpmath
+	dependency. Fixed coding style.
+
+	2006-02-18  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* native/jni/java-lang/java_lang_VMProcess.c: Removed TARGET
+	dependency. Simplified the JNI code by moving some part into the
+	native layer.
+
+	* native/jni/native-lib/cpproc.h: New interface to handle processes.
+
+	2006-02-18  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* native/jni/java-net/java_net_VMInetAddress.c: Fixed compilation
+	errors. Removed any remaining TARGET invocations.
+
+	* native/jni/java-net/javanet.c
+	(_javanet_create_inetaddress): Removed spurious arr and
+	octets. Fixed compilation errors.
+
+	* native/jni/native-lib/cpnet.h
+	(cpnet_getHostname, cpnet_getHostByName, cpnet_getHostByAddr,
+	cpnet_setIPV4Any, cpnet_freeAddresses, cpnet_isIPV6Address,
+	cpnet_isIPV4Address): New functions.
+	(cpnet_bytesToIPV4Address): Fixed interface to be consistent with
+	the rest.
+	
+	2006-01-28  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* native/jni/java-io/java_io_VMFile.c,
+	native/jni/java-net/gnu_java_net_VMPlainDatagramSocketImpl.c,
+	native/jni/java-net/gnu_java_net_VMPlainSocketImpl.c,
+	native/jni/java-net/javanet.c,
+	native/jni/java-net/javanet.h: Adapted the VM layer code
+	to the new native layer.
+
+	* native/jni/native-lib/cpnet.h
+	(cpnet_addMembership,
+	cpnet_dropMembership,
+	cpnet_getAvailableBytes): Added the declarations of
+	some new functions.
+	(cpnet_newIPV6Address,
+	cpnet_IPV6AddressToBytes,
+	cpnet_bytesToIPV6Address): Implemented.
+	(cpnet_newIPV4Address): Initialize the sin_family field.
+
+	2006-01-28  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* native/target: Removed.
+
+	* configure.ac: Removed target from CLASSPATH_INCLUDES and
+	Makefile generation.
+
+	* native/jni/native-lib/Makefile.am,
+	native/jni/native-lib/cpnet.h,
+	native/jni/native-lib/cpnet.c
+	native/jni/native-lib/cpio.h,
+	native/jni/native-lib/cpio.c,
+	native/jni/native-lib/cpmath.h: Imported new native compatibility
+	layer.
+
+2006-08-21  Roman Kennke  <kennke@aicas.com>
+
+	* gnu/javax/swing/text/html/css/CSSParser.java:
+	New class.
+	* gnu/javax/swing/text/html/css/CSSParserCallback.java:
+	New interface.
+	* gnu/javax/swing/text/html/css/CSSParserException.java:
+	New exception.
+	* gnu/javax/swing/text/html/css/CSSScanner.java:
+	Adjusted API comments. Made all constants package private.
+	(EOF): New constant field.
+	(parseBuffer): Made package private.
+	(tokenEnd): Made package private.
+	(CSSScanner): Initialize lookahead buffer with -1.
+	(main): Print out to System.out rather then System.err.
+	(nextToken): Push back character after IDENT.
+
+2006-08-21  Jeroen Frijters  <jeroen@frijters.net>
+
+	* java/io/File.java (normalizePath): Fixed handling of "//" and "\\".
+
+2006-08-21  Roman Kennke  <kennke@aicas.com>
+
+	* gnu/javax/swing/text/html/css/CSSScanner.java
+	(main): Use buffered input stream.
+	(nextToken): Removed 65536 workaround. Use int value directly
+	without cast to char.
+	(readComment): Use int value directly without cast to char.
+	Cast to char only when putting the character into the buffer.
+	(readEscape): Likewise.
+	(readIdent): Likewise.
+	(readName): Likewise.
+	(readNum): Likewise.
+	(readString): Likewise.
+	(readWhitespace): Likewise.
+
+2006-08-21  Ingo Proetel  <proetel@aicas.com>
+
+	* java/io/InputStreamReader.java
+	(bytesCache): New field.
+	(cacheLock): New field.
+	(read(byte[],int,int): Avoid allocations of new byte
+	array on every call and reuse cached byte array if possible.
+
+2006-08-21  Roman Kennke  <kennke@aicas.com>
+
+	* gnu/java/net/local/LocalSocketImpl.java
+	Only load native lib if this is supported by runtime.
+	* native/jni/java-net/local.c
+	Include config.h unconditionally.
+	* native/jni/java-net/gnu_java_net_local_LocalSocketImpl.c
+	Include config.h unconditionally.
+
+2006-08-21  Friedjof Siebert  <siebert@aicas.com>
+
+	* java/io/ObjectInputStream.java
+	(objectLookupTable): Changed to be a Vector.
+	(ObjectInputStream): Initialize objectLookupTable as Vector.
+	(assignNewHandle): Store Object using handle index rather than
+	Hashtable, using the new rememberHandle() method.
+	(hierarchy): New method. This replaces inputGetObjectStreamClasses()
+	with a caching in ObjectStreamClass.
+	(inputGetObjectStreamClass): Replaced by hierarchy().
+	(lookupHandle): New method. Looks up an object by it's handle
+	index.
+	(parseContent): Avoid creating of Integer objects. Use
+	hierarchy() method for looking up the class hierarchy.
+	(processResolution): Use rememberHandle() to store
+	handle per index, rather than Hashtabling the object.
+	(readFields): 
+	(rememberHandle): New method.
+	* java/io/ObjectOutputStream.java
+	(OIDLookupTable): Use ObjectIdentityMap2Int instead of
+	Hashtable for improved lookup performance.
+	(ObjectOutputStream): Initialize OIDLookupTable as
+	ObjectIdentityMap2Int.
+	(assignNewHandle): Change to use ObjectIdentityMap2Int.
+	(findHandle): Change to use ObjectIdentityMap2Int.
+	(getBooleanField): Removed.
+	(getByteField): Removed.
+	(getCharField): Removed.
+	(getDoubleField): Removed.
+	(getField): Removed.
+	(getFloatField): Removed.
+	(getIntField): Removed.
+	(getLongField): Removed.
+	(getObjectField): Removed.
+	(writeFields(Object,ObjectStreamClass)): Use new helper method.
+	(writeFields(Object,ObjectStreamField)): New helper method.
+	Use switch rather then if-else cascade.
+	(writeObject): Use int handle, rather then Integer.
+	* java/io/ObjectStreamClass.java
+	(hierarchy): New field. Caches the class hierarchy.
+	(methodCache): New field. Caches methods.
+	(readObjectSignature): New field. Stores the read signature.
+	(uidCache): New field. Caches UIDs.
+	(writeObjectSignature): New field. Stores the write signature.
+	(cacheMethods): Cache methods in methodCache.
+	(calculateClassID): Outsourced from getClassUID()
+	for computing the UIDs.
+	(getClassUIDFromField): Outsourced from getClassUID() for
+	fetching the UID from the class field.
+	(getClassUID): Use cached uid if possible. Use new helper
+	methods for fetching the UID from the field or computing
+	from scratch.
+	(getObjectStreamClasses): Removed. Replaced by more
+	efficient hierarchy() method, that also caches the result.
+	(hierarchy): Replaces getObjectStreamClasses() for caching
+	the result.
+	(loadedByBootOrApplicationClassLoader): New helper method.
+	(setClass): Invalidate hierarchy cache.
+	(setSuperclass): Invalidate hierarchy cache.
+	* java/io/ObjectStreamField.java
+	(field): Made field package private for access from other
+	classes.
+	* gnu/java/io/ObjectIdentityWrapper.java: Removed.
+	* gnu/java/io/ObjectIdentityMap2Int.java: Efficient
+	hashtable for mapping objects to ints.
+
+2006-08-21  Roman Kennke  <kennke@aicas.com>
+
+	* java/io/File.java
+	(getAbsolutePath): Fetch absolute path from
+	VMFile.getAbsolutePath(). Moved actual impl to there.
+	(isAbsolute): Let VMFile determine the absoluteness.
+	(toURL): Let VMFile convert the filename.
+	* vm/reference/java/io/VMFile.java
+	(getAbsolutePath): New method.
+	(isAbsolute): New method.
+	(toURL): New method.
+
+2006-08-21  Jeroen Frijters  <jeroen@frijters.net>
+
+	* NEWS: Added note about updated VM interface.
+
+2006-08-20  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* java/lang/management/ManagementFactory.java:
+	Updated documentation.
+	
+2006-08-20  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	Fixes bug #28412
+	* gnu/java/util/regex/CharIndexed.java(move1, setHitEnd, hitEnd):
+	New methods.
+	* gnu/java/util/regex/CharIndexedCharSequence.java,
+	gnu/java/util/regex/CharIndexedInputStream.java: Implemented the
+	new methods above.
+	* gnu/java/util/regex/RE.java(REG_FIX_STARTING_POSITION): New flag,
+	(match): call the new method setHitEnd of the input,
+	(getMatchImpl): Handle the new flag REG_FIX_STARTING_POSITION,
+	Some optimization commented out, Use CharIndexed#move1 instead of move.
+	* gnu/java/util/regex/REMatch.java: Made some debugging methods public.
+	* gnu/java/util/regex/REToken.java(match): The method body has been
+	moved to an internal private method, (matchFake): New method,
+	(setHitEnd): New method.
+	* gnu/java/util/regex/RETokenChar.java(matchThis): Call setHitEnd
+	if the match is not complete, (matchOneString): Count the number of
+	characters which matched the pattern.
+	* gnu/java/util/regex/RETokenEnd.java(fake): New field,
+	(setFake): New method, (match): Call super.match or super.matchFake.
+	* gnu/java/util/regex/RETokenEndSub.java(setHitEnd): New method.
+	* gnu/java/util/regex/RETokenOneOf.java(match): call the new method
+	setHitEnd of the input,
+	* gnu/java/util/regex/RETokenRepeated.java(match): Likewise.
+	* java/util/regex/Matcher.java(lookingAt, match): Use the new flag
+	RE.REG_FIX_STARTING_POSITION, (hitEnd, toString): New methods.
+
+2006-08-18  Tom Tromey  <tromey@redhat.com>
+
+	* gnu/javax/swing/text/html/css/CSSScanner.java (readWhitespace): Push
+	the 'int', not the cast char.
+
+2006-08-18  Roger Sayle  <roger@eyesopen.com>
+
+	* scripts/check_jni_methods.sh: Don't use the "set -C" command
+	which isn't available in all shells.
+
+2006-08-18  Roger Sayle  <roger@eyesopen.com>
+
+	* lib/Makefile.am (resources): Fix some shell portability issues.
+
+2006-08-18  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* configure.ac (tool-wrappers): Check for ltdl support when tool
+	wrapper binaries are enabled.
+	* tools/Makefile.am (LIBJVM): Remove variable.
+	(AM_CPPFLAGS): Add LIBJVM define.
+	(gappletviewer_LDFLAGS, gjarsigner_LDFLAGS, gkeytool_LDFLAGS,
+	gjar_LDFLAGS, gnative2ascii_LDFLAGS, gserialver_LDFLAGS,
+	gjavah_LDFLAGS): Remove variables.
+	* tools/toolwrapper.c (main): Use dlopen to load libjvm library.
+
+2006-08-18  Tom Tromey  <tromey@redhat.com>
+
+	* gnu/java/util/prefs/NodeWriter.java (writeParents): Removed
+	debugging prints.
+	* gnu/java/util/prefs/NodeReader.java (readNodes): Removed debugging
+	print.
+	(readEntries): Likewise.
+
+2006-08-17  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/basic/BasicTabbedPaneUI.java
+	(layoutLabel): Reset the text and icon rectangles.
+
 2006-08-17  Thomas Fitzsimmons  <fitzsim@redhat.com>
 
 	PR classpath/28537

@@ -2465,13 +2465,6 @@ for ac_option in $CFLAGS $KAFFE_CFLAGS; do
 done
 AC_SUBST(CFLAGS_WITHOUT_PG)
 
-dnl -----------------------------------------------------------
-dnl Add the include files for the native abstraction layer.
-dnl Used by AM_CPPFLAGS in the different modules.
-dnl -----------------------------------------------------------
-CLASSPATH_INCLUDES="-I\$(top_srcdir)/libraries/clib/target/Linux -I\$(top_srcdir)/libraries/clib/target/generic"
-AC_SUBST(CLASSPATH_INCLUDES)
-
 dnl Replace KAFFE_CFLAGS by the generated one
 AC_SUBST(KAFFE_CFLAGS)
 dnl Replace KAFFE_CCASFLAGS by the generated one
@@ -2572,9 +2565,6 @@ AC_CONFIG_FILES([libraries/javalib/dnsjava/Makefile])
 AC_CONFIG_FILES([libraries/javalib/gnu-inet/Makefile])
 AC_CONFIG_FILES([libraries/javalib/vmspecific/Makefile])
 AC_CONFIG_FILES([libraries/clib/Makefile])
-AC_CONFIG_FILES([libraries/clib/target/Makefile])
-AC_CONFIG_FILES([libraries/clib/target/generic/Makefile])
-AC_CONFIG_FILES([libraries/clib/target/Linux/Makefile])
 AC_CONFIG_FILES([libraries/clib/zip/Makefile])
 AC_CONFIG_FILES([libraries/clib/math/Makefile])
 AC_CONFIG_FILES([libraries/clib/management/Makefile])

@@ -42,9 +42,10 @@ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/acattribute.m4 \
 	$(top_srcdir)/m4/accross.m4 $(top_srcdir)/m4/acinclude.m4 \
 	$(top_srcdir)/m4/ax_create_stdint_h.m4 \
-	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/lib-ld.m4 \
-	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
-	$(top_srcdir)/m4/pkg.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/gcc_attribute.m4 $(top_srcdir)/m4/iconv.m4 \
+	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
+	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/pkg.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -300,7 +301,7 @@ target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
 vm_classes = @vm_classes@
-@CREATE_CORE_JNI_LIBRARIES_TRUE@JNIDIRS = java-io java-lang java-net java-nio java-util
+@CREATE_CORE_JNI_LIBRARIES_TRUE@JNIDIRS = native-lib java-io java-lang java-net java-nio java-util
 @CREATE_ALSA_LIBRARIES_TRUE@ALSADIR = midi-alsa
 @CREATE_DSSI_LIBRARIES_TRUE@DSSIDIR = midi-dssi
 @CREATE_GTK_PEER_LIBRARIES_TRUE@GTKDIR = gtk-peer
@@ -312,7 +313,8 @@ SUBDIRS = classpath $(JNIDIRS) \
   $(CLASSPATH_GCONF_PEER_DIR)
 
 DIST_SUBDIRS = classpath java-io java-lang java-net java-nio java-util \
-               gtk-peer gconf-peer qt-peer xmlj midi-alsa midi-dssi
+               gtk-peer gconf-peer qt-peer xmlj midi-alsa midi-dssi \
+               native-lib
 
 all: all-recursive
 

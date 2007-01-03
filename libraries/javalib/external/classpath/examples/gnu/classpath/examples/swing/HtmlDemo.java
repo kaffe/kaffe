@@ -52,6 +52,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
+import javax.swing.text.AbstractDocument;
 import javax.swing.text.Element;
 import javax.swing.text.html.HTMLDocument;
 
@@ -62,16 +63,48 @@ import javax.swing.text.html.HTMLDocument;
  */
 public class HtmlDemo extends JPanel
 { 
-  
+
+  /**
+   * Setting this to true causes the parsed element structure to be dumped.
+   */
+  private static final boolean DEBUG = true;
+
   JTextPane html = new JTextPane();
 
-  JTextArea text = new JTextArea("<html><body>" +
-    "123456789HR!<hr>987654321"+
-    "123456789BR!<br>987654321"+
-    "<p id='insertHere'>Insertion target</p><p>"+
-    "<font color=red>ma</font>"+
-    "<sup>sup</sup>normal<sub>sub</sub>normal</p><p>Table:"+
-    "<table><tr>a<td>b<td>c<tr>x<td>y<td>z</table></body></html>");  
+  JTextArea text = new JTextArea("<html><body>\n"
+
+      + "<h1>H1 Headline</h1>\n"
+      + "<h2>H2 Headline</h2>\n"
+      + "<h3>H3 Headline</h3>\n"
+      + "<h4>H4 Headline</h3>\n"
+      + "<h5>H5 Headline</h5>\n"
+      + "<h6>H6 Headline</h6>\n"
+      + "<h1>CSS colors via font tag</h1>\n"
+      + "<p>"
+      + "<font color=\"maroon\">maroon</font>\n"
+      + "<font color=\"red\">red</font>\n"
+      + "<font color=\"orange\">orange</font>\n"
+      + "<font color=\"yellow\">yellow</font>\n"
+      + "<font color=\"olive\">olive</font>\n"
+      + "<font color=\"purple\">purlpe</font>\n"
+      + "<font color=\"fuchsia\">fuchsia</font>\n"
+      + "<font color=\"white\">white</font>\n"
+      + "<font color=\"lime\">lime</font>\n"
+      + "<font color=\"green\">green</font>\n"
+      + "<font color=\"navy\">navy</font>\n"
+      + "<font color=\"blue\">blue</font>\n"
+      + "<font color=\"aqua\">aqua</font>\n"
+      + "<font color=\"teal\">teal</font>\n"
+      + "<font color=\"black\">black</font>\n"
+      + "<font color=\"silver\">silver</font>\n"
+      + "<font color=\"gray\">gray</font>\n"
+      + "</p>"
+      + "<h1>Some HTML formatting tags</h1>\n"
+      + "<p>Normal <b>Bold</b> <i>Italic</i> <b><i>Bold + Italic</i></b></p>\n"
+      + "<p><big>Big</big> <em>Emphasized</em> <small>Small</small>\n"
+      + "<strike>Strike</strike> <strong>Strong</strong> <u>Underline</u></p>\n"
+      + "<p>Normal vs <sup>Superscript</sup> vs <sub>Subscript</sub> text</p>\n"
+      + "</body></html>\n");
   
   JPanel buttons;
   
@@ -111,7 +144,9 @@ public class HtmlDemo extends JPanel
             String t = text.getText();
             System.out.println("HtmlDemo.java.createContent:Parsing started");
             html.setText(t);
-            System.out.println("HtmlDemo.java.createContent:Parsing completed");            
+            System.out.println("HtmlDemo.java.createContent:Parsing completed");
+            if (DEBUG)
+              ((AbstractDocument) html.getDocument()).dump(System.out);
           }
       });
     

@@ -67,6 +67,49 @@ import javax.management.NotCompliantMBeanException;
  * <li>Calling the appropriate static method of this factory.
  * </li>
  * </ol>
+ * <h2>Open Data Types</h2>
+ * <p>
+ * The data types used by the management beans are restricted
+ * to <emph>open</emph> data types to aid interoperability.  This
+ * allows the beans to be accessed remotely, including from non-Java
+ * clients.  Below is a table which lists the types used by the beans
+ * on the left, and the types they are converted to when returned via
+ * a bean server on the right.  Type information is provided for each
+ * bean by obtaining its instance of {@link javax.management.MBeanInfo}.
+ * </p>
+ * <table>
+ * <th><td>Data Type Used</td><td>Data Type Returned</td></th>
+ * <tr>
+ * <td>Primitive types (<code>int</code>, <code>char</code>, etc.)</td>
+ * <td>Same</td>
+ * </tr><tr>
+ * <td>Wrapper classes ({@link{java.lang.Integer},
+ * @link{java.lang.Character}, etc.)</td>
+ * <td>Same</td>
+ * </tr><tr>
+ * <td>An {@link java.lang.Enum}</td>
+ * <td>The <code>name</code> of the enumeration constant</td>
+ * </tr><tr>
+ * <td>An array of type <code>E</code></td>
+ * <td>An array of the same dimensions with this mapping applied
+ * to <code>E</code>.</td>
+ * </tr><tr>
+ * <td>A class with `getter' methods and a
+ * <code>from({@link javax.management.openmbean.CompositeData})</code>
+ * method.</td>
+ * <td>The equivalent {@link javax.management.openmbean.CompositeData}
+ * instance, specified by the <code>from</code> method.</td>
+ * </tr><tr>
+ * <td>A map with keys of type <code>K</code> and values of
+ * type <code>V</code>.</td>
+ * <td>A {@link javax.management.openmbean.TabularData} instance,
+ * with the row type containing two items, <code>"key"</code> and
+ * <code>"value"</code> with the types <code>K</code> and <code>V</code>
+ * respectively (with translation applied).</td>
+ * </tr><tr>
+ * <td>A list of type <code>E</code>.</td>
+ * <td>An array with this mapping applied to <code>E</code>.</td>
+ * </tr></table>
  *
  * @author Andrew John Hughes (gnu_andrew@member.fsf.org)
  * @since 1.5

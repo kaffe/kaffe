@@ -1,10 +1,22 @@
 New in release 0.93 (UNRELEASED)
 
+* CORBA objects that exist on the same virtual machine and only are connected
+  to another ORB are now accessed directly and no longer via network. It is
+  the same feature that RMI implementation provides. These faster calls should
+  be completely transparent, as the parameters are cloned, where required. 
+  Currently the direct calls are only possible for the non-deprecated objects
+  that are connected to the ORB via POA.
 * The 'javah' tool has been added.  It requires the ASM library
   (see asm.objectweb.org); it can be enabled with the --with-asm
   option to configure
 * Added the rmi and corbaname URL context factories for JNDI.
 * Fixes in the JNDI InitialContext now allows to plug-in user implementation.
+* Removed currentClassLoader method from
+  vm/reference/java/io/ObjectInputStream.java.
+* Added firstNonNullClassLoader method to
+  vm/reference/gnu/classpath/VMStackWalker.java. VMs are encouraged to
+  provide a more efficient implementation.
+* Added aton method to vm/reference/java/net/VMInetAddress.java.
 
 New in release 0.92 (Aug 9, 2006)
 

@@ -86,8 +86,6 @@ public class Container extends Component
   Component[] component;
   LayoutManager layoutMgr;
 
-  Dimension maxSize;
-
   /**
    * @since 1.4
    */
@@ -652,18 +650,10 @@ public class Container extends Component
       return;
 
     ContainerPeer cPeer = null;
-    if (peer != null && ! (peer instanceof LightweightPeer))
+    if (peer instanceof ContainerPeer)
       {
         cPeer = (ContainerPeer) peer;
         cPeer.beginValidate();
-      }
-
-    for (int i = 0; i < ncomponents; ++i)
-      {
-        Component comp = component[i];
-
-        if (comp.getPeer () == null)
-          comp.addNotify();
       }
 
     doLayout ();
@@ -671,17 +661,21 @@ public class Container extends Component
       {
         Component comp = component[i];
 
-        if (! comp.isValid())
+        if (comp instanceof Container && ! (comp instanceof Window)
+            && ! comp.valid)
           {
-            if (comp instanceof Container)
-              {
-                ((Container) comp).validateTree();
-              }
-            else
-              {
-                component[i].validate();
-              }
+            ((Container) comp).validateTree();
           }
+        else
+          {
+            comp.validate();
+          }
+      }
+
+    if (peer instanceof ContainerPeer)
+      {
+        cPeer = (ContainerPeer) peer;
+        cPeer.endValidate();
       }
 
     /* children will call invalidate() when they are layed out. It
@@ -689,8 +683,6 @@ public class Container extends Component
        until after the children have been layed out. */
     valid = true;
 
-    if (cPeer != null)
-      cPeer.endValidate();
   }
 
   public void setFont(Font f)

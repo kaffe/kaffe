@@ -1,5 +1,5 @@
 /* ORB.java --
-   Copyright (C) 2005 Free Software Foundation, Inc.
+   Copyright (C) 2005, 2006 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -41,10 +41,8 @@ package org.omg.CORBA;
 import gnu.CORBA.OrbFocused;
 import gnu.CORBA.ObjectCreator;
 import gnu.CORBA.OrbRestricted;
-import gnu.CORBA.gnuContext;
 import gnu.CORBA.typecodes.FixedTypeCode;
 import gnu.CORBA.typecodes.GeneralTypeCode;
-import gnu.CORBA.typecodes.PrimitiveTypeCode;
 import gnu.CORBA.typecodes.RecordTypeCode;
 import gnu.CORBA.typecodes.RecursiveTypeCode;
 
@@ -144,7 +142,7 @@ public abstract class ORB
 {
   /**
   * By default, {@link #init(String[], Properties)} and
-  * {@link #iinit(Applet, Properties)} return
+  * {@link #init(Applet, Properties)} return
   * the built-in fully functional ORB is returned. If the
   * <code>props</code> contains the property org.omg.CORBA.ORBClass,
   * the value of this property is used as a class name to instantiate

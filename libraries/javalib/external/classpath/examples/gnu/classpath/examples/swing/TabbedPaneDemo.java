@@ -80,12 +80,12 @@ public class TabbedPaneDemo
     p.setLayout(new GridLayout(1, 1));
     
     int COUNT = 25;
-    JTabbedPane tp = createTabbedPane(SwingConstants.TOP, "top", COUNT);
+    JTabbedPane tp = createTabbedPane(SwingConstants.TOP, "tab", COUNT);
     p.add(tp);
     
     final JPopupMenu popup = new JPopupMenu();
 
-    JMenu menu = new JMenu("directions");
+    JMenu menu = new JMenu("tab placement");
     menu.add(createPlacementChangingMenuItem("top",
                                              SwingConstants.TOP,
                                              tp));

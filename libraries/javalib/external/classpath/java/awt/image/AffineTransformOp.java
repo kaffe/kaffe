@@ -39,6 +39,7 @@ exception statement from your version. */
 package java.awt.image;
 
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
@@ -48,8 +49,11 @@ import java.awt.geom.Rectangle2D;
 import java.util.Arrays;
 
 /**
- * This class performs affine transformation between two images or 
- * rasters in 2 dimensions. 
+ * AffineTransformOp performs matrix-based transformations (translations,
+ * scales, flips, rotations, and shears).
+ * 
+ * If interpolation is required, nearest neighbour, bilinear, and bicubic
+ * methods are available.
  *
  * @author Olga Rodimina (rodimina@redhat.com) 
  * @author Francis Kung (fkung@redhat.com)
@@ -115,14 +119,14 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp
     }
 
     /**
-     * Creates empty BufferedImage with the size equal to that of the 
-     * transformed image and correct number of bands. The newly created 
+     * Creates a new BufferedImage with the size equal to that of the 
+     * transformed image and the correct number of bands. The newly created 
      * image is created with the specified ColorModel. 
-     * If the ColorModel is equal to null, an appropriate ColorModel is used.
+     * If a ColorModel is not specified, an appropriate ColorModel is used.
      *
-     * @param src source image
-     * @param destCM color model for the destination image
-     * @return new compatible destination image
+     * @param src the source image.
+     * @param destCM color model for the destination image (can be null).
+     * @return a new compatible destination image.
      */
     public BufferedImage createCompatibleDestImage (BufferedImage src,
                                                     ColorModel destCM)
@@ -145,21 +149,18 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp
     }
 
     /**
-     * Creates empty WritableRaster with the size equal to the transformed 
-     * source raster and correct number of bands 
+     * Creates a new WritableRaster with the size equal to the transformed 
+     * source raster and correct number of bands .
      *
-     * @param src source raster
-     * @throws RasterFormatException if resulting width or height of raster is 0
-     * @return new compatible raster
+     * @param src the source raster.
+     * @throws RasterFormatException if resulting width or height of raster is 0.
+     * @return a new compatible raster.
      */
     public WritableRaster createCompatibleDestRaster (Raster src)
     {
       Rectangle2D rect = getBounds2D(src);
       
-      // throw RasterFormatException if resulting width or height of the
-      // transformed raster is 0
-
-      if (rect.getWidth () == 0 || rect.getHeight () == 0) 
+      if (rect.getWidth() == 0 || rect.getHeight() == 0) 
         throw new RasterFormatException("width or height is 0");
 
       return src.createCompatibleWritableRaster((int) rect.getWidth(), 
@@ -175,24 +176,22 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp
      * @param dst destination image
      * @throws IllegalArgumentException if the source and destination image are
      *          the same
-     * @return transformed source image
+     * @return transformed source image.
      */
     public final BufferedImage filter (BufferedImage src, BufferedImage dst)
     {
-
       if (dst == src)
-        throw new IllegalArgumentException ("src image cannot be the same as " +
-                "the dst image");
+        throw new IllegalArgumentException("src image cannot be the same as "
+                                         + "the dst image");
 
-      // If the destination image is null, then use a compatible BufferedImage  
+      // If the destination image is null, then use a compatible BufferedImage
       if (dst == null)
         dst = createCompatibleDestImage(src, null);
 
-      Graphics2D gr = (Graphics2D) dst.createGraphics ();
-      gr.setRenderingHints (hints);	
-      gr.drawImage (src, transform, null);
+      Graphics2D gr = (Graphics2D) dst.createGraphics();
+      gr.setRenderingHints(hints);
+      gr.drawImage(src, transform, null);
       return dst;
-
     }
 
     /**
@@ -204,21 +203,40 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp
      * @param dst destination raster
      * @throws IllegalArgumentException if the source and destination are not
      *          compatible
-     * @return transformed raster
+     * @return transformed raster.
      */
-    public final WritableRaster filter (Raster src, WritableRaster dst)
+    public final WritableRaster filter(Raster src, WritableRaster dst)
     {
+      // Initial checks
       if (dst == src)
         throw new IllegalArgumentException("src image cannot be the same as"
-					   + " the dst image");
+                                           + " the dst image");
 
       if (dst == null)
         dst = createCompatibleDestRaster(src);
 
       if (src.getNumBands() != dst.getNumBands())
         throw new IllegalArgumentException("src and dst must have same number"
-					   + " of bands");
+                                           + " of bands");
       
+      // Optimization for rasters that can be represented in the RGB colormodel:
+      // wrap the rasters in images, and let Cairo do the transformation
+      if (ColorModel.getRGBdefault().isCompatibleSampleModel(src.getSampleModel())
+          && ColorModel.getRGBdefault().isCompatibleSampleModel(dst.getSampleModel()))
+        {
+          WritableRaster src2 = Raster.createWritableRaster(src.getSampleModel(),
+                                                            src.getDataBuffer(),
+                                                            new Point(src.getMinX(),
+                                                                      src.getMinY()));
+          BufferedImage iSrc = new BufferedImage(ColorModel.getRGBdefault(),
+                                                 src2, false, null);
+          BufferedImage iDst = new BufferedImage(ColorModel.getRGBdefault(), dst,
+                                                 false, null);
+  
+          return filter(iSrc, iDst).getRaster();
+        }
+
+      // Otherwise, we need to do the transformation in java code...
       // Create arrays to hold all the points
       double[] dstPts = new double[dst.getHeight() * dst.getWidth() * 2];
       double[] srcPts = new double[dst.getHeight() * dst.getWidth() * 2];
@@ -287,7 +305,7 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp
     }
 
     /**
-     * Returns interpolation type used during transformations
+     * Returns interpolation type used during transformations.
      *
      * @return interpolation type
      */
@@ -319,7 +337,7 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp
     /**
      * Returns rendering hints that are used during transformation.
      *
-     * @return rendering hints
+     * @return the rendering hints used in this Op.
      */
     public final RenderingHints getRenderingHints ()
     {
@@ -330,7 +348,7 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp
      * Returns transform used in transformation between source and destination
      * image.
      *
-     * @return transform
+     * @return the transform used in this Op.
      */
     public final AffineTransform getTransform ()
     {
@@ -377,6 +395,18 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp
     {
       Rectangle srcbounds = src.getBounds();
   
+      Object xyarr = null;
+      Object xp1arr = null;
+      Object yp1arr = null;
+      Object xyp1arr = null;
+      
+      double xy;
+      double xp1;
+      double yp1;
+      double xyp1;
+
+      double[] result = new double[src.getNumBands()];
+      
       // For all points in the destination raster, use bilinear interpolation
       // to find the value from the corrosponding source points
       for (int i = 0; i < dpts.length; i += 2)
@@ -400,22 +430,65 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp
                   int y = (int) Math.floor(pts[i + 1] + src.getMinY());
                   double xdiff = pts[i] + src.getMinX() - x;
                   double ydiff = pts[i + 1] + src.getMinY() - y;
-  
-                  // Run the interpolation for each band
+
+                  // Get surrounding pixels used in interpolation... optimized
+                  // to use the smallest datatype possible.
+                  if (src.getTransferType() == DataBuffer.TYPE_DOUBLE
+                      || src.getTransferType() == DataBuffer.TYPE_FLOAT)
+                    {
+                      xyarr = src.getPixel(x, y, (double[])xyarr);
+                      xp1arr  = src.getPixel(x+1, y, (double[])xp1arr);
+                      yp1arr = src.getPixel(x, y+1, (double[])yp1arr);
+                      xyp1arr = src.getPixel(x+1, y+1, (double[])xyp1arr);
+                    }
+                  else
+                    {
+                      xyarr = src.getPixel(x, y, (int[])xyarr);
+                      xp1arr  = src.getPixel(x+1, y, (int[])xp1arr);
+                      yp1arr = src.getPixel(x, y+1, (int[])yp1arr);
+                      xyp1arr = src.getPixel(x+1, y+1, (int[])xyp1arr);
+                    }
+                  // using 
+                  // array[] pixels = src.getPixels(x, y, 2, 2, pixels);
+                  // instead of doing four individual src.getPixel() calls
+                  // should be faster, but benchmarking shows that it's not...
+                  
+                  // Run interpolation for each band
                   for (int j = 0; j < src.getNumBands(); j++)
                     {
-                      double result = (src.getSampleDouble(x, y, j) * (1 - xdiff)
-                                         + src.getSampleDouble(x + 1, y, j) * xdiff)
-                                       * (1 - ydiff)
-                                       + (src.getSampleDouble(x, y + 1, j)
-                                          * (1 - xdiff)
-                                          + src.getSampleDouble(x + 1, y + 1, j)
-                                          * xdiff)
-                                       * ydiff;
-                      dst.setSample((int) dpts[i] + dst.getMinX(),
-                                    (int) dpts[i + 1] + dst.getMinY(),
-                                    j, result);
+                      // Pull individual sample values out of array
+                      if (src.getTransferType() == DataBuffer.TYPE_DOUBLE
+                          || src.getTransferType() == DataBuffer.TYPE_FLOAT)
+                        {
+                          xy = ((double[])xyarr)[j];
+                          xp1  = ((double[])xp1arr)[j];
+                          yp1 = ((double[])yp1arr)[j];
+                          xyp1 = ((double[])xyp1arr)[j];
+                        }
+                      else
+                        {
+                          xy = ((int[])xyarr)[j];
+                          xp1  = ((int[])xp1arr)[j];
+                          yp1 = ((int[])yp1arr)[j];
+                          xyp1 = ((int[])xyp1arr)[j];
+                        }
+                      
+                      // If all four samples are identical, there's no need to 
+                      // calculate anything
+                      if (xy == xp1 && xy == yp1 && xy == xyp1)
+                        result[j] = xy;
+                      
+                      // Run bilinear interpolation formula
+                      else
+                        result[j] = (xy * (1-xdiff) + xp1 * xdiff) 
+                                      * (1-ydiff) 
+                                    + (yp1 * (1-xdiff) + xyp1 * xdiff)
+                                      * ydiff;
                     }
+
+                  dst.setPixel((int)dpts[i] + dst.getMinX(),
+                               (int)dpts[i+1] + dst.getMinY(),
+                               result);
                 }
             }
         }
@@ -434,10 +507,11 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp
                                double[] pts)
     {
       Rectangle srcbounds = src.getBounds();
-  
+      double[] result = new double[src.getNumBands()];
+      Object pixels = null;
+
       // For all points on the destination raster, perform bicubic interpolation
       // from corrosponding source points
-      double[] result = new double[src.getNumBands()];
       for (int i = 0; i < dpts.length; i += 2)
         {
           if (srcbounds.contains((int) Math.round(pts[i]) + src.getMinX(),
@@ -450,76 +524,84 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp
               Arrays.fill(result, 0);
   
               for (int m = - 1; m < 3; m++)
-                {
-                  for (int n = - 1; n < 3; n++)
-                    {
-                      // R(x) = ( P(x+2)^3 - 4 P(x+1)^3 + 6 P(x)^3 - 4 P(x-1)^3 ) / 6
-                      double r1 = 0;
-                      double r2 = 0;
-  
-                      // Calculate R(m - dx)
-                      double rx = m - dx + 2;
-                      if (rx > 0)
-                        r1 += rx * rx * rx;
-  
-                      rx = m - dx + 1;
-                      if (rx > 0)
-                        r1 -= 4 * rx * rx * rx;
-  
-                      rx = m - dx;
-                      if (rx > 0)
-                        r1 += 6 * rx * rx * rx;
-  
-                      rx = m - dx - 1;
-                      if (rx > 0)
-                        r1 -= 4 * rx * rx * rx;
-  
-                      r1 /= 6;
-  
-                      // Calculate R(dy - n);
-                      rx = dy - n + 2;
-                      if (rx > 0)
-                        r2 += rx * rx * rx;
-  
-                      rx = dy - n + 1;
-                      if (rx > 0)
-                        r2 -= 4 * rx * rx * rx;
-  
-                      rx = dy - n;
-                      if (rx > 0)
-                        r2 += 6 * rx * rx * rx;
-  
-                      rx = dy - n - 1;
-                      if (rx > 0)
-                        r2 -= 4 * rx * rx * rx;
-  
-                      r2 /= 6;
-  
-                      // Calculate F(i+m, j+n) R(m - dx) R(dy - n)
-                      // Check corner cases
-                      int srcX = x + m;
-                      if (srcX >= src.getMinX() + src.getWidth())
-                        srcX = src.getMinX() + src.getWidth() - 1;
-                      else if (srcX < src.getMinX())
-                        srcX = src.getMinX();
+                for (int n = - 1; n < 3; n++)
+                  {
+                    // R(x) = ( P(x+2)^3 - 4 P(x+1)^3 + 6 P(x)^3 - 4 P(x-1)^3 ) / 6
+                    double r1 = 0;
+                    double r2 = 0;
 
-                      int srcY = y + n;
-                      if (srcY >= src.getMinY() + src.getHeight())
-                        srcY = src.getMinY() + src.getHeight() - 1;
-                      else if (srcY < src.getMinY())
-                        srcY = src.getMinY();
+                    // Calculate R(m - dx)
+                    double rx = m - dx + 2;
+                    r1 += rx * rx * rx;
 
-                      // Calculate once for each band
-                      for (int j = 0; j < result.length; j++)
-                        result[j] += src.getSample(srcX, srcY, j) * r1 * r2;
-                    }
-                }
+                    rx = m - dx + 1;
+                    if (rx > 0)
+                      r1 -= 4 * rx * rx * rx;
+
+                    rx = m - dx;
+                    if (rx > 0)
+                      r1 += 6 * rx * rx * rx;
+
+                    rx = m - dx - 1;
+                    if (rx > 0)
+                      r1 -= 4 * rx * rx * rx;
+
+                    r1 /= 6;
+
+                    // Calculate R(dy - n);
+                    rx = dy - n + 2;
+                    if (rx > 0)
+                      r2 += rx * rx * rx;
+
+                    rx = dy - n + 1;
+                    if (rx > 0)
+                      r2 -= 4 * rx * rx * rx;
+
+                    rx = dy - n;
+                    if (rx > 0)
+                      r2 += 6 * rx * rx * rx;
+
+                    rx = dy - n - 1;
+                    if (rx > 0)
+                      r2 -= 4 * rx * rx * rx;
+
+                    r2 /= 6;
+
+                    // Calculate F(i+m, j+n) R(m - dx) R(dy - n)
+                    // Check corner cases
+                    int srcX = x + m;
+                    if (srcX >= src.getMinX() + src.getWidth())
+                      srcX = src.getMinX() + src.getWidth() - 1;
+                    else if (srcX < src.getMinX())
+                      srcX = src.getMinX();
+
+                    int srcY = y + n;
+                    if (srcY >= src.getMinY() + src.getHeight())
+                      srcY = src.getMinY() + src.getHeight() - 1;
+                    else if (srcY < src.getMinY())
+                      srcY = src.getMinY();
+
+                    // Calculate once for each band, using the smallest
+                    // datatype possible
+                    if (src.getTransferType() == DataBuffer.TYPE_DOUBLE
+                        || src.getTransferType() == DataBuffer.TYPE_FLOAT)
+                      {
+                        pixels = src.getPixel(srcX, srcY, (double[])pixels);
+                        for (int j = 0; j < result.length; j++)
+                          result[j] += ((double[])pixels)[j] * r1 * r2;
+                      }
+                    else
+                      {
+                        pixels = src.getPixel(srcX, srcY, (int[])pixels);
+                        for (int j = 0; j < result.length; j++)
+                          result[j] += ((int[])pixels)[j] * r1 * r2;
+                      }
+                  }
   
               // Put it all together
-              for (int j = 0; j < result.length; j++)
-                dst.setSample((int) dpts[i] + dst.getMinX(),
-                              (int) dpts[i + 1] + dst.getMinY(),
-                              j, result[j]);
+              dst.setPixel((int)dpts[i] + dst.getMinX(),
+                           (int)dpts[i+1] + dst.getMinY(),
+                           result);
             }
         }
     }

@@ -165,7 +165,7 @@ public class GapContent
      */
     int getOffset()
     {
-      assert mark == 0 || mark < gapStart || mark >= gapEnd :
+      assert mark == 0 || mark <= gapStart || mark >= gapEnd :
              "Invalid mark: " + mark + ", gapStart: " + gapStart
              + ", gapEnd: " + gapEnd;
 
@@ -1013,7 +1013,7 @@ public class GapContent
    *
    * @return the index of the first occurance of o in l, or -i + 1 if not found
    */
-  private int search(List l, Object o)
+  int search(List l, Object o)
   {
     int i = Collections.binarySearch(l, o);
     while (i > 0)

@@ -197,19 +197,6 @@ public class RepaintManager
   private WeakHashMap offscreenBuffers;
 
   /**
-   * Indicates if the RepaintManager is currently repainting an area.
-   */
-  private boolean repaintUnderway;
-
-  /**
-   * This holds buffer commit requests when the RepaintManager is working.
-   * This maps Component objects (the top level components) to Rectangle
-   * objects (the area of the corresponding buffer that must be blitted on
-   * the component).
-   */
-  private HashMap commitRequests;
-
-  /**
    * The maximum width and height to allocate as a double buffer. Requests
    * beyond this size are ignored.
    *
@@ -232,8 +219,6 @@ public class RepaintManager
     doubleBufferMaximumSize = new Dimension(2000,2000);
     doubleBufferingEnabled = true;
     offscreenBuffers = new WeakHashMap();
-    repaintUnderway = false;
-    commitRequests = new HashMap();
   }
 
   /**
@@ -398,8 +383,6 @@ public class RepaintManager
     if (w <= 0 || h <= 0 || !component.isShowing())
       return;
 
-    Component parent = component.getParent();
-    
     component.computeVisibleRect(rectCache);
     SwingUtilities.computeIntersection(x, y, w, h, rectCache);
 
@@ -557,7 +540,6 @@ public class RepaintManager
         compileRepaintRoots(dirtyComponentsWork, dirty, repaintRoots);
       }
 
-    repaintUnderway = true;
     for (Iterator i = repaintRoots.iterator(); i.hasNext();)
       {
         JComponent comp = (JComponent) i.next();
@@ -567,12 +549,11 @@ public class RepaintManager
         comp.paintImmediately(damaged);
       }
     dirtyComponentsWork.clear();
-    repaintUnderway = false;
   }
-  
+
   /**
    * Compiles a list of components that really get repainted. This is called
-   * once for each component in the dirtyComponents HashMap, each time with
+   * once for each component in the dirtyRegions HashMap, each time with
    * another <code>dirty</code> parameter. This searches up the component
    * hierarchy of <code>dirty</code> to find the highest parent that is also
    * marked dirty and merges the dirty regions.
@@ -587,6 +568,29 @@ public class RepaintManager
     Component current = dirty;
     Component root = dirty;
 
+    // This will contain the dirty region in the root coordinate system,
+    // possibly clipped by ancestor's bounds.
+    Rectangle originalDirtyRect = (Rectangle) dirtyRegions.get(dirty); 
+    rectCache.setBounds(originalDirtyRect);
+
+    // The bounds of the current component.
+    int x = dirty.getX();
+    int y = dirty.getY();
+    int w = dirty.getWidth();
+    int h = dirty.getHeight();
+
+    // Do nothing if dirty region is clipped away by the component's bounds.
+    rectCache = SwingUtilities.computeIntersection(0, 0, w, h, rectCache);
+    if (rectCache.isEmpty())
+      return;
+
+    // The cumulated offsets. 
+    int dx = 0;
+    int dy = 0;
+    // The actual offset for the found root.
+    int rootDx = 0;
+    int rootDy = 0;
+
     // Search the highest component that is also marked dirty.
     Component parent;
     while (true)
@@ -596,10 +600,29 @@ public class RepaintManager
           break;
 
         current = parent;
+        // Update the offset.
+        dx += x;
+        dy += y;
+        rectCache.x += x;
+        rectCache.y += y;
+        
+        x = current.getX();
+        y = current.getY();
+        w = current.getWidth();
+        h = current.getHeight();
+        rectCache = SwingUtilities.computeIntersection(0, 0, w, h, rectCache);
+
+        // Don't paint if the dirty regions is clipped away by any of
+        // its ancestors.
+        if (rectCache.isEmpty())
+          return;
+
         // We can skip to the next up when this parent is not dirty.
         if (dirtyRegions.containsKey(parent))
           {
             root = current;
+            rootDx = dx;
+            rootDy = dy;
           }
       }
 
@@ -607,15 +630,16 @@ public class RepaintManager
     // the are different.
     if (root != dirty)
       {
-        Rectangle dirtyRect = (Rectangle) dirtyRegions.get(dirty);
-        dirtyRect = SwingUtilities.convertRectangle(dirty, dirtyRect, root);
-        Rectangle rootRect = (Rectangle) dirtyRegions.get(root);
-        SwingUtilities.computeUnion(dirtyRect.x, dirtyRect.y, dirtyRect.width,
-                                    dirtyRect.height, rootRect);
+        rectCache.x += rootDx - dx;
+        rectCache.y += rootDy - dy;
+        Rectangle dirtyRect = (Rectangle) dirtyRegions.get(root);
+        SwingUtilities.computeUnion(rectCache.x, rectCache.y, rectCache.width,
+                                    rectCache.height, dirtyRect);
       }
 
     // Adds the root to the roots set.
-    roots.add(root);
+    if (! roots.contains(root))
+      roots.add(root);
   }
 
   /**
@@ -653,16 +677,19 @@ public class RepaintManager
    * This is package private because it must get called by JComponent.
    *
    * @param comp the component to be painted
-   * @param area the area to paint on screen, in comp coordinates
+   * @param x the area to paint on screen, in comp coordinates
+   * @param y the area to paint on screen, in comp coordinates
+   * @param w the area to paint on screen, in comp coordinates
+   * @param h the area to paint on screen, in comp coordinates
    */
-  void commitBuffer(Component comp, Rectangle area)
+  void commitBuffer(Component comp, int x, int y, int w, int h)
   {
     Component root = comp;
     while (root != null
 	   && ! (root instanceof Window || root instanceof Applet))
       {
-	area.x += root.getX();
-	area.y += root.getY();
+	x += root.getX();
+	y += root.getY();
 	root = root.getParent();
       }
 
@@ -670,7 +697,7 @@ public class RepaintManager
     Image buffer = (Image) offscreenBuffers.get(root);
 
     // Make sure we have a sane clip at this point.
-    g.clipRect(area.x, area.y, area.width, area.height);
+    g.clipRect(x, y, w, h);
     g.drawImage(buffer, 0, 0, root);
     g.dispose();
   }

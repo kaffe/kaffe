@@ -187,8 +187,31 @@ public abstract class AbstractButton extends JComponent
      */
     public void stateChanged(ChangeEvent ev)
     {
-      AbstractButton.this.fireStateChanged();
+      getEventHandler().stateChanged(ev);
+    }
+  }
+
+  /**
+   * The combined event handler for ActionEvent, ChangeEvent and
+   * ItemEvent. This combines ButtonChangeListener, ActionListener
+   */
+  private class EventHandler
+    implements ActionListener, ChangeListener, ItemListener
+  {
+    public void actionPerformed(ActionEvent ev)
+    {
+      fireActionPerformed(ev);
+    }
+
+    public void stateChanged(ChangeEvent ev)
+    {
+      fireStateChanged();
       repaint();
+    }
+
+    public void itemStateChanged(ItemEvent ev)
+    {
+      fireItemStateChanged(ev);
     }
   }
 
@@ -264,14 +287,27 @@ public abstract class AbstractButton extends JComponent
    */
   int mnemonicIndex;
 
-  /** Listener the button uses to receive ActionEvents from its model.  */
+  /**
+   * Listener the button uses to receive ActionEvents from its model.
+   */
   protected ActionListener actionListener;
 
-  /** Listener the button uses to receive ItemEvents from its model.  */
+  /**
+   * Listener the button uses to receive ItemEvents from its model.
+   */
   protected ItemListener itemListener;
 
-  /** Listener the button uses to receive ChangeEvents from its model.  */  
+  /**
+   * Listener the button uses to receive ChangeEvents from its model.
+   */  
   protected ChangeListener changeListener;
+
+  /**
+   * The event handler for ActionEvent, ItemEvent and ChangeEvent.
+   * This replaces the above three handlers and combines them
+   * into one for efficiency.
+   */
+  private EventHandler eventHandler;
 
   /**
    * The time in milliseconds in which clicks get coalesced into a single
@@ -855,10 +891,6 @@ public abstract class AbstractButton extends JComponent
    */
   public AbstractButton()
   {
-    actionListener = createActionListener();
-    changeListener = createChangeListener();
-    itemListener = createItemListener();
-
     horizontalAlignment = CENTER;
     horizontalTextPosition = TRAILING;
     verticalAlignment = CENTER;
@@ -900,15 +932,21 @@ public abstract class AbstractButton extends JComponent
     if (model != null)
       {
         model.removeActionListener(actionListener);
+        actionListener = null;
         model.removeChangeListener(changeListener);
+        changeListener = null;
         model.removeItemListener(itemListener);
+        itemListener = null;
       }
     ButtonModel old = model;
     model = newModel;
     if (model != null)
       {
+        actionListener = createActionListener();
         model.addActionListener(actionListener);
+        changeListener = createChangeListener();
         model.addChangeListener(changeListener);
+        itemListener = createItemListener();
         model.addItemListener(itemListener);
       }
     firePropertyChange(MODEL_CHANGED_PROPERTY, old, model);
@@ -1923,13 +1961,7 @@ public abstract class AbstractButton extends JComponent
    */
   protected  ActionListener createActionListener()
   {
-    return new ActionListener()
-      {
-        public void actionPerformed(ActionEvent e)
-        {
-          AbstractButton.this.fireActionPerformed(e);
-        }
-      };
+    return getEventHandler();
   }
 
   /**
@@ -1995,7 +2027,7 @@ public abstract class AbstractButton extends JComponent
    */
   protected ChangeListener createChangeListener()
   {
-    return new ButtonChangeListener();
+    return getEventHandler();
   }
 
   /**
@@ -2021,13 +2053,7 @@ public abstract class AbstractButton extends JComponent
    */
   protected  ItemListener createItemListener()
   {
-    return new ItemListener()
-      {
-        public void itemStateChanged(ItemEvent e)
-        {
-          AbstractButton.this.fireItemStateChanged(e);
-        }
-      };
+    return getEventHandler();
   }
 
   /**
@@ -2489,5 +2515,18 @@ public abstract class AbstractButton extends JComponent
       {
         super.setUIProperty(propertyName, value);
       }
+  }
+
+  /**
+   * Returns the combined event handler. The instance is created if
+   * necessary.
+   *
+   * @return the combined event handler
+   */
+  EventHandler getEventHandler()
+  {
+    if (eventHandler == null)
+      eventHandler = new EventHandler();
+    return eventHandler;
   }
 }

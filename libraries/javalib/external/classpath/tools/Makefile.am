@@ -30,62 +30,46 @@ bin_SCRIPTS =
 bin_PROGRAMS = gappletviewer gjarsigner gkeytool \
 	gjar gnative2ascii gserialver $(javah)
 
-if FOUND_GCJ
-LIBJVM = -lgcj
-else
-if FOUND_CACAO
-LIBJVM = -ljvm
-else
-LIBJVM =
-endif
-endif
-
 AM_CPPFLAGS = -Wall \
 	-I$(top_srcdir)/include \
+	-DLIBJVM="\"$(libdir)/libjvm\"" \
 	-DTOOLS_ZIP="\"$(TOOLSdir)/$(TOOLS_ZIP)\""
 
 gappletviewer_SOURCES = toolwrapper.c
 gappletviewer_CFLAGS = \
 	-DTOOLPACKAGE="\"appletviewer\"" \
 	-DTOOLNAME="\"gappletviewer\""
-gappletviewer_LDFLAGS = -L$(libdir) $(LIBJVM)
 
 gjarsigner_SOURCES = toolwrapper.c
 gjarsigner_CFLAGS = \
 	-DTOOLPACKAGE="\"jarsigner\"" \
 	-DTOOLNAME="\"gjarsigner\""
-gjarsigner_LDFLAGS = -L$(libdir) $(LIBJVM)
 
 gkeytool_SOURCES = toolwrapper.c
 gkeytool_CFLAGS = \
 	-DTOOLPACKAGE="\"keytool\"" \
 	-DTOOLNAME="\"gkeytool\""
-gkeytool_LDFLAGS = -L$(libdir) $(LIBJVM)
 
 gjar_SOURCES = toolwrapper.c
 gjar_CFLAGS = \
 	-DTOOLPACKAGE="\"jar\"" \
 	-DTOOLNAME="\"gjar\""
-gjar_LDFLAGS = -L$(libdir) $(LIBJVM)
 
 gnative2ascii_SOURCES = toolwrapper.c
 gnative2ascii_CFLAGS = \
 	-DTOOLPACKAGE="\"native2ascii\"" \
 	-DTOOLNAME="\"gnative2ascii\""
-gnative2ascii_LDFLAGS = -L$(libdir) $(LIBJVM)
 
 gserialver_SOURCES = toolwrapper.c
 gserialver_CFLAGS = \
 	-DTOOLPACKAGE="\"serialver\"" \
 	-DTOOLNAME="\"gserialver\""
-gserialver_LDFLAGS = -L$(libdir) $(LIBJVM)
 
 if USE_ASM
 gjavah_SOURCES = toolwrapper.c
 gjavah_CFLAGS = \
 	-DTOOLPACKAGE="\"javah\"" \
 	-DTOOLNAME="\"gjavah\""
-gjavah_LDFLAGS = -L$(libdir) $(LIBJVM)
 endif
 
 else

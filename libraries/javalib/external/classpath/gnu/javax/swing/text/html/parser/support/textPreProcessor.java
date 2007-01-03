@@ -42,17 +42,17 @@ import gnu.javax.swing.text.html.parser.support.low.Constants;
 
 /**
  * Pre - processes text in text parts of the html document.
- * Not thread - safe.
+ *
  * @author Audrius Meskauskas, Lithuania (AudriusA@Bioinformatics.org)
  */
 public class textPreProcessor
 {
   /**
-   * Pre - process non-preformatted text.
-   * \t, \r and \n mutate into spaces, then multiple spaces mutate
-   * into single one, all whitespace around tags is consumed.
-   * The content of the passed buffer is destroyed.
-   * @param text A text to pre-process.
+   * Pre - process non-preformatted text. \t, \r and \n mutate into spaces, then
+   * multiple spaces mutate into single one, all whitespace around tags is
+   * consumed. The content of the passed buffer is destroyed.
+   * 
+   * @param a_text A text to pre-process.
    */
   public char[] preprocess(StringBuffer a_text)
   {
@@ -64,17 +64,22 @@ public class textPreProcessor
     int a = 0;
     int b = text.length - 1;
 
+    // Remove leading/trailing whitespace, leaving at most one character
     try
       {
-        while (Constants.bWHITESPACE.get(text [ a ]))
+        while (Constants.bWHITESPACE.get(text[a])
+               && Constants.bWHITESPACE.get(text[a + 1]))
           a++;
-        while (Constants.bWHITESPACE.get(text [ b ]))
+
+        while (b > a && Constants.bWHITESPACE.get(text[b])
+               && Constants.bWHITESPACE.get(text[b - 1]))
           b--;
       }
     catch (ArrayIndexOutOfBoundsException sx)
       {
-        // A text fragment, consisting from line breaks only.
-        return null;
+        // A text fragment, consisting from spaces and line breaks only,
+        // mutates into single space.
+        return new char[] { ' ' };
       }
 
     a_text.setLength(0);
@@ -83,10 +88,9 @@ public class textPreProcessor
     boolean spaceNow;
     char c;
 
-    chars: 
-    for (int i = a; i <= b; i++)
+    chars: for (int i = a; i <= b; i++)
       {
-        c = text [ i ];
+        c = text[i];
         spaceNow = Constants.bWHITESPACE.get(c);
         if (spacesWere && spaceNow)
           continue chars;

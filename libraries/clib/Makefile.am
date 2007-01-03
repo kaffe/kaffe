@@ -27,7 +27,6 @@ if COND_ZLIB_ZIP
 endif
 
 SUBDIRS = \
-	target \
 	security \
 	management \
 	$(MAYBE_NATIVE_AWT_DIR) \

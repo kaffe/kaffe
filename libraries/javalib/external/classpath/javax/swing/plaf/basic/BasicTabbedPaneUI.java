@@ -76,7 +76,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.plaf.ActionMapUIResource;
 import javax.swing.plaf.ComponentUI;
-import javax.swing.plaf.PanelUI;
 import javax.swing.plaf.TabbedPaneUI;
 import javax.swing.plaf.UIResource;
 import javax.swing.text.View;
@@ -903,6 +902,7 @@ public class BasicTabbedPaneUI extends TabbedPaneUI implements SwingConstants
             default:
               tabAreaHeight = calculateTabAreaHeight(tabPlacement, runCount,
                                                      maxTabHeight);
+            
               compX = insets.left + contentBorderInsets.left;
               compY = tabAreaHeight + insets.top + contentBorderInsets.top;
           }
@@ -957,7 +957,6 @@ public class BasicTabbedPaneUI extends TabbedPaneUI implements SwingConstants
     protected void normalizeTabRuns(int tabPlacement, int tabCount, int start,
                                     int max)
     {
-      Insets tabAreaInsets = getTabAreaInsets(tabPlacement);
       if (tabPlacement == SwingUtilities.TOP
           || tabPlacement == SwingUtilities.BOTTOM)
         {
@@ -1444,7 +1443,6 @@ public class BasicTabbedPaneUI extends TabbedPaneUI implements SwingConstants
     {
       super.layoutContainer(pane);
       int tabCount = tabPane.getTabCount();
-      Point p = null;
       if (tabCount == 0)
         return;
       int tabPlacement = tabPane.getTabPlacement();
@@ -1631,7 +1629,7 @@ public class BasicTabbedPaneUI extends TabbedPaneUI implements SwingConstants
      */
     public void updateUI()
     {
-      setUI((PanelUI) new ScrollingPanelUI());
+      setUI(new ScrollingPanelUI());
     }
   }
 
@@ -2454,7 +2452,6 @@ public class BasicTabbedPaneUI extends TabbedPaneUI implements SwingConstants
     paintTabBorder(g, tabPlacement, tabIndex, rect.x, rect.y, rect.width,
                    rect.height, isSelected);
 
-
     // Layout label.
     FontMetrics fm = getFontMetrics();
     Icon icon = getIconForTab(tabIndex);
@@ -2492,7 +2489,17 @@ public class BasicTabbedPaneUI extends TabbedPaneUI implements SwingConstants
                              Rectangle tabRect, Rectangle iconRect,
                              Rectangle textRect, boolean isSelected)
   {
-    SwingUtilities.layoutCompoundLabel(metrics, title, icon,
+    // Reset the icon and text rectangles, as the result is not specified
+    // when the locations are not (0,0).
+    textRect.x = 0;
+    textRect.y = 0;
+    textRect.width = 0;
+    textRect.height = 0;
+    iconRect.x = 0;
+    iconRect.y = 0;
+    iconRect.width = 0;
+    iconRect.height = 0;
+    SwingUtilities.layoutCompoundLabel(tabPane, metrics, title, icon,
                                        SwingConstants.CENTER,
                                        SwingConstants.CENTER,
                                        SwingConstants.CENTER,
@@ -2887,7 +2894,6 @@ public class BasicTabbedPaneUI extends TabbedPaneUI implements SwingConstants
     int width = tabPane.getWidth();
     int height = tabPane.getHeight();
     Insets insets = tabPane.getInsets();
-    Insets tabAreaInsets = getTabAreaInsets(tabPlacement);
 
     // Calculate coordinates of content area.
     int x = insets.left;
@@ -2992,8 +2998,6 @@ public class BasicTabbedPaneUI extends TabbedPaneUI implements SwingConstants
     int endgap = rects[selectedIndex].y + rects[selectedIndex].height
                  - currentScrollOffset;
 
-    int diff = 0;
-
     if (tabPlacement == SwingConstants.LEFT && startgap >= 0)
       {
         g.drawLine(x, y, x, startgap);
@@ -3079,8 +3083,6 @@ public class BasicTabbedPaneUI extends TabbedPaneUI implements SwingConstants
     int startgap = rects[selectedIndex].y - currentScrollOffset;
     int endgap = rects[selectedIndex].y + rects[selectedIndex].height
                  - currentScrollOffset;
-
-    int diff = 0;
 
     if (tabPlacement == SwingConstants.RIGHT && startgap >= 0)
       {
@@ -3475,21 +3477,20 @@ public class BasicTabbedPaneUI extends TabbedPaneUI implements SwingConstants
     Icon icon = getIconForTab(tabIndex);
     Insets insets = getTabInsets(tabPlacement, tabIndex);
 
-    int width = 0;
+    int width = insets.bottom + insets.right + 3;
     if (icon != null)
       {
-        Rectangle vr = new Rectangle();
-        Rectangle ir = new Rectangle();
-        Rectangle tr = new Rectangle();
-        layoutLabel(tabPlacement, getFontMetrics(), tabIndex,
-                    tabPane.getTitleAt(tabIndex), icon, vr, ir, tr,
-                    tabIndex == tabPane.getSelectedIndex());
-        width = tr.union(ir).width;
+        width += icon.getIconWidth() + textIconGap;
       }
-    else
-      width = metrics.stringWidth(tabPane.getTitleAt(tabIndex));
 
-    width += insets.left + insets.right;
+    View v = getTextViewForTab(tabIndex);
+    if (v != null)
+      width += v.getPreferredSpan(View.X_AXIS);
+    else
+      {
+        String label = tabPane.getTitleAt(tabIndex);
+        width += metrics.stringWidth(label);
+      }
     return width;
   }
 
@@ -3528,7 +3529,8 @@ public class BasicTabbedPaneUI extends TabbedPaneUI implements SwingConstants
   {
     Insets insets = getTabAreaInsets(tabPlacement);
     int tabAreaHeight = horizRunCount * maxTabHeight
-                        - (horizRunCount - 1) * tabRunOverlay;
+                        - (horizRunCount - 1)
+                        * getTabRunOverlay(tabPlacement);
 
     tabAreaHeight += insets.top + insets.bottom;
 
@@ -3550,7 +3552,8 @@ public class BasicTabbedPaneUI extends TabbedPaneUI implements SwingConstants
   {
     Insets insets = getTabAreaInsets(tabPlacement);
     int tabAreaWidth = vertRunCount * maxTabWidth
-                       - (vertRunCount - 1) * tabRunOverlay;
+                       - (vertRunCount - 1)
+                       * getTabRunOverlay(tabPlacement);
 
     tabAreaWidth += insets.left + insets.right;
 

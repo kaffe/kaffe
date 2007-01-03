@@ -45,13 +45,9 @@ exception statement from your version. */
 #include <jni.h>
 #include <jcl.h>
 
+#include <cpnative.h>
+#include <cpnet.h>
 #include "javanet.h"
-
-#include "target_native.h"
-#ifndef WITHOUT_NETWORK
-  #include "target_native_file.h"  /* Get FIONREAD on Solaris.  */
-  #include "target_native_network.h"
-#endif /* WITHOUT_NETWORK */
 
 #include "gnu_java_net_VMPlainSocketImpl.h"
 
@@ -195,10 +191,10 @@ Java_gnu_java_net_VMPlainSocketImpl_available(JNIEnv *env,
 
   fd = (*env)->GetIntField(env, obj, fid);
   
-  TARGET_NATIVE_NETWORK_SOCKET_RECEIVE_AVAILABLE(fd,bytesAvailable,result);
-  if (result != TARGET_NATIVE_OK)
+  result = cpnet_getAvailableBytes (env, fd, &bytesAvailable);
+  if (result != CPNATIVE_OK)
     {
-      JCL_ThrowException(env, IO_EXCEPTION, TARGET_NATIVE_LAST_ERROR_STRING());
+      JCL_ThrowException(env, IO_EXCEPTION, cpnative_getErrorString (result));
       return 0;
     }
 
@@ -255,7 +251,7 @@ Java_gnu_java_net_VMPlainSocketImpl_read(JNIEnv *env,
 					 jint offset, jint len)
 {
 #ifndef WITHOUT_NETWORK
-  return(_javanet_recvfrom(env, obj, buf, offset, len, 0, 0));
+  return(_javanet_recvfrom(env, obj, buf, offset, len, 0));
 #else /* not WITHOUT_NETWORK */
   return 0;
 #endif /* not WITHOUT_NETWORK */
@@ -273,7 +269,7 @@ Java_gnu_java_net_VMPlainSocketImpl_write(JNIEnv *env,
 					  jint offset, jint len)
 {
 #ifndef WITHOUT_NETWORK
-  _javanet_sendto(env, obj, buf, offset, len, 0, 0);
+  _javanet_sendto(env, obj, buf, offset, len, 0);
 #else /* not WITHOUT_NETWORK */
 #endif /* not WITHOUT_NETWORK */
 }

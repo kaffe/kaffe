@@ -318,6 +318,7 @@ final class RETokenRepeated extends REToken {
     }
 
     boolean match(CharIndexed input, REMatch mymatch) {
+	setHitEnd(input, mymatch);
 	REMatch m1 = findMatch(input, mymatch);
 	if (m1 != null) {
 	    mymatch.assignFrom(m1);

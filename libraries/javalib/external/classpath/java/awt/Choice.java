@@ -255,8 +255,8 @@ public class Choice extends Component
   /**
    * Adds the specified item to this choice box.
    *
-   * This method is oboslete since Java 2 platform 1.1. Please use @see add
-   * instead.
+   * This method is oboslete since Java 2 platform 1.1. Please use 
+   * {@link #add(String)} instead.
    *
    * @param item The item to add.
    *

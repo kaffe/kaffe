@@ -228,7 +228,7 @@ public class BasicSplitPaneUI extends SplitPaneUI
      */
     public float getLayoutAlignmentX(Container target)
     {
-      return target.getAlignmentX();
+      return 0.0f;
     }
 
     /**
@@ -241,7 +241,7 @@ public class BasicSplitPaneUI extends SplitPaneUI
      */
     public float getLayoutAlignmentY(Container target)
     {
-      return target.getAlignmentY();
+      return 0.0f;
     }
 
     /**

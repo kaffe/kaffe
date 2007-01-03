@@ -53,9 +53,10 @@ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/acattribute.m4 \
 	$(top_srcdir)/m4/accross.m4 $(top_srcdir)/m4/acinclude.m4 \
 	$(top_srcdir)/m4/ax_create_stdint_h.m4 \
-	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/lib-ld.m4 \
-	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
-	$(top_srcdir)/m4/pkg.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/gcc_attribute.m4 $(top_srcdir)/m4/iconv.m4 \
+	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
+	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/pkg.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -383,11 +384,9 @@ GLIBJ_CLASSPATH = '$(top_builddir)/lib':'$(top_builddir)/lib/glibj.zip':$(PATH_T
 @CREATE_WRAPPERS_FALSE@	gjar gnative2ascii gserialver $(javah)
 
 @CREATE_WRAPPERS_TRUE@bin_SCRIPTS = 
-@CREATE_WRAPPERS_TRUE@@FOUND_CACAO_FALSE@@FOUND_GCJ_FALSE@LIBJVM = 
-@CREATE_WRAPPERS_TRUE@@FOUND_CACAO_TRUE@@FOUND_GCJ_FALSE@LIBJVM = -ljvm
-@CREATE_WRAPPERS_TRUE@@FOUND_GCJ_TRUE@LIBJVM = -lgcj
 @CREATE_WRAPPERS_TRUE@AM_CPPFLAGS = -Wall \
 @CREATE_WRAPPERS_TRUE@	-I$(top_srcdir)/include \
+@CREATE_WRAPPERS_TRUE@	-DLIBJVM="\"$(libdir)/libjvm\"" \
 @CREATE_WRAPPERS_TRUE@	-DTOOLS_ZIP="\"$(TOOLSdir)/$(TOOLS_ZIP)\""
 
 @CREATE_WRAPPERS_TRUE@gappletviewer_SOURCES = toolwrapper.c
@@ -395,43 +394,36 @@ GLIBJ_CLASSPATH = '$(top_builddir)/lib':'$(top_builddir)/lib/glibj.zip':$(PATH_T
 @CREATE_WRAPPERS_TRUE@	-DTOOLPACKAGE="\"appletviewer\"" \
 @CREATE_WRAPPERS_TRUE@	-DTOOLNAME="\"gappletviewer\""
 
-@CREATE_WRAPPERS_TRUE@gappletviewer_LDFLAGS = -L$(libdir) $(LIBJVM)
 @CREATE_WRAPPERS_TRUE@gjarsigner_SOURCES = toolwrapper.c
 @CREATE_WRAPPERS_TRUE@gjarsigner_CFLAGS = \
 @CREATE_WRAPPERS_TRUE@	-DTOOLPACKAGE="\"jarsigner\"" \
 @CREATE_WRAPPERS_TRUE@	-DTOOLNAME="\"gjarsigner\""
 
-@CREATE_WRAPPERS_TRUE@gjarsigner_LDFLAGS = -L$(libdir) $(LIBJVM)
 @CREATE_WRAPPERS_TRUE@gkeytool_SOURCES = toolwrapper.c
 @CREATE_WRAPPERS_TRUE@gkeytool_CFLAGS = \
 @CREATE_WRAPPERS_TRUE@	-DTOOLPACKAGE="\"keytool\"" \
 @CREATE_WRAPPERS_TRUE@	-DTOOLNAME="\"gkeytool\""
 
-@CREATE_WRAPPERS_TRUE@gkeytool_LDFLAGS = -L$(libdir) $(LIBJVM)
 @CREATE_WRAPPERS_TRUE@gjar_SOURCES = toolwrapper.c
 @CREATE_WRAPPERS_TRUE@gjar_CFLAGS = \
 @CREATE_WRAPPERS_TRUE@	-DTOOLPACKAGE="\"jar\"" \
 @CREATE_WRAPPERS_TRUE@	-DTOOLNAME="\"gjar\""
 
-@CREATE_WRAPPERS_TRUE@gjar_LDFLAGS = -L$(libdir) $(LIBJVM)
 @CREATE_WRAPPERS_TRUE@gnative2ascii_SOURCES = toolwrapper.c
 @CREATE_WRAPPERS_TRUE@gnative2ascii_CFLAGS = \
 @CREATE_WRAPPERS_TRUE@	-DTOOLPACKAGE="\"native2ascii\"" \
 @CREATE_WRAPPERS_TRUE@	-DTOOLNAME="\"gnative2ascii\""
 
-@CREATE_WRAPPERS_TRUE@gnative2ascii_LDFLAGS = -L$(libdir) $(LIBJVM)
 @CREATE_WRAPPERS_TRUE@gserialver_SOURCES = toolwrapper.c
 @CREATE_WRAPPERS_TRUE@gserialver_CFLAGS = \
 @CREATE_WRAPPERS_TRUE@	-DTOOLPACKAGE="\"serialver\"" \
 @CREATE_WRAPPERS_TRUE@	-DTOOLNAME="\"gserialver\""
 
-@CREATE_WRAPPERS_TRUE@gserialver_LDFLAGS = -L$(libdir) $(LIBJVM)
 @CREATE_WRAPPERS_TRUE@@USE_ASM_TRUE@gjavah_SOURCES = toolwrapper.c
 @CREATE_WRAPPERS_TRUE@@USE_ASM_TRUE@gjavah_CFLAGS = \
 @CREATE_WRAPPERS_TRUE@@USE_ASM_TRUE@	-DTOOLPACKAGE="\"javah\"" \
 @CREATE_WRAPPERS_TRUE@@USE_ASM_TRUE@	-DTOOLNAME="\"gjavah\""
 
-@CREATE_WRAPPERS_TRUE@@USE_ASM_TRUE@gjavah_LDFLAGS = -L$(libdir) $(LIBJVM)
 EXTRA_DIST = toolwrapper.c gappletviewer.in gjarsigner.in gkeytool.in \
 	gjar.in gnative2ascii.in gserialver.in gjavah.in
 

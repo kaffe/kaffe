@@ -42,8 +42,8 @@ import java.awt.Component;
 import java.awt.KeyboardFocusManager;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -74,10 +74,16 @@ public abstract class TextAction extends AbstractAction
    */
   protected final JTextComponent getTextComponent(ActionEvent event)
   {
-    if (event.getSource() instanceof JTextComponent)
-      return (JTextComponent) event.getSource();
-
-    return getFocusedComponent();
+    JTextComponent target = null;
+    if (event != null)
+      {
+        Object source = event.getSource();
+        if (source instanceof JTextComponent)
+          target = (JTextComponent) source;
+      }
+    if (target == null)
+      target = getFocusedComponent();
+    return target;
   }
 
   /**
@@ -90,16 +96,26 @@ public abstract class TextAction extends AbstractAction
    */
   public static final Action[] augmentList(Action[] list1, Action[] list2)
   {
-    HashSet actionSet = new HashSet();
+    HashMap actions = new HashMap();
 
     for (int i = 0; i < list1.length; ++i)
-      actionSet.add(list1[i]);
-
+      {
+        Action a = list1[i];
+        Object name = a.getValue(Action.NAME);
+        actions.put(name != null ? name : "", a);
+      }
     for (int i = 0; i < list2.length; ++i)
-      actionSet.add(list2[i]);
-
-    ArrayList list = new ArrayList(actionSet);
-    return (Action[]) list.toArray(new Action[actionSet.size()]);
+      {
+        Action a = list2[i];
+        Object name = a.getValue(Action.NAME);
+        actions.put(name != null ? name : "", a);
+      }
+    Action[] augmented = new Action[actions.size()];
+    
+    int i = 0;
+    for (Iterator it = actions.values().iterator(); it.hasNext(); i++)
+      augmented[i] = (Action) it.next();
+    return augmented;
   }
 
   /**

@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package javax.swing.plaf.basic;
 
+import gnu.classpath.SystemProperties;
+
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -71,6 +73,7 @@ import javax.swing.plaf.InputMapUIResource;
 import javax.swing.plaf.TextUI;
 import javax.swing.plaf.UIResource;
 import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Caret;
 import javax.swing.text.DefaultCaret;
@@ -118,6 +121,140 @@ public abstract class BasicTextUI extends TextUI
     {
       // Nothing to do here.
     }
+  }
+
+  private static class FocusHandler
+    implements FocusListener
+  {
+    public void focusGained(FocusEvent e) 
+    {
+      // Nothing to do here.
+    }
+    public void focusLost(FocusEvent e)
+    {
+      JTextComponent textComponent = (JTextComponent) e.getComponent();
+      // Integrates Swing text components with the system clipboard:
+      // The idea is that if one wants to copy text around X11-style
+      // (select text and middle-click in the target component) the focus
+      // will move to the new component which gives the old focus owner the
+      // possibility to paste its selection into the clipboard.
+      if (!e.isTemporary()
+          && textComponent.getSelectionStart()
+             != textComponent.getSelectionEnd())
+        {
+          SecurityManager sm = System.getSecurityManager();
+          try
+            {
+              if (sm != null)
+                sm.checkSystemClipboardAccess();
+              
+              Clipboard cb = Toolkit.getDefaultToolkit().getSystemSelection();
+              if (cb != null)
+                {
+                  StringSelection selection = new StringSelection(
+                      textComponent.getSelectedText());
+                  cb.setContents(selection, selection);
+                }
+            }
+          catch (SecurityException se)
+            {
+              // Not allowed to access the clipboard: Ignore and
+              // do not access it.
+            }
+          catch (HeadlessException he)
+            {
+              // There is no AWT: Ignore and do not access the
+              // clipboard.
+            }
+          catch (IllegalStateException ise)
+          {
+              // Clipboard is currently unavaible.
+          }
+        }
+    }
+  }
+
+  /**
+   * This FocusListener triggers repaints on focus shift.
+   */
+  private static FocusListener focusListener;
+
+  /**
+   * Receives notifications when properties of the text component change.
+   */
+  private class Handler
+    implements PropertyChangeListener, DocumentListener
+  {
+    /**
+     * Notifies when a property of the text component changes.
+     *
+     * @param event the PropertyChangeEvent describing the change
+     */
+    public void propertyChange(PropertyChangeEvent event)
+    {
+      if (event.getPropertyName().equals("document"))
+        {
+          // Document changed.
+          Object oldValue = event.getOldValue();
+          if (oldValue != null)
+            {
+              Document oldDoc = (Document) oldValue;
+              oldDoc.removeDocumentListener(handler);
+            }
+          Object newValue = event.getNewValue();
+          if (newValue != null)
+            {
+              Document newDoc = (Document) newValue;
+              newDoc.addDocumentListener(handler);
+            }
+          modelChanged();
+        }
+
+      BasicTextUI.this.propertyChange(event);
+    }
+
+    /**
+     * Notification about a document change event.
+     *
+     * @param ev the DocumentEvent describing the change
+     */
+    public void changedUpdate(DocumentEvent ev)
+    {
+      // Updates are forwarded to the View even if 'getVisibleEditorRect'
+      // method returns null. This means the View classes have to be
+      // aware of that possibility.
+      rootView.changedUpdate(ev, getVisibleEditorRect(),
+                             rootView.getViewFactory());
+    }
+
+    /**
+     * Notification about a document insert event.
+     *
+     * @param ev the DocumentEvent describing the insertion
+     */
+    public void insertUpdate(DocumentEvent ev)
+    {
+      // Updates are forwarded to the View even if 'getVisibleEditorRect'
+      // method returns null. This means the View classes have to be
+      // aware of that possibility.
+      rootView.insertUpdate(ev, getVisibleEditorRect(),
+                            rootView.getViewFactory());
+    }
+
+    /**
+     * Notification about a document removal event.
+     *
+     * @param ev the DocumentEvent describing the removal
+     */
+    public void removeUpdate(DocumentEvent ev)
+    {
+      // Updates are forwarded to the View even if 'getVisibleEditorRect'
+      // method returns null. This means the View classes have to be
+      // aware of that possibility.
+      rootView.removeUpdate(ev, getVisibleEditorRect(),
+                            rootView.getViewFactory());
+    }
+
   }
 
   /**
@@ -225,22 +362,6 @@ public abstract class BasicTextUI extends TextUI
       return textComponent;
     }
 
-    /**
-     * Returns the preferred span along the specified <code>axis</code>.
-     * This is delegated to the real root view.
-     *
-     * @param axis the axis for which the preferred span is queried
-     *
-     * @return the preferred span along the axis
-     */
-    public float getPreferredSpan(int axis)
-    {
-      if (view != null)
-	return view.getPreferredSpan(axis);
-
-      return Integer.MAX_VALUE;
-    }
-
     public void setSize(float w, float h)
     {
       if (view != null)
@@ -318,7 +439,8 @@ public abstract class BasicTextUI extends TextUI
      */
     public void insertUpdate(DocumentEvent ev, Shape shape, ViewFactory vf)
     {
-      view.insertUpdate(ev, shape, vf);
+      if (view != null)
+        view.insertUpdate(ev, shape, vf);
     }
 
     /**
@@ -331,7 +453,8 @@ public abstract class BasicTextUI extends TextUI
      */
     public void removeUpdate(DocumentEvent ev, Shape shape, ViewFactory vf)
     {
-      view.removeUpdate(ev, shape, vf);
+      if (view != null)
+        view.removeUpdate(ev, shape, vf);
     }
 
     /**
@@ -344,7 +467,8 @@ public abstract class BasicTextUI extends TextUI
      */
     public void changedUpdate(DocumentEvent ev, Shape shape, ViewFactory vf)
     {
-      view.changedUpdate(ev, shape, vf);
+      if (view != null)
+        view.changedUpdate(ev, shape, vf);
     }
 
     /**
@@ -406,116 +530,73 @@ public abstract class BasicTextUI extends TextUI
     {
       return textComponent.getDocument();
     }
-  }
 
-  /**
-   * Receives notifications when properties of the text component change.
-   */
-  private class PropertyChangeHandler implements PropertyChangeListener
-  {
     /**
-     * Notifies when a property of the text component changes.
-     *
-     * @param event the PropertyChangeEvent describing the change
+     * Returns the attributes, which is null for the RootView.
      */
-    public void propertyChange(PropertyChangeEvent event)
+    public AttributeSet getAttributes()
     {
-      if (event.getPropertyName().equals("document"))
-        {
-          // Document changed.
-          Object oldValue = event.getOldValue();
-          if (oldValue != null)
-            {
-              Document oldDoc = (Document) oldValue;
-              oldDoc.removeDocumentListener(documentHandler);
-            }
-          Object newValue = event.getNewValue();
-          if (newValue != null)
-            {
-              Document newDoc = (Document) newValue;
-              newDoc.addDocumentListener(documentHandler);
-            }
-          modelChanged();
-        }
-
-      BasicTextUI.this.propertyChange(event);
-    }
-  }
-
-  /**
-   * Listens for changes on the underlying model and forwards notifications
-   * to the View. This also updates the caret position of the text component.
-   *
-   * TODO: Maybe this should somehow be handled through EditorKits
-   */
-  class DocumentHandler implements DocumentListener
-  {
-    /**
-     * Notification about a document change event.
-     *
-     * @param ev the DocumentEvent describing the change
-     */
-    public void changedUpdate(DocumentEvent ev)
-    {
-      // Updates are forwarded to the View even if 'getVisibleEditorRect'
-      // method returns null. This means the View classes have to be
-      // aware of that possibility.
-      rootView.changedUpdate(ev, getVisibleEditorRect(),
-                             rootView.getViewFactory());
+      return null;
     }
 
     /**
-     * Notification about a document insert event.
-     *
-     * @param ev the DocumentEvent describing the insertion
+     * Overridden to forward to the view.
      */
-    public void insertUpdate(DocumentEvent ev)
+    public float getPreferredSpan(int axis)
     {
-      // Updates are forwarded to the View even if 'getVisibleEditorRect'
-      // method returns null. This means the View classes have to be
-      // aware of that possibility.
-      rootView.insertUpdate(ev, getVisibleEditorRect(),
-                            rootView.getViewFactory());
+      // The RI returns 10 in the degenerate case.
+      float span = 10;
+      if (view != null)
+        span = view.getPreferredSpan(axis);
+      return span;
     }
 
     /**
-     * Notification about a document removal event.
-     *
-     * @param ev the DocumentEvent describing the removal
+     * Overridden to forward to the real view.
      */
-    public void removeUpdate(DocumentEvent ev)
+    public float getMinimumSpan(int axis)
     {
-      // Updates are forwarded to the View even if 'getVisibleEditorRect'
-      // method returns null. This means the View classes have to be
-      // aware of that possibility.
-      rootView.removeUpdate(ev, getVisibleEditorRect(),
-                            rootView.getViewFactory());
+      // The RI returns 10 in the degenerate case.
+      float span = 10;
+      if (view != null)
+        span = view.getMinimumSpan(axis);
+      return span;
+    }
+
+    /**
+     * Overridden to return Integer.MAX_VALUE.
+     */
+    public float getMaximumSpan(int axis)
+    {
+      // The RI returns Integer.MAX_VALUE here, regardless of the real view's
+      // maximum size.
+      return Integer.MAX_VALUE;
     }
   }
 
   /**
    * The EditorKit used by this TextUI.
    */
-  // FIXME: should probably be non-static.
-  static EditorKit kit = new DefaultEditorKit();
+  private static EditorKit kit;
+
+  /**
+   * The combined event handler for text components.
+   *
+   * This is package private to avoid accessor methods.
+   */
+  Handler handler;
 
   /**
    * The root view.
+   *
+   * This is package private to avoid accessor methods.
    */
-  RootView rootView = new RootView();
+  RootView rootView;
 
   /**
    * The text component that we handle.
    */
   JTextComponent textComponent;
-
-  /**
-   * Receives notification when the model changes.
-   */
-  private PropertyChangeHandler updateHandler = new PropertyChangeHandler();
-
-  /** The DocumentEvent handler. */
-  DocumentHandler documentHandler = new DocumentHandler();
 
   /**
    * Creates a new <code>BasicTextUI</code> instance.
@@ -564,17 +645,31 @@ public abstract class BasicTextUI extends TextUI
   public void installUI(final JComponent c)
   {
     textComponent = (JTextComponent) c;
+
+    if (rootView == null)
+      rootView = new RootView();
+
     installDefaults();
-    textComponent.addPropertyChangeListener(updateHandler);
+    installFixedDefaults();
+
+    // These listeners must be installed outside of installListeners(),
+    // because overriding installListeners() doesn't prevent installing
+    // these in the RI, but overriding isntallUI() does.
+    if (handler == null)
+      handler = new Handler();
+    textComponent.addPropertyChangeListener(handler);
     Document doc = textComponent.getDocument();
     if (doc == null)
       {
+        // The Handler takes care of installing the necessary listeners
+        // on the document here.
         doc = getEditorKit(textComponent).createDefaultDocument();
         textComponent.setDocument(doc);
       }
     else
       {
-        doc.addDocumentListener(documentHandler);
+        // Must install the document listener.
+        doc.addDocumentListener(handler);
         modelChanged();
       }
 
@@ -592,7 +687,6 @@ public abstract class BasicTextUI extends TextUI
     LookAndFeel.installColorsAndFont(textComponent, prefix + ".background",
                                      prefix + ".foreground", prefix + ".font");
     LookAndFeel.installBorder(textComponent, prefix + ".border");
-    textComponent.setMargin(UIManager.getInsets(prefix + ".margin"));
 
     // Some additional text component only properties.
     Color color = textComponent.getCaretColor();
@@ -606,7 +700,7 @@ public abstract class BasicTextUI extends TextUI
     color = textComponent.getDisabledTextColor();
     if (color == null || color instanceof UIResource)
       {
-        color = UIManager.getColor(prefix + ".inactiveBackground");
+        color = UIManager.getColor(prefix + ".inactiveForeground");
         textComponent.setDisabledTextColor(color);
       }
     color = textComponent.getSelectedTextColor();
@@ -629,6 +723,15 @@ public abstract class BasicTextUI extends TextUI
         textComponent.setMargin(margin);
       }
 
+  }
+
+  /**
+   * Installs defaults that can't be overridden by overriding
+   * installDefaults().
+   */
+  private void installFixedDefaults()
+  {
+    String prefix = getPropertyPrefix();
     Caret caret = textComponent.getCaret();
     if (caret == null || caret instanceof UIResource)
       {
@@ -644,64 +747,18 @@ public abstract class BasicTextUI extends TextUI
   }
 
   /**
-   * This FocusListener triggers repaints on focus shift.
-   */
-  private FocusListener focuslistener = new FocusListener() {
-      public void focusGained(FocusEvent e) 
-      {
-        textComponent.repaint();
-      }
-      public void focusLost(FocusEvent e)
-      {
-        textComponent.repaint();
-        
-        // Integrates Swing text components with the system clipboard:
-        // The idea is that if one wants to copy text around X11-style
-        // (select text and middle-click in the target component) the focus
-        // will move to the new component which gives the old focus owner the
-        // possibility to paste its selection into the clipboard.
-        if (!e.isTemporary()
-            && textComponent.getSelectionStart()
-               != textComponent.getSelectionEnd())
-          {
-            SecurityManager sm = System.getSecurityManager();
-            try
-              {
-                if (sm != null)
-                  sm.checkSystemClipboardAccess();
-                
-                Clipboard cb = Toolkit.getDefaultToolkit().getSystemSelection();
-                if (cb != null)
-                  {
-                    StringSelection selection = new StringSelection(
-                        textComponent.getSelectedText());
-                    cb.setContents(selection, selection);
-                  }
-              }
-            catch (SecurityException se)
-              {
-                // Not allowed to access the clipboard: Ignore and
-                // do not access it.
-              }
-            catch (HeadlessException he)
-              {
-                // There is no AWT: Ignore and do not access the
-                // clipboard.
-              }
-            catch (IllegalStateException ise)
-            {
-                // Clipboard is currently unavaible.
-            }
-          }
-      }
-    };
-
-  /**
    * Install all listeners on the text component.
    */
   protected void installListeners()
   {
-    textComponent.addFocusListener(focuslistener);
+    // 
+    if (SystemProperties.getProperty("gnu.swing.text.no-xlike-clipboard")
+        == null)
+      {
+        if (focusListener == null)
+          focusListener = new FocusHandler();
+        textComponent.addFocusListener(focusListener);
+      }
   }
 
   /**
@@ -840,10 +897,12 @@ public abstract class BasicTextUI extends TextUI
    */
   public void uninstallUI(final JComponent component)
   {
-    super.uninstallUI(component);
+    textComponent.removePropertyChangeListener(handler);
+    textComponent.getDocument().removeDocumentListener(handler);
     rootView.setView(null);
 
     uninstallDefaults();
+    uninstallFixedDefaults();
     uninstallListeners();
     uninstallKeyboardActions();
 
@@ -856,7 +915,29 @@ public abstract class BasicTextUI extends TextUI
    */
   protected void uninstallDefaults()
   {
-    // Do nothing here.
+    if (textComponent.getCaretColor() instanceof UIResource)
+      textComponent.setCaretColor(null);
+    if (textComponent.getSelectionColor() instanceof UIResource)
+      textComponent.setSelectionColor(null);
+    if (textComponent.getDisabledTextColor() instanceof UIResource)
+      textComponent.setDisabledTextColor(null);
+    if (textComponent.getSelectedTextColor() instanceof UIResource)
+      textComponent.setSelectedTextColor(null);
+    LookAndFeel.uninstallBorder(textComponent);
+    if (textComponent.getMargin() instanceof UIResource)
+      textComponent.setMargin(null);
+  }
+
+  /**
+   * Uninstalls additional fixed defaults that were installed
+   * by installFixedDefaults().
+   */
+  private void uninstallFixedDefaults()
+  {
+    if (textComponent.getCaret() instanceof UIResource)
+      textComponent.setCaret(null);
+    if (textComponent.getHighlighter() instanceof UIResource)
+      textComponent.setHighlighter(null);
   }
 
   /**
@@ -865,8 +946,10 @@ public abstract class BasicTextUI extends TextUI
    */
   protected void uninstallListeners()
   {
-    textComponent.removeFocusListener(focuslistener);
-    textComponent.getDocument().removeDocumentListener(documentHandler);
+    // Don't nullify the focusListener field, as it is static and shared
+    // between components.
+    if (focusListener != null)
+      textComponent.removeFocusListener(focusListener);
   }
 
   /**
@@ -900,14 +983,28 @@ public abstract class BasicTextUI extends TextUI
   {
     Dimension d = c.getSize();
     Insets i = c.getInsets();
-    if (d.width > (i.left + i.right) && d.height > (i.top + i.bottom))
+    // We need to lock here, since we require the view hierarchy to _not_
+    // change in between.
+    float w;
+    float h;
+    Document doc = textComponent.getDocument();
+    if (doc instanceof AbstractDocument)
+      ((AbstractDocument) doc).readLock();
+    try
       {
-        rootView.setSize(d.width - i.left - i.right,
-                         d.height - i.top - i.bottom);
+        if (d.width > (i.left + i.right) && d.height > (i.top + i.bottom))
+          {
+            rootView.setSize(d.width - i.left - i.right,
+                             d.height - i.top - i.bottom);
+          }
+        w = rootView.getPreferredSpan(View.X_AXIS);
+        h = rootView.getPreferredSpan(View.Y_AXIS);
       }
-    float w = rootView.getPreferredSpan(View.X_AXIS);
-    float h = rootView.getPreferredSpan(View.Y_AXIS);
-
+    finally
+      {
+        if (doc instanceof AbstractDocument)
+          ((AbstractDocument) doc).readUnlock();
+      }
     Dimension size =  new Dimension((int) w + i.left + i.right,
                          (int) h + i.top + i.bottom);
     return size;
@@ -924,8 +1021,27 @@ public abstract class BasicTextUI extends TextUI
    */
   public Dimension getMaximumSize(JComponent c)
   {
-    // Sun's implementation returns Integer.MAX_VALUE here, so do we.
-    return new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE);
+    Dimension d = new Dimension();
+    Insets i = c.getInsets();
+    Document doc = textComponent.getDocument();
+    // We need to lock here, since we require the view hierarchy to _not_
+    // change in between.
+    if (doc instanceof AbstractDocument)
+      ((AbstractDocument) doc).readLock();
+    try
+      {
+        // Check for overflow here.
+        d.width = (int) Math.min((long) rootView.getMaximumSpan(View.X_AXIS)
+                                 + i.left + i.right, Integer.MAX_VALUE);
+        d.height = (int) Math.min((long) rootView.getMaximumSpan(View.Y_AXIS)
+                                  + i.top + i.bottom, Integer.MAX_VALUE);
+      }
+    finally
+      {
+        if (doc instanceof AbstractDocument)
+          ((AbstractDocument) doc).readUnlock();
+      }
+    return d;
   }
 
   /**
@@ -936,8 +1052,26 @@ public abstract class BasicTextUI extends TextUI
    */
   public Dimension getMinimumSize(JComponent c)
   {
+    Dimension d = new Dimension();
+    Document doc = textComponent.getDocument();
+    // We need to lock here, since we require the view hierarchy to _not_
+    // change in between.
+    if (doc instanceof AbstractDocument)
+      ((AbstractDocument) doc).readLock();
+    try
+      {
+        d.width = (int) rootView.getMinimumSpan(View.X_AXIS);
+        d.height = (int) rootView.getMinimumSpan(View.Y_AXIS);
+      }
+    finally
+      {
+        if (doc instanceof AbstractDocument)
+          ((AbstractDocument) doc).readUnlock();
+      }
     Insets i = c.getInsets();
-    return new Dimension(i.left + i.right, i.top + i.bottom);
+    d.width += i.left + i.right;
+    d.height += i.top + i.bottom;
+    return d;
   }
 
   /**
@@ -1008,7 +1142,6 @@ public abstract class BasicTextUI extends TextUI
         g.setColor(oldColor);
       }
       
-
     rootView.paint(g, getVisibleEditorRect());
 
     if (caret != null && textComponent.hasFocus())
@@ -1116,6 +1249,8 @@ public abstract class BasicTextUI extends TextUI
    */
   public EditorKit getEditorKit(JTextComponent t)
   {
+    if (kit == null)
+      kit = new DefaultEditorKit();
     return kit;
   }
 

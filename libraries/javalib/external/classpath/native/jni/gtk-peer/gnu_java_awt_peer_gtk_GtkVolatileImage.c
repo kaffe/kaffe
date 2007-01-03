@@ -88,7 +88,7 @@ Java_gnu_java_awt_peer_gtk_GtkVolatileImage_init (JNIEnv *env,
  */
 JNIEXPORT void JNICALL 
 Java_gnu_java_awt_peer_gtk_GtkVolatileImage_destroy
-(JNIEnv *env __attribute__((unused)), jobject obj __attribute((unused)),
+(JNIEnv *env __attribute__((unused)), jobject obj __attribute__((unused)),
  jlong pointer)
 {
   GdkPixmap* pixmap = JLONG_TO_PTR(GdkPixmap, pointer);
@@ -148,7 +148,7 @@ Java_gnu_java_awt_peer_gtk_GtkVolatileImage_nativeGetPixels
  */
 JNIEXPORT void JNICALL 
 Java_gnu_java_awt_peer_gtk_GtkVolatileImage_nativeCopyArea
-(JNIEnv *env __attribute__((unused)), jobject obj __attribute((unused)),
+(JNIEnv *env __attribute__((unused)), jobject obj __attribute__((unused)),
  jlong pointer, jint x, jint y, jint w, jint h, jint dx, jint dy)
 {
   GdkPixbuf *pixbuf;
@@ -169,7 +169,7 @@ Java_gnu_java_awt_peer_gtk_GtkVolatileImage_nativeCopyArea
 
 JNIEXPORT void JNICALL 
 Java_gnu_java_awt_peer_gtk_GtkVolatileImage_nativeDrawVolatile
-(JNIEnv *env __attribute__((unused)), jobject obj __attribute((unused)),
+(JNIEnv *env __attribute__((unused)), jobject obj __attribute__((unused)),
  jlong pointer, jlong srcptr, jint x, jint y, jint w, jint h)
 {
   GdkPixmap *dst, *src;

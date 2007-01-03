@@ -45,9 +45,10 @@ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/acattribute.m4 \
 	$(top_srcdir)/m4/accross.m4 $(top_srcdir)/m4/acinclude.m4 \
 	$(top_srcdir)/m4/ax_create_stdint_h.m4 \
-	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/lib-ld.m4 \
-	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
-	$(top_srcdir)/m4/pkg.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/gcc_attribute.m4 $(top_srcdir)/m4/iconv.m4 \
+	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
+	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/pkg.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -308,6 +309,7 @@ vm_classes = @vm_classes@
 JAVA_DEPEND = java.dep
 propertydirs := $(shell cd $(top_srcdir)/resource && $(FIND) gnu java javax org META-INF -type d ! -name CVS -print)
 propertyfiles := $(shell cd $(top_srcdir)/resource && $(FIND) gnu java javax org -name \*\.properties -print)
+cssfiles := $(shell cd $(top_srcdir) && $(FIND) gnu java javax org -name \*\.css -print)
 metafiles := $(shell cd $(top_srcdir)/resource && $(FIND) META-INF -name CVS -prune -o -name \*\.in -prune -o -type f -print)
 iconfiles := $(shell cd $(top_srcdir) && $(FIND) gnu/javax/swing/plaf/gtk/icons -name *.png -type f -print)
 compile_classpath = $(vm_classes):$(top_srcdir):$(top_srcdir)/external/w3c_dom:$(top_srcdir)/external/sax:$(top_srcdir)/external/relaxngDatatype:.:$(USER_CLASSLIB):$(PATH_TO_ESCHER)
@@ -565,15 +567,18 @@ sinclude $(JAVA_DEPEND)
 @USE_PREBUILT_GLIBJ_ZIP_FALSE@	if test "$(FASTJAR)" != ""; then $(FASTJAR) cf glibj.zip gnu java javax org sun META-INF; fi
 
 resources: copy-vmresources.sh
-	if ! [ -e gnu ]; then mkdir gnu; fi
-	if ! [ -e gnu/java ]; then mkdir gnu/java; fi
-	if ! [ -e gnu/java/locale ]; then mkdir gnu/java/locale; fi
-	if ! [ -e gnu/javax/swing/plaf/gtk/icons ]; then mkdir -p gnu/javax/swing/plaf/gtk/icons; fi
+	if ! test -d gnu; then mkdir gnu; fi
+	if ! test -d gnu/java; then mkdir gnu/java; fi
+	if ! test -d gnu/java/locale; then mkdir gnu/java/locale; fi
+	if ! test -d gnu/javax/swing/plaf/gtk/icons; then mkdir -p gnu/javax/swing/plaf/gtk/icons; fi
 	@list='$(propertydirs)'; for p in $$list; do \
-	  if ! [ -e $$p ]; then mkdir $$p; fi; \
+	  if ! test -d $$p; then mkdir $$p; fi; \
 	done
 	@list='$(propertyfiles)'; for p in $$list; do \
 	  cp $(top_srcdir)/resource/$$p $$p; \
+	done
+	@list='$(cssfiles)'; for p in $$list; do \
+	  cp $(top_srcdir)/$$p $$p; \
 	done
 	@list='$(metafiles)'; for p in $$list; do \
 	  cp $(top_srcdir)/resource/$$p $$p; \

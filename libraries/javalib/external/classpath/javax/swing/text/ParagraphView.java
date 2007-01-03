@@ -40,6 +40,7 @@ package javax.swing.text;
 
 import java.awt.Shape;
 
+import javax.swing.SizeRequirements;
 import javax.swing.event.DocumentEvent;
 
 /**
@@ -64,11 +65,39 @@ public class ParagraphView extends FlowView implements TabExpander
       super(el, X_AXIS);
     }
 
+    /**
+     * Overridden to adjust when we are the first line, and firstLineIndent
+     * is not 0.
+     */
+    public short getLeftInset()
+    {
+      short leftInset = super.getLeftInset();
+      View parent = getParent();
+      if (parent != null)
+        {
+          if (parent.getView(0) == this)
+            leftInset += firstLineIndent;
+        }
+      return leftInset;
+    }
+
     public float getAlignment(int axis)
     {
       float align;
       if (axis == X_AXIS)
-        align = 0.0F; // TODO: Implement according to justification
+        switch (justification)
+          {
+          case StyleConstants.ALIGN_RIGHT:
+            align = 1.0F;
+            break;
+          case StyleConstants.ALIGN_CENTER:
+          case StyleConstants.ALIGN_JUSTIFIED:
+            align = 0.5F;
+            break;
+          case StyleConstants.ALIGN_LEFT:
+          default:
+            align = 0.0F;
+          }
       else
         align = super.getAlignment(axis);
       return align;
@@ -105,6 +134,27 @@ public class ParagraphView extends FlowView implements TabExpander
             }
         }
       return index;
+    }
+
+
+    /**
+     * Overridden to perform a baseline layout. The normal BoxView layout
+     * isn't completely suitable for rows.
+     */
+    protected void layoutMinorAxis(int targetSpan, int axis, int[] offsets,
+                                   int[] spans)
+    {
+      baselineLayout(targetSpan, axis, offsets, spans);
+    }
+
+    /**
+     * Overridden to perform a baseline layout. The normal BoxView layout
+     * isn't completely suitable for rows.
+     */
+    protected SizeRequirements calculateMinorAxisRequirements(int axis,
+                                                            SizeRequirements r)
+    {
+      return baselineRequirements(axis, r);
     }
 
     protected void loadChildren(ViewFactory vf)

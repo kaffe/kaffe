@@ -329,6 +329,16 @@ public abstract class FlowView extends BoxView
     {
       super(el, axis);
     }
+
+    /**
+     * Overridden to return the attributes of the parent
+     * (== the FlowView instance).
+     */
+    public AttributeSet getAttributes()
+    {
+      View p = getParent();
+      return p != null ? p.getAttributes() : null;
+    }
   }
 
   /**

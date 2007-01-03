@@ -902,6 +902,20 @@ public class JPopupMenu extends JComponent implements Accessible, MenuElement
     }
   }
 
+  /**
+   * Returns <code>true</code> if the component is guaranteed to be painted
+   * on top of others. This returns false by default and is overridden by
+   * components like JMenuItem, JPopupMenu and JToolTip to return true for
+   * added efficiency.
+   *
+   * @return <code>true</code> if the component is guaranteed to be painted
+   *         on top of others
+   */
+  boolean onTop()
+  {
+    return true;
+  }
+
   protected class AccessibleJPopupMenu extends AccessibleJComponent
   {
     private static final long serialVersionUID = 7423261328879849768L;

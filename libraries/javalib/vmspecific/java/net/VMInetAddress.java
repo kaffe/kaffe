@@ -122,4 +122,14 @@ class VMInetAddress implements Serializable
   {
     return impl.getHostByName(hostname);
   }
+
+  /**
+   * Return the IP address represented by a literal address.
+   * Will return null if the literal address is not valid.
+   *
+   * @param address the name of the host
+   *
+   * @return The IP address as a byte array
+   */
+  public static native byte[] aton(String address);
 }

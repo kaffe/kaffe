@@ -1594,6 +1594,13 @@ public class BasicInternalFrameUI extends InternalFrameUI
   {
     replacePane(northPane, c);
     northPane = c;
+    // the following is needed to make internal frames draggable when using
+    // the JGoodies PlasticLookAndFeel, because it overrides the 
+    // createNorthPane() method and doesn't assign anything to the titlePane
+    // field.  It is possible there is another way to make this work, but
+    // I didn't find it...
+    if (c instanceof BasicInternalFrameTitlePane)
+      titlePane = (BasicInternalFrameTitlePane) c;
   }
 
   /**

@@ -46,7 +46,6 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Toolkit;
-import java.text.BreakIterator;
 
 import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
@@ -300,28 +299,19 @@ public class GlyphView extends View implements TabableView, Cloneable
       g.setColor(view.getForeground());
       g.setFont(view.getFont());
       int ascent = g.getFontMetrics().getAscent();
-      if (view.isSuperscript())
-        // TODO: Adjust font for superscripting.
-        Utilities.drawTabbedText(txt, bounds.x, bounds.y + ascent - height / 2,
-                                 g, tabEx, txt.offset);
-      else if (view.isSubscript())
-        // TODO: Adjust font for subscripting.
-        Utilities.drawTabbedText(txt, bounds.x, bounds.y + ascent + height / 2,
-                                 g, tabEx, txt.offset);
-      else
-        Utilities.drawTabbedText(txt, bounds.x, bounds.y + ascent, g, tabEx,
-                                 txt.offset);
+      Utilities.drawTabbedText(txt, bounds.x, bounds.y + ascent, g, tabEx,
+                               txt.offset);
 
       if (view.isStrikeThrough())
         {
           int strikeHeight = (int) (getAscent(view) / 2);
-          g.drawLine(bounds.x, bounds.y + strikeHeight, bounds.height + width,
+          g.drawLine(bounds.x, bounds.y + strikeHeight, bounds.x + width,
                      bounds.y + strikeHeight);
         }
       if (view.isUnderline())
         {
           int lineHeight = (int) getAscent(view);
-          g.drawLine(bounds.x, bounds.y + lineHeight, bounds.height + width,
+          g.drawLine(bounds.x, bounds.y + lineHeight, bounds.x + width,
                      bounds.y + lineHeight);
         }
       g.setColor(oldColor);
@@ -385,7 +375,6 @@ public class GlyphView extends View implements TabableView, Cloneable
     public float getSpan(GlyphView view, int p0, int p1,
                          TabExpander te, float x)
     {
-      Element el = view.getElement();
       Font font = view.getFont();
       FontMetrics fm = Toolkit.getDefaultToolkit().getFontMetrics(font);
       Segment txt = view.getText(p0, p1);
@@ -466,7 +455,7 @@ public class GlyphView extends View implements TabableView, Cloneable
     {
       Rectangle b = a.getBounds();
       int pos = getBoundedPosition(v, v.getStartOffset(), b.x, x - b.x);
-      return pos;
+      return pos + v.getStartOffset();
     }
   }
 
@@ -574,19 +563,24 @@ public class GlyphView extends View implements TabableView, Cloneable
     float span = 0;
     checkPainter();
     GlyphPainter painter = getGlyphPainter();
-    if (axis == X_AXIS)
+    switch (axis)
       {
-        Element el = getElement();
+      case X_AXIS:
         TabExpander tabEx = null;
         View parent = getParent();
         if (parent instanceof TabExpander)
           tabEx = (TabExpander) parent;
         span = painter.getSpan(this, getStartOffset(), getEndOffset(),
                                tabEx, 0.F);
+        break;
+      case Y_AXIS:
+        span = painter.getHeight(this);
+        if (isSuperscript())
+          span += span / 3;
+        break;
+      default:
+        throw new IllegalArgumentException("Illegal axis");
       }
-    else
-      span = painter.getHeight(this);
-
     return span;
   }
 
@@ -762,16 +756,19 @@ public class GlyphView extends View implements TabableView, Cloneable
    */
   public Font getFont()
   {
-    Element el = getElement();
-    AttributeSet atts = el.getAttributes();
-    String family = StyleConstants.getFontFamily(atts);
-    int size = StyleConstants.getFontSize(atts);
-    int style = Font.PLAIN;
-    if (StyleConstants.isBold(atts))
-        style |= Font.BOLD;
-    if (StyleConstants.isItalic(atts))
-      style |= Font.ITALIC;
-    Font font = new Font(family, style, size);
+    Document doc = getDocument();
+    Font font = null;
+    if (doc instanceof StyledDocument)
+      {
+        StyledDocument styledDoc = (StyledDocument) doc;
+        font = styledDoc.getFont(getAttributes());
+      }
+    else
+      {
+        Container c = getContainer();
+        if (c != null)
+          font = c.getFont();
+      }
     return font;
   }
 
@@ -908,10 +905,8 @@ public class GlyphView extends View implements TabableView, Cloneable
       return this;
 
     checkPainter();
-    GlyphPainter painter = getGlyphPainter();
 
     // Try to find a suitable line break.
-    BreakIterator lineBreaker = BreakIterator.getLineInstance();
     Segment txt = new Segment();
     try
       {
@@ -1050,14 +1045,21 @@ public class GlyphView extends View implements TabableView, Cloneable
    */
   public float getAlignment(int axis)
   {
+    checkPainter();
     float align;
     if (axis == Y_AXIS)
       {
-        checkPainter();
         GlyphPainter painter = getGlyphPainter();
         float height = painter.getHeight(this);
         float descent = painter.getDescent(this);
-        align = (height - descent) / height; 
+        float ascent = painter.getAscent(this);
+        if (isSuperscript())
+          align = 1.0F;
+        else if (isSubscript())
+          align = height > 0 ? (height - (descent + (ascent / 2))) / height
+                             : 0;
+        else
+          align = height > 0 ? (height - descent) / height : 0;
       }
     else
       align = super.getAlignment(axis);

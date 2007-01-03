@@ -56,6 +56,7 @@ import javax.accessibility.AccessibleStateSet;
 import javax.accessibility.AccessibleText;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
+import javax.swing.plaf.TextUI;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.Document;
@@ -695,10 +696,28 @@ public class JEditorPane extends JTextComponent
   public Dimension getPreferredSize()
   {
     Dimension pref = super.getPreferredSize();
-    if (getScrollableTracksViewportWidth())
-      pref.width = getUI().getMinimumSize(this).width;
-    if (getScrollableTracksViewportHeight())
-      pref.height = getUI().getMinimumSize(this).height;
+    Container parent = getParent();
+    if (parent instanceof JViewport)
+      {
+        JViewport vp = (JViewport) getParent();
+        TextUI ui = getUI();
+        Dimension min = null;
+        if (! getScrollableTracksViewportWidth())
+          {
+            min = ui.getMinimumSize(this);
+            int vpWidth = vp.getWidth();
+            if (vpWidth != 0 && vpWidth < min.width)
+              pref.width = min.width;
+          }
+        if (! getScrollableTracksViewportHeight())
+          {
+            if (min == null)
+              min = ui.getMinimumSize(this);
+            int vpHeight = vp.getHeight();
+            if (vpHeight != 0 && vpHeight < min.height)
+              pref.height = min.height;
+          }
+      }
     return pref;
   }
 
@@ -716,9 +735,11 @@ public class JEditorPane extends JTextComponent
     // Tests show that this returns true when the parent is a JViewport
     // and has a height > minimum UI height.
     Container parent = getParent();
+    int height = parent.getHeight();
+    TextUI ui = getUI();
     return parent instanceof JViewport
-           && parent.getHeight() >= getUI().getMinimumSize(this).height
-           && parent.getHeight() <= getUI().getMaximumSize(this).height;
+           && height >= ui.getMinimumSize(this).height
+           && height <= ui.getMaximumSize(this).height;
   }
 
   /**

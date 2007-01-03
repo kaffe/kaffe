@@ -1,5 +1,5 @@
 /* java.lang.ref.Reference
-   Copyright (C) 1999, 2002, 2003 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2002, 2003, 2006 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -82,7 +82,7 @@ public abstract class Reference
    * The queue this reference is registered on. This is null, if this
    * wasn't registered to any queue or reference was already enqueued.
    */
-  ReferenceQueue queue;
+  volatile ReferenceQueue queue;
 
   /**
    * Link to the next entry on the queue.  If this is null, this
@@ -91,7 +91,7 @@ public abstract class Reference
    * (not to null, that value is used to mark a not enqueued
    * reference).  
    */
-  Reference nextOnQueue;
+  volatile Reference nextOnQueue;
 
   /**
    * This lock should be taken by the garbage collector, before
@@ -166,11 +166,10 @@ public abstract class Reference
    */
   public boolean enqueue() 
   {
-    if (queue != null && nextOnQueue == null)
+    ReferenceQueue q = queue;
+    if (q != null)
       {
-	queue.enqueue(this);
-	queue = null;
-	return true;
+	return q.enqueue(this);
       }
     return false;
   }

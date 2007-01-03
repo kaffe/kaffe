@@ -942,10 +942,10 @@ public class JViewport extends JComponent implements Accessible
    *
    * @param r the rectangle to paint
    */
-  void paintImmediately2(Rectangle r)
+  void paintImmediately2(int x, int y, int w, int h)
   {
     isPaintRoot = true;
-    super.paintImmediately2(r);
+    super.paintImmediately2(x, y, w, h);
     isPaintRoot = false;
   }
 }

@@ -44,10 +44,12 @@ import gnu.classpath.tools.getopt.OptionGroup;
 import gnu.classpath.tools.getopt.Parser;
 import java.applet.Applet;
 import java.awt.Dimension;
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -249,6 +251,7 @@ class Main
 
     if (pluginMode)
       {
+        // Plugin will warn user about missing security manager.
 	InputStream in;
 	OutputStream out;
 
@@ -259,6 +262,33 @@ class Main
       }
     else
       {
+        // Warn user about missing security manager.
+        System.err.println("WARNING: CURRENTLY GAPPLETVIEWER RUNS WITH NO SECURITY MANAGER.\n\n"
+                           + "THIS MEANS THAT APPLETS YOU LOAD CAN DO ANYTHING A JAVA APPLICATION\n"
+                           + "THAT YOU DOWNLOAD AND RUN CAN DO.  BE *VERY* CAREFUL WHICH APPLETS YOU RUN.\n"
+                           + "DO NOT USE GAPPLETVIEWER ON YOUR SYSTEM IF YOUR SYSTEM STORES IMPORTANT DATA.\n"
+                           + "THIS DATA CAN BE DESTROYED OR STOLEN IF YOU LOAD A MALICIOUS APPLET.\n");
+
+        System.err.println("[press 'c' or 'C' to continue or anything else to quit]");
+
+        BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
+        String response = null;
+
+        try
+          {
+            response = stdin.readLine();
+          }
+        catch (IOException e)
+          {
+            System.err.println("failed to read response to warning message: " + e);
+            System.exit(1);
+          }
+
+        if (!(response.equals("c") || response.equals("C")))
+          {
+            System.exit(0);
+          }
+
         if (code == null)
           {
             // The --code option wasn't given and there are no URL

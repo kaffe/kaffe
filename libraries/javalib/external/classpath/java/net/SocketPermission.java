@@ -164,12 +164,61 @@ public final class SocketPermission extends Permission implements Serializable
    */
   public SocketPermission(String hostport, String actions)
   {
-    super(hostport);
+    super(processHostport(hostport));
 
-    setHostPort(hostport);
+    setHostPort(getName());
     setActions(actions);
   }
 
+  /**
+   * There are two cases in which hostport needs rewriting before
+   * being passed to the superclass constructor.  If hostport is an
+   * empty string then it is substituted with "localhost".  And if
+   * the host part of hostport is a literal IPv6 address in the full
+   * uncompressed form not enclosed with "[" and "]" then we enclose
+   * it with them.
+   */
+  private static String processHostport(String hostport)
+  {
+    if (hostport.length() == 0)
+      return "localhost";
+
+    if (hostport.charAt(0) == '[')
+      return hostport;
+
+    int colons = 0, last_colon = 0;
+    for (int i = 0; i < hostport.length(); i++)
+      {
+	if (hostport.charAt(i) == ':')
+	  {
+	    if (i - last_colon == 1)
+	      throw new IllegalArgumentException("Ambiguous hostport part");
+	    colons++;
+	    last_colon = i;
+	  }
+      }
+
+    switch (colons)
+      {
+      case 0:
+      case 1:
+	// a hostname or IPv4 address
+	return hostport;
+	
+      case 7:
+	// an IPv6 address with no ports
+	return "[" + hostport + "]";
+
+      case 8:
+	// an IPv6 address with ports
+	return "[" + hostport.substring(0, last_colon) + "]"
+	  + hostport.substring(last_colon);
+
+      default:
+	throw new IllegalArgumentException("Ambiguous hostport part");
+      }
+  }
+  
   /**
    * Parse the hostport argument to the constructor.
    */
@@ -177,11 +226,7 @@ public final class SocketPermission extends Permission implements Serializable
   {
     // Split into host and ports
     String ports;
-    if (hostport.length() == 0)
-      {
-	host = ports = "";
-      }
-    else if (hostport.charAt(0) == '[')
+    if (hostport.charAt(0) == '[')
       {
 	// host is a bracketed IPv6 address
 	int end = hostport.indexOf("]");
@@ -211,8 +256,6 @@ public final class SocketPermission extends Permission implements Serializable
 	    ports = hostport.substring(sep + 1);
 	  }
       }
-    if (ports.indexOf(":") != -1)
-      throw new IllegalArgumentException("Unexpected ':'");
 
     // Parse and validate the ports
     if (ports.length() == 0)

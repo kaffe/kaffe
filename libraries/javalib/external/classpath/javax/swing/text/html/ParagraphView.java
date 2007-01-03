@@ -39,12 +39,14 @@ exception statement from your version. */
 package javax.swing.text.html;
 
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.Shape;
 
 import javax.swing.SizeRequirements;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.Document;
 import javax.swing.text.Element;
+import javax.swing.text.StyleConstants;
 import javax.swing.text.View;
 
 /**
@@ -55,8 +57,18 @@ import javax.swing.text.View;
  * @author Roman Kennke (kennke@aicas.com)
  */
 public class ParagraphView
-    extends javax.swing.text.ParagraphView
+  extends javax.swing.text.ParagraphView
 {
+
+  /**
+   * The attributes used by this view.
+   */
+  private AttributeSet attributes;
+
+  /**
+   * The stylesheet's box painter.
+   */
+  private StyleSheet.BoxPainter painter;
 
   /**
    * Creates a new ParagraphView for the specified element.
@@ -88,8 +100,11 @@ public class ParagraphView
    */
   public AttributeSet getAttributes()
   {
-    // FIXME: Implement this multiplexing thing.
-    return super.getAttributes();
+    if (attributes == null)
+      {
+        attributes = getStyleSheet().getViewAttributes(this);
+      }
+    return attributes;
   }
 
   /**
@@ -98,7 +113,32 @@ public class ParagraphView
    */
   protected void setPropertiesFromAttributes()
   {
-    // FIXME: Implement this.
+    super.setPropertiesFromAttributes();
+
+    // Fetch CSS attributes.
+    AttributeSet atts = getAttributes();
+    Object o = atts.getAttribute(CSS.Attribute.TEXT_ALIGN);
+    if (o != null)
+      {
+        String align = o.toString();
+        if (align.equals("left"))
+          setJustification(StyleConstants.ALIGN_LEFT);
+        else if (align.equals("right"))
+          setJustification(StyleConstants.ALIGN_RIGHT);
+        else if (align.equals("center"))
+          setJustification(StyleConstants.ALIGN_CENTER);
+        else if (align.equals("justify"))
+          setJustification(StyleConstants.ALIGN_JUSTIFIED);
+      }
+
+    // Fetch StyleSheet's box painter.
+    painter = getStyleSheet().getBoxPainter(atts);
+    setInsets((short) painter.getInset(TOP, this),
+              (short) painter.getInset(LEFT, this),
+              (short) painter.getInset(BOTTOM, this),
+              (short) painter.getInset(RIGHT, this));
+
+    // TODO: Handle CSS width and height attributes somehow.
   }
 
   /**
@@ -147,15 +187,20 @@ public class ParagraphView
   }
 
   /**
-   * Paints this view. This delegates to the superclass after the coordinates
-   * have been updated for tab calculations.
+   * Paints this view. This paints the box using the stylesheet's
+   * box painter for this view and delegates to the super class paint()
+   * afterwards.
    *
    * @param g the graphics object
    * @param a the current allocation of this view
    */
   public void paint(Graphics g, Shape a)
   {
-    // FIXME: Implement the above specified behaviour.
+    if (a != null)
+      {
+        Rectangle r = a instanceof Rectangle ? (Rectangle) a : a.getBounds();
+        painter.paint(g, r.x, r.y, r.width, r.height, this);
+      }
     super.paint(g, a);
   }
 
