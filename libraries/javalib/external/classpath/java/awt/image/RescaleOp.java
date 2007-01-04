@@ -287,10 +287,9 @@ public class RescaleOp implements BufferedImageOp, RasterOp
     float scaleFactor, offset;
     
     // Find max sample value, to be used for clipping later
-    int maxValue = (int)Math.pow(2, 
-                                 DataBuffer.getDataTypeSize(src.getDataBuffer()
-                                                               .getDataType()))
-                                                               - 1;
+    int[] maxValue = src.getSampleModel().getSampleSize();
+    for (int i = 0; i < maxValue.length; i++)
+      maxValue[i] = (int)Math.pow(2, maxValue[i]) - 1;
     
     // TODO: can this be optimized further?
     // Filter all samples of all requested bands
@@ -318,8 +317,8 @@ public class RescaleOp implements BufferedImageOp, RasterOp
               // Clip if needed
               if (values[i] < 0)
                 values[i] = 0;
-              if (values[i] > maxValue)
-                values[i] = maxValue;
+              if (values[i] > maxValue[band])
+                values[i] = maxValue[band];
             }
 
           dest.setSamples(dest.getMinX(), dest.getMinY(), dest.getWidth(),

@@ -668,6 +668,7 @@ public abstract class DomNode
               {
                 insertionEvent(null, child);
               }
+            length++;
           }
         
         return child;

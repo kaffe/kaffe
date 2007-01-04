@@ -93,7 +93,7 @@ public final class Inet6Address extends InetAddress
   private transient NetworkInterface nif; 
 
   /**
-   * The address family of these addresses.
+   * The address family of these addresses (used for serialization).
    */
   private static final int AF_INET6 = 10;
 

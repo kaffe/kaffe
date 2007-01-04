@@ -52,6 +52,8 @@ public class FieldHelper
     out.print("  ");
     if (Modifier.isStatic(field.access))
       out.print("static ");
+    if (Modifier.isVolatile(field.access))
+      out.print("volatile ");
     if ((field.value instanceof Integer) || (field.value instanceof Long))
       out.print("const ");
     out.print(Type.getType(field.desc));

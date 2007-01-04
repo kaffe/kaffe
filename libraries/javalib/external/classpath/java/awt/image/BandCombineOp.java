@@ -40,6 +40,7 @@ package java.awt.image;
 import java.awt.RenderingHints;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.Arrays;
 
 /**
  * Filter Raster pixels by applying a matrix.
@@ -52,6 +53,9 @@ import java.awt.geom.Rectangle2D;
  * The rows of the matrix are multiplied by the pixel to produce the values
  * for the destination.  Therefore the destination Raster must contain the
  * same number of bands as the number of rows in the filter matrix.
+ * 
+ * This Op assumes that samples are integers; floating point sample types will
+ * be rounded to their nearest integer value during filtering.
  * 
  * @author Jerry Quinn (jlquinn@optonline.net)
  */
@@ -109,19 +113,27 @@ public class BandCombineOp implements RasterOp
       throw new IllegalArgumentException("Destination raster is incompatible with source raster");
 
     // Filter the pixels
-    float[] spix = new float[matrix[0].length - 1];
-    float[] dpix = new float[matrix.length];
+    int[] spix = new int[matrix[0].length - 1];
+    int[] spix2 = new int[matrix[0].length - 1];
+    int[] dpix = new int[matrix.length];
     for (int y = src.getMinY(); y < src.getHeight() + src.getMinY(); y++)
       for (int x = src.getMinX(); x < src.getWidth() + src.getMinX(); x++)
         {
           // In case matrix rows have implicit translation
-          spix[spix.length - 1] = 1.0f;
+          spix[spix.length - 1] = 1;
           src.getPixel(x, y, spix);
-          for (int i = 0; i < matrix.length; i++)
+          
+          // Do not re-calculate if pixel is identical to the last one
+          // (ie, blocks of the same colour)
+          if (!Arrays.equals(spix, spix2))
             {
-              dpix[i] = 0;
-              for (int j = 0; j < matrix[0].length - 1; j++)
-                dpix[i] += spix[j] * matrix[i][j];
+              System.arraycopy(spix, 0, spix2, 0, spix.length);
+              for (int i = 0; i < matrix.length; i++)
+                {
+                  dpix[i] = 0;
+                  for (int j = 0; j < matrix[0].length - 1; j++)
+                    dpix[i] += spix[j] * (int)matrix[i][j];
+                }
             }
           dest.setPixel(x, y, dpix);
         }

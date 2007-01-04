@@ -1,3 +1,229 @@
+2006-09-16  Chris Burdess  <dog@gnu.org>
+
+	Fixes PR 28572.
+	* gnu/xml/transform/StreamSerializer.java: Don't escape XML entities
+	  when in text output mode.
+
+2006-09-16  Chris Burdess  <dog@gnu.org>
+
+	Fixes PR 27293.
+	* gnu/xml/dom/DomNode.java: Increment length of node during insert.
+
+2006-09-14  Michael Koch  <konqueror@gmx.de>
+
+	* include/gnu_java_awt_peer_gtk_CairoGraphics2D.h: Recreated.
+
+2006-09-15  Chistian Elias Naur  <elias@oddlabs.com>
+
+	* java/io/ObjectStreamClass.java (setClass(Class, ObjectStreamClass)):
+	Added !cl.isArray() to serialVersionUID mismatch check.
+
+2006-09-14  Francis Kung  <fkung@redhat.com>
+
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_CairoGraphics2D.c
+	(gnu_java_awt_peer_gtk_CairoGraphics2D_setGradient): Updated constants to
+	be compatibe with Cairo 1.2.x.
+
+2006-09-14  Francis Kung  <fkung@redhat.com>
+
+	* gnu/java/awt/peer/gtk/CairoGraphics2D.java: Added interpolation constants.
+	(cairoSurfaceSetFilter): Removed method.
+	(drawImage): Pass interpolation type as argument to drawing methods.
+	(drawPixels): Added interpolation parameter.
+	(drawRaster): Pass interpolation type as argument to drawing method.
+	(getInterpolation): New method.
+	(setRenderingHint): Store hints, but do not set interpolation in cairo.
+	(setRenderingHints): Store hints, but do not set interpolation in cairo.
+	* gnu/java/awt/peer/gtk/CairoSurface.java
+	(drawSurface): Added interpolation parameter.
+	(nativeDrawSurface): Added interpolation parameter.
+	* include/gnu_java_awt_peer_gtk_CairoGraphics2D.h
+	(Java_gnu_java_awt_peer_gtk_CairoGraphics2D_drawPixels): Added interpolation
+	parameter.
+	(Java_gnu_java_awt_peer_gtk_CairoGraphics2D_cairoSurfaceSetFilter): Removed.
+	* native/jni/gtk-peer/cairographics2d.h
+	(java_awt_rendering_hints_filter): Added bicubic interpolation constant.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_CairoGraphics2D.c
+	(Java_gnu_java_awt_peer_gtk_CairoGraphics2D_drawPixels): Added interpolation
+	parameter.
+	(Java_gnu_java_awt_peer_gtk_CairoGraphics2D_cairoSurfaceSetFilter): Removed.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_CairoSurface.c
+	(Java_gnu_java_awt_peer_gtk_CairoSurface_nativeDrawSurface): Added
+	interpolation parameter.
+
+2006-09-14  Gary Benson  <gbenson@redhat.com>
+
+	* java/net/InetAddress.java
+	(internalGetCanonicalHostName): New method.
+	(getCanonicalHostName): Use internalGetCanonicalHostName.
+	(getByLiteral): New method.
+	(getAllByName): Use getByLiteral.
+	* java/net/SocketPermission.java
+	(host): Replaced with...
+	(hostname, address): New fields.
+	(equals, hashcode): Reflect the above.
+	(setHostPort): Parse host into hostname or address.
+	(implies): Rewrite host checks.
+
+2006-09-14  David Gilbert  <david.gilbert@object-refinery.com>
+
+	Fixes PR28699
+	* java/awt/Menu.java
+	(insert(MenuItem, int)): Fixed loop range,
+	(insert(String, int)): Updated API docs.
+
+2006-09-14  Christian Thalinger  <twisti@complang.tuwien.ac.at>
+
+	Fixes PR22800
+	* native/fdlibm/mprec.h (Storeinc): Define correctly for LE
+	architectures (like Arm).
+	* native/jni/java-lang/java_lang_VMDouble.c (doubleToLongBits):
+	Reverted SWAP_DOUBLE patch.
+	(doubleToRawLongBits): Likewise.
+	(longBitsToDouble): Likewise.
+
+2006-09-14  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/awt/Menu.java: Reformatted source file.
+
+2006-09-14  Jeroen Frijters  <jeroen@frijters.net>
+
+	* gnu/java/rmi/server/ActivatableRef.java
+	(readExternal, writeExternal): Partial fix for serialization format.
+
+2006-09-14  Jeroen Frijters  <jeroen@frijters.net>
+
+	PR classpath/28984
+	* java/io/InputStreamReader.java
+	(read(char[],int,int)): Fixed bug.
+
+2006-09-13  Francis Kung  <fkung@redhat.com>
+
+	* java/awt/image/BandCombineOp.java: Updated documentation.
+	(filter(Raster, WritableRaster)): Use int arrays, and added simple cache.
+
+2006-09-13  Tom Tromey  <tromey@redhat.com>
+
+	PR classpath/29034:
+	* java/io/PipedReader.java (read): Return early if len==0.
+	* java/io/PipedInputStream.java (read): Return early if len==0.
+
+2006-09-13  Francis Kung  <fkung@redhat.com>
+
+	* java/awt/image/ConvolveOp.java (filter(Raster, WritableRaster)):
+	Removed hard-coded max sample value.
+	* java/awt/image/RescaleOp.java (filter(Raster, WritableRaster)): 
+	Fixed finding of max sample value.
+
+2006-09-12  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* gnu/java/awt/peer/gtk/CairoGraphics2D.java
+	(setPaint): Check null argument ('p').
+
+2006-09-12  Francis Kung  <fkung@redhat.com>
+
+	PR 27940
+	* gnu/java/awt/java2d/TexturePaintContext.java
+	(constructor): Fixed typo, getMinY instead of getMaxX.
+	* gnu/java/awt/peer/gtk/CairoGraphics2D.java
+	(setPaint): Implemented support for custom Paint classes.
+	(setPaintPixels): Renamed from setTexturePixels, added repeat parameter.
+	(setTexturePixels): Renamed to setPaintPixels, added repeat parameter.
+	* include/gnu_java_awt_peer_gtk_CairoGraphics2D.h: Renamed setTexturePixels
+	to setPaintPixels, and added repeat parameter.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_CairoGraphics2D.c:
+	 Renamed setTexturePixels to setPaintPixels, and added repeat parameter.
+
+2006-09-12  Gary Benson  <gbenson@redhat.com>
+
+	* java/net/NetworkInterface.java (getInetAddresses):
+	Fix port used in security check.
+
+2006-09-12  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/plaf/metal/DefaultMetalTheme.java
+	(CONTROL_TEXT_FONT): Renamed 'controlTextFont',
+	(MENU_TEXT_FONT): Renamed 'menuTextFont',
+	(getControlTextFont): Check 'swing.boldMetal' setting before 
+	initialising font,
+	(getMenuTextFont): Likewise.
+
+2006-09-12  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/plaf/metal/OceanTheme.java
+	(addCustomEntriesToTable): Added 'List.focusCellHighlightBorder' entry.
+
+2006-09-12  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/plaf/metal/MetalIconFactory.java
+	(InternalFrameDefaultMenuIcon.paintIcon): Use theme colors.
+
+2006-09-12  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/AbstractSpinnerModel.java: API doc updates.
+
+2006-09-12  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/AbstractButton.java
+	(AbstractButton): Initialise textIconGap field.
+
+2006-09-11  Tom Tromey  <tromey@redhat.com>
+
+	* tools/gnu/classpath/tools/javah/FieldHelper.java (print): Print
+	"volatile" when needed.
+
+2006-09-11  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/text/AttributedCharacterIterator.java
+	(LANGUAGE): Initialise with lower case string,
+	(INPUT_METHOD_SEGMENT): Likewise,
+	(READING): Likewise,
+	* java/text/AttributedStringIterator.java
+	(getRunLimit): Check all attributes for changes.
+
+2006-09-11  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/text/AttributedCharacterIterator.java: Added @since tag, 
+	renamed some variables (no underscores) and removed some spaces to
+	match the common style,
+	* java/text/AttributedString.java: Likewise,
+	* java/text/AttributedStringIterator.java: Likewise.
+
+2006-09-11  Gary Benson  <gbenson@redhat.com>
+
+	* java/net/Inet4Address.java
+	(FAMILY): Renamed back to AF_INET.
+	(<init>, writeReplace): Reflect the above.
+	* java/net/Inet6Address.java
+	(FAMILY): Renamed back to AF_INET6.
+	(<init>): Reflect the above.
+
+2006-09-11  Cameron McCormack  <cam-gcc-bugzilla@aka.mcc.id.au>
+
+	Fixes PR29010
+	* java/text/AttributedString.java
+	(AttributedString(AttributedCharacterIterator, int, int, 
+	AttributedCharacterIterator.Attribute[])): Fixed check for defined 
+	attribute.
+
+2006-09-11  Gary Benson  <gbenson@redhat.com>
+
+	* java/net/Inet4Address.java
+	(AF_INET): Renamed to FAMILY.
+	(<init>, writeReplace): Reflect the above.
+	* java/net/Inet6Address.java
+	(AF_INET6): Renamed to FAMILY.
+	(<init>): Reflect the above.
+
+2006-09-10  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	Fixes bug #28867
+	Originally in Kaffe: 2004-04-16  Helmer Kraemer <hkraemer@freenet.de>
+	* java/net/ServerSocket.java(implAccept): Deleted socket.implCreated.
+	* java/net/Socket.java: Avoid creating a redundant file descriptor.
+	(implCreated): Deleted, (getImpl): Don't check impleCreated,
+	(bind): Call getImpl().create(true).
+
 2006-09-09  Chris Burdess  <dog@gnu.org>
 
 	* gnu/xml/xpath/Expr.java: Ensure that node-set evaluation returns

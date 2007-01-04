@@ -102,11 +102,13 @@ public class CairoSurface extends WritableRaster
    * with an affine transform given by i2u.
    */
   public native void nativeDrawSurface(long surfacePointer, long contextPointer,
-                                       double[] i2u, double alpha);
+                                       double[] i2u, double alpha,
+                                       int interpolation);
 
-  public void drawSurface(long contextPointer, double[] i2u, double alpha)
+  public void drawSurface(long contextPointer, double[] i2u, double alpha,
+                          int interpolation)
   {
-    nativeDrawSurface(surfacePointer, contextPointer, i2u, alpha);
+    nativeDrawSurface(surfacePointer, contextPointer, i2u, alpha, interpolation);
   }
 
   /**

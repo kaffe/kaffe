@@ -249,6 +249,11 @@ public class ConvolveOp implements BufferedImageOp, RasterOp
     int top = kernel.getYOrigin();
     int bottom = Math.max(kHeight - top - 1, 0);
     
+    // Calculate max sample values for clipping
+    int[] maxValue = src.getSampleModel().getSampleSize();
+    for (int i = 0; i < maxValue.length; i++)
+      maxValue[i] = (int)Math.pow(2, maxValue[i]) - 1;
+    
     // process the region that is reachable...
     int regionW = src.width - left - right;
     int regionH = src.height - top - bottom;
@@ -270,12 +275,10 @@ public class ConvolveOp implements BufferedImageOp, RasterOp
                 // the samples array to make the tests pass.  I haven't worked 
                 // out why this is necessary.
 
-              // This clipping is pretty strange, and seems to be hard-coded
-              // at 255 (regardless of the raster's datatype or transfertype).
-              // But it's what the reference does.
-              if (v > 255)
-                v = 255;
-              if (v < 0)
+              // This clipping is is undocumented, but determined by testing.
+              if (v > maxValue[b])
+                v = maxValue[b];
+              else if (v < 0)
                 v = 0;
 
               dest.setSample(x + kernel.getXOrigin(), y + kernel.getYOrigin(), 

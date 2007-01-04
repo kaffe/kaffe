@@ -317,8 +317,8 @@ public class ObjectStreamClass implements Serializable
     else
       {
 	// Check that the actual UID of the resolved class matches the UID from 
-	// the stream.    
-	if (uid != class_uid)
+	// the stream. Mismatches for array classes are ignored.
+	if (!cl.isArray() && uid != class_uid)
 	  {
 	    String msg = cl + 
 	      ": Local class not compatible: stream serialVersionUID="

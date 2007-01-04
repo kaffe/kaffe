@@ -57,7 +57,7 @@ public final class Inet4Address extends InetAddress
   static final long serialVersionUID = 3286316764910316507L;
 
   /**
-   * The address family of these addresses.
+   * The address family of these addresses (used for serialization).
    */
   private static final int AF_INET = 2;
 

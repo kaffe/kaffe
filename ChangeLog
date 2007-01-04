@@ -1,3 +1,8 @@
+2007-01-04  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/external/classpath/ : Resynced with GNU Classpath until
+        2006-09-16.
+
 2007-01-03  Dalibor Topic  <robilad@kaffe.org>
 
 	* configure.ac: Removed CLASSPATH_INCLUDES. Removed

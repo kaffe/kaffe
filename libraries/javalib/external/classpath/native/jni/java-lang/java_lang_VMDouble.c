@@ -121,17 +121,8 @@ Java_java_lang_VMDouble_doubleToLongBits
 {
   jvalue val;
   jlong e, f;
+
   val.d = doubleValue;
-
-#if defined(__IEEE_BYTES_LITTLE_ENDIAN)
-  /* On little endian ARM processors when using FPA, word order of
-     doubles is still big endian. So take that into account here. When
-     using VFP, word order of doubles follows byte order. */
-
-#define SWAP_DOUBLE(a)    (((a) << 32) | (((a) >> 32) & 0x00000000ffffffff))
-
-  val.j = SWAP_DOUBLE(val.j);
-#endif
 
   e = val.j & 0x7ff0000000000000LL;
   f = val.j & 0x000fffffffffffffLL;
@@ -153,11 +144,8 @@ Java_java_lang_VMDouble_doubleToRawLongBits
    jclass cls __attribute__ ((__unused__)), jdouble doubleValue)
 {
   jvalue val;
-  val.d = doubleValue;
 
-#if defined(__IEEE_BYTES_LITTLE_ENDIAN)
-  val.j = SWAP_DOUBLE(val.j);
-#endif
+  val.d = doubleValue;
 
   return val.j;
 }
@@ -173,11 +161,8 @@ Java_java_lang_VMDouble_longBitsToDouble
    jclass cls __attribute__ ((__unused__)), jlong longValue)
 {
   jvalue val;
-  val.j = longValue;
 
-#if defined(__IEEE_BYTES_LITTLE_ENDIAN)
-  val.j = SWAP_DOUBLE(val.j);
-#endif
+  val.j = longValue;
 
   return val.d;
 }

@@ -368,6 +368,8 @@ public class InputStreamReader extends Reader
     if(decoder != null)
       {
 	int totalBytes = (int)((double) length * maxBytesPerChar);
+        if (byteBuffer != null)
+          totalBytes = Math.max(totalBytes, byteBuffer.remaining());
 	byte[] bytes;
         // Fetch cached bytes array if available and big enough.
         synchronized(cacheLock)

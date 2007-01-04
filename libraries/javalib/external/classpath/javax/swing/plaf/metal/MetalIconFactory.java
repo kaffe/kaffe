@@ -1268,23 +1268,23 @@ public class MetalIconFactory implements Serializable
      */
     public void paintIcon(Component c, Graphics g, int x, int y) 
     {
-      g.setColor(new Color(102, 102, 153));
+      g.setColor(MetalLookAndFeel.getPrimaryControlDarkShadow());
       g.fillRect(x + 1, y, 14, 2);
       g.fillRect(x, y + 1, 2, 14);
       g.fillRect(x + 1, y + 14, 14, 2);
       g.fillRect(x + 14, y + 1, 2, 14);
       g.drawLine(x + 2, y + 5, x + 14, y + 5);
       
-      g.setColor(new Color(204, 204, 255));
+      g.setColor(MetalLookAndFeel.getPrimaryControl());
       g.fillRect(x + 2, y + 2, 12, 3);
       
-      g.setColor(new Color(102, 102, 153));
+      g.setColor(MetalLookAndFeel.getPrimaryControlDarkShadow());
       g.drawLine(x + 3, y + 3, x + 3, y + 3);
       g.drawLine(x + 6, y + 3, x + 6, y + 3);
       g.drawLine(x + 9, y + 3, x + 9, y + 3);
       g.drawLine(x + 12, y + 3, x + 12, y + 3);
 
-      g.setColor(Color.white);
+      g.setColor(MetalLookAndFeel.getWhite());
       g.fillRect(x + 2, y + 6, 12, 8);
       g.drawLine(x + 2, y + 2, x + 2, y + 2);
       g.drawLine(x + 5, y + 2, x + 5, y + 2);

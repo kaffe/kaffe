@@ -40,6 +40,7 @@ package javax.swing.plaf.metal;
 
 import java.awt.Font;
 
+import javax.swing.UIManager;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
 
@@ -63,10 +64,6 @@ public class DefaultMetalTheme extends MetalTheme
   private static final ColorUIResource SECONDARY3 = 
     new ColorUIResource(204, 204, 204);
   
-  private static final FontUIResource CONTROL_TEXT_FONT =
-    new FontUIResource("Dialog", Font.BOLD, 12);
-  private static final FontUIResource MENU_TEXT_FONT =
-    new FontUIResource("Dialog", Font.BOLD, 12);
   private static final FontUIResource SUB_TEXT_FONT =
     new FontUIResource("Dialog", Font.PLAIN, 10);
   private static final FontUIResource SYSTEM_TEXT_FONT =
@@ -75,6 +72,12 @@ public class DefaultMetalTheme extends MetalTheme
     new FontUIResource("Dialog", Font.PLAIN, 12);
   private static final FontUIResource WINDOW_TITLE_FONT =
     new FontUIResource("Dialog", Font.BOLD, 12);
+  
+  /** The control text font. */
+  private FontUIResource controlTextFont;
+
+  /** The menu text font. */
+  private FontUIResource menuTextFont;
   
   /**
    * Creates a new instance of this theme.
@@ -156,23 +159,42 @@ public class DefaultMetalTheme extends MetalTheme
 
   /**
    * Returns the font used for text on controls.  In this case, the font is
-   * <code>FontUIResource("Dialog", Font.BOLD, 12)</code>.
+   * <code>FontUIResource("Dialog", Font.BOLD, 12)</code>, unless the
+   * <code>swing.boldMetal</code> UI default is set to {@link Boolean#FALSE} 
+   * in which case it is <code>FontUIResource("Dialog", Font.PLAIN, 12)</code>.
    * 
    * @return The font.
    */
   public FontUIResource getControlTextFont()
   {
-    return CONTROL_TEXT_FONT;
+    if (controlTextFont == null)
+      {
+        if (Boolean.FALSE.equals(UIManager.get("swing.boldMetal")))
+          controlTextFont = new FontUIResource("Dialog", Font.PLAIN, 12);
+        else
+          controlTextFont = new FontUIResource("Dialog", Font.BOLD, 12);
+      }
+    return controlTextFont;
   }
+  
   /**
    * Returns the font used for text in menus.  In this case, the font is
-   * <code>FontUIResource("Dialog", Font.BOLD, 12)</code>.
+   * <code>FontUIResource("Dialog", Font.BOLD, 12)</code>, unless the
+   * <code>swing.boldMetal</code> UI default is set to {@link Boolean#FALSE} 
+   * in which case it is <code>FontUIResource("Dialog", Font.PLAIN, 12)</code>.
    * 
    * @return The font used for text in menus.
    */
   public FontUIResource getMenuTextFont()
   {
-    return MENU_TEXT_FONT;
+    if (menuTextFont == null)
+      {
+        if (Boolean.FALSE.equals(UIManager.get("swing.boldMetal")))
+          menuTextFont = new FontUIResource("Dialog", Font.PLAIN, 12);
+        else
+          menuTextFont = new FontUIResource("Dialog", Font.BOLD, 12);
+      }
+    return menuTextFont;
   }
   
   /**

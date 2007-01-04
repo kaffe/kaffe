@@ -367,7 +367,6 @@ public class ServerSocket
       throw new IllegalBlockingModeException();
 
     impl.accept(socket.impl);
-    socket.implCreated = true;
     socket.bound = true;
   }
 

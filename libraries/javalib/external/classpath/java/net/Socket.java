@@ -83,13 +83,6 @@ public class Socket
   SocketImpl impl;
 
   /**
-   * True if socket implementation was created by calling their
-   * create() method.
-   */
-  // package-private because ServerSocket.implAccept() needs to access it.
-  boolean implCreated;
-
-  /**
    * True if the socket is bound.
    * Package private so it can be set from ServerSocket when accept is called.
    */
@@ -315,21 +308,6 @@ public class Socket
 
   private SocketImpl getImpl() throws SocketException
   {
-    try
-      {
-	if (! implCreated)
-	  {
-	    impl.create(true);
-	    implCreated = true;
-	  }
-      }
-    catch (IOException e)
-      {
-	SocketException se = new SocketException(e.toString());
-	se.initCause(e);
-	throw se;
-      }
-
     return impl;
   }
 
@@ -363,6 +341,7 @@ public class Socket
     // bind to address/port
     try
       {
+	getImpl().create(true);
 	getImpl().bind(tmp.getAddress(), tmp.getPort());
 	bound = true;
       }

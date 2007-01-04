@@ -1,5 +1,5 @@
 /* NetworkInterface.java --
-   Copyright (C) 2002, 2003, 2004, 2005  Free Software Foundation, Inc.
+   Copyright (C) 2002, 2003, 2004, 2005, 2006 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -112,7 +112,7 @@ public final class NetworkInterface
 	InetAddress addr = (InetAddress) addresses.nextElement();
 	try
 	  {
-	    s.checkConnect(addr.getHostAddress(), 58000);
+	    s.checkConnect(addr.getHostAddress(), -1);
 	    tmpInetAddresses.add(addr);
 	  }
 	catch (SecurityException e)

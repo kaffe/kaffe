@@ -311,20 +311,27 @@ public class InetAddress implements Serializable
 
   /**
    * Returns the canonical hostname represented by this InetAddress
-   * 
-   * @since 1.4
    */
-  public String getCanonicalHostName()
+  String internalGetCanonicalHostName()
   {
-    String hostname;
     try
       {
-	hostname = VMInetAddress.getHostByAddr(addr);
+	return VMInetAddress.getHostByAddr(addr);
       }
     catch (UnknownHostException e)
       {
 	return getHostAddress();
       }
+  }
+
+  /**
+   * Returns the canonical hostname represented by this InetAddress
+   * 
+   * @since 1.4
+   */
+  public String getCanonicalHostName()
+  {
+    String hostname = internalGetCanonicalHostName();
 
     SecurityManager sm = System.getSecurityManager();
     if (sm != null)
@@ -492,6 +499,34 @@ public class InetAddress implements Serializable
   }
 
   /**
+   * Returns an InetAddress object representing the IP address of
+   * the given literal IP address in dotted decimal format such as
+   * "127.0.0.1".  This is used by SocketPermission.setHostPort()
+   * to parse literal IP addresses without performing a DNS lookup.
+   *
+   * @param literal The literal IP address to create the InetAddress
+   * object from
+   *
+   * @return The address of the host as an InetAddress object, or
+   * null if the IP address is invalid.
+   */
+  static InetAddress getByLiteral(String literal)
+  {
+    byte[] address = VMInetAddress.aton(literal);
+    if (address == null)
+      return null;
+    
+    try
+      {
+	return getByAddress(address);
+      }
+    catch (UnknownHostException e)
+      {
+	throw new RuntimeException("should never happen", e);
+      }
+  }
+
+  /**
    * Returns an InetAddress object representing the IP address of the given
    * hostname.  This name can be either a hostname such as "www.urbanophile.com"
    * or an IP address in dotted decimal format such as "127.0.0.1".  If the
@@ -542,9 +577,9 @@ public class InetAddress implements Serializable
       return new InetAddress[] {LOCALHOST};
 
     // Check if hostname is an IP address
-    byte[] address = VMInetAddress.aton(hostname);
+    InetAddress address = getByLiteral(hostname);
     if (address != null)
-      return new InetAddress[] {getByAddress(address)};
+      return new InetAddress[] {address};
 
     // Perform security check before resolving
     SecurityManager sm = System.getSecurityManager();
