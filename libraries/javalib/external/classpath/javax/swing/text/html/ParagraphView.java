@@ -153,8 +153,15 @@ public class ParagraphView
                   (short) painter.getInset(BOTTOM, this),
                   (short) painter.getInset(RIGHT, this));
 
+        StyleSheet ss = getStyleSheet();
+        float emBase = ss.getEMBase(attributes);
+        float exBase = ss.getEXBase(attributes);
         cssWidth = (Length) attributes.getAttribute(CSS.Attribute.WIDTH);
+        if (cssWidth != null)
+          cssWidth.setFontBases(emBase, exBase);
         cssHeight = (Length) attributes.getAttribute(CSS.Attribute.WIDTH);
+        if (cssHeight != null)
+          cssHeight.setFontBases(emBase, exBase);
       }
   }
 

@@ -1,6 +1,5 @@
 package javax.swing.text.html;
 
-import gnu.javax.swing.text.html.CombinedAttributes;
 import gnu.javax.swing.text.html.ImageViewIconFactory;
 import gnu.javax.swing.text.html.css.Length;
 
@@ -15,6 +14,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.swing.Icon;
+import javax.swing.SwingUtilities;
+import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
@@ -40,16 +41,15 @@ public class ImageView extends View
     public boolean imageUpdate(Image image, int flags, int x, int y, int width, int height)
     {
       boolean widthChanged = false;
-      if ((flags & ImageObserver.WIDTH) != 0
-          && ! getElement().getAttributes().isDefined(HTML.Attribute.WIDTH))
+      if ((flags & ImageObserver.WIDTH) != 0 && spans[X_AXIS] == null)
         widthChanged = true;
       boolean heightChanged = false;
-      if ((flags & ImageObserver.HEIGHT) != 0
-          && ! getElement().getAttributes().isDefined(HTML.Attribute.HEIGHT))
-        widthChanged = true;
+      if ((flags & ImageObserver.HEIGHT) != 0 && spans[Y_AXIS] == null)
+        heightChanged = true;
       if (widthChanged || heightChanged)
-        preferenceChanged(ImageView.this, widthChanged, heightChanged);
-      return (flags & ALLBITS) != 0;
+        safePreferenceChanged(ImageView.this, widthChanged, heightChanged);
+      boolean ret = (flags & ALLBITS) != 0;
+      return ret;
     }
     
   }
@@ -111,6 +111,18 @@ public class ImageView extends View
   private ImageObserver observer;
 
   /**
+   * The CSS width and height.
+   *
+   * Package private to avoid synthetic accessor methods.
+   */
+  Length[] spans;
+
+  /**
+   * The cached attributes.
+   */
+  private AttributeSet attributes;
+
+  /**
    * Creates the image view that represents the given element.
    * 
    * @param element the element, represented by this image view.
@@ -118,9 +130,11 @@ public class ImageView extends View
   public ImageView(Element element)
   {
     super(element);
+    spans = new Length[2];
     observer = new Observer();
     reloadProperties = true;
     reloadImage = true;
+    loadOnDemand = false;
   }
  
   /**
@@ -221,12 +235,9 @@ public class ImageView extends View
    */
   public AttributeSet getAttributes()
   {
-    StyleSheet styles = getStyleSheet();
-    if (styles == null)
-      return super.getAttributes();
-    else
-      return CombinedAttributes.combine(super.getAttributes(),
-                                        styles.getViewAttributes(this));
+    if (attributes == null)
+      attributes = getStyleSheet().getViewAttributes(this);
+    return attributes;
   }
   
   /**
@@ -318,9 +329,8 @@ public class ImageView extends View
 
     if (axis == View.X_AXIS)
       {
-        Object w = attrs.getAttribute(CSS.Attribute.WIDTH);
-        if (w instanceof Length)
-          return ((Length) w).getValue();
+        if (spans[axis] != null)
+          return spans[axis].getValue();
         else if (image != null)
           return image.getWidth(getContainer());
         else
@@ -328,9 +338,8 @@ public class ImageView extends View
       }
     else if (axis == View.Y_AXIS)
       {
-        Object w = attrs.getAttribute(CSS.Attribute.HEIGHT);
-        if (w instanceof Length)
-          return ((Length) w).getValue();
+        if (spans[axis] != null)
+          return spans[axis].getValue();
         else if (image != null)
           return image.getHeight(getContainer());
         else
@@ -347,11 +356,8 @@ public class ImageView extends View
    */
   protected StyleSheet getStyleSheet()
   {
-    Document d = getElement().getDocument();
-    if (d instanceof HTMLDocument)
-      return ((HTMLDocument) d).getStyleSheet();
-    else
-      return null;
+    HTMLDocument doc = (HTMLDocument) getDocument();
+    return doc.getStyleSheet();
   }
 
   /**
@@ -410,7 +416,20 @@ public class ImageView extends View
    */
   protected void setPropertiesFromAttributes()
   {
-    // FIXME: Implement this properly.
+    AttributeSet atts = getAttributes();
+    StyleSheet ss = getStyleSheet();
+    float emBase = ss.getEMBase(atts);
+    float exBase = ss.getEXBase(atts);
+    spans[X_AXIS] = (Length) atts.getAttribute(CSS.Attribute.WIDTH);
+    if (spans[X_AXIS] != null)
+      {
+        spans[X_AXIS].setFontBases(emBase, exBase);
+      }
+    spans[Y_AXIS] = (Length) atts.getAttribute(CSS.Attribute.HEIGHT);
+    if (spans[Y_AXIS] != null)
+      {
+        spans[Y_AXIS].setFontBases(emBase, exBase);
+      }
   }
   
   /**
@@ -471,7 +490,9 @@ public class ImageView extends View
     if (src != null)
       {
         // Call getImage(URL) to allow the toolkit caching of that image URL.
-        newImage = Toolkit.getDefaultToolkit().getImage(src);
+        Toolkit tk = Toolkit.getDefaultToolkit();
+        newImage = tk.getImage(src);
+        tk.prepareImage(newImage, -1, -1, observer);
         if (newImage != null && getLoadsSynchronously())
           {
             // Load image synchronously.
@@ -503,7 +524,7 @@ public class ImageView extends View
       {
         AttributeSet atts = getAttributes();
         // Fetch width.
-        Length l = (Length) atts.getAttribute(CSS.Attribute.WIDTH);
+        Length l = spans[X_AXIS];
         if (l != null)
           {
             newW = (int) l.getValue();
@@ -514,7 +535,7 @@ public class ImageView extends View
             newW = newIm.getWidth(observer);
           }
         // Fetch height.
-        l = (Length) atts.getAttribute(CSS.Attribute.HEIGHT);
+        l = spans[Y_AXIS];
         if (l != null)
           {
             newH = (int) l.getValue();
@@ -530,6 +551,44 @@ public class ImageView extends View
           tk.prepareImage(newIm, width, height, observer);
         else
           tk.prepareImage(newIm, -1, -1, observer);
+      }
+  }
+
+  /**
+   * Calls preferenceChanged from the event dispatch thread and within
+   * a read lock to protect us from threading issues.
+   *
+   * @param v the view
+   * @param width true when the width changed
+   * @param height true when the height changed
+   */
+  void safePreferenceChanged(final View v, final boolean width,
+                             final boolean height)
+  {
+    if (SwingUtilities.isEventDispatchThread())
+      {
+        Document doc = getDocument();
+        if (doc instanceof AbstractDocument)
+          ((AbstractDocument) doc).readLock();
+        try
+          {
+            preferenceChanged(v, width, height);
+          }
+        finally
+          {
+            if (doc instanceof AbstractDocument)
+              ((AbstractDocument) doc).readUnlock();
+          }
+      }
+    else
+      {
+        SwingUtilities.invokeLater(new Runnable()
+        {
+          public void run()
+          {
+            safePreferenceChanged(v, width, height);
+          }
+        });
       }
   }
 }

@@ -650,7 +650,12 @@ public class HTMLDocument extends DefaultStyledDocument
     protected MutableAttributeSet charAttr = new SimpleAttributeSet();
     
     protected Vector parseBuffer = new Vector();
-    
+
+    /**
+     * The parse stack. It holds the current element tree path.
+     */
+    private Stack parseStack = new Stack();
+
     /** 
      * A stack for character attribute sets *
      */
@@ -695,16 +700,6 @@ public class HTMLDocument extends DefaultStyledDocument
      * This is true when we are inside a pre tag.
      */
     boolean inPreTag = false;
-
-    /**
-     * True when we are inside a paragraph (P, H1-H6, P-IMPLIED).
-     */
-    boolean inParagraph = false;
-
-    /**
-     * True when we are currently inside an implied paragraph.
-     */
-    boolean inImpliedParagraph = false;
 
     /**
      * This is true when we are inside a style tag. This will add text
@@ -795,6 +790,10 @@ public class HTMLDocument extends DefaultStyledDocument
       {
         // Put the old attribute set on the stack.
         pushCharacterStyle();
+
+        // Initialize with link pseudo class.
+        if (t == HTML.Tag.A)
+          a.addAttribute(HTML.Attribute.PSEUDO_CLASS, "link");
 
         // Just add the attributes in <code>a</code>.
         charAttr.addAttribute(t, a.copyAttributes());
@@ -948,7 +947,6 @@ public class HTMLDocument extends DefaultStyledDocument
       public void start(HTML.Tag t, MutableAttributeSet a)
       {
         super.start(t, a);
-        inParagraph = true;
       }
       
       /**
@@ -958,7 +956,6 @@ public class HTMLDocument extends DefaultStyledDocument
       public void end(HTML.Tag t)
       {
         super.end(t);
-        inParagraph = false;
       } 
     }
 
@@ -1638,8 +1635,11 @@ public class HTMLDocument extends DefaultStyledDocument
      */
     protected void blockOpen(HTML.Tag t, MutableAttributeSet attr)
     {
-      if (inImpliedParagraph)
+      if (inImpliedParagraph())
         blockClose(HTML.Tag.IMPLIED);
+
+      // Push the new tag on top of the stack.
+      parseStack.push(t);
 
       DefaultStyledDocument.ElementSpec element;
 
@@ -1652,6 +1652,34 @@ public class HTMLDocument extends DefaultStyledDocument
     }
 
     /**
+     * Returns true when we are currently inside a paragraph, either
+     * a real one or an implied, false otherwise.
+     *
+     * @return
+     */
+    private boolean inParagraph()
+    {
+      boolean inParagraph = false;
+      if (! parseStack.isEmpty())
+        {
+          HTML.Tag top = (HTML.Tag) parseStack.peek();
+          inParagraph = top == HTML.Tag.P || top == HTML.Tag.IMPLIED;
+        }
+      return inParagraph;
+    }
+
+    private boolean inImpliedParagraph()
+    {
+      boolean inParagraph = false;
+      if (! parseStack.isEmpty())
+        {
+          HTML.Tag top = (HTML.Tag) parseStack.peek();
+          inParagraph = top == HTML.Tag.IMPLIED;
+        }
+      return inParagraph;
+    }
+
+    /**
      * Instructs the parse buffer to close the block element associated with 
      * the given HTML.Tag
      * 
@@ -1661,13 +1689,12 @@ public class HTMLDocument extends DefaultStyledDocument
     {
       DefaultStyledDocument.ElementSpec element;
 
-      if (inImpliedParagraph)
-        {
-          inImpliedParagraph = false;
-          inParagraph = false;
-          if (t != HTML.Tag.IMPLIED)
-            blockClose(HTML.Tag.IMPLIED);
-        }
+      if (inImpliedParagraph() && t != HTML.Tag.IMPLIED)
+        blockClose(HTML.Tag.IMPLIED);
+
+      // Pull the token from the stack.
+      if (! parseStack.isEmpty()) // Just to be sure.
+        parseStack.pop();
 
       // If the previous tag is a start tag then we insert a synthetic
       // content tag.
@@ -1711,11 +1738,9 @@ public class HTMLDocument extends DefaultStyledDocument
     protected void addContent(char[] data, int offs, int length,
                               boolean generateImpliedPIfNecessary)
     {
-      if (generateImpliedPIfNecessary && (! inParagraph) && (! inPreTag))
+      if (generateImpliedPIfNecessary && ! inParagraph())
         {
           blockOpen(HTML.Tag.IMPLIED, new SimpleAttributeSet());
-          inParagraph = true;
-          inImpliedParagraph = true;
         }
 
       AbstractDocument.AttributeContext ctx = getAttributeContext();
@@ -1760,11 +1785,9 @@ public class HTMLDocument extends DefaultStyledDocument
      */
     protected void addSpecialElement(HTML.Tag t, MutableAttributeSet a)
     {
-      if (t != HTML.Tag.FRAME && ! inParagraph && ! inImpliedParagraph)
+      if (t != HTML.Tag.FRAME && ! inParagraph())
         {
           blockOpen(HTML.Tag.IMPLIED, new SimpleAttributeSet());
-          inParagraph = true;
-          inImpliedParagraph = true;
         }
 
       a.addAttribute(StyleConstants.NameAttribute, t);
@@ -2098,4 +2121,49 @@ public void setOuterHTML(Element elem, String htmlText)
   {
     return baseTarget;
   }
+
+  /**
+   * Updates the A tag's pseudo class value in response to a hyperlink
+   * action.
+   *
+   * @param el the corresponding element
+   * @param value the new value
+   */
+  void updateSpecialClass(Element el, HTML.Attribute cl, String value)
+  {
+    try
+    {
+      writeLock();
+      DefaultDocumentEvent ev =
+        new DefaultDocumentEvent(el.getStartOffset(), 1,
+                                 DocumentEvent.EventType.CHANGE);
+      AttributeSet elAtts = el.getAttributes();
+      AttributeSet anchorAtts = (AttributeSet) elAtts.getAttribute(HTML.Tag.A);
+      if (anchorAtts != null)
+        {
+          AttributeSet copy = elAtts.copyAttributes();
+          StyleSheet ss = getStyleSheet();
+          if (value != null)
+            {
+              anchorAtts = ss.addAttribute(anchorAtts, cl, value);
+            }
+          else
+            {
+              anchorAtts = ss.removeAttribute(anchorAtts, cl);
+            }
+          MutableAttributeSet matts = (MutableAttributeSet) elAtts;
+          ev.addEdit(new AttributeUndoableEdit(el, copy, false));
+          matts.removeAttribute(HTML.Tag.A);
+          matts.addAttribute(HTML.Tag.A, anchorAtts);
+          ev.end();
+          fireChangedUpdate(ev);
+          fireUndoableEditUpdate(new UndoableEditEvent(this, ev));
+        }
+    }
+  finally
+    {
+      writeUnlock();
+    }
+  }
+
 }

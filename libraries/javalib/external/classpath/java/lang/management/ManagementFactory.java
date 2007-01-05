@@ -50,9 +50,18 @@ import gnu.java.lang.management.RuntimeMXBeanImpl;
 import gnu.java.lang.management.ThreadMXBeanImpl;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import java.util.logging.LogManager;
+
+import javax.management.InstanceAlreadyExistsException;
+import javax.management.MBeanRegistrationException;
+import javax.management.MBeanServer;
+import javax.management.MBeanServerFactory;
+import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
+import javax.management.ObjectName;
 
 /**
  * <p>
@@ -66,6 +75,11 @@ import javax.management.NotCompliantMBeanException;
  * <ol>
  * <li>Calling the appropriate static method of this factory.
  * </li>
+ * <li>Using the platform {@link javax.management.MBeanServer}
+ * to access the beans locally, or an
+ * {@link javax.management.MBeanServerConnection} for remote
+ * access.  The attributes and operations use the limited
+ * range of data types specified below.</li>
  * </ol>
  * <h2>Open Data Types</h2>
  * <p>
@@ -118,6 +132,60 @@ public class ManagementFactory
 {
 
   /**
+   * The object name for the class loading bean.
+   */
+  public static final String CLASS_LOADING_MXBEAN_NAME =
+    "java.lang:type=ClassLoading";
+
+  /**
+   * The object name for the compilation bean.
+   */
+  public static final String COMPILATION_MXBEAN_NAME =
+    "java.lang:type=Compilation";
+
+  /**
+   * The domain for the garbage collecting beans.
+   */
+  public static final String GARBAGE_COLLECTOR_MXBEAN_DOMAIN_TYPE =
+    "java.lang:type=GarbageCollector";
+
+  /**
+   * The domain for the memory manager beans.
+   */
+  public static final String MEMORY_MANAGER_MXBEAN_DOMAIN_TYPE =
+    "java.lang:type=MemoryManager";
+
+  /**
+   * The object name for the memory bean.
+   */
+  public static final String MEMORY_MXBEAN_NAME =
+    "java.lang:type=Memory";
+
+  /**
+   * The domain for the memory pool beans.
+   */
+  public static final String MEMORY_POOL_MXBEAN_DOMAIN_TYPE =
+    "java.lang:type=MemoryPool";
+
+  /**
+   * The object name for the operating system bean.
+   */
+  public static final String OPERATING_SYSTEM_MXBEAN_NAME =
+    "java.lang:type=OperatingSystem";
+
+  /**
+   * The object name for the runtime bean.
+   */
+  public static final String RUNTIME_MXBEAN_NAME =
+    "java.lang:type=Runtime";
+
+  /**
+   * The object name for the threading bean.
+   */
+  public static final String THREAD_MXBEAN_NAME =
+    "java.lang:type=Threading";
+
+  /**
    * The operating system management bean.
    */
   private static OperatingSystemMXBean osBean;
@@ -146,6 +214,11 @@ public class ManagementFactory
    * The compilation bean (may remain null).
    */
   private static CompilationMXBean compilationBean;
+
+  /**
+   * The platform server.
+   */
+  private static MBeanServer platformServer;
 
   /**
    * Private constructor to prevent instance creation.
@@ -369,6 +442,108 @@ public class ManagementFactory
 				  "bean.");
 	}
     return gcBeans;
+  }
+
+  /**
+   * <p>
+   * Returns the platform {@link javax.management.MBeanServer}.  On the
+   * first call to this method, a server instance is retrieved from
+   * the {@link javax.management.MBeanServerFactory} and each of the
+   * beans are registered with it.  Subsequent calls return the existing
+   * instance.  If the property <code>javax.management.builder.initial</code>
+   * is set, its value will be used as the name of the class which is used
+   * to provide the server instance.
+   * </p>
+   * <p>
+   * It is recommended that the platform server is used for other beans as
+   * well, in order to simplify their discovery and publication.  Name conflicts
+   * should be avoided.
+   * </p>
+   *
+   * @return the platform {@link javax.management.MBeanServer}
+   * @throws SecurityException if a security manager exists and the
+   *                           caller's permissions don't imply {@link
+   *                           MBeanServerPermission(String)}("createMBeanServer")
+   * @see javax.management.MBeanServerFactory
+   * @see javax.management.MBeanServerFactory#createMBeanServer()
+   */
+  public static MBeanServer getPlatformMBeanServer()
+  {
+    if (platformServer == null)
+      {
+	platformServer = MBeanServerFactory.createMBeanServer();
+	try
+	  {
+	    platformServer.registerMBean(getOperatingSystemMXBean(),
+					 new ObjectName(OPERATING_SYSTEM_MXBEAN_NAME));
+	    platformServer.registerMBean(getRuntimeMXBean(),
+					 new ObjectName(RUNTIME_MXBEAN_NAME));
+	    platformServer.registerMBean(getClassLoadingMXBean(),
+					 new ObjectName(CLASS_LOADING_MXBEAN_NAME));
+	    platformServer.registerMBean(getThreadMXBean(),
+					 new ObjectName(THREAD_MXBEAN_NAME));
+	    platformServer.registerMBean(getMemoryMXBean(),
+					 new ObjectName(MEMORY_MXBEAN_NAME));
+	    CompilationMXBean compBean = getCompilationMXBean();
+	    if (compBean != null)
+	      platformServer.registerMBean(compBean,
+					   new ObjectName(COMPILATION_MXBEAN_NAME));
+	    Iterator beans = getMemoryPoolMXBeans().iterator();
+	    while (beans.hasNext())
+	      {
+		MemoryPoolMXBean bean = (MemoryPoolMXBean) beans.next();
+		platformServer.registerMBean(bean,
+					     new ObjectName(MEMORY_POOL_MXBEAN_DOMAIN_TYPE +
+							    ",name=" +
+							    bean.getName()));
+	      }
+	    beans = getMemoryManagerMXBeans().iterator();
+	    while (beans.hasNext())
+	      {
+		MemoryManagerMXBean bean = (MemoryManagerMXBean) beans.next();
+		platformServer.registerMBean(bean,
+					     new ObjectName(MEMORY_MANAGER_MXBEAN_DOMAIN_TYPE +
+							    ",name=" +
+							    bean.getName()));
+	      }
+	    beans = getGarbageCollectorMXBeans().iterator();
+	    while (beans.hasNext())
+	      {
+		GarbageCollectorMXBean bean = (GarbageCollectorMXBean) beans.next();
+		platformServer.registerMBean(bean,
+					     new ObjectName(GARBAGE_COLLECTOR_MXBEAN_DOMAIN_TYPE +
+							    ",name=" +
+							    bean.getName()));
+	      }
+	    platformServer.registerMBean(LogManager.getLoggingMXBean(),
+					 new ObjectName(LogManager.LOGGING_MXBEAN_NAME));
+	  }
+	catch (InstanceAlreadyExistsException e)
+	  {
+	    throw (Error) 
+	      (new InternalError("One of the management beans is " +
+				 "already registered.").initCause(e));
+	  }
+	catch (MBeanRegistrationException e)
+	  {
+	    throw (Error) 
+	      (new InternalError("One of the management beans' preRegister " +
+				 "methods threw an exception.").initCause(e));
+	  }
+	catch (NotCompliantMBeanException e)
+	  {
+	    throw (Error) 
+	      (new InternalError("One of the management beans is " +
+				 "not compliant.").initCause(e));
+	  }
+	catch (MalformedObjectNameException e)
+	  {
+	    throw (Error) 
+	      (new InternalError("The object name of a management bean is " +
+				 "not compliant.").initCause(e));
+	  }
+      }
+    return platformServer;
   }
 
 }

@@ -26,6 +26,7 @@ New in release 0.93 (UNRELEASED)
   natively. Blocking IO classes have been refactored to call
   non-blocking classes. Non-blocking accepts, connects, and
   scatter-gather IO should now be better supported.
+* HTML support for Swing has been greatly enhanced.
 
 Runtime interface changes:
 

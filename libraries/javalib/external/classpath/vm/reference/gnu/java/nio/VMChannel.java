@@ -634,7 +634,7 @@ public final class VMChannel
    * 
    * @return
    */
-  final boolean isThreadInterrupted()
+  static boolean isThreadInterrupted()
   {
     return Thread.currentThread().isInterrupted();
   }

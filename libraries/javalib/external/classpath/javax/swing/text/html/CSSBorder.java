@@ -40,12 +40,10 @@ package javax.swing.text.html;
 
 import gnu.javax.swing.text.html.css.BorderWidth;
 import gnu.javax.swing.text.html.css.CSSColor;
-import gnu.javax.swing.text.html.css.Length;
 
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Insets;
 
 import javax.swing.border.Border;
@@ -140,7 +138,7 @@ class CSSBorder
    *
    * @param atts the attribute set that contains the border spec
    */
-  CSSBorder(AttributeSet atts)
+  CSSBorder(AttributeSet atts, StyleSheet ss)
   {
     // Determine the border styles.
     int style = getBorderStyle(atts, CSS.Attribute.BORDER_STYLE);
@@ -179,20 +177,20 @@ class CSSBorder
       rightColor = color;
 
     // Determine the border widths.
-    int width = getBorderWidth(atts, CSS.Attribute.BORDER_WIDTH);
+    int width = getBorderWidth(atts, CSS.Attribute.BORDER_WIDTH, ss);
     if (width == -1)
       width = 0;
     top = bottom = left = right = width;
-    width = getBorderWidth(atts, CSS.Attribute.BORDER_TOP_WIDTH);
+    width = getBorderWidth(atts, CSS.Attribute.BORDER_TOP_WIDTH, ss);
     if (width >= 0)
       top = width;
-    width = getBorderWidth(atts, CSS.Attribute.BORDER_BOTTOM_WIDTH);
+    width = getBorderWidth(atts, CSS.Attribute.BORDER_BOTTOM_WIDTH, ss);
     if (width >= 0)
       bottom = width;
-    width = getBorderWidth(atts, CSS.Attribute.BORDER_LEFT_WIDTH);
+    width = getBorderWidth(atts, CSS.Attribute.BORDER_LEFT_WIDTH, ss);
     if (width >= 0)
       left = width;
-    width = getBorderWidth(atts, CSS.Attribute.BORDER_RIGHT_WIDTH);
+    width = getBorderWidth(atts, CSS.Attribute.BORDER_RIGHT_WIDTH, ss);
     if (width >= 0)
       right = width;
   }
@@ -264,12 +262,15 @@ class CSSBorder
    *
    * @return the width, or -1 of none has been set
    */
-  private int getBorderWidth(AttributeSet atts, CSS.Attribute key)
+  private int getBorderWidth(AttributeSet atts, CSS.Attribute key,
+                             StyleSheet ss)
   {
     int width = -1;
     Object o = atts.getAttribute(key);
     if (o instanceof BorderWidth)
       {
+        BorderWidth w = (BorderWidth) o;
+        w.setFontBases(ss.getEMBase(atts), ss.getEXBase(atts));
         width = (int) ((BorderWidth) o).getValue();
       }
     return width;

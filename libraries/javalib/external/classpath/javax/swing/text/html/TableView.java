@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package javax.swing.text.html;
 
+import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.Shape;
 
 import gnu.javax.swing.text.html.css.Length;
@@ -45,7 +47,6 @@ import gnu.javax.swing.text.html.css.Length;
 import javax.swing.SizeRequirements;
 import javax.swing.event.DocumentEvent;
 import javax.swing.text.AttributeSet;
-import javax.swing.text.BoxView;
 import javax.swing.text.Element;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.View;
@@ -58,7 +59,7 @@ import javax.swing.text.ViewFactory;
  * and the rows are horizontal BoxViews that contain the actual columns.
  */
 class TableView
-  extends BoxView
+  extends BlockView
   implements ViewFactory
 {
 
@@ -68,6 +69,17 @@ class TableView
   class RowView
     extends BlockView
   {
+    /**
+     * Has true at column positions where an above row's cell overlaps into
+     * this row.
+     */
+    boolean[] overlap;
+
+    /**
+     * Stores the row index of this row.
+     */
+    int rowIndex;
+
     /**
      * Creates a new RowView.
      *
@@ -80,8 +92,8 @@ class TableView
 
     public void replace(int offset, int len, View[] views)
     {
-      super.replace(offset, len, views);
       gridValid = false;
+      super.replace(offset, len, views);
     }
 
     /**
@@ -137,25 +149,63 @@ class TableView
     /**
      * Lays out the columns in this row.
      */
-    protected void layoutMajorAxis(int targetSpan, int axis, int[] offsets,
+    protected void layoutMinorAxis(int targetSpan, int axis, int[] offsets,
                                    int spans[])
     {
-      int numCols = offsets.length;
-      int realColumn = 0;
+      super.layoutMinorAxis(targetSpan, axis, offsets, spans);
+
+      // Adjust columns that have rowSpan > 1.
+      int numCols = getViewCount();
       for (int i = 0; i < numCols; i++)
         {
           View v = getView(i);
           if (v instanceof CellView)
             {
-              CellView cv = (CellView) v;
-              offsets[i] = columnOffsets[realColumn];
-              spans[i] = 0;
-              for (int j = 0; j < cv.colSpan; j++, realColumn++)
+              CellView cell = (CellView) v;
+              if (cell.rowSpan > 1)
                 {
-                  spans[i] += columnSpans[realColumn];
-                  if (j < cv.colSpan - 1)
-                    spans[i] += cellSpacing;
+                  for (int r = 1; r < cell.rowSpan; r++)
+                    {
+                      spans[i] += TableView.this.getSpan(axis, rowIndex + r);
+                      spans[i] += cellSpacing;
+                    }
                 }
+            }
+        }
+    }
+
+    /**
+     * Lays out the columns in this row.
+     */
+    protected void layoutMajorAxis(int targetSpan, int axis, int[] offsets,
+                                   int spans[])
+    {
+      updateGrid();
+      int numCols = offsets.length;
+      int realColumn = 0;
+      int colCount = getViewCount();
+      for (int i = 0; i < numColumns;)
+        {
+          if (! overlap[i] && realColumn < colCount)
+            {
+              View v = getView(realColumn);
+              if (v instanceof CellView)
+                {
+                  CellView cv = (CellView) v;
+                  offsets[realColumn] = columnOffsets[i];
+                  spans[realColumn] = 0;
+                  for (int j = 0; j < cv.colSpan; j++, i++)
+                    {
+                      spans[realColumn] += columnSpans[i];
+                      if (j < cv.colSpan - 1)
+                        spans[realColumn] += cellSpacing;
+                    }
+                }
+              realColumn++;
+            }
+          else
+            {
+              i++;
             }
         }
     }
@@ -172,6 +222,11 @@ class TableView
      * The number of columns that this view spans.
      */
     int colSpan;
+
+    /**
+     * The number of rows that this cell spans.
+     */
+    int rowSpan;
 
     /**
      * Creates a new CellView for the specified element.
@@ -210,6 +265,20 @@ class TableView
             {
               // Couldn't parse the colspan, assume 1.
               colSpan = 1;
+            }
+        }
+      rowSpan = 1;
+      o = atts.getAttribute(HTML.Attribute.ROWSPAN);
+      if (o != null)
+        {
+          try
+            {
+              rowSpan = Integer.parseInt(o.toString());
+            }
+          catch (NumberFormatException ex)
+            {
+              // Couldn't parse the colspan, assume 1.
+              rowSpan = 1;
             }
         }
     }
@@ -255,9 +324,19 @@ class TableView
   Length[] columnWidths;
 
   /**
+   * The total number of columns.
+   */
+  int numColumns;
+
+  /**
+   * The table width.
+   */
+  private Length width;
+
+  /**
    * Indicates if the grid setup is ok.
    */
-  boolean gridValid;
+  boolean gridValid = false;
 
   /**
    * Additional space that is added _between_ table cells.
@@ -265,6 +344,11 @@ class TableView
    * This is package private to avoid accessor methods.
    */
   int cellSpacing;
+
+  /**
+   * A cached Rectangle object for reuse in paint().
+   */
+  private Rectangle tmpRect;
 
   /**
    * Creates a new HTML table view for the specified element.
@@ -275,6 +359,7 @@ class TableView
   {
     super(el, Y_AXIS);
     totalColumnRequirements = new SizeRequirements();
+    tmpRect = new Rectangle();
   }
 
   /**
@@ -286,21 +371,20 @@ class TableView
     View view = null;
     AttributeSet atts = elem.getAttributes();
     Object name = atts.getAttribute(StyleConstants.NameAttribute);
-    if (name instanceof HTML.Tag)
-      {
-        HTML.Tag tag = (HTML.Tag) name;
-        if (tag == HTML.Tag.TR)
-          view = new RowView(elem);
-        else if (tag == HTML.Tag.TD || tag == HTML.Tag.TH)
-          view = new CellView(elem);
-        else if (tag == HTML.Tag.CAPTION)
-          view = new ParagraphView(elem);
-      }
+    AttributeSet pAtts = elem.getParentElement().getAttributes();
+    Object pName = pAtts.getAttribute(StyleConstants.NameAttribute);
 
-    // If we haven't mapped the element, then fall back to the standard
-    // view factory.
-    if (view == null)
+    if (name == HTML.Tag.TR && pName == HTML.Tag.TABLE)
+      view = new RowView(elem);
+    else if ((name == HTML.Tag.TD || name == HTML.Tag.TH)
+             && pName == HTML.Tag.TR)
+      view = new CellView(elem);
+    else if (name == HTML.Tag.CAPTION)
+      view = new ParagraphView(elem);
+    else
       {
+        // If we haven't mapped the element, then fall back to the standard
+        // view factory.
         View parent = getParent();
         if (parent != null)
           {
@@ -337,7 +421,7 @@ class TableView
    *
    * @return the stylesheet associated with this view
    */
-  private StyleSheet getStyleSheet()
+  protected StyleSheet getStyleSheet()
   {
     HTMLDocument doc = (HTMLDocument) getDocument();
     return doc.getStyleSheet();
@@ -358,13 +442,11 @@ class TableView
     r = super.calculateMinorAxisRequirements(axis, r);
 
     // Try to set the CSS width if it fits.
-    AttributeSet atts = getAttributes();
-    Length l = (Length) atts.getAttribute(CSS.Attribute.WIDTH);
-    if (l != null)
+    if (width != null)
       {
-        int width = (int) l.getValue();
-        if (r.minimum < width)
-          r.minimum = width;
+        int w = (int) width.getValue();
+        if (r.minimum < w)
+          r.minimum = w;
       }
 
     // Adjust requirements when we have cell spacing.
@@ -373,6 +455,7 @@ class TableView
     r.preferred += adjust;
 
     // Apply the alignment.
+    AttributeSet atts = getAttributes();
     Object o = atts.getAttribute(CSS.Attribute.TEXT_ALIGN);
     r.alignment = 0.0F;
     if (o != null)
@@ -400,7 +483,8 @@ class TableView
   {
     updateGrid();
 
-    // Mark all rows as invalid.
+    // Mark all rows as invalid along their minor axis to force correct
+    // layout of multi-row cells.
     int n = getViewCount();
     for (int i = 0; i < n; i++)
       {
@@ -441,7 +525,8 @@ class TableView
         SizeRequirements total = new SizeRequirements();
         SizeRequirements relTotal = new SizeRequirements();
         float totalPercent = 0.F;
-        for (int c = 0; c < numCols; )
+        int realCol = 0;
+        for (int c = 0; c < numCols; c++)
           {
             View v = rowView.getView(c);
             if (v instanceof CellView)
@@ -458,7 +543,7 @@ class TableView
                     long currentMax = 0;
                     for (int i = 0; i < colSpan; i++)
                       {
-                        SizeRequirements req = columnRequirements[c + i];
+                        SizeRequirements req = columnRequirements[realCol];
                         currentMin += req.minimum;
                         currentPref += req.preferred;
                         currentMax += req.maximum;
@@ -469,15 +554,15 @@ class TableView
                     // Distribute delta.
                     for (int i = 0; i < colSpan; i++)
                       {
-                        SizeRequirements req = columnRequirements[c + i];
+                        SizeRequirements req = columnRequirements[realCol];
                         if (deltaMin > 0)
                           req.minimum += deltaMin / colSpan;
                         if (deltaPref > 0)
                           req.preferred += deltaPref / colSpan;
                         if (deltaMax > 0)
                           req.maximum += deltaMax / colSpan;
-                        if (columnWidths[c + i] == null
-                            || ! columnWidths[c + i].isPercentage())
+                        if (columnWidths[realCol] == null
+                            || ! columnWidths[realCol].isPercentage())
                           {
                             total.minimum += req.minimum;
                             total.preferred += req.preferred;
@@ -488,35 +573,37 @@ class TableView
                             relTotal.minimum =
                               Math.max(relTotal.minimum,
                                      (int) (req.minimum
-                                            * columnWidths[c + i].getValue()));
+                                          * columnWidths[realCol].getValue()));
                             relTotal.preferred =
                               Math.max(relTotal.preferred,
                                      (int) (req.preferred
-                                            * columnWidths[c + i].getValue()));
+                                          * columnWidths[realCol].getValue()));
                             relTotal.maximum =
                               Math.max(relTotal.maximum,
                                      (int) (req.maximum
-                                            * columnWidths[c + i].getValue()));
-                            totalPercent += columnWidths[c + i].getValue();
+                                          * columnWidths[realCol].getValue()));
+                            totalPercent += columnWidths[realCol].getValue();
                           }
                       }
+                    realCol += colSpan;
                   }
                 else
                   {
                     // Shortcut for colSpan == 1.
-                    SizeRequirements req = columnRequirements[c];
+                    SizeRequirements req = columnRequirements[realCol];
                     req.minimum = Math.max(req.minimum,
-                                           (int) cellView.getMinimumSpan(X_AXIS));
+                                        (int) cellView.getMinimumSpan(X_AXIS));
                     req.preferred = Math.max(req.preferred,
-                                             (int) cellView.getPreferredSpan(X_AXIS));
+                                      (int) cellView.getPreferredSpan(X_AXIS));
                     req.maximum = Math.max(req.maximum,
-                                           (int) cellView.getMaximumSpan(X_AXIS));
-                    if (columnWidths[c] == null
-                        || ! columnWidths[c].isPercentage())
+                                        (int) cellView.getMaximumSpan(X_AXIS));
+                    if (columnWidths[realCol] == null
+                        || ! columnWidths[realCol].isPercentage())
                       {
-                        total.minimum += columnRequirements[c].minimum;
-                        total.preferred += columnRequirements[c].preferred;
-                        total.maximum += columnRequirements[c].maximum;
+                        total.minimum += columnRequirements[realCol].minimum;
+                        total.preferred +=
+                          columnRequirements[realCol].preferred;
+                        total.maximum += columnRequirements[realCol].maximum;
                       }
                     else
                       {
@@ -534,11 +621,9 @@ class TableView
                                         / columnWidths[c].getValue()));
                         totalPercent += columnWidths[c].getValue();
                       }
+                    realCol += 1;
                   }
-                c += colSpan;
               }
-            else
-              c++;
           }
 
         // Update the total requirements as follows:
@@ -660,45 +745,83 @@ class TableView
   /**
    * Updates the arrays that contain the row and column data in response
    * to a change to the table structure.
+   *
+   * Package private to avoid accessor methods.
    */
-  private void updateGrid()
+  void updateGrid()
   {
     if (! gridValid)
       {
+        AttributeSet atts = getAttributes();
+        StyleSheet ss = getStyleSheet();
+        float emBase = ss.getEMBase(atts);
+        float exBase = ss.getEXBase(atts);
         int maxColumns = 0;
         int numRows = getViewCount();
         for (int r = 0; r < numRows; r++)
           {
             View rowView = getView(r);
-            int numCols;
+            int numCols = 0;
             if (rowView instanceof RowView)
-              numCols = ((RowView) rowView).getViewCount();
-            else
-              numCols = 0;
+              {
+                int numCells = ((RowView) rowView).getViewCount();
+                for (int i = 0; i < numCells; i++)
+                  {
+                    View v = rowView.getView(i);
+                    if (v instanceof CellView)
+                      numCols += ((CellView) v).colSpan;
+                  }
+              }
             maxColumns = Math.max(numCols, maxColumns);
           }
+        numColumns = maxColumns;
         columnWidths = new Length[maxColumns];
+        int[] rowSpans = new int[maxColumns];
         for (int r = 0; r < numRows; r++)
           {
-            View rowView = getView(r);
-            int numCols;
-            if (rowView instanceof RowView)
-              numCols = ((RowView) rowView).getViewCount();
-            else
-              numCols = 0;
-            int colIndex = 0;
-            for (int c = 0; c < numCols; c++)
+            View view = getView(r);
+            if (view instanceof RowView)
               {
-                View v = rowView.getView(c);
-                if (v instanceof CellView)
+                RowView rowView = (RowView) view;
+                rowView.rowIndex = r;
+                rowView.overlap = new boolean[maxColumns];
+                int colIndex = 0;
+                int colCount = rowView.getViewCount();
+                for (int c = 0; c < maxColumns;)
                   {
-                    CellView cv = (CellView) v;
-                    Object o =
-                      cv.getAttributes().getAttribute(CSS.Attribute.WIDTH);
-                    if (o != null && columnWidths[colIndex] == null
-                        && o instanceof Length)
-                      columnWidths[colIndex]= (Length) o;
-                    colIndex += cv.colSpan;
+                    if (rowSpans[c] > 0)
+                      {
+                        rowSpans[c]--;
+                        rowView.overlap[c] = true;
+                        c++;
+                      }
+                    else if (colIndex < colCount)
+                      {
+                        View v = rowView.getView(colIndex);
+                        colIndex++;
+                        if (v instanceof CellView)
+                          {
+                            CellView cv = (CellView) v;
+                            Object o =
+                              cv.getAttributes().getAttribute(CSS.Attribute.WIDTH);
+                            if (o != null && columnWidths[c] == null
+                                && o instanceof Length)
+                              {
+                                columnWidths[c]= (Length) o;
+                                columnWidths[c].setFontBases(emBase, exBase);
+                              }
+                            int rs = cv.rowSpan - 1;
+                            for (int col = cv.colSpan - 1; col >= 0; col--)
+                              {
+                                rowSpans[c] = rs;
+                                c++;
+                              }
+                          }
+                      }
+                    else
+                      {
+                        c++;
+                      }
                   }
               }
           }
@@ -738,14 +861,27 @@ class TableView
   /**
    * Fetches CSS and HTML layout attributes.
    */
-  private void setPropertiesFromAttributes()
+  protected void setPropertiesFromAttributes()
   {
+    super.setPropertiesFromAttributes();
+
     // Fetch and parse cell spacing.
-    Object o = getAttributes().getAttribute(CSS.Attribute.BORDER_SPACING);
+    AttributeSet atts = getAttributes();
+    StyleSheet ss = getStyleSheet();
+    float emBase = ss.getEMBase(atts);
+    float exBase = ss.getEXBase(atts);
+    Object o = atts.getAttribute(CSS.Attribute.BORDER_SPACING);
     if (o != null && o instanceof Length)
       {
         Length l = (Length) o;
+        l.setFontBases(emBase, exBase);
         cellSpacing = (int) l.getValue();
+      }
+    o = atts.getAttribute(CSS.Attribute.WIDTH);
+    if (o != null && o instanceof Length)
+      {
+        width = (Length) o;
+        width.setFontBases(emBase, exBase);
       }
   }
 
@@ -769,6 +905,16 @@ class TableView
   protected void layoutMajorAxis(int targetSpan, int axis, int[] offsets,
                                  int spans[])
   {
+    // Mark all rows as invalid along their minor axis to force correct
+    // layout of multi-row cells.
+    int n = getViewCount();
+    for (int i = 0; i < n; i++)
+      {
+        View row = getView(i);
+        if (row instanceof RowView)
+          ((RowView) row).layoutChanged(axis);
+      }
+
     int adjust = (getViewCount() + 1) * cellSpacing;
     super.layoutMajorAxis(targetSpan - adjust, axis, offsets, spans);
     for (int i = 0; i < offsets.length; i++)
@@ -803,7 +949,27 @@ class TableView
 
   public void replace(int offset, int len, View[] views)
   {
-    super.replace(offset, len, views);
     gridValid = false;
+    super.replace(offset, len, views);
   }
+
+  /**
+   * We can't use the super class's paint() method because it might cut
+   * off multi-row children. Instead we trigger painting for all rows
+   * and let the rows sort out what to paint and what not.
+   */
+  public void paint(Graphics g, Shape a)
+  {
+    Rectangle rect = a instanceof Rectangle ? (Rectangle) a : a.getBounds();
+    painter.paint(g, rect.x, rect.y, rect.width, rect.height, this);
+    int nRows = getViewCount();
+    Rectangle inside = getInsideAllocation(a);
+    for (int r = 0; r < nRows; r++)
+      {
+        tmpRect.setBounds(inside);
+        childAllocation(r, tmpRect);
+        paintChild(g, tmpRect, r);
+      }
+  }
+
 }

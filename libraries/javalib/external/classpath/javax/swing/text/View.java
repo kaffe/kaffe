@@ -335,8 +335,9 @@ public abstract class View implements SwingConstants
 
   public void preferenceChanged(View child, boolean width, boolean height)
   {
-    if (parent != null)
-      parent.preferenceChanged(this, width, height);
+    View p = getParent();
+    if (p != null)
+      p.preferenceChanged(this, width, height);
   }
 
   public int getBreakWeight(int axis, float pos, float len)

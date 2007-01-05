@@ -500,11 +500,8 @@ public class BeanImpl
       {
 	OpenType e = SimpleType.VOID;
 	TypeVariable[] vars = c.getTypeParameters();
-	for (int a = 0; a < vars.length; ++a)
-	  {
-	    if (vars[a].getName().equals("E"))
-	      e = getTypeFromClass((Class) vars[a].getGenericDeclaration());
-	  }
+	if (vars.length > 0)
+	  e = getTypeFromClass((Class) vars[0].getGenericDeclaration());
 	return new OpenMBeanParameterInfoSupport("TransParam",
 						 "Translated parameter",
 						 new ArrayType(1, e)

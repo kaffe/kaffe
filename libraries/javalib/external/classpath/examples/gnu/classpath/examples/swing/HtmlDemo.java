@@ -44,8 +44,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URL;
+import java.util.LinkedList;
 
 import javax.swing.BoxLayout;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -53,6 +55,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
@@ -98,10 +101,17 @@ public class HtmlDemo extends JPanel
   
   int n;
 
+  /**
+   * The browsing history.
+   *
+   * Package private to avoid accessor method.
+   */
+  LinkedList history;
+
   public HtmlDemo()
   {
     super();
-    html.setContentType("text/html"); // not now.
+    history = new LinkedList();
     createContent();
   }
 
@@ -124,10 +134,11 @@ public class HtmlDemo extends JPanel
         URL u = event.getURL();
         if (u != null)
           {
-            url.setText(u.toString());
             try
               {
-                html.setPage(u);
+                url.setText(u.toString());
+                html.setPage(u.toString());
+                history.addLast(u);
               }
             catch (IOException ex)
               {
@@ -148,24 +159,93 @@ public class HtmlDemo extends JPanel
     JButton loadButton = new JButton("go");
     urlPanel.add(loadButton);
     loadButton.addActionListener(action);
-    add(urlPanel, BorderLayout.NORTH);
-    add(scroller, BorderLayout.CENTER);
+
+    // Setup control panel.
+    JToolBar controlPanel = createToolBar();
+    JPanel browserPanel = new JPanel();
+    browserPanel.setLayout(new BorderLayout());
+    browserPanel.add(urlPanel, BorderLayout.NORTH);
+    browserPanel.add(scroller, BorderLayout.CENTER);
+    add(controlPanel, BorderLayout.NORTH);
+    add(browserPanel, BorderLayout.CENTER);
 
     // Load start page.
-    URL startpage = getClass().getResource("welcome.html");
     try
       {
+        URL startpage = getClass().getResource("welcome.html");
         html.setPage(startpage);
         url.setText(startpage.toString());
+        history.addLast(startpage);
       }
-    catch (IOException ex)
+    catch (Exception ex)
       {
-        System.err.println("couldn't load page: " + startpage);
+        System.err.println("couldn't load page: "/* + startpage*/);
+        ex.printStackTrace();
       }
-
-    setPreferredSize(new Dimension(600, 400));
+    setPreferredSize(new Dimension(800, 600));
   }
  
+
+  /**
+   * Creates the toolbar with the control buttons.
+   *
+   * @return the toolbar with the control buttons
+   */
+  JToolBar createToolBar()
+  {
+    JToolBar tb = new JToolBar();
+    Icon backIcon = Demo.getIcon("/gnu/classpath/examples/icons/back.png",
+                                 "back");
+    JButton back = new JButton(backIcon);
+    back.addActionListener(new ActionListener()
+    {
+      public void actionPerformed(ActionEvent ev)
+      {
+        if (history.size() > 1)
+          {
+            URL last = (URL) history.removeLast();
+            last = (URL) history.getLast();
+            url.setText(last.toString());
+            try
+              {
+                html.setPage(last);
+              }
+            catch (IOException ex)
+              {
+                // Do something more useful.
+                ex.printStackTrace();
+              }
+          }
+      }
+    });
+    tb.add(back);
+    Icon reloadIcon = Demo.getIcon("/gnu/classpath/examples/icons/reload.png",
+                                   "reload");
+    JButton reload = new JButton(reloadIcon);
+    reload.addActionListener(new ActionListener()
+    {
+      public void actionPerformed(ActionEvent ev)
+      {
+        if (history.size() > 0)
+          {
+            URL last = (URL) history.getLast();
+            url.setText(last.toString());
+            try
+              {
+                html.setPage(last);
+              }
+            catch (IOException ex)
+              {
+                // Do something more useful.
+                ex.printStackTrace();
+              }
+          }
+      }
+    });
+    tb.add(reload);
+    return tb;
+  }
+
   /**
    * The executable method to display the editable table.
    * 
@@ -182,7 +262,7 @@ public class HtmlDemo extends JPanel
          HtmlDemo demo = new HtmlDemo();
          JFrame frame = new JFrame();
          frame.getContentPane().add(demo);
-         frame.setSize(new Dimension(700, 480));
+         frame.setSize(new Dimension(750, 480));
          frame.setVisible(true);
        }
      });

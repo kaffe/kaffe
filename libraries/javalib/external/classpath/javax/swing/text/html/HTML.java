@@ -465,6 +465,16 @@ public class HTML
     public static final Attribute WIDTH = new Attribute("width");
 
     /**
+     * This is used to reflect the pseudo class for the a tag.
+     */
+    static final Attribute PSEUDO_CLASS = new Attribute("_pseudo");
+
+    /**
+     * This is used to reflect the dynamic class for the a tag.
+     */
+    static final Attribute DYNAMIC_CLASS = new Attribute("_dynamic");
+
+    /**
      * The attribute name.
      */
     private final String name;

@@ -362,7 +362,12 @@ public abstract class BasicTextUI extends TextUI
       return textComponent;
     }
 
-    public void setSize(float w, float h)
+    /**
+     * Sets the size of the renderer. This is synchronized because that
+     * potentially triggers layout and we don't want more than one thread
+     * playing with the layout information.
+     */
+    public synchronized void setSize(float w, float h)
     {
       if (view != null)
         view.setSize(w, h);
@@ -379,7 +384,7 @@ public abstract class BasicTextUI extends TextUI
       if (view != null)
         {
           Rectangle b = s instanceof Rectangle ? (Rectangle) s : s.getBounds();
-          view.setSize(b.width, b.height);
+          setSize(b.width, b.height);
           view.paint(g, s);
         }
     }

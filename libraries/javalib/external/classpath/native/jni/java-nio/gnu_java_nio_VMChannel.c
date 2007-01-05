@@ -106,7 +106,7 @@ void JCL_print_buffer(JNIEnv *, struct JCL_buffer *);
 int JCL_init_buffer(JNIEnv *, struct JCL_buffer *, jobject);
 void JCL_release_buffer(JNIEnv *, struct JCL_buffer *, jobject, jint);
 void JCL_cleanup_buffers(JNIEnv *, struct JCL_buffer *, jint, jobjectArray, jint, jlong);
-int JCL_thread_interrupted(JNIEnv *, jclass);
+int JCL_thread_interrupted(JNIEnv *);
 
 static jfieldID address_fid;
 static jmethodID get_position_mid;
@@ -117,6 +117,7 @@ static jmethodID has_array_mid;
 static jmethodID array_mid;
 static jmethodID array_offset_mid;
 static jmethodID thread_interrupted_mid;
+static jclass vm_channel_class;
 
 jmethodID
 get_method_id(JNIEnv *env,  jclass clazz, const char *name, 
@@ -255,9 +256,10 @@ JCL_cleanup_buffers(JNIEnv *env,
 
 
 int
-JCL_thread_interrupted(JNIEnv *env, jclass c)
+JCL_thread_interrupted(JNIEnv *env)
 {
-  return (int) (*env)->CallBooleanMethod(env, c, thread_interrupted_mid);
+  return (int) (*env)->CallStaticBooleanMethod(env, vm_channel_class,
+					       thread_interrupted_mid);
 }
 
 
@@ -331,7 +333,10 @@ Java_gnu_java_nio_VMChannel_initIDs  (JNIEnv *env,
   array_mid = get_method_id(env, byteBufferClass, "array", "()[B");
   array_offset_mid = get_method_id(env, byteBufferClass, "arrayOffset", "()I");
   
-  thread_interrupted_mid = get_method_id(env, clazz, "isThreadInterrupted", "()Z");
+  vm_channel_class = clazz;
+  thread_interrupted_mid = (*env)->GetStaticMethodID(env, clazz,
+                                                  "isThreadInterrupted",
+                                                  "()Z");
 }
 
 JNIEXPORT void JNICALL 
@@ -378,6 +383,7 @@ Java_gnu_java_nio_VMChannel_read__ILjava_nio_ByteBuffer_2 (JNIEnv *env,
   jint len;
   ssize_t result;
   struct JCL_buffer buf;
+  int tmp_errno;
 
 /*   NIODBG("fd: %d; bbuf: %p", fd, bbuf); */
   
@@ -396,7 +402,13 @@ Java_gnu_java_nio_VMChannel_read__ILjava_nio_ByteBuffer_2 (JNIEnv *env,
       return 0;
     }
   
-  result = cpnio_read (fd, &(buf.ptr[buf.position + buf.offset]), len);
+  do 
+    {
+      result = cpnio_read (fd, &(buf.ptr[buf.position + buf.offset]), len);
+      tmp_errno = errno;
+    }
+  while (result == -1 && errno == EINTR && ! JCL_thread_interrupted(env));
+  errno = tmp_errno;
   
   if (result == 0)
     {
@@ -452,6 +464,7 @@ Java_gnu_java_nio_VMChannel_write__ILjava_nio_ByteBuffer_2 (JNIEnv *env,
   jint len;
   ssize_t result;
   struct JCL_buffer buf;
+  int tmp_errno;
 
 /*   NIODBG("fd: %d; bbuf: %p", fd, bbuf); */
   
@@ -470,7 +483,14 @@ Java_gnu_java_nio_VMChannel_write__ILjava_nio_ByteBuffer_2 (JNIEnv *env,
       return 0;
     }
   
-  result = cpnio_write (fd, &(buf.ptr[buf.position + buf.offset]), len);
+  do
+    {
+      result = cpnio_write (fd, &(buf.ptr[buf.position + buf.offset]), len);
+      tmp_errno = errno;
+    }
+  while (result == -1 && errno == EINTR && ! JCL_thread_interrupted(env));
+  errno = tmp_errno;
+
   buf.count = result;
 
   if (result == -1)
@@ -524,6 +544,7 @@ Java_gnu_java_nio_VMChannel_readScattering (JNIEnv *env,
   ssize_t result;
   jint vec_len = length < JCL_IOV_MAX ? length : JCL_IOV_MAX;
   jlong bytes_read = 0;
+  int tmp_errno;
 
 /*   NIODBG("fd: %d; bbufs: %p; offset: %d; length: %d", */
 /*          fd, bbufs, offset, length); */
@@ -547,7 +568,13 @@ Java_gnu_java_nio_VMChannel_readScattering (JNIEnv *env,
     }
     
   /* Work the scattering magic */
-  result = cpnio_readv (fd, buffers, vec_len);
+  do
+    {
+      result = cpnio_readv (fd, buffers, vec_len);
+      tmp_errno = errno;
+    }
+  while (result == -1 && errno == EINTR && ! JCL_thread_interrupted(env));
+  errno = tmp_errno;
   bytes_read = (jlong) result;
   
   /* Handle the response */
@@ -606,6 +633,7 @@ Java_gnu_java_nio_VMChannel_writeGathering (JNIEnv *env,
   ssize_t result;
   jint vec_len = length < JCL_IOV_MAX ? length : JCL_IOV_MAX;
   jlong bytes_written;
+  int tmp_errno;
   
 /*   NIODBG("fd: %d; bbufs: %p; offset: %d; length: %d", */
 /*          fd, bbufs, offset, length); */
@@ -629,7 +657,14 @@ Java_gnu_java_nio_VMChannel_writeGathering (JNIEnv *env,
     }
     
   /* Work the gathering magic */
-  result = cpnio_writev (fd, buffers, vec_len);
+  do
+    {
+      result = cpnio_writev (fd, buffers, vec_len);
+      tmp_errno = errno;
+    }
+  while (result == -1 && tmp_errno == EINTR && ! JCL_thread_interrupted(env));
+  errno = tmp_errno;
+
   bytes_written = (jlong) result;
 
   if (result < 0)
@@ -895,10 +930,18 @@ Java_gnu_java_nio_VMChannel_read__I (JNIEnv *env,
 #ifdef HAVE_READ
   char in;
   int ret;
+  int tmp_errno;
 
 /*   NIODBG("fd: %d", fd); */
 
-  ret = cpnio_read (fd, &in, 1);
+  do
+    {
+      ret = cpnio_read (fd, &in, 1);
+      tmp_errno = errno;
+    }
+  while (ret == -1 && errno == EINTR && ! JCL_thread_interrupted(env));
+  errno = tmp_errno;
+
   if (-1 == ret)
     JCL_ThrowException (env, IO_EXCEPTION, strerror (errno));
   if (0 == ret)
@@ -925,10 +968,17 @@ Java_gnu_java_nio_VMChannel_write__II (JNIEnv *env,
 #ifdef HAVE_WRITE
   char out = (char) data;
   int ret;
+  int tmp_errno;
 
 /*   NIODBG("fd: %d; data: %d", fd, data); */
 
-  ret = cpnio_write (fd, &out, 1);
+  do
+    {
+      ret = cpnio_write (fd, &out, 1);
+      tmp_errno = errno;
+    }
+  while (ret == -1 && errno == EINTR && ! JCL_thread_interrupted(env));
+  errno = tmp_errno;
 
   if (-1 == ret)
     JCL_ThrowException(env, IO_EXCEPTION, strerror (errno));
@@ -986,6 +1036,7 @@ Java_gnu_java_nio_VMChannel_connect (JNIEnv *env, jclass clazz __attribute__((un
   int origflags = 0, flags;
   jbyte *addr_elems;
   int ret;
+  int tmpErrno;
 
   if ((*env)->GetArrayLength (env, addr) != 4)
     {
@@ -1024,8 +1075,14 @@ Java_gnu_java_nio_VMChannel_connect (JNIEnv *env, jclass clazz __attribute__((un
   sockaddr.sin_addr.s_addr = *((uint32_t *) addr_elems);
 
 
-  ret = cpnio_connect (fd, (struct sockaddr *) &sockaddr,
-                       sizeof (struct sockaddr_in));
+  do
+    {
+      ret = cpnio_connect (fd, (struct sockaddr *) &sockaddr,
+                           sizeof (struct sockaddr_in));
+      tmpErrno = errno;
+    }
+  while (ret == -1 && errno == EINTR && ! JCL_thread_interrupted(env));
+  errno = tmpErrno;
 
   (*env)->ReleaseByteArrayElements (env, addr, addr_elems, JNI_ABORT);
 
@@ -1355,7 +1412,7 @@ Java_gnu_java_nio_VMChannel_getpeername (JNIEnv *env, jclass clazz __attribute__
  */
 JNIEXPORT jint JNICALL
 Java_gnu_java_nio_VMChannel_accept (JNIEnv *env,
-                                    jclass clazz,
+                                    jclass c __attribute__((unused)),
                                     jint fd)
 {
 #ifdef HAVE_ACCEPT
@@ -1383,7 +1440,7 @@ Java_gnu_java_nio_VMChannel_accept (JNIEnv *env,
              * other unrelated signal interrupted the system function and
              * we should start over again.
              */
-            if (JCL_thread_interrupted(env, clazz))
+            if (JCL_thread_interrupted(env))
               {
                 JCL_ThrowException (env, "java/net/SocketException", strerror (tmp_errno));
                 return -1;

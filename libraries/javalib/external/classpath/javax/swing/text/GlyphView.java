@@ -38,14 +38,21 @@ exception statement from your version. */
 
 package javax.swing.text;
 
+import gnu.classpath.SystemProperties;
+
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.Toolkit;
+import java.awt.font.FontRenderContext;
+import java.awt.font.TextHitInfo;
+import java.awt.font.TextLayout;
+import java.awt.geom.Rectangle2D;
 
 import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
@@ -245,6 +252,158 @@ public class GlyphView extends View implements TabableView, Cloneable
     {
       return this;
     }
+  }
+
+  /**
+   * A GlyphPainter implementation based on TextLayout. This should give
+   * better performance in Java2D environments.
+   */
+  private static class J2DGlyphPainter
+    extends GlyphPainter
+  {
+
+    /**
+     * The text layout.
+     */
+    TextLayout textLayout;
+
+    /**
+     * Creates a new J2DGlyphPainter.
+     *
+     * @param str the string
+     * @param font the font
+     * @param frc the font render context
+     */
+    J2DGlyphPainter(String str, Font font, FontRenderContext frc)
+    {
+      textLayout = new TextLayout(str, font, frc);
+    }
+
+    /**
+     * Returns null so that GlyphView.checkPainter() creates a new instance.
+     */
+    public GlyphPainter getPainter(GlyphView v, int p0, int p1)
+    {
+      return null;
+    }
+
+    /**
+     * Delegates to the text layout.
+     */
+    public float getAscent(GlyphView v)
+    {
+      return textLayout.getAscent();
+    }
+
+    /**
+     * Delegates to the text layout.
+     */
+    public int getBoundedPosition(GlyphView v, int p0, float x, float len)
+    {
+      int pos;
+      TextHitInfo hit = textLayout.hitTestChar(len, 0);
+      if (hit.getCharIndex() == -1 && ! textLayout.isLeftToRight())
+        pos = v.getEndOffset();
+      else
+        {
+          pos = hit.isLeadingEdge() ? hit.getInsertionIndex()
+                                    : hit.getInsertionIndex() - 1;
+          pos += v.getStartOffset();
+        }
+      return pos;
+    }
+
+    /**
+     * Delegates to the text layout.
+     */
+    public float getDescent(GlyphView v)
+    {
+      return textLayout.getDescent();
+    }
+
+    /**
+     * Delegates to the text layout.
+     */
+    public float getHeight(GlyphView view)
+    {
+      return textLayout.getAscent() + textLayout.getDescent()
+             + textLayout.getLeading();
+    }
+
+    /**
+     * Delegates to the text layout.
+     */
+    public float getSpan(GlyphView v, int p0, int p1, TabExpander te, float x)
+    {
+      float span;
+      if (p0 == v.getStartOffset() && p1 == v.getEndOffset())
+        span = textLayout.getAdvance();
+      else
+        {
+          int start = v.getStartOffset();
+          int i0 = p0 - start;
+          int i1 = p1 - start;
+          TextHitInfo hit0 = TextHitInfo.afterOffset(i0);
+          TextHitInfo hit1 = TextHitInfo.afterOffset(i1);
+          float x0 = textLayout.getCaretInfo(hit0)[0];
+          float x1 = textLayout.getCaretInfo(hit1)[0];
+          span = Math.abs(x1 - x0);
+        }
+      return span;
+    }
+
+    /**
+     * Delegates to the text layout.
+     */
+    public Shape modelToView(GlyphView v, int pos, Bias b, Shape a)
+      throws BadLocationException
+    {
+      int offs = pos - v.getStartOffset();
+      // Create copy here to protect original shape.
+      Rectangle2D bounds = a.getBounds2D();
+      TextHitInfo hit =
+        b == Position.Bias.Forward ? TextHitInfo.afterOffset(offs)
+                                   : TextHitInfo.beforeOffset(offs);
+      float[] loc = textLayout.getCaretInfo(hit);
+      bounds.setRect(bounds.getX() + loc[0], bounds.getY(), 1,
+                     bounds.getHeight());
+      return bounds;
+    }
+
+    /**
+     * Delegates to the text layout.
+     */
+    public void paint(GlyphView view, Graphics g, Shape a, int p0, int p1)
+    {
+      // Can't paint this with plain graphics.
+      if (g instanceof Graphics2D)
+        {
+          Graphics2D g2d = (Graphics2D) g;
+          Rectangle2D b = a instanceof Rectangle2D ? (Rectangle2D) a
+                                                   : a.getBounds2D();
+          float x = (float) b.getX();
+          float y = (float) b.getY() + textLayout.getAscent()
+                    + textLayout.getLeading();
+          // TODO: Try if clipping makes things faster for narrow views.
+          textLayout.draw(g2d, x, y);
+        }
+    }
+
+    /**
+     * Delegates to the text layout.
+     */
+    public int viewToModel(GlyphView v, float x, float y, Shape a,
+                           Bias[] biasRet)
+    {
+      Rectangle2D bounds = a instanceof Rectangle2D ? (Rectangle2D) a
+                                                    : a.getBounds2D();
+      TextHitInfo hit = textLayout.hitTestChar(x - (float) bounds.getX(), 0);
+      int pos = hit.getInsertionIndex();
+      biasRet[0] = hit.isLeadingEdge() ? Position.Bias.Forward
+                                       : Position.Bias.Backward;
+      return pos + v.getStartOffset();
+    }
+    
   }
 
   /**
@@ -532,7 +691,21 @@ public class GlyphView extends View implements TabableView, Cloneable
   protected void checkPainter()
   {
     if (glyphPainter == null)
-      glyphPainter = new DefaultGlyphPainter();
+      {
+        if ("true".equals(
+                 SystemProperties.getProperty("gnu.javax.swing.noGraphics2D")))
+          {
+            glyphPainter = new DefaultGlyphPainter();
+          }
+        else
+          {
+            Segment s = getText(getStartOffset(), getEndOffset());
+            glyphPainter = new J2DGlyphPainter(s.toString(), getFont(),
+                                               new FontRenderContext(null,
+                                                                     false,
+                                                                     false));
+          }
+      }
   }
 
   /**

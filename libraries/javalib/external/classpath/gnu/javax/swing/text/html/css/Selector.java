@@ -38,6 +38,7 @@ exception statement from your version. */
 
 package gnu.javax.swing.text.html.css;
 
+import java.util.Map;
 import java.util.StringTokenizer;
 
 /**
@@ -98,7 +99,7 @@ public class Selector
    * @return <code>true</code> when this selector matches the element path,
    *         <code>false</code> otherwise
    */
-  public boolean matches(String[] tags, String[] pathClasses, String[] pathIds)
+  public boolean matches(String[] tags, Map[] attributes)
   {
     // TODO: This implements class, id and descendent matching. These are
     // the most commonly used selector matchers in CSS together with HTML.
@@ -119,15 +120,22 @@ public class Selector
             boolean tagMatch = false;
             for (; tagIndex < numTags && tagMatch == false; tagIndex++)
               {
+                Object pathClass = attributes[tagIndex].get("class");
+                // Try pseudo class too.
+                Object pseudoClass = attributes[tagIndex].get("_pseudo");
+                Object dynClass = attributes[tagIndex].get("_dynamic");
+                Object pathId = attributes[tagIndex].get("id");
                 String tag = elements[j];
                 String clazz = classes[j];
                 String id = ids[j];
                 tagMatch = tag.equals("") || tag.equals("*")
                            || tag.equals(tags[tagIndex]);
                 tagMatch = tagMatch && (clazz.equals("*")
-                                       || clazz.equals(pathClasses[tagIndex]));
+                                        || clazz.equals(dynClass)
+                                        || clazz.equals(pseudoClass)
+                                        || clazz.equals(pathClass));
                 tagMatch = tagMatch && (id.equals("*")
-                                        || id.equals(pathIds[tagIndex]));
+                                        || id.equals(pathId));
                 // For the last element in the selector we must not look
                 // further.
                 if (j == 0)
@@ -190,6 +198,9 @@ public class Selector
       {
         String sel = selector[i];
         int clazzIndex = sel.indexOf('.');
+        // Try pseudo class too.
+        if (clazzIndex == -1)
+          clazzIndex = sel.indexOf(':');
         int idIndex = sel.indexOf('#');
         String clazz;
         if (clazzIndex == -1)

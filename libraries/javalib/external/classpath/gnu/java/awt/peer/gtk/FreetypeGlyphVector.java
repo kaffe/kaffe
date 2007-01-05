@@ -101,13 +101,7 @@ public class FreetypeGlyphVector extends GlyphVector
   public FreetypeGlyphVector(Font f, char[] chars, int start, int len,
                              FontRenderContext frc, int flags)
   {
-    // We need to filter out control characters (and possibly other
-    // non-renderable characters here).
-    StringBuilder b = new StringBuilder(chars.length);
-    for (int i = start; i < start + len; i++)
-      if (!Character.isISOControl(chars[i]))
-        b.append(chars[i]);
-    this.s = b.toString();
+    this.s = new String(chars, start, len);
 
     this.font = f;
     this.frc = frc;
@@ -187,10 +181,17 @@ public class FreetypeGlyphVector extends GlyphVector
     for(int i = 0; i < nGlyphs; i++)
       {
 	codePoints[i] = s.codePointAt( stringIndex );
-	// UTF32 surrogate handling
+        // UTF32 surrogate handling
 	if( codePoints[i] != (int)s.charAt( stringIndex ) )
 	  stringIndex ++;
 	stringIndex ++;
+
+        if (Character.isISOControl(codePoints[i]))
+          {
+            // Replace with 'hair space'. Should better be 'zero-width space'
+            // but that doesn't seem to be supported by default font.
+            codePoints[i] = 8202;
+          }
       }
 
    glyphCodes = getGlyphs( codePoints );

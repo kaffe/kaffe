@@ -1,4 +1,4 @@
-/* BorderWidth.java -- A CSS metric for border widths
+/* BorderStyle.java -- Utility for dealing with border styles
    Copyright (C) 2006 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -39,40 +39,26 @@ exception statement from your version. */
 package gnu.javax.swing.text.html.css;
 
 /**
- * A special CSS metric for border widths. It basically understands everything
- * as Length, and in addition to that provides a mapping for the border-width's
- * thin, medium and think values.
+ * Utility class for handling border styles.
  */
-public class BorderWidth
-  extends Length
+public class BorderStyle
 {
 
   /**
-   * Creates a new BorderWidth instance.
-   *
-   * @param val the CSS value to be interpreted
-   */
-  public BorderWidth(String val)
-  {
-    super(val);
-    if (val.equals("thin"))
-      floatValue = 1.F;
-    else if (val.equals("medium"))
-      floatValue = 2.F;
-    else if (val.equals("thick"))
-      floatValue = 3.F;
-  }
-
-  /**
-   * Checks if the specified value makes up a valid border-width value.
+   * Determines if a given value makes up a valid border style value.
    *
    * @param value the value to check
    *
-   * @return <code>true</code> if the value is a valid border-width
+   * @return <code>true</code> when this is a valid border style,
+   *         <code>false</code> otherwise
    */
-  public static boolean isValid(String value)
+  public static boolean isValidStyle(String value)
   {
-    return value.equals("thin") || value.equals("medium")
-           || value.equals("thick") || Length.isValid(value);
+    return value.equals("none") || value.equals("hidden")
+           || value.equals("dotted") || value.equals("dashed")
+           || value.equals("solid") || value.equals("double")
+           || value.equals("groove") || value.equals("ridge")
+           || value.equals("inset") || value.equals("outset");
+           
   }
 }

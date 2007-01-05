@@ -62,15 +62,40 @@ public class Length
   private boolean isPercentage;
 
   /**
+   * Indicates a length value that is relative to the font size (em).
+   */
+  private boolean isFontEMRelative;
+
+  /**
+   * Indicates a length value that is relative to the font size (ex).
+   */
+  private boolean isFontEXRelative;
+
+  /**
+   * The EM base size.
+   */
+  private float emBase;
+
+  /**
+   * The EX base size.
+   */
+  private float exBase;
+
+  /**
    * Creates a new length converter instance.
    *
    * @param val the CSS value
    */
   public Length(String val)
   {
+    isFontEMRelative = false;
+    isFontEXRelative = false;
+    isPercentage = false;
     value = val;
     int i = value.indexOf("px");
     int percent = value.indexOf("%");
+    int em = value.indexOf("em");
+    int ex = value.indexOf("ex");
     try
       {
         floatValue = 0.0F;
@@ -85,13 +110,24 @@ public class Length
             String sub = value.substring(0, percent);
             floatValue = Float.parseFloat(sub) / 100;
           }
+        else if (em != -1)
+          {
+            isFontEMRelative = true;
+            String sub = value.substring(0, em);
+            floatValue = Float.parseFloat(sub);
+          }
+        else if (ex != -1)
+          {
+            isFontEXRelative = true;
+            String sub = value.substring(0, ex);
+            floatValue = Float.parseFloat(sub);
+          }
         else
           {
-            // TODO: Implement other length options.
             floatValue = Float.parseFloat(value);
           }
       }
-    catch (NumberFormatException ex)
+    catch (NumberFormatException exc)
       {
         // Don't let such small problems interrupt CSS parsing.
         System.err.println("couldn't parse: " + val);
@@ -112,16 +148,76 @@ public class Length
    * Returns the absolute span for the case when this length value is
    * a relative value.
    *
-   * @param available the target span
+   * @param base the base span
    *
    * @return the absolute span
    */
-  public float getValue(float available)
+  public float getValue(float base)
   {
     float span = floatValue;
     if (isPercentage)
-      span *= available;
+      span *= base;
+    else if (isFontEMRelative)
+      span *= emBase;
+    else if (isFontEXRelative)
+      span *= exBase;
     return span;
+  }
+
+  /**
+   * Sets the font relative EM base.
+   *
+   * @param base the font relative EM base
+   */
+  public void setEMBase(float base)
+  {
+    emBase = base;
+  }
+
+  /**
+   * Sets the font relative EX base.
+   *
+   * @param base the font relative EX base
+   */
+  public void setEXBase(float base)
+  {
+    exBase = base;
+  }
+
+  /**
+   * Sets the font relative base values.
+   *
+   * @param emBase the EM base
+   * @param exBase the EX base
+   */
+  public void setFontBases(float emBase, float exBase)
+  {
+    setEMBase(emBase);
+    setEXBase(exBase);
+  }
+
+  /**
+   * Returns true when this length value is an em font relative value. In
+   * order to get correct results, you need the exBase property set up
+   * correctly.
+   *
+   * @return true when this length value is an ex font relative value
+   */
+  public boolean isFontEMRelative()
+  {
+    return isFontEMRelative;
+  }
+
+  /**
+   * Returns true when this length value is an ex font relative value. In
+   * order to get correct results, you need the emBase property set up
+   * correctly.
+   *
+   * @return true when this length value is an ex font relative value
+   */
+  public boolean isFontEXRelative()
+  {
+    return isFontEXRelative;
   }
 
   /**
@@ -134,5 +230,54 @@ public class Length
   public boolean isPercentage()
   {
     return isPercentage;
+  }
+
+  /**
+   * Checks if the specified value makes up a valid length value.
+   *
+   * @param value the value to check
+   *
+   * @return <code>true</code> if the value is a valid length
+   */
+  public static boolean isValid(String value)
+  {
+    boolean isValid = true;
+    int px = value.indexOf("px");
+    int em = value.indexOf("em");
+    int ex = value.indexOf("ex");
+    int pc = value.indexOf('%');
+    try
+      {
+        if (px != -1)
+          {
+            Integer.parseInt(value.substring(0, px));
+          }
+        else if (em != -1)
+          {
+            Integer.parseInt(value.substring(0, em));
+          }
+        else if (ex != -1)
+          {
+            Integer.parseInt(value.substring(0, ex));
+          }
+        else if (pc != -1)
+          {
+            Integer.parseInt(value.substring(0, ex));
+          }
+        else
+          {
+            Integer.parseInt(value);
+          }
+      }
+    catch (NumberFormatException nfe)
+      {
+        isValid = false;
+      }
+    return isValid;
+  }
+
+  public String toString()
+  {
+    return value;
   }
 }

@@ -1203,6 +1203,8 @@ public abstract class Component
         Component p = parent;
         if (p != null)
           f = p.getFontImpl();
+        else
+          f = new Font("Dialog", Font.PLAIN, 12);
       }
     return f;
   }

@@ -86,38 +86,39 @@ public class BeanContextServicesSupport
   {
     private static final long serialVersionUID = 7078212910685744490L;
 
-    private BCSSProxyServiceProvider()
+    private BeanContextServiceProvider provider;
+
+    private BCSSProxyServiceProvider(BeanContextServiceProvider p)
     {
+      provider = p;
     }
 
     public Iterator getCurrentServiceSelectors (BeanContextServices bcs,
                                                 Class serviceClass)
-      throws NotImplementedException
     {
-      throw new Error ("Not implemented");
+      return provider.getCurrentServiceSelectors(bcs, serviceClass);
     }
 
     public Object getService (BeanContextServices bcs,
                               Object requestor,
                               Class serviceClass,
                               Object serviceSelector)
-      throws NotImplementedException
     {
-      throw new Error ("Not implemented");
+      return provider.getService(bcs, requestor, serviceClass,
+				 serviceSelector);
     }
 
     public void releaseService (BeanContextServices bcs,
                                 Object requestor,
                                 Object service)
-      throws NotImplementedException
     {
-      throw new Error ("Not implemented");
+      provider.releaseService(bcs, requestor, service);
     }
 
     public void serviceRevoked (BeanContextServiceRevokedEvent bcsre)
-      throws NotImplementedException
     {
-      throw new Error ("Not implemented");
+      if (provider instanceof BeanContextServiceRevokedListener)
+	((BeanContextServiceRevokedListener) provider).serviceRevoked(bcsre);
     }
   }
 
@@ -772,16 +773,24 @@ public class BeanContextServicesSupport
     serviceLeases = new HashMap();
   }
 
-  protected  void initializeBeanContextResources ()
-    throws NotImplementedException
+  /**
+   * Subclasses may override this method to allocate resources
+   * from the nesting bean context.
+   */
+  protected  void initializeBeanContextResources()
   {
-    throw new Error ("Not implemented");
+    /* Purposefully left empty */
   }
 
-  protected  void releaseBeanContextResources ()
-    throws NotImplementedException
+  /**
+   * Relinquishes any resources obtained from the parent context.
+   * Specifically, those services obtained from the parent are revoked.
+   * Subclasses may override this method to deallocate resources
+   * from the nesting bean context.  
+   */
+  protected void releaseBeanContextResources()
   {
-    throw new Error ("Not implemented");
+    /* Purposefully left empty */
   }
 
   /**

@@ -660,11 +660,11 @@ public class DecimalFormat extends NumberFormat
     int len = str.length();
     if (len < stop) stop = len;
     
-    char ch;
-    int i = 0;
-    for (i = start; i < stop; i++)
+    int i = start;
+    while (i < stop)
       {
-        ch = str.charAt(i);
+        char ch = str.charAt(i);
+        i++;
        
         if (ch >= zero && ch <= (zero + 9))
           {
@@ -749,7 +749,7 @@ public class DecimalFormat extends NumberFormat
     
     if (isNegative) number.insert(0, '-');
    
-    pos.setIndex(i);
+    pos.setIndex(i - 1);
     
     // now we handle the return type
     BigDecimal bigDecimal = new BigDecimal(number.toString());
@@ -1893,71 +1893,16 @@ public class DecimalFormat extends NumberFormat
     // add the INTEGER attribute
     addAttribute(Field.INTEGER, attributeStart, dest.length());
     
-    if (this.decimalSeparatorAlwaysShown ||
-        ((!isLong || this.useExponentialNotation)
-         && this.showDecimalSeparator &&
-         this.maximumFractionDigits > 0) ||
-         this.minimumFractionDigits > 0)
+    // ...update field position, if needed, and return...
+    if ((fieldPos.getField() == INTEGER_FIELD ||
+        fieldPos.getFieldAttribute() == NumberFormat.Field.INTEGER))
       {
-        attributeStart = dest.length();
-        
-        if (this.useCurrencySeparator)
-          dest.append(symbols.getMonetaryDecimalSeparator());
-        else
-          dest.append(symbols.getDecimalSeparator());
-        
-        // add the INTEGER attribute
-        addAttribute(Field.DECIMAL_SEPARATOR, attributeStart, dest.length());
+        fieldPos.setBeginIndex(beginIndexInt);
+        fieldPos.setEndIndex(endIndexInt);
       }
     
-    // now handle the fraction portion of the number
-    if ((!isLong || this.useExponentialNotation)
-        && this.maximumFractionDigits > 0
-        || this.minimumFractionDigits > 0)
-      {
-        attributeStart = dest.length();
-        beginIndexFract = attributeStart;
+    handleFractionalPart(dest, fractPart, fieldPos, isLong);
         
-        int digits = this.minimumFractionDigits;
-        
-        if (this.useExponentialNotation)
-          {
-            digits = (this.minimumIntegerDigits + this.minimumFractionDigits)
-              - dest.length();
-            if (digits < 0) digits = 0;
-          }
-        
-        fractPart = adjustTrailingZeros(fractPart, digits);
-        
-        // FIXME: this code must be improved
-        // now check if the factional part is just 0, in this case
-        // we need to remove the '.' unless requested
-        boolean allZeros = true;
-        char fracts[] = fractPart.toCharArray();
-        for (int i = 0; i < fracts.length; i++)
-          {
-            if (fracts[i] != '0')
-              allZeros = false;
-          }
-             
-        if (!allZeros || (minimumFractionDigits > 0))
-          {
-            appendDigit(fractPart, dest, false);
-            endIndexFract = dest.length();
-            addAttribute(Field.FRACTION, attributeStart, endIndexFract);
-          }
-        else if (!this.decimalSeparatorAlwaysShown)
-          {
-            dest.deleteCharAt(dest.length() - 1);
-          }
-        else
-          {
-            System.out.println("ayeeeee!");
-            endIndexFract = dest.length();
-            addAttribute(Field.FRACTION, attributeStart, endIndexFract);
-          }
-      }
-    
     // and the exponent
     if (this.useExponentialNotation)
       {
@@ -1999,23 +1944,108 @@ public class DecimalFormat extends NumberFormat
       {
         dest.append(positiveSuffix);
       }
+  }
+
+  /**
+   * Add to the input buffer the result of formatting the fractional
+   * portion of the number.
+   * 
+   * @param dest
+   * @param fractPart
+   * @param fieldPos
+   * @param isLong
+   */
+  private void handleFractionalPart(StringBuffer dest, String fractPart,
+                                    FieldPosition fieldPos, boolean isLong)
+  {
+    int dotStart = 0;
+    int dotEnd = 0;
+    boolean addDecimal = false;
     
-    // ...update field position, if needed, and return...
-    if ((fieldPos.getField() == INTEGER_FIELD ||
-        fieldPos.getFieldAttribute() == NumberFormat.Field.INTEGER))
+    if (this.decimalSeparatorAlwaysShown  ||
+         ((!isLong || this.useExponentialNotation) &&
+           this.showDecimalSeparator && this.maximumFractionDigits > 0) ||
+        this.minimumFractionDigits > 0)
       {
-        fieldPos.setBeginIndex(beginIndexInt);
-        fieldPos.setEndIndex(endIndexInt);
+        dotStart = dest.length();
+        
+        if (this.useCurrencySeparator)
+          dest.append(symbols.getMonetaryDecimalSeparator());
+        else
+          dest.append(symbols.getDecimalSeparator());
+        
+        dotEnd = dest.length();
+        addDecimal = true;
       }
+    
+    // now handle the fraction portion of the number
+    int fractStart = 0;
+    int fractEnd = 0;
+    boolean addFractional = false;
+    
+    if ((!isLong || this.useExponentialNotation)
+        && this.maximumFractionDigits > 0
+        || this.minimumFractionDigits > 0)
+      {
+        fractStart = dest.length();
+        fractEnd = fractStart;
+        
+        int digits = this.minimumFractionDigits;
+        
+        if (this.useExponentialNotation)
+          {
+            digits = (this.minimumIntegerDigits + this.minimumFractionDigits)
+              - dest.length();
+            if (digits < 0) digits = 0;
+          }
+        
+        fractPart = adjustTrailingZeros(fractPart, digits);
+        
+        // FIXME: this code must be improved
+        // now check if the factional part is just 0, in this case
+        // we need to remove the '.' unless requested
+        boolean allZeros = true;
+        char fracts[] = fractPart.toCharArray();
+        for (int i = 0; i < fracts.length; i++)
+          {
+            if (fracts[i] != '0')
+              allZeros = false;
+          }
+        
+        if (!allZeros || (minimumFractionDigits > 0))
+          {
+            appendDigit(fractPart, dest, false);
+            fractEnd = dest.length();
+            
+            addDecimal = true;
+            addFractional = true;
+          }
+        else if (!this.decimalSeparatorAlwaysShown)
+          {
+            dest.deleteCharAt(dest.length() - 1);
+            addDecimal = false;
+          }
+        else
+          {
+            fractEnd = dest.length();
+            addFractional = true;
+          }
+      }
+    
+    if (addDecimal)
+      addAttribute(Field.DECIMAL_SEPARATOR, dotStart, dotEnd);
+    
+    if (addFractional)
+      addAttribute(Field.FRACTION, fractStart, fractEnd);
     
     if ((fieldPos.getField() == FRACTION_FIELD ||
         fieldPos.getFieldAttribute() == NumberFormat.Field.FRACTION))
       {
-        fieldPos.setBeginIndex(beginIndexFract);
-        fieldPos.setEndIndex(endIndexFract);
+        fieldPos.setBeginIndex(fractStart);
+        fieldPos.setEndIndex(fractEnd);
       }
   }
-
+  
   /**
    * Append to <code>dest</code>the give number of zeros.
    * Grouping is added if needed.

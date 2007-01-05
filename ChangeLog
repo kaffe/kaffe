@@ -1,6 +1,11 @@
 2007-01-05  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/external/classpath/ : Resynced with GNU Classpath 
+	up to 2006-12-06, i.e. 0.93.
+
+2007-01-05  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/external/classpath/ : Resynced with GNU Classpath 
 	up to 2006-11-30.
 
 2007-01-05  Dalibor Topic  <robilad@kaffe.org>

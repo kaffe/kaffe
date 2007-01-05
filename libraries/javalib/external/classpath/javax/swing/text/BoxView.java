@@ -285,89 +285,14 @@ public class BoxView
     // This returns a cached instance.
     alloc = getInsideAllocation(alloc);
 
-    // The following algorithm optimizes painting of a BoxView by taking
-    // advantage of the layout order of the box children.
-    //
-    // 1. It first searches a child that which's allocation is inside the clip.
-    //    This is accomplished by an efficient binary search. This assumes
-    //    that the children of the BoxView are laid out in the same order
-    //    as their index within the view. This is true for the BoxView, but
-    //    might not be the case for all subclasses.
-    // 2. Starting from the found view, it paints the children in both
-    //    directions until the first view is hit that is outside the clip.
-
-    // First we search a child view that is inside the clip.
-
-    // Fetch the clip rect and calculate the center point of it.
-    clipRect = g.getClipBounds(clipRect);
-    int cX = clipRect.x + clipRect.width / 2;
-    int cY = clipRect.y + clipRect.height / 2;
-
-    int viewCount = getViewCount();
-    int up = viewCount;
-    int low = 0;
-    int mid = (up - low) / 2;
-    View start = getView(mid);
-
-    int newMid;
-    // Use another cached instance here to avoid allocations during
-    // painting.
-    tmpRect.setBounds(alloc);
-    // This modifies tmpRect.
-    childAllocation(mid, tmpRect);
-    while (! clipRect.intersects(tmpRect))
+    int count = getViewCount();
+    for (int i = 0; i < count; i++)
       {
-        if (isBefore(cX, cY, tmpRect))
-          {
-            up = mid;
-            newMid = (up - low) / 2 + low;
-            mid = (newMid == mid) ? newMid - 1 : newMid;
-          }
-        else if (isAfter(cX, cY, tmpRect))
-          {
-            low = mid;
-            newMid = (up - low) / 2 + low;
-            mid = (newMid == mid) ? newMid + 1 : newMid;
-          }
-        else
-          break;
-        if (mid >= 0 && mid < viewCount)
-          {
-            start = getView(mid);
-            tmpRect.setBounds(alloc);
-            childAllocation(mid, tmpRect);
-          }
-        else
-          break;
-      }
-
-    if (mid >= 0 && mid < viewCount)
-      {
-        // Ok, we found one view that is inside the clip rect. Now paint the
-        // children before it that are inside the clip.
-        boolean inClip = true;
-        for (int i = mid - 1; i >= 0 && inClip; i--)
-          {
-            start = getView(i);
-            tmpRect.setBounds(alloc);
-            childAllocation(i, tmpRect);
-            inClip = clipRect.intersects(tmpRect);
-            if (inClip)
-              paintChild(g, tmpRect, i);
-          }
-
-        // Now paint the found view and all views after it that lie inside the
-        // clip.
-        inClip = true;
-        for (int i = mid; i < viewCount && inClip; i++)
-          {
-            start = getView(i);
-            tmpRect.setBounds(alloc);
-            childAllocation(i, tmpRect);
-            inClip = clipRect.intersects(tmpRect);
-            if (inClip)
-              paintChild(g, tmpRect, i);
-          }
+        View child = getView(i);
+        tmpRect.setBounds(alloc);
+        childAllocation(i, tmpRect);
+        if (g.hitClip(tmpRect.x, tmpRect.y, tmpRect.width, tmpRect.height))
+          paintChild(g, tmpRect, i);
       }
   }
 

@@ -137,27 +137,45 @@ public class BufferedImageGraphics extends CairoGraphics2D
 
     cairo_t = surface.newCairoContext();
 
+    // Get pixels out of buffered image and set in cairo surface
     Raster raster = bi.getRaster();
     int[] pixels;
-    // get pixels
 
-    if(raster instanceof CairoSurface)
-      pixels = ((CairoSurface)raster).getPixels(imageWidth * imageHeight);
+    if (hasFastCM)
+      {
+        SinglePixelPackedSampleModel sm = (SinglePixelPackedSampleModel)image.getSampleModel();
+        int minX = image.getRaster().getSampleModelTranslateX();
+        int minY = image.getRaster().getSampleModelTranslateY();
+
+        // Pull pixels directly out of data buffer
+        if(raster instanceof CairoSurface)
+          pixels = ((CairoSurface)raster).getPixels(raster.getWidth() * raster.getHeight());
+        else
+          pixels = ((DataBufferInt)raster.getDataBuffer()).getData();
+
+        // Discard pixels that fall outside of the image's bounds
+        // (ie, this image is actually a subimage of a different image)
+        if (!(sm.getScanlineStride() == imageWidth && minX == 0 && minY == 0))
+          {
+            int[] pixels2 = new int[imageWidth * imageHeight];
+            int scanline = sm.getScanlineStride();
+            
+            for (int i = 0; i < imageHeight; i++)
+              System.arraycopy(pixels, (i - minY) * scanline - minX, pixels2, i * imageWidth, imageWidth);
+            
+            pixels = pixels2;
+          }
+
+        // Fill the alpha channel as opaque if image does not have alpha
+        if( !hasAlpha )
+          for(int i = 0; i < pixels.length; i++)
+            pixels[i] &= 0xFFFFFFFF;
+      }
     else
       {
-	if( hasFastCM )
-	  {
-	    pixels = ((DataBufferInt)raster.getDataBuffer()).getData();
-	    if( !hasAlpha )
-	      for(int i = 0; i < pixels.length; i++)
-		pixels[i] &= 0xFFFFFFFF;
-	  }
-	else
-	  {
-	    pixels = CairoGraphics2D.findSimpleIntegerArray
-	      (image.getColorModel(),image.getData());
-	  }
+        pixels = CairoGraphics2D.findSimpleIntegerArray(image.getColorModel(),image.getData());
       }
+    
     surface.setPixels( pixels );
 
     setup( cairo_t );

@@ -1174,16 +1174,14 @@ public final class TextLayout implements Cloneable
         // TODO: Perform binary search for maximum efficiency. However, we
         // need the run location laid out statically to do that.
         int numRuns = runs.length;
-        float offs = 0;
         Run hitRun = null;
         for (int i = 0; i < numRuns && hitRun == null; i++)
           {
             Run run = runs[i];
             Rectangle2D lBounds = run.glyphVector.getLogicalBounds();
-            if (lBounds.getMinY() + offs <= y && lBounds.getMaxY() + offs > y)
+            if (lBounds.getMinY() + run.location <= y
+                && lBounds.getMaxY() + run.location >= y)
               hitRun = run;
-            else
-              offs += lBounds.getHeight();
           }
         // Now we have (hopefully) found a run that hits. Now find the
         // right character.
@@ -1196,12 +1194,12 @@ public final class TextLayout implements Cloneable
                 int gi = i - hitRun.runStart;
                 Rectangle2D lBounds = gv.getGlyphLogicalBounds(gi)
                                       .getBounds2D();
-                if (lBounds.getMinY() + offs <= y
-                    && lBounds.getMaxY() + offs > y)
+                if (lBounds.getMinY() + hitRun.location <= y
+                    && lBounds.getMaxY() + hitRun.location >= y)
                   {
                     // Found hit. Now check if we are leading or trailing.
                     boolean leading = true;
-                    if (lBounds.getCenterY() + offs <= y)
+                    if (lBounds.getCenterY() + hitRun.location <= y)
                       leading = false;
                     hitInfo = leading ? TextHitInfo.leading(i)
                                       : TextHitInfo.trailing(i);
@@ -1215,16 +1213,14 @@ public final class TextLayout implements Cloneable
         // TODO: Perform binary search for maximum efficiency. However, we
         // need the run location laid out statically to do that.
         int numRuns = runs.length;
-        float offs = 0;
         Run hitRun = null;
         for (int i = 0; i < numRuns && hitRun == null; i++)
           {
             Run run = runs[i];
             Rectangle2D lBounds = run.glyphVector.getLogicalBounds();
-            if (lBounds.getMinX() + offs <= x && lBounds.getMaxX() + offs > x)
+            if (lBounds.getMinX() + run.location <= x
+                && lBounds.getMaxX() + run.location >= x)
               hitRun = run;
-            else
-              offs += lBounds.getWidth();
           }
         // Now we have (hopefully) found a run that hits. Now find the
         // right character.
@@ -1237,12 +1233,12 @@ public final class TextLayout implements Cloneable
                 int gi = i - hitRun.runStart;
                 Rectangle2D lBounds = gv.getGlyphLogicalBounds(gi)
                                       .getBounds2D();
-                if (lBounds.getMinX() + offs <= x
-                    && lBounds.getMaxX() + offs > x)
+                if (lBounds.getMinX() + hitRun.location <= x
+                    && lBounds.getMaxX() + hitRun.location >= x)
                   {
                     // Found hit. Now check if we are leading or trailing.
                     boolean leading = true;
-                    if (lBounds.getCenterX() + offs <= x)
+                    if (lBounds.getCenterX() + hitRun.location <= x)
                       leading = false;
                     hitInfo = leading ? TextHitInfo.leading(i)
                                       : TextHitInfo.trailing(i);

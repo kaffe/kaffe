@@ -710,7 +710,11 @@ public class LogManager
   {
     try
       {
-	return Level.parse(getLogManager().getProperty(propertyName));
+        String value = getLogManager().getProperty(propertyName);
+	if (value != null)
+	  return Level.parse(getLogManager().getProperty(propertyName));
+        else
+	   return defaultValue;
       }
     catch (Exception ex)
       {

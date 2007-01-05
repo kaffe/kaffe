@@ -468,6 +468,7 @@ public class ComponentGraphics extends CairoGraphics2D
       }
 
     BufferedImage bimg;
+    img = AsyncImage.realImage(img, observer);
     if (img instanceof BufferedImage)
       bimg = (BufferedImage) img;
     else

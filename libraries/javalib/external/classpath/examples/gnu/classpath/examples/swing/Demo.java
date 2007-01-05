@@ -66,7 +66,7 @@ public class Demo
     return getIcon("/gnu/classpath/examples/icons/big-" + s + ".png", s);
   }
 
-  private static Icon getIcon(String location, String name)
+  static Icon getIcon(String location, String name)
   {
     URL url = Demo.class.getResource(location);
     if (url == null) System.err.println("WARNING " + location + " not found.");

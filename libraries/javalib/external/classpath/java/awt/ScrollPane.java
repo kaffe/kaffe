@@ -414,7 +414,7 @@ addNotify()
   super.addNotify();
 
   Component[] list = getComponents();
-  if (list != null && list.length > 0 && ! (list[0] instanceof Panel))
+  if (list != null && list.length > 0 && list[0].isLightweight())
   {
     Panel panel = new Panel();
     panel.setLayout(new BorderLayout());
@@ -454,8 +454,6 @@ removeNotify()
     remove(list[0]);
 
   super.addImpl(component, constraints, index);
-
-  doLayout();
 }
 
 /*************************************************************************/

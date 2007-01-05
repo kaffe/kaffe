@@ -176,6 +176,9 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
     if (image instanceof GtkImage)
 	return ((GtkImage) image).checkImage (observer);
 
+    if (image instanceof AsyncImage)
+      return ((AsyncImage) image).checkImage(observer);
+
     if (observer != null)
       observer.imageUpdate (image, status,
                             -1, -1,
@@ -189,7 +192,7 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
    * Helper to return either a Image -- the argument -- or a
    * GtkImage with the errorLoading flag set if the argument is null.
    */
-  private Image imageOrError(Image b)
+  static Image imageOrError(Image b)
   {
     if (b == null) 
       return GtkImage.getErrorImage();
@@ -216,16 +219,7 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
 
   public Image createImage (URL url)
   {
-    Image image;
-    try
-      {
-	image = CairoSurface.getBufferedImage( new GtkImage( url ) );
-      }
-    catch (IllegalArgumentException iae)
-      {
-	image = null;
-      }
-    return imageOrError(image);
+    return new AsyncImage(url);
   }
 
   public Image createImage (ImageProducer producer) 
@@ -390,6 +384,13 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
     if (image instanceof GtkImage)
       return ((((GtkImage)image).checkImage (observer) & 
 	       ImageObserver.ALLBITS) != 0);
+
+    if (image instanceof AsyncImage)
+      {
+        AsyncImage aImg = (AsyncImage) image;
+        aImg.addObserver(observer);
+        return aImg.realImage != null;
+      }
 
     /* Assume anything else is too */
     return true;

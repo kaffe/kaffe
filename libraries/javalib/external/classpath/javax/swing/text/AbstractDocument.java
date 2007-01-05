@@ -176,6 +176,12 @@ public abstract class AbstractDocument implements Document, Serializable
   private BidiRootElement bidiRoot;
 
   /**
+   * True when we are currently notifying any listeners. This is used
+   * to detect illegal situations in writeLock().
+   */
+  private transient boolean notifyListeners;
+
+  /**
    * Creates a new <code>AbstractDocument</code> with the specified
    * {@link Content} model.
    *
@@ -325,10 +331,17 @@ public abstract class AbstractDocument implements Document, Serializable
    */
   protected void fireChangedUpdate(DocumentEvent event)
   {
-    DocumentListener[] listeners = getDocumentListeners();
-
-    for (int index = 0; index < listeners.length; ++index)
-      listeners[index].changedUpdate(event);
+    notifyListeners = true;
+    try
+      {
+        DocumentListener[] listeners = getDocumentListeners();
+        for (int index = 0; index < listeners.length; ++index)
+          listeners[index].changedUpdate(event);
+      }
+    finally
+      {
+        notifyListeners = false;
+      }
   }
 
   /**
@@ -339,10 +352,17 @@ public abstract class AbstractDocument implements Document, Serializable
    */
   protected void fireInsertUpdate(DocumentEvent event)
   {
-    DocumentListener[] listeners = getDocumentListeners();
-
-    for (int index = 0; index < listeners.length; ++index)
-      listeners[index].insertUpdate(event);
+    notifyListeners = true;
+    try
+      {
+        DocumentListener[] listeners = getDocumentListeners();
+        for (int index = 0; index < listeners.length; ++index)
+          listeners[index].insertUpdate(event);
+      }
+    finally
+      {
+        notifyListeners = false;
+      }
   }
 
   /**
@@ -353,10 +373,17 @@ public abstract class AbstractDocument implements Document, Serializable
    */
   protected void fireRemoveUpdate(DocumentEvent event)
   {
-    DocumentListener[] listeners = getDocumentListeners();
-
-    for (int index = 0; index < listeners.length; ++index)
-      listeners[index].removeUpdate(event);
+    notifyListeners = true;
+    try
+      {
+        DocumentListener[] listeners = getDocumentListeners();
+        for (int index = 0; index < listeners.length; ++index)
+          listeners[index].removeUpdate(event);
+      }
+    finally
+      {
+        notifyListeners = false;
+      }
   }
 
   /**
@@ -1338,6 +1365,8 @@ public abstract class AbstractDocument implements Document, Serializable
           {
             if (Thread.currentThread() == currentWriter)
               {
+                if (notifyListeners)
+                  throw new IllegalStateException("Mutation during notify");
                 numWriters++;
                 return;
               }

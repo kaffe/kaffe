@@ -1,3 +1,556 @@
+2006-12-06  Roman Kennke  <kennke@aicas.com>
+
+	* gnu/java/awt/peer/gtk/AsyncImage.java
+	(Loader.run): Synchronize on the AsyncImage to avoid threading
+	issues.
+	(addObservers): Check for obs==null outside and synchronize on
+	this inside to avoid locking issues.
+	(checkImage): New helper method.
+	(notifyObservers): Check that the correct lock is held and
+	remove actual locking.
+	* gnu/java/awt/peer/gtk/GtkToolkit.java
+	(checkImage): Added special handling for AsyncImages.
+	
+2006-12-06  Roman Kennke  <kennke@aicas.com>
+
+	* examples/gnu/classpath/examples/swing/Demo.java
+	(getIcon): Made package private.
+	* examples/gnu/classpath/examples/swing/HtmlDemo.java
+	(hyperlinkUpdate): Convert URL to string.
+
+2006-12-06  Mark Wielaard  <mark@klomp.org>
+
+	* gnu/java/awt/peer/gtk/AsyncImage.java (addObserver): Never notify
+	null Observer.
+
+2006-12-06  Roman Kennke  <kennke@aicas.com>
+
+	* examples/gnu/classpath/examples/icons/back.png,
+	* examples/gnu/classpath/examples/icons/reload.png:
+	New icons for the HTML browser.
+	* examples/gnu/classpath/examples/swing/HtmlDemo.java
+	(history): New field. Manages the browsing history.
+	(HtmlDemo): Initialize history.
+	(createContent): Set location and add history. Add toolbar.
+	(createToolBar): New helper method.
+	(main): Make default size bigger.
+	* examples/gnu/classpath/examples/swing/frame1.html,
+	* examples/gnu/classpath/examples/swing/frame2.html,
+	* examples/gnu/classpath/examples/swing/frame3.html,
+	* examples/gnu/classpath/examples/swing/frame4.html,
+	* examples/gnu/classpath/examples/swing/frames.html,
+	* examples/gnu/classpath/examples/swing/tables.html:
+	New example pages.
+	* examples/gnu/classpath/examples/swing/welcome.html
+	Add a couple of links and new test pages.
+
+2006-12-06  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JEditorPane.java
+	(getStream): Buffer the stream for efficiency.
+	(setPage): Don't scroll the view at this point.
+	* javax/swing/plaf/basic/BasicTextUI.java
+	(RootView.paint): Call RootView's setSize to get synchronization.
+	(RootView.setSize): Synchronize to prevent race in layout code.
+	* javax/swing/text/AbstractDocument.java
+	(notifyListeners): New field.
+	(fireChangedUpdate): Track notifyListener field.
+	(fireRemoveUpdate): Track notifyListener field.
+	(fireIndertUpdate): Track notifyListener field.
+	(writeLock): Check notifyListener and throw IllegalStateException.
+	* javax/swing/text/View.java
+	(preferenceChanged): Create local var for better thread safety and
+	more efficiency.
+
+2006-12-06  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* java/awt/ScrollPane.java (addNotify): Add a parent panel for any
+	lightweight component, not just for non-Panel components.
+	(addImpl): Do not call doLayout.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkButtonPeer.c
+	(setNativeBounds): Ensure widget parent is a GtkFixed before
+	calling gtk_fixed_move.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkLabelPeer.c
+	(setNativeBounds): Likewise.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkComponentPeer.c
+	(setNativeBounds): Likewise.
+
+2006-12-06  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/html/TableView.java
+	(RowView.layoutMajorAxis): Check column index for invalid value.
+	(updateGrid): Check column index for invalid value.
+
+2006-12-06  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/html/BlockView.java
+	(getAlignment): Align blocks horizontally by the superclass.
+	* javax/swing/text/html/HTMLEditorKit.java
+	(HTMLFactory.create): Replace equals comparison by == for efficiency.
+	Add mapping for misplaced tr, td and th tags. Include object mapping.
+	* javax/swing/text/html/TableView.java
+	(RowView.replace): Invalidate grid early.
+	(gridValid): Initialize with false.
+	(create): Only create RowView and CellView for correctly placed
+	tags. Avoid unnecessary casts.
+	(getAlignment): Removed.
+	(replace): Invalidate grid early.
+
+2006-12-06  Francis Kung  <fkung@redhat.com>
+
+	* java/awt/geom/RectangularShape.java
+	(getBounds): Remove empty rectangle check.
+
+2006-12-06  Ben Konrath  <bkonrath@redhat.com>
+
+	Fixes PR 29853.
+	* gnu/xml/dom/DomAttr.java: Don't report mutation if oldValue and
+	newValue are the same.
+	* gnu/xml/dom/DomNode.java: Set parent if null during mutation.
+
+2006-12-06  Tania Bento  <tbento@redhat.com>
+
+	* javax/swing/border/CompoundBorder.java:
+	(isBorderOpaque): If inside border is null, return true if outside
+	border is opaque, false otherwise; if outside border is null, return
+	true if inside border is opaque, false otherwise; if inside or
+	outside border are both not null, then return true only if both the
+	inside and outside border are opaque, false otherwise.
+
+2006-12-06  Tania Bento  <tbento@redhat.com>
+
+	* javax/swing/border/CompoundBorder.java:
+	(isBorderOpaque): If inside and outside border both have a null
+	value, return true.
+
+2006-12-06  Chris Burdess  <dog@gnu.org>
+
+	Fixes PR 29272.
+	* javax/xml/parsers/DocumentBuilderFactory.java: Fix broken Javadoc.
+	* gnu/xml/stream/SAXParser.java: Fix file descriptor leak.
+
+2006-12-06  Chris Burdess  <dog@gnu.org>
+
+	Fixes PR 29264.
+	* gnu/xml/stream/XMLStreamWriterImpl.java: Allow arbitrary text in
+	  writeDTD method.
+
+2006-12-06  Chris Burdess  <dog@gnu.org>
+
+	Fixes PR 28816.
+	* javax/xml/validation/SchemaFactory.java: Use correct algorithm to
+	  discover schema factory implementation class.
+
+2006-12-05  Roman Kennke  <kennke@aicas.com>
+
+	* gnu/java/awt/peer/gtk/AsyncImage.java
+	(Loader.run): Nullify observers after loading.
+	(observers): Made package private.
+	(addObserver): Check for null observers field. Create local
+	variable for thread safety.
+	(getHeight): Use addObserver() for checking state of field
+	and notifying observer when necessary.
+	(getWidth): Use addObserver() for checking state of field
+	and notifying observer when necessary.
+	(getProperty): Use addObserver() for checking state of field
+	and notifying observer when necessary.
+	(notifyObservers): Check for null observers field. Create local
+	variable for thread safety.
+
+2006-12-05  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/html/HTMLEditorKit.java
+	(HTMLFactory.create): Removed debug output.
+	* javax/swing/text/html/InlineView.java
+	(getBreakWeight): Likewise.
+	* javax/swing/text/html/StyleSheet.java
+	(addRule): Likewise.
+	(ListPainter.paint): Removed debug output.
+
+2006-12-05  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/html/BlockView.java
+	(painter): Made package visible.
+	* javax/swing/text/html/StyleSheet.java
+	(translateBorder): New helper method.
+	(translateHTMLToCSS): Add mappings for border attributes.
+	* javax/swing/text/html/TableView.java
+	Made class subclass of BlockView to get CSS goodness.
+	(CellView.rowSpan): New field.
+	(CellView.setPropertiesFromAttributes): Fetch rowspan.
+	(RowView.overlap): New field.
+	(RowView.rowIndex): New field.
+	(RowView.layoutMajorAxis): Skip overlapping cells.
+	(RowView.layoutMinorAxis): Layout cells that span more than 1 row.
+	(numColumns): New field.
+	(tmpRect): New field.
+	(TableView): Initialize tmpRect.
+	(calculateColumnRequirements): Adjusted and fixed for multirows.
+	(getAlignment): Overridden to center tables.
+	(paint): Overridden to fix clipping.
+	(getStyleSheet): Made protected.
+	(layoutMajorAxis): Invalidate rows.
+	(setPropertiesFromAttributes): Made protected and call super.
+	(updateGrid): Update the overlapping information for multirows.
+
+2006-12-05  Roman Kennke  <kennke@aicas.com>
+
+	* gnu/java/awt/peer/gtk/AsyncImage.java
+	(addObserver): Check for null and ignore null observers.
+	(getWidth): Check for null and ignore null observers.
+	(getHeight): Check for null and ignore null observers.
+	(getProperty): Check for null and ignore null observers.
+
+2006-12-05  Francis Kung  <fkung@redhat.com>
+
+	* java/awt/BasicStroke.java
+	(capEnd): Prevent division by zero.
+	* java/awt/geom/Arc2D.java
+	(ArcIterator.ArcIterator): Do not shift the arc to make the extent positive.
+	(ArcIterator.currentSegment): Handle a negative extent.
+
+2006-12-05  Francis Kung  <fkung@redhat.com>
+
+	* gnu/java/awt/peer/gtk/BufferedImageGraphics.java
+	(constructor): Handle translated subimages properly, ie, if the image's
+	0,0 position is not the data buffer's first element.
+
+2006-12-05  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/html/ImageView.java
+	(ImageView): Initialize spans array here.
+	(setPropertiesFromAttributes): Moved init of spans array to
+	constructor.
+
+2006-12-05  Roman Kennke  <kennke@aicas.com>
+
+	* NEWS: Add entry about improved HTML support.
+
+2006-12-05  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/html/ImageView.java
+	(imageUpdate): Use spans field to determine if the CSS width/height
+	are set. Call safePreferenceChanged to protect view structure
+	from threading issues.
+	(spans): Made package private.
+	(ImageView): Initialize loadOnDemand with false.
+	(loadImage): Call Toolkit.prepareImage() to make sure we have
+	our Observer registered.
+	(safePreferenceChanged): New helper method. Calls preferenceChanged
+	in a thread safe environment.
+
+2006-12-05  Roman Kennke  <kennke@aicas.com>
+
+	* gnu/java/awt/peer/gtk/AsyncImage.java: New class. Supports
+	asynchronous loading of images.
+	* gnu/java/awt/peer/gtk/CairoGraphics2D.java
+	(drawImage): Fetch real image from possibly AsyncImage.
+	* gnu/java/awt/peer/gtk/ComponentGraphics.java
+	(drawImage): Fetch real image from possibly AsyncImage.
+	* gnu/java/awt/peer/gtk/GtkToolkit.java
+	(createImage(URL)): Create async image.
+	(imageOrError): Made method static for easy access from AsyncImage.
+	(prepareImage): For async images, register the observer to the
+	image.
+
+2006-12-05  Roman Kennke  <kennke@aicas.com>
+
+	(paintComponent): Include paint area from event.
+	(updateComponent): Include paint area from event.
+
+2006-12-04  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* java/awt/Component.java (getFontImpl): Return a default font if
+	topmost parent's font is null.
+
+2006-12-04  Robert Lougher  <rob.lougher@gmail.com>
+
+	* java/lang/management/ThreadInfo.java (ThreadInfo): Check
+	whether given a null lock and lockOwner.
+	(getLockName): Switch condition.
+	(getLockOwnerId): Likewise.
+	(getLockOwnerName): Likewise.
+
+2006-12-04  Mark Wielaard  <mark@klomp.org>
+
+	* javax/swing/text/html/CSS.java (parseMarginShorthand):
+	Remove debug output.
+
+2006-12-04  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/GlyphView.java
+	(J2DGlyphPainter): New inner class.
+	(checkPainter): For Java2D capable environments create
+	a J2DGlyphPainter.
+
+2006-12-04  Roman Kennke  <kennke@aicas.com>
+
+	* gnu/java/awt/peer/gtk/FreetypeGlyphVector.java
+	(FreeTypeGlyphVector): Don't filter control chars here.
+	(getGlyphs): Filter control chars and replace them by
+	hair space char.
+
+2006-12-04  Roman Kennke  <kennke@aicas.com>
+
+	* native/jni/java-nio/gnu_java_nio_VMChannel.c
+	(Java_gnu_java_nio_VMChannel_connect): Retry on EINTR.
+
+2006-12-04  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/font/TextLayout.java
+	(hitTestChar): Fixed conditions for inclusion of range.
+	Use layout information in the run for more efficiency.
+
+2006-12-04  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* gnu/java/lang/management/BeanImpl.java:
+	(translate(String)): Don't assume the list uses "E",
+	just use the first and only type variable.
+	* java/lang/management/ManagementFactory.java:
+	(getPlatformMBeanServer()): Register logging bean.
+	* javax/management/openmbean/OpenType.java:
+	(OpenType(String,String,String)): Actually use
+	the string created to handle arrays.
+	
+2006-12-04  Mark Wielaard  <mark@klomp.org>
+
+	* native/jni/java-nio/gnu_java_nio_VMChannel.c
+	(JCL_thread_interrupted): Use CallStaticBooleanMethod.
+
+2006-12-04  Mark Wielaard  <mark@klomp.org>
+
+	* vm/reference/gnu/java/nio/VMChannel.java (isThreadInterrupted):
+	Make static.
+	* native/jni/java-nio/gnu_java_nio_VMChannel.c
+	(JCL_thread_interrupted): Only take JNIEnv.
+	(vm_channel_class): New static variable.
+	(initID): Set vm_channel_class.
+	Wrap all reads() and writes() in do-while blocks that check
+	interrupted status.
+
+2006-12-04  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* gnu/javax/management/Server.java:
+	Make map final and initialise it.
+	(unregisterMBean(ObjectName)): Match against
+	delegate's object name and not the instance.
+	* java/lang/management/ManagementFactory.java:
+	Added constant fields.
+	(getPlatformMBeanServer()): Implemented.
+	* javax/management/MBeanServerFactory.java: New file.
+	
+2006-12-04  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/BoxView.java
+	(paint): Replaced painting algorithm with more simple and more
+	reliable painting of the box.
+	* javax/swing/text/html/BlockView.java
+	(PositionInfo): New inner class. Stores additional CSS positioning
+	information.
+	(positionInfo): New field.
+	(BlockView): Initialize positionInfo field.
+	(fetchLayoutInfo): New helper method. Fetches additional
+	CSS positioning information.
+	(layoutMajorAxis): Perform additional CSS layout.
+	(layoutMinorAxis): Perform additional CSS layout.
+	(positionView): New helper method.
+	(replace): Overridden to fetch additional layout information.
+	* javax/swing/text/html/CSS.java
+	(Attribute.POSITION): New field.
+	(Attribute.LEFT): New field.
+	(Attribute.RIGHT): New field.
+	(Attribute.TOP): New field.
+	(Attribute.BOTTOM): New field.
+	(getValue): Create Length for left, right, top and bottom
+	attributes.
+
+2006-12-04  Roman Kennke  <kennke@aicas.com>
+
+	* gnu/javax/swing/text/html/parser/support/Parser.java
+	(Sgml): Consume any whitespace that immediately follows
+	and sgml insertion.
+	(parseDocument): Consume any initial whitespace.
+
+2006-12-03  Mark Wielaard  <mark@klomp.org>
+
+	* java/util/logging/LogManager.java (getLevelProperty): Check
+	whether value is null before passing to Level.parse().
+
+2006-12-03  Mark Wielaard  <mark@klomp.org>
+
+	* javax/swing/JEditorPane.java (PageLoader.in): Made a PageStream.
+	(PageLoader.page): Made package local.
+	(PageLoader.run): Don't reset loader.
+	(PageLoader.cancel): New method.
+	(loading): Renamed to loader.
+	(getPage): Return loader.page.
+	(setPage): Always set loader. Never reset to null.
+
+2006-12-03  Mark Wielaard  <mark@klomp.org>
+
+	* javax/swing/plaf/basic/BasicTreeUI.java (paint): Check whether
+	path[k] is null.
+	(isLastChild): Return false when path is null.
+
+2006-12-03  Mark Wielaard  <mark@klomp.org>
+
+	* gnu/java/awt/peer/gtk/GtkComponentPeer.java (paintArea): Renamed
+	to currentPaintArea.
+	(paintComponent): Work with local reference to currentPaintArea.
+	(updateComponent): Likewise.
+	(coalescePaintEvent): Set currentPaintArea.
+
+2006-12-02  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* javax/management/MBeanServerBuilder.java: New file.
+	
+2006-12-01  Mark Wielaard  <mark@klomp.org>
+
+	* java/text/DecimalFormat.java (parse): Always increment parsing
+	index and adjust pos result.
+
+2006-12-01  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/html/HTML.java
+	(Attribute.DYNAMIC_CLASS): New field.
+	(Attribute.PSEUDO_CLASS): New field.
+	* javax/swing/text/html/HTMLDocument.java
+	(HTMLReader.CharacterAction.start): Initialize anchor with link
+	pseudo attribute.
+	(updateSpecialClass): New helper method. Updates the dynamic
+	or pseudo class for anchor tags.
+	* javax/swing/text/html/HTMLEditorKit.java
+	(LinkController.lastAnchorElement): New field. For tracking
+	enter/exit of anchors.
+	(LinkController.activateLink): Set pseudo class to 'visited'.
+	(LinkController.mouseMoved): Added support for tracking
+	the 'hover' dynamic class.
+	* javax/swing/text/html/InlineView.java
+	(changedUpdate): Fetch new properties.
+	* javax/swing/text/html/StyleSheet.java
+	(attributeSetToMap): New helper method.
+	(getRule): Also append dynamic and pseudo class to key.
+	(resolveStyle): Resolve style based generally on all attributes.
+	* javax/swing/text/html/TableView.java
+	(RowView.layoutMajorAxis): Make sure the grid is valid.
+	(updateGrid): Made package private.
+	* gnu/javax/swing/text/html/css/Selector.java
+	(calculateSpecificity): Added support for dynamic and pseudo classes.
+	(matches): Changed to operate on general attributes.
+	Added support for dynamic and pseudo classes.
+
+2006-12-01  Mario Torre  <neugens@limasoftware.net>
+
+	* java/text/DecimalFormat.java (formatInternal): move the formatting of
+	fractional portion in a separate method.
+	Also fixes the handling of decimal separator and its associated field.
+	(handleFractionalPart): new method, needed to relax a bit
+	formatInternal.
+	
+2006-12-01  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* java/beans/beancontext/BeanContextServicesSupport.java:
+	(BCSSProxyServiceProvider.getCurrentServiceSelectors(BeanContextServices,
+	Class)): Implemented.
+	(BCSSProxyServiceProvider.getService(BeanContextServices, Object,
+	Class, Object)): Implemented.
+	(BCSSProxyServiceProvider.releaseService(BeanContextServices,
+	Object, Object)): Implemented.
+	(BCSSProxyServiceProvider.serviceRevoked(BeanContextServiceRevokedEvent)):
+	Implemented.
+	(initialiseBeanContextResources()): Implemented.
+	(releaseBeanContextResoures()): Implemented.
+	
+2006-12-01  Mark Wielaard  <mark@klomp.org>
+
+	* include/gnu_java_awt_peer_gtk_GdkFontPeer.h: Regenerated.
+
+2006-12-01  Roman Kennke  <kennke@aicas.com>
+
+	* gnu/javax/swing/text/html/css/BorderStyle.java: New class for
+	handling border styles.
+	* gnu/javax/swing/text/html/css/BorderWidth.java
+	(isValid): New method.
+	* gnu/javax/swing/text/html/css/Length.java
+	(isValid): New method.
+	* javax/swing/text/html/CSS.java
+	(addInternal): Added shorthand parsing for border, padding and
+	margin.
+	(parseBackgroundShorthand): Added API docs.
+	(parsePaddingShorthand): New method. Handles padding shorthand
+	values.
+	(parseMarginShorthand): New method. Handles margin shorthand
+	values.
+	(parseBorderShorthand): New method. Handles border shorthand
+	values.
+	* javax/swing/text/html/StyleSheet.java
+	(translateHTMLToCSS): Set specific padding attributes.
+	(BoxPainter.BoxPainter): Don't handle PADDING and MARGIN here.
+	These shorthands are now handled in CSS.
+	(BoxPainter.paint): Exclude the outer margin.
+
+2006-12-01  Roman Kennke  <kennke@aicas.com>
+
+	* gnu/javax/swing/text/html/css/Length.java
+	(emBase): New field.
+	(exBase): New field.
+	(isFontEMRelative): New field.
+	(isFontEXRelative): New field.
+	(Length): Recognize and setup EM and EX relative values.
+	(getValue): Handle EM and EX relative values.
+	(isEMRelative): New method.
+	(isEXRelative): New method.
+	(setEMBase): New method.
+	(setEXBase): New method.
+	(setFontBases): New method.
+	* gnu/javax/swing/text/html/parser/support/Parser.java
+	(_handleEmptyTag): Use new isBlock() helper method.
+	(_handleEndTag_remaining): Use new isBlock() helper method.
+	(_handleStartTag): Consume whitespace after block start tag.
+	(Comment): Consume whitespace after a comment.
+	(isBlock): New helper method.
+	(readAttributes): Consider all characters in unquoted attribute
+	values.
+	* javax/swing/text/html/BlockView.java
+	(layoutMinorAxis): Use cached span value.
+	(paint): Added debug code (commented out).
+	(setPropertiesFromAttributes): Set the EM and EX base on lengths.
+	* javax/swing/text/html/CSSBorder.java
+	(CSSBorder): Take StyleSheet as argument. Call getBorderWidth()
+	with stylesheet.
+	(getBorderWidth): Set the EM and EX base on the length values.
+	* javax/swing/text/html/HTMLDocument.java
+	(HTMLReader.ParagraphAction.end): Do not set the inParagraph field.
+	(HTMLReader.ParagraphAction.start): Do not set the inParagraph field.
+	(HTMLReader.inImpliedParagraph): Removed.
+	(HTMLReader.inParagraph): Removed.
+	(HTMLReader.parseStack): New field.
+	(HTMLReader.addContent): Use new paragraph handling.
+	(HTMLReader.addSpecialElement): Use new paragraph handling.
+	(HTMLReader.blockClose): Use new paragraph handling.
+	(HTMLReader.blockOpen): Use new paragraph handling.
+	(HTMLReader.inImpliedParagraph): New helper method.
+	(HTMLReader.inParagraph): New helper method.
+	* javax/swing/text/html/ImageView.java
+	(attributes): New field. Caches view attributes.
+	(spans): New field. Caches CSS spans.
+	(getAttributes): Correctly setup CSS view attributes.
+	(getPreferredSpan): Use caches spans.
+	(getStyleSheet): Use the view's getDocument() method.
+	(setPropertiesFromAttributes): Cache spans and setup EM and EX.
+	(updateSize): Use cached spans.
+	* javax/swing/text/html/ParagraphView.java
+	(setPropertiesFromAttributes): Setup EM and EX.
+	* javax/swing/text/html/StyleSheet.java
+	(BoxPainter.BoxPainter): Setup EM and EX correctly.
+	(getEMBase): New helper method.
+	(getEXBase): New helper method.
+	* javax/swing/text/html/TableView.java
+	(width): New field. Caches the table width.
+	(calculateMinorAxisRequirements): Use caches span.
+	(setPropertiesFromAttributes): Cache span and setup EM/EX.
+	(updateGrid): Correctly setup EM/EX.
+
 2006-11-30  Roman Kennke  <kennke@aicas.com>
 
 	* javax/swing/text/html/FormSubmitEvent.java: New class.

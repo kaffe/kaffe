@@ -139,6 +139,7 @@ public class InlineView
     StyleSheet ss = getStyleSheet();
     attributes = ss.getViewAttributes(this);
     preferenceChanged(null, true, true);
+    setPropertiesFromAttributes();
   }
 
   /**
@@ -161,9 +162,8 @@ public class InlineView
   public int getBreakWeight(int axis, float pos, float len)
   {
     int weight;
-    if (nowrap) { if (getText(getStartOffset(), getEndOffset()).toString().contains("Web"))
-      System.err.println("Web NOWRAP");
-      weight = BadBreakWeight;}
+    if (nowrap)
+      weight = BadBreakWeight;
     else
       weight = super.getBreakWeight(axis, pos, len);
     return weight;
@@ -303,4 +303,5 @@ public class InlineView
       }
     return span;
   }
+
 }

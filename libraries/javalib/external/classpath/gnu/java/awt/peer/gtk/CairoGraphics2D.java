@@ -1463,7 +1463,7 @@ public abstract class CairoGraphics2D extends Graphics2D
     // Note - this can get us in trouble when the gdk lock is re-acquired.
     // for example by VolatileImage. See ComponentGraphics for how we work
     // around this.
-    
+    img = AsyncImage.realImage(img, obs);
     if( !(img instanceof BufferedImage) )
       {
 	ImageProducer source = img.getSource();

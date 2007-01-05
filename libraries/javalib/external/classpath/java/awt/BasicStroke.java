@@ -761,9 +761,13 @@ public class BasicStroke implements Stroke
         p1 = new double[]{a.last.P2.getX(), a.last.P2.getY()};
         dx = p1[0] - p0[0];
         dy = p1[1] - p0[1];
-        l = Math.sqrt(dx * dx + dy * dy);
-        dx = (2.0/3.0)*width*dx/l;
-        dy = (2.0/3.0)*width*dy/l;
+        if (dx != 0 && dy != 0)
+          {
+            l = Math.sqrt(dx * dx + dy * dy);
+            dx = (2.0/3.0)*width*dx/l;
+            dy = (2.0/3.0)*width*dy/l;
+          }
+        
         c1 = new Point2D.Double(p1[0] + dx, p1[1] + dy);
         c2 = new Point2D.Double(b.P1.getX() + dx, b.P1.getY() + dy);
         a.add(new CubicSegment(a.last.P2, c1, c2, b.P1));

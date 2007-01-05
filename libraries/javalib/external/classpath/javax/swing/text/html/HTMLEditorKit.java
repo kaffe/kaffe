@@ -98,7 +98,12 @@ public class HTMLEditorKit
     extends MouseAdapter
     implements MouseMotionListener, Serializable
     {
-      
+
+      /**
+       * The element of the last anchor tag.
+       */
+      private Element lastAnchorElement;
+
       /**
        * Constructor
        */
@@ -162,10 +167,41 @@ public class HTMLEditorKit
                     AttributeSet aAtts = (AttributeSet)
                                    el.getAttributes().getAttribute(HTML.Tag.A);
                     if (aAtts != null)
-                      newCursor = kit.getLinkCursor();
+                      {
+                        if (el != lastAnchorElement)
+                          {
+                            if (lastAnchorElement != null)
+                              htmlDoc.updateSpecialClass(lastAnchorElement,
+                                                  HTML.Attribute.DYNAMIC_CLASS,
+                                                  null);
+                            lastAnchorElement = el;
+                            htmlDoc.updateSpecialClass(el,
+                                                  HTML.Attribute.DYNAMIC_CLASS,
+                                                  "hover");
+                          }
+                        newCursor = kit.getLinkCursor();
+                      }
+                    else
+                      {
+                        if (lastAnchorElement != null)
+                          htmlDoc.updateSpecialClass(lastAnchorElement,
+                                              HTML.Attribute.DYNAMIC_CLASS,
+                                              null);
+                        lastAnchorElement = null;
+                      }
+                  }
+                else
+                  {
+                    if (lastAnchorElement != null)
+                      htmlDoc.updateSpecialClass(lastAnchorElement,
+                                          HTML.Attribute.DYNAMIC_CLASS,
+                                          null);
+                    lastAnchorElement = null;
                   }
                 if (editor.getCursor() != newCursor)
-                  editor.setCursor(newCursor);
+                  {
+                    editor.setCursor(newCursor);
+                  }
               }
           }
       }
@@ -198,6 +234,8 @@ public class HTMLEditorKit
             if (anchorAtts != null)
               {
                 href = (String) anchorAtts.getAttribute(HTML.Attribute.HREF);
+                htmlDoc.updateSpecialClass(el, HTML.Attribute.PSEUDO_CLASS,
+                                           "visited");
               }
             else
               {
@@ -754,52 +792,56 @@ public class HTMLEditorKit
         {
           HTML.Tag tag = (HTML.Tag) attr;
 
-          if (tag.equals(HTML.Tag.IMPLIED) || tag.equals(HTML.Tag.P)
-              || tag.equals(HTML.Tag.H1) || tag.equals(HTML.Tag.H2)
-              || tag.equals(HTML.Tag.H3) || tag.equals(HTML.Tag.H4)
-              || tag.equals(HTML.Tag.H5) || tag.equals(HTML.Tag.H6)
-              || tag.equals(HTML.Tag.DT))
+          if (tag == HTML.Tag.IMPLIED || tag == HTML.Tag.P
+              || tag == HTML.Tag.H1 || tag == HTML.Tag.H2
+              || tag == HTML.Tag.H3 || tag == HTML.Tag.H4
+              || tag == HTML.Tag.H5 || tag == HTML.Tag.H6
+              || tag == HTML.Tag.DT)
             view = new ParagraphView(element);
-          else if (tag.equals(HTML.Tag.LI) || tag.equals(HTML.Tag.DL)
-                   || tag.equals(HTML.Tag.DD) || tag.equals(HTML.Tag.BODY)
-                   || tag.equals(HTML.Tag.HTML) || tag.equals(HTML.Tag.CENTER)
-                   || tag.equals(HTML.Tag.DIV)
-                   || tag.equals(HTML.Tag.BLOCKQUOTE)
-                   || tag.equals(HTML.Tag.PRE)
-                   || tag.equals(HTML.Tag.FORM))
+          else if (tag == HTML.Tag.LI || tag == HTML.Tag.DL
+                   || tag == HTML.Tag.DD || tag == HTML.Tag.BODY
+                   || tag == HTML.Tag.HTML || tag == HTML.Tag.CENTER
+                   || tag == HTML.Tag.DIV
+                   || tag == HTML.Tag.BLOCKQUOTE
+                   || tag == HTML.Tag.PRE
+                   || tag == HTML.Tag.FORM
+                   // Misplaced TD and TH tags get mapped as vertical block.
+                   // Note that correctly placed tags get mapped in TableView.
+                   || tag == HTML.Tag.TD || tag == HTML.Tag.TH)
             view = new BlockView(element, View.Y_AXIS);
-          else if (tag.equals(HTML.Tag.IMG))
+          else if (tag == HTML.Tag.TR)
+            // Misplaced TR tags get mapped as horizontal blocks.
+            // Note that correctly placed tags get mapped in TableView.
+            view = new BlockView(element, View.X_AXIS);
+          else if (tag == HTML.Tag.IMG)
             view = new ImageView(element);
           
-          else if (tag.equals(HTML.Tag.CONTENT))
+          else if (tag == HTML.Tag.CONTENT)
             view = new InlineView(element);
           else if (tag == HTML.Tag.HEAD)
             view = new NullView(element);
-          else if (tag.equals(HTML.Tag.TABLE))
+          else if (tag == HTML.Tag.TABLE)
             view = new javax.swing.text.html.TableView(element);
-          else if (tag.equals(HTML.Tag.HR))
+          else if (tag == HTML.Tag.HR)
             view = new HRuleView(element);
-          else if (tag.equals(HTML.Tag.BR))
+          else if (tag == HTML.Tag.BR)
             view = new BRView(element);
-          else if (tag.equals(HTML.Tag.INPUT) || tag.equals(HTML.Tag.SELECT)
-                   || tag.equals(HTML.Tag.TEXTAREA))
+          else if (tag == HTML.Tag.INPUT || tag == HTML.Tag.SELECT
+                   || tag == HTML.Tag.TEXTAREA)
             view = new FormView(element);
 
-          else if (tag.equals(HTML.Tag.MENU) || tag.equals(HTML.Tag.DIR)
-                   || tag.equals(HTML.Tag.UL) || tag.equals(HTML.Tag.OL))
+          else if (tag == HTML.Tag.MENU || tag == HTML.Tag.DIR
+                   || tag == HTML.Tag.UL || tag == HTML.Tag.OL)
             view = new ListView(element);
-          else if (tag.equals(HTML.Tag.FRAMESET))
+          else if (tag == HTML.Tag.FRAMESET)
             view = new FrameSetView(element);
-          else if (tag.equals(HTML.Tag.FRAME))
+          else if (tag == HTML.Tag.FRAME)
             view = new FrameView(element);
-          // FIXME: Uncomment when the views have been implemented
-          /*
-          else if (tag.equals(HTML.Tag.OBJECT))
-            view = new ObjectView(element); */
+          else if (tag == HTML.Tag.OBJECT)
+            view = new ObjectView(element);
         }
       if (view == null)
         {
-          System.err.println("missing tag->view mapping for: " + element);
           view = new NullView(element);
         }
       return view;
