@@ -81,6 +81,7 @@ exception statement from your version. */
 
 extern int _javanet_get_int_field(JNIEnv *, jobject, const char *);
 extern cpnet_address *_javanet_get_ip_netaddr(JNIEnv *, jobject);
+extern jobject _javanet_create_inetaddress (JNIEnv *, cpnet_address *);
 extern void _javanet_create(JNIEnv *, jobject, jboolean);
 extern void _javanet_close(JNIEnv *, jobject, int);
 extern void _javanet_connect(JNIEnv *, jobject, jobject, jint, jboolean);

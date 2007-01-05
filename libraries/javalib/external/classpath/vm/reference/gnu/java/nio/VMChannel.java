@@ -39,7 +39,6 @@ exception statement from your version. */
 package gnu.java.nio;
 
 import gnu.classpath.Configuration;
-import gnu.classpath.jdwp.exception.NotImplementedException;
 
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -379,23 +378,37 @@ public final class VMChannel
    * @throws IOException If an error occurs while connecting.
    */
   public boolean connect(InetSocketAddress saddr, int timeout)
-    throws IOException
+    throws SocketException
   {
+    int fd;
+
     InetAddress addr = saddr.getAddress();
+ 
+    // Translates an IOException into a SocketException to conform
+    // to the throws clause.
+    try
+      {
+        fd = nfd.getNativeFD();
+      }
+    catch (IOException ioe)
+      {
+        throw new SocketException(ioe.getMessage());
+      }
+
     if (addr instanceof Inet4Address)
-      return connect(nfd.getNativeFD(), addr.getAddress(), saddr.getPort(),
+      return connect(fd, addr.getAddress(), saddr.getPort(),
                      timeout);
     if (addr instanceof Inet6Address)
-      return connect6(nfd.getNativeFD(), addr.getAddress(), saddr.getPort(),
+      return connect6(fd, addr.getAddress(), saddr.getPort(),
                       timeout);
-    throw new IOException("unsupported internet address");
+    throw new SocketException("unsupported internet address");
   }
   
   private static native boolean connect(int fd, byte[] addr, int port, int timeout)
-    throws IOException;
+    throws SocketException;
   
   private static native boolean connect6(int fd, byte[] addr, int port, int timeout)
-    throws IOException;
+    throws SocketException;
   
   /**
    * Disconnect this channel, if it is a datagram socket. Disconnecting
@@ -614,6 +627,17 @@ public final class VMChannel
   }
   
   static native void close(int native_fd) throws IOException;
+  
+  /**
+   * <p>Provides a simple mean for the JNI code to find out whether the
+   * current thread was interrupted by a call to Thread.interrupt().</p>
+   * 
+   * @return
+   */
+  final boolean isThreadInterrupted()
+  {
+    return Thread.currentThread().isInterrupted();
+  }
 
   // Inner classes.
   

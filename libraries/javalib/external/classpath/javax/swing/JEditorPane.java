@@ -47,6 +47,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.HashMap;
 
 import javax.accessibility.AccessibleContext;
@@ -508,7 +509,6 @@ public class JEditorPane extends JTextComponent
 
   private static final long serialVersionUID = 3140472492599046285L;
   
-  private URL page;
   private EditorKit editorKit;
   
   boolean focus_root;
@@ -762,13 +762,19 @@ public class JEditorPane extends JTextComponent
 
   public URL getPage()
   {
-    return page;
+    return (URL) getDocument().getProperty(Document.StreamDescriptionProperty);
   }
 
   protected InputStream getStream(URL page)
     throws IOException
   {
-    return page.openStream();
+    URLConnection conn = page.openConnection();
+    // Try to detect the content type of the stream data.
+    String type = conn.getContentType();
+    if (type != null)
+      setContentType(type);
+    InputStream stream = conn.getInputStream();
+    return stream;
   }
 
   public String getText()
@@ -799,10 +805,12 @@ public class JEditorPane extends JTextComponent
     EditorKit kit = getEditorKit();
     if (kit instanceof HTMLEditorKit && desc instanceof HTMLDocument)
       {
-        Document doc = (Document) desc;
+        HTMLDocument doc = (HTMLDocument) desc;
+        setDocument(doc);
         try
           {
-            kit.read(in, doc, 0);
+            InputStreamReader reader = new InputStreamReader(in);
+            kit.read(reader, doc, 0);
           }
         catch (BadLocationException ex)
           {
@@ -861,6 +869,13 @@ public class JEditorPane extends JTextComponent
 
   public final void setContentType(String type)
   {
+    // Strip off content type parameters.
+    int paramIndex = type.indexOf(';');
+    if (paramIndex > -1)
+      {
+        // TODO: Handle character encoding.
+        type = type.substring(0, paramIndex).trim();
+      }
     if (editorKit != null
 	&& editorKit.getContentType().equals(type))
       return;
@@ -921,15 +936,16 @@ public class JEditorPane extends JTextComponent
     if (page == null)
       throw new IOException("invalid url");
 
-    try
+    URL old = getPage();;
+    InputStream in = getStream(page);
+    if (editorKit != null)
       {
-	this.page = page;
-	getEditorKit().read(page.openStream(), getDocument(), 0);
+        Document doc = editorKit.createDefaultDocument();
+        doc.putProperty(Document.StreamDescriptionProperty, page);
+        read(in, doc);
+        setDocument(doc);
       }
-    catch (BadLocationException e)
-      {
-	// Ignored. '0' is always a valid offset.
-      }
+    firePropertyChange("page", old, page);
   }
 
   /**

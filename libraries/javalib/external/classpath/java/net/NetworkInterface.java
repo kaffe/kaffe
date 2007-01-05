@@ -67,6 +67,16 @@ public final class NetworkInterface
     this.netif = netif;
   }
   
+  /** Creates an NetworkInterface instance which
+   * represents any interface in the system. Its only
+   * address is <code>0.0.0.0/0.0.0.0</code>. This
+   * method is needed by {@link MulticastSocket#getNetworkInterface}
+   */
+  static NetworkInterface createAnyInterface()
+  {
+    return new NetworkInterface(new VMNetworkInterface());
+  }
+  
   /**
    * Returns the name of the network interface
    *
@@ -206,6 +216,9 @@ public final class NetworkInterface
       return false;
 
     NetworkInterface tmp = (NetworkInterface) obj;
+    
+    if (netif.name == null)
+      return tmp.netif.name == null;
 
     return (netif.name.equals(tmp.netif.name)
             && (netif.addresses.equals(tmp.netif.addresses)));
@@ -219,7 +232,12 @@ public final class NetworkInterface
   public int hashCode()
   {
     // FIXME: hash correctly
-    return netif.name.hashCode() + netif.addresses.hashCode();
+    int hc = netif.addresses.hashCode();
+    
+    if (netif.name != null)
+      hc += netif.name.hashCode();
+    
+    return hc;
   }
 
   /**

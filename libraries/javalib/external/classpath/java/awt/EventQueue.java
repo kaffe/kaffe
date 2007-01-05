@@ -39,6 +39,7 @@ exception statement from your version. */
 package java.awt;
 
 import gnu.java.awt.LowPriorityEvent;
+import gnu.java.awt.peer.NativeEventLoopRunningEvent;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
@@ -114,31 +115,25 @@ public class EventQueue
   private long lastWhen = System.currentTimeMillis();
 
   private EventDispatchThread dispatchThread = new EventDispatchThread(this);
-  private boolean shutdown = false;
+  private boolean nativeLoopRunning = false;
 
-  synchronized private void setShutdown (boolean b) 
+  private boolean isShutdown ()
   {
-    shutdown = b;
-  }
-
-  synchronized boolean isShutdown ()
-  {
-    if (shutdown)
-      return true;
-
     // This is the exact self-shutdown condition specified in J2SE:
     // http://java.sun.com/j2se/1.4.2/docs/api/java/awt/doc-files/AWTThreadIssues.html
-    
-    // FIXME: check somewhere that the native queue is empty
-    if (peekEvent() == null)
-      {
-        Frame[] frames = Frame.getFrames();
-        for (int i = 0; i < frames.length; ++i)
-          if (frames[i].isDisplayable())
-            return false;
-        return true;
-      }
-    return false;
+
+    if (nativeLoopRunning)
+      return false;
+
+    if (peekEvent() != null)
+      return false;
+
+    Frame[] frames = Frame.getFrames();
+    for (int i = 0; i < frames.length; ++i)
+      if (frames[i].isDisplayable())
+        return false;
+
+    return true;
   }
 
   /**
@@ -167,19 +162,23 @@ public class EventQueue
       return next.getNextEvent();
 
     AWTEvent res = getNextEventImpl(true);
+
     while (res == null)
       {
-        // We are not allowed to return null from this method, yet it
-        // is possible that we actually have run out of native events
-        // in the enclosing while() loop, and none of the native events
-        // happened to cause AWT events. We therefore ought to check
-        // the isShutdown() condition here, before risking a "native
-        // wait". If we check it before entering this function we may
-        // wait forever for events after the shutdown condition has
-        // arisen.
-
         if (isShutdown())
-          throw new InterruptedException();
+          {
+            // Explicitly set dispathThread to null.  If we don't do
+            // this, there is a race condition where dispatchThread
+            // can be != null even after the event dispatch thread has
+            // stopped running.  If that happens, then the
+            // dispatchThread == null check in postEventImpl will
+            // fail, and a new event dispatch thread will not be
+            // created, leaving invokeAndWaits waiting indefinitely.
+            dispatchThread = null;
+
+            // Interrupt the event dispatch thread.
+            throw new InterruptedException();
+          }
 
         wait();
         res = getNextEventImpl(true);
@@ -296,6 +295,12 @@ public class EventQueue
       priority = LOW_PRIORITY;
     // TODO: Maybe let Swing RepaintManager events also be processed with
     // low priority.
+    if (evt instanceof NativeEventLoopRunningEvent)
+      {
+        nativeLoopRunning = ((NativeEventLoopRunningEvent) evt).isRunning();
+        notify();
+        return;
+      }
     postEventImpl(evt, priority);
   }
 
@@ -576,11 +581,11 @@ public class EventQueue
                         ex.printStackTrace();
                       }
                   }
-
                 prev = null;
-                setShutdown(true);
+                // Tell our EventDispatchThread that it can end
+                // execution.
+                dispatchThread.interrupt();
                 dispatchThread = null;
-                this.notifyAll();
               }
           }
       }

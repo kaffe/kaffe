@@ -1,3 +1,1020 @@
+2006-11-06  Francis Kung  <fkung@redhat.com>
+
+	* gnu/java/awt/peer/gtk/ComponentGraphics.java
+	(fillRect): Handle custom composites.
+	(drawRenderedImage): Handle custom composites.
+	(drawImage): Handle custom composites.
+	(createBuffer): New method.
+	(drawLine): Handle custom composites.
+	(drawComposite): New method.
+	(fill): Handle custom composites.
+	(getNativeCM): New method.
+	(drawGlyphVector): Handle custom composites.
+	(drawRect): Handle custom composites.
+	(draw): Handle custom composites.
+	* gnu/java/awt/peer/gtk/VolatileImageGraphics.java
+	(drawComposite): Unset composite during draw call, to prevent parent
+	from handling composite again.
+	* gnu/java/awt/peer/gtk/CairoGraphics2D.java
+	(getBufferCM): Added comments.
+	(getNativeCM): Made abstract.
+	(setComposite): Removed comments.
+
+2006-11-06  Roman Kennke  <kennke@aicas.com>
+
+	* examples/gnu/classpath/examples/swing/HtmlDemo.java:
+	Fixed initial window size and start document.
+
+2006-11-06  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/html/HTMLDocument.java
+	(HTMLReader.addSpecialElement): Removed comment about
+	htmlAttributeSet.
+	(HTMLReader.handleComment): Create SimpleAttributeSet instead
+	of htmlAttributeSet.
+	* javax/swing/text/html/parser/DocumentParser.java
+	(gnuParser.handleStartTag): Use SimpleAttributeSet instead
+	of htmlAttributeSet.
+	* javax/swing/text/html/parser/ParserDelegator.java
+	(gnuParser.handleStartTag): Use SimpleAttributeSet instead
+	of htmlAttributeSet.
+	* gnu/javax/swing/text/html/parser/GnuParserDelegator.java
+	(gnuParser.handleStartTag): Use SimpleAttributeSet instead
+	of htmlAttributeSet.
+	* gnu/javax/swing/text/html/parser/support/Parser.java
+	(getAttributes): Return a SimpleAttributeSet.
+	(restOfTag): Don't set resolving parent here.
+
+2006-11-06  Tania Bento  <tbento@redhat.com>
+
+	* java/awt/TextComponent.java
+	(setSelectionStart): Added check.
+
+2006-11-06  Tania Bento  <tbento@redhat.com>
+
+	* java/awt/TextField.java
+	(minimumSize(int)): Check if minimum size has been previously
+	set and changed values of Dimension returned if peer == null.
+	(preferredSize(int)): Check if preferred size has been previously
+	set and changed values of Dimension returned if peer == null.
+
+2006-11-06  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JTree.java
+	(TreeModelHandler.treeNodesRemoved): Implemented.
+	(TreeModelHandler.treeStructureChanged): Implemented.
+	(nodeStates): Made package private.
+
+2006-11-06  Francis Kung  <fkung@redhat.com>
+
+	PR 29420
+	* javax/swing/JTree.java
+	(clearSelectionPathStates): New private method to clean up nodeStates.
+	(removeSelectionPath): Call clearSelectionPathStates().
+	(removeSelectionPaths): Call clearSelectionPathStates().
+	(removeSelectionRow): Call clearSelectionPathStates().
+	(setSelectionPath): Call clearSelectionPathStates().
+	(setSelectionPaths): Call clearSelectionPathStates().
+	(setSelectionRow): Call clearSelectionPathStates().
+
+2006-11-06  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	Fixes bug #29703
+	* java/util/regex/Matcher.java(reset): Reset inputCharIndexed.
+
+2006-11-06  Roman Kennke  <kennke@aicas.com>
+
+	* examples/gnu/classpath/examples/swing/HtmlDemo.java:
+	Changed to implement a minimalistic browser.
+	* examples/gnu/classpath/examples/swing/forms.html,
+	* examples/gnu/classpath/examples/swing/textstyles.html,
+	* examples/gnu/classpath/examples/swing/welcome.html:
+	Some example content.
+
+2006-11-06  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/ComponentView.java
+	(setParent): Lock the document and repaint the hosting
+	container.
+	* javax/swing/text/FlowView.java
+	(FlowStrategy.createView): Removed comment.
+	(FlowView): Initialize span with Short.MAX_VALUE.
+	(getFlowStart): Return 0 unconditionally.
+	(layout): Moved code around to make it more readable.
+	(loadChildren): Always set the parent.
+	* javax/swing/text/GlyphView.java
+	(DefaultGlyphPainter.fontMetrics): New field.
+	(DefaultGlyphPainter.getAscent): Use new helper method to
+	synchronize the font metrics.
+	(DefaultGlyphPainter.getBoundedPosition): Use new helper method
+	to synchronize the font	metrics.
+	(DefaultGlyphPainter.getDescent): Use new helper method to
+	synchronize the font metrics.
+	(DefaultGlyphPainter.getHeight): Use new helper method to
+	synchronize the font metrics.
+	(DefaultGlyphPainter.getSpan): Use new helper method to
+	synchronize the font metrics.
+	(DefaultGlyphPainter.modelToView): Use new helper method to
+	synchronize the font metrics.
+	(DefaultGlyphPainter.updateFontMetrics): New helper method for
+	font metrics caching.
+	(DefaultGlyphPainter.viewToModel): Use new helper method to
+	synchronize the font metrics. Fixed view to model mapping.
+	* javax/swing/text/View.java
+	(removeAll): Pass null to replace().
+	(setParent): Only reparent children that have this view as parent.
+
+2006-11-05  Mark Wielaard  <mark@klomp.org>
+
+	* include/gnu_java_net_VMPlainDatagramSocketImpl.h: Removed.
+	* include/gnu_java_nio_channels_FileChannelImpl.h: Removed.
+	* native/jni/java-net/gnu_java_net_VMPlainDatagramSocketImpl.c:
+	Removed.
+	* native/jni/java-nio/gnu_java_nio_channels_FileChannelImpl.c:
+	Removed.
+	* native/jni/java-nio/Makefile.am (libjavanio_la_SOURCES):
+	Remove gnu_java_nio_channels_FileChannelImpl.c.
+
+2006-11-03  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/html/BlockView.java
+	(attributes): New field.
+	(cssHeight): New field.
+	(cssWidth): New field.
+	(painter): New field.
+	(calculateMajorAxisRequirements): Overridden to account for
+	CSS settings.
+	(calculateMinorAxisRequirements): Overridden to account for
+	CSS settings.
+	(layoutMinorAxis): Overridden to account for CSS settings.
+	(changedUpdate): Formatting fixlet.
+	(constrainSize): New helper method.
+	(getAlignment): Fix alignment.
+	(getAttributes): Cache attributes for better performance.
+	(getStyleSheet): Fetch stylesheet from document rather than creating
+	a new one.
+	(paint): Remove comment.
+	(setCSSSpan): New helper method.
+	(setPropertiesFromAttributes): Implemented to fetch the
+	recognized properties.
+	* javax/swing/text/html/CSS.java
+	(getValue): Added mapping for width and height attributes.
+	* javax/swing/text/html/InlineView.java
+	(longestWord): New field.
+	(getLongestWord): New helper method.
+	(calculateLongestWord): New helper method.
+	(getMinimumSpan): Overridden to constrain the minimum span by the
+	longest word.
+	* javax/swing/text/html/ParagraphView.java
+	(cssHeight): New field.
+	(cssWidth): New field.
+	(calculateMinorAxisRequirements): Overridden to account for
+	CSS settings.
+	(setCSSSpan): New helper method.
+	(setPropertiesFromAttributes): Fetch CSS width and height. Added
+	null check.
+	* gnu/javax/swing/text/html/css/Length.java
+	(percentage): New field.
+	(Length): Determine percentage values.
+	(getValue(float)): New method for handling percentage values.
+	(isPercentage): New method.
+
+2006-11-03  Tania Bento  <tbento@redhat.com>
+
+	* java/awt/TextArea.java
+	(getMinimumSize): Changed documentation.
+	(getPreferredSize): Changed documentation.
+	(getMinimumSize(int,int)): Changed documenation.
+	(getPreferredSize(int,int)): Changed documenation.
+	(minimumSize): Changed documentation.
+	(preferredSize): Changed documenation.
+	(minimumSize(int,int)): Changed documentation.  Checked if 
+	minimum size had been previously set and changed values of
+	Dimension returned if peer == null.
+	(preferredSize(int, int)): Checked if preferred size had been
+	previously set and changed values of Dimension returned if
+	peer = null.
+
+2006-11-03  Tania Bento  <tbento@redhat.com>
+
+	* java/awt/event/ComponentEvent.java
+	(paramString): Changed format of string representation returned.
+
+2006-11-03  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/html/HTMLDocument.java
+	(HTMLReader.FormAction.start): Added support for textarea.
+	(HTMLReader.FormAction.end): Added support for textarea.
+	(HTMLReader.HeadAction.end): Call super to actually close the
+	block.
+	(HTMLReader.inTextArea): New field.
+	(HTMLReader.textAreaDocument): New field.
+	(HTMLReader.handleText): Call textAreaContent when inside
+	a textarea tag.
+	(HTMLReader.textAreaContent): Implemented to initialize
+	the text area's model.
+	* javax/swing/text/html/FormView.java
+	(createComponent): Added support for textarea tag.
+
+2006-11-03  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/html/HTMLDocument.java
+	(HTMLReader.IsindexAction.start): Implemented.
+
+2006-11-03  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/html/StyleSheet.java
+	(addRule): Implemented.
+	* javax/swing/text/html/HTMLDocument.java
+	(HTMLReader.inStyleTag): New field.
+	(HTMLReader.styles): New field.
+	(HTMLReader.HeadAction.end): Implemented to read all stylesheets,
+	if any.
+	(HTMLReader.StyleAction.start): Set inStyleTag flag.
+	(HTMLReader.StyleAction.end): Set inStyleTag flag.
+	(HTMLReader.handleText): When inside a style tag, add
+	content to the styles array.
+
+2006-11-02  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/html/FormView.java
+	(maxIsPreferred): New field.
+	(createComponent): Initialize components correctly.
+	(getMaximumSpan): Return the preferred span for components
+	that need this. The maxIsPreferred flag is set accordingly
+	in createComponent.
+	* javax/swing/text/html/HTMLDocument.java
+	(HTMLReader.FormAction.start): Implemented to set the
+	correct model as attribute.
+	(HTMLReader.FormAction.setModel): New helper method.
+	(HTMLReader.FormAction.end): Call super to finish the element.
+	Added TODO about things left to do.
+	(HTMLReader.handleComment): Use SimpleAttributeSet rather
+	than htmlAttributeSet.
+	* javax/swing/text/html/HTMLEditorKit.java
+	(HTMLFactory.create): Create BlockView for FORM tags.
+	Create FormView for INPUT, TEXTAREA and SELECT tags.
+
+2006-11-02  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/awt/geom/GeneralPath.java: API doc fixes.
+
+2006-11-02  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/html/ImageView.java
+	(getImageURL): Fetch attribute from element. Consider the
+	base URL for relative image locations.
+
+2006-11-02  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JEditorPane.java
+	(setContentType): Strip off attributes.
+	* javax/swing/text/html/HTMLEditorKit.java
+	(LinkController.activateLink(int,JEditorPane,int,int): New
+	method. Implements activation of a hyperlink.
+	(LinkController.activateLinke(int,JEditorPane)): Delegate
+	to the other activateLink() method.
+	(LinkController.createHyperlinkEvent): New helper method.
+	(LinkController.mouseClicked): Implemented to activate the link.
+	(LinkController.mouseDragged): Added comment that this
+	method does nothing.
+	(LinkController.mouseMoved): Update cursor for hyperlinks.
+	(mouseHandler): Renamed field to linkController.
+	(HTMLEditorKit): Create a link controller.
+	(clone): Give the clone a new link controller.
+	(deinstall): De-install link controller as mouseMotionListener too.
+	(install): Install link controller as mouseMotionListener too.
+
+2006-11-02  Roman Kennke  <kennke@aicas.com>
+
+	PR 29644
+	* javax/swing/text/FlowView.java
+	(FlowStrategy.changedUpdate): Reversed condition. This caused
+	wrong layout and bad performance.
+	(FlowStrategy.insertUpdate): Reversed condition. This caused
+	wrong layout and bad performance.
+	(FlowStrategy.removeUpdate): Reversed condition. This caused
+	wrong layout and bad performance.
+	(LogicalView): Changed to be a subclass of CompositeView.
+	(LogicalView()): Only take one Element argument.
+	(LogicalView.childAllocation): New method for implementing
+	the abstract CompositeView method.
+	(LogicalView.forwardUpdateToView): Overridden for correct
+	reparenting.
+	(getMinimumSpan): Overridden to handle line breaking correctly.
+	(getPreferredSpan): Implemented to handle line breaking correctly.
+	(getViewAtPoint): New method for implementing
+	the abstract CompositeView method.
+	(getViewIndexAtPosition): Overridden to handle leaf elements
+	correctly.
+	(isAfter): New method for implementing
+	the abstract CompositeView method.
+	(isBefore): New method for implementing
+	the abstract CompositeView method.
+	(loadChildren): Overridden to handle leaf elements
+	correctly.
+	(paint): New method for implementing
+	the abstract CompositeView method.
+	(calculateMinorAxisRequirements): Use preferredSpan in calculation.
+	(loadChildren): Initialize flow layout by sending a synthetic
+	insertUpdate() to the layout strategy.
+	* javax/swing/text/GlyphView.java
+	(DefaultGlyphPainter.getBoundedPosition): Fall back to Toolkit's
+	font metrics if component is not available. Add initial offset
+	to result.
+	(breakView): Be more clever when breaking the view.
+	(getBreakLocation): New helper method to determine a good
+	break location.
+	(getBreakWeight): Be more clever when breaking the view.
+	(getTabbedSpan): Make sure we have a painter. Use view's
+	start and end offset rather than the element's.
+	* javax/swing/text/Utilities.java
+	(drawTabbedText): Avoid useless add and sub with the y offset.
+
+2006-11-02  Roman Kennke  <kennke@aicas.com>
+
+	PR 29644
+	* gnu/java/awt/peer/ClasspathFontPeer.java
+	(getStringBounds): Removed abstract method. This is replaced
+	in java.awt.Font to use a TextLayout.
+	* gnu/java/awt/peer/gtk/GtkWindowPeer.java
+	(GtkWindowPeer): Set a font on the window object.
+	* gnu/java/awt/peer/gtk/FreetypeGlyphVector.java
+	(FreetypeGlyphVector(Font,String,FontRenderContext,int)):
+	Changed to take char,int,int instead of String. Filter
+	control characters.
+	(FreetypeGlyphVector(Font,String,FontRenderContext)):
+	Create char array out of string.
+	(getLogicalBounds): Don't translate bounds. They already are
+	translated.
+	* gnu/java/awt/peer/gtk/GdkFontMetrics.java
+	(stringWidth): Filter out control characters.
+	* gnu/java/awt/peer/gtk/GdkFontPeer.java
+	(getStringBounds): Removed unneeded method.
+	(layoutGlyphVector): Pass char array directly to FreetypeGlyphVector
+	constructor.
+	* gnu/java/awt/peer/qt/QtFontPeer.java
+	(getStringBounds): Removed unneeded method.
+	* gnu/java/awt/peer/x/XFontPeer.java
+	(getStringBounds): Removed unneeded method.
+	* gnu/java/awt/peer/x/XFontPeer2.java
+	(getStringBounds): Removed unneeded method.
+	* java/awt/Font.java
+	(getStringBounds(char[],int,int,FontRenderContext)):
+	Use TextLayout to determine the bounds.
+	(getStringBounds(CharacterIterator,int,int,FontRenderContext)):
+	Delegate to the char[] version of this method.
+	(getStringBounds(String,FontRenderContext)):
+	Delegate to the char[] version of this method.
+	(getStringBounds(String,int,int,FontRenderContext)):
+	Delegate to the String version of this method.
+
+2006-11-01  Tania Bento  <tbento@redhat.com>
+
+	* java/awt/ScrollPaneAdjustable.java
+	(paramString): Changed format of string representation returned.
+	(paramStringHelper): New private method.
+
+2006-11-01  Tania Bento  <tbento@redhat.com>
+
+	* java/awt/GridBagLayout.java
+	(toString): Implemented method.
+
+2006-10-30  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* native/plugin/gcjwebplugin.cc (GCJ_New): Move GLib threading
+	initialization to NP_Initialize.
+	(NP_Initialize): Initialize GLib threading.
+
+2006-10-31  Tania Bento  <tbento@redhat.com>
+
+	* javax/swing/JTextField.java
+	(fireActionPerformed): When creating the new event, if
+	actionCommand == null, then getText() is used.
+
+2006-10-31  Francis Kung  <fkung@redhat.com>
+
+	* gnu/java/awt/peer/gtk/CairoGraphics2D.java
+	(fillArc): Corrected arc type to Arc2D.PIE.
+
+2006-10-31  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/html/HTMLDocument.java
+	(HTMLReader.PreAction.end): Implemented.
+	(HTMLReader.PreAction.start): Implemented.
+	(HTMLReader.inPreTag): New field.
+	(HTMLReader.handleTag): When inside a pre tag, call preContent().
+	(HTMLReader.preContent): Implemented.
+
+2006-10-31  Tania Bento  <tbento@redhat.com>
+
+	* javax/swing/JTextField.java
+	(fireActionPerformed): When creating the new event, 
+	actionCommand should be used as the command, not
+	getText().
+
+2006-10-31  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/html/HTMLEditorKit.java
+	(write): Use HTMLWriter or MinimalHTMLWriter for writing
+	HTML or Styled documents.
+
+2006-10-31  David Fu  <fchoong@netbeans.jp>
+
+	* javax/swing/text/html/HTMLWriter.java: New class.
+
+2006-10-30  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/dnd/DragSourceContext.java
+	(dragExit): Use constant fields instead of 0.
+	(updateCurrentCursor): Completed implementation.
+
+2006-10-30  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/dnd/DragGestureRecognizer.java
+	(resetRecognizer): Added API docs. Do not replace the events object
+	but rather clear() it. Removed not implemented tag.
+
+2006-10-30  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/datatransfer/DataFlavor.java
+	(writeExternal): Remove not implemented tag.
+
+2006-10-30  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/datatransfer/DataFlavor.java
+	(javaFileListFlavor): Don't explicitly specify class.
+	(plainTextFlavor): Don't explicitly specify class.
+	(mimeType): Changed to type MimeType. Remove final.
+	(representationClass): Remove final.
+	(DataFlavor): Don't do anything here.
+	(DataFlavor(Class,String,String)): Removed.
+	(DataFlavor(Class,String)): Initialize here.
+	(DataFlavor(String,String,ClassLoader)): Initialize in init().
+	(DataFlavor(String,String)): Initialize in init().
+	(DataFlavor(String)): Initialize in init().
+	(init): New initialization method.
+	(getMimeType): Delegate to MimeType.toString().
+	(getParameter(String,String)): Removed. Is now done in MimeType.
+	(getParameter(String)): Delegate to MimeType.
+	(getPrimaryType): Delegate to MimeType.
+	(getRepresentationClassFromMime): Removed.
+	(getRepresentationClassFromMimeThrows): Removed.
+	(getSubType): Delegate to MimeType.
+	(hashCode): Take MimeType.toString() for the hashCode.
+	(isFlavorRemoveObjectType): Return true only when representation
+	class is remove and serializable and the mime type is remote.
+	(isFlavorSerializedObjectType): Return true only when representation
+	class is serializable and the mime type is serialized.
+	(isMimeTypeEqual): Rewritten to delegate to MimeType.matches().
+	(isMimeTypeSerializedObject): Delegate to isMimeTypeEqual().
+	(readExternal): Implemented stub method.
+	(writeExternal): Implemented stub method.
+	* java/awt/datatransfer/MimeType.java: New helper class.
+
+2006-10-28  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/TransferHandler.java
+	(importData): Implemented stub method. Added API docs.
+
+2006-10-26  Christian Elias Naur  <elias@oddlabs.com>
+
+	* native/jni/gtk-peer/gtk_jawt.c (classpath_jawt_get_depth): New
+	function.
+	* native/jni/classpath/classpath_jawt.h: Likewise.
+	* native/jawt/jawt.c (_Jv_GetDrawingSurfaceInfo): Added
+	initializer for surface_info_x11->depth.
+
+2006-10-26  Tania Bento  <tbento@redhat.com>
+	
+	* java/awt/FileDialog.java:
+	(setFile): Changed if-clause condition.
+
+2006-10-25  Francis Kung  <fkung@redhat.com>
+
+	* include/gnu_java_nio_VMChannel.h,
+	* include/java_net_VMNetworkInterface.h,
+	* include/gnu_java_nio_EpollSelectorImpl.h,
+	* include/gnu_java_awt_peer_gtk_CairoGraphics2D.h,
+	* include/gnu_java_nio_FileChannelImpl.h,
+	* include/gnu_java_nio_KqueueSelectorImpl.h,
+	* include/gnu_java_nio_VMPipe.h,
+	* include/gnu_java_net_VMPlainSocketImpl.h: Regenerated.
+
+2006-10-25  Tania Bento  <tbento@redhat.com>
+
+	* java/awt/Dialog.java: Created new private variable
+	next_dialog_number.
+	(Dialog(Frame, String, boolean, GraphicsConfiguration)):
+	Set cursor to default cursor.
+	(Dialog(Dialog, STring, boolean, GraphicsConfiguration)):
+	Same.
+	(generateName): New method.
+	(getUniqueLong): New private method.
+	* java/awt/FileDialog.java: Created new private variable
+	next_file_dialog_number.
+	(setFile): If file == "", set it to null.
+	(generateName): New method.
+	(getUniqueLong): New private method.
+
+2006-10-25  Robert Schuster  <robertschuster@fsfe.org>
+
+	* java/net/MulticastSocket.java:
+	(setNetworkInterface): Rewritten.
+
+2006-10-25  Robert Schuster  <robertschuster@fsfe.org>
+
+	* native/jni/java-net/javanet.h: Added declaration for
+	_javanet_create_inetaddress.
+	* native/jni/java-net/javanet.c:
+	(_javanet_create_inetaddress): Removed static keyword.
+
+2006-10-25  Robert Schuster  <robertschuster@fsfe.org>
+
+        * gnu/java/net/PlainDatagramSocketImpl.java:
+        (connect): Use VMChannel instance for connect call.
+        (getTimeToLive): Call VMPlainSocketImpl.getTimeToLive.
+        (setTimeToLive): Call VMPlainSocketImpl.setTimeToLive.
+	(setOption): Handle multicast options.
+	(getOption): Handle multicast options.
+        * gnu/java/net/PlainSocketImpl.java:
+        (getTimeToLive): Call VMPlainSocketImpl.getTimeToLive.
+        (setTimeToLive): Call VMPlainSocketImpl.setTimeToLive.
+	(setOption): Filter unappropriate options.
+	(getOption): Filter unappropriate options.
+	(connect): Use given SocketAddress.
+	(close): Reset address and port.
+	(getInetAddress): 
+        * include/Makefile.am: Removed all occurences of
+        gnu_java_net_VMPlainDatagramSocketImpl.h.
+        * include/gnu_java_net_VMPlainDatagramSocketImpl.h: Removed.
+        * native/jni/java-net/Makefile.am: Removed
+        gnu_java_net_VMPlainDatagramSocketImpl.c from sources.
+        * native/jni/java-net/gnu_java_net_VMPlainDatagramSocketImpl.c:
+        Removed.
+        as SocketException, declare to throw SocketException.
+        * native/jni/java-nio/gnu_java_nio_VMChannel.c: Added definitions
+        for SocketException and ConnectException.
+        (Java_gnu_java_nio_VMChannel_connect): Throw SocketException instead
+        of IOException.
+        (Java_gnu_java_nio_VMChannel_connect6): Throw SocketException instead
+        of IOException.
+	(Java_gnu_java_nio_VMChannel_accept): Rewritten.
+	(JCL_thread_interrupted): New function.
+	(initIDs): Added initialisation for isThreadInterrupted method id.
+        * native/jni/java-net/gnu_java_net_VMPlainSocketImpl.c: Added
+        CPNET_IP_TTL to java_sockopt enum.
+        (Java_gnu_java_net_VMPlainSocketImpl_setOption): Handle CPNET_IP_TTL
+        case, handle SO_LINGER case properly.
+        (Java_gnu_java_net_VMPlainSocketImpl_getOption): Handle CPNET_IP_TTL
+        case, handle SO_LINGER case properly.
+	(Java_gnu_java_net_VMPlainSocketImpl_getMulticastInterface): New
+	function.
+	(Java_gnu_java_net_VMPlainSocketImpl_setMulticastInterface): New
+	function.
+	(Java_gnu_java_net_VMPlainSocketImpl_setMulticastInterface6): New
+	function.
+	(Java_gnu_java_net_VMPlainSocketImpl_leave6): Fixed constant to be
+	IPV6_LEAVE_GROUP.
+        * vm/reference/gnu/java/net/VMPlainDatagramSocketImpl.java: Removed.
+        * vm/reference/gnu/java/nio/VMChannel.java:
+        (connect(int, byte[], int, int)): Declare to throw SocketException.
+        (connect6): Declare to throw SocketException.
+        (connect(InetSocketAddress, int)): Catch IOException and rethrow
+	(isThreadInterrupted): New method.
+        * vm/reference/gnu/java/net/VMPlainSocketImpl.java: Added CP_IP_TTL
+        field.
+        (setTimeToLive): New method.
+        (getTimeToLive): New method.
+	(setMulticastInterface(int, InetAddress)): New method.
+	(setMulticastInterface(int, int, Inet4Address): New method.
+	(setMulticastInterface6(int, int, Inet6Address): New method.
+	(setOptions): Handle SO_LINGER case.
+	(getOptions): Add missing SO_REUSEADDR case.
+	* java/net/Socket.java:
+	(Socket(InetAddress, int, InetAddress, int, boolean)): Close socket
+	when exception was thrown out of connect().
+	(setSoLinger): Replaced instantiations with valueOf calls, replaced
+        Boolean.FALSE with Integer.valueOf(-1).
+	* native/jni/native-lib/cpio.h: Added cpio_closeOnExec declaration.
+	* native/jni/native-lib/cpio.c: Added cpio_closeOnExec implementation.
+        * NEWS: Documented VM interface changes.
+
+2006-10-25  Robert Schuster  <robertschuster@fsfe.org>
+
+	* java/net/Inet6Address.java:
+	(isMulticastAddress): Fixed check.
+
+2006-10-25  Robert Schuster  <robertschuster@fsfe.org>
+
+	Fixes PR29576
+	* java/net/MulticastSocket.java:
+	(getNetworkInterface): Return a special NetworkInterface instance
+	if the socket's multicast interface is set to any.
+
+2006-10-25  Robert Schuster  <robertschuster@fsfe.org>
+
+	Fixes PR29576
+	* java/net/NetworkInterface.java:
+	(createAnyInterface): New method.
+	(equals): Added if-statement to handle case where netif.name is null.
+	* vm/reference/java/net/VMNetworkInterface.java:
+	(hashCode): Rewritten.
+	(VMNetworkInterface): New constructor.
+
+2006-10-24  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* tools/Makefile.am: Add ASM_JAR define to each tool's CFLAGS.
+	* tools/toolwrapper.c (main): Set bootclasspath, not classpath.
+	Add ASM_JAR to bootclasspath.
+
+2006-10-24  Tania Bento  <tbento@redhat.com>
+
+	* java/awt/Scrollbar.java:
+	(setLineIncrement): Removed unnecessary if-clause and if 
+	lineIncrement == 0, then it should be set to 1, not 0.
+	(setPageIncrement): Removed unnecessary if-clause and if
+	pageIncrement == 0, then it should be set to 1, not 0.
+	(setValues): If visibleAmount <= 0, it should be set to 1, not 0.
+	If maximum <= minimum, maximum should be set to mininum + 1. The
+	actual value of maximum is maximum - visibleAmount, so I made 
+	this change to the appropriate if-check. Remove the two unneccessary
+	if-clauses.
+
+2006-10-23  Francis Kung  <fkung@redhat.com>
+
+	* gnu/java/awt/peer/gtk/CairoGraphics2D.java
+	(cairoSetFont): New method.
+	(copy): Set font using setFont method.
+	(setFont): Call cairoSetFont.
+	(setup): Set font using setFont method.
+	* include/gnu_java_awt_peer_gtk_CairoGraphics2D.h: Added method.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_CairoGraphics2D.c
+	(install_font_peer): Removed.
+	(cairoDrawGlyphVector): Removed call to install_font_peer.
+	(cairoSetFont): New method.
+
+2006-10-23  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* gnu/java/awt/peer/NativeEventLoopRunningEvent.java: New file.
+	* gnu/java/awt/peer/gtk/GtkMainThread.java: Post
+	NativeEventLoopRunningEvent after GTK main loop start and stop.
+	* java/awt/EventQueue.java (isShutdown): Check nativeLoopRunning.
+	(getNextEvent): Set dispatchThread to null.
+	(postEventImpl): Set nativeLoopRunning.
+	(pop): Interrupt event dispatch thread.
+	* java/awt/Frame.java (noteFrame): Synchronize on weakFrames.
+
+2006-10-22  Christian Thalinger  <twisti@complang.tuwien.ac.at>
+
+	* native/jni/java-net/gnu_java_net_VMPlainSocketImpl.c (config-int.h):
+	Added include.
+	* native/jni/java-nio/gnu_java_nio_VMChannel.c (config-int.h):
+	Likewise.
+
+2006-10-23  Marco Trudel <mtrudel@gmx.ch>
+
+	* gnu/javax/crypto/pad/PKCS7.java (unpad): Removed an unnecessary test.
+	* javax/crypto/CipherOutputStream.java: Re-implemented.
+	* gnu/javax/crypto/jce/cipher/CipherAdapter.java
+	(engineUpdate(byte[], int, int)): Always keep data for unpadding in padded
+	decryption mode and check if it is a complete block.
+	(engineUpdate(byte[], int, int, byte[], int)): Likewise.
+	(engineDoFinal(byte[], int, int)): In padded decryption mode, take
+	partially processed data into account.
+
+2006-10-20  Tom Tromey  <tromey@redhat.com>
+
+	* tools/gnu/classpath/tools/javah/JniIncludePrinter.java (printClass):
+	Don't use mangled class name for .h file.
+	* tools/gnu/classpath/tools/javah/JniStubPrinter.java (printClass):
+	Don't use mangled class name for .c file.
+	* tools/gnu/classpath/tools/javah/CniPrintStream.java (writeClass):
+	Handle classes from the default package.
+
+2006-10-20  Francis Kung  <fkung@redhat.com>
+
+	* include/gnu_java_awt_peer_gtk_CairoGraphics2D.h: Added missing constants.
+
+2006-10-19  Francis Kung  <fkung@redhat.com>
+
+	PR 29510
+	* java/awt/image/BufferedImage.java
+	(constructor): Updated some properties of default image types.
+	* gnu/java/awt/peer/gtk/BufferedImageGraphics.java
+	(argb32): Updated field to match default in BufferedImage.
+
+2006-10-18  Roman Kennke  <kennke@aicas.com>
+
+	PR 29419
+	* gnu/java/awt/peer/gtk/CairoGraphics2D.java
+	(copyArea): Changed size comparison to return when size == 0
+	too.
+	* javax/swing/JViewport.java
+	(paintBackingStore): Check width and height of blitted area
+	and only do blit if its > 0.
+	(paintBlit): Check width and height of blitted area
+	and only do blit if its > 0.
+
+2006-10-18  Roman Kennke  <kennke@aicas.com>
+
+	PR 27091
+	* gnu/java/awt/peer/gtk/GtkFramePeer.java
+	(maximize): New native method.
+	(unmaximize): New native method.
+	(iconify): New native method.
+	(deiconify): New native method.
+	(getState): Implemented.
+	(setState): Implemented.
+	* gnu/java/awt/peer/gtk/GtkWindowPeer.java
+	(oldState): Rename to windowState and made protected, so that
+	the FramePeer can access it.
+	(postWindowEvent): Handle state change events more gently and
+	correctly.
+	* java/awt/Frame.java
+	(getState): Fetch state from getExtendedState().
+	(setExtendedState): Update the peer. Check if the state change
+	is actually supported.
+	(getExtendedState): Update the state from the peer.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkFramePeer.c
+	(maximize): New method.
+	(unmaximize): New method.
+	(iconify): New method.
+	(deiconify): New method.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkWindowPeer.c
+	(AWT_FRAME_NORMAL): New macro.
+	(AWT_FRAME_ICONIFIED): New macro.
+	(AWT_FRAME_MAXIMIZED_BOTH): New macro.
+	(window_window_state_cb): Rewritten to handle window state changes
+	more gently (mostly on the java side of the world).
+	* include/gnu_java_awt_peer_gtk_GtkFramePeer.h: Regenerated.
+
+2006-10-18  Tania Bento  <tbento@redhat.com>
+
+	* java/awt/CardLayout.java:
+	(maximumLayoutSize): Return a new Dimension with Integer.MAX_VALUE as
+	its height and width if Container passed as argument is null.
+	(gotoComponent): Consider the case where the component is not visible.
+
+2006-10-18  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* resource/gnu/classpath/tools/appletviewer/MessagesBundle.properties:
+	Rename file...
+	* resource/gnu/classpath/tools/appletviewer/messages.properties:
+	New file.
+	* resource/gnu/classpath/tools/appletviewer/MessagesBundle_de.properties:
+	Remove file.
+	* tools/gnu/classpath/tools/appletviewer/AppletWarning.java:
+	Remove file.
+	* tools/gnu/classpath/tools/appletviewer/ConsoleDialog.java:
+	Likewise.
+	* tools/gnu/classpath/tools/appletviewer/Messages.java: New file.
+	* tools/gnu/classpath/tools/appletviewer/CommonAppletStub.java:
+	Retrieve user-visible strings through Messages.getString.
+	* tools/gnu/classpath/tools/appletviewer/Main.java: Likewise.
+	* tools/gnu/classpath/tools/appletviewer/PluginAppletContext.java:
+	Likewise.
+	* tools/gnu/classpath/tools/appletviewer/PluginAppletViewer.java:
+	Likewise.
+	* tools/gnu/classpath/tools/appletviewer/PluginAppletWindow.java:
+	Likewise.
+	* tools/gnu/classpath/tools/appletviewer/StandaloneAppletContext.java:
+	Likewise.
+	* tools/gnu/classpath/tools/appletviewer/StandaloneAppletViewer.java:
+	Likewise.
+	* tools/gnu/classpath/tools/appletviewer/StandaloneAppletWindow.java:
+	Likewise.
+
+2006-10-18  Roman Kennke  <kennke@aicas.com>
+
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkWindowPeer.c
+	(AWT_WINDOW_OPENED): Remove unnecessary macro.
+	(window_show_cb): Removed unnecessary function.
+	(connect_signals): Don't connect signal for show.  *
+	gnu/java/awt/peer/gtk/GtkWindowPeer.java
+	(hasBeenShown): Removed. This is handled in java.awt.Window.
+	(postWindowEvent): Removed handling of WINDOW_OPENED. This is done
+	in java.awt.Window.  * java/awt/Window.java
+	(dispose): Post WINDOW_CLOSED here, not WINDOW_OPENED.
+
+2006-10-18  Francis Kung  <fkung@redhat.com>
+
+	* gnu/java/awt/peer/gtk/CairoSurfaceGraphics.java
+	(drawRenderedImage):  New method.
+	(drawImage): New method.
+	(CairoSurfaceGraphics): Set clip.
+	(createBuffer): New method.
+	(getBufferCM): New method.
+	(drawComposite): New method.
+	(fill): New method.
+	(getNativeCM): New method.
+	(drawGlyphVector): New method.
+	(draw): New method.
+	* gnu/java/awt/peer/gtk/VolatileImageGraphics.java
+	(getNativeCM): Reflect renamed field.
+	* gnu/java/awt/peer/gtk/CairoSurface.java
+	(cairoCM_pre): Renamed from cairoColorModel.
+	(cairoColorModel): Set premultiplication to false.
+
+2006-10-18  Roman Kennke  <kennke@aicas.com>
+
+	PR 28769
+	* javax/swing/JScrollPane.java
+	(viewportBorder): Made field private.
+	(wheelScrollingEnabled): Made field private.
+	(JScrollPane): Enabled wheel scrolling by default.
+	* javax/swing/JTree.java
+	(TreeSelectionRedirector.valueChanged): Don't repaint anything
+	here.
+	(getScrollableUnitIncrement): Fixed thinko.
+	* javax/swing/plaf/basic/BasicScrollBarUI.java
+	(static scrollByBlock): New static method to avoid code duplication
+	for the BasicScrollPane wheel scrolling.
+	(static scrollByUnits): New static method to avoid code duplication
+	for the BasicScrollPane wheel scrolling.
+	(scrollByBlock): Delegate to static helper method.
+	(scrollByUnit): Delegate to static helper method.
+	* javax/swing/plaf/basic/BasicScrollPaneUI.java
+	(MouseWheelHandler.mouseWheelMoved): Delegate to BasicScrollBarUI
+	static helper methods to avoid code duplication.
+	(MouseWheelHandler.bounds): Removed.
+	(MouseWheelHandler.getValue): Removed.
+	(MouseWheelHandler.scroll): Removed.
+
+2006-10-18  Roman Kennke  <kennke@aicas.com>
+
+	PR 29502
+	* gnu/java/awt/peer/gtk/GtkWindowPeer.java
+	(updateComponent): Don't override this here.
+	* java/awt/Window.java
+	(addWindowListener): Ignore null listener. Set newEventsOnly flag.
+	(addWindowFocusListener): Ignore null listener. Set newEventsOnly
+	flag.
+	(addWindowStateListener): Ignore null listener. Set newEventsOnly
+	flag.
+
+2006-10-18  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JEditorPane.java
+	(getStream): Try to detect and set the content type of the
+	connection stream.
+
+2006-10-18  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/RepaintManager.java
+	(RepaintWorkerEvent): Pass full set of params to super.
+	(RepaintWorker.dispatch): Overridden to allow apps to call this
+	via reflection.
+	(addDirtyRegion): Synchronize a little more to protect the
+	dirtyComponents field and avoid NPEs.
+	(invokeLater): Pass full set of params to RepaintWorkerEvent
+	constructor.
+
+2006-10-18  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JEditorPane.java
+	(page): Removed field. The page is now stored in the correct
+	document property.
+	(getPage): Fetch page URL from document property.
+	(read): Set the document for this JEditorPane. Use a Reader
+	for reading in the document.
+	(setPage): Call getStream() to get the stream from which we read.
+	Fire property change. Store page in document property.
+
+2006-10-18  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/datatransfer/DataFlavor.java
+	(DataFlavor(String)): Removed check for space in mime string.
+
+2006-10-18  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/Container.java
+	(validateTree): Call ContainerPeer.begin|endLayout() rather than
+	begin|endValidate().
+	(validate): Call ContainerPeer.begin|endValidate() here.
+	Added some local vars to avoid NPEs.
+
+2006-10-18  Roman Kennke  <kennke@aicas.com>
+
+	* native/target/.cvsignore
+	* native/target/Linux/.cvsignore
+	* native/target/generic/.cvsignore:
+	Added to let CVS ignore the generated Makefile and Makefile.in
+	files.
+
+2006-10-18  Roman Kennke  <kennke@aicas.com>
+
+	PR 29448
+	* java/awt/Window.java
+	(eventTypeEnabled): Overridden to handle WindowEvents.
+	(processEvent): Switch between processWindowEvent(),
+	processWindowFocusEvent() and processWindowStateEvent() here,
+	rather than simply calling processWindowEvent().
+	(processWindowEvent): Only dispatch event to listener, do not
+	switch to processWindowFocusEvent() or processWindowStateEvent()
+	here.
+	* javax/swing/JFrame.java
+	(frameInit): Explicitly enable window and key events here.
+	(processWindowEvent): Throw out some unnecessary code.
+	* javax/swing/JWindow.java
+	(windowInit): Explicitly enable key events here.
+	* javax/swing/JDialog.java
+	(close_action): Renamed to closeAction.
+	(dialogInit): Explicitly enable window events here.
+	(getDefaultCloseOperation): Renamed close_action to closeAction.
+	(processWindowEvent): Throw out some unnecessary code.
+	Renamed close_action to closeAction.
+	(setDefaultCloseOperation): Renamed close_action to closeAction.
+
+2006-10-17  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* gnu/java/awt/peer/gtk/GtkMainThread.java: Introduce running flag
+	to track native GTK event loop status.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkToolkit.c: Set and
+	clear running flag when native GTK event loop starts and stops.
+
+2006-10-17  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/TransferHandler.java
+	(exportToClipboard): Implemented.
+
+2006-10-17  Francis Kung  <fkung@redhat.com>
+
+	* gnu/java/awt/peer/gtk/BufferedImageGraphics.java (draw): Extend updated
+	region to account for pixel-shifting.
+	* gnu/java/awt/peer/gtk/CairoGraphics2D.java (shiftDrawCalls): Made
+	proctected.
+
+2006-10-17  Francis Kung  <fkung@redhat.com>
+
+	PR 29450
+	* gnu/java/awt/peer/gtk/FreetypeGlyphVector.java
+	(getLogicalBounds): Translate individual glyphs before appending bounds.
+	(getOutline): Translate individual glyphs before appending outline.
+
+2006-10-17  Cameron McCormack  <cam@mcc.id.au>
+
+	PR 29014
+	* java/awt/font/TextLayout.java
+	(bidi): New field.
+	(constructor): Store bidi in field.
+	(getCharacterLevel): Implemented.
+
+2006-10-17  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/TransferHandler.java
+	(PropertyTransferable): New inner class. Handles transfers
+	from component properties.
+	(createTransferable): Implemented.
+
+2006-10-17  Francis Kung  <fkung@redhat.com>
+
+	* gnu/java/awt/peer/gtk/BufferedImageGraphics.java
+	(drawComposite): Ensure	composite does not extend beyond buffer
+	bounds.
+	* java/awt/image/Raster.java
+	(createChild): Ensure child does not extend beyond parent's
+	bounds.
+	* java/awt/image/WritableRaster.java
+	(createWritableChild): Ensure child does not extend beyond
+	parent's bounds.
+
+2006-10-17  Jeroen Frijters  <jeroen@frijters.net>
+
+	* native/jni/classpath/jcl.c
+	(JNI_OnLoad): Corrected calling convention.
+
+2006-10-16  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/TransferHandler.java
+	(propertyName): New field.
+	(TransferHandler(String)): Store property name in field.
+	(canImport): Implemented stub method.
+	(exportDone): This is a no-op. Removed not-implemented mark.
+	(getPropertyDataFlavor): New helper method.
+	(getPropertyDescriptor): New helper method.
+
+2006-10-16  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/AbstractButton.java
+	(AccessibleJButton.getAfterIndex): Implemented.
+	(AccessibleJButton.getAtIndex): Implemented.
+	(AccessibleJButton.getBeforeIndex): Implemented.
+	(AccessibleJButton.getCharacterAttribute): Completed incomplete
+	method implementation.
+
+2006-10-16  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JLabel.java
+	(AccessibleJLabel.getIndexAtPoint): Implemented.
+	(AccessibleJLabel.getCharacterBounds): Implemented.
+	(AccessibleJLabel.getTextRectangle): New helper method.
+
+2006-10-16  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/filechooser/FileSystemView.java
+	(getFileSystemView): Mark as implemented.
+
 2006-10-14  Roman Kennke  <kennke@aicas.com>
 
 	PR 27957

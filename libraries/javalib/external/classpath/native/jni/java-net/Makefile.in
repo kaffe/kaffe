@@ -70,16 +70,13 @@ libjavanet_la_DEPENDENCIES =  \
 	$(am__DEPENDENCIES_1)
 am__libjavanet_la_SOURCES_DIST = javanet.c javanet.h \
 	java_net_VMInetAddress.c java_net_VMNetworkInterface.c \
-	java_net_VMURLConnection.c \
-	gnu_java_net_VMPlainDatagramSocketImpl.c \
-	gnu_java_net_VMPlainSocketImpl.c \
+	java_net_VMURLConnection.c gnu_java_net_VMPlainSocketImpl.c \
 	gnu_java_net_local_LocalSocketImpl.c local.c local.h
 @ENABLE_LOCAL_SOCKETS_FALSE@am__objects_1 = gnu_java_net_local_LocalSocketImpl.lo
 @ENABLE_LOCAL_SOCKETS_TRUE@am__objects_1 = gnu_java_net_local_LocalSocketImpl.lo \
 @ENABLE_LOCAL_SOCKETS_TRUE@	local.lo
 am_libjavanet_la_OBJECTS = javanet.lo java_net_VMInetAddress.lo \
 	java_net_VMNetworkInterface.lo java_net_VMURLConnection.lo \
-	gnu_java_net_VMPlainDatagramSocketImpl.lo \
 	gnu_java_net_VMPlainSocketImpl.lo $(am__objects_1)
 libjavanet_la_OBJECTS = $(am_libjavanet_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/include
@@ -348,7 +345,6 @@ libjavanet_la_SOURCES = javanet.c \
 			java_net_VMInetAddress.c \
 			java_net_VMNetworkInterface.c \
 			java_net_VMURLConnection.c \
-			gnu_java_net_VMPlainDatagramSocketImpl.c \
                         gnu_java_net_VMPlainSocketImpl.c \
 			$(local_sources)
 
@@ -428,7 +424,6 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnu_java_net_VMPlainDatagramSocketImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnu_java_net_VMPlainSocketImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnu_java_net_local_LocalSocketImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/java_net_VMInetAddress.Plo@am__quote@

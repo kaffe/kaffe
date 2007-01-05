@@ -58,7 +58,7 @@ static jmethodID rawData_mid = NULL;
 /*
  * JNI OnLoad constructor.
  */
-jint
+JNIEXPORT jint JNICALL
 JNI_OnLoad (JavaVM *vm, void *reserved __attribute__((unused)))
 {
   JNIEnv *env;

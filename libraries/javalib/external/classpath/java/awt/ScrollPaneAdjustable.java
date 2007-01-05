@@ -196,13 +196,23 @@ public class ScrollPaneAdjustable
 
   public String paramString ()
   {
-    return ("scrollpane=" + sp + ", orientation=" + orientation
-            + ", value=" + value + ", minimum=" + minimum
-            + ", maximum=" + maximum + ", visibleAmount=" + visibleAmount
-            + ", unitIncrement=" + unitIncrement
-            + ", blockIncrement=" + blockIncrement);
+    return paramStringHelper() 
+         + ",[" + getMinimum() + ".." + getMaximum() 
+         + "],val=" + getValue() 
+         + ",vis=" + getVisibleAmount() 
+         + ",unit=" + getUnitIncrement()
+         + ",block=" + getBlockIncrement() 
+         + ",isAdjusting=" + valueIsAdjusting;
   }
 
+  private String paramStringHelper()
+  {
+    if (getOrientation() == HORIZONTAL)
+      return "horizontal";
+    else
+      return "vertical";
+  }
+  
   public String toString()
   {
     return getClass().getName() + "[" + paramString() + "]";
@@ -227,5 +237,6 @@ public class ScrollPaneAdjustable
   {
     this.valueIsAdjusting = valueIsAdjusting;
   }
+  
 } // class ScrollPaneAdjustable
 

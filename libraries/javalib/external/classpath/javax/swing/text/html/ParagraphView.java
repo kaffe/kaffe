@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package javax.swing.text.html;
 
+import gnu.javax.swing.text.html.css.Length;
+
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Shape;
@@ -69,6 +71,16 @@ public class ParagraphView
    * The stylesheet's box painter.
    */
   private StyleSheet.BoxPainter painter;
+
+  /**
+   * The width as specified in the stylesheet or null if not specified.
+   */
+  private Length cssWidth;
+
+  /**
+   * The height as specified in the stylesheet or null if not specified.
+   */
+  private Length cssHeight;
 
   /**
    * Creates a new ParagraphView for the specified element.
@@ -116,29 +128,34 @@ public class ParagraphView
     super.setPropertiesFromAttributes();
 
     // Fetch CSS attributes.
-    AttributeSet atts = getAttributes();
-    Object o = atts.getAttribute(CSS.Attribute.TEXT_ALIGN);
-    if (o != null)
+    attributes = getAttributes();
+    if (attributes != null)
       {
-        String align = o.toString();
-        if (align.equals("left"))
-          setJustification(StyleConstants.ALIGN_LEFT);
-        else if (align.equals("right"))
-          setJustification(StyleConstants.ALIGN_RIGHT);
-        else if (align.equals("center"))
-          setJustification(StyleConstants.ALIGN_CENTER);
-        else if (align.equals("justify"))
-          setJustification(StyleConstants.ALIGN_JUSTIFIED);
+        super.setPropertiesFromAttributes();
+        Object o = attributes.getAttribute(CSS.Attribute.TEXT_ALIGN);
+        if (o != null)
+          {
+            String align = o.toString();
+            if (align.equals("left"))
+              setJustification(StyleConstants.ALIGN_LEFT);
+            else if (align.equals("right"))
+              setJustification(StyleConstants.ALIGN_RIGHT);
+            else if (align.equals("center"))
+              setJustification(StyleConstants.ALIGN_CENTER);
+            else if (align.equals("justify"))
+              setJustification(StyleConstants.ALIGN_JUSTIFIED);
+          }
+
+        // Fetch StyleSheet's box painter.
+        painter = getStyleSheet().getBoxPainter(attributes);
+        setInsets((short) painter.getInset(TOP, this),
+                  (short) painter.getInset(LEFT, this),
+                  (short) painter.getInset(BOTTOM, this),
+                  (short) painter.getInset(RIGHT, this));
+
+        cssWidth = (Length) attributes.getAttribute(CSS.Attribute.WIDTH);
+        cssHeight = (Length) attributes.getAttribute(CSS.Attribute.WIDTH);
       }
-
-    // Fetch StyleSheet's box painter.
-    painter = getStyleSheet().getBoxPainter(atts);
-    setInsets((short) painter.getInset(TOP, this),
-              (short) painter.getInset(LEFT, this),
-              (short) painter.getInset(BOTTOM, this),
-              (short) painter.getInset(RIGHT, this));
-
-    // TODO: Handle CSS width and height attributes somehow.
   }
 
   /**
@@ -169,8 +186,66 @@ public class ParagraphView
   protected SizeRequirements calculateMinorAxisRequirements(int axis,
                                                             SizeRequirements r)
   {
-    // FIXME: Implement the above specified behaviour.
-    return super.calculateMinorAxisRequirements(axis, r);
+    r = super.calculateMinorAxisRequirements(axis, r);
+    if (setCSSSpan(r, axis))
+      {
+        // If we have set the span from CSS, then we need to adjust
+        // the margins.
+        SizeRequirements parent = super.calculateMinorAxisRequirements(axis,
+                                                                       null);
+        int margin = axis == X_AXIS ? getLeftInset() + getRightInset()
+                                    : getTopInset() + getBottomInset();
+        r.minimum -= margin;
+        r.preferred -= margin;
+        r.maximum -= margin;
+      }
+    else
+      {
+        float min = 0;
+        int n = getLayoutViewCount();
+        for (int i = 0; i < n; i++)
+          min = Math.max(getLayoutView(i).getMinimumSpan(axis), min);
+        r.minimum = (int) min;
+        r.preferred = Math.max(r.preferred, r.minimum);
+        r.maximum = Math.max(r.maximum, r.preferred);
+      }
+    return r;
+  }
+
+  /**
+   * Sets the span on the SizeRequirements object according to the
+   * according CSS span value, when it is set.
+   * 
+   * @param r the size requirements
+   * @param axis the axis
+   *
+   * @return <code>true</code> when the CSS span has been set,
+   *         <code>false</code> otherwise
+   */
+  private boolean setCSSSpan(SizeRequirements r, int axis)
+  {
+    boolean ret = false;
+    if (axis == X_AXIS)
+      {
+        if (cssWidth != null && ! cssWidth.isPercentage())
+          {
+            r.minimum = (int) cssWidth.getValue();
+            r.preferred = (int) cssWidth.getValue();
+            r.maximum = (int) cssWidth.getValue();
+            ret = true;
+          }
+      }
+    else
+      {
+        if (cssHeight != null && ! cssWidth.isPercentage())
+          {
+            r.minimum = (int) cssHeight.getValue();
+            r.preferred = (int) cssHeight.getValue();
+            r.maximum = (int) cssHeight.getValue();
+            ret = true;
+          }
+      }
+    return ret;
   }
 
   /**

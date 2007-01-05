@@ -38,7 +38,6 @@ exception statement from your version. */
 
 package javax.swing.plaf.basic;
 
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
@@ -62,8 +61,6 @@ import javax.swing.JViewport;
 import javax.swing.LookAndFeel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.ScrollPaneLayout;
-import javax.swing.Scrollable;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
@@ -229,102 +226,23 @@ public class BasicScrollPaneUI extends ScrollPaneUI
      */
     public void mouseWheelMoved(MouseWheelEvent e)
     {
-      if (scrollpane.getViewport().getComponentCount() == 0)
-        return;
-
-      Component target = scrollpane.getViewport().getComponent(0);
-      JScrollBar bar = scrollpane.getVerticalScrollBar();
-      Scrollable scrollable = (target instanceof Scrollable) ? (Scrollable) target
-                                                            : null;
-
-      boolean tracksHeight = scrollable != null
-                             && scrollable.getScrollableTracksViewportHeight();
-      int wheel = e.getWheelRotation() * ROWS_PER_WHEEL_CLICK;
-      int delta;
-
-      // If possible, scroll vertically.
-      if (bar != null && ! tracksHeight)
+      if (scrollpane.isWheelScrollingEnabled() && e.getScrollAmount() != 0)
         {
-          if (scrollable != null)
+          // Try to scroll vertically first.
+          JScrollBar scrollBar = scrollpane.getVerticalScrollBar();
+          if (scrollBar == null || ! scrollBar.isVisible())
+            scrollBar = scrollpane.getHorizontalScrollBar();
+          if (scrollBar != null && scrollBar.isVisible())
             {
-              bounds(target);
-              delta = scrollable.getScrollableUnitIncrement(
-                rect, SwingConstants.VERTICAL, wheel);
-            }
-          else
-            {
-              // Scroll non scrollables.
-              delta = wheel * SCROLL_NON_SCROLLABLES;
-            }
-          scroll(bar, wheel > 0 ? delta : -delta);
-        }
-      // If not, try to scroll horizontally
-      else
-        {
-          bar = scrollpane.getHorizontalScrollBar();
-          boolean tracksWidth = scrollable != null
-                                && scrollable.getScrollableTracksViewportWidth();
-
-          if (bar != null && ! tracksWidth)
-            {
-              if (scrollable != null)
-                {
-                  bounds(target);
-                  delta = scrollable.getScrollableUnitIncrement(
-                     rect, SwingConstants.HORIZONTAL, wheel);
-                }
-              else
-                {
-                  // Scroll non scrollables.
-                  delta = wheel * SCROLL_NON_SCROLLABLES;
-                }
-              scroll(bar, delta);
+              int direction = e.getWheelRotation() < 0 ? -1 : 1;
+              int scrollType = e.getScrollType();
+              if (scrollType == MouseWheelEvent.WHEEL_UNIT_SCROLL)
+                BasicScrollBarUI.scrollByUnits(scrollBar, direction,
+                                               e.getScrollAmount());
+              else if (scrollType == MouseWheelEvent.WHEEL_BLOCK_SCROLL)
+                BasicScrollBarUI.scrollByBlock(scrollBar, direction);
             }
         }
-    }
-    
-    /**
-     * Place the component bounds into rect. The x and y values 
-     * need to be reversed.
-     * 
-     * @param target the target being scrolled
-     */
-    final void bounds(Component target)
-    {
-      // Viewport bounds, translated by the scroll bar positions.
-      target.getParent().getBounds(rect);
-      rect.x = getValue(scrollpane.getHorizontalScrollBar());
-      rect.y = getValue(scrollpane.getVerticalScrollBar());
-    }
-    
-    /**
-     * Get the scroll bar value or 0 if there is no such scroll bar.
-     * 
-     * @param bar  the scroll bar (<code>null</code> permitted).
-     * 
-     * @return The scroll bar value, or 0.
-     */
-    final int getValue(JScrollBar bar)
-    {
-      return bar != null ? bar.getValue() : 0;
-    }
-    
-    /**
-     * Scroll the given distance.
-     * 
-     * @param bar the scrollbar to scroll
-     * @param delta the distance
-     */
-    final void scroll(JScrollBar bar, int delta)
-    {
-      int y = bar.getValue() + delta;
-
-      if (y < bar.getMinimum())
-        y = bar.getMinimum();
-      if (y > bar.getMaximum())
-        y = bar.getMaximum();
-
-      bar.setValue(y);
     }
   }
   

@@ -430,7 +430,6 @@ $(XMLJ_H_FILES) \
 $(GTKPEER_H_FILES) \
 $(QTPEER_H_FILES) \
 $(GCONF_PREFS_FILES) \
-$(top_srcdir)/include/gnu_java_net_VMPlainDatagramSocketImpl.h \
 $(top_srcdir)/include/gnu_java_net_VMPlainSocketImpl.h \
 $(top_srcdir)/include/gnu_java_net_local_LocalSocketImpl.h \
 $(top_srcdir)/include/gnu_java_nio_EpollSelectorImpl.h \
@@ -729,8 +728,6 @@ uninstall-am: uninstall-includeHEADERS uninstall-info-am
 @CREATE_JNI_HEADERS_TRUE@$(top_srcdir)/include/gnu_java_util_prefs_gconf_%.h: $(top_builddir)/$(CLASSDIR)/gnu/java/util/prefs/gconf/%.class
 @CREATE_JNI_HEADERS_TRUE@	$(JAVAH) -o $@ gnu.java.util.prefs.gconf.$*
 
-@CREATE_JNI_HEADERS_TRUE@$(top_srcdir)/include/gnu_java_net_VMPlainDatagramSocketImpl.h: $(top_srcdir)/vm/reference/gnu/java/net/VMPlainDatagramSocketImpl.java
-@CREATE_JNI_HEADERS_TRUE@	$(JAVAH) -o $@ gnu.java.net.VMPlainDatagramSocketImpl
 @CREATE_JNI_HEADERS_TRUE@$(top_srcdir)/include/gnu_java_net_VMPlainSocketImpl.h: $(top_srcdir)/vm/reference/gnu/java/net/VMPlainSocketImpl.java
 @CREATE_JNI_HEADERS_TRUE@	$(JAVAH) -o $@ gnu.java.net.VMPlainSocketImpl
 @CREATE_JNI_HEADERS_TRUE@$(top_srcdir)/include/gnu_java_net_local_LocalSocketImpl.h: $(top_srcdir)/gnu/java/net/local/LocalSocketImpl.java

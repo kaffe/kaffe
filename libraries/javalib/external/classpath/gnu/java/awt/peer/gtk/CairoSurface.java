@@ -72,14 +72,22 @@ public class CairoSurface extends WritableRaster
    */
   long bufferPointer;
 
-  static ColorModel cairoColorModel = new DirectColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB),
-                                                           32, 0x00FF0000,
+  // FIXME: use only the cairoCM_pre colormodel
+  // since that's what Cairo really uses (is there a way to do this cheaply?
+  // we use a non-multiplied model most of the time to avoid costly coercion
+  // operations...)
+  static ColorModel cairoColorModel = new DirectColorModel(32, 0x00FF0000,
                                                            0x0000FF00,
                                                            0x000000FF,
-                                                           0xFF000000,
-                                                           true,
-                                                           Buffers.smallestAppropriateTransferType(32));
+                                                           0xFF000000);
 
+  static ColorModel cairoCM_pre = new DirectColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB),
+                                                       32, 0x00FF0000,
+                                                       0x0000FF00,
+                                                       0x000000FF,
+                                                       0xFF000000,
+                                                       true,
+                                                       Buffers.smallestAppropriateTransferType(32));
   /**
    * Allocates and clears the buffer and creates the cairo surface.
    * @param width, height - the image size

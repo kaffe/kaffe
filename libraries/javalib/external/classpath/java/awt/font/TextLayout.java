@@ -88,6 +88,12 @@ public final class TextLayout implements Cloneable
   private boolean hasWhitespace = false;
 
   /**
+   * The {@link Bidi} object that is used for reordering and by
+   * {@link #getCharacterLevel(int)}.
+   */
+  private Bidi bidi;
+
+  /**
    * The default caret policy.
    */
   public static final TextLayout.CaretPolicy DEFAULT_CARET_POLICY = new CaretPolicy();
@@ -107,7 +113,7 @@ public final class TextLayout implements Cloneable
 
     if( Bidi.requiresBidi( string.toCharArray(), 0, string.length() ) )
       {
-	Bidi bidi = new Bidi( string, leftToRight ? 
+	bidi = new Bidi( string, leftToRight ? 
 			      Bidi.DIRECTION_LEFT_TO_RIGHT : 
 			      Bidi.DIRECTION_RIGHT_TO_LEFT );
 	int rc = bidi.getRunCount();
@@ -434,9 +440,10 @@ public final class TextLayout implements Cloneable
   }
 
   public byte getCharacterLevel (int index)
-    throws NotImplementedException
   {
-    throw new Error ("not implemented");
+    if( bidi == null )
+      return (byte)( leftToRight ? 0 : 1 );
+    return (byte)bidi.getLevelAt( index );
   }
 
   public float getDescent ()

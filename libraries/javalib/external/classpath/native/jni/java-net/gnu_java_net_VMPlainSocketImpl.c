@@ -40,6 +40,8 @@ exception statement from your version. */
 #include <config.h>
 #endif /* HAVE_CONFIG_H */
 
+#include <config-int.h>
+
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -47,6 +49,7 @@ exception statement from your version. */
 #include <ifaddrs.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
+#include <net/if.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -56,16 +59,14 @@ exception statement from your version. */
 #include <jni.h>
 #include <jcl.h>
 
-/* #include "javanet.h" */
+#include "cpnative.h"
+#include "cpnet.h"
+#include "cpio.h"
+#include "javanet.h"
 
 #include "gnu_java_net_VMPlainSocketImpl.h"
 
-#define IO_EXCEPTION "java/io/IOException"
-#define SOCKET_EXCEPTION "java/net/SocketException"
-#define BIND_EXCEPTION "java/net/BindException"
-
-#define THROW_NO_NETWORK(env) JCL_ThrowException (env, "java/lang/InternalError", "this platform not configured for network support") 
-
+#define THROW_NO_NETWORK(env) JCL_ThrowException (env, "java/lang/InternalError", "this platform not configured for network support")
 
 /*
  * Class:     gnu_java_net_VMPlainSocketImpl
@@ -102,6 +103,8 @@ Java_gnu_java_net_VMPlainSocketImpl_bind (JNIEnv *env,
 
   if (-1 == ret)
     JCL_ThrowException (env, BIND_EXCEPTION, strerror (errno));
+    
+  cpio_closeOnExec(ret);
 }
 
 
@@ -158,7 +161,10 @@ Java_gnu_java_net_VMPlainSocketImpl_listen (JNIEnv *env,
 }
 
 
-/* These constants are also defined in java/net/SocketOptions.java */
+/* These constants are also defined in java/net/SocketOptions.java.
+ * Except for CPNET_IP_TTL which is defined in 
+ * vm/reference/gnu/java/net/VMPlainSocketImpl.java .
+ */
 enum java_sockopt {
   CPNET_SO_KEEPALIVE = 0x8,
   CPNET_SO_LINGER = 0x80,
@@ -173,7 +179,8 @@ enum java_sockopt {
   CPNET_IP_MULTICAST_IF = 0x10,
   CPNET_IP_MULTICAST_IF2 = 0x1F,
   CPNET_IP_MULTICAST_LOOP = 0x12,
-  CPNET_IP_TOS = 0x03
+  CPNET_IP_TOS = 0x03,
+  CPNET_IP_TTL = 0x1E61
 };
 
 
@@ -195,7 +202,7 @@ Java_gnu_java_net_VMPlainSocketImpl_setOption (JNIEnv *env,
   struct timeval _timeo;
   void *optval = (void *) &_value;
   socklen_t optlen = sizeof (int);
-
+  
   switch (joption)
     {
     case CPNET_IP_MULTICAST_LOOP:
@@ -209,7 +216,7 @@ Java_gnu_java_net_VMPlainSocketImpl_setOption (JNIEnv *env,
 
     case CPNET_SO_LINGER:
       optname = SO_LINGER;
-      if (_value == 0)
+      if (_value == -1)
         _linger.l_onoff = 0;
       else
         _linger.l_onoff = 1;
@@ -254,6 +261,11 @@ Java_gnu_java_net_VMPlainSocketImpl_setOption (JNIEnv *env,
     case CPNET_IP_TOS:
       level = IPPROTO_IP;
       optname = IP_TOS;
+      break;
+
+    case CPNET_IP_TTL:
+      level = IPPROTO_IP;
+      optname = IP_TTL;
       break;
 
     case CPNET_SO_BINDADDR:
@@ -339,6 +351,11 @@ Java_gnu_java_net_VMPlainSocketImpl_getOption (JNIEnv *env,
       optname = IP_TOS;
       break;
 
+    case CPNET_IP_TTL:
+      level = IPPROTO_IP;
+      optname = IP_TTL;
+      break;
+
     case CPNET_SO_BINDADDR:
     case CPNET_IP_MULTICAST_IF:
     case CPNET_IP_MULTICAST_IF2:
@@ -349,12 +366,106 @@ Java_gnu_java_net_VMPlainSocketImpl_getOption (JNIEnv *env,
   if (getsockopt (fd, level, optname, optval, &optlen) == -1)
     JCL_ThrowException (env, IO_EXCEPTION, strerror (errno));
 
+  /* Returns the linger value if it is enabled or -1 in case
+   * it is disabled. This is how the Java API expects it.
+   */
   if (joption == CPNET_SO_LINGER)
-    return linger.l_linger;
+    return (linger.l_onoff) ? linger.l_linger : -1;
   if (joption == CPNET_SO_TIMEOUT)
     return (timeo.tv_sec * 1000) + (timeo.tv_usec / 1000);
 
   return value;
+}
+
+JNIEXPORT void JNICALL
+Java_gnu_java_net_VMPlainSocketImpl_setMulticastInterface (JNIEnv *env,
+                                                           jclass c __attribute__((unused)),
+                                                           jint fd,
+                                                           jint optionId __attribute__((unused)),
+                                                           jobject addr)
+{
+  int result;
+  cpnet_address *cpaddr = _javanet_get_ip_netaddr (env, addr);
+
+  if ((*env)->ExceptionOccurred (env))
+    return;
+
+  result = setsockopt(fd, IPPROTO_IP, IP_MULTICAST_IF,
+                      (struct sockaddr *) cpaddr->data, cpaddr->len);
+
+  cpnet_freeAddress (env, cpaddr);
+  
+  if (result == -1)
+    JCL_ThrowException (env, SOCKET_EXCEPTION, cpnative_getErrorString (errno));
+}
+
+JNIEXPORT void JNICALL
+Java_gnu_java_net_VMPlainSocketImpl_setMulticastInterface6 (JNIEnv *env,
+                                                           jclass c __attribute__((unused)),
+                                                           jint fd,
+                                                           jint optionId __attribute__((unused)),
+                                                           jstring ifname)
+{
+#ifdef HAVE_SETSOCKOPT
+#ifdef HAVE_INET6	
+  int result;
+  const char *str_ifname = JCL_jstring_to_cstring (env, ifname);
+  u_int if_index;
+
+  if ((*env)->ExceptionOccurred (env))
+    {
+      JCL_free_cstring(env, ifname, str_ifname);
+      return;
+    }
+
+  if_index = if_nametoindex(str_ifname);
+  if (!if_index)
+    {
+      JCL_free_cstring(env, ifname, str_ifname);
+      JCL_ThrowException (env, SOCKET_EXCEPTION, "interface does not exist");
+      return;
+    }
+
+  result = setsockopt(fd, IPPROTO_IPV6, IPV6_MULTICAST_IF,
+                      (u_int *) &if_index, sizeof(if_index));
+
+  JCL_free_cstring(env, ifname, str_ifname);
+  
+  if (result == -1)
+    JCL_ThrowException (env, SOCKET_EXCEPTION, cpnative_getErrorString (errno));
+#else
+  (void) fd;
+  JCL_ThrowException (env, "java/lang/InternalError",
+                      "IPv6 support not available");
+#endif /* HAVE_INET6 */
+#else
+  (void) fd;
+  JCL_ThrowException (env, "java/lang/InternalError",
+                      "socket options not supported");
+#endif /* HAVE_SETSOCKOPT */
+}
+
+JNIEXPORT jobject JNICALL
+Java_gnu_java_net_VMPlainSocketImpl_getMulticastInterface (JNIEnv *env,
+                                                           jclass c __attribute__((unused)),
+                                                           jint fd,
+                                                           jint optionId __attribute__((unused)))
+{
+  jobject obj;
+  cpnet_address *cpaddr;
+  int result = cpnet_getMulticastIF (env, fd, &cpaddr);
+ 
+  if (result != CPNATIVE_OK)
+    {
+      JCL_ThrowException (env, SOCKET_EXCEPTION,
+                          cpnative_getErrorString (result));
+      return (0);
+    }
+
+  obj = _javanet_create_inetaddress (env, cpaddr);
+  cpnet_freeAddress (env, cpaddr);
+
+  return obj;
 }
 
 
@@ -538,7 +649,7 @@ Java_gnu_java_net_VMPlainSocketImpl_leave6 (JNIEnv *env,
 
   (*env)->ReleaseByteArrayElements (env, addr, addr_elems, JNI_ABORT);
 
-  if (-1 == setsockopt (fd, IPPROTO_IPV6, IPV6_JOIN_GROUP,
+  if (-1 == setsockopt (fd, IPPROTO_IPV6, IPV6_LEAVE_GROUP,
                         &maddr, sizeof (struct ipv6_mreq)))
     JCL_ThrowException (env, SOCKET_EXCEPTION, strerror (errno));
 #else

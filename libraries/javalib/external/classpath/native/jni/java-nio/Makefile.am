@@ -5,7 +5,6 @@ libjavanio_la_SOURCES = gnu_java_nio_VMPipe.c \
 			gnu_java_nio_VMSelector.c \
 			gnu_java_nio_charset_iconv_IconvDecoder.c \
 			gnu_java_nio_charset_iconv_IconvEncoder.c \
-			gnu_java_nio_channels_FileChannelImpl.c \
 			java_nio_MappedByteBufferImpl.c \
 			java_nio_VMDirectByteBuffer.c \
 			gnu_java_nio_EpollSelectorImpl.c \

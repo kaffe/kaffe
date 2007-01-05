@@ -488,7 +488,8 @@ public class CSS implements Serializable
       o = new CSSColor(v);
     else if (att == Attribute.MARGIN || att == Attribute.MARGIN_BOTTOM
              || att == Attribute.MARGIN_LEFT || att == Attribute.MARGIN_RIGHT
-             || att == Attribute.MARGIN_TOP)
+             || att == Attribute.MARGIN_TOP || att == Attribute.WIDTH
+             || att == Attribute.HEIGHT)
       o = new Length(v);
     else
       o = v;

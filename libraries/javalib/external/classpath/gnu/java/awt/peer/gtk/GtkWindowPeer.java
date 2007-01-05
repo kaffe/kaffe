@@ -41,6 +41,7 @@ package gnu.java.awt.peer.gtk;
 import gnu.java.awt.ComponentReshapeEvent;
 
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.KeyboardFocusManager;
@@ -64,8 +65,7 @@ public class GtkWindowPeer extends GtkContainerPeer
   protected static final int GDK_WINDOW_TYPE_HINT_DOCK = 6;
   protected static final int GDK_WINDOW_TYPE_HINT_DESKTOP = 7;
 
-  private boolean hasBeenShown = false;
-  private int oldState = Frame.NORMAL;
+  protected int windowState = Frame.NORMAL;
 
   // Cached awt window component location, width and height.
   private int x, y, width, height;
@@ -152,6 +152,8 @@ public class GtkWindowPeer extends GtkContainerPeer
   public GtkWindowPeer (Window window)
   {
     super (window);
+    // Set reasonable font for the window.
+    window.setFont(new Font("Dialog", Font.PLAIN, 12));
   }
 
   public native void toBack();
@@ -283,23 +285,26 @@ public class GtkWindowPeer extends GtkContainerPeer
 
   void postWindowEvent (int id, Window opposite, int newState)
   {
-    if (id == WindowEvent.WINDOW_OPENED)
+    if (id == WindowEvent.WINDOW_STATE_CHANGED)
       {
-	// Post a WINDOW_OPENED event the first time this window is shown.
-	if (!hasBeenShown)
+	if (windowState != newState)
 	  {
+            // Post old styleWindowEvent with WINDOW_ICONIFIED or
+            // WINDOW_DEICONIFIED if appropriate.
+            if ((windowState & Frame.ICONIFIED) != 0
+                && (newState & Frame.ICONIFIED) == 0)
+              q().postEvent(new WindowEvent((Window) awtComponent,
+                                            WindowEvent.WINDOW_DEICONIFIED,
+                                            opposite, 0, 0));
+            else if ((windowState & Frame.ICONIFIED) == 0
+                && (newState & Frame.ICONIFIED) != 0)
+              q().postEvent(new WindowEvent((Window) awtComponent,
+                                            WindowEvent.WINDOW_ICONIFIED,
+                                            opposite, 0, 0));
+            // Post new-style WindowStateEvent.
 	    q().postEvent (new WindowEvent ((Window) awtComponent, id,
-					  opposite));
-	    hasBeenShown = true;
-	  }
-      }
-    else if (id == WindowEvent.WINDOW_STATE_CHANGED)
-      {
-	if (oldState != newState)
-	  {
-	    q().postEvent (new WindowEvent ((Window) awtComponent, id, opposite,
-					  oldState, newState));
-	    oldState = newState;
+                                            opposite, windowState, newState));
+	    windowState = newState;
 	  }
       }
     else
@@ -376,13 +381,6 @@ public class GtkWindowPeer extends GtkContainerPeer
     // non-zero.
     g.translate (-insets.left, -insets.top);
     return g;
-  }
-
-  protected void updateComponent (PaintEvent event)
-  {
-    // Do not clear anything before painting.  Sun never calls
-    // Window.update, only Window.paint.
-    paintComponent(event);
   }
 
   protected void postMouseEvent(int id, long when, int mods, int x, int y, 

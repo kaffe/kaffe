@@ -176,7 +176,7 @@ public abstract class CairoGraphics2D extends Graphics2D
    * coords be shifted to land on 0.5-pixel boundaries, in order to land on
    * "middle of pixel" coordinates and light up complete pixels. 
    */
-  private boolean shiftDrawCalls = false;
+  protected boolean shiftDrawCalls = false;
 
   /**
    * Keep track if the first clip to be set, which is restored on setClip(null);
@@ -220,7 +220,7 @@ public abstract class CairoGraphics2D extends Graphics2D
   { 
     nativePointer = init(cairo_t_pointer);
     setRenderingHints(new RenderingHints(getDefaultHints()));
-    font = new Font("SansSerif", Font.PLAIN, 12);
+    setFont(new Font("SansSerif", Font.PLAIN, 12));
     setColor(Color.black);
     setBackground(Color.white);
     setPaint(Color.black);
@@ -262,8 +262,7 @@ public abstract class CairoGraphics2D extends Graphics2D
     else
       transform = new AffineTransform(g.transform);
 
-    font = g.font;
-
+    setFont(g.font);
     setColor(foreground);
     setBackground(bg);
     setPaint(paint);
@@ -385,6 +384,10 @@ public abstract class CairoGraphics2D extends Graphics2D
                                    float x, float y, int n, 
                                    int[] codes, float[] positions);
 
+  /**
+   * Set the font in cairo.
+   */
+  private native void cairoSetFont(long pointer, GdkFontPeer font);
 
   private native void cairoRelCurveTo(long pointer, double dx1, double dy1,
                                       double dx2, double dy2, double dx3,
@@ -982,10 +985,6 @@ public abstract class CairoGraphics2D extends Graphics2D
             if (sm != null)
               sm.checkPermission(new AWTPermission("readDisplayPixels"));
     
-            // FIXME: implement general Composite support
-            //throw new java.lang.UnsupportedOperationException();
-            // this is in progress!  yay!
-            //compCtx = comp.createContext(getNativeCM(), getNativeCM(), hints);
             compCtx = comp.createContext(getBufferCM(), getNativeCM(), hints);
           }
       }
@@ -997,18 +996,17 @@ public abstract class CairoGraphics2D extends Graphics2D
    *  
    * @return ColorModel the ColorModel of native data in this peer
    */
-  /* protected abstract ColorModel getNativeCM(); */
-  protected ColorModel getNativeCM()
-  {
-    // This stub should be removed and the method made abstract once I'm done
-    // implementing custom composites across all the peers... but we need it
-    // for now, so that the build doesn't break.
-    return null;
-  }
+  protected abstract ColorModel getNativeCM();
   
-  // This may be overridden by some subclasses
+  /**
+   * Returns the Color Model describing the buffer that this peer uses
+   * for custom composites.
+   * 
+   * @return ColorModel the ColorModel of the composite buffer in this peer.
+   */
   protected ColorModel getBufferCM()
   {
+    // This may be overridden by some subclasses
     return getNativeCM();
   }
 
@@ -1151,7 +1149,7 @@ public abstract class CairoGraphics2D extends Graphics2D
   {
     fill(new Arc2D.Double((double) x, (double) y, (double) width,
                           (double) height, (double) startAngle,
-                          (double) arcAngle, Arc2D.OPEN));
+                          (double) arcAngle, Arc2D.PIE));
   }
 
   public void fillRect(int x, int y, int width, int height)
@@ -1222,7 +1220,7 @@ public abstract class CairoGraphics2D extends Graphics2D
 
     Rectangle2D r = getRealBounds();
 
-    if( width < 0 || height < 0 )
+    if( width <= 0 || height <= 0 )
       return;
     // Return if outside the surface
     if( x + dx > r.getWidth() || y + dy > r.getHeight() )
@@ -1613,6 +1611,8 @@ public abstract class CairoGraphics2D extends Graphics2D
       font = 
         ((ClasspathToolkit)(Toolkit.getDefaultToolkit()))
         .getFont(f.getName(), f.getAttributes());    
+    
+    cairoSetFont(nativePointer, (GdkFontPeer)getFont().getPeer());
   }
 
   public Font getFont()

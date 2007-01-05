@@ -1225,12 +1225,36 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
    */
   protected void scrollByBlock(int direction)
   {
+    scrollByBlock(scrollbar, direction);
+  }
+
+  /**
+   * Scrolls the specified <code>scrollBar</code> by one block (according
+   * to the scrollable protocol) in the specified <code>direction</code>.
+   *
+   * This method is here statically to support wheel scrolling from the
+   * BasicScrollPaneUI without code duplication.
+   *
+   * @param scrollBar the scrollbar to scroll
+   * @param direction the scroll direction
+   */
+  static final void scrollByBlock(JScrollBar scrollBar, int direction)
+  {
+    int delta;
     if (direction > 0)
-    scrollbar.setValue(scrollbar.getValue()
-                       + scrollbar.getBlockIncrement(direction));
+      delta = scrollBar.getBlockIncrement(direction);
     else
-      scrollbar.setValue(scrollbar.getValue()
-                         - scrollbar.getBlockIncrement(direction));
+      delta = - scrollBar.getBlockIncrement(direction);
+    int oldValue = scrollBar.getValue();
+    int newValue = oldValue + delta;
+
+    // Overflow check.
+    if (delta > 0 && newValue < oldValue)
+      newValue = scrollBar.getMaximum();
+    else if (delta < 0 && newValue > oldValue)
+      newValue = scrollBar.getMinimum();
+
+    scrollBar.setValue(newValue);
   }
 
   /**
@@ -1240,12 +1264,46 @@ public class BasicScrollBarUI extends ScrollBarUI implements LayoutManager,
    */
   protected void scrollByUnit(int direction)
   {
-    if (direction > 0)
-      scrollbar.setValue(scrollbar.getValue()
-                         + scrollbar.getUnitIncrement(direction));
-    else
-      scrollbar.setValue(scrollbar.getValue()
-                         - scrollbar.getUnitIncrement(direction));
+    scrollByUnits(scrollbar, direction, 1);
+  }
+
+  /**
+   * Scrolls the specified <code>scrollbac/code> by <code>units</code> units
+   * in the specified <code>direction</code>.
+   *
+   * This method is here statically to support wheel scrolling from the
+   * BasicScrollPaneUI without code duplication.
+   *
+   * @param scrollBar the scrollbar to scroll
+   * @param direction the direction
+   * @param units the number of units to scroll
+   */
+  static final void scrollByUnits(JScrollBar scrollBar, int direction,
+                                   int units)
+  {
+    // Do this inside a loop so that we don't clash with the scrollable
+    // interface, which can return different units at times. For instance,
+    // a Scrollable could return a unit of 2 pixels only to adjust the
+    // visibility of an item. If we would simply multiply this by units,
+    // then we would only get 6 pixels, which is complete crap.
+    for (int i = 0; i < units; i++)
+      {
+        int delta;
+        if (direction > 0)
+          delta = scrollBar.getUnitIncrement(direction);
+        else
+          delta = - scrollBar.getUnitIncrement(direction);
+        int oldValue = scrollBar.getValue();
+        int newValue = oldValue + delta;
+
+        // Overflow check.
+        if (delta > 0 && newValue < oldValue)
+          newValue = scrollBar.getMaximum();
+        else if (delta < 0 && newValue > oldValue)
+          newValue = scrollBar.getMinimum();
+
+        scrollBar.setValue(newValue);
+      }
   }
 
   /**

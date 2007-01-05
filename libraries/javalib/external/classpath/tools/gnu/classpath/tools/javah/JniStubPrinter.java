@@ -76,12 +76,12 @@ public class JniStubPrinter
     if (! klass.hasNativeMethod())
       return;
     String xname = JniHelper.mangle(klass.name);
-    JniPrintStream out = (JniPrintStream) getPrintStream(xname + ".c", klass);
+    JniPrintStream out = (JniPrintStream) getPrintStream(klass.name + ".c", klass);
     if (out == null)
       return;
     out.println();
     out.print("#include <");
-    out.print(xname);
+    out.print(klass.name);
     out.println(".h>");
 
     Iterator i = klass.methods.iterator();

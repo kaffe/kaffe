@@ -43,15 +43,11 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
-import java.net.SocketAddress;
 import java.net.SocketException;
-import java.net.SocketImpl;
 import java.net.SocketOptions;
-import java.net.UnknownHostException;
 
 import gnu.classpath.Configuration;
 import gnu.java.nio.VMChannel;
-import gnu.java.nio.VMChannel.State;
 
 /**
  * The VM interface for {@link gnu.java.net.PlainSocketImpl}.
@@ -61,6 +57,10 @@ import gnu.java.nio.VMChannel.State;
  */
 public final class VMPlainSocketImpl
 {
+  /** Option id for time to live
+   */
+  private static final int CP_IP_TTL = 0x1E61;
+
   private final State nfd;
   
   /**
@@ -91,6 +91,41 @@ public final class VMPlainSocketImpl
     return nfd;
   }
 
+  /** This method exists to hide the CP_IP_TTL value from
+   * higher levels.
+   *
+   * Always think of JNode ... :)
+   */
+  public void setTimeToLive(int ttl)
+    throws SocketException
+  {
+    try
+      {
+        setOption(nfd.getNativeFD(), CP_IP_TTL, ttl);
+      }
+    catch (IOException ioe)
+      {
+        SocketException se = new SocketException();
+        se.initCause(ioe);
+        throw se;
+      }
+  }
+
+  public int getTimeToLive()
+    throws SocketException
+  {
+    try
+      {
+        return getOption(nfd.getNativeFD(), CP_IP_TTL);
+      }
+    catch (IOException ioe)
+      {
+        SocketException se = new SocketException();
+        se.initCause(ioe);
+        throw se;
+      }
+  }
+
   public void setOption(int optionId, Object optionValue)
     throws SocketException
   {
@@ -98,7 +133,14 @@ public final class VMPlainSocketImpl
     if (optionValue instanceof Integer)
       value = ((Integer) optionValue).intValue();
     else if (optionValue instanceof Boolean)
-      value = ((Boolean) optionValue).booleanValue() ? 1 : 0;
+      // Switching off the linger behavior is done by setting
+      // the value to -1. This is how the Java API interprets
+      // it.
+      value = ((Boolean) optionValue).booleanValue()
+              ? 1
+              : (optionId == SocketOptions.SO_LINGER)
+              ? -1
+              : 0;
     else
       throw new IllegalArgumentException("option value type "
                                          + optionValue.getClass().getName());
@@ -118,6 +160,41 @@ public final class VMPlainSocketImpl
   private static native void setOption(int fd, int id, int value)
     throws SocketException;
 
+  public void setMulticastInterface(int optionId, InetAddress addr)
+    throws SocketException
+  {
+    try
+      {
+        if (addr instanceof Inet4Address)
+          setMulticastInterface(nfd.getNativeFD(), optionId, (Inet4Address) addr);
+        else if (addr instanceof Inet6Address)
+          {
+            NetworkInterface iface = NetworkInterface.getByInetAddress(addr);
+            setMulticastInterface6(nfd.getNativeFD(), optionId, iface.getName());
+          }
+        else
+          throw new SocketException("Unknown address format: " + addr);
+      }
+    catch (SocketException se)
+      {
+        throw se;
+      }
+    catch (IOException ioe)
+      {
+        SocketException se = new SocketException();
+        se.initCause(ioe);
+        throw se;
+      }
+  }
+
+  private static native void setMulticastInterface(int fd,
+                                                   int optionId,
+                                                   Inet4Address addr);
+
+  private static native void setMulticastInterface6(int fd,
+                                                    int optionId,
+                                                    String ifName);
+
   /**
    * Get a socket option. This implementation is only required to support
    * socket options that are boolean values, which include:
@@ -126,6 +203,7 @@ public final class VMPlainSocketImpl
    *  SocketOptions.SO_BROADCAST
    *  SocketOptions.SO_KEEPALIVE
    *  SocketOptions.SO_OOBINLINE
+   *  SocketOptions.SO_REUSEADDR
    *  SocketOptions.TCP_NODELAY
    * 
    * and socket options that are integer values, which include:
@@ -161,6 +239,7 @@ public final class VMPlainSocketImpl
         case SocketOptions.SO_BROADCAST:
         case SocketOptions.SO_KEEPALIVE:
         case SocketOptions.SO_OOBINLINE:
+        case SocketOptions.SO_REUSEADDR:
         case SocketOptions.TCP_NODELAY:
           return Boolean.valueOf(value != 0);
           
@@ -178,6 +257,33 @@ public final class VMPlainSocketImpl
   }
   
   private static native int getOption(int fd, int id) throws SocketException;
+
+  /**
+   * Returns an Inet4Address or Inet6Address instance belonging to the
+   * interface which is set as the multicast interface.
+   *
+   * The optionId is provided to make it possible that the native
+   * implementation may do something different depending on whether
+   * the value is SocketOptions.IP_MULTICAST_IF or 
+   * SocketOptions.IP_MULTICAST_IF2.
+   */
+  public InetAddress getMulticastInterface(int optionId)
+    throws SocketException
+  {
+    try
+      {
+        return getMulticastInterface(nfd.getNativeFD(), optionId);
+      }
+    catch (IOException ioe)
+      {
+        SocketException se = new SocketException();
+        se.initCause(ioe);
+        throw se;
+      }
+  }
+
+  private static native InetAddress getMulticastInterface(int fd,
+                                                          int optionId);
   
   /**
    * Binds this socket to the given local address and port.
@@ -403,3 +509,4 @@ public final class VMPlainSocketImpl
     }
   }
 }
+

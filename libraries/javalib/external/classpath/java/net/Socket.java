@@ -298,8 +298,26 @@ public class Socket
       laddr == null ? null : new InetSocketAddress(laddr, lport);
     bind(bindaddr);
 
-    // connect socket
-    connect(new InetSocketAddress(raddr, rport));
+    // Connect socket in case of Exceptions we must close the socket
+    // because an exception in the constructor means that the caller will
+    // not have a reference to this instance.
+    // Note: You may have the idea that the exception treatment
+    // should be moved into connect() but there is a Mauve test which
+    // shows that a failed connect should not close the socket.
+    try
+      {
+        connect(new InetSocketAddress(raddr, rport));
+      }
+    catch (IOException ioe)
+      {
+        impl.close();
+        throw ioe;
+      }
+    catch (RuntimeException re)
+      {
+        impl.close();
+        throw re;
+      }
 
     // FIXME: JCL p. 1586 says if localPort is unspecified, bind to any port,
     // i.e. '0' and if localAddr is unspecified, use getLocalAddress() as
@@ -692,10 +710,10 @@ public class Socket
 	if (linger > 65535)
 	  linger = 65535;
 
-	getImpl().setOption(SocketOptions.SO_LINGER, new Integer(linger));
+	getImpl().setOption(SocketOptions.SO_LINGER, Integer.valueOf(linger));
       }
     else
-      getImpl().setOption(SocketOptions.SO_LINGER, Boolean.valueOf(false));
+      getImpl().setOption(SocketOptions.SO_LINGER, Integer.valueOf(-1));
   }
 
   /**
@@ -1190,7 +1208,7 @@ public class Socket
   {
     if (impl == null)
       return false;
-
+    
     return impl.getInetAddress() != null;
   }
 
@@ -1223,6 +1241,7 @@ public class Socket
   public boolean isClosed()
   {
     SocketChannel channel = getChannel();
+    
     return impl == null || (channel != null && ! channel.isOpen());
   }
 

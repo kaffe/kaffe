@@ -40,6 +40,7 @@ package gnu.java.awt.peer.gtk;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
@@ -269,10 +270,13 @@ public class VolatileImageGraphics extends ComponentGraphics
     // This MUST call directly into the "action" method in CairoGraphics2D,
     // not one of the wrappers, to ensure that the composite isn't processed
     // more than once!
+    Composite oldComp = comp;           // so that ComponentGraphics doesn't
+    comp = null;                        // process the composite again
     boolean rv = super.drawImage(buffer2,
                            AffineTransform.getTranslateInstance(bounds.getX(),
                                                                 bounds.getY()),
                            null, null);
+    comp = oldComp;
 
     return rv;
   }
@@ -306,7 +310,7 @@ public class VolatileImageGraphics extends ComponentGraphics
     // the fixme in drawImage) so we use the naive Cairo model instead to trick
     // the compositing context.
     // Because getNativeCM() == getBufferCM() for this peer, it doesn't break.
-    return CairoSurface.cairoColorModel;
+    return CairoSurface.cairoCM_pre;
   }
 }
 

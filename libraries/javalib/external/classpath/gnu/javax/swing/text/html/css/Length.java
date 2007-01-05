@@ -57,6 +57,11 @@ public class Length
   private float floatValue;
 
   /**
+   * Indicates when the value is a percentage value.
+   */
+  private boolean isPercentage;
+
+  /**
    * Creates a new length converter instance.
    *
    * @param val the CSS value
@@ -65,11 +70,18 @@ public class Length
   {
     value = val;
     int i = value.indexOf("px");
+    int percent = value.indexOf("%");
     floatValue = 0.0F;
     if (i != -1)
       {
         String sub = value.substring(0, i);
         floatValue = Float.parseFloat(sub);
+      }
+    else if (percent != -1)
+      {
+        isPercentage = true;
+        String sub = value.substring(0, percent);
+        floatValue = Float.parseFloat(sub) / 100;
       }
     else
       {
@@ -86,5 +98,30 @@ public class Length
   public float getValue()
   {
     return floatValue;
+  }
+
+  /**
+   * Returns the absolute span for the case when this length value is
+   * a relative value.
+   *
+   * @param span the target span
+   *
+   * @return the absolute span
+   */
+  public float getValue(float span)
+  {
+    return span * floatValue;
+  }
+
+  /**
+   * Returns <code>true</code> when the length value is a percentage
+   * value, <code>false</code> otherwise.
+   *
+   * @return <code>true</code> when the length value is a percentage
+   *         value, <code>false</code> otherwise
+   */
+  public boolean isPercentage()
+  {
+    return isPercentage;
   }
 }

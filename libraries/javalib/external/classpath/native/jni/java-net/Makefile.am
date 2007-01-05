@@ -13,7 +13,6 @@ libjavanet_la_SOURCES = javanet.c \
 			java_net_VMInetAddress.c \
 			java_net_VMNetworkInterface.c \
 			java_net_VMURLConnection.c \
-			gnu_java_net_VMPlainDatagramSocketImpl.c \
                         gnu_java_net_VMPlainSocketImpl.c \
 			$(local_sources)
 

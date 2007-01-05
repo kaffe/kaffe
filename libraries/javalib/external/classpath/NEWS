@@ -39,11 +39,13 @@ Runtime interface changes:
 * gnu.java.nio.VMPipe has been similarly changed.
 * gnu.java.net.VMPlainSocketImpl has been changed to remove some
   functionality now provided by VMChannel; datagram socket-specific
-  methods have also been moved here, deprecating
-  VMPlainDatagramSocketImpl.
+  methods have also been moved here, deprecating VMPlainDatagramSocketImpl.
+* gnu.java.net.VMPlainDatagramSocketImpl removed.
 
 New in release 0.92 (Aug 9, 2006)
 
+* GConf is used as a backend for java.util.prefs. GNU Classpath 
+  thanks to Mario Torre for this contribution!
 * libjawtgnu.so has been renamed libjawt.so for binary compatibility.
   libjawt.so should be installed in a VM-specific directory rather
   than directly in /usr/lib.  Proprietary VMs put their libjawt.so

@@ -38,7 +38,6 @@ exception statement from your version. */
 
 package javax.swing.text.html;
 
-import gnu.classpath.NotImplementedException;
 import gnu.javax.swing.text.html.css.CSSColor;
 import gnu.javax.swing.text.html.css.CSSParser;
 import gnu.javax.swing.text.html.css.CSSParserCallback;
@@ -53,6 +52,7 @@ import java.awt.Graphics;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Serializable;
+import java.io.StringReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -94,8 +94,10 @@ public class StyleSheet extends StyleContext
 
   /**
    * Parses CSS stylesheets using the parser in gnu/javax/swing/html/css.
+   *
+   * This is package private to avoid accessor methods.
    */
-  private class CSSStyleSheetParserCallback
+  class CSSStyleSheetParserCallback
     implements CSSParserCallback
   {
     /**
@@ -405,9 +407,20 @@ public class StyleSheet extends StyleContext
    * @param rule - the rule to add to the sheet
    */
   public void addRule(String rule)
-    throws NotImplementedException
   {
-    // FIXME: Implement.
+    CSSStyleSheetParserCallback cb = new CSSStyleSheetParserCallback();
+    // FIXME: Handle ref.
+    StringReader in = new StringReader(rule);
+    CSSParser parser = new CSSParser(in, cb);
+    try
+      {
+        parser.parse();
+      }
+    catch (IOException ex)
+      {
+        // Shouldn't happen. And if, then we
+        assert false;
+      }
   }
   
   /**

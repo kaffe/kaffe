@@ -49,7 +49,6 @@ exception statement from your version. */
 #include <stdio.h>
 #include <stdlib.h>
 
-static void install_font_peer(cairo_t *cr, struct peerfont *pfont);
 static void update_pattern_transform (struct cairographics2d *gr);
 
 /**
@@ -327,8 +326,6 @@ Java_gnu_java_awt_peer_gtk_CairoGraphics2D_cairoDrawGlyphVector
   pfont = (struct peerfont *)NSA_GET_FONT_PTR (env, font);
   g_assert (pfont != NULL);
 
-  install_font_peer(gr->cr, pfont);
-
   glyphs = g_malloc( sizeof(cairo_glyph_t) * n);
   g_assert (glyphs != NULL);
 
@@ -352,6 +349,37 @@ Java_gnu_java_awt_peer_gtk_CairoGraphics2D_cairoDrawGlyphVector
   g_free(glyphs);
 }
 
+
+JNIEXPORT void JNICALL
+Java_gnu_java_awt_peer_gtk_CairoGraphics2D_cairoSetFont
+(JNIEnv *env __attribute__ ((unused)), jobject obj __attribute__ ((unused)),
+ jlong pointer, jobject font)
+{
+  struct cairographics2d *gr = NULL;
+  struct peerfont *pfont = NULL;
+  FT_Face face = NULL;
+  cairo_font_face_t *ft = NULL;
+
+  gr = JLONG_TO_PTR(struct cairographics2d, pointer);
+  g_assert (gr != NULL);
+  
+  pfont = (struct peerfont *)NSA_GET_FONT_PTR (env, font);
+  g_assert (pfont != NULL);
+
+  face = pango_fc_font_lock_face( (PangoFcFont *)pfont->font );
+  g_assert (face != NULL);
+
+  ft = cairo_ft_font_face_create_for_ft_face (face, 0);
+  g_assert (ft != NULL);
+
+  cairo_set_font_face (gr->cr, ft);
+  cairo_set_font_size (gr->cr,
+                       (pango_font_description_get_size (pfont->desc) /
+                       (double)PANGO_SCALE));
+                       
+  cairo_font_face_destroy (ft);
+  pango_fc_font_unlock_face((PangoFcFont *)pfont->font);
+}
 
 JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_CairoGraphics2D_cairoSetOperator 
@@ -746,45 +774,6 @@ Java_gnu_java_awt_peer_gtk_CairoGraphics2D_cairoFillRect
   cairo_new_path(gr->cr);
   cairo_rectangle(gr->cr, x, y, w, h);
   cairo_fill(gr->cr);
-}
-
-
-/************************** FONT STUFF ****************************/
-static void
-install_font_peer(cairo_t *cr,
-		  struct peerfont *pfont)
-{
-  cairo_font_face_t *ft;
-  FT_Face face = NULL;
-
-  g_assert(cr != NULL);
-  g_assert(pfont != NULL);
-
-  if (pfont->graphics_resource == NULL)
-    {
-      face = pango_fc_font_lock_face( (PangoFcFont *)pfont->font );
-      g_assert (face != NULL);
-
-      ft = cairo_ft_font_face_create_for_ft_face (face, 0);
-      g_assert (ft != NULL);
-
-      cairo_set_font_face (cr, ft);
-      /*      cairo_font_face_destroy (ft);*/
-      cairo_set_font_size (cr,
-                           (pango_font_description_get_size (pfont->desc) /
-                            (double)PANGO_SCALE));
-      ft = cairo_get_font_face (cr);
-      pango_fc_font_unlock_face( (PangoFcFont *)pfont->font );
-      pfont->graphics_resource = ft;
-    }
-  else
-    {
-      ft = (cairo_font_face_t *) pfont->graphics_resource;
-      cairo_set_font_face (cr, ft);
-      cairo_set_font_size (cr,
-                           (pango_font_description_get_size (pfont->desc) /
-                            (double)PANGO_SCALE));
-    }
 }
 
 static void 

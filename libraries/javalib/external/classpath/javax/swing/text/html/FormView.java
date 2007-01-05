@@ -44,15 +44,23 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.net.MalformedURLException;
+import java.net.URL;
 
+import javax.swing.ButtonModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton;
 import javax.swing.UIManager;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.ComponentView;
+import javax.swing.text.Document;
 import javax.swing.text.Element;
 import javax.swing.text.StyleConstants;
 
@@ -125,6 +133,11 @@ public class FormView
     UIManager.getString("FormView.resetButtonText");
 
   /**
+   * If this is true, the maximum size is set to the preferred size.
+   */
+  private boolean maxIsPreferred;
+
+  /**
    * Creates a new <code>FormView</code>.
    *
    * @param el the element that is displayed by this view.
@@ -141,37 +154,147 @@ public class FormView
   {
     Component comp = null;
     Element el = getElement();
-    Object tag = el.getAttributes().getAttribute(StyleConstants.NameAttribute);
+    AttributeSet atts = el.getAttributes();
+    Object tag = atts.getAttribute(StyleConstants.NameAttribute);
+    Object model = atts.getAttribute(StyleConstants.ModelAttribute);
     if (tag.equals(HTML.Tag.INPUT))
       {
-        AttributeSet atts = el.getAttributes();
         String type = (String) atts.getAttribute(HTML.Attribute.TYPE);
-        String value = (String) atts.getAttribute(HTML.Attribute.VALUE);
         if (type.equals("button"))
-          comp = new JButton(value);
+          {
+            String value = (String) atts.getAttribute(HTML.Attribute.VALUE);
+            JButton b = new JButton(value);
+            if (model != null)
+              {
+                b.setModel((ButtonModel) model);
+                b.addActionListener(this);
+              }
+            comp = b;
+            maxIsPreferred = true;
+          }
         else if (type.equals("checkbox"))
-          comp = new JCheckBox(value);
+          {
+            JCheckBox c = new JCheckBox();
+            if (model != null)
+              {
+                boolean sel = atts.getAttribute(HTML.Attribute.CHECKED) != null;
+                ((JToggleButton.ToggleButtonModel) model).setSelected(sel);
+                c.setModel((ButtonModel) model);
+              }
+            comp = c;
+            maxIsPreferred = true;
+          }
         else if (type.equals("image"))
-          comp = new JButton(value); // FIXME: Find out how to fetch the image.
+          {
+            String src = (String) atts.getAttribute(HTML.Attribute.SRC);
+            JButton b;
+            try
+              {
+                URL base = ((HTMLDocument) el.getDocument()).getBase();
+                URL srcURL = new URL(base, src);
+                ImageIcon icon = new ImageIcon(srcURL);
+                b = new JButton(icon);
+              }
+            catch (MalformedURLException ex)
+              {
+                b = new JButton(src);
+              }
+            if (model != null)
+              {
+                b.setModel((ButtonModel) model);
+                b.addActionListener(this);
+              }
+            comp = b;
+            maxIsPreferred = true;
+          }
         else if (type.equals("password"))
-          comp = new JPasswordField(value);
+          {
+            int size = HTML.getIntegerAttributeValue(atts, HTML.Attribute.SIZE,
+                                                     -1);
+            JTextField tf = new JPasswordField();
+            if (size > 0)
+              tf.setColumns(size);
+            else
+              tf.setColumns(20);
+            if (model != null)
+              tf.setDocument((Document) model);
+            String value = (String) atts.getAttribute(HTML.Attribute.VALUE);
+            if (value != null)
+              tf.setText(value);
+            tf.addActionListener(this);
+            comp = tf;
+            maxIsPreferred = true;
+          }
         else if (type.equals("radio"))
-          comp = new JRadioButton(value);
+          {
+            JRadioButton c = new JRadioButton();
+            if (model != null)
+              {
+                boolean sel = atts.getAttribute(HTML.Attribute.CHECKED) != null;
+                ((JToggleButton.ToggleButtonModel) model).setSelected(sel);
+                c.setModel((ButtonModel) model);
+              }
+            comp = c;
+            maxIsPreferred = true;
+          }
         else if (type.equals("reset"))
           {
-            if (value == null || value.equals(""))
-              value = RESET;
-            comp = new JButton(value);
+            String value = (String) atts.getAttribute(HTML.Attribute.VALUE);
+            if (value == null)
+              value = UIManager.getString("FormView.resetButtonText");
+            JButton b = new JButton(value);
+            if (model != null)
+              {
+                b.setModel((ButtonModel) model);
+                b.addActionListener(this);
+              }
+            comp = b;
+            maxIsPreferred = true;
           }
         else if (type.equals("submit"))
           {
-            if (value == null || value.equals(""))
-              value = SUBMIT;
-            comp = new JButton(value);
+            String value = (String) atts.getAttribute(HTML.Attribute.VALUE);
+            if (value == null)
+              value = UIManager.getString("FormView.submitButtonText");
+            JButton b = new JButton(value);
+            if (model != null)
+              {
+                b.setModel((ButtonModel) model);
+                b.addActionListener(this);
+              }
+            comp = b;
+            maxIsPreferred = true;
           }
         else if (type.equals("text"))
-          comp = new JTextField(value);
-        
+          {
+            int size = HTML.getIntegerAttributeValue(atts, HTML.Attribute.SIZE,
+                                                     -1);
+            JTextField tf = new JTextField();
+            if (size > 0)
+              tf.setColumns(size);
+            else
+              tf.setColumns(20);
+            if (model != null)
+              tf.setDocument((Document) model);
+            String value = (String) atts.getAttribute(HTML.Attribute.VALUE);
+            if (value != null)
+              tf.setText(value);
+            tf.addActionListener(this);
+            comp = tf;
+            maxIsPreferred = true;
+          }
+      }
+    else if (tag == HTML.Tag.TEXTAREA)
+      {
+        JTextArea textArea = new JTextArea((Document) model);
+        int rows = HTML.getIntegerAttributeValue(atts, HTML.Attribute.ROWS, 1);
+        textArea.setRows(rows);
+        int cols = HTML.getIntegerAttributeValue(atts, HTML.Attribute.COLS, 20);
+        textArea.setColumns(cols);
+        maxIsPreferred = true;
+        comp = new JScrollPane(textArea,
+                               JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                               JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
       }
     // FIXME: Implement the remaining components.
     return comp;
@@ -188,16 +311,11 @@ public class FormView
    */
   public float getMaximumSpan(int axis)
   {
-    // FIXME: The specs say that for some components the maximum span == the
-    // preferred span of the component. This should be figured out and
-    // implemented accordingly.
     float span;
-    if (axis == X_AXIS)
-      span = getComponent().getMaximumSize().width;
-    else if (axis == Y_AXIS)
-      span = getComponent().getMaximumSize().height;
+    if (maxIsPreferred)
+      span = getPreferredSpan(axis);
     else
-      throw new IllegalArgumentException("Invalid axis parameter");
+      span = super.getMaximumSpan(axis);
     return span;
   }
 

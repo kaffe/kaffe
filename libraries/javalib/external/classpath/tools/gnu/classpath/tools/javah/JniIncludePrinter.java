@@ -112,7 +112,7 @@ public class JniIncludePrinter
     if (! klass.hasNativeMethod())
       return;
     String xname = JniHelper.mangle(klass.name);
-    JniPrintStream out = (JniPrintStream) getPrintStream(xname + ".h", klass);
+    JniPrintStream out = (JniPrintStream) getPrintStream(klass.name + ".h", klass);
     if (out == null)
       return;
     out.println();

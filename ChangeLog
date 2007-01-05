@@ -1,6 +1,11 @@
 2007-01-05  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/external/classpath/ : Resynced with GNU Classpath 
+	up to 2006-11-06.
+
+2007-01-05  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/external/classpath/ : Resynced with GNU Classpath 
 	up to 2006-10-15.
 
 	* libraries/javalib/vmspecific/java/lang/VMClassLoader.java:

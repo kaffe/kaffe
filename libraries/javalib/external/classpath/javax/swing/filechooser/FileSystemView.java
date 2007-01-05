@@ -37,8 +37,6 @@ exception statement from your version. */
 
 package javax.swing.filechooser;
 
-import gnu.classpath.NotImplementedException;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -171,7 +169,6 @@ public abstract class FileSystemView
    * @return A default {@link FileSystemView} appropriate for the platform.
    */
   public static FileSystemView getFileSystemView()
-    throws NotImplementedException
   {
     if (defaultFileSystemView == null)
       {

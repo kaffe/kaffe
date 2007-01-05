@@ -46,6 +46,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.Cursor;
+import java.awt.Point;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,18 +55,24 @@ import java.io.Reader;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.io.Writer;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import javax.accessibility.Accessible;
 import javax.accessibility.AccessibleContext;
 
 import javax.swing.Action;
 import javax.swing.JEditorPane;
+import javax.swing.SwingUtilities;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.EditorKit;
 import javax.swing.text.Element;
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 import javax.swing.text.StyledEditorKit;
 import javax.swing.text.TextAction;
 import javax.swing.text.View;
@@ -111,11 +118,14 @@ public class HTMLEditorKit
        */
       public void mouseClicked(MouseEvent e)
       {
-        /*
-         These MouseInputAdapter methods generate mouse appropriate events around
-         hyperlinks (entering, exiting, and activating).
-         */
-        // FIXME: Not implemented.
+        JEditorPane editor = (JEditorPane) e.getSource();
+        if (! editor.isEditable() && SwingUtilities.isLeftMouseButton(e))
+          {
+            Point loc = e.getPoint();
+            int pos = editor.viewToModel(loc);
+            if (pos >= 0)
+              activateLink(pos, editor, e.getX(), e.getY());
+          }
       }
       
       /**
@@ -125,11 +135,7 @@ public class HTMLEditorKit
        */
       public void mouseDragged(MouseEvent e)
       {
-        /*
-        These MouseInputAdapter methods generate mouse appropriate events around
-        hyperlinks (entering, exiting, and activating).
-        */
-        // FIXME: Not implemented.     
+        // Nothing to do here.
       }
       
       /**
@@ -139,29 +145,111 @@ public class HTMLEditorKit
        */
       public void mouseMoved(MouseEvent e)
       {
-        /*
-        These MouseInputAdapter methods generate mouse appropriate events around
-        hyperlinks (entering, exiting, and activating).
-        */
-        // FIXME: Not implemented.
+        JEditorPane editor = (JEditorPane) e.getSource();
+        HTMLEditorKit kit = (HTMLEditorKit) editor.getEditorKit();
+        if (! editor.isEditable())
+          {
+            Document doc = editor.getDocument();
+            if (doc instanceof HTMLDocument)
+              {
+                Cursor newCursor = kit.getDefaultCursor();
+                HTMLDocument htmlDoc = (HTMLDocument) doc;
+                Point loc = e.getPoint();
+                int pos = editor.viewToModel(loc);
+                Element el = htmlDoc.getCharacterElement(pos);
+                if (pos < el.getStartOffset() || pos >= el.getEndOffset())
+                  el = null;
+                if (el != null)
+                  {
+                    AttributeSet aAtts = (AttributeSet)
+                                   el.getAttributes().getAttribute(HTML.Tag.A);
+                    if (aAtts != null)
+                      newCursor = kit.getLinkCursor();
+                  }
+                if (editor.getCursor() != newCursor)
+                  editor.setCursor(newCursor);
+              }
+          }
       }
-      
+
       /**
        * If the given position represents a link, then linkActivated is called
-       * on the JEditorPane. Implemented to forward to the method with the same
-       * name, but pos == editor == -1.
-       * 
-       * @param pos - the position
-       * @param editor - the editor pane
+       * on the JEditorPane.
+       *
+       * @param pos the position
+       * @param editor the editor pane
        */
-      protected void activateLink(int pos,
-                                  JEditorPane editor)
+      protected void activateLink(int pos, JEditorPane editor)
       {
-        /*
-          This method creates and fires a HyperlinkEvent if the document is an
-          instance of HTMLDocument and the href tag of the link is not null.
-         */
-        // FIXME: Not implemented.
+        activateLink(pos, editor);
+      }
+
+      private void activateLink(int pos, JEditorPane editor, int x, int y)
+      {
+        // TODO: This is here for future extension for mapped links support.
+        // For the time beeing we implement simple hyperlinks.
+        Document doc = editor.getDocument();
+        if (doc instanceof HTMLDocument)
+          {
+            HTMLDocument htmlDoc = (HTMLDocument) doc;
+            Element el = htmlDoc.getCharacterElement(pos);
+            AttributeSet atts = el.getAttributes();
+            AttributeSet anchorAtts =
+              (AttributeSet) atts.getAttribute(HTML.Tag.A);
+            String href = null;
+            if (anchorAtts != null)
+              {
+                href = (String) anchorAtts.getAttribute(HTML.Attribute.HREF);
+              }
+            else
+              {
+                // TODO: Implement link maps here.
+              }
+            HyperlinkEvent event = null;
+            if (href != null)
+              event = createHyperlinkEvent(editor, htmlDoc, href,
+                                           anchorAtts, el);
+            if (event != null)
+              editor.fireHyperlinkUpdate(event);
+          }
+        
+      }
+
+      /**
+       * Creates a HyperlinkEvent for the specified href and anchor if
+       * possible. If for some reason this won't work, return null.
+       *
+       * @param editor the editor
+       * @param doc the document
+       * @param href the href link
+       * @param anchor the anchor
+       * @param el the element
+       *
+       * @return the hyperlink event, or <code>null</code> if we couldn't
+       *         create one
+       */
+      private HyperlinkEvent createHyperlinkEvent(JEditorPane editor,
+                                                  HTMLDocument doc,
+                                                  String href,
+                                                  AttributeSet anchor,
+                                                  Element el)
+      {
+        URL url;
+        try
+          {
+            URL base = doc.getBase();
+            url = new URL(base, href);
+            
+          }
+        catch (MalformedURLException ex)
+          {
+            url = null;
+          }
+        // TODO: Handle frame documents and target here.
+        HyperlinkEvent ev =
+          new HyperlinkEvent(editor, HyperlinkEvent.EventType.ACTIVATED, url,
+                             href, el);
+        return ev;
       }
     }
   
@@ -552,7 +640,8 @@ public class HTMLEditorKit
                    || tag.equals(HTML.Tag.HTML) || tag.equals(HTML.Tag.CENTER)
                    || tag.equals(HTML.Tag.DIV)
                    || tag.equals(HTML.Tag.BLOCKQUOTE)
-                   || tag.equals(HTML.Tag.PRE))
+                   || tag.equals(HTML.Tag.PRE)
+                   || tag.equals(HTML.Tag.FORM))
             view = new BlockView(element, View.Y_AXIS);
           else if (tag.equals(HTML.Tag.IMG))
             view = new ImageView(element);
@@ -570,14 +659,14 @@ public class HTMLEditorKit
             view = new HRuleView(element);
           else if (tag.equals(HTML.Tag.BR))
             view = new BRView(element);
+          else if (tag.equals(HTML.Tag.INPUT) || tag.equals(HTML.Tag.SELECT)
+                   || tag.equals(HTML.Tag.TEXTAREA))
+            view = new FormView(element);
 
           /*
           else if (tag.equals(HTML.Tag.MENU) || tag.equals(HTML.Tag.DIR)
                    || tag.equals(HTML.Tag.UL) || tag.equals(HTML.Tag.OL))
             view = new ListView(element);
-          else if (tag.equals(HTML.Tag.INPUT) || tag.equals(HTML.Tag.SELECT)
-                   || tag.equals(HTML.Tag.TEXTAREA))
-            view = new FormView(element);
           else if (tag.equals(HTML.Tag.OBJECT))
             view = new ObjectView(element);
           else if (tag.equals(HTML.Tag.FRAMESET))
@@ -830,7 +919,7 @@ public class HTMLEditorKit
   /**
    * The mouse listener used for links.
    */
-  LinkController mouseListener;
+  private LinkController linkController;
   
   /** The content type */
   String contentType = "text/html";
@@ -846,7 +935,7 @@ public class HTMLEditorKit
    */
   public HTMLEditorKit()
   {
-    // Nothing to do here.
+    linkController = new LinkController();
   }
   
   /**
@@ -982,8 +1071,15 @@ public class HTMLEditorKit
   {
     if (doc instanceof HTMLDocument)
       {
-        // FIXME: Not implemented. Use HTMLWriter.
-        out.write(doc.getText(pos, len));
+        HTMLWriter writer = new HTMLWriter(out, (HTMLDocument) doc, pos, len);
+        writer.write();
+      }
+    else if (doc instanceof StyledDocument)
+      {
+        MinimalHTMLWriter writer = new MinimalHTMLWriter(out,
+                                                         (StyledDocument) doc,
+                                                         pos, len);
+        writer.write();
       }
     else
       super.write(out, doc, pos, len);
@@ -1008,7 +1104,9 @@ public class HTMLEditorKit
   public Object clone()
   {
     // FIXME: Need to clone all fields
-    return (HTMLEditorKit) super.clone();
+    HTMLEditorKit copy = (HTMLEditorKit) super.clone();
+    copy.linkController = new LinkController();
+    return copy;
   }
   
   /**
@@ -1035,10 +1133,9 @@ public class HTMLEditorKit
   public void install(JEditorPane c)
   {
     super.install(c);
-    mouseListener = new LinkController();
-    c.addMouseListener(mouseListener);
+    c.addMouseListener(linkController);
+    c.addMouseMotionListener(linkController);
     editorPane = c;
-    // FIXME: need to set up hyperlinklistener object
   }
   
   /**
@@ -1050,8 +1147,8 @@ public class HTMLEditorKit
   public void deinstall(JEditorPane c)
   {
     super.deinstall(c);
-    c.removeMouseListener(mouseListener);
-    mouseListener = null;
+    c.removeMouseListener(linkController);
+    c.removeMouseMotionListener(linkController);
     editorPane = null;
   }
   

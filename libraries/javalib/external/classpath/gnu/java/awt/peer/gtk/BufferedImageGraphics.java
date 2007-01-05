@@ -103,7 +103,7 @@ public class BufferedImageGraphics extends CairoGraphics2D
   /**
    * Colormodels we recognize for fast copying.
    */  
-  static ColorModel rgb32 = new DirectColorModel(32, 0xFF0000, 0xFF00, 0xFF);
+  static ColorModel rgb32 = new DirectColorModel(24, 0xFF0000, 0xFF00, 0xFF);
   static ColorModel argb32 = new DirectColorModel(32, 0xFF0000, 0xFF00, 0xFF,
 						  0xFF000000);
   private boolean hasFastCM;
@@ -248,7 +248,11 @@ public class BufferedImageGraphics extends CairoGraphics2D
       {
         super.draw(s);
         Rectangle r = s.getBounds();
-        updateBufferedImage(r.x, r.y, r.width, r.height);
+        
+        if (shiftDrawCalls)
+          updateBufferedImage(r.x, r.y, r.width+1, r.height+1);
+        else
+          updateBufferedImage(r.x, r.y, r.width, r.height);
       }
     else
       {
@@ -377,6 +381,9 @@ public class BufferedImageGraphics extends CairoGraphics2D
   {
     // Clip source to visible areas that need updating
     Rectangle2D clip = this.getClipBounds();
+    Rectangle2D.intersect(bounds, clip, bounds);
+    clip = new Rectangle(buffer.getMinX(), buffer.getMinY(),
+                         buffer.getWidth(), buffer.getHeight());
     Rectangle2D.intersect(bounds, clip, bounds);
     
     BufferedImage buffer2 = buffer;

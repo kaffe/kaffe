@@ -488,7 +488,10 @@ public class Frame extends Window implements MenuContainer
 
   private static void noteFrame(Frame f)
   {
-    weakFrames.add(new WeakReference(f));
+    synchronized (weakFrames)
+      {
+        weakFrames.add(new WeakReference(f));
+      }
   }
 
   public static Frame[] getFrames()
@@ -536,8 +539,7 @@ public class Frame extends Window implements MenuContainer
 
   public int getState()
   {
-    // FIXME: State might have changed in the peer... Must check.
-    return (state & ICONIFIED) != 0 ? ICONIFIED : NORMAL;
+    return (getExtendedState() & ICONIFIED) != 0 ? ICONIFIED : NORMAL;
   }
 
   /**
@@ -545,7 +547,13 @@ public class Frame extends Window implements MenuContainer
    */
   public void setExtendedState(int state)
   {
-    this.state = state;
+    if (getToolkit().isFrameStateSupported(state))
+      {
+        this.state = state;
+        FramePeer p = (FramePeer) peer;
+        if (p != null)
+          p.setState(state);
+      }
   }
 
   /**
@@ -553,6 +561,9 @@ public class Frame extends Window implements MenuContainer
    */
   public int getExtendedState()
   {
+    FramePeer p = (FramePeer) peer;
+    if (p != null)
+      state = p.getState();
     return state;
   }
 

@@ -95,8 +95,22 @@ public class GdkFontMetrics extends FontMetrics
   
   public int stringWidth (String str)
   {
+
+//    TextLayout layout = new TextLayout(str, getFont(), null);
+//    return (int) layout.getAdvance();
+    // We need to filter control chars, because they are never displayed
+    // in Java and thus also have no metrics.
+    int len = str.length();
+    StringBuilder b = new StringBuilder(len);
+    for (int i = 0; i < len; i++)
+      {
+        char ch = str.charAt(i);
+        if (! Character.isISOControl(ch))
+          b.append(ch);
+      }
     double [] hires = new double[6];
-    peer.getTextMetrics(str, hires);
+    String string = b.toString();
+    peer.getTextMetrics(string, hires);
     return (int) hires [TEXT_METRICS_WIDTH];
   }
 

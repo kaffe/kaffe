@@ -72,7 +72,6 @@ am_libjavanio_la_OBJECTS = gnu_java_nio_VMPipe.lo \
 	gnu_java_nio_VMChannel.lo gnu_java_nio_VMSelector.lo \
 	gnu_java_nio_charset_iconv_IconvDecoder.lo \
 	gnu_java_nio_charset_iconv_IconvEncoder.lo \
-	gnu_java_nio_channels_FileChannelImpl.lo \
 	java_nio_MappedByteBufferImpl.lo \
 	java_nio_VMDirectByteBuffer.lo \
 	gnu_java_nio_EpollSelectorImpl.lo \
@@ -339,7 +338,6 @@ libjavanio_la_SOURCES = gnu_java_nio_VMPipe.c \
 			gnu_java_nio_VMSelector.c \
 			gnu_java_nio_charset_iconv_IconvDecoder.c \
 			gnu_java_nio_charset_iconv_IconvEncoder.c \
-			gnu_java_nio_channels_FileChannelImpl.c \
 			java_nio_MappedByteBufferImpl.c \
 			java_nio_VMDirectByteBuffer.c \
 			gnu_java_nio_EpollSelectorImpl.c \
@@ -430,7 +428,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnu_java_nio_VMChannel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnu_java_nio_VMPipe.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnu_java_nio_VMSelector.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnu_java_nio_channels_FileChannelImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnu_java_nio_charset_iconv_IconvDecoder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gnu_java_nio_charset_iconv_IconvEncoder.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/java_nio_MappedByteBufferImpl.Plo@am__quote@

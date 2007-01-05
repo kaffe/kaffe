@@ -320,6 +320,16 @@ public class GridBagLayout
     }
 
     /**
+     * Return a string representation of this GridBagLayout.
+     *
+     * @return a string representation
+     */
+    public String toString()
+    {
+      return getClass().getName();
+    }
+    
+    /**
      * Move and resize a rectangle according to a set of grid bag
      * constraints.  The x, y, width and height fields of the
      * rectangle argument are adjusted to the new values.

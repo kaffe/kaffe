@@ -278,6 +278,7 @@ public final class Matcher implements MatchResult
   public Matcher reset (CharSequence input)
   {
     this.input = input;
+    this.inputCharIndexed = RE.makeCharIndexed(input, 0);
     return reset();
   }
   

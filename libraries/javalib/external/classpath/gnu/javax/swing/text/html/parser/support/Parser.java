@@ -56,6 +56,7 @@ import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.swing.text.ChangedCharSetException;
+import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.parser.AttributeList;
 import javax.swing.text.html.parser.DTD;
@@ -250,9 +251,9 @@ public class Parser
    * Get the attributes of the current tag.
    * @return The attribute set, representing the attributes of the current tag.
    */
-  public htmlAttributeSet getAttributes()
+  public SimpleAttributeSet getAttributes()
   {
-    return attributes;
+    return new SimpleAttributeSet(attributes);
   }
 
   /**
@@ -1417,8 +1418,6 @@ public class Parser
       }
 
     hTag = new Token(start, next);
-
-    attributes.setResolveParent(defaulter.getDefaultParameters(name.getImage()));
 
     if (!end)
       {

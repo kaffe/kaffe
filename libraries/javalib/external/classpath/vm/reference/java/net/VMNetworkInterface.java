@@ -66,6 +66,23 @@ final class VMNetworkInterface
     addresses = new HashSet();
   }
   
+  /**
+   * Creates a dummy instance which represents any network
+   * interface.
+   */
+  public VMNetworkInterface()
+  {
+    addresses = new HashSet();
+    try
+      {
+        addresses.add(InetAddress.getByName("0.0.0.0"));
+      }
+    catch (UnknownHostException _)
+      {
+        // Cannot happen.
+      }
+  }
+  
   static
   {
     if (Configuration.INIT_LOAD_LIBRARY)

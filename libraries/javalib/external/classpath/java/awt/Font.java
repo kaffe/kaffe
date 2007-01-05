@@ -1086,7 +1086,8 @@ public class Font implements Serializable
    */
   public Rectangle2D getStringBounds(String str, FontRenderContext frc)
   {
-    return getStringBounds(str, 0, str.length() - 1, frc);
+    char[] chars = str.toCharArray();
+    return getStringBounds(chars, 0, chars.length, frc);
   }
 
   /**
@@ -1114,8 +1115,8 @@ public class Font implements Serializable
   public Rectangle2D getStringBounds(String str, int begin, 
                                      int limit, FontRenderContext frc)
   {
-    return peer.getStringBounds(this, new StringCharacterIterator(str), begin,
-                                limit, frc);
+    String sub = str.substring(begin, limit);
+    return getStringBounds(sub, frc);
   }
 
   /**
@@ -1143,7 +1144,16 @@ public class Font implements Serializable
   public Rectangle2D getStringBounds(CharacterIterator ci, int begin, 
                                      int limit, FontRenderContext frc)
   {
-    return peer.getStringBounds(this, ci, begin, limit, frc);
+    int start = ci.getBeginIndex();
+    int end = ci.getEndIndex();
+    char[] chars = new char[limit - start];
+    ci.setIndex(start);
+    for (int index = 0; index < chars.length; index++)
+      {
+        chars[index] = ci.current();
+        ci.next();
+      }
+    return getStringBounds(chars, 0, chars.length, frc);
   }
 
   /**
@@ -1171,9 +1181,10 @@ public class Font implements Serializable
   public Rectangle2D getStringBounds(char[] chars, int begin, 
                                      int limit, FontRenderContext frc)
   {
-    return peer.getStringBounds(this,
-                                new StringCharacterIterator(new String(chars)), 
-                                begin, limit, frc);
+    String str = new String(chars, begin, limit - begin);
+    TextLayout layout = new TextLayout(str, this, frc);
+    return new Rectangle2D.Float(0, -layout.getAscent(), layout.getAdvance(),
+                                layout.getDescent() + layout.getLeading());
   }
 
   /**

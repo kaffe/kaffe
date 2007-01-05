@@ -225,6 +225,8 @@ public class CardLayout implements LayoutManager2, Serializable
    */
   public Dimension maximumLayoutSize (Container target)
   {
+    if (target == null)
+      return new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE);
     // The JCL says that this returns Integer.MAX_VALUE for both
     // dimensions.  But that just seems wrong to me.
     return getSize (target, MAX);
@@ -423,7 +425,10 @@ public class CardLayout implements LayoutManager2, Serializable
  
 		if (choice >= 0)
 		  break;
-	      }
+	      } else 
+                {
+                  comps[i].setVisible(true);
+                }
 	  }
 
 	if (choice >= 0 && choice < num)

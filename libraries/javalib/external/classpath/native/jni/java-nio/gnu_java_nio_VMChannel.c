@@ -40,6 +40,8 @@ exception statement from your version. */
 #include <config.h>
 #endif
 
+#include <config-int.h>
+
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
@@ -57,6 +59,7 @@ exception statement from your version. */
 #include <jni.h>
 #include <jcl.h>
 
+#include "cpio.h"
 #include "gnu_java_nio_VMChannel.h"
 #include "javanio.h"
 
@@ -64,7 +67,9 @@ exception statement from your version. */
 #include <fcntl.h>
 #endif /* HAVE_FCNTL_H */
 
+#define CONNECT_EXCEPTION "java/net/ConnectException"
 #define IO_EXCEPTION "java/io/IOException"
+#define SOCKET_EXCEPTION "java/net/SocketException"
 #define INTERRUPTED_IO_EXCEPTION "java/io/InterruptedIOException"
 #define NON_READABLE_CHANNEL_EXCEPTION "java/nio/channels/NonReadableChannelException"
 #define NON_WRITABLE_CHANNEL_EXCEPTION "java/nio/channels/NonWritableChannelException"
@@ -101,6 +106,7 @@ void JCL_print_buffer(JNIEnv *, struct JCL_buffer *);
 int JCL_init_buffer(JNIEnv *, struct JCL_buffer *, jobject);
 void JCL_release_buffer(JNIEnv *, struct JCL_buffer *, jobject, jint);
 void JCL_cleanup_buffers(JNIEnv *, struct JCL_buffer *, jint, jobjectArray, jint, jlong);
+int JCL_thread_interrupted(JNIEnv *, jclass);
 
 static jfieldID address_fid;
 static jmethodID get_position_mid;
@@ -110,6 +116,7 @@ static jmethodID set_limit_mid;
 static jmethodID has_array_mid;
 static jmethodID array_mid;
 static jmethodID array_offset_mid;
+static jmethodID thread_interrupted_mid;
 
 jmethodID
 get_method_id(JNIEnv *env,  jclass clazz, const char *name, 
@@ -119,7 +126,7 @@ get_method_id(JNIEnv *env,  jclass clazz, const char *name,
 /*   NIODBG("name: %s; sig: %s", name, sig); */
   if (mid == NULL)
     {
-  	  JCL_ThrowException(env, "java/lang/InternalError", name);
+      JCL_ThrowException(env, "java/lang/InternalError", name);
       return NULL;
     }
   
@@ -247,6 +254,13 @@ JCL_cleanup_buffers(JNIEnv *env,
 }
 
 
+int
+JCL_thread_interrupted(JNIEnv *env, jclass c)
+{
+  return (int) (*env)->CallBooleanMethod(env, c, thread_interrupted_mid);
+}
+
+
 /*
  * Class:     gnu_java_nio_VMChannel
  * Method:    stdin_fd
@@ -291,7 +305,7 @@ Java_gnu_java_nio_VMChannel_stderr_1fd (JNIEnv *env __attribute__((unused)),
 
 JNIEXPORT void JNICALL 
 Java_gnu_java_nio_VMChannel_initIDs  (JNIEnv *env, 
-	jclass clazz __attribute__ ((__unused__)))
+	jclass clazz)
 {
   jclass bufferClass = JCL_FindClass(env, "java/nio/Buffer");
   jclass byteBufferClass = JCL_FindClass(env, "java/nio/ByteBuffer");
@@ -316,6 +330,8 @@ Java_gnu_java_nio_VMChannel_initIDs  (JNIEnv *env,
   has_array_mid = get_method_id(env, byteBufferClass, "hasArray", "()Z");
   array_mid = get_method_id(env, byteBufferClass, "array", "()[B");
   array_offset_mid = get_method_id(env, byteBufferClass, "arrayOffset", "()I");
+  
+  thread_interrupted_mid = get_method_id(env, clazz, "isThreadInterrupted", "()Z");
 }
 
 JNIEXPORT void JNICALL 
@@ -973,7 +989,8 @@ Java_gnu_java_nio_VMChannel_connect (JNIEnv *env, jclass clazz __attribute__((un
 
   if ((*env)->GetArrayLength (env, addr) != 4)
     {
-      JCL_ThrowException (env, "java/io/IOException", "expecting 4-byte address");
+      JCL_ThrowException (env, SOCKET_EXCEPTION,
+                          "expecting 4-byte address");
       return JNI_FALSE;
     }
 
@@ -984,7 +1001,7 @@ Java_gnu_java_nio_VMChannel_connect (JNIEnv *env, jclass clazz __attribute__((un
       origflags = fcntl (fd, F_GETFL, 0);
       if (origflags == -1)
         {
-          JCL_ThrowException (env, IO_EXCEPTION, strerror (errno));
+          JCL_ThrowException (env, SOCKET_EXCEPTION, strerror (errno));
           return JNI_FALSE;
         }
       /* Set nonblocking mode, if not already set. */
@@ -993,7 +1010,7 @@ Java_gnu_java_nio_VMChannel_connect (JNIEnv *env, jclass clazz __attribute__((un
           flags = origflags | O_NONBLOCK;
           if (fcntl (fd, F_SETFL, flags) == -1)
             {
-              JCL_ThrowException (env, IO_EXCEPTION, strerror (errno));
+              JCL_ThrowException (env, SOCKET_EXCEPTION, strerror (errno));
               return JNI_FALSE;
             }
         }
@@ -1022,7 +1039,7 @@ Java_gnu_java_nio_VMChannel_connect (JNIEnv *env, jclass clazz __attribute__((un
           if (fcntl (fd, F_SETFL, origflags) == -1)
             {
               /* oops */
-              JCL_ThrowException (env, IO_EXCEPTION, strerror (errno));
+              JCL_ThrowException (env, SOCKET_EXCEPTION, strerror (errno));
               return JNI_FALSE;
             }
         }
@@ -1033,7 +1050,7 @@ Java_gnu_java_nio_VMChannel_connect (JNIEnv *env, jclass clazz __attribute__((un
           ret = cpnio_select (fd + 1, NULL, &wrfds, NULL, &timeo);
           if (ret == -1)
             {
-              JCL_ThrowException (env, IO_EXCEPTION, strerror (errno));
+              JCL_ThrowException (env, SOCKET_EXCEPTION, strerror (errno));
               return JNI_FALSE;
             }
           if (ret == 0) /* connect timed out */
@@ -1046,13 +1063,13 @@ Java_gnu_java_nio_VMChannel_connect (JNIEnv *env, jclass clazz __attribute__((un
         }
       else if (ECONNREFUSED == errno)
         {
-          JCL_ThrowException (env, "java/net/ConnectException",
+          JCL_ThrowException (env, CONNECT_EXCEPTION,
                               strerror (errno));
           return JNI_FALSE;
         }
       else
         {
-          JCL_ThrowException (env, IO_EXCEPTION, strerror (errno));
+          JCL_ThrowException (env, SOCKET_EXCEPTION, strerror (errno));
           return JNI_FALSE;
         }
     }
@@ -1063,13 +1080,13 @@ Java_gnu_java_nio_VMChannel_connect (JNIEnv *env, jclass clazz __attribute__((un
         return JNI_FALSE;
       else if (ECONNREFUSED == errno)
         {
-          JCL_ThrowException (env, "java/net/ConnectException",
+          JCL_ThrowException (env, CONNECT_EXCEPTION,
                               strerror (errno));
           return JNI_FALSE;
         }
       else
         {
-          JCL_ThrowException (env, IO_EXCEPTION, strerror (errno));
+          JCL_ThrowException (env, SOCKET_EXCEPTION, strerror (errno));
           return JNI_FALSE;
         }
     }
@@ -1080,7 +1097,7 @@ Java_gnu_java_nio_VMChannel_connect (JNIEnv *env, jclass clazz __attribute__((un
   (void) addr;
   (void) port;
   (void) timeout;
-  JCL_ThrowException (env, IO_EXCEPTION, "connect not supported");
+  JCL_ThrowException (env, SOCKET_EXCEPTION, "connect not supported");
   return JNI_FALSE;
 #endif /* HAVE_CONNECT */
 }
@@ -1109,7 +1126,7 @@ Java_gnu_java_nio_VMChannel_connect6 (JNIEnv *env, jclass clazz __attribute__((u
       origflags = fcntl (fd, F_GETFL, 0);
       if (origflags == -1)
         {
-          JCL_ThrowException (env, IO_EXCEPTION, strerror (errno));
+          JCL_ThrowException (env, SOCKET_EXCEPTION, strerror (errno));
           return JNI_FALSE;
         }
       /* Set nonblocking mode, if not already set. */
@@ -1118,7 +1135,7 @@ Java_gnu_java_nio_VMChannel_connect6 (JNIEnv *env, jclass clazz __attribute__((u
           flags = origflags | O_NONBLOCK;
           if (fcntl (fd, F_SETFL, flags) == -1)
             {
-              JCL_ThrowException (env, IO_EXCEPTION, strerror (errno));
+              JCL_ThrowException (env, SOCKET_EXCEPTION, strerror (errno));
               return JNI_FALSE;
             }
         }
@@ -1146,7 +1163,7 @@ Java_gnu_java_nio_VMChannel_connect6 (JNIEnv *env, jclass clazz __attribute__((u
           if (fcntl (fd, F_SETFL, origflags) == -1)
             {
               /* oops */
-              JCL_ThrowException (env, IO_EXCEPTION, strerror (errno));
+              JCL_ThrowException (env, SOCKET_EXCEPTION, strerror (errno));
               return JNI_FALSE;
             }
         }
@@ -1157,7 +1174,7 @@ Java_gnu_java_nio_VMChannel_connect6 (JNIEnv *env, jclass clazz __attribute__((u
           ret = cpnio_select (fd + 1, NULL, &wrfds, NULL, &timeo);
           if (ret == -1)
             {
-              JCL_ThrowException (env, IO_EXCEPTION, strerror (errno));
+              JCL_ThrowException (env, SOCKET_EXCEPTION, strerror (errno));
               return JNI_FALSE;
             }
           if (ret == 0) /* connect timed out */
@@ -1170,13 +1187,13 @@ Java_gnu_java_nio_VMChannel_connect6 (JNIEnv *env, jclass clazz __attribute__((u
         }
       else if (ECONNREFUSED == errno)
         {
-          JCL_ThrowException (env, "java/net/ConnectException",
+          JCL_ThrowException (env, CONNECT_EXCEPTION,
                               strerror (errno));
           return JNI_FALSE;
         }
       else
         {
-          JCL_ThrowException (env, IO_EXCEPTION, strerror (errno));
+          JCL_ThrowException (env, SOCKET_EXCEPTION, strerror (errno));
           return JNI_FALSE;
         }
     }
@@ -1187,13 +1204,13 @@ Java_gnu_java_nio_VMChannel_connect6 (JNIEnv *env, jclass clazz __attribute__((u
         return JNI_FALSE;
       else if (ECONNREFUSED == errno)
         {
-          JCL_ThrowException (env, "java/net/ConnectException",
+          JCL_ThrowException (env, CONNECT_EXCEPTION,
                               strerror (errno));
           return JNI_FALSE;
         }
       else
         {
-          JCL_ThrowException (env, "java/io/IOException", strerror (errno));
+          JCL_ThrowException (env, SOCKET_EXCEPTION, strerror (errno));
           return JNI_FALSE;
         }
     }
@@ -1204,7 +1221,7 @@ Java_gnu_java_nio_VMChannel_connect6 (JNIEnv *env, jclass clazz __attribute__((u
   (void) addr;
   (void) port;
   (void) timeout;
-  JCL_ThrowException (env, IO_EXCEPTION, "IPv6 connect not supported");
+  JCL_ThrowException (env, SOCKET_EXCEPTION, "IPv6 connect not supported");
   return JNI_FALSE;
 #endif /* HAVE_CONNECT && HAVE_INET6 */
 }
@@ -1338,11 +1355,12 @@ Java_gnu_java_nio_VMChannel_getpeername (JNIEnv *env, jclass clazz __attribute__
  */
 JNIEXPORT jint JNICALL
 Java_gnu_java_nio_VMChannel_accept (JNIEnv *env,
-                                    jclass clazz __attribute__((unused)),
+                                    jclass clazz,
                                     jint fd)
 {
 #ifdef HAVE_ACCEPT
   int ret;
+  int tmp_errno = 0;
 
 #ifdef HAVE_INET6
   struct sockaddr_in6 addr;
@@ -1355,14 +1373,38 @@ Java_gnu_java_nio_VMChannel_accept (JNIEnv *env,
   do
     {
       ret = cpnio_accept (fd, (struct sockaddr *) &addr, &alen);
+      tmp_errno = errno;
+      
+      if (ret == -1)
+        switch (tmp_errno)
+        {
+          case EINTR:
+            /* Check if interrupted by Thread.interrupt(). If not then some
+             * other unrelated signal interrupted the system function and
+             * we should start over again.
+             */
+            if (JCL_thread_interrupted(env, clazz))
+              {
+                JCL_ThrowException (env, "java/net/SocketException", strerror (tmp_errno));
+                return -1;
+              }
+            break;
+#if defined(EWOULDBLOCK) && defined(EAGAIN) && EWOULDBLOCK != EAGAIN
+          case EWOULDBLOCK:
+#endif
+          case EAGAIN:
+            /* Socket in non-blocking mode and no pending connection. */
+            return -1;
+          default:
+            JCL_ThrowException (env, "java/net/SocketException", strerror (tmp_errno));
+            return -1;
+        }
+      else
+        break;
     }
-  while (ret == -1 && EINTR == errno);
+  while (1);
 
-  if (ret == -1)
-    {
-      if (EWOULDBLOCK != ret && EAGAIN != ret)
-        JCL_ThrowException (env, "java/net/SocketException", strerror (errno));
-    }
+  cpio_closeOnExec(ret);
 
   return ret;
 #else

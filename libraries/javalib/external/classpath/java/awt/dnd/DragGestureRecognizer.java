@@ -38,8 +38,6 @@ exception statement from your version. */
 
 package java.awt.dnd;
 
-import gnu.classpath.NotImplementedException;
-
 import java.awt.Component;
 import java.awt.Point;
 import java.awt.event.InputEvent;
@@ -127,11 +125,12 @@ public abstract class DragGestureRecognizer implements Serializable
     return events.size() > 0 ? (InputEvent) events.get(0) : null;
   }
 
+  /**
+   * Resets the recognizer. If a gesture is currently recognize, discard it.
+   */
   public void resetRecognizer()
-    throws NotImplementedException
   {
-    events = new ArrayList();
-    // FIXME: Not implemented fully.
+    events.clear();
   }
 
   /**

@@ -664,6 +664,14 @@ public class GtkToolkit extends gnu.java.awt.ClasspathToolkit
     return new GtkMouseInfoPeer();
   }
 
+  public boolean isFrameStateSupported(int state)
+  {
+    // GTK supports ICONFIED, NORMAL and MAXIMIZE_BOTH, but
+    // not (yet?) MAXIMIZE_VERT and MAXIMIZE_HORIZ.
+    return state == Frame.NORMAL || state == Frame.ICONIFIED
+           || state == Frame.MAXIMIZED_BOTH;
+  }
+
   public native int getMouseNumberOfButtons();
 
 } // class GtkToolkit

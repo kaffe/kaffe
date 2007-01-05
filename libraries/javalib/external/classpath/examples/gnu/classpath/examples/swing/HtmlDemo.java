@@ -40,21 +40,22 @@ package gnu.classpath.examples.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.URL;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
-import javax.swing.text.AbstractDocument;
-import javax.swing.text.Element;
-import javax.swing.text.html.HTMLDocument;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 
 /**
  * Parses and displays HTML content.
@@ -64,49 +65,36 @@ import javax.swing.text.html.HTMLDocument;
 public class HtmlDemo extends JPanel
 { 
 
+  private class LoadActionListener
+    implements ActionListener
+  {
+
+    public void actionPerformed(ActionEvent event)
+    {
+      String urlStr = url.getText();
+      try
+        {
+          html.setPage(url.getText());
+        }
+      catch (IOException ex)
+        {
+          System.err.println("exception while loading: " + ex);
+          ex.printStackTrace();
+        }
+    }
+  }
+
   /**
    * Setting this to true causes the parsed element structure to be dumped.
    */
   private static final boolean DEBUG = true;
 
+  /**
+   * The URL entry field.
+   */
+  JTextField url = new JTextField(); 
+
   JTextPane html = new JTextPane();
-
-  JTextArea text = new JTextArea("<html><body>\n"
-
-      + "<h1>H1 Headline</h1>\n"
-      + "<h2>H2 Headline</h2>\n"
-      + "<h3>H3 Headline</h3>\n"
-      + "<h4>H4 Headline</h3>\n"
-      + "<h5>H5 Headline</h5>\n"
-      + "<h6>H6 Headline</h6>\n"
-      + "<h1>CSS colors via font tag</h1>\n"
-      + "<p>"
-      + "<font color=\"maroon\">maroon</font>\n"
-      + "<font color=\"red\">red</font>\n"
-      + "<font color=\"orange\">orange</font>\n"
-      + "<font color=\"yellow\">yellow</font>\n"
-      + "<font color=\"olive\">olive</font>\n"
-      + "<font color=\"purple\">purlpe</font>\n"
-      + "<font color=\"fuchsia\">fuchsia</font>\n"
-      + "<font color=\"white\">white</font>\n"
-      + "<font color=\"lime\">lime</font>\n"
-      + "<font color=\"green\">green</font>\n"
-      + "<font color=\"navy\">navy</font>\n"
-      + "<font color=\"blue\">blue</font>\n"
-      + "<font color=\"aqua\">aqua</font>\n"
-      + "<font color=\"teal\">teal</font>\n"
-      + "<font color=\"black\">black</font>\n"
-      + "<font color=\"silver\">silver</font>\n"
-      + "<font color=\"gray\">gray</font>\n"
-      + "</p>"
-      + "<h1>Some HTML formatting tags</h1>\n"
-      + "<p>Normal <b>Bold</b> <i>Italic</i> <b><i>Bold + Italic</i></b></p>\n"
-      + "<p><big>Big</big> <em>Emphasized</em> <small>Small</small>\n"
-      + "<strike>Strike</strike> <strong>Strong</strong> <u>Underline</u></p>\n"
-      + "<p>Normal vs <sup>Superscript</sup> vs <sub>Subscript</sub> text</p>\n"
-      + "</body></html>\n");
-  
-  JPanel buttons;
   
   int n;
 
@@ -116,7 +104,7 @@ public class HtmlDemo extends JPanel
     html.setContentType("text/html"); // not now.
     createContent();
   }
-  
+
   /**
    * Returns a panel with the demo content. The panel uses a BorderLayout(), and
    * the BorderLayout.SOUTH area is empty, to allow callers to add controls to
@@ -126,158 +114,56 @@ public class HtmlDemo extends JPanel
   private void createContent()
   {
     setLayout(new BorderLayout());
-    
-    JPanel center = new JPanel();
-    GridLayout layout = new GridLayout();
-    layout.setRows(2);
-    center.setLayout(layout);
-    center.add(new JScrollPane(text));
-    center.add(new JScrollPane(html));
-    
-    buttons = new JPanel();
-    
-    JButton parse = new JButton("parse");
-    parse.addActionListener(new ActionListener()
-      {
-        public void actionPerformed(ActionEvent event)
-          {
-            String t = text.getText();
-            System.out.println("HtmlDemo.java.createContent:Parsing started");
-            html.setText(t);
-            System.out.println("HtmlDemo.java.createContent:Parsing completed");
-            if (DEBUG)
-              ((AbstractDocument) html.getDocument()).dump(System.out);
-          }
-      });
-    
-    buttons.add(parse);
-    
-    JButton insertBeforeEnd = new JButton("before end");
-    insertBeforeEnd.addActionListener(new ActionListener()
-      {
-        public void actionPerformed(ActionEvent event)
-          {
-            HTMLDocument doc = (HTMLDocument) html.getDocument();
-            Element el = doc.getElement("insertHere");
-            System.out.println("Element found:"+el);
-            try
-              {
-                doc.insertBeforeEnd(el,"before end "+(n++));
-              }
-            catch (Exception e)
-              {
-                e.printStackTrace();
-              }
-          }
-      });
-    
-    JButton insertBeforeStart = new JButton("before start");
-    insertBeforeStart.addActionListener(new ActionListener()
-      {
-        public void actionPerformed(ActionEvent event)
-          {
-            HTMLDocument doc = (HTMLDocument) html.getDocument();
-            Element el = doc.getElement("insertHere");
-            System.out.println("Element found:"+el);
-            try
-              {
-                doc.insertBeforeStart(el,"before start "+(n++));
-              }
-            catch (Exception e)
-              {
-                e.printStackTrace();
-              }
-          }
-      });
-    
-    JButton insertAfterEnd = new JButton("after end");
-    insertAfterEnd.addActionListener(new ActionListener()
-      {
-        public void actionPerformed(ActionEvent event)
-          {
-            HTMLDocument doc = (HTMLDocument) html.getDocument();
-            Element el = doc.getElement("insertHere");
-            System.out.println("Element found:"+el);
-            try
-              {
-                doc.insertAfterEnd(el,"after end "+(n++));
-              }
-            catch (Exception e)
-              {
-                e.printStackTrace();
-              }
-          }
-      });
-    
-    JButton insertAfterStart = new JButton("after start");
-    insertAfterStart.addActionListener(new ActionListener()
-      {
-        public void actionPerformed(ActionEvent event)
-          {
-            HTMLDocument doc = (HTMLDocument) html.getDocument();
-            Element el = doc.getElement("insertHere");
-            System.out.println("Element found:"+el);
-            try
-              {
-                doc.insertAfterStart(el,"after start "+(n++));
-              }
-            catch (Exception e)
-              {
-                e.printStackTrace();
-              }
-          }
-      });
-    
 
-    JButton setInner = new JButton("inner");
-    setInner.addActionListener(new ActionListener()
+    html.setEditable(false);
+    html.addHyperlinkListener(new HyperlinkListener()
+    {
+
+      public void hyperlinkUpdate(HyperlinkEvent event)
       {
-        public void actionPerformed(ActionEvent event)
+        URL u = event.getURL();
+        if (u != null)
           {
-            HTMLDocument doc = (HTMLDocument) html.getDocument();
-            Element el = doc.getElement("insertHere");
-            System.out.println("Element found:"+el);
+            url.setText(u.toString());
             try
               {
-                doc.setInnerHTML(el,"inner "+(n++));
+                html.setPage(u);
               }
-            catch (Exception e)
+            catch (IOException ex)
               {
-                e.printStackTrace();
+                ex.printStackTrace();
               }
           }
-      });
-    
-    JButton setOuter = new JButton("outer");
-    setOuter.addActionListener(new ActionListener()
+      }
+      
+    });
+
+    JScrollPane scroller = new JScrollPane(html);
+    JPanel urlPanel = new JPanel();
+    urlPanel.setLayout(new BoxLayout(urlPanel, BoxLayout.X_AXIS));
+    url.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
+    LoadActionListener action = new LoadActionListener();
+    url.addActionListener(action);
+    urlPanel.add(url);
+    JButton loadButton = new JButton("go");
+    urlPanel.add(loadButton);
+    loadButton.addActionListener(action);
+    add(urlPanel, BorderLayout.NORTH);
+    add(scroller, BorderLayout.CENTER);
+
+    // Load start page.
+    URL startpage = getClass().getResource("welcome.html");
+    try
       {
-        public void actionPerformed(ActionEvent event)
-          {
-            HTMLDocument doc = (HTMLDocument) html.getDocument();
-            Element el = doc.getElement("insertHere");
-            System.out.println("Element found:"+el);
-            try
-              {
-                doc.setOuterHTML(el,"outer "+(n++));
-              }
-            catch (Exception e)
-              {
-                e.printStackTrace();
-              }
-          }
-      });
-    
+        html.setPage(startpage);
+        url.setText(startpage.toString());
+      }
+    catch (IOException ex)
+      {
+        System.err.println("couldn't load page: " + startpage);
+      }
 
-    buttons.add(insertBeforeStart);
-    buttons.add(insertAfterStart);    
-    buttons.add(insertBeforeEnd);
-    buttons.add(insertAfterEnd);
-
-    buttons.add(setInner);
-    buttons.add(setOuter);
-    
-    add(center, BorderLayout.CENTER);
-    add(buttons, BorderLayout.SOUTH);
+    setPreferredSize(new Dimension(600, 400));
   }
  
   /**
@@ -294,18 +180,6 @@ public class HtmlDemo extends JPanel
        public void run()
        {
          HtmlDemo demo = new HtmlDemo();
-         
-         JButton exit = new JButton("exit");
-         exit.addActionListener(new ActionListener()
-           {
-             public void actionPerformed(ActionEvent event)
-               {
-                 System.exit(0);
-               }
-           });
-         
-         demo.buttons.add(exit);
-         
          JFrame frame = new JFrame();
          frame.getContentPane().add(demo);
          frame.setSize(new Dimension(700, 480));

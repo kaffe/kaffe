@@ -93,7 +93,6 @@ public class Utilities
 
     // The current x and y pixel coordinates.
     int pixelX = x;
-    int pixelY = y - ascent;
 
     int pixelWidth = 0;
     int pos = s.offset;
@@ -107,7 +106,7 @@ public class Utilities
         if (c == '\t')
           {
             if (len > 0) {
-              g.drawChars(buffer, pos, len, pixelX, pixelY + ascent);            
+              g.drawChars(buffer, pos, len, pixelX, y);
               pixelX += pixelWidth;
               pixelWidth = 0;
             }
@@ -134,7 +133,7 @@ public class Utilities
       }
 
     if (len > 0)
-      g.drawChars(buffer, pos, len, pixelX, pixelY + ascent);            
+      g.drawChars(buffer, pos, len, pixelX, y);
     
     return pixelX + pixelWidth;
   }

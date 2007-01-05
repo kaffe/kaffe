@@ -473,3 +473,13 @@ int cpio_readDir (void *handle, char *filename)
   strncpy (filename, dBuf->d_name, FILENAME_MAX);
   return 0;
 }
+
+
+int
+cpio_closeOnExec(int fd)
+{
+	if (fcntl (fd, F_SETFD, FD_CLOEXEC) == -1)
+	  return errno;
+	  
+	return 0;
+}

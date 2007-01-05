@@ -64,6 +64,7 @@ JNIEXPORT int cpio_read (int fd, void *data, jint len, jint *bytes_read);
 JNIEXPORT int cpio_write (int fd, const void *data, jint len, jint *bytes_written);
 JNIEXPORT int cpio_fsync (int fd);
 JNIEXPORT int cpio_truncate (int fd, jlong size);
+JNIEXPORT int cpio_closeOnExec(int fd);
 
 #define CPFILE_FILE 0
 #define CPFILE_DIRECTORY 1

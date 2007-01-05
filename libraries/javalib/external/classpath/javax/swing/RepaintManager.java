@@ -69,6 +69,7 @@ import java.util.WeakHashMap;
  * <p>See <a
  * href="http://java.sun.com/products/jfc/tsc/articles/painting/index.html">this
  * document</a> for more details.</p>
+ * document</a> for more details.</p>
  *
  * @author Roman Kennke (kennke@aicas.com)
  * @author Graydon Hoare (graydon@redhat.com)
@@ -96,9 +97,21 @@ public class RepaintManager
      * @param source the source
      * @param runnable the runnable to execute
      */
-    public RepaintWorkerEvent(Object source, Runnable runnable)
+    public RepaintWorkerEvent(Object source, Runnable runnable,
+                              Object notifier, boolean catchEx)
     {
-      super(source, runnable);
+      super(source, runnable, notifier, catchEx);
+    }
+
+    /**
+     * An application that I met implements its own event dispatching and
+     * calls dispatch() via reflection, and only checks declared methods,
+     * that is, it expects this method to be in the event's class, not
+     * in a superclass. So I put this in here... sigh.
+     */
+    public void dispatch()
+    {
+      super.dispatch();
     }
   }
   
@@ -419,15 +432,16 @@ public class RepaintManager
 
     if (! rectCache.isEmpty())
       {
-        if (dirtyComponents.containsKey(component))
+        synchronized (dirtyComponents)
           {
-            SwingUtilities.computeUnion(rectCache.x, rectCache.y,
-                                        rectCache.width, rectCache.height,
-                                   (Rectangle) dirtyComponents.get(component));
-          }
-        else
-          {
-            synchronized (dirtyComponents)
+            Rectangle dirtyRect = (Rectangle)dirtyComponents.get(component);
+            if (dirtyRect != null)
+              {
+                SwingUtilities.computeUnion(rectCache.x, rectCache.y,
+                                            rectCache.width, rectCache.height,
+                                            dirtyRect);
+              }
+            else
               {
                 dirtyComponents.put(component, rectCache.getBounds());
               }
@@ -838,7 +852,7 @@ public class RepaintManager
   {
     Toolkit tk = Toolkit.getDefaultToolkit();
     EventQueue evQueue = tk.getSystemEventQueue();
-    InvocationEvent ev = new RepaintWorkerEvent(this, runnable);
+    InvocationEvent ev = new RepaintWorkerEvent(evQueue, runnable, null, false);
     evQueue.postEvent(ev);
   }
 }

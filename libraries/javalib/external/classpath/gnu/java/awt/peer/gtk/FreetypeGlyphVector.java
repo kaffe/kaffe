@@ -92,16 +92,23 @@ public class FreetypeGlyphVector extends GlyphVector
    */
   public FreetypeGlyphVector(Font f, String s, FontRenderContext frc)
   {
-    this(f, s, frc, Font.LAYOUT_LEFT_TO_RIGHT);
+    this(f, s.toCharArray(), 0, s.length(), frc, Font.LAYOUT_LEFT_TO_RIGHT);
   }
 
   /**
    * Create a glyphvector from a given (Freetype) font and a String.
    */
-  public FreetypeGlyphVector(Font f, String s, FontRenderContext frc,
-			     int flags)
+  public FreetypeGlyphVector(Font f, char[] chars, int start, int len,
+                             FontRenderContext frc, int flags)
   {
-    this.s = s;
+    // We need to filter out control characters (and possibly other
+    // non-renderable characters here).
+    StringBuilder b = new StringBuilder(chars.length);
+    for (int i = start; i < start + len; i++)
+      if (!Character.isISOControl(chars[i]))
+        b.append(chars[i]);
+    this.s = b.toString();
+
     this.font = f;
     this.frc = frc;
     if( !(font.getPeer() instanceof GdkFontPeer ) )
@@ -424,10 +431,12 @@ public class FreetypeGlyphVector extends GlyphVector
       return logicalBounds;
 
     Rectangle2D rect = (Rectangle2D)getGlyphLogicalBounds( 0 );
+    AffineTransform tx = new AffineTransform();
     for( int i = 1; i < nGlyphs; i++ )
       {
-	Rectangle2D r2 = (Rectangle2D)getGlyphLogicalBounds( i );
-	rect = rect.createUnion( r2 );
+        Rectangle2D r2 = (Rectangle2D)getGlyphLogicalBounds( i );
+        
+        rect = rect.createUnion( r2 );
       }
 
     logicalBounds = rect;
@@ -448,8 +457,14 @@ public class FreetypeGlyphVector extends GlyphVector
   public Shape getOutline()
   {
     GeneralPath path = new GeneralPath();
+    AffineTransform tx = new AffineTransform();
     for( int i = 0; i < getNumGlyphs(); i++ )
-      path.append( getGlyphOutline( i ), false );
+      {
+        Shape outline = getGlyphOutline(i);
+        tx.setToTranslation(glyphPositions[i*2], glyphPositions[i*2 +1]);
+        outline = tx.createTransformedShape(outline);
+        path.append(outline, false);
+      }
     return path;
   }
 

@@ -232,7 +232,7 @@ _javanet_create_integer (JNIEnv * env, jint val)
 /*
  * Builds an InetAddress object from a 32 bit address in host byte order
  */
-static jobject
+jobject
 _javanet_create_inetaddress (JNIEnv * env, cpnet_address *netaddr)
 {
 #ifndef WITHOUT_NETWORK

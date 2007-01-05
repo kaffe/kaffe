@@ -37,8 +37,6 @@ exception statement from your version. */
 
 package javax.swing;
 
-import gnu.classpath.NotImplementedException;
-
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -74,7 +72,10 @@ import javax.swing.plaf.ButtonUI;
 import javax.swing.plaf.basic.BasicHTML;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.Element;
 import javax.swing.text.Position;
+import javax.swing.text.StyledDocument;
 import javax.swing.text.View;
 
 
@@ -804,22 +805,127 @@ public abstract class AbstractButton extends JComponent
       return -1;
     }
 
-    public String getAtIndex(int value0, int value1)
-      throws NotImplementedException
+    /**
+     * Returns the character, word or sentence at the specified index. The
+     * <code>part</code> parameter determines what is returned, the character,
+     * word or sentence after the index.
+     *
+     * @param part one of {@link AccessibleText#CHARACTER},
+     *             {@link AccessibleText#WORD} or
+     *             {@link AccessibleText#SENTENCE}, specifying what is returned
+     * @param index the index
+     *
+     * @return the character, word or sentence after <code>index</code>
+     */
+    public String getAtIndex(int part, int index)
     {
-      return null; // TODO
+      String result = "";
+      int startIndex = -1;
+      int endIndex = -1;
+      switch(part)
+        {
+        case AccessibleText.CHARACTER:
+          result = String.valueOf(text.charAt(index));
+          break;
+        case AccessibleText.WORD:
+          startIndex = text.lastIndexOf(' ', index);
+          endIndex = text.indexOf(' ', startIndex + 1);
+          if (endIndex == -1)
+            endIndex = startIndex + 1;
+          result = text.substring(startIndex + 1, endIndex);
+          break;
+        case AccessibleText.SENTENCE:
+        default:
+          startIndex = text.lastIndexOf('.', index);
+          endIndex = text.indexOf('.', startIndex + 1);
+          if (endIndex == -1)
+            endIndex = startIndex + 1;
+          result = text.substring(startIndex + 1, endIndex);
+          break;
+        }
+      return result;
     }
 
-    public String getAfterIndex(int value0, int value1)
-      throws NotImplementedException
+    /**
+     * Returns the character, word or sentence after the specified index. The
+     * <code>part</code> parameter determines what is returned, the character,
+     * word or sentence after the index.
+     *
+     * @param part one of {@link AccessibleText#CHARACTER},
+     *             {@link AccessibleText#WORD} or
+     *             {@link AccessibleText#SENTENCE}, specifying what is returned
+     * @param index the index
+     *
+     * @return the character, word or sentence after <code>index</code>
+     */
+    public String getAfterIndex(int part, int index)
     {
-      return null; // TODO
+      String result = "";
+      int startIndex = -1;
+      int endIndex = -1;
+      switch(part)
+        {
+        case AccessibleText.CHARACTER:
+          result = String.valueOf(text.charAt(index + 1));
+          break;
+        case AccessibleText.WORD:
+          startIndex = text.indexOf(' ', index);
+          endIndex = text.indexOf(' ', startIndex + 1);
+          if (endIndex == -1)
+            endIndex = startIndex + 1;
+          result = text.substring(startIndex + 1, endIndex);
+          break;
+        case AccessibleText.SENTENCE:
+        default:
+          startIndex = text.indexOf('.', index);
+          endIndex = text.indexOf('.', startIndex + 1);
+          if (endIndex == -1)
+            endIndex = startIndex + 1;
+          result = text.substring(startIndex + 1, endIndex);
+          break;
+        }
+      return result;
     }
 
-    public String getBeforeIndex(int value0, int value1)
-      throws NotImplementedException
+    /**
+     * Returns the character, word or sentence before the specified index. The
+     * <code>part</code> parameter determines what is returned, the character,
+     * word or sentence before the index.
+     *
+     * @param part one of {@link AccessibleText#CHARACTER},
+     *             {@link AccessibleText#WORD} or
+     *             {@link AccessibleText#SENTENCE}, specifying what is returned
+     * @param index the index
+     *
+     * @return the character, word or sentence before <code>index</code>
+     */
+    public String getBeforeIndex(int part, int index)
     {
-      return null; // TODO
+      String result = "";
+      int startIndex = -1;
+      int endIndex = -1;
+      switch(part)
+        {
+        case AccessibleText.CHARACTER:
+          result = String.valueOf(text.charAt(index - 1));
+          break;
+        case AccessibleText.WORD:
+          endIndex = text.lastIndexOf(' ', index);
+          if (endIndex == -1)
+            endIndex = 0;
+          startIndex = text.lastIndexOf(' ', endIndex - 1);
+          result = text.substring(startIndex + 1, endIndex);
+          break;
+        case AccessibleText.SENTENCE:
+        default:
+          endIndex = text.lastIndexOf('.', index);
+          if (endIndex == -1)
+            endIndex = 0;
+          startIndex = text.lastIndexOf('.', endIndex - 1);
+          result = text.substring(startIndex + 1, endIndex);
+          break;
+        }
+      return result;
     }
 
     /**
@@ -837,7 +943,14 @@ public abstract class AbstractButton extends JComponent
       View view = (View) getClientProperty(BasicHTML.propertyKey); 
       if (view != null)
         {
-          
+          Document doc = view.getDocument();
+          if (doc instanceof StyledDocument)
+            {
+              StyledDocument sDoc = (StyledDocument) doc;
+              Element charEl = sDoc.getCharacterElement(i);
+              if (charEl != null)
+                atts = charEl.getAttributes();
+            }
         }
       return atts;
     }

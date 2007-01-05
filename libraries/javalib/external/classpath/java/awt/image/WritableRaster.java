@@ -136,8 +136,9 @@ public class WritableRaster extends Raster
   {
     // This mirrors the code from the super class
     
-    // FIXME: Throw RasterFormatException if child bounds extends
-    // beyond the bounds of this raster.
+    if (parentX < minX || parentX + w > minX + width
+        || parentY < minY || parentY + h > minY + height)
+      throw new RasterFormatException("Child raster extends beyond parent");
     
     SampleModel sm = (bandList == null) ?
       sampleModel :

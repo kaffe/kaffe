@@ -397,7 +397,24 @@ public class ComponentView extends View
        {
          public void run()
          {
-           setParentImpl();
+           Document doc = getDocument();
+           try
+             {
+               if (doc instanceof AbstractDocument)
+                 ((AbstractDocument) doc).readLock();
+               setParentImpl();
+               Container host = getContainer();
+               if (host != null)
+                 {
+                   preferenceChanged(null, true, true);
+                   host.repaint();
+                 }
+             }
+           finally
+             {
+               if (doc instanceof AbstractDocument)
+                 ((AbstractDocument) doc).readUnlock();
+             }
          }
        });
   }

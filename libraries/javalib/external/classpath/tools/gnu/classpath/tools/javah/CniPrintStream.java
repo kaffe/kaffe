@@ -196,9 +196,9 @@ public class CniPrintStream
   private void writeClass(PrintStream out, String klass)
   {
     int index = klass.lastIndexOf('/');
-    String pkg = klass.substring(0, index);
-    String[] pkgParts = pkg.split("/");
-    String className = klass.substring(index + 1);
+    String pkg = index == -1 ? "" : klass.substring(0, index);
+    String[] pkgParts = index == -1 ? new String[0] : pkg.split("/");
+    String className = index == -1 ? klass : klass.substring(index + 1);
     moveToPackage(out, pkgParts);
     indent(out, pkgParts.length + 2);
     out.print("class ");

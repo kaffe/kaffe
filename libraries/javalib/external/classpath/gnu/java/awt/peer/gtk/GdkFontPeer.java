@@ -345,15 +345,6 @@ public class GdkFontPeer extends ClasspathFontPeer
     return buf.getShort(4);
   }
 
-  public Rectangle2D getStringBounds (Font font, CharacterIterator ci, 
-                                      int begin, int limit, FontRenderContext frc)
-  {
-    GlyphVector gv = new FreetypeGlyphVector( font, 
-					      buildString(ci, begin, limit),
-					      frc);
-    return gv.getVisualBounds();
-  }
-
   public boolean hasUniformLineMetrics (Font font)
   {
     return true;
@@ -363,8 +354,7 @@ public class GdkFontPeer extends ClasspathFontPeer
                                         char[] chars, int start, int limit, 
                                         int flags)
   {
-    return new FreetypeGlyphVector( font, new String( chars, start, 
-						      limit - start),
+    return new FreetypeGlyphVector( font, chars, start, limit - start,
 				    frc, flags);
   }
 

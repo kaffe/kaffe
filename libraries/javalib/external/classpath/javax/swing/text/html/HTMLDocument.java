@@ -39,24 +39,28 @@ exception statement from your version. */
 package javax.swing.text.html;
 
 import gnu.classpath.NotImplementedException;
-import gnu.javax.swing.text.html.parser.htmlAttributeSet;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
 import java.util.Vector;
 
+import javax.swing.DefaultButtonModel;
 import javax.swing.JEditorPane;
+import javax.swing.JToggleButton;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.Document;
 import javax.swing.text.Element;
 import javax.swing.text.ElementIterator;
 import javax.swing.text.GapContent;
 import javax.swing.text.MutableAttributeSet;
+import javax.swing.text.PlainDocument;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.html.HTML.Tag;
@@ -559,7 +563,42 @@ public class HTMLDocument extends DefaultStyledDocument
     
     /** A temporary variable that helps with the printing out of debug information **/
     boolean debug = false;
-    
+
+    /**
+     * This is true when we are inside a pre tag.
+     */
+    boolean inPreTag = false;
+
+    /**
+     * This is true when we are inside a style tag. This will add text
+     * content inside this style tag beeing parsed as CSS.
+     *
+     * This is package private to avoid accessor methods.
+     */
+    boolean inStyleTag = false;
+
+    /**
+     * This is true when we are inside a &lt;textarea&gt; tag. Any text
+     * content will then be added to the text area.
+     *
+     * This is package private to avoid accessor methods.
+     */
+    boolean inTextArea = false;
+
+    /**
+     * This contains all stylesheets that are somehow read, either
+     * via embedded style tags, or via linked stylesheets. The
+     * elements will be String objects containing a stylesheet each.
+     */
+    ArrayList styles;
+
+    /**
+     * The document model for a textarea.
+     *
+     * This is package private to avoid accessor methods.
+     */
+    Document textAreaDocument;
+
     void print (String line)
     {
       if (debug)
@@ -634,7 +673,11 @@ public class HTMLDocument extends DefaultStyledDocument
         popCharacterStyle();
       } 
     }
-    
+
+    /**
+     * Processes elements that make up forms: &lt;input&gt;, &lt;textarea&gt;,
+     * &lt;select&gt; and &lt;option&gt;.
+     */
     public class FormAction extends SpecialAction
     {
       /**
@@ -642,10 +685,27 @@ public class HTMLDocument extends DefaultStyledDocument
        * of tags associated with this Action.
        */
       public void start(HTML.Tag t, MutableAttributeSet a)
-        throws NotImplementedException
       {
-        // FIXME: Implement.
-        print ("FormAction.start not implemented");
+        if (t == HTML.Tag.INPUT)
+          {
+            String type = (String) a.getAttribute(HTML.Attribute.TYPE);
+            if (type == null)
+              {
+                type = "text"; // Default to 'text' when nothing was specified.
+                a.addAttribute(HTML.Attribute.TYPE, type);
+              }
+            setModel(type, a);
+          }
+        else if (t == HTML.Tag.TEXTAREA)
+          {
+            inTextArea = true;
+            textAreaDocument = new PlainDocument();
+            a.addAttribute(StyleConstants.ModelAttribute, textAreaDocument);
+          }
+        // TODO: Handle select and option tags.
+
+        // Build the element.
+        super.start(t, a);
       }
       
       /**
@@ -653,11 +713,46 @@ public class HTMLDocument extends DefaultStyledDocument
        * with this Action.
        */
       public void end(HTML.Tag t)
-        throws NotImplementedException
       {
-        // FIXME: Implement.
-        print ("FormAction.end not implemented");
-      } 
+        if (t == HTML.Tag.TEXTAREA)
+          {
+            inTextArea = false;
+          }
+
+        // TODO: Handle select and option tags.
+
+        // Finish the element.
+        super.end(t);
+      }
+
+      private void setModel(String type, MutableAttributeSet attrs)
+      {
+        if (type.equals("submit") || type.equals("reset")
+            || type.equals("image"))
+          {
+            // Create button.
+            attrs.addAttribute(StyleConstants.ModelAttribute,
+                               new DefaultButtonModel());
+          }
+        else if (type.equals("text") || type.equals("password"))
+          {
+            // TODO: Handle fixed length input fields.
+            attrs.addAttribute(StyleConstants.ModelAttribute,
+                               new PlainDocument());
+          }
+        else if (type.equals("file"))
+          {
+            attrs.addAttribute(StyleConstants.ModelAttribute,
+                               new PlainDocument());
+          }
+        else if (type.equals("checkbox") || type.equals("radio"))
+          {
+            JToggleButton.ToggleButtonModel model =
+              new JToggleButton.ToggleButtonModel();
+            // TODO: Handle radio button via ButtonGroups.
+            attrs.addAttribute(StyleConstants.ModelAttribute, model);
+          }
+      }
     }
     
     /**
@@ -690,7 +785,10 @@ public class HTMLDocument extends DefaultStyledDocument
         blockClose(t);
       } 
     }
-    
+
+    /**
+     * Handles &lt;isindex&gt; tags.
+     */
     public class IsindexAction extends TagAction
     {
       /**
@@ -698,10 +796,10 @@ public class HTMLDocument extends DefaultStyledDocument
        * of tags associated with this Action.
        */
       public void start(HTML.Tag t, MutableAttributeSet a)
-        throws NotImplementedException
       {
-        // FIXME: Implement.
-        print ("IsindexAction.start not implemented");
+        blockOpen(HTML.Tag.IMPLIED, new SimpleAttributeSet());
+        addSpecialElement(t, a);
+        blockClose(HTML.Tag.IMPLIED);
       }
     }
     
@@ -725,7 +823,10 @@ public class HTMLDocument extends DefaultStyledDocument
         blockClose(t);
       } 
     }
-    
+
+    /**
+     * This action is performed when a &lt;pre&gt; tag is parsed.
+     */
     public class PreAction extends BlockAction
     {
       /**
@@ -733,11 +834,11 @@ public class HTMLDocument extends DefaultStyledDocument
        * of tags associated with this Action.
        */
       public void start(HTML.Tag t, MutableAttributeSet a)
-        throws NotImplementedException
       {
-        // FIXME: Implement.
-        print ("PreAction.start not implemented");
-        super.start(t, a);
+        inPreTag = true;
+        blockOpen(t, a);
+        a.addAttribute(CSS.Attribute.WHITE_SPACE, "pre");
+        blockOpen(HTML.Tag.IMPLIED, a);
       }
       
       /**
@@ -745,11 +846,10 @@ public class HTMLDocument extends DefaultStyledDocument
        * with this Action.
        */
       public void end(HTML.Tag t)
-        throws NotImplementedException
       {
-        // FIXME: Implement.
-        print ("PreAction.end not implemented");
-        super.end(t);
+        blockClose(HTML.Tag.IMPLIED);
+        inPreTag = false;
+        blockClose(t);
       } 
     }
     
@@ -875,12 +975,20 @@ public class HTMLDocument extends DefaultStyledDocument
        * with this Action.
        */
       public void end(HTML.Tag t)
-        throws NotImplementedException
       {
-        // FIXME: Implement.
-        print ("HeadAction.end not implemented: "+t);
+        // We read in all the stylesheets that are embedded or referenced
+        // inside the header.
+        if (styles != null)
+          {
+            int numStyles = styles.size();
+            for (int i = 0; i < numStyles; i++)
+              {
+                String style = (String) styles.get(i);
+                getStyleSheet().addRule(style);
+              }
+          }
         super.end(t);
-      } 
+      }
     }
     
     class LinkAction extends TagAction
@@ -957,7 +1065,7 @@ public class HTMLDocument extends DefaultStyledDocument
         print ("MetaAction.end not implemented");
       } 
     }
-    
+
     class StyleAction extends TagAction
     {
       /**
@@ -965,10 +1073,8 @@ public class HTMLDocument extends DefaultStyledDocument
        * of tags associated with this Action.
        */
       public void start(HTML.Tag t, MutableAttributeSet a)
-        throws NotImplementedException
       {
-        // FIXME: Implement.
-        print ("StyleAction.start not implemented");
+        inStyleTag = true;
       }
       
       /**
@@ -976,10 +1082,8 @@ public class HTMLDocument extends DefaultStyledDocument
        * with this Action.
        */
       public void end(HTML.Tag t)
-        throws NotImplementedException
       {
-        // FIXME: Implement.
-        print ("StyleAction.end not implemented");
+        inStyleTag = false;
       } 
     }
     
@@ -1182,7 +1286,21 @@ public class HTMLDocument extends DefaultStyledDocument
     public void handleText(char[] data, int pos)
     {
       if (shouldInsert() && data != null && data.length > 0)
-        addContent(data, 0, data.length);
+        {
+          if (inTextArea)
+            textAreaContent(data);
+          else if (inPreTag)
+            preContent(data);
+          else if (inStyleTag)
+            {
+              if (styles == null)
+                styles = new ArrayList();
+              styles.add(new String(data));
+            }
+          else
+            addContent(data, 0, data.length);
+            
+        }
     }
     
     /**
@@ -1232,8 +1350,7 @@ public class HTMLDocument extends DefaultStyledDocument
           TagAction action = (TagAction) tagToAction.get(HTML.Tag.COMMENT);
           if (action != null)
             {
-              action.start(HTML.Tag.COMMENT, 
-                           htmlAttributeSet.EMPTY_HTML_ATTRIBUTE_SET);
+              action.start(HTML.Tag.COMMENT, new SimpleAttributeSet());
               action.end(HTML.Tag.COMMENT);
             }
         }
@@ -1305,22 +1422,46 @@ public class HTMLDocument extends DefaultStyledDocument
      * @param data the text to add to the textarea
      */
     protected void textAreaContent(char[] data)
-      throws NotImplementedException
     {
-      // FIXME: Implement.
-      print ("HTMLReader.textAreaContent not implemented yet");
+      try
+        {
+          int offset = textAreaDocument.getLength();
+          textAreaDocument.insertString(offset, new String(data), null);
+        }
+      catch (BadLocationException ex)
+        {
+          // Must not happen as we insert at a model location that we
+          // got from the document itself.
+          assert false;
+        }
     }
     
     /**
      * Adds the given text that was encountered in a <PRE> element.
-     * 
+     * This adds synthesized lines to hold the text runs.
+     *
      * @param data the text
      */
     protected void preContent(char[] data)
-      throws NotImplementedException
     {
-      // FIXME: Implement
-      print ("HTMLReader.preContent not implemented yet");
+      int start = 0;
+      for (int i = 0; i < data.length; i++)
+        {
+          if (data[i] == '\n')
+            {
+              addContent(data, start, i - start + 1);
+              blockClose(HTML.Tag.IMPLIED);
+              MutableAttributeSet atts = new SimpleAttributeSet();
+              atts.addAttribute(CSS.Attribute.WHITE_SPACE, "pre");
+              blockOpen(HTML.Tag.IMPLIED, atts);
+              start = i + 1;
+            }
+        }
+      if (start < data.length)
+        {
+          // Add remaining last line.
+          addContent(data, start, data.length - start);
+        }
     }
     
     /**
@@ -1451,15 +1592,11 @@ public class HTMLDocument extends DefaultStyledDocument
     {
       a.addAttribute(StyleConstants.NameAttribute, t);
       
-      // Migrate from the rather htmlAttributeSet to the faster, lighter and 
-      // unchangeable alternative implementation.
-      AttributeSet copy = a.copyAttributes();
-
       // The two spaces are required because some special elements like HR
       // must be broken. At least two characters are needed to break into the
       // two parts.
       DefaultStyledDocument.ElementSpec spec =
-        new DefaultStyledDocument.ElementSpec(copy,
+        new DefaultStyledDocument.ElementSpec(a.copyAttributes(),
 	  DefaultStyledDocument.ElementSpec.ContentType, 
           new char[] {' ', ' '}, 0, 2 );
       parseBuffer.add(spec);

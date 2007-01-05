@@ -391,7 +391,9 @@ public class TextComponent extends Component
    */
   public synchronized void setSelectionStart(int selectionStart)
   {
-    select(selectionStart, getSelectionEnd());
+    select(selectionStart, 
+           (getSelectionEnd() < selectionStart) 
+                              ? selectionStart : getSelectionEnd());
   }
 
   /**

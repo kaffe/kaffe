@@ -40,63 +40,75 @@ AM_CPPFLAGS = -Wall \
 gappletviewer_SOURCES = toolwrapper.c
 gappletviewer_CFLAGS = \
 	-DTOOLPACKAGE="\"appletviewer\"" \
-	-DTOOLNAME="\"gappletviewer\""
+	-DTOOLNAME="\"gappletviewer\"" \
+	-DASM_JAR=""
 
 gjarsigner_SOURCES = toolwrapper.c
 gjarsigner_CFLAGS = \
 	-DTOOLPACKAGE="\"jarsigner\"" \
-	-DTOOLNAME="\"gjarsigner\""
+	-DTOOLNAME="\"gjarsigner\"" \
+	-DASM_JAR=""
 
 gkeytool_SOURCES = toolwrapper.c
 gkeytool_CFLAGS = \
 	-DTOOLPACKAGE="\"keytool\"" \
-	-DTOOLNAME="\"gkeytool\""
+	-DTOOLNAME="\"gkeytool\"" \
+	-DASM_JAR=""
 
 gjar_SOURCES = toolwrapper.c
 gjar_CFLAGS = \
 	-DTOOLPACKAGE="\"jar\"" \
-	-DTOOLNAME="\"gjar\""
+	-DTOOLNAME="\"gjar\"" \
+	-DASM_JAR=""
 
 gnative2ascii_SOURCES = toolwrapper.c
 gnative2ascii_CFLAGS = \
 	-DTOOLPACKAGE="\"native2ascii\"" \
-	-DTOOLNAME="\"gnative2ascii\""
+	-DTOOLNAME="\"gnative2ascii\"" \
+	-DASM_JAR=""
 
 gserialver_SOURCES = toolwrapper.c
 gserialver_CFLAGS = \
 	-DTOOLPACKAGE="\"serialver\"" \
-	-DTOOLNAME="\"gserialver\""
+	-DTOOLNAME="\"gserialver\"" \
+	-DASM_JAR=""
 
 grmiregistry_SOURCES = toolwrapper.c
 grmiregistry_CFLAGS = \
 	-DTOOLPACKAGE="\"rmiregistry\"" \
-	-DTOOLNAME="\"grmiregistry\""
+	-DTOOLNAME="\"grmiregistry\"" \
+	-DASM_JAR=""
 
 gtnameserv_SOURCES = toolwrapper.c
 gtnameserv_CFLAGS = \
 	-DTOOLPACKAGE="\"tnameserv\"" \
-	-DTOOLNAME="\"gtnameserv\""
+	-DTOOLNAME="\"gtnameserv\"" \
+	-DASM_JAR=""
 
 gorbd_SOURCES = toolwrapper.c
 gorbd_CFLAGS = \
 	-DTOOLPACKAGE="\"orbd\"" \
-	-DTOOLNAME="\"gorbd\""
+	-DTOOLNAME="\"gorbd\"" \
+	-DASM_JAR=""
 
 grmid_SOURCES = toolwrapper.c
 grmid_CFLAGS = \
 	-DTOOLPACKAGE="\"rmid\"" \
-	-DTOOLNAME="\"grmid\""
+	-DTOOLNAME="\"grmid\"" \
+	-DASM_JAR=""
 
 if USE_ASM
 gjavah_SOURCES = toolwrapper.c
 gjavah_CFLAGS = \
 	-DTOOLPACKAGE="\"javah\"" \
-	-DTOOLNAME="\"gjavah\""
+	-DTOOLNAME="\"gjavah\"" \
+	-DASM_JAR="\":$(PATH_TO_ASM)\""
 
 grmic_SOURCES = toolwrapper.c
 grmic_CFLAGS = \
 	-DTOOLPACKAGE="\"rmic\"" \
-	-DTOOLNAME="\"grmic\""
+	-DTOOLNAME="\"grmic\"" \
+	-DASM_JAR="\":$(PATH_TO_ASM)\""
 endif
 
 else

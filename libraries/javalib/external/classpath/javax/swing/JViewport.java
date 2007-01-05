@@ -837,10 +837,13 @@ public class JViewport extends JComponent implements Accessible
         if (canBlit)
           {
             // Copy the part that remains visible during scrolling.
-            g2.copyArea(cachedBlitFrom.x, cachedBlitFrom.y,
-                        cachedBlitSize.width, cachedBlitSize.height,
-                        cachedBlitTo.x - cachedBlitFrom.x,
-                        cachedBlitTo.y - cachedBlitFrom.y);
+            if (cachedBlitSize.width > 0 && cachedBlitSize.height > 0)
+              {
+                g2.copyArea(cachedBlitFrom.x, cachedBlitFrom.y,
+                            cachedBlitSize.width, cachedBlitSize.height,
+                            cachedBlitTo.x - cachedBlitFrom.x,
+                            cachedBlitTo.y - cachedBlitFrom.y);
+              }
             // Now paint the part that becomes newly visible.
             g2.setClip(cachedBlitPaint.x, cachedBlitPaint.y,
                        cachedBlitPaint.width, cachedBlitPaint.height);
@@ -888,10 +891,13 @@ public class JViewport extends JComponent implements Accessible
     if (canBlit && isPaintRoot)
       {
         // Copy the part that remains visible during scrolling.
-        g.copyArea(cachedBlitFrom.x, cachedBlitFrom.y,
-                   cachedBlitSize.width, cachedBlitSize.height,
-                   cachedBlitTo.x - cachedBlitFrom.x,
-                   cachedBlitTo.y - cachedBlitFrom.y);
+        if (cachedBlitSize.width > 0 && cachedBlitSize.width > 0)
+          {
+            g.copyArea(cachedBlitFrom.x, cachedBlitFrom.y,
+                       cachedBlitSize.width, cachedBlitSize.height,
+                       cachedBlitTo.x - cachedBlitFrom.x,
+                       cachedBlitTo.y - cachedBlitFrom.y);
+          }
         // Now paint the part that becomes newly visible.
         Shape oldClip = g.getClip();
         g.clipRect(cachedBlitPaint.x, cachedBlitPaint.y,

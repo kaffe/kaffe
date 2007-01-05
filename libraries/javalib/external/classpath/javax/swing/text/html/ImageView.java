@@ -175,19 +175,22 @@ public class ImageView extends View
    */
   public URL getImageURL()
   {
-    Object url = getAttributes().getAttribute(Attribute.SRC);
-    if (url == null)
-      return null;
-
-    try
+    Element el = getElement();
+    String src = (String) el.getAttributes().getAttribute(Attribute.SRC);
+    URL url = null;
+    if (src != null)
       {
-        return new URL(url.toString());
+        URL base = ((HTMLDocument) getDocument()).getBase();
+        try
+          {
+            url = new URL(base, src);
+          }
+        catch (MalformedURLException ex)
+          {
+            // Return null.
+          }
       }
-    catch (MalformedURLException e)
-      {
-        // The URL is malformed - no image.
-        return null;
-      }
+    return url;
   }
 
   /**

@@ -39,12 +39,9 @@ exception statement from your version. */
 
 package gnu.java.net;
 
-import gnu.java.nio.SelectorProviderImpl;
 import gnu.java.nio.SocketChannelImpl;
 import gnu.java.nio.VMChannel;
-import gnu.java.security.action.GetSecurityPropertyAction;
 
-import java.io.EOFException;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -56,7 +53,6 @@ import java.net.SocketException;
 import java.net.SocketImpl;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
 
 /**
  * Written using on-line Java Platform 1.2 API Specification, as well
@@ -148,26 +144,21 @@ public class PlainSocketImpl extends SocketImpl
   {
     switch (optionId)
       {
-        case IP_MULTICAST_IF:
-        case IP_MULTICAST_IF2:
-          throw new UnsupportedOperationException("FIXME");
-
+        case SO_LINGER:
         case IP_MULTICAST_LOOP:
         case SO_BROADCAST:
         case SO_KEEPALIVE:
         case SO_OOBINLINE:
         case TCP_NODELAY:          
         case IP_TOS:
-        case SO_LINGER:
         case SO_RCVBUF:
         case SO_SNDBUF:
         case SO_TIMEOUT:
         case SO_REUSEADDR:
           impl.setOption(optionId, value);
           return;
-        
-      default:
-        throw new SocketException("cannot set option " + optionId);
+        default:
+          throw new SocketException("Unrecognized TCP option: " + optionId);
       }
   }
 
@@ -197,10 +188,26 @@ public class PlainSocketImpl extends SocketImpl
             throw se;
           }
       }
-    if (optionId == IP_MULTICAST_IF || optionId == IP_MULTICAST_IF2)
-      throw new UnsupportedOperationException ("can't get option " +
-                                               optionId + " yet");
-    return impl.getOption(optionId);
+    
+    // This filters options which are invalid for TCP.
+    switch (optionId)
+    {
+      case SO_LINGER:
+      case IP_MULTICAST_LOOP:
+      case SO_BROADCAST:
+      case SO_KEEPALIVE:
+      case SO_OOBINLINE:
+      case TCP_NODELAY:          
+      case IP_TOS:
+      case SO_RCVBUF:
+      case SO_SNDBUF:
+      case SO_TIMEOUT:
+      case SO_REUSEADDR:
+        return impl.getOption(optionId);
+      default:
+        throw new SocketException("Unrecognized TCP option: " + optionId);
+    }
+    
   }
 
   public void shutdownInput() throws IOException
@@ -274,7 +281,10 @@ public class PlainSocketImpl extends SocketImpl
     boolean connected = channel.connect(address, timeout);
     if (!connected)
       throw new SocketTimeoutException("connect timed out");
-    InetSocketAddress addr = channel.getVMChannel().getPeerAddress();
+    
+    // Using the given SocketAddress is important to preserve
+    // hostnames given by the caller.
+    InetSocketAddress addr = (InetSocketAddress) address; 
     this.address = addr.getAddress();
     this.port = addr.getPort();
   }
@@ -364,6 +374,9 @@ public class PlainSocketImpl extends SocketImpl
   {
     if (impl.getState().isValid())
       impl.close();
+    
+    address = null;
+    port = -1;
   }
 
   public void sendUrgentData(int data) throws IOException
@@ -417,11 +430,18 @@ public class PlainSocketImpl extends SocketImpl
   {
     if (channel == null)
       return null;
+    
     try
       {
         InetSocketAddress remote = channel.getVMChannel().getPeerAddress();
         if (remote == null)
           return null;
+        // To mimic behavior of the RI the InetAddress instance which was
+        // used to establish the connection is returned instead of one that
+        // was created by the native layer (this preserves exact hostnames).
+        if (address != null)
+          return address;
+        
         return remote.getAddress();
       }
     catch (IOException ioe)
@@ -471,6 +491,7 @@ public class PlainSocketImpl extends SocketImpl
   {
     if (channel == null)
       return -1;
+    
     try
       {
         InetSocketAddress remote = channel.getVMChannel().getPeerAddress();

@@ -264,9 +264,12 @@ public class TextField extends TextComponent
    */
   public Dimension minimumSize(int columns)
   {
+    if (isMinimumSizeSet())
+      return new Dimension(minSize);
+    
     TextFieldPeer peer = (TextFieldPeer) getPeer ();
     if (peer == null)
-      return null; // FIXME: What do we do if there is no peer?
+      return new Dimension(getWidth(), getHeight());
 
     return peer.getMinimumSize (columns);
   }
@@ -316,10 +319,13 @@ public class TextField extends TextComponent
    */
   public Dimension preferredSize(int columns)
   {
+    if (isPreferredSizeSet())
+      return new Dimension(prefSize);
+    
     TextFieldPeer peer = (TextFieldPeer) getPeer ();
     if (peer == null)
-      return new Dimension (0, 0);
-
+      return new Dimension (getWidth(), getHeight());
+    
     return peer.getPreferredSize (columns);
   }
 

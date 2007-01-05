@@ -1,5 +1,6 @@
-/* AppletWarning -- a security warning message display dialog
-   Copyright (C) 2003, 2004, 2006  Free Software Foundation, Inc.
+/* NativeEventLoopRunningEvent.java -- communicates to EventQueue the
+   state of the native event loop
+   Copyright (C) 2006 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -35,32 +36,23 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
-package gnu.classpath.tools.appletviewer;
+package gnu.java.awt.peer;
 
-import javax.swing.JOptionPane;
+import java.awt.AWTEvent;
 
-/**
- * @author Michael Koch (konqueror@gmx.de)
- */
-public class AppletWarning
+public class NativeEventLoopRunningEvent
+  extends AWTEvent
 {
-  private static String TITLE = "WARNING";
-  private static boolean showWarning = false;
+  private boolean running;
 
-  private static String MESSAGE =
-    "The current version of this applet plugin does not provide\n" +
-    "a security manager capable of handling Java (tm) applets. Applets\n" +
-    "have UNRESTRICTED access to your computer. This means they can do\n" +
-    "anything you can do, like deleting all your important data.\n\n" +
-    "Continue ?";
-  
-  public static int show()
+  public NativeEventLoopRunningEvent(Object source)
   {
-    if (showWarning)
-      return JOptionPane.showConfirmDialog(null, MESSAGE, TITLE,
-                                           JOptionPane.YES_NO_OPTION,
-                                           JOptionPane.WARNING_MESSAGE);
-    else
-      return JOptionPane.YES_OPTION;
+    super(source, 2999);
+    running = ((Boolean) source).booleanValue();
+  }
+
+  public boolean isRunning()
+  {
+    return running;
   }
 }

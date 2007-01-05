@@ -43,6 +43,7 @@ import java.awt.event.ContainerEvent;
 import java.awt.event.ContainerListener;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.awt.peer.ComponentPeer;
 import java.awt.peer.ContainerPeer;
 import java.awt.peer.LightweightPeer;
@@ -605,11 +606,20 @@ public class Container extends Component
    */
   public void validate()
   {
-    synchronized (getTreeLock ())
+    ComponentPeer p = peer;
+    if (! valid && p != null)
       {
-        if (! isValid() && peer != null)
+        ContainerPeer cPeer = null;
+        if (p instanceof ContainerPeer)
+          cPeer = (ContainerPeer) peer;
+        synchronized (getTreeLock ())
           {
+            if (cPeer != null)
+              cPeer.beginValidate();
             validateTree();
+            valid = true;
+            if (cPeer != null)
+              cPeer.endValidate();
           }
       }
   }
@@ -640,36 +650,36 @@ public class Container extends Component
    */
   protected void validateTree()
   {
-    if (valid)
-      return;
-
-    ContainerPeer cPeer = null;
-    if (peer instanceof ContainerPeer)
+    if (!valid)
       {
-        cPeer = (ContainerPeer) peer;
-        cPeer.beginValidate();
-      }
-
-    doLayout ();
-    for (int i = 0; i < ncomponents; ++i)
-      {
-        Component comp = component[i];
-
-        if (comp instanceof Container && ! (comp instanceof Window)
-            && ! comp.valid)
+        ContainerPeer cPeer = null;
+        if (peer instanceof ContainerPeer)
           {
-            ((Container) comp).validateTree();
+            cPeer = (ContainerPeer) peer;
+            cPeer.beginLayout();
           }
-        else
-          {
-            comp.validate();
-          }
-      }
 
-    if (peer instanceof ContainerPeer)
-      {
-        cPeer = (ContainerPeer) peer;
-        cPeer.endValidate();
+        doLayout ();
+        for (int i = 0; i < ncomponents; ++i)
+          {
+            Component comp = component[i];
+
+            if (comp instanceof Container && ! (comp instanceof Window)
+                && ! comp.valid)
+              {
+                ((Container) comp).validateTree();
+              }
+            else
+              {
+                comp.validate();
+              }
+          }
+
+        if (cPeer != null)
+          {
+            cPeer = (ContainerPeer) peer;
+            cPeer.endLayout();
+          }
       }
 
     /* children will call invalidate() when they are layed out. It

@@ -1,5 +1,5 @@
 /* PlainDatagramSocketImpl.java -- Default DatagramSocket implementation
-   Copyright (C) 1998, 1999, 2001, 2003, 2004, 2005  Free Software Foundation, Inc.
+   Copyright (C) 1998, 1999, 2001, 2003, 2004, 2005, 2006  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -42,7 +42,6 @@ import gnu.java.nio.VMChannel;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
-import java.lang.reflect.Field;
 import java.net.DatagramPacket;
 import java.net.DatagramSocketImpl;
 import java.net.InetAddress;
@@ -69,7 +68,6 @@ import java.nio.ByteBuffer;
  */
 public final class PlainDatagramSocketImpl extends DatagramSocketImpl
 {
-  
   private final VMChannel channel;
   
   /**
@@ -171,7 +169,7 @@ public final class PlainDatagramSocketImpl extends DatagramSocketImpl
    */
   protected void connect(InetAddress addr, int port) throws SocketException
   {
-    VMPlainDatagramSocketImpl.connect(this, addr, port);
+    channel.connect(new InetSocketAddress(addr, port), 0);
   }
 
   /**
@@ -203,7 +201,7 @@ public final class PlainDatagramSocketImpl extends DatagramSocketImpl
    */
   protected synchronized void setTimeToLive(int ttl) throws IOException
   {
-    setOption(VMPlainDatagramSocketImpl.IP_TTL, new Integer(ttl));
+    impl.setTimeToLive(ttl);
   }
 
   /**
@@ -215,12 +213,7 @@ public final class PlainDatagramSocketImpl extends DatagramSocketImpl
    */
   protected synchronized int getTimeToLive() throws IOException
   {
-    Object obj = getOption(VMPlainDatagramSocketImpl.IP_TTL);
-
-    if (! (obj instanceof Integer))
-      throw new IOException("Internal Error");
-
-    return ((Integer) obj).intValue();
+    return impl.getTimeToLive();
   }
 
   protected int getLocalPort()
@@ -318,30 +311,53 @@ public final class PlainDatagramSocketImpl extends DatagramSocketImpl
   /**
    * Sets the value of an option on the socket
    *
-   * @param option_id The identifier of the option to set
-   * @param val The value of the option to set
+   * @param optionId The identifier of the option to set
+   * @param value The value of the option to set
    *
    * @exception SocketException If an error occurs
    */
-  public synchronized void setOption(int option_id, Object val)
+  public synchronized void setOption(int optionId, Object value)
     throws SocketException
   {
-    impl.setOption(option_id, val);
+    switch (optionId)
+      {
+        case IP_MULTICAST_IF:
+        case IP_MULTICAST_IF2:
+          impl.setMulticastInterface(optionId, (InetAddress) value);
+          break;
+
+        case IP_MULTICAST_LOOP:
+        case SO_BROADCAST:
+        case SO_KEEPALIVE:
+        case SO_OOBINLINE:
+        case TCP_NODELAY:
+        case IP_TOS:
+        case SO_LINGER:
+        case SO_RCVBUF:
+        case SO_SNDBUF:
+        case SO_TIMEOUT:
+        case SO_REUSEADDR:
+          impl.setOption(optionId, value);
+          return;
+
+      default:
+        throw new SocketException("cannot set option " + optionId);
+      }
   }
 
   /**
    * Retrieves the value of an option on the socket
    *
-   * @param option_id The identifier of the option to retrieve
+   * @param optionId The identifier of the option to retrieve
    *
    * @return The value of the option
    *
    * @exception SocketException If an error occurs
    */
-  public synchronized Object getOption(int option_id)
+  public synchronized Object getOption(int optionId)
     throws SocketException
   {
-    if (option_id == SO_BINDADDR)
+    if (optionId == SO_BINDADDR)
       {
         try
           {
@@ -361,7 +377,10 @@ public final class PlainDatagramSocketImpl extends DatagramSocketImpl
             throw se;
           }
       }
-    return impl.getOption(option_id);
+    if (optionId == IP_MULTICAST_IF || optionId == IP_MULTICAST_IF2)
+      return impl.getMulticastInterface(optionId);
+
+    return impl.getOption(optionId);
   }
 
   /**
