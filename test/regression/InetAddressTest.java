@@ -26,11 +26,17 @@ public class InetAddressTest
     private static String check(InetAddress ia)
          throws Throwable
     {
-        String expected = (
-            ia instanceof Inet6Address ?
-                "localhost/::::::::1" :
-	        "localhost/127.0.0.1" );
-        if (ia.toString().equals(expected)) return "localhost/127.0.0.1";
+	if (ia instanceof Inet6Address) {
+	    if (ia.toString().equals("localhost/::::::::1") ||
+		ia.toString().equals("localhost/0:0:0:0:0:0:0:1")) {
+		return "localhost/127.0.0.1";
+	    }
+	}
+	else {
+	    if (ia.toString().equals("localhost/127.0.0.1")) {
+		return "localhost/127.0.0.1";
+	    }
+	}
         return ia.toString();
     }
 

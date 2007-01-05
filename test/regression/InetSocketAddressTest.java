@@ -69,7 +69,8 @@ public class InetSocketAddressTest
     private static String check(InetSocketAddress isa)
     {
         if (isa.getAddress() instanceof Inet6Address) {
-            if (isa.toString().equals("localhost/::::::::1:0"))
+            if (isa.toString().equals("localhost/::::::::1:0") ||
+                isa.toString().equals("localhost/0:0:0:0:0:0:0:1:0"))
             {
                 return "localhost/127.0.0.1:0";
             }
