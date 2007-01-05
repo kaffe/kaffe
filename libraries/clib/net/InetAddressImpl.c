@@ -38,81 +38,9 @@
 
 #define	HOSTNMSZ	1024
 
-HArrayOfByte*
-java_net_VMInetAddress_lookupInaddrAny(void)
-{
-  HArrayOfByte* addr = NULL;
-  errorInfo einfo;
-
-  addr = (HArrayOfByte *)newArrayChecked(TYPE_CLASS(TYPE_Byte),
-					 4,
-					 &einfo);
-  if (addr)
-    {
-      unhand_byte_array(addr)[0] = (INADDR_ANY >> 24) & 0xFF; 
-      unhand_byte_array(addr)[1] = (INADDR_ANY >> 16) & 0xFF; 
-      unhand_byte_array(addr)[2] = (INADDR_ANY >> 8) & 0xFF; 
-      unhand_byte_array(addr)[3] = (INADDR_ANY) & 0xFF;
-    }
-  else
-    throwError(&einfo);
-
-  return addr;
-}
-
-static Hjava_lang_Class* inetClass;
 static Hjava_lang_Class* SysInetClass;
-static int inetLockInit;
 static int nsLockInit;
-static iStaticLock inetLock;
 static iStaticLock nsLock;
-
-/* TODO: This is functional but ugly and should be updated later. */
-static void initInetLock(void)
-{
-  errorInfo einfo;
-
-  if (inetLockInit != 0)
-    return;
-
-  if (inetClass == NULL)
-    {
-      Utf8Const *name = utf8ConstFromString("java/net/InetAddress");
-      inetClass = loadClass(name, NULL, &einfo);
-      utf8ConstRelease(name);
-      assert(inetClass != NULL);
-    }
-  lockClass(inetClass);
-  if (inetLockInit == 0)
-    {
-      initStaticLock(&inetLock);
-      inetLockInit = 1;
-    }
-  unlockClass(inetClass);
-}
-
-/*
- * Get localhost name.
- */
-struct Hjava_lang_String*
-java_net_VMInetAddress_getLocalHostname(void)
-{
-  static char hostname[HOSTNMSZ] = "localhost";
-	
-  struct Hjava_lang_String *retval = NULL;
-
-  initInetLock();
-  lockStaticMutex(&inetLock);
-  if( gethostname(hostname, HOSTNMSZ - 1) < 0 )
-    {
-      perror("gethostname");
-      KAFFEVM_ABORT();
-    }
-  retval = stringC2Java(hostname);
-  unlockStaticMutex(&inetLock);
-
-  return( checkPtr(retval) );
-}
 
 static void initNsLock(void)
 {

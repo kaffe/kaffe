@@ -87,6 +87,8 @@ initialiseSecurity (void)
 	struct Hjava_lang_Object *permissions;
 	struct Hjava_lang_Object *allPermission;
 
+        DBG(INIT, dprintf("initialiseSecurity()\n"); );
+
 	codeSource = execute_java_constructor ("java/security/CodeSource",
 					       NULL,
 					       NULL,
@@ -114,6 +116,7 @@ initialiseSecurity (void)
 							    "(Ljava/security/CodeSource;Ljava/security/PermissionCollection;)V",
 							    codeSource,
 							    permissions);
+        DBG(INIT, dprintf("initialiseSecurity() done\n"); );
 }
 
 #if !defined(ALIGNMENT_OF_SIZE)

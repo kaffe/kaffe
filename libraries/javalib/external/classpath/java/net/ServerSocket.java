@@ -39,6 +39,7 @@ exception statement from your version. */
 package java.net;
 
 import gnu.java.net.PlainSocketImpl;
+import gnu.java.nio.VMChannel;
 
 import java.io.IOException;
 import java.nio.channels.IllegalBlockingModeException;
@@ -93,6 +94,7 @@ public class ServerSocket
 
     this.impl = impl;
     this.impl.create(true);
+    setReuseAddress(true);
   }
 
   /*
@@ -381,10 +383,6 @@ public class ServerSocket
       return;
 
     impl.close();
-    impl = null;
-
-    if (getChannel() != null)
-      getChannel().close();
   }
 
   /**
@@ -424,7 +422,10 @@ public class ServerSocket
    */
   public boolean isClosed()
   {
-    return impl == null;
+    VMChannel vmchannel = ((PlainSocketImpl) impl).getVMChannel();
+    if (vmchannel == null) // Not created yet.
+      return false;
+    return vmchannel.getState().isClosed();
   }
 
   /**

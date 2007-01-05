@@ -5,14 +5,17 @@
  *      Transvirtual Technologies, Inc.  All rights reserved.
  * Copyright (c) 2003
  *      Mark J. Wielaard <mark@klomp.org>
- * Copyright (c) 2004
+ * Copyright (c) 2004, 2007
  *      Kaffe.org contributors. See ChangeLog for details.
  *
  * See the file "license.terms" for information on usage and redistribution
  * of this file.
  */
 
-#include <jcl.h>
+#if defined(HAVE_CONFIG_H)
+#include "config.h"
+#endif
+
 #include <locale.h>
 #if defined(HAVE_PWD_H)
 #include <pwd.h>

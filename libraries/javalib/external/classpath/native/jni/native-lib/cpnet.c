@@ -598,8 +598,8 @@ jint cpnet_getHostByName (JNIEnv *env, const char *hostname, cpnet_address ***ad
   struct hostent hret;
   struct hostent *result;
   jint buflen = 1024;
-  int herr;
-  int ret;
+  int herr = 0;
+  int ret = 0;
   int counter = 0;
   cpnet_address **addr_arr;
   int i;
@@ -611,7 +611,13 @@ jint cpnet_getHostByName (JNIEnv *env, const char *hostname, cpnet_address ***ad
 #ifdef HAVE_GETHOSTBYNAME_R
       ret = gethostbyname_r (hostname, &hret, buf, buflen, &result, &herr);
 #else
-      ret = gethostbyname (hostname);
+      hret.h_addr_list = NULL;
+      hret.h_addrtype = 0;
+
+      result = gethostbyname (hostname);
+      if (result == NULL)
+        return -errno;
+      memcpy (&hret, result, sizeof (struct hostent));
 #endif
       if (ret != 0 || result == NULL)
 	{

@@ -1,3 +1,341 @@
+2006-09-17  Casey Marshall  <csm@gnu.org>
+
+	* native/jni/classpath/jcl.c (JNI_OnLoad): mark `reserved' as
+	unused.
+
+2006-09-17  Chris Burdess  <dog@gnu.org>
+
+	Fixes PR 27610 27687.
+	* gnu/xml/dom/ls/SAXEventSink.java: Permit limited subclassing.
+	* gnu/xml/transform/SAXTemplatesHandler.java,
+	* gnu/xml/transform/SAXTransformerHandler.java: New files.
+	* gnu/xml/transform/TransformerFactoryImpl.java: Implement
+	  SAXTransformerFactory.
+
+2006-09-16  Casey Marshall  <csm@gnu.org>
+
+	* NEWS: updated.
+	* configure.ac (AC_CHECK_HEADERS): check for `sys/event.h'.
+	(AC_CHECK_FUNCS): add checks for readv, writev, getifaddrs,
+	kqueue, and kevent.
+	(HAVE_INET6): define if IPv6 is supported.
+	* gnu/java/net/PlainDatagramSocketImpl.java (channel): new field.
+	(native_fd): removed.
+	(impl): new field.
+	(<init>): throw IOException; initialize fields.
+	(finalize): removed.
+	(getNativeFD): removed.
+	(bind): use `PlainSocketImpl.bind.'
+	(create): use `PlainSocketImpl.initSocket.'
+	(disconnect): use `PlainSocketImpl.disconnect.'
+	(getLocalPort): new method.
+	(send): use `VMChannel.send.'
+	(receive): use `VMChannel.receive.'
+	(setOption): use `PlainSocketImpl.setOption.'
+	(getOption): use `PlainSocketImpl.getOption.'
+	(close): use `VMChannel.State.close.'
+	(join): use `PlainSocketImpl.join.'
+	(leave): use `PlainSocketImpl.leave.'
+	(joinGroup, leaveGroup): implemented.
+	* gnu/java/net/PlainSocketImpl.java: make non-final.
+	(native_fd): removed.
+	(impl): new field.
+	(channel): new field.
+	(<init>): initialize `impl.'
+	(finalize, getNativeFD): removed.
+	(setOption): use `PlainSocketImpl.setOption.'
+	(getOption): use `PlainSocketImpl.getOption.'
+	(shutdownInput): use `PlainSocketImpl.shutdownInput.'
+	(shutdownOutput): use `PlainSocketImpl.shutdownOutput.'
+	(create): create `channel,' initialize `impl's native state.
+	(connect): use `connect(SocketAddress, int).'
+	(connect): use `SocketChannelImpl.connect;' initialize `address'
+	and `port.'
+	(bind): use `VMPlainSocketImpl.bind.'
+	(listen): use `VMPlainSocketImpl.listen.'
+	(accept): use `SocketChannelImpl.accept.'
+	(available): use `VMChannel.available.'
+	(close): use `PlainSocketImpl.close.'
+	(sendUrgentData): use `PlainSocketImpl.sendUrgentData.'
+	(getVMChannel, getInetAddress, getLocalPort, getLocalAddress,
+	getPort): new methods.
+	(SocketInputStream.read): use `VMChannel.read.'
+	(SocketInputStream.read): use `SocketChannel.read.'
+	(SocketOutputStream.write): use `VMChannel.write.'
+	(SocketOutputStream.write): use `SocketChannel.write.'
+	* gnu/java/nio/DatagramChannelImpl.java: implement VMChannel.
+	(channel): new field.
+	(<init>): initialize `channel.'
+	(implCloseSelectableChannel): use `VMChannel.close.'
+	(implConfigureBlocking): use `VMChannel.setBlocking.'
+	(connect): use `VMChannel.connect.'
+	(disconnect): use `VMChannel.disconnect.'
+	(isConnected): use `VMChannel.getPeerAddress.'
+	(write): use `VMChannel.write.'
+	(write): use `VMChannel.writeGathering.'
+	(read): use `VMChannel.read.'
+	(read): use `VMChannel.readScattering.'
+	(receive): use `VMChannel.receive.'
+	(send): use `VMChannel.send.'
+	(getVMChannel): new method.
+	* gnu/java/nio/DatagramChannelSelectionKey.java (getNativeFD):
+	access native FD through VMChannel.State.
+	* gnu/java/nio/FileChannelImpl.java: moved from
+	gnu/java/nio/channels/FileChannelImpl.java.
+	* gnu/java/nio/FileLockImpl.java: fix imports.
+	* gnu/java/nio/KqueueSelectionKeyImpl.java: new file.
+	* gnu/java/nio/KqueueSelectorImpl.java: new file.
+	* gnu/java/nio/NIOSocket.java (impl): removed.
+	(channel): new field.
+	(<init>): init superclass with a `NIOSocketImpl;' init `channel.'
+	(getPlainSocketImpl, setChannel): removed.
+	(isConnected): new method.
+	* gnu/java/nio/NIOSocketImpl.java: new file.
+	* gnu/java/nio/PipeImpl.java (SourceChannelImpl): implement
+	`VMChannelOwner.'
+	(SourceChannelImpl.native_fd): removed.
+	(SourceChannelImpl.<init>): init with a `VMChannel.'
+	(SourceChannelImpl.getNativeFD): removed.
+	(SourceChannelImpl.getVMChannel): new method.
+	(SourceChannelImpl.implCloseSelectableChannel): implement.
+	(SinkChannelImpl): implement `VMChannelOwner.'
+	(SinkChannelImpl.native_fd): removed.
+	(SinkChannelImpl.<init>): init with a `VMChannel.'
+	(SinkChannelImpl.implCloseSelectableChannel): implement.
+	(SinkChannelImpl.getNativeFD): removed.
+	(SinkChannelImpl.getVMChannel): new method.
+	* gnu/java/nio/SelectionKeyImpl.java (getNativeFD): mark
+	deprecated.
+	* gnu/java/nio/SelectorProviderImpl.java (SELECTOR_IMPL_KQUEUE,
+	SELECTOR_IMPL_EPOLL, SELECTOR_IMPL): new constants.
+	(openSelector): return kqueue selector if available.
+	* gnu/java/nio/ServerSocketChannelImpl.java: implement
+	`VMChannelOwner.'
+	(channel): new field.
+	(<init>): init `channel.'
+	(finalizer): check if the `VMChannel.State' is valid.
+	(implCloseSelectableChannel): use `VMChannel.close.'
+	(implConfigureBlocking): use `VMChannel.setBlocking.'
+	(accept): use `VMChannel.accept.'
+	(getVMChannel): new method.
+	* gnu/java/nio/ServerSocketChannelSelectionKey.java (getNativeFD):
+	access native FD through `VMChannel.State.'
+	* gnu/java/nio/SocketChannelImpl.java: implement `VMChannelOwner.'
+	(impl): removed.
+	(channel, connected, connectAddress): new field.
+	(<init>): new constructors.
+	(getPlainSocketImpl): removed.
+	(implCloseSelectableChannel): use `VMChannel.close.'
+	(implConfigureBlocking): use `VMChannel.setBlocking.'
+	(connect): use `connect(SocketAddress,int).'
+	(connect): use `VMChannel.connect.'
+	(finishConnect): don't use a selector.
+	(isConnected): use `VMChannel.getPeerAddress.'
+	(read): use `VMChannel.read.'
+	(read): use `VMChannel.readScattering.'
+	(write): use `VMChannel.write.'
+	(write): use `VMChannel.writeGathering.'
+	(getVMChannel): new method.
+	* gnu/java/nio/SocketChannelSelectionKey.java (getNativeFD): get
+	native FD from `VMChannel.State.'
+	* gnu/java/nio/SocketChannelSelectionKeyImpl.java (getNativeFD):
+	get native FD from `VMChannel.State.'
+	* gnu/java/nio/VMChannelOwner.java: new file.
+	* gnu/java/nio/channels/FileChannelImpl.java: removed.
+	* include/Makefile.am: generate `gnu_java_nio_FileChannelImpl.h'
+	and `gnu_java_nio_KqueueSelectorImpl.h;' don't generate
+	`gnu_java_nio_channels_FileChannelImpl.h.'
+	* include/gnu_java_net_VMPlainSocketImpl.h: regenerated.
+	* include/gnu_java_nio_FileChannelImpl.h: new file.
+	* include/gnu_java_nio_KqueueSelectorImpl.h: new file.
+	* include/gnu_java_nio_VMChannel.h: regenerated.
+	* include/gnu_java_nio_VMPipe.h: regenerated.
+	* include/java_net_VMNetworkInterface.h: regenerated.
+	* java/io/FileDescriptor.java: fix imports.
+	* java/io/FileInputStream.java (<init>): handle exceptions.
+	(read): wrap the destination arary.
+	* java/io/FileOutputStream.java (<init>): handle exceptions.
+	(write): wrap the source array.
+	* java/io/RandomAccessFile.java (<init>): handle exceptions.
+	* java/net/DatagramSocket.java (<init>): handle exceptions.
+	(receive): handle length/port setting.
+	(connect): bind to any address/port if the argument is null.
+	* java/net/NetworkInterface.java (name, inetAddress): removed.
+	(netif): new field.
+	(<init>): make private.
+	(getName): return `netif.name.'
+	(getInetAddresses): access `netif.addresses.'
+	(getDisplayName): return `netif.name.'
+	(getByName, getByAddress): handle changes to `VMNetworkInterface.'
+	(condense): removed.
+	(getNetworkInterfaces): handle changes to `VMNetworkInterface.'
+	(equals): compare `netif' fields.
+	(hashCode): get hash codes from `netif.'
+	(toString): use a StringBuffer.
+	* java/net/ServerSocket.java (close): don't set `impl' to null.
+	(isClosed): use `VMChannel.State.isClosed.'
+	* java/net/Socket.java (getLocalAddress): don't use `getOption' if
+	the `SocketImpl' is a `PlainSocketImpl.'
+	(close): just close the `impl.'
+	(toString): use `super.toString' in the value we return.
+	(isConnected): just access `impl,' not `getImpl.'
+	(isBound): use `PlainSocketImpl' methods if we can.
+	(isClosed): look at `VMChannel.State.'
+	* native/jni/classpath/jcl.c (JNI_OnLoad): new function.
+	(JCL_NewRawDataObject): don't initialize cached fields here; throw
+	an exception if they were not.
+	(JCL_GetRawData): throw an exception if cached fields weren't
+	created.
+	* native/jni/java-lang/java_lang_VMProcess.c: handle
+	FileChannelImpl move.
+	* native/jni/java-net/gnu_java_net_VMPlainSocketImpl.c
+	(IO_EXCEPTION, SOCKET_EXCEPTION, BIND_EXCEPTION,
+	THROW_NO_NETWORK): new macros.
+	(Java_gnu_java_net_VMPlainSocketImpl_bind): reipmlemented.
+	(Java_gnu_java_net_VMPlainSocketImpl_bind6): new function.
+	(Java_gnu_java_net_VMPlainSocketImpl_listen): reimplemented.
+	(java_sockopt): new enum.
+	(Java_gnu_java_net_VMPlainSocketImpl_setOption): reimplemented.
+	(Java_gnu_java_net_VMPlainSocketImpl_getOption): reimplemented.
+	(Java_gnu_java_net_VMPlainSocketImpl_shutdownInput):
+	reimplemented.
+	(Java_gnu_java_net_VMPlainSocketImpl_shutdownOutput):
+	reimplemented.
+	(Java_gnu_java_net_VMPlainSocketImpl_sendUrgentData): new
+	function.
+	(Java_gnu_java_net_VMPlainSocketImpl_join): new function.
+	(Java_gnu_java_net_VMPlainSocketImpl_join6): new function.
+	(Java_gnu_java_net_VMPlainSocketImpl_read): removed.
+	(Java_gnu_java_net_VMPlainSocketImpl_leave): new function.
+	(Java_gnu_java_net_VMPlainSocketImpl_leave6): new function.
+	(Java_gnu_java_net_VMPlainSocketImpl_joinGroup): new function.
+	(Java_gnu_java_net_VMPlainSocketImpl_write): removed.
+	(Java_gnu_java_net_VMPlainSocketImpl_joinGroup6): new function.
+	(Java_gnu_java_net_VMPlainSocketImpl_leaveGroup): new function.
+	(Java_gnu_java_net_VMPlainSocketImpl_leaveGroup6): new function.
+	(getif_address): new function.
+	(getif_index): new function.
+	* native/jni/java-net/java_net_VMNetworkInterface.c
+	(java_net_VMNetworkInterface_init,
+	java_net_VMNetworkInterface_addAddress): new file-scope globals.
+	(Java_java_net_VMNetworkInterface_initIds): new function.
+	(struct netif_entry): new struct.
+	(free_netif_list): new function.
+	(Java_java_net_VMNetworkInterface_getInterfaces): removed.
+	(Java_java_net_VMNetworkInterface_getVMInterfaces): new function.
+	* native/jni/java-nio/Makefile.am (libjavanio_la_SOURCES): remove
+	gnu_java_nio_channels_FileChannelImpl.c, add
+	gnu_java_nio_KqueueSelectorImpl.c.
+	* native/jni/java-nio/gnu_java_nio_KqueueSelectorImpl.c: new file.
+	* native/jni/java-nio/gnu_java_nio_VMChannel.c
+	(INTERRUPTED_IO_EXCEPTION, SOCKET_TIMEOUT_EXCEPTION, ALIGN_UP,
+	ALIGN_DOWN): new macros.
+	(JCL_init_buffer): get the address through GetDirectBufferAddress
+	if possible.
+	(Java_gnu_java_nio_VMChannel_stdin_1fd,
+	Java_gnu_java_nio_VMChannel_stdout_1fd,
+	Java_gnu_java_nio_VMChannel_stderr_1fd): new functions.
+	(Java_gnu_java_nio_VMChannel_setBlocking): fix setting blocking
+	value.
+	(Java_gnu_java_nio_VMChannel_read): renamed...
+	(Java_gnu_java_nio_VMChannel_read__ILjava_nio_ByteBuffer_2): to
+	this; handle interrupted IO; add HAVE_READ check.
+	(Java_gnu_java_nio_VMChannel_write): renamed...
+	(Java_gnu_java_nio_VMChannel_write__ILjava_nio_ByteBuffer_2): to
+	this; handle zero-length write; add HAVE_WRITE check.
+	(Java_gnu_java_nio_VMChannel_receive): new function.
+	(Java_gnu_java_nio_VMChannel_send): new function.
+	(Java_gnu_java_nio_VMChannel_send6): new function.
+	(Java_gnu_java_nio_VMChannel_read__I): new function.
+	(Java_gnu_java_nio_VMChannel_write__II): new function.
+	(Java_gnu_java_nio_VMChannel_socket): new function.
+	(Java_gnu_java_nio_VMChannel_connect): new function.
+	(Java_gnu_java_nio_VMChannel_connect6): new function.
+	(Java_gnu_java_nio_VMChannel_getsockname): new function.
+	(Java_gnu_java_nio_VMChannel_getpeername): new function.
+	(Java_gnu_java_nio_VMChannel_accept): new function.
+	(Java_gnu_java_nio_VMChannel_disconnect): new function.
+	(Java_gnu_java_nio_VMChannel_close): new function.
+	(Java_gnu_java_nio_VMChannel_available): new function.
+	(FileChannel_mode): new enum.
+	(Java_gnu_java_nio_VMChannel_open): new function.
+	(Java_gnu_java_nio_VMChannel_position): new function.
+	(Java_gnu_java_nio_VMChannel_seek): new function.
+	(Java_gnu_java_nio_VMChannel_truncate): new funciton.
+	(Java_gnu_java_nio_VMChannel_lock): new function.
+	(Java_gnu_java_nio_VMChannel_unlock): new function.
+	(Java_gnu_java_nio_VMChannel_size): new function.
+	(Java_gnu_java_nio_VMChannel_map): new function.
+	(Java_gnu_java_nio_VMChannel_flush): new function.
+	* native/jni/java-nio/gnu_java_nio_VMPipe.c
+	(Java_gnu_java_nio_VMPipe_init): removed.
+	(Java_gnu_java_nio_VMPipe_pipe0): new function.
+	* native/jni/java-nio/javanio.c: new file.
+	* native/jni/java-nio/javanio.h: new file.
+	* native/jni/native-lib/cpnet.c (cpnet_getHostByName): fix for
+	systems without `gethostbyname_r.'
+	* vm/reference/gnu/java/net/VMPlainSocketImpl.java (nfd): new
+	field.
+	(<init>, <init>): new constructors.
+	(setOption, getOption): make instance methods; defer to native
+	implementation.
+	(connect): removed.
+	(bind): make an instance method; defer to native methods.
+	(accept): removed.
+	(available): removed.
+	(listen): make an instance method; defer to native method.
+	(read): removed.
+	(join, leave): new methods.
+	(write): removed.
+	(joinGroup, leaveGroup): new methods.
+	(shutdownInput, shutdownOutput): make instance methods.
+	(sendUrgentData): removed.
+	(State): new class.
+	* vm/reference/gnu/java/nio/VMChannel.java: make final.
+	(fd): removed.
+	(nfd): new field.
+	(<init>): new, public constructors.
+	(getVMChannel): methods removed.
+	(getState, getStdin, getStdout, getStderr, stdin_fd, stdout_fd,
+	stderr_fd): new methods.
+	(setBlocking): make an instance method.
+	(available): new method.
+	(read): get native fd from `nfd.'
+	(read): new single-byte read method.
+	(readScattering): get native fd from `nfd.'
+	(receive): new method.
+	(write, writeGathering): get native fd from `nfd.'
+	(send): new method.
+	(write): new single-byte write method.
+	(initSocket): new method.
+	(connect): new method.
+	(disconnect): new method.
+	(getLocalAddress): new method.
+	(getPeerAddress): new method.
+	(accept): new method.
+	(openFile): new method.
+	(position): new method.
+	(seek): new method.
+	(truncate): new method.
+	(lock): new method.
+	(unlock): new method.
+	(size): new method.
+	(map): new method.
+	(flush): new method.
+	(close): new method.
+	(State): new class.
+	(Kind): new class.
+	* vm/reference/gnu/java/nio/VMPipe.java (init): removed.
+	(pipe, pipe0): new method.
+	* vm/reference/java/net/VMNetworkInterface.java (name, addresses):
+	new fields.
+	(<clinit>): call `initIds.'
+	(initIds): new method.
+	(getInterfaces): removed.
+	(getVMInterfaces): new method.
+	(addAddress): new method.
+	* vm/reference/java/nio/channels/VMChannels.java: fix imports.
+
 2006-09-16  Chris Burdess  <dog@gnu.org>
 
 	Fixes PR 28572.

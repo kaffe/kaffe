@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package java.net;
 
+import gnu.classpath.SystemProperties;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -58,25 +60,13 @@ import java.util.Vector;
  */
 public final class NetworkInterface
 {
-  private String name;
-  private Vector inetAddresses;
+  private final VMNetworkInterface netif;
 
-  NetworkInterface(String name, InetAddress address)
+  private NetworkInterface(VMNetworkInterface netif)
   {
-    this.name = name;
-    this.inetAddresses = new Vector(1, 1);
-    this.inetAddresses.add(address);
+    this.netif = netif;
   }
-
-  NetworkInterface(String name, InetAddress[] addresses)
-  {
-    this.name = name;
-    this.inetAddresses = new Vector(addresses.length, 1);
-
-    for (int i = 0; i < addresses.length; i++)
-      this.inetAddresses.add(addresses[i]);
-  }
-
+  
   /**
    * Returns the name of the network interface
    *
@@ -84,7 +74,7 @@ public final class NetworkInterface
    */
   public String getName()
   {
-    return name;
+    return netif.name;
   }
 
   /**
@@ -100,6 +90,7 @@ public final class NetworkInterface
   public Enumeration getInetAddresses()
   {
     SecurityManager s = System.getSecurityManager();
+    Vector inetAddresses = new Vector(netif.addresses);
 
     if (s == null)
       return inetAddresses.elements();
@@ -131,7 +122,7 @@ public final class NetworkInterface
    */
   public String getDisplayName()
   {
-    return name;
+    return netif.name;
   }
 
   /**
@@ -148,15 +139,14 @@ public final class NetworkInterface
   public static NetworkInterface getByName(String name)
     throws SocketException
   {
-    for (Enumeration e = getNetworkInterfaces(); e.hasMoreElements();)
+    if (name == null)
+      throw new NullPointerException();
+    VMNetworkInterface[] netifs = VMNetworkInterface.getVMInterfaces();
+    for (int i = 0; i < netifs.length; i++)
       {
-	NetworkInterface tmp = (NetworkInterface) e.nextElement();
-
-	if (name.equals(tmp.getName()))
-	  return tmp;
+        if (netifs[i].name.equals(name))
+          return new NetworkInterface(netifs[i]);
       }
-
-    // No interface with the given name found.
     return null;
   }
 
@@ -173,55 +163,15 @@ public final class NetworkInterface
   public static NetworkInterface getByInetAddress(InetAddress addr)
     throws SocketException
   {
-    for (Enumeration interfaces = getNetworkInterfaces();
-         interfaces.hasMoreElements();)
+    if (addr == null)
+      throw new NullPointerException();
+    VMNetworkInterface[] netifs = VMNetworkInterface.getVMInterfaces();
+    for (int i = 0; i < netifs.length; i++)
       {
-	NetworkInterface tmp = (NetworkInterface) interfaces.nextElement();
-
-	for (Enumeration addresses = tmp.inetAddresses.elements();
-	     addresses.hasMoreElements();)
-	  {
-	    if (addr.equals((InetAddress) addresses.nextElement()))
-	      return tmp;
-	  }
+        if (netifs[i].addresses.contains(addr))
+          return new NetworkInterface(netifs[i]);
       }
-
-    throw new SocketException("no network interface is bound to such an IP address");
-  }
-
-  static private Collection condense(Collection interfaces) 
-  {
-    final Map condensed = new HashMap();
-
-    final Iterator interfs = interfaces.iterator();
-    while (interfs.hasNext()) {
-
-      final NetworkInterface face = (NetworkInterface) interfs.next();
-      final String name = face.getName();
-      
-      if (condensed.containsKey(name))
-	{
-	  final NetworkInterface conface = (NetworkInterface) condensed.get(name);
-	  if (!conface.inetAddresses.containsAll(face.inetAddresses))
-	    {
-	      final Iterator faceAddresses = face.inetAddresses.iterator();
-	      while (faceAddresses.hasNext())
-		{
-		  final InetAddress faceAddress = (InetAddress) faceAddresses.next();
-		  if (!conface.inetAddresses.contains(faceAddress))
-		    {
-		      conface.inetAddresses.add(faceAddress);
-		    }
-		}
-	    }
-	}
-      else
-	{
-	  condensed.put(name, face);
-	}
-    }
-
-    return condensed.values();
+    return null;
   }
 
   /**
@@ -233,14 +183,14 @@ public final class NetworkInterface
    */
   public static Enumeration getNetworkInterfaces() throws SocketException
   {
-    Vector networkInterfaces = VMNetworkInterface.getInterfaces();
-
-    if (networkInterfaces.isEmpty())
-      return null;
-
-    Collection condensed = condense(networkInterfaces);
-
-    return Collections.enumeration(condensed);
+    VMNetworkInterface[] netifs = VMNetworkInterface.getVMInterfaces();
+    Vector networkInterfaces = new Vector(netifs.length);
+    for (int i = 0; i < netifs.length; i++)
+      {
+        if (!netifs[i].addresses.isEmpty())
+          networkInterfaces.add(new NetworkInterface(netifs[i]));
+      }
+    return networkInterfaces.elements();
   }
 
   /**
@@ -257,7 +207,8 @@ public final class NetworkInterface
 
     NetworkInterface tmp = (NetworkInterface) obj;
 
-    return (name.equals(tmp.name) && inetAddresses.equals(tmp.inetAddresses));
+    return (netif.name.equals(tmp.netif.name)
+            && (netif.addresses.equals(tmp.netif.addresses)));
   }
 
   /**
@@ -268,7 +219,7 @@ public final class NetworkInterface
   public int hashCode()
   {
     // FIXME: hash correctly
-    return name.hashCode() + inetAddresses.hashCode();
+    return netif.name.hashCode() + netif.addresses.hashCode();
   }
 
   /**
@@ -279,19 +230,22 @@ public final class NetworkInterface
   public String toString()
   {
     // FIXME: check if this is correct
-    String result;
-    String separator = System.getProperty("line.separator");
+    StringBuffer result;
+    String separator = SystemProperties.getProperty("line.separator");
 
-    result =
-      "name: " + getDisplayName() + " (" + getName() + ") addresses:"
-      + separator;
+    result = new StringBuffer();
+    
+    result.append("name: ");
+    result.append(getDisplayName());
+    result.append(" (").append(getName()).append(") addresses:");
+    result.append(separator);
 
-    for (Enumeration e = inetAddresses.elements(); e.hasMoreElements();)
+    for (Iterator it = netif.addresses.iterator(); it.hasNext(); )
       {
-	InetAddress address = (InetAddress) e.nextElement();
-	result += address.toString() + ";" + separator;
+	InetAddress address = (InetAddress) it.next();
+	result.append(address.toString()).append(";").append(separator);
       }
 
-    return result;
+    return result.toString();
   }
 }

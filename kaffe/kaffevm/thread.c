@@ -88,6 +88,8 @@ static void runfinalizer(void);
 static void
 linkNativeAndJavaThread(jthread_t thread, Hjava_lang_VMThread *jlThread)
 {
+	jnirefs *reftable;
+
 	threadData *thread_data = KTHREAD(get_data)(thread);
 
 	thread_data->jlThread = jlThread;
@@ -97,6 +99,13 @@ linkNativeAndJavaThread(jthread_t thread, Hjava_lang_VMThread *jlThread)
 	thread_data->jniEnv = &Kaffe_JNINativeInterface;
 
 	thread_data->needOnStack = STACK_HIGH; 
+
+	/* Setup JNI for this newly attached thread */
+	reftable = (jnirefs *)gc_malloc(sizeof(jnirefs) + sizeof(jref) * DEFAULT_JNIREFS_NUMBER,
+					KGC_ALLOC_STATIC_THREADDATA);
+	reftable->frameSize = DEFAULT_JNIREFS_NUMBER;
+	reftable->localFrames = 1;
+	thread_data->jnireferences = reftable;
 }
 
 /*
@@ -253,7 +262,6 @@ KaffeVM_attachFakedThreadInstance(const char* nm, int isDaemon)
 	Hjava_lang_Thread* tid;
 	jvalue retval;
 	int i;
-	jnirefs *reftable;
 
 	DBG(VMTHREAD, dprintf("attachFakedThreadInstance(%s)\n", nm); );
 
@@ -313,13 +321,6 @@ KaffeVM_attachFakedThreadInstance(const char* nm, int isDaemon)
 	do_execute_java_method(NULL, unhand(tid)->group, "addThread", "(Ljava/lang/Thread;)V", NULL, 0, tid);
 
 	DBG(VMTHREAD, dprintf("attachFakedThreadInstance(%s)=%p done\n", nm, tid); );
-	
-	/* Setup JNI for this newly attached thread */
-	reftable = (jnirefs *)gc_malloc(sizeof(jnirefs) + sizeof(jref) * DEFAULT_JNIREFS_NUMBER,
-					KGC_ALLOC_STATIC_THREADDATA);
-	reftable->frameSize = DEFAULT_JNIREFS_NUMBER;
-	reftable->localFrames = 1;
-	THREAD_DATA()->jnireferences = reftable;
 }
 
 /*

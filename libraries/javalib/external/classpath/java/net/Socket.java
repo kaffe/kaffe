@@ -1,5 +1,5 @@
 /* Socket.java -- Client socket implementation
-   Copyright (C) 1998, 1999, 2000, 2002, 2003, 2004
+   Copyright (C) 1998, 1999, 2000, 2002, 2003, 2004, 2006
    Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -39,6 +39,7 @@ exception statement from your version. */
 package java.net;
 
 import gnu.java.net.PlainSocketImpl;
+import gnu.java.nio.VMChannel;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -458,16 +459,22 @@ public class Socket
 
     InetAddress addr = null;
 
-    try
+    if (impl instanceof PlainSocketImpl)
+      addr = ((PlainSocketImpl) impl).getLocalAddress().getAddress();
+    
+    if (addr == null)
       {
-	addr = (InetAddress) getImpl().getOption(SocketOptions.SO_BINDADDR);
-      }
-    catch (SocketException e)
-      {
-	// (hopefully) shouldn't happen
-	// throw new java.lang.InternalError
-	//      ("Error in PlainSocketImpl.getOption");
-	return null;
+        try
+          {
+            addr = (InetAddress) getImpl().getOption(SocketOptions.SO_BINDADDR);
+          }
+        catch (SocketException e)
+          {
+            // (hopefully) shouldn't happen
+            // throw new java.lang.InternalError
+            //      ("Error in PlainSocketImpl.getOption");
+            return null;
+          }
       }
 
     // FIXME: According to libgcj, checkConnect() is supposed to be called
@@ -980,12 +987,8 @@ public class Socket
     if (isClosed())
       return;
 
-    getImpl().close();
+    impl.close();
     impl = null;
-    bound = false;
-
-    if (getChannel() != null)
-      getChannel().close();
   }
 
   /**
@@ -998,16 +1001,17 @@ public class Socket
     try
       {
 	if (isConnected())
-	  return ("Socket[addr=" + getImpl().getInetAddress() + ",port="
-	         + getImpl().getPort() + ",localport="
-	         + getImpl().getLocalPort() + "]");
+	  return (super.toString()
+                  + " [addr=" + getImpl().getInetAddress() + ",port="
+	          + getImpl().getPort() + ",localport="
+	          + getImpl().getLocalPort() + "]");
       }
     catch (SocketException e)
       {
 	// This cannot happen as we are connected.
       }
 
-    return "Socket[unconnected]";
+    return super.toString() + " [unconnected]";
   }
 
   /**
@@ -1185,17 +1189,10 @@ public class Socket
    */
   public boolean isConnected()
   {
-    try
-      {
-	if (getImpl() == null)
-	  return false;
+    if (impl == null)
+      return false;
 
-	return getImpl().getInetAddress() != null;
-      }
-    catch (SocketException e)
-      {
-	return false;
-      }
+    return impl.getInetAddress() != null;
   }
 
   /**
@@ -1207,6 +1204,13 @@ public class Socket
    */
   public boolean isBound()
   {
+    if (isClosed())
+      return false;
+    if (impl instanceof PlainSocketImpl)
+      {
+        InetSocketAddress addr = ((PlainSocketImpl) impl).getLocalAddress(); 
+        return addr != null && addr.getAddress() != null;
+      }
     return bound;
   }
 
@@ -1219,7 +1223,17 @@ public class Socket
    */
   public boolean isClosed()
   {
-    return impl == null;
+    if (impl == null)
+      return true;
+    if (impl instanceof PlainSocketImpl)
+      {
+        VMChannel vmchannel = ((PlainSocketImpl) impl).getVMChannel();
+        if (vmchannel == null)
+          return false;  // Not created yet.
+        VMChannel.State state = vmchannel.getState();
+        return state.isClosed();
+      }
+    return false;
   }
 
   /**

@@ -55,7 +55,7 @@ void *KaffeJNI_GetDirectBufferAddress(JNIEnv *env UNUSED, jobject buffer)
 {
   jobject buffer_obj = buffer;
   jobject address_obj;
-  void *address;
+  void *address = NULL;
   Hjava_lang_Object *buffer_local;
 
   BEGIN_EXCEPTION_HANDLING(NULL);
@@ -65,11 +65,11 @@ void *KaffeJNI_GetDirectBufferAddress(JNIEnv *env UNUSED, jobject buffer)
   if (!instanceof(javaNioBufferClass, OBJECT_CLASS(buffer_local)))
   {
 	  printf("buffer_local is %s\n", OBJECT_CLASS(buffer_local)->name->data);
-    address = NULL;
   } else
     {
       address_obj = KNI_GET_FIELD(Hjava_lang_Object *, buffer_local, directByteBufferImplAddress);
-      address = KNI_GET_FIELD(void *, address_obj, gnuClasspathPointerAddress);
+      if (NULL != address_obj)
+        address = KNI_GET_FIELD(void *, address_obj, gnuClasspathPointerAddress);
     }
 
   END_EXCEPTION_HANDLING();

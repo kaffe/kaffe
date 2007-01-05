@@ -37,6 +37,9 @@ exception statement from your version. */
 
 package gnu.java.nio;
 
+
+import gnu.classpath.SystemProperties;
+
 import java.io.IOException;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.Pipe;
@@ -47,6 +50,10 @@ import java.nio.channels.spi.SelectorProvider;
 
 public class SelectorProviderImpl extends SelectorProvider
 {
+  private static final String SELECTOR_IMPL_KQUEUE = "kqueue";
+  private static final String SELECTOR_IMPL_EPOLL = "epoll";
+  private static final String SELECTOR_IMPL = "gnu.java.nio.selectorImpl";
+  
   public SelectorProviderImpl ()
   {
   }
@@ -66,6 +73,16 @@ public class SelectorProviderImpl extends SelectorProvider
   public AbstractSelector openSelector ()
     throws IOException
   {
+    String selectorImpl = "default";
+    if (KqueueSelectorImpl.kqueue_supported())
+      selectorImpl = SELECTOR_IMPL_KQUEUE;
+    selectorImpl = SystemProperties.getProperty(SELECTOR_IMPL, selectorImpl);
+
+    if (selectorImpl.equals(SELECTOR_IMPL_KQUEUE))
+      return new KqueueSelectorImpl(this);
+    if (selectorImpl.equals(SELECTOR_IMPL_EPOLL))
+      throw new UnsupportedOperationException("epoll selector not yet implemented");
+
     return new SelectorImpl (this);
   }
 

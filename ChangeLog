@@ -1,3 +1,48 @@
+2007-01-05  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/Makefile.am (AM_CPPFLAGS): removed fdlibm and 
+	classpath directories.
+	(libkaffevm_la_DEPENDENCIES) Removed fdlibm and classpath libraries.
+
+	This allows libkaffevm to be independent of libclasspath, and 
+	thereby avoids triggering the new JNI_OnLoad function in 
+	libclasspath during bootstrap. 
+
+	* kaffe/kaffevm/classMethod.c (initialiseSecurity): Added debug
+	output.
+
+	* kaffe/kaffevm/external.c (loadNativeLibrarySymFromLib): New 
+	internal function.
+	(loadNativeLibrary, loadNativeLibrarySym) Use it.
+
+	* kaffe/kaffevm/thread.c (KaffeVM_attachFakedThreadInstance): 
+	Moved jnireferences initialisation to ...
+	(linkNativeAndJavaThread) ... here, to ensure that each new 
+	thread has jnireferences available.
+
+	* kaffe/kaffevm/jni/jni-helpers.c (KaffeJNI_GetDirectBufferAddress):
+	Return NULL if no directbufferimpladdress is set.
+
+	* libraries/clib/native/gnu_classpath_VMSystemProperties.c:
+	Don't include jcl.h. Include config.h.
+
+	* libraries/clib/net/InetAddressImpl.c (inetClass, inetLockInit,
+	inetLock, java_net_VMInetAddress_lookupInaddrAny, initInetLock,
+	java_net_VMInetAddress_getLocalHostname): Removed in ordeer to 
+	use the implementation in GNU Classpath.
+
+	* libraries/clib/native/java_lang_VMDouble.c,
+	libraries/clib/native/java_lang_VMSystem.c,
+	libraries/clib/net/NetworkInterface.c,
+	libraries/clib/nio/.cvsignore,
+	libraries/clib/nio/gnu_java_nio_VMSelector.c: Removed.
+
+	* libraries/javalib/vmspecific/java/lang/VMSystem.java:
+	Resynced with GNU Classpath.
+
+	* libraries/javalib/external/classpath/ : Resynced with GNU Classpath 
+	up to 2006-09-17.
+
 2007-01-05  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* test/regression/InetAddressTest.java,

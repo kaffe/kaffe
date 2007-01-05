@@ -35,265 +35,801 @@ this exception to your version of the library, but you are not
 obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
-/* do not move; needed here because of some macro definitions */
-#include <config.h>
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
+
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/time.h>
+#include <ifaddrs.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
+#include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
  
 #include <jni.h>
 #include <jcl.h>
 
-#include <cpnative.h>
-#include <cpnet.h>
-#include "javanet.h"
+/* #include "javanet.h" */
 
 #include "gnu_java_net_VMPlainSocketImpl.h"
 
-/*
- * Note that the functions in this module simply redirect to another
- * internal function.  Why?  Because many of these functions are shared
- * with PlainDatagramSocketImpl.  The unshared ones were done the same
- * way for consistency.
- */
+#define IO_EXCEPTION "java/io/IOException"
+#define SOCKET_EXCEPTION "java/net/SocketException"
+#define BIND_EXCEPTION "java/net/BindException"
 
-/*************************************************************************/
+#define THROW_NO_NETWORK(env) JCL_ThrowException (env, "java/lang/InternalError", "this platform not configured for network support") 
+
 
 /*
- * Creates a new stream or datagram socket
- */
-JNIEXPORT void JNICALL
-Java_gnu_java_net_VMPlainSocketImpl_create(JNIEnv *env,
-					   jclass klass __attribute__ ((__unused__)),
-					   jobject obj)
-{
-#ifndef WITHOUT_NETWORK
-  _javanet_create(env, obj, JNI_TRUE);
-#else /* not WITHOUT_NETWORK */
-#endif /* not WITHOUT_NETWORK */
-}
-
-/*************************************************************************/
-
-/*
- * Close the socket.  Any underlying streams will be closed by this
- * action as well.
+ * Class:     gnu_java_net_VMPlainSocketImpl
+ * Method:    bind
+ * Signature: (I[BI)V
  */
 JNIEXPORT void JNICALL
-Java_gnu_java_net_VMPlainSocketImpl_close(JNIEnv *env,
-					  jclass klass __attribute__ ((__unused__)),
-					  jobject obj)
+Java_gnu_java_net_VMPlainSocketImpl_bind (JNIEnv *env,
+                                          jclass clazz __attribute__((unused)),
+                                          jint fd, jbyteArray addr, jint port)
 {
-#ifndef WITHOUT_NETWORK
-  _javanet_close(env, obj, 1);
-#else /* not WITHOUT_NETWORK */
-#endif /* not WITHOUT_NETWORK */
+  struct sockaddr_in sockaddr;
+  jbyte *elems = NULL;
+  int ret;
+
+  if (addr != NULL)
+    elems = (*env)->GetByteArrayElements (env, addr, NULL);
+
+  memset(&sockaddr, 0, sizeof (struct sockaddr_in));
+  sockaddr.sin_family = AF_INET;
+  sockaddr.sin_port = htons (port);
+  /* addr is already in network byte order. */
+  if (elems != NULL)
+    sockaddr.sin_addr.s_addr = *((uint32_t *) elems);
+  else
+    sockaddr.sin_addr.s_addr = INADDR_ANY;
+
+  /* bind(2) from BSD says bind will never return EINTR */
+  /* bind is not a blocking system call */
+  ret = bind (fd, (struct sockaddr *) &sockaddr, sizeof (struct sockaddr_in));
+
+  if (elems != NULL)
+    (*env)->ReleaseByteArrayElements (env, addr, elems, JNI_ABORT);
+
+  if (-1 == ret)
+    JCL_ThrowException (env, BIND_EXCEPTION, strerror (errno));
 }
 
-/*************************************************************************/
 
 /*
- * Connects to the specified destination.
+ * Class:     gnu_java_net_VMPlainSocketImpl
+ * Method:    bind6
+ * Signature: (I[BI)V
  */
 JNIEXPORT void JNICALL
-Java_gnu_java_net_VMPlainSocketImpl_connect(JNIEnv *env,
-					    jclass klass __attribute__ ((__unused__)),
-					    jobject obj, 
-					    jobject addr, jint port)
+Java_gnu_java_net_VMPlainSocketImpl_bind6 (JNIEnv *env,
+                                           jclass c __attribute__((unused)),
+                                           jint fd, jbyteArray addr, jint port)
 {
-#ifndef WITHOUT_NETWORK
-  _javanet_connect(env, obj, addr, port, 1);
-#else /* not WITHOUT_NETWORK */
-#endif /* not WITHOUT_NETWORK */
+  /* FIXME! Add check if we have IPv6! */
+  struct sockaddr_in6 sockaddr;
+  jbyte *elems;
+  int ret;
+
+  elems = (*env)->GetByteArrayElements (env, addr, NULL);
+
+  memset (&sockaddr, 0, sizeof (struct sockaddr_in6));
+  sockaddr.sin6_family = AF_INET6;
+  sockaddr.sin6_port = htons (port);
+  memcpy (&sockaddr.sin6_addr.s6_addr, elems, 16);
+
+  /* bind(2) from BSD says bind will never return EINTR */
+  /* bind is not a blocking system call */
+  ret = bind (fd, (struct sockaddr *) &sockaddr,
+              sizeof (struct sockaddr_in6));
+
+  (*env)->ReleaseByteArrayElements (env, addr, elems, JNI_ABORT);
+
+  if (-1 == ret)
+    JCL_ThrowException (env, IO_EXCEPTION, strerror (errno));
 }
 
-/*************************************************************************/
 
 /*
- * This method binds the specified address to the specified local port.
- * Note that we have to set the local address and local port public instance 
- * variables. 
+ * Class:     gnu_java_net_VMPlainSocketImpl
+ * Method:    listen
+ * Signature: (II)V
  */
 JNIEXPORT void JNICALL
-Java_gnu_java_net_VMPlainSocketImpl_bind(JNIEnv *env,
-					 jclass klass __attribute__ ((__unused__)),
-					 jobject obj, jobject addr,
-					 jint port)
+Java_gnu_java_net_VMPlainSocketImpl_listen (JNIEnv *env,
+                                            jclass c __attribute__((unused)),
+                                            jint fd, jint backlog)
 {
-#ifndef WITHOUT_NETWORK
-  _javanet_bind(env, obj, addr, port, 1);
-#else /* not WITHOUT_NETWORK */
-#endif /* not WITHOUT_NETWORK */
+  int ret;
+
+  /* listen(2) says that this call will never return EINTR */
+  /* listen is not a blocking system call */
+  if ((ret = listen (fd, backlog)) == -1)
+    JCL_ThrowException (env, IO_EXCEPTION, strerror (errno));
+  printf("listen returns %d\n", ret);
 }
 
-/*************************************************************************/
+
+/* These constants are also defined in java/net/SocketOptions.java */
+enum java_sockopt {
+  CPNET_SO_KEEPALIVE = 0x8,
+  CPNET_SO_LINGER = 0x80,
+  CPNET_SO_TIMEOUT = 0x1006,
+  CPNET_SO_BINDADDR = 0x0F,
+  CPNET_SO_SNDBUF = 0x1001,
+  CPNET_SO_RCVBUF = 0x1002,
+  CPNET_SO_REUSEADDR = 0x04,
+  CPNET_SO_BROADCAST = 0x20,
+  CPNET_SO_OOBINLINE = 0x1003,
+  CPNET_TCP_NODELAY = 0x01,
+  CPNET_IP_MULTICAST_IF = 0x10,
+  CPNET_IP_MULTICAST_IF2 = 0x1F,
+  CPNET_IP_MULTICAST_LOOP = 0x12,
+  CPNET_IP_TOS = 0x03
+};
+
 
 /*
- * Starts listening on a socket with the specified number of pending 
- * connections allowed.
+ * Class:     gnu_java_net_VMPlainSocketImpl
+ * Method:    setOption
+ * Signature: (III)V
  */
 JNIEXPORT void JNICALL
-Java_gnu_java_net_VMPlainSocketImpl_listen(JNIEnv *env,
-					   jclass klass __attribute__ ((__unused__)),
-					   jobject obj, jint queuelen)
+Java_gnu_java_net_VMPlainSocketImpl_setOption (JNIEnv *env,
+                                               jclass c __attribute__((unused)),
+                                               jint fd, jint option, jint value)
 {
-#ifndef WITHOUT_NETWORK
-  _javanet_listen(env, obj, queuelen);
-#else /* not WITHOUT_NETWORK */
-#endif /* not WITHOUT_NETWORK */
-}
+  enum java_sockopt joption = (enum java_sockopt) option;
+  int optname = -1;
+  int level = SOL_SOCKET;
+  const int _value = value;
+  struct linger _linger;
+  struct timeval _timeo;
+  void *optval = (void *) &_value;
+  socklen_t optlen = sizeof (int);
 
-/*************************************************************************/
+  switch (joption)
+    {
+    case CPNET_IP_MULTICAST_LOOP:
+      level = IPPROTO_IP;
+      optname = IP_MULTICAST_LOOP;
+      break;
+
+    case CPNET_SO_KEEPALIVE:
+      optname = SO_KEEPALIVE;
+      break;
+
+    case CPNET_SO_LINGER:
+      optname = SO_LINGER;
+      if (_value == 0)
+        _linger.l_onoff = 0;
+      else
+        _linger.l_onoff = 1;
+      _linger.l_linger = _value;
+      optval = &_linger;
+      optlen = sizeof (struct linger);
+      break;
+
+    case CPNET_SO_TIMEOUT:
+      optname = SO_RCVTIMEO;
+      _timeo.tv_sec = value / 1000;
+      _timeo.tv_usec = (value % 1000) * 1000;
+      optval = &_timeo;
+      optlen = sizeof (struct timeval);
+      break;
+
+    case CPNET_SO_SNDBUF:
+      optname = SO_SNDBUF;
+      break;
+
+    case CPNET_SO_RCVBUF:
+      optname = SO_RCVBUF;
+      break;
+
+    case CPNET_SO_REUSEADDR:
+      optname = SO_REUSEADDR;
+      break;
+
+    case CPNET_SO_BROADCAST:
+      optname = SO_BROADCAST;
+      break;
+
+    case CPNET_SO_OOBINLINE:
+      optname = SO_OOBINLINE;
+      break;
+
+    case CPNET_TCP_NODELAY:
+      level = IPPROTO_TCP;
+      optname = TCP_NODELAY;
+      break;
+
+    case CPNET_IP_TOS:
+      level = IPPROTO_IP;
+      optname = IP_TOS;
+      break;
+
+    case CPNET_SO_BINDADDR:
+    case CPNET_IP_MULTICAST_IF:
+    case CPNET_IP_MULTICAST_IF2:
+      JCL_ThrowException (env, IO_EXCEPTION, "argument not a boolean or integer option");
+      return;
+    }
+
+  if (setsockopt (fd, level, optname, (const void *) optval, optlen) == -1)
+    JCL_ThrowException (env, IO_EXCEPTION, strerror (errno));
+}
 
 /*
- * Accepts a new connection and assigns it to the passed in SocketImpl
- * object. Note that we assume this is a PlainSocketImpl just like us.
+ * Class:     gnu_java_net_VMPlainSocketImpl
+ * Method:    getOption
+ * Signature: (II)I
  */
-JNIEXPORT void JNICALL
-Java_gnu_java_net_VMPlainSocketImpl_accept(JNIEnv *env,
-					   jclass klass __attribute__ ((__unused__)),
-					   jobject obj, jobject impl)
-{
-#ifndef WITHOUT_NETWORK
-  _javanet_accept(env, obj, impl);
-#else /* not WITHOUT_NETWORK */
-#endif /* not WITHOUT_NETWORK */
-}
-
-/*************************************************************************/
-
 JNIEXPORT jint JNICALL
-Java_gnu_java_net_VMPlainSocketImpl_available(JNIEnv *env,
-					      jclass klass __attribute__ ((__unused__)),
-					      jobject obj)
+Java_gnu_java_net_VMPlainSocketImpl_getOption (JNIEnv *env,
+                                               jclass c __attribute__((unused)),
+                                               jint fd, jint option)
 {
-#ifndef WITHOUT_NETWORK
-  jclass   cls;
-  jfieldID fid;
-  int      fd;
-  int      bytesAvailable;
-  int      result;
-  
-  cls = (*env)->GetObjectClass(env, obj);
-  if (cls == 0)
+  enum java_sockopt joption = (enum java_sockopt) option;
+  int optname = -1;
+  int level = SOL_SOCKET;
+  int value;
+  struct linger linger;
+  struct timeval timeo;
+  void *optval = &value;
+  socklen_t optlen = sizeof (int);
+
+  switch (joption)
     {
-      JCL_ThrowException(env, IO_EXCEPTION, "internal error");
-      return 0;
+    case CPNET_IP_MULTICAST_LOOP:
+      level = IPPROTO_IP;
+      optname = IP_MULTICAST_LOOP;
+      break;
+
+    case CPNET_SO_KEEPALIVE:
+      optname = SO_KEEPALIVE;
+      break;
+
+    case CPNET_SO_LINGER:
+      optname = SO_LINGER;
+      optval = &linger;
+      optlen = sizeof (struct linger);
+      break;
+
+    case CPNET_SO_TIMEOUT:
+      optname = SO_RCVTIMEO;
+      optval = &timeo;
+      optlen = sizeof (struct timeval);
+      break;
+
+    case CPNET_SO_SNDBUF:
+      optname = SO_SNDBUF;
+      break;
+
+    case CPNET_SO_RCVBUF:
+      optname = SO_RCVBUF;
+      break;
+
+    case CPNET_SO_REUSEADDR:
+      optname = SO_REUSEADDR;
+      break;
+
+    case CPNET_SO_BROADCAST:
+      optname = SO_BROADCAST;
+      break;
+
+    case CPNET_SO_OOBINLINE:
+      optname = SO_OOBINLINE;
+      break;
+
+    case CPNET_TCP_NODELAY:
+      level = IPPROTO_TCP;
+      optname = TCP_NODELAY;
+      break;
+
+    case CPNET_IP_TOS:
+      level = IPPROTO_IP;
+      optname = IP_TOS;
+      break;
+
+    case CPNET_SO_BINDADDR:
+    case CPNET_IP_MULTICAST_IF:
+    case CPNET_IP_MULTICAST_IF2:
+      JCL_ThrowException (env, IO_EXCEPTION, "argument not a boolean or integer option");
+      return -1;
     }
-  
-  fid = (*env)->GetFieldID(env, cls, "native_fd", "I"); 
-  if (fid == 0)
+
+  if (getsockopt (fd, level, optname, optval, &optlen) == -1)
+    JCL_ThrowException (env, IO_EXCEPTION, strerror (errno));
+
+  if (joption == CPNET_SO_LINGER)
+    return linger.l_linger;
+  if (joption == CPNET_SO_TIMEOUT)
+    return (timeo.tv_sec * 1000) + (timeo.tv_usec / 1000);
+
+  return value;
+}
+
+
+/*
+ * Class:     gnu_java_net_VMPlainSocketImpl
+ * Method:    shutdownInput
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL
+Java_gnu_java_net_VMPlainSocketImpl_shutdownInput (JNIEnv *env,
+                                                   jclass c __attribute__((unused)),
+                                                   jint fd)
+{
+  if (shutdown (fd, SHUT_RD) == -1)
+    JCL_ThrowException (env, IO_EXCEPTION, strerror (errno));
+}
+
+/*
+ * Class:     gnu_java_net_VMPlainSocketImpl
+ * Method:    shutdownOutput
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL
+Java_gnu_java_net_VMPlainSocketImpl_shutdownOutput (JNIEnv *env,
+                                                    jclass c __attribute__((unused)),
+                                                    jint fd)
+{
+  if (shutdown (fd, SHUT_WR) == -1)
+    JCL_ThrowException (env, IO_EXCEPTION, strerror (errno));
+}
+
+
+/*
+ * Class:     gnu_java_net_VMPlainSocketImpl
+ * Method:    sendUrgentData
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL
+Java_gnu_java_net_VMPlainSocketImpl_sendUrgentData (JNIEnv *env,
+                                                    jclass c __attribute__((unused)),
+                                                    jint fd, jint data)
+{
+  const char x = (char) data;
+
+  if (send (fd, &x, 1, MSG_OOB) == -1)
+    JCL_ThrowException (env, IO_EXCEPTION, strerror (errno));
+}
+
+
+/*
+ * Class:     gnu_java_net_VMPlainSocketImpl
+ * Method:    join
+ * Signature: (I[B)V
+ */
+JNIEXPORT void JNICALL
+Java_gnu_java_net_VMPlainSocketImpl_join (JNIEnv *env,
+                                          jclass clazz __attribute__((unused)),
+                                          jint fd, jbyteArray addr)
+{
+#ifdef HAVE_SETSOCKOPT
+  struct ip_mreq maddr;
+  jbyte *addr_elems;
+
+  addr_elems = (*env)->GetByteArrayElements (env, addr, NULL);
+  if (addr_elems == NULL)
+    return;
+
+  maddr.imr_multiaddr.s_addr = * ((uint32_t *) addr_elems);
+  maddr.imr_interface.s_addr = INADDR_ANY;
+
+  (*env)->ReleaseByteArrayElements (env, addr, addr_elems, JNI_ABORT);
+
+  if (-1 == setsockopt (fd, IPPROTO_IP, IP_ADD_MEMBERSHIP,
+                        &maddr, sizeof (struct ip_mreq)))
+    JCL_ThrowException (env, SOCKET_EXCEPTION, strerror (errno));
+#else
+  (void) fd;
+  (void) addr;
+  JCL_ThrowException (env, "java/lang/InternalError",
+                      "socket options not supported");
+#endif /* HAVE_SETSOCKOPT */
+}
+
+
+/*
+ * Class:     gnu_java_net_VMPlainSocketImpl
+ * Method:    join6
+ * Signature: (I[B)V
+ */
+JNIEXPORT void JNICALL
+Java_gnu_java_net_VMPlainSocketImpl_join6 (JNIEnv *env,
+                                           jclass clazz __attribute__((unused)),
+                                           jint fd, jbyteArray addr)
+{
+#ifdef HAVE_SETSOCKOPT
+#ifdef HAVE_INET6
+  struct ipv6_mreq maddr;
+  jbyte *addr_elems;
+
+  addr_elems = (*env)->GetByteArrayElements (env, addr, NULL);
+  if (addr_elems == NULL)
+    return;
+
+  memcpy (&(maddr.ipv6mr_multiaddr.s6_addr), addr_elems, 16);
+  maddr.ipv6mr_interface = 0;
+
+  (*env)->ReleaseByteArrayElements (env, addr, addr_elems, JNI_ABORT);
+
+  if (-1 == setsockopt (fd, IPPROTO_IPV6, IPV6_JOIN_GROUP,
+                        &maddr, sizeof (struct ipv6_mreq)))
+    JCL_ThrowException (env, SOCKET_EXCEPTION, strerror (errno));
+#else
+  (void) fd;
+  (void) addr;
+  JCL_ThrowException (env, "java/lang/InternalError",
+                      "IPv6 support not available");
+#endif /* HAVE_INET6 */
+#else
+  (void) fd;
+  (void) addr;
+  JCL_ThrowException (env, "java/lang/InternalError",
+                      "socket options not supported");
+#endif /* HAVE_SETSOCKOPT */
+}
+
+/*
+ * Class:     gnu_java_net_VMPlainSocketImpl
+ * Method:    leave
+ * Signature: (I[B)V
+ */
+JNIEXPORT void JNICALL
+Java_gnu_java_net_VMPlainSocketImpl_leave (JNIEnv *env,
+                                           jclass c __attribute__((unused)),
+                                           jint fd, jbyteArray addr)
+{
+#ifdef HAVE_SETSOCKOPT
+  struct ip_mreq maddr;
+  jbyte *addr_elems;
+
+  addr_elems = (*env)->GetByteArrayElements (env, addr, NULL);
+  if (addr_elems == NULL)
+    return;
+
+  maddr.imr_multiaddr.s_addr = * ((uint32_t *) addr_elems);
+  maddr.imr_interface.s_addr = INADDR_ANY;
+
+  (*env)->ReleaseByteArrayElements (env, addr, addr_elems, JNI_ABORT);
+
+  if (-1 == setsockopt (fd, IPPROTO_IP, IP_DROP_MEMBERSHIP,
+                        &maddr, sizeof (struct ip_mreq)))
+    JCL_ThrowException (env, SOCKET_EXCEPTION, strerror (errno));
+#else
+  (void) fd;
+  (void) addr;
+  JCL_ThrowException (env, "java/lang/InternalError",
+                      "socket options not supported");
+#endif /* HAVE_SETSOCKOPT */
+}
+
+/*
+ * Class:     gnu_java_net_VMPlainSocketImpl
+ * Method:    leave6
+ * Signature: (I[B)V
+ */
+JNIEXPORT void JNICALL
+Java_gnu_java_net_VMPlainSocketImpl_leave6 (JNIEnv *env,
+                                            jclass c __attribute__((unused)),
+                                            jint fd, jbyteArray addr)
+{
+#ifdef HAVE_SETSOCKOPT
+#ifdef HAVE_INET6
+  struct ipv6_mreq maddr;
+  jbyte *addr_elems;
+
+  addr_elems = (*env)->GetByteArrayElements (env, addr, NULL);
+  if (addr_elems == NULL)
+    return;
+
+  memcpy (&(maddr.ipv6mr_multiaddr.s6_addr), addr_elems, 16);
+  maddr.ipv6mr_interface = 0;
+
+  (*env)->ReleaseByteArrayElements (env, addr, addr_elems, JNI_ABORT);
+
+  if (-1 == setsockopt (fd, IPPROTO_IPV6, IPV6_JOIN_GROUP,
+                        &maddr, sizeof (struct ipv6_mreq)))
+    JCL_ThrowException (env, SOCKET_EXCEPTION, strerror (errno));
+#else
+  (void) fd;
+  (void) addr;
+  JCL_ThrowException (env, "java/lang/InternalError",
+                      "IPv6 support not available");
+#endif /* HAVE_INET6 */
+#else
+  (void) fd;
+  (void) addr;
+  JCL_ThrowException (env, "java/lang/InternalError",
+                      "socket options not supported");
+#endif /* HAVE_SETSOCKOPT */
+}
+
+static uint32_t getif_address (JNIEnv *env, char *ifname);
+static int getif_index (JNIEnv *env, char *ifname);
+
+/*
+ * Class:     gnu_java_net_VMPlainSocketImpl
+ * Method:    joinGroup
+ * Signature: (I[BILjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL
+Java_gnu_java_net_VMPlainSocketImpl_joinGroup (JNIEnv *env,
+                                               jclass c __attribute__((unused)),
+                                               jint fd, jbyteArray addr,
+                                               jstring ifname)
+{
+#ifdef HAVE_SETSOCKOPT
+  struct ip_mreq maddr;
+  jbyte *addr_elems;
+
+  if (ifname != NULL)
     {
-      JCL_ThrowException(env, IO_EXCEPTION, "internal error");
+      maddr.imr_interface.s_addr = getif_address (env, ifname);
+      if ((*env)->ExceptionCheck (env))
+        return;
+    }
+  else
+    maddr.imr_interface.s_addr = INADDR_ANY;
+
+  addr_elems = (*env)->GetByteArrayElements (env, addr, NULL);
+  if (addr_elems == NULL)
+    return;
+
+  maddr.imr_multiaddr.s_addr = * ((uint32_t *) addr_elems);
+
+  (*env)->ReleaseByteArrayElements (env, addr, addr_elems, JNI_ABORT);
+
+  if (-1 == setsockopt (fd, IPPROTO_IP, IP_ADD_MEMBERSHIP,
+                        &maddr, sizeof (struct ip_mreq)))
+    JCL_ThrowException (env, SOCKET_EXCEPTION, strerror (errno));
+#else
+  (void) fd;
+  (void) addr;
+  (void) ifname;
+  JCL_ThrowException (env, "java/lang/InternalError",
+                      "socket options not supported");
+#endif /* HAVE_SETSOCKOPT */
+}
+
+/*
+ * Class:     gnu_java_net_VMPlainSocketImpl
+ * Method:    joinGroup6
+ * Signature: (I[BILjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL
+Java_gnu_java_net_VMPlainSocketImpl_joinGroup6 (JNIEnv *env,
+                                                jclass c __attribute__((unused)),
+                                                jint fd, jbyteArray addr,
+                                                jstring ifname)
+{
+#ifdef HAVE_SETSOCKOPT
+#ifdef HAVE_INET6
+  struct ipv6_mreq maddr;
+  jbyte *addr_elems;
+
+  if (ifname == NULL)
+    {
+      maddr.ipv6mr_interface = getif_index (env, ifname);
+      if ((*env)->ExceptionCheck (env))
+        return;
+    }
+  else
+    maddr.ipv6mr_interface = 0;
+
+  addr_elems = (*env)->GetByteArrayElements (env, addr, NULL);
+  if (addr_elems == NULL)
+    return;
+
+  memcpy (&(maddr.ipv6mr_multiaddr.s6_addr), addr_elems, 16);
+
+  (*env)->ReleaseByteArrayElements (env, addr, addr_elems, JNI_ABORT);
+
+  if (-1 == setsockopt (fd, IPPROTO_IPV6, IPV6_JOIN_GROUP,
+                        &maddr, sizeof (struct ipv6_mreq)))
+    JCL_ThrowException (env, SOCKET_EXCEPTION, strerror (errno));
+#else
+  (void) fd;
+  (void) addr;
+  JCL_ThrowException (env, "java/lang/InternalError",
+                      "IPv6 support not available");
+#endif /* HAVE_INET6 */
+#else
+  (void) fd;
+  (void) addr;
+  JCL_ThrowException (env, "java/lang/InternalError",
+                      "socket options not supported");
+#endif /* HAVE_SETSOCKOPT */
+}
+
+/*
+ * Class:     gnu_java_net_VMPlainSocketImpl
+ * Method:    leaveGroup
+ * Signature: (I[BILjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL
+Java_gnu_java_net_VMPlainSocketImpl_leaveGroup (JNIEnv *env,
+                                                jclass c __attribute__((unused)),
+                                                jint fd, jbyteArray addr,
+                                                jstring ifname)
+{
+#ifdef HAVE_SETSOCKOPT
+  struct ip_mreq maddr;
+  jbyte *addr_elems;
+
+  if (ifname != NULL)
+    {
+      maddr.imr_interface.s_addr = getif_address (env, ifname);
+      if ((*env)->ExceptionCheck (env))
+        return;
+    }
+  else
+    maddr.imr_interface.s_addr = INADDR_ANY;
+
+  addr_elems = (*env)->GetByteArrayElements (env, addr, NULL);
+  if (addr_elems == NULL)
+    return;
+
+  maddr.imr_multiaddr.s_addr = * ((uint32_t *) addr_elems);
+
+  (*env)->ReleaseByteArrayElements (env, addr, addr_elems, JNI_ABORT);
+
+  if (-1 == setsockopt (fd, IPPROTO_IP, IP_DROP_MEMBERSHIP,
+                        &maddr, sizeof (struct ip_mreq)))
+    JCL_ThrowException (env, SOCKET_EXCEPTION, strerror (errno));
+#else
+  (void) fd;
+  (void) addr;
+  (void) ifname;
+  JCL_ThrowException (env, "java/lang/InternalError",
+                      "socket options not supported");
+#endif /* HAVE_SETSOCKOPT */
+}
+
+/*
+ * Class:     gnu_java_net_VMPlainSocketImpl
+ * Method:    leaveGroup6
+ * Signature: (I[BILjava/lang/String;)V
+ */
+JNIEXPORT void JNICALL
+Java_gnu_java_net_VMPlainSocketImpl_leaveGroup6 (JNIEnv *env,
+                                                jclass c __attribute__((unused)),
+                                                jint fd, jbyteArray addr,
+                                                jstring ifname)
+{
+#ifdef HAVE_SETSOCKOPT
+#ifdef HAVE_INET6
+  struct ipv6_mreq maddr;
+  jbyte *addr_elems;
+
+  if (ifname == NULL)
+    {
+      maddr.ipv6mr_interface = getif_index (env, ifname);
+      if ((*env)->ExceptionCheck (env))
+        return;
+    }
+  else
+    maddr.ipv6mr_interface = 0;
+
+  addr_elems = (*env)->GetByteArrayElements (env, addr, NULL);
+  if (addr_elems == NULL)
+    return;
+
+  memcpy (&(maddr.ipv6mr_multiaddr.s6_addr), addr_elems, 16);
+
+  (*env)->ReleaseByteArrayElements (env, addr, addr_elems, JNI_ABORT);
+
+  if (-1 == setsockopt (fd, IPPROTO_IPV6, IPV6_LEAVE_GROUP,
+                        &maddr, sizeof (struct ipv6_mreq)))
+    JCL_ThrowException (env, SOCKET_EXCEPTION, strerror (errno));
+#else
+  (void) fd;
+  (void) addr;
+  JCL_ThrowException (env, "java/lang/InternalError",
+                      "IPv6 support not available");
+#endif /* HAVE_INET6 */
+#else
+  (void) fd;
+  (void) addr;
+  JCL_ThrowException (env, "java/lang/InternalError",
+                      "socket options not supported");
+#endif /* HAVE_SETSOCKOPT */
+}
+
+static uint32_t
+getif_address (JNIEnv *env, char *ifname)
+{
+#ifdef HAVE_GETIFADDRS
+  struct ifaddrs *ifaddrs, *i;
+  uint32_t addr = 0;
+  int foundaddr = 0;
+
+  if (getifaddrs (&ifaddrs) == -1)
+    {
+      JCL_ThrowException (env, SOCKET_EXCEPTION, strerror (errno));
       return 0;
     }
 
-  fd = (*env)->GetIntField(env, obj, fid);
-  
-  result = cpnet_getAvailableBytes (env, fd, &bytesAvailable);
-  if (result != CPNATIVE_OK)
+  for (i = ifaddrs; i != NULL; i = i->ifa_next)
     {
-      JCL_ThrowException(env, IO_EXCEPTION, cpnative_getErrorString (result));
-      return 0;
+      if (strcmp (ifname, i->ifa_name) == 0)
+        {
+          /* Matched the name; see if there is an IPv4 address. */
+          if (i->ifa_addr->sa_family == AF_INET)
+            {
+              foundaddr = 1;
+              addr = ((struct sockaddr_in *) i->ifa_addr)->sin_addr.s_addr;
+              break;
+            }
+        }
     }
 
-  return bytesAvailable;
-#else /* not WITHOUT_NETWORK */
+  if (!foundaddr)
+    JCL_ThrowException (env, SOCKET_EXCEPTION, "interface has no IPv4 address");
+
+  freeifaddrs (ifaddrs);
+
+  return addr;
+#else
+  (void) ifname;
+  JCL_ThrowException (env, "java/lang/InternalError",
+                      "getifaddrs not available");
   return 0;
-#endif /* not WITHOUT_NETWORK */
+#endif /* HAVE_GETIFADDRS */
 }
 
-/*************************************************************************/
-
-/*
- * This method sets the specified option for a socket
- */
-JNIEXPORT void JNICALL
-Java_gnu_java_net_VMPlainSocketImpl_setOption(JNIEnv *env,
-					      jclass klass __attribute__ ((__unused__)),
-					      jobject obj, 
-					      jint option_id, jobject val)
+static int
+getif_index (JNIEnv *env, char *ifname)
 {
-#ifndef WITHOUT_NETWORK
-  _javanet_set_option(env, obj, option_id, val);
-#else /* not WITHOUT_NETWORK */
-#endif /* not WITHOUT_NETWORK */
+#ifdef HAVE_GETIFADDRS
+  struct ifaddrs *ifaddrs, *i;
+  char *lastname = NULL;
+  int index = 1;
+  int foundname = 0;
+
+  if (getifaddrs (&ifaddrs) == -1)
+    {
+      JCL_ThrowException (env, SOCKET_EXCEPTION, strerror (errno));
+      return -1;
+    }
+
+  lastname = ifaddrs->ifa_name;
+  for (i = ifaddrs; i != NULL; i = i->ifa_next)
+    {
+      if (strcmp (lastname, ifaddrs->ifa_name) != 0)
+        {
+          lastname = ifaddrs->ifa_name;
+          index++;
+        }
+      if (strcmp (ifname, ifaddrs->ifa_name) == 0)
+        {
+          foundname = 1;
+          break;
+        }
+    }
+
+  if (!foundname)
+    JCL_ThrowException (env, SOCKET_EXCEPTION,
+                        "no interface with that name");
+
+  freeifaddrs (ifaddrs);
+
+  return index;
+#else
+  (void) ifname;
+  JCL_ThrowException (env, "java/lang/InternalError",
+                      "getifaddrs not available");
+  return -1;
+#endif /* HAVE_GETIFADDRS */
 }
-
-/*************************************************************************/
-
-/*
- * This method gets the specified option for a socket
- */
-JNIEXPORT jobject JNICALL
-Java_gnu_java_net_VMPlainSocketImpl_getOption(JNIEnv *env,
-					      jclass klass __attribute__ ((__unused__)),
-					      jobject obj, 
-					      jint option_id)
-{
-#ifndef WITHOUT_NETWORK
-  return(_javanet_get_option(env, obj, option_id));
-#else /* not WITHOUT_NETWORK */
-  return NULL;
-#endif /* not WITHOUT_NETWORK */
-}
-
-/*************************************************************************/
-
-/*
- * Reads a buffer from a remote host
- */
-JNIEXPORT jint JNICALL
-Java_gnu_java_net_VMPlainSocketImpl_read(JNIEnv *env,
-					 jclass klass __attribute__ ((__unused__)),
-					 jobject obj, jarray buf,
-					 jint offset, jint len)
-{
-#ifndef WITHOUT_NETWORK
-  return(_javanet_recvfrom(env, obj, buf, offset, len, 0));
-#else /* not WITHOUT_NETWORK */
-  return 0;
-#endif /* not WITHOUT_NETWORK */
-}
-
-/*************************************************************************/
-
-/*
- * Writes a buffer to the remote host
- */
-JNIEXPORT void JNICALL
-Java_gnu_java_net_VMPlainSocketImpl_write(JNIEnv *env,
-					  jclass klass __attribute__ ((__unused__)),
-					  jobject obj, jarray buf,
-					  jint offset, jint len)
-{
-#ifndef WITHOUT_NETWORK
-  _javanet_sendto(env, obj, buf, offset, len, 0);
-#else /* not WITHOUT_NETWORK */
-#endif /* not WITHOUT_NETWORK */
-}
-
-JNIEXPORT void JNICALL
-Java_gnu_java_net_VMPlainSocketImpl_shutdownInput (JNIEnv * env,
-						   jclass klass __attribute__ ((__unused__)),
-						   jobject this)
-{
-#ifndef WITHOUT_NETWORK
-  _javanet_shutdownInput (env, this);
-#else /* not WITHOUT_NETWORK */
-#endif /* not WITHOUT_NETWORK */
-}
-
-JNIEXPORT void JNICALL
-Java_gnu_java_net_VMPlainSocketImpl_shutdownOutput (JNIEnv * env,
-						    jclass klass __attribute__ ((__unused__)),
-						    jobject this)
-{
-#ifndef WITHOUT_NETWORK
-  _javanet_shutdownOutput (env, this);
-#else /* not WITHOUT_NETWORK */
-#endif /* not WITHOUT_NETWORK */
-}
-
-/* end of file */

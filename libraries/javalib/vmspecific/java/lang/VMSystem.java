@@ -149,7 +149,7 @@ final class VMSystem
    */
 
   /**
-   * Set {@link #in} to a new InputStream.
+   * Set {@link System#in} to a new InputStream.
    *
    * @param in the new InputStream
    * @see #setIn(InputStream)
@@ -157,7 +157,7 @@ final class VMSystem
   static native void setIn(InputStream in);
 
   /**
-   * Set {@link #out} to a new PrintStream.
+   * Set {@link System#out} to a new PrintStream.
    *
    * @param out the new PrintStream
    * @see #setOut(PrintStream)
@@ -165,7 +165,7 @@ final class VMSystem
   static native void setOut(PrintStream out);
 
   /**
-   * Set {@link #err} to a new PrintStream.
+   * Set {@link System#err} to a new PrintStream.
    *
    * @param err the new PrintStream
    * @see #setErr(PrintStream)
@@ -180,7 +180,10 @@ final class VMSystem
    * @return the current time
    * @see java.util.Date
    */
-   public static native long currentTimeMillis();
+   public static long currentTimeMillis()
+   {
+     return nanoTime() / 1000000L;
+   }
 
   /**
    * <p>
@@ -207,10 +210,7 @@ final class VMSystem
    * @return the time of a system timer in nanoseconds.
    * @since 1.5 
    */
-   public static long nanoTime()
-   {
-     return currentTimeMillis() * 1000;
-   }
+  public static native long nanoTime();
 
   /**
    * Returns a list of 'name=value' pairs representing the current environment

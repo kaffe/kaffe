@@ -38,7 +38,7 @@ exception statement from your version. */
 #include <config.h>
 
 #include "java_lang_VMProcess.h"
-#include "gnu_java_nio_channels_FileChannelImpl.h"
+#include "gnu_java_nio_FileChannelImpl.h"
 
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -137,8 +137,8 @@ Java_java_lang_VMProcess_nativeSpawn (JNIEnv * env, jobject this,
   char *dir = NULL;
   pid_t pid = -1;
   char errbuf[64];
-  jmethodID method;
-  jclass clazz;
+  jmethodID method, vmmethod;
+  jclass clazz, vmclazz;
   int i;
   int pipe_count = redirect ? 2 : 3;
   int err;
@@ -214,10 +214,12 @@ Java_java_lang_VMProcess_nativeSpawn (JNIEnv * env, jobject this,
     }
 
   /* Create Input/OutputStream objects around parent file descriptors */
-  clazz = (*env)->FindClass (env, "gnu/java/nio/channels/FileChannelImpl");
+  vmclazz = (*env)->FindClass (env, "gnu/java/nio/VMChannel");
+  clazz = (*env)->FindClass (env, "gnu/java/nio/FileChannelImpl");
   if ((*env)->ExceptionOccurred (env))
     goto done;
-  method = (*env)->GetMethodID (env, clazz, "<init>", "(II)V");
+  vmmethod = (*env)->GetMethodID (env, vmclazz, "<init>", "(I)V");
+  method = (*env)->GetMethodID (env, clazz, "<init>", "(Lgnu/java/nio/VMChannel;I)V");
   if ((*env)->ExceptionOccurred (env))
     goto done;
   for (i = 0; i < pipe_count; i++)
@@ -228,11 +230,16 @@ Java_java_lang_VMProcess_nativeSpawn (JNIEnv * env, jobject this,
       jclass sclazz;
       jmethodID smethod;
 
-      jobject channel = (*env)->NewObject (env, clazz, method, fd, mode);
+      jobject vmchannel;
+      jobject channel;
+      vmchannel = (*env)->NewObject (env, vmclazz, vmmethod, fd);
+      if ((*env)->ExceptionOccurred (env))
+	goto done;
+      channel = (*env)->NewObject (env, clazz, method, vmchannel, mode);
       if ((*env)->ExceptionOccurred (env))
 	goto done;
 
-      if (mode == gnu_java_nio_channels_FileChannelImpl_WRITE)
+      if (mode == gnu_java_nio_FileChannelImpl_WRITE)
 	sclazz = (*env)->FindClass (env, "java/io/FileOutputStream");
       else
 	sclazz = (*env)->FindClass (env, "java/io/FileInputStream");
@@ -240,7 +247,7 @@ Java_java_lang_VMProcess_nativeSpawn (JNIEnv * env, jobject this,
 	goto done;
 
       smethod = (*env)->GetMethodID (env, sclazz, "<init>",
-				     "(Lgnu/java/nio/channels/FileChannelImpl;)V");
+				     "(Lgnu/java/nio/FileChannelImpl;)V");
       if ((*env)->ExceptionOccurred (env))
 	goto done;
 

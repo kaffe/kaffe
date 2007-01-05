@@ -38,13 +38,18 @@ exception statement from your version. */
 
 package gnu.java.net;
 
+import gnu.java.nio.VMChannel;
+
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.DatagramPacket;
 import java.net.DatagramSocketImpl;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.SocketAddress;
 import java.net.SocketException;
+import java.nio.ByteBuffer;
 
 /**
  * Written using on-line Java Platform 1.2 API Specification, as well
@@ -62,11 +67,13 @@ import java.net.SocketException;
  */
 public final class PlainDatagramSocketImpl extends DatagramSocketImpl
 {
-   
+  
+  private final VMChannel channel;
+  
   /**
-   * This is the actual underlying file descriptor
+   * The platform-specific socket implementation.
    */
-  int native_fd = -1;
+  private final VMPlainSocketImpl impl;
   
   /**
    * Lock object to serialize threads wanting to receive 
@@ -81,25 +88,26 @@ public final class PlainDatagramSocketImpl extends DatagramSocketImpl
   /**
    * Default do nothing constructor
    */
-  public PlainDatagramSocketImpl()
+  public PlainDatagramSocketImpl() throws IOException
   {
-    // Nothing to do here.
+    channel = new VMChannel();
+    impl = new VMPlainSocketImpl(channel);
   }
 
-  protected void finalize() throws Throwable
+  /*protected void finalize() throws Throwable
   {
     synchronized (this)
       {
-	if (native_fd != -1)
+        if (channel.getState().isValid())
 	  close();
       }
     super.finalize();
-  }
+  }*/
 
-  public int getNativeFD()
+  /*public int getNativeFD()
   {
     return native_fd;
-  }
+  }*/
 
   /**
    * Binds this socket to a particular port and interface
@@ -109,20 +117,46 @@ public final class PlainDatagramSocketImpl extends DatagramSocketImpl
    *
    * @exception SocketException If an error occurs
    */
-  protected  synchronized void bind(int port, InetAddress addr)
+  protected synchronized void bind(int port, InetAddress addr)
     throws SocketException
-    {
-      VMPlainDatagramSocketImpl.bind(this, port, addr);
-    }
+  {
+    try
+      {
+        impl.bind(new InetSocketAddress(addr, port));
+      }
+    catch (SocketException se)
+      {
+        throw se;
+      }
+    catch (IOException ioe)
+      {
+        SocketException se = new SocketException();
+        se.initCause(ioe);
+        throw se;
+      }
+  }
 
   /**
    * Creates a new datagram socket
    *
    * @exception SocketException If an error occurs
    */
-  protected  synchronized void create() throws SocketException
+  protected synchronized void create() throws SocketException
   {
-    VMPlainDatagramSocketImpl.create(this);
+    try
+      {
+        channel.initSocket(false);
+      }
+    catch (SocketException se)
+      {
+        throw se;
+      }
+    catch (IOException ioe)
+      {
+        SocketException se = new SocketException();
+        se.initCause(ioe);
+        throw se;
+      }
   }
 
   /**
@@ -147,8 +181,14 @@ public final class PlainDatagramSocketImpl extends DatagramSocketImpl
   {
     synchronized (this)
       {
-	if (native_fd != -1)
-	  close();
+        try
+          {
+            if (channel.getState().isValid())
+              channel.disconnect();
+          }
+        catch (IOException ioe)
+          {
+          }
       }
   }
 
@@ -181,6 +221,23 @@ public final class PlainDatagramSocketImpl extends DatagramSocketImpl
     return ((Integer) obj).intValue();
   }
 
+  protected int getLocalPort()
+  {
+    if (channel == null)
+      return -1;
+
+    try
+      {
+        InetSocketAddress local = channel.getLocalAddress();
+        if (local == null)
+          return -1;
+        return local.getPort();
+      }
+    catch (IOException ioe)
+      {
+        return -1;
+      }
+  }
 
   /**
    * Sends a packet of data to a remote host
@@ -191,13 +248,19 @@ public final class PlainDatagramSocketImpl extends DatagramSocketImpl
    */
   protected void send(DatagramPacket packet) throws IOException
   {
-    if (native_fd != -1)
+    synchronized (SEND_LOCK)
       {
-        synchronized(SEND_LOCK)
-          {
-            VMPlainDatagramSocketImpl.send(this, packet);
-          }
-      }    
+        ByteBuffer buf = ByteBuffer.wrap(packet.getData(),
+                                         packet.getOffset(),
+                                         packet.getLength());
+        InetAddress remote = packet.getAddress();
+        int port = packet.getPort();
+        if (remote == null)
+          throw new NullPointerException();
+        if (port <= 0)
+          throw new SocketException("invalid port " + port);
+        channel.send(buf, new InetSocketAddress(remote, port));
+      }
   }
 
   /**
@@ -210,10 +273,16 @@ public final class PlainDatagramSocketImpl extends DatagramSocketImpl
   protected void receive(DatagramPacket packet)
     throws IOException
   {
-      synchronized(RECEIVE_LOCK)
-        {
-          VMPlainDatagramSocketImpl.receive(this, packet);	
-        }
+    synchronized(RECEIVE_LOCK)
+      {
+        ByteBuffer buf = ByteBuffer.wrap(packet.getData(),
+                                         packet.getOffset(),
+                                         packet.getLength());
+        SocketAddress addr = channel.receive(buf);
+        if (addr != null)
+          packet.setSocketAddress(addr);
+        packet.setLength(buf.position() - packet.getOffset());
+      }
   }
 
 
@@ -227,9 +296,9 @@ public final class PlainDatagramSocketImpl extends DatagramSocketImpl
    */
   public synchronized void setOption(int option_id, Object val)
     throws SocketException
-    {
-      VMPlainDatagramSocketImpl.setOption(this, option_id, val);
-    }
+  {
+    impl.setOption(option_id, val);
+  }
 
   /**
    * Retrieves the value of an option on the socket
@@ -242,16 +311,43 @@ public final class PlainDatagramSocketImpl extends DatagramSocketImpl
    */
   public synchronized Object getOption(int option_id)
     throws SocketException
-    {
-      return VMPlainDatagramSocketImpl.getOption(this, option_id);
-    }
+  {
+    if (option_id == SO_BINDADDR)
+      {
+        try
+          {
+            InetSocketAddress local = channel.getLocalAddress();
+            if (local == null)
+              return null;
+            return local.getAddress();
+          }
+        catch (SocketException se)
+          {
+            throw se;
+          }
+        catch (IOException ioe)
+          {
+            SocketException se = new SocketException();
+            se.initCause(ioe);
+            throw se;
+          }
+      }
+    return impl.getOption(option_id);
+  }
 
   /**
    * Closes the socket
    */
   protected synchronized void close()
   {
-    VMPlainDatagramSocketImpl.close(this);
+    try
+      {
+        if (channel.getState().isValid())
+          channel.close();
+      }
+    catch (IOException ioe)
+      {
+      }
   }
 
   /**
@@ -291,7 +387,7 @@ public final class PlainDatagramSocketImpl extends DatagramSocketImpl
    */
   protected synchronized void join(InetAddress addr) throws IOException
   {
-    VMPlainDatagramSocketImpl.join(this,addr);
+    impl.join(addr);
   }
 
   /**
@@ -303,7 +399,7 @@ public final class PlainDatagramSocketImpl extends DatagramSocketImpl
    */
   protected synchronized void leave(InetAddress addr) throws IOException
   {
-    VMPlainDatagramSocketImpl.leave(this, addr);
+    impl.leave(addr);
   }
 
   /**
@@ -323,12 +419,20 @@ public final class PlainDatagramSocketImpl extends DatagramSocketImpl
   public void joinGroup(SocketAddress address, NetworkInterface netIf)
     throws IOException
   {
-    VMPlainDatagramSocketImpl.joinGroup(this, address, netIf);
+    if (address == null)
+      throw new NullPointerException();
+    if (!(address instanceof InetSocketAddress))
+      throw new SocketException("unknown address type");
+    impl.joinGroup((InetSocketAddress) address, netIf);
   }
 
   public void leaveGroup(SocketAddress address, NetworkInterface netIf)
     throws IOException
   {
-    VMPlainDatagramSocketImpl.leaveGroup(this, address, netIf);
+    if (address == null)
+      throw new NullPointerException();
+    if (!(address instanceof InetSocketAddress))
+      throw new SocketException("unknown address type");
+    impl.leaveGroup((InetSocketAddress) address, netIf);
   }
 }

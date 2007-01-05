@@ -5,7 +5,7 @@
  * Copyright (c) 1996, 1997, 1998, 1999
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
- * Copyright (c) 2004
+ * Copyright (c) 2004, 2007
  *      Kaffe.org contributors. See ChangeLogs for details. All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -180,6 +180,38 @@ initNative(void)
 }
 
 /*
+ * Get pointer to symbol from symbol name.
+ */
+static
+void*
+loadNativeLibrarySymFromLib(struct _libHandle *lib, const char* name)
+{
+  void* func = NULL;
+
+  lockStaticMutex(&libraryLock);
+  
+  func = KaffeLib_GetSymbol(lib->desc, name);
+    
+DBG(NATIVELIB,
+  if (func == NULL) {
+    dprintf("Couldn't find %s in library %s.\nError message is %s.\n",
+            name,
+            lib->name,
+            KaffeLib_GetError());
+  }
+  else {
+    dprintf("Found %s in library %s.\n",
+            name,
+            lib->name);
+  }
+);
+
+  unlockStaticMutex(&libraryLock);
+
+  return func;
+}
+
+/*
  * Link in a native library. If successful, returns an index >= 0 that
  * can be passed to unloadNativeLibrary(). Otherwise, returns -1 and
  * fills errbuf (if not NULL) with the error message. Assumes synchronization.
@@ -280,7 +312,7 @@ DBG(NATIVELIB,
 	feedbackLibrary(path, true);
 #endif
  
-        func = loadNativeLibrarySym("JNI_OnLoad"); 
+        func = loadNativeLibrarySymFromLib(lib, "JNI_OnLoad"); 
 	if (func != NULL) {
 	    JavaVM *jvm = KaffeJNI_GetKaffeVM();
 	    /* Call JNI_OnLoad */
@@ -337,31 +369,10 @@ loadNativeLibrarySym(const char* name)
   int i = 0;
   void* func = NULL;
 
-  lockStaticMutex(&libraryLock);
-  
   while (!func && i < MAXLIBS && libHandle[i].desc!=NULL) {
-    func = KaffeLib_GetSymbol(libHandle[i].desc, name);
-    
-DBG(NATIVELIB,
-    if (func == NULL) {
-	dprintf("Couldn't find %s in library handle %d == %s.\nError message is %s.\n",
-		name,
-		i,
-		libHandle[i].name,
-		KaffeLib_GetError());
-    }
-    else {
-	dprintf("Found %s in library handle %d == %s.\n",
-		name,
-        	i,
-		libHandle[i].name);
-    }
-);
-
+    func = loadNativeLibrarySymFromLib(&libHandle[i], name);
     ++i;
   }
-
-  unlockStaticMutex(&libraryLock);
 
   return func;
 }

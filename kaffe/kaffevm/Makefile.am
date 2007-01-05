@@ -40,9 +40,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/kaffe/kaffevm/jni \
         -I$(top_srcdir)/config/$(Khost_cpu) \
 	-I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os) \
-	$(MAYBE_INTERNAL_ZIP_INCLUDES) \
-        -I$(top_srcdir)/libraries/javalib/external/classpath/native/fdlibm \
-        -I$(top_srcdir)/libraries/javalib/external/classpath/native/jni/classpath 
+	$(MAYBE_INTERNAL_ZIP_INCLUDES) 
 
 native_LTLIBRARIES = libkaffevm.la
 
@@ -79,9 +77,7 @@ libkaffevm_la_DEPENDENCIES = \
 	verifier/libkaffeverifier.la \
 	$(GC_NAME)/libkaffegc.la \
 	jni/libkaffejni.la \
-        $(top_builddir)/replace/libreplace.la \
-        $(top_builddir)/libraries/javalib/external/classpath/native/fdlibm/libfdlibm.la \
-        $(top_builddir)/libraries/javalib/external/classpath/native/jni/classpath/libclasspath.la 
+        $(top_builddir)/replace/libreplace.la 
 
 libkaffevm_la_LIBADD = \
 	$(libkaffevm_la_DEPENDENCIES) \
@@ -128,9 +124,7 @@ libkaffevm_la_SOURCES = \
 	reflect.c \
 	reference.c \
 	binreloc.c \
-	$(top_srcdir)/libraries/clib/nio/gnu_java_nio_VMSelector.c \
 	$(top_srcdir)/libraries/clib/net/InetAddressImpl.c \
-	$(top_srcdir)/libraries/clib/net/NetworkInterface.c \
 	$(top_srcdir)/libraries/clib/native/AccessController.c \
 	$(top_srcdir)/libraries/clib/native/java_lang_ref_Reference.c \
         $(top_srcdir)/libraries/clib/native/java_lang_reflect_VMArray.c \
@@ -148,9 +142,7 @@ libkaffevm_la_SOURCES = \
         $(top_srcdir)/libraries/clib/native/java_lang_Thread.c \
         $(top_srcdir)/libraries/clib/native/Throwable.c \
 	$(top_srcdir)/libraries/clib/native/gnu_classpath_VMStackWalker.c \
-	$(top_srcdir)/libraries/clib/native/gnu_classpath_VMSystemProperties.c \
-        $(top_srcdir)/libraries/clib/native/java_lang_VMDouble.c \
-        $(top_srcdir)/libraries/clib/native/java_lang_VMSystem.c
+	$(top_srcdir)/libraries/clib/native/gnu_classpath_VMSystemProperties.c 
 
 noinst_HEADERS = \
 	access.h \

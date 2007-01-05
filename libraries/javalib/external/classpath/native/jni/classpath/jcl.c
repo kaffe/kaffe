@@ -48,6 +48,65 @@ exception statement from your version. */
   #endif
 #endif
 
+/*
+ * Cached Pointer class info.
+ */
+static jclass rawDataClass = NULL;
+static jfieldID rawData_fid = NULL;
+static jmethodID rawData_mid = NULL;
+
+/*
+ * JNI OnLoad constructor.
+ */
+jint
+JNI_OnLoad (JavaVM *vm, void *reserved __attribute__((unused)))
+{
+  JNIEnv *env;
+  void *envp;
+
+  if ((*vm)->GetEnv (vm, &envp, JNI_VERSION_1_4) != JNI_OK)
+    {
+      return JNI_VERSION_1_4;
+    }
+  env = (JNIEnv *) envp;
+#if SIZEOF_VOID_P == 8
+  rawDataClass = (*env)->FindClass (env, "gnu/classpath/Pointer64");
+  if (rawDataClass != NULL)
+    {
+      jclass tmp = rawDataClass;
+      rawDataClass = (*env)->NewGlobalRef (env, rawDataClass);
+      (*env)->DeleteGlobalRef (env, tmp);
+    }
+
+  if (rawDataClass != NULL)
+    {
+      rawData_fid = (*env)->GetFieldID (env, rawDataClass, "data", "J");
+      rawData_mid = (*env)->GetMethodID (env, rawDataClass, "<init>", "(J)V");
+    }
+#else
+#if SIZEOF_VOID_P == 4
+  rawDataClass = (*env)->FindClass (env, "gnu/classpath/Pointer32");
+  if (rawDataClass != NULL)
+    {
+      jclass tmp = rawDataClass;
+      rawDataClass = (*env)->NewGlobalRef (env, rawDataClass);
+      (*env)->DeleteGlobalRef (env, tmp);
+    }
+
+  if (rawDataClass != NULL)
+    {
+      rawData_fid = (*env)->GetFieldID (env, rawDataClass, "data", "I");
+      rawData_mid = (*env)->GetMethodID (env, rawDataClass, "<init>", "(I)V");
+    }
+#else
+#error "Pointer size is not supported."
+#endif /* SIZEOF_VOID_P == 4 */
+#endif /* SIZEOF_VOID_P == 8 */
+
+  return JNI_VERSION_1_4;
+}
+
+
 JNIEXPORT void JNICALL
 JCL_ThrowException (JNIEnv * env, const char *className, const char *errMsg)
 {
@@ -183,78 +242,17 @@ JCL_FindClass (JNIEnv * env, const char *className)
 
 
 /*
- * Build a Pointer object. The function caches the class type 
+ * Build a Pointer object.
  */
-
-static jclass rawDataClass;
-static jfieldID rawData_fid;
-static jmethodID rawData_mid;
 
 JNIEXPORT jobject JNICALL
 JCL_NewRawDataObject (JNIEnv * env, void *data)
 {
-  if (rawDataClass == NULL)
+  if (rawDataClass == NULL || rawData_mid == NULL)
     {
-      jclass tmp;
-#if SIZEOF_VOID_P == 8
-      rawDataClass = (*env)->FindClass (env, "gnu/classpath/Pointer64");
-      if (rawDataClass == NULL)
-	{
-	  JCL_ThrowException (env, "java/lang/InternalError",
-			      "unable to find internal class");
-	  return NULL;
-	}
-
-      rawData_mid = (*env)->GetMethodID (env, rawDataClass, "<init>", "(J)V");
-      if (rawData_mid == NULL)
-	{
-	  JCL_ThrowException (env, "java/lang/InternalError",
-			      "unable to find internal constructor");
-	  return NULL;
-	}
-
-      rawData_fid = (*env)->GetFieldID (env, rawDataClass, "data", "J");
-      if (rawData_fid == NULL)
-	{
-	  JCL_ThrowException (env, "java/lang/InternalError",
-			      "unable to find internal field");
-	  return NULL;
-	}
-#else
-      rawDataClass = (*env)->FindClass (env, "gnu/classpath/Pointer32");
-      if (rawDataClass == NULL)
-	{
-	  JCL_ThrowException (env, "java/lang/InternalError",
-			      "unable to find internal class");
-	  return NULL;
-	}
-
-      rawData_mid = (*env)->GetMethodID (env, rawDataClass, "<init>", "(I)V");
-      if (rawData_mid == NULL)
-	{
-	  JCL_ThrowException (env, "java/lang/InternalError",
-			      "unable to find internal constructor");
-	  return NULL;
-	}
-
-      rawData_fid = (*env)->GetFieldID (env, rawDataClass, "data", "I");
-      if (rawData_fid == NULL)
-	{
-	  JCL_ThrowException (env, "java/lang/InternalError",
-			      "unable to find internal field");
-	  return NULL;
-	}
-
-#endif
-      tmp = (*env)->NewGlobalRef (env, rawDataClass);
-      if (tmp == NULL)
-	{
-	  JCL_ThrowException (env, "java/lang/InternalError",
-			      "unable to create an internal global ref");
-	  return NULL;
-	}
-      (*env)->DeleteLocalRef(env, rawDataClass);
-      rawDataClass = tmp;
+      JCL_ThrowException (env, "java/lang/InternalError",
+                          "Pointer class was not properly initialized");
+      return NULL;
     }
 
 #if SIZEOF_VOID_P == 8
@@ -267,6 +265,13 @@ JCL_NewRawDataObject (JNIEnv * env, void *data)
 JNIEXPORT void * JNICALL
 JCL_GetRawData (JNIEnv * env, jobject rawdata)
 {
+  if (rawData_fid == NULL)
+    {
+      JCL_ThrowException (env, "java/lang/InternalError",
+                          "Pointer class was not properly initialized");
+      return NULL;
+    }
+
 #if SIZEOF_VOID_P == 8
   return (void *) (*env)->GetLongField (env, rawdata, rawData_fid);
 #else

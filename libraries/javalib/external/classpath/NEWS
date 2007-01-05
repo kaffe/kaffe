@@ -17,6 +17,30 @@ New in release 0.93 (UNRELEASED)
   vm/reference/gnu/classpath/VMStackWalker.java. VMs are encouraged to
   provide a more efficient implementation.
 * Added aton method to vm/reference/java/net/VMInetAddress.java.
+* NetworkInterface has been implemented for systems that provide the
+  `getifaddrs' function.
+* A java.nio.channels.Selector implementation based on the
+  kqueue/kevent notification mechanism has been added for Mac OS X and
+  BSD systems.
+* java.nio has been refactored to support more non-blocking operations
+  natively. Blocking IO classes have been refactored to call
+  non-blocking classes. Non-blocking accepts, connects, and
+  scatter-gather IO should now be better supported.
+
+Runtime interface changes:
+
+* java.net.VMNetworkInterface and java.net.NetworkInterface have been
+  updated to keep native-modified state in the former, and to simplify
+  the native code in our reference implementation.
+* gnu.java.nio.VMChannel has been expanded to better support native
+  non-blocking IO. Most native state data (such as file descriptor
+  integers) has been abstracted away into private state in the runtime
+  interface.
+* gnu.java.nio.VMPipe has been similarly changed.
+* gnu.java.net.VMPlainSocketImpl has been changed to remove some
+  functionality now provided by VMChannel; datagram socket-specific
+  methods have also been moved here, deprecating
+  VMPlainDatagramSocketImpl.
 
 New in release 0.92 (Aug 9, 2006)
 

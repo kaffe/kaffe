@@ -36,7 +36,7 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package gnu.java.nio.channels;
+package gnu.java.nio;
 
 import gnu.classpath.Configuration;
 import gnu.java.nio.FileLockImpl;
@@ -74,11 +74,11 @@ public final class FileChannelImpl extends FileChannel
   public static final int SYNC   = 16;
   public static final int DSYNC  = 32;
 
-  public static FileChannelImpl in;
-  public static FileChannelImpl out;
-  public static FileChannelImpl err;
+  public static final FileChannelImpl in;
+  public static final FileChannelImpl out;
+  public static final FileChannelImpl err;
 
-  private static native void init();
+  //private static native void init();
 
   static
   {
@@ -87,22 +87,45 @@ public final class FileChannelImpl extends FileChannel
         System.loadLibrary("javanio");
       }
     
-    init();
+    //init();
 
-    in  = new FileChannelImpl(0, READ);
-    out = new FileChannelImpl(1, WRITE);
-    err = new FileChannelImpl(2, WRITE);
+    FileChannelImpl ch = null;
+    try
+      {
+        ch = new FileChannelImpl(VMChannel.getStdin(), READ);
+      }
+    catch (IOException ioe)
+      {
+        throw new Error(ioe);
+      }
+    in = ch;
+    
+    ch = null;
+    try
+      {
+        ch = new FileChannelImpl(VMChannel.getStdout(), WRITE);
+      }
+    catch (IOException ioe)
+      {
+        throw new Error(ioe);
+      }
+    out = ch;
+    
+    ch = null;
+    try
+      {
+        ch = new FileChannelImpl(VMChannel.getStderr(), WRITE);        
+      }
+    catch (IOException ioe)
+      {
+        throw new Error(ioe);
+      }
+    err = ch;
   }
 
   /**
    * This is the actual native file descriptor value
    */
-  // System's notion of file descriptor.  It might seem redundant to
-  // initialize this given that it is reassigned in the constructors.
-  // However, this is necessary because if open() throws an exception
-  // we want to make sure this has the value -1.  This is the most
-  // efficient way to accomplish that.
-  private int fd = -1;
   private VMChannel ch;
 
   private int mode;
@@ -113,19 +136,19 @@ public final class FileChannelImpl extends FileChannel
   /* This is a static factory method, so that VM implementors can decide
    * substitute subclasses of FileChannelImpl. */
   public static FileChannelImpl create(File file, int mode)
-    throws FileNotFoundException
+    throws IOException
   {
     return new FileChannelImpl(file, mode);
   }
 
   private FileChannelImpl(File file, int mode)
-    throws FileNotFoundException
+    throws IOException
   {
     String path = file.getPath();
     description = path;
-    fd = open (path, mode);
     this.mode = mode;
-    this.ch = VMChannel.getVMChannel(this);
+    this.ch = new VMChannel();
+    ch.openFile(path, mode);
 
     // First open the file and then check if it is a a directory
     // to avoid race condition.
@@ -133,11 +156,11 @@ public final class FileChannelImpl extends FileChannel
       {
 	try 
 	  {
-	      close();
+	    close();
 	  }
 	catch (IOException e)
 	  {
-	      /* ignore it */
+	    /* ignore it */
 	  }
 
 	throw new FileNotFoundException(description + " is a directory");
@@ -153,49 +176,59 @@ public final class FileChannelImpl extends FileChannel
    *
    * @param mode READ or WRITE
    */
-  FileChannelImpl (int fd, int mode)
+  FileChannelImpl (VMChannel ch, int mode)
   {
-    this.fd = fd;
     this.mode = mode;
-    this.description = "descriptor(" + fd + ")";
-    this.ch = VMChannel.getVMChannel(this);
+    this.description = "descriptor(" + ch.getState() + ")";
+    this.ch = ch;
   }
 
-  private native int open (String path, int mode) throws FileNotFoundException;
+  public int available() throws IOException
+  {
+    return ch.available();
+  }
 
-  public native int available () throws IOException;
-  private native long implPosition () throws IOException;
-  private native void seek (long newPosition) throws IOException;
-  private native void implTruncate (long size) throws IOException;
+  private long implPosition() throws IOException
+  {
+    return ch.position();
+  }
+
+  private void seek(long newPosition) throws IOException
+  {
+    ch.seek(newPosition);
+  }
+
+  private void implTruncate(long size) throws IOException
+  {
+    ch.truncate(size);
+  }
   
-  public native void unlock (long pos, long len) throws IOException;
+  public void unlock(long pos, long len) throws IOException
+  {
+    ch.unlock(pos, len);
+  }
 
-  public native long size () throws IOException;
+  public long size () throws IOException
+  {
+    return ch.size();
+  }
     
-  protected native void implCloseChannel() throws IOException;
+  protected void implCloseChannel() throws IOException
+  {
+    ch.close();
+  }
 
   /**
    * Makes sure the Channel is properly closed.
    */
   protected void finalize() throws IOException
   {
-    if (fd != -1)
+    if (ch.getState().isValid())
       close();
   }
 
   public int read (ByteBuffer dst) throws IOException
   {
-    /*
-    int result;
-    byte[] buffer = new byte [dst.remaining ()];
-    
-    result = read (buffer, 0, buffer.length);
-
-    if (result > 0)
-      dst.put (buffer, 0, result);
-
-    return result;
-    */
     return ch.read(dst);
   }
 
@@ -212,11 +245,10 @@ public final class FileChannelImpl extends FileChannel
     return result;
   }
 
-  public native int read ()
-    throws IOException;
-
-  public native int read (byte[] buffer, int offset, int length)
-    throws IOException;
+  public int read() throws IOException
+  {
+    return ch.read();
+  }
 
   public long read (ByteBuffer[] dsts, int offset, int length)
     throws IOException
@@ -252,19 +284,16 @@ public final class FileChannelImpl extends FileChannel
     return result;
   }
 
-  public native void write (byte[] buffer, int offset, int length)
-    throws IOException;
-  
-  public native void write (int b) throws IOException;
+  public void write (int b) throws IOException
+  {
+    ch.write(b);
+  }
 
   public long write(ByteBuffer[] srcs, int offset, int length)
     throws IOException
   {
     return ch.writeGathering(srcs, offset, length);
   }
-				   
-  public native MappedByteBuffer mapImpl (char mode, long position, int size)
-    throws IOException;
 
   public MappedByteBuffer map (FileChannel.MapMode mode,
 			       long position, long size)
@@ -291,7 +320,7 @@ public final class FileChannelImpl extends FileChannel
     if (position < 0 || size < 0 || size > Integer.MAX_VALUE)
       throw new IllegalArgumentException ("position: " + position
 					  + ", size: " + size);
-    return mapImpl(nmode, position, (int) size);
+    return ch.map(nmode, position, (int) size);
   }
 
   /**
@@ -302,10 +331,8 @@ public final class FileChannelImpl extends FileChannel
     if (!isOpen ())
       throw new ClosedChannelException ();
 
-    force ();
+    ch.flush(metaData);
   }
-
-  private native void force ();
 
   // like transferTo, but with a count of less than 2Gbytes
   private int smallTransferTo (long position, int count, 
@@ -453,7 +480,7 @@ public final class FileChannelImpl extends FileChannel
     try
       {
 	begin();
-	boolean lockable = lock(position, size, shared, false);
+	boolean lockable = ch.lock(position, size, shared, false);
 	completed = true;
 	return (lockable
 		? new FileLockImpl(this, position, size, shared)
@@ -464,14 +491,6 @@ public final class FileChannelImpl extends FileChannel
 	end(completed);
       }
   }
-
-  /** Try to acquire a lock at the given position and size.
-   * On success return true.
-   * If wait as specified, block until we can get it.
-   * Otherwise return false.
-   */
-  private native boolean lock(long position, long size,
-			      boolean shared, boolean wait) throws IOException;
   
   public FileLock lock (long position, long size, boolean shared)
     throws IOException
@@ -481,7 +500,7 @@ public final class FileChannelImpl extends FileChannel
     boolean completed = false;
     try
       {
-	boolean lockable = lock(position, size, shared, true);
+	boolean lockable = ch.lock(position, size, shared, true);
 	completed = true;
 	return (lockable
 		? new FileLockImpl(this, position, size, shared)
@@ -537,17 +556,17 @@ public final class FileChannelImpl extends FileChannel
 
   public String toString()
   {
-    return (this.getClass()
-	    + "[fd=" + fd
-	    + ",mode=" + mode + ","
-	    + description + "]");
+    return (super.toString()
+	    + "[ fd: " + ch.getState()
+	    + "; mode: " + Integer.toOctalString(mode)
+	    + "; " + description + " ]");
   }
 
   /**
    * @return The native file descriptor.
-   */
+   * /
   public int getNativeFD()
   {
     return fd;
-  }
+  }*/
 }
