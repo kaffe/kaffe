@@ -541,14 +541,6 @@ public abstract class JComponent extends Container implements Serializable
    */
   Border border;
 
-  /** 
-   * The text to show in the tooltip associated with this component.
-   * 
-   * @see #setToolTipText
-   * @see #getToolTipText()
-   */
-   String toolTipText;
-
   /**
    * The popup menu for the component.
    * 
@@ -1439,14 +1431,12 @@ public abstract class JComponent extends Container implements Serializable
   {
     JToolTip toolTip = new JToolTip();
     toolTip.setComponent(this);
-    toolTip.setTipText(toolTipText);
-
     return toolTip;
   }
 
   /**
-   * Return the location at which the {@link #toolTipText} property should be
-   * displayed, when triggered by a particular mouse event. 
+   * Return the location at which the <code>toolTipText</code> property should
+   * be displayed, when triggered by a particular mouse event. 
    *
    * @param event The event the tooltip is being presented in response to
    *
@@ -1459,53 +1449,56 @@ public abstract class JComponent extends Container implements Serializable
   }
 
   /**
-   * Set the value of the {@link #toolTipText} property.
+   * Set the tooltip text for this component. If a non-<code>null</code>
+   * value is set, this component is registered in the
+   * <code>ToolTipManager</code> in order to turn on tooltips for this
+   * component. If a <code>null</code> value is set, tooltips are turne off
+   * for this component.
    *
-   * @param text The new property value
+   * @param text the tooltip text for this component
    *
    * @see #getToolTipText()
+   * @see #getToolTipText(MouseEvent)
    */
   public void setToolTipText(String text)
   {
+    String old = getToolTipText();
+    putClientProperty(TOOL_TIP_TEXT_KEY, text);
+    ToolTipManager ttm = ToolTipManager.sharedInstance();
     if (text == null)
-    {
-      ToolTipManager.sharedInstance().unregisterComponent(this);
-      toolTipText = null;
-      return;
-    }
-
-    // XXX: The tip text doesn't get updated unless you set it to null
-    // and then to something not-null. This is consistent with the behaviour
-    // of Sun's ToolTipManager.
-
-    String oldText = toolTipText;
-    toolTipText = text;
-
-    if (oldText == null)
-      ToolTipManager.sharedInstance().registerComponent(this);
+      ttm.unregisterComponent(this);
+    else if (old == null)
+      ttm.registerComponent(this);
   }
 
   /**
-   * Get the value of the {@link #toolTipText} property.
+   * Returns the current tooltip text for this component, or <code>null</code>
+   * if none has been set.
    *
-   * @return The current property value
+   * @return the current tooltip text for this component, or <code>null</code>
+   *         if none has been set
    *
    * @see #setToolTipText
+   * @see #getToolTipText(MouseEvent)
    */
   public String getToolTipText()
   {
-    return toolTipText;
+    return (String) getClientProperty(TOOL_TIP_TEXT_KEY);
   }
 
   /**
-   * Get the value of the {@link #toolTipText} property, in response to a
-   * particular mouse event.
+   * Returns the tooltip text for this component for a particular mouse
+   * event. This can be used to support context sensitive tooltips that can
+   * change with the mouse location. By default this returns the static
+   * tooltip text returned by {@link #getToolTipText()}.
    *
-   * @param event The mouse event which triggered the tooltip
+   * @param event the mouse event which triggered the tooltip
    *
-   * @return The current property value
+   * @return the tooltip text for this component for a particular mouse
+   *         event
    *
    * @see #setToolTipText
+   * @see #getToolTipText()
    */
   public String getToolTipText(MouseEvent event)
   {
@@ -2188,6 +2181,10 @@ public abstract class JComponent extends Container implements Serializable
         components.add(c);
         if (! onTop && jc != null  && ! jc.isOptimizedDrawingEnabled())
           {
+            // Indicates whether we reset the paint root to be the current
+            // component.
+            boolean updatePaintRoot = false;
+
             // Check obscured state of the child.
             // Generally, we have 3 cases here:
             // 1. Not obscured. No need to paint from the parent.
@@ -2195,22 +2192,31 @@ public abstract class JComponent extends Container implements Serializable
             // 3. Completely obscured. No need to paint anything.
             if (c != this)
               {
-                int count = c.getComponentCount();
-                int i = 0;
-                for (; i < count && c.getComponent(i) != child; i++);
-
-                if (jc.isCompletelyObscured(i, paintX, paintY, paintW, paintH))
-                  return; // No need to paint anything.
-                else if (jc.isPartiallyObscured(i, paintX, paintY, paintW,
-                                                paintH))
+                if (jc.isPaintRoot())
+                  updatePaintRoot = true;
+                else
                   {
-                    // Paint from parent.
-                    paintRoot = jc;
-                    pIndex = pCount;
-                    offsX = 0;
-                    offsY = 0;
-                    haveBuffer = false;
+                    int count = c.getComponentCount();
+                    int i = 0;
+                    for (; i < count && c.getComponent(i) != child; i++);
+
+                    if (jc.isCompletelyObscured(i, paintX, paintY, paintW,
+                                                paintH))
+                      return; // No need to paint anything.
+                    else if (jc.isPartiallyObscured(i, paintX, paintY, paintW,
+                                                    paintH))
+                      updatePaintRoot = true;
+                      
                   }
+              }
+            if (updatePaintRoot)
+              {
+                // Paint from parent.
+                paintRoot = jc;
+                pIndex = pCount;
+                offsX = 0;
+                offsY = 0;
+                haveBuffer = false;
               }
           }
         pCount++;
@@ -2257,8 +2263,7 @@ public abstract class JComponent extends Container implements Serializable
 
         // Actually trigger painting.
         if (haveBuffer)
-          paintRoot.paintDoubleBuffered(paintX, paintY, paintW,
-                                                paintH);
+          paintRoot.paintDoubleBuffered(paintX, paintY, paintW, paintH);
         else
           {
             Graphics g = paintRoot.getGraphics();
@@ -2298,6 +2303,19 @@ public abstract class JComponent extends Container implements Serializable
    *         on top of others
    */
   boolean onTop()
+  {
+    return false;
+  }
+
+  /**
+   * This returns true when a component needs to force itself as a paint
+   * origin. This is used for example in JViewport to make sure that it
+   * gets to update its backbuffer.
+   *
+   * @return true when a component needs to force itself as a paint
+   *         origin
+   */
+  boolean isPaintRoot()
   {
     return false;
   }

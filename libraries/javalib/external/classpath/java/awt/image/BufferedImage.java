@@ -38,6 +38,7 @@ exception statement from your version. */
 
 package java.awt.image;
 
+import gnu.java.awt.Buffers;
 import gnu.java.awt.ComponentDataBlitOp;
 
 import java.awt.Graphics;
@@ -172,7 +173,13 @@ public class BufferedImage extends Image
 							  0x0000FF00, 
 							  0x000000FF, 
 							  0xFF000000 } );
-	cm = new DirectColorModel( 32, 0xff0000, 0xff00, 0xff, 0xff000000 );
+        if (premultiplied)
+          cm = new DirectColorModel( ColorSpace.getInstance(ColorSpace.CS_sRGB),
+                                     32, 0xff0000, 0xff00, 0xff, 0xff000000,
+                                     true,
+                                     Buffers.smallestAppropriateTransferType(32));
+        else
+          cm = new DirectColorModel( 32, 0xff0000, 0xff00, 0xff, 0xff000000 );
 	break;
 
       case BufferedImage.TYPE_4BYTE_ABGR:
@@ -183,7 +190,13 @@ public class BufferedImage extends Image
 							  0xFF000000, 
 							  0x00FF0000, 
 							  0x0000FF00 } );
-	cm = new DirectColorModel( 32, 0xff, 0xff00, 0xff0000, 0xff000000 );
+        if (premultiplied)
+          cm = new DirectColorModel( ColorSpace.getInstance(ColorSpace.CS_sRGB),
+                                     32, 0xff0000, 0xff00, 0xff, 0xff000000,
+                                     true,
+                                     Buffers.smallestAppropriateTransferType(32));
+        else
+          cm = new DirectColorModel( 32, 0xff0000, 0xff00, 0xff, 0xff000000 );
 	break;
 
       case BufferedImage.TYPE_INT_BGR:

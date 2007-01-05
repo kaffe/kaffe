@@ -38,6 +38,8 @@ exception statement from your version. */
 
 package gnu.java.awt.peer.gtk;
 
+import gnu.java.awt.ComponentReshapeEvent;
+
 import java.awt.Component;
 import java.awt.Frame;
 import java.awt.Graphics;
@@ -224,8 +226,30 @@ public class GtkWindowPeer extends GtkContainerPeer
   // only called from GTK thread
   protected void postConfigureEvent (int x, int y, int width, int height)
   {
+    int frame_x = x - insets.left;
+    int frame_y = y - insets.top;
     int frame_width = width + insets.left + insets.right;
     int frame_height = height + insets.top + insets.bottom;
+
+    // Update the component's knowledge about the size.
+    // Important: Please look at the big comment in ComponentReshapeEvent
+    // to learn why we did it this way. If you change this code, make
+    // sure that the peer->AWT bounds update still works.
+    // (for instance: http://gcc.gnu.org/bugzilla/show_bug.cgi?id=29448 )
+
+    // We do this befor we post the ComponentEvent, because (in Window)
+    // we invalidate() / revalidate() when a ComponentEvent is seen,
+    // and the AWT must already know about the new size then.
+    if (frame_x != this.x || frame_y != this.y || frame_width != this.width
+        || frame_height != this.height)
+      {
+        ComponentReshapeEvent ev = new ComponentReshapeEvent(awtComponent,
+                                                             frame_x,
+                                                             frame_y,
+                                                             frame_width,
+                                                             frame_height);
+        awtComponent.dispatchEvent(ev);
+      }
 
     if (frame_width != getWidth()
 	|| frame_height != getHeight())
@@ -236,9 +260,6 @@ public class GtkWindowPeer extends GtkContainerPeer
 					 ComponentEvent.COMPONENT_RESIZED));
       }
 
-    int frame_x = x - insets.left;
-    int frame_y = y - insets.top;
-
     if (frame_x != getX()
 	|| frame_y != getY())
       {
@@ -247,6 +268,7 @@ public class GtkWindowPeer extends GtkContainerPeer
 	q().postEvent(new ComponentEvent(awtComponent,
 					 ComponentEvent.COMPONENT_MOVED));
       }
+
   }
 
   public void show ()

@@ -364,7 +364,7 @@ public class BasicMenuItemUI extends MenuItemUI
    */
   protected void doClick(MenuSelectionManager msm)
   {
-    menuItem.doClick();
+    menuItem.doClick(0);
     msm.clearSelectedPath();
   }
 
@@ -1058,15 +1058,14 @@ public class BasicMenuItemUI extends MenuItemUI
      */
     public void mouseReleased(MouseEvent e)
     {
-      Rectangle size = menuItem.getBounds();
       MenuSelectionManager manager = MenuSelectionManager.defaultManager();
-      if (e.getX() > 0 && e.getX() < size.width && e.getY() > 0
-          && e.getY() < size.height)
+      int x = e.getX();
+      int y = e.getY();
+      if (x > 0 && x < menuItem.getWidth() && y > 0
+          && y < menuItem.getHeight())
         {
-          manager.clearSelectedPath();
-          menuItem.doClick();
+          doClick(manager);
         }
-
       else
         manager.processMouseEvent(e);
     }
@@ -1085,7 +1084,7 @@ public class BasicMenuItemUI extends MenuItemUI
      */
     public void menuDragMouseDragged(MenuDragMouseEvent e)
     {
-      MenuSelectionManager manager = MenuSelectionManager.defaultManager();
+      MenuSelectionManager manager = e.getMenuSelectionManager();
       manager.setSelectedPath(e.getPath());
     }
 
@@ -1098,7 +1097,7 @@ public class BasicMenuItemUI extends MenuItemUI
      */
     public void menuDragMouseEntered(MenuDragMouseEvent e)
     {
-      MenuSelectionManager manager = MenuSelectionManager.defaultManager();
+      MenuSelectionManager manager = e.getMenuSelectionManager();
       manager.setSelectedPath(e.getPath());
     }
 
@@ -1110,7 +1109,7 @@ public class BasicMenuItemUI extends MenuItemUI
      */
     public void menuDragMouseExited(MenuDragMouseEvent e)
     {
-      // TODO: What should be done here, if anything?
+      // Nothing to do here yet.
     }
 
     /**
@@ -1122,13 +1121,14 @@ public class BasicMenuItemUI extends MenuItemUI
      */
     public void menuDragMouseReleased(MenuDragMouseEvent e)
     {
-      MenuElement[] path = e.getPath();
-
-      if (path[path.length - 1] instanceof JMenuItem)
-        ((JMenuItem) path[path.length - 1]).doClick();
-
-      MenuSelectionManager manager = MenuSelectionManager.defaultManager();
-      manager.clearSelectedPath();
+      MenuSelectionManager manager = e.getMenuSelectionManager();
+      int x = e.getX();
+      int y = e.getY();
+      if (x >= 0 && x < menuItem.getWidth() && y >= 0
+          && y < menuItem.getHeight())
+        doClick(manager);
+      else
+        manager.clearSelectedPath();
     }
   }
 

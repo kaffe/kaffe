@@ -1582,7 +1582,11 @@ Java_gnu_java_nio_VMChannel_lock (JNIEnv *env,
   struct flock fl;
 
   fl.l_start  = (off_t) pos;
-  fl.l_len    = (off_t) len;
+  /* Long.MAX_VALUE means lock everything possible starting at pos. */
+  if (len == 9223372036854775807LL)
+    fl.l_len = 0;
+  else
+    fl.l_len = (off_t) len;
   fl.l_pid    = getpid ();
   fl.l_type   = (shared ? F_RDLCK : F_WRLCK);
   fl.l_whence = SEEK_SET;

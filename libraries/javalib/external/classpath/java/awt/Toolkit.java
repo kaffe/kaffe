@@ -547,7 +547,7 @@ public abstract class Toolkit
    *
    * @throws AWTError If the toolkit cannot be loaded.
    */
-  public static Toolkit getDefaultToolkit()
+  public static synchronized Toolkit getDefaultToolkit()
   {
     if (toolkit != null)
       return toolkit;

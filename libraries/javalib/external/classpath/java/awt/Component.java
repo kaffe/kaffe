@@ -41,6 +41,8 @@ package java.awt;
 
 //import gnu.java.awt.dnd.peer.gtk.GtkDropTargetContextPeer;
 
+import gnu.java.awt.ComponentReshapeEvent;
+
 import java.awt.dnd.DropTarget;
 import java.awt.event.ActionEvent;
 import java.awt.event.AdjustmentEvent;
@@ -5698,6 +5700,21 @@ p   * <li>the set of backward traversal keys
    */
   void dispatchEventImpl(AWTEvent e)
   {
+    // Update the component's knowledge about the size.
+    // Important: Please look at the big comment in ComponentReshapeEvent
+    // to learn why we did it this way. If you change this code, make
+    // sure that the peer->AWT bounds update still works.
+    // (for instance: http://gcc.gnu.org/bugzilla/show_bug.cgi?id=29448 )
+    if (e instanceof ComponentReshapeEvent)
+      {
+        ComponentReshapeEvent reshape = (ComponentReshapeEvent) e;
+        x = reshape.x;
+        y = reshape.y;
+        width = reshape.width;
+        height = reshape.height;
+        return;
+      }
+
     // Retarget focus events before dispatching it to the KeyboardFocusManager
     // in order to handle lightweight components properly.
     boolean dispatched = false;

@@ -161,6 +161,38 @@ public class ParagraphView extends FlowView implements TabExpander
     {
       // Do nothing here. The children are added while layouting.
     }
+
+    /**
+     * Overridden to determine the minimum start offset of the row's children.
+     */
+    public int getStartOffset()
+    {
+      // Determine minimum start offset of the children.
+      int offset = Integer.MAX_VALUE;
+      int n = getViewCount();
+      for (int i = 0; i < n; i++)
+        {
+          View v = getView(i);
+          offset = Math.min(offset, v.getStartOffset());
+        }
+      return offset;
+    }
+
+    /**
+     * Overridden to determine the maximum end offset of the row's children.
+     */
+    public int getEndOffset()
+    {
+      // Determine minimum start offset of the children.
+      int offset = 0;
+      int n = getViewCount();
+      for (int i = 0; i < n; i++)
+        {
+          View v = getView(i);
+          offset = Math.max(offset, v.getEndOffset());
+        }
+      return offset;
+    }
   }
 
   /**

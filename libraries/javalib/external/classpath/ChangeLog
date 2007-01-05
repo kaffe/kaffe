@@ -1,3 +1,484 @@
+2006-10-14  Roman Kennke  <kennke@aicas.com>
+
+	PR 27957
+	* javax/swing/JComponent.java
+	(toolTipText): Removed field.
+	(createToolTip): Don't set tooltip text here. This is done
+	in the ToolTipManager.
+	(setToolTipText): Set tooltip text as client property.
+	(getToolTipText): Get tooltip text from client property.
+	* javax/swing/ToolTipManager.java
+	(currentComponent): Made field non-static and of type JComponent.
+	(currentPoint): Made field non-static.
+	(currentTip): Made field non-static.
+	(popup): Made field non-static.
+	(toolTipText): New field. Stores the current tooltip text.
+	(checkTipUpdate): New helper method. Checks for updates of
+	the tooltip text and triggers the appropriate actions.
+	(getContentPaneDeepestComponent): Removed unneeded casts.
+	(mouseEntered): Removed unneeded cast. Initially fetch tooltip
+	text from component.
+	(mouseMoved): Check for tooltip text updates.
+	(showTip): Set tooltip text from current setting.
+
+2006-10-14  Roman Kennke  <kennke@aicas.com>
+
+	PR 27956
+	* javax/swing/JSlider.java
+	(setPaintLabels): Call setLabelTable() instead of setting
+	the field directly. This also updates the label's size.
+
+2006-10-13  Tom Tromey  <tromey@redhat.com>
+
+	* tools/gnu/classpath/tools/javah/ClassWrapper.java (toString): New
+	method.
+
+2006-10-13  Tania Bento  <tbento@redhat.com>
+
+	* java/awt/ScrollPane.java
+	(setLayout): Should throw AWTError whenever called.
+
+2006-10-13  Roman Kennke  <kennke@aicas.com>
+
+	PR 29448
+	* java/awt/Component.java
+	(dispatchEventImpl): Special handle ComponentReshapeEvents to
+	update the AWT's knowledge about a component's size.
+	* gnu/java/awt/ComponentReshapeEvent.java: New class.
+	* gnu/java/awt/peer/gtk/GtkWindowPeer.java
+	(postConfigureEvent): Directly dispatch a ComponentReshapeEvent
+	to update the AWT's knowledge about the component bounds.
+
+2006-10-13  Tania Bento  <tbento@redhat.com>
+
+	* java/awt/ScrollPaneAdjustable.java
+	(setMaximum): Should throw AWTError whenever called.
+	(setMinimum): Same.
+	(setVisibleAmount): Same.
+
+2006-10-13  Tania Bento  <tbento@redhat.com>
+
+	* java/awt/ScrollPane.java
+	(addImpl): When calling super, index should be value passed, 
+	not -1.
+	(getIsValidString): New helper method for paramString().
+	(getScrollbarDisplayString): New helper method for paramString(). 
+	(paramString): Changed format of outputted string.
+
+2006-10-13  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/tree/DefaultTreeSelectionModel.java
+	(clone): Added cast to TreePath[].
+
+2006-10-13  Roman Kennke  <kennke@aicas.com>
+
+	PR 27780
+	* javax/swing/JMenuItem.java
+	(isDragging): New field. Indicates if we are inside a mouse
+	drag.
+	(createMenuDragMouseEvent): Removed unneeded method.
+	(processMenuDragMouseEvent): Track if we are dragging.
+	(processMouseEvent): Simply forward to processMenuDragMouseEvent().
+	* javax/swing/plaf/basic/BasicMenuItemUI.java
+	(MenuDragMouseHandler.menuDragMouseDragged): Fetch
+	MenuSelectionManager from event.
+	(MenuDragMouseHandler.menuDragMouseEntered): Fetch
+	MenuSelectionManager from event.
+	(MenuDragMouseHandler.menuDragMouseExited): Fetch
+	MenuSelectionManager from event.
+	(MenuDragMouseHandler.menuDragMouseReleased): Click on mouse
+	release inside menu item, otherwise clear selection.
+	(MenuInputHandler.mouseReleased): Avoid multiple calls to getX()
+	and getY(). Call doClick() rather than the doClick() of JMenuItem.
+	(doClick): Perform an immediate click.
+
+2006-10-13  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* javax/swing/DefaultComboBoxModel.java (setSelectedItem): Simply
+	return if object is not in the list.
+
+2006-10-12  Roman Kennke  <kennke@aicas.com>
+
+	PR 27956
+	* javax/swing/JSlider.java
+	(LabelUIResource): New inner class. A JLabel as UIResource.
+	(createStandardLabels): Don't set label bounds here.
+	Create LabelUIResource instances.
+	(setInverted): Repaint.
+	(setLabelTable): Update the label UIs. Revalidate and repaint.
+	(setMajorTickSpacing): Update the label table. Repaint if
+	necessary.
+	(setMinorTickSpacing): Repaint if necessary.
+	(setOrientation): Revalidate.
+	(setPaintLabels): Revalidate and repaint.
+	(setPaintTicks): Revalidate and repaint.
+	(setPaintTrack): Repaint.
+	(updateLabelUIs): Set the label sizes here.
+	(updateUI): Also update the label UIs.
+	* javax/swing/plaf/basic/BasicSliderUI.java
+	(ComponentHandler.componentResized): Don't revalidate.
+	(FocusHandler.focusGained): Don't set field.
+	(FocusHandler.focusLost): Don't set field.
+	(PropertyChangeHandler.propertyChange): Calculate geometry
+	and repaint for a couple more properties.
+	(TrackListener.mouseReleased): Repaint.
+	(hasFocus): Removed unneeded field.
+	(calculateContentRect): No need to check for content size < 0.
+	(calculateFocusRect): Use insets from insetCache.
+	(calculateLabelRect): Fixed calculation of label rectangle.
+	It is relative to the tick rectangle, rather than the content
+	rectangle.
+	(calculateTickRect): Small restructuring to avoid unnecessary
+	comparisons.
+	(calculateTrackRect): Fixed calculation of track rectangle.
+	(getMaximumSize): Fixed. Fetch preferred size and set
+	the height of width to Short.MAX_VALUE.
+	(getMinimumHorizontalSize): Fixed to return UIManager value.
+	(getMinimumVerticalSize): Fixed to return UIManager value.
+	(getPreferredHorizontalSize): Fixed to return UIManager value.
+	(getPreferredVerticalSize): Fixed to return UIManager value.
+	(getMinimumSize): Fixed to return the UIManager value plus
+	insets added.
+	(getPreferredSize): Fixed to return the UIManager value plus
+	insets added.
+	(getWidthOfWidestLabel): Restructured for more cleanness and
+	efficiency.
+	(hitClip): New helper method.
+	(paintHorizontalLabel): Replaced by more efficient and clean
+	implementation.
+	(paintVerticalLabel): Replaced by more efficient and clean
+	implementation.
+	(paintLabels): Replaced by more efficient and clean
+	implementation.
+	(paint): Check if rectangles intersect with clip for maximum
+	efficiency.
+	(recalculateIfInsetsChanged): Fixed. This method should
+	recalculate only when the insets changed.
+	(setThumbLocation): Repaint with a reasonable clip.
+	(xPositionForValue): Made more clean and efficient.
+	(yPositionForValue): Made more clean and efficient.
+	* javax/swing/plaf/basic/BasicLookAndFeel.java
+	(initComponenDefaults):	Added Slider.horizontalSize,
+	Slider.verticalSize, Slider.minimumHorizontalSize and
+	Slider.minimumVerticalSize properties.
+	* javax/swing/plaf/metal/MetalSliderUI.java
+	(getTickLength): Add 1 for horizontal sliders and 3 for
+	vertical sliders.
+	(paintMajorTickForHorizSlider): Fix colors. Fix line locations.
+	(paintMinorTickForHorizSlider): Fix colors. Fix line locations.
+	(paintMajorTickForVertSlider): Fix colors. Fix line locations.
+	(paintMinorTickForVertSlider): Fix colors. Fix line locations.
+
+2006-10-12  Roman Kennke  <kennke@aicas.com>
+
+	PR 28696
+	* javax/swing/text/FlowView.java
+	(FlowStrategy.layout): Preserve logical views from getting lost.
+	(FlowStrategy.layoutRow): Fix line breaking.
+	(FlowStrategy.adjustRow): Fix line breaking.
+	(FlowStrategy.changedUpdate): Mark layout invalid, or repaint.
+	(FlowStrategy.insertUpdate): Mark layout invalid, or repaint.
+	(FlowStrategy.removeUpdate): Mark layout invalid, or repaint.
+	(createView): Don't check index.
+	(contains): New helper method.
+	(reparent): New helper method.
+	(layoutDirty): Removed unneeded field.
+	(FlowView): Removed layoutDirty field init.
+	(changedUpdate): Removed layoutDirty handling.
+	(insertUpdate): Removed layoutDirty handling.
+	(removeUpdate): Removed layoutDirty handling.
+	(layout): Use isLayoutValid() rather than the layoutDirty field.
+	* javax/swing/text/GlyphView.java
+	(startOffset): Removed.
+	(endOffset): Removed.
+	(offset): New field.
+	(length): New field.
+	(GlyphView): Initialize new fields. Removed old fields.
+	(createFragment): Create fragment with new relative offsets.
+	(getEndOffset): Work with new relative offsets.
+	(getStartOffset): Work with new relative offsets.
+	* javax/swing/text/ParagraphView.java
+	(Row.getStartOffset): Overidden to determine the minimum start
+	offset from the children.
+	(Row.getEndOffset): Overidden to determine the maximum end
+	offset from the children.
+	* javax/swing/text/html/BRView.java
+	Make subclass of InlineView.
+	(getBreakWeight): Fall back to super for Y_AXIS.
+
+2006-10-12  Roman Kennke  <kennke@aicas.com>
+
+	PR 28733
+	* javax/swing/plaf/basic/BasicTabbedPaneUI.java
+	(TabPaneLayout.normalizeTabRuns): Replaced algorithm with
+	one that avoids faulty state that could cause division by zero
+	error.
+
+2006-10-12  Roman Kennke  <kennke@aicas.com>
+
+	PR 28057
+	* javax/swing/plaf/basic/BasicRadioButtonUI.java
+	(paint): Determine correct icon. Added support for HTML label.
+	Added small optimizations.
+	(getPreferredSize): Only consider the buttons iconTextGap, and
+	only when the text is not null.
+	* javax/swing/plaf/basic/BasicLookAndFeel.java
+	(initComponentDefaults): Fetch border for RadioButton from
+	BasicButtons.getRadioButtonBorder().
+	* javax/swing/plaf/metal/MetalRadioButtonUI.java
+	(paintFocus): Paint focus rectangle one pixel smaller.
+
+2006-10-12  Roman Kennke  <kennke@aicas.com>
+
+	PR 29418
+	* javax/swing/tree/AbstractLayoutCache.java
+	(getNodeDimensions): Don't throw InternalError, but instead
+	return null.
+	(getRowsForPaths): Check for null here.
+	(isFixedRowHeight): Returns true when rowHeight > 0.
+	(setSelectionModel): Set this as the row mapper for the selection
+	model.
+	* javax/swing/tree/VariableHeightLayoutCache.java
+	(NodeRecord.NodeRecord): Initialize bounds field.
+	(getBounds): Simply return the bounds field.
+	(row2Node): Changed to be an ArrayList.
+	(RECT_CACHE): New field. Caches a Rectangle instance.
+	(countRows): Added y parameter and return value. The method
+	now takes the current y position as parameter, and returns
+	the updated y position.
+	(getBounds): Fixed to return the correct bounds.
+	(getPathForRow): Replaced by fixed implementation.
+	(getPreferredHeight): Replaced by more efficient implementation.
+	This simply fetches the last node record and returns its lower
+	bounds.
+	(getPreferredWidth): Added null check.
+	(getVisibleChildCount): Added null check.
+	(getVisiblePathsFrom): Added null check.
+	(setExpandedState): Also expand the ancestors of the node
+	to be expanded.
+	(setModel): Set dirty flag rather than updating for real.
+	(setNodeDimensions): Overridden to set the dirty flag.
+	(setRowHeight): Overridden to set the dirty flag.
+	(update): Don't special case the root here, this is done now
+	in countRows().
+
+2006-10-12  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JComponent.java
+	(paintImmediately2): Added support for components which need
+	to force themselves as paint root.
+	(isPaintRoot): New method. This should be overridden by components
+	which need to force themselves as paint root.
+	* javax/swing/JViewport.java
+	(isPaintRoot): Overridden to force the viewport as paint root
+	when running in backingstore mode.
+
+2006-10-12  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/tree/DefaultTreeSelectionModel.java
+	(PathPlaceHolder): New inner class. Wraps a path and its status
+	wrt to its newness.
+	(selectedPaths): New field. A supporting datastructure.
+	(tmpPaths): New field. A supporting datastructure.
+	(DefaultTreeSelectionModel): Initialize the list selection model,
+	the leadIndex and the supporting datastructures.
+	(addPropertyChangeListener): Create changeSupport object lazily.
+	(addSelectionPaths): Mostly rewritten to handle the different
+	selection modes correctly.
+	(addSelectionPath): Delegate to addSelectionPaths().
+	(arePathsContiguous): Replaced with more efficient implementation
+	using BitSet
+	(canPathBeAdded): Removed unneeded method.
+	(canPathsBeAdded): Replaced with more efficient implementation.
+	(clearSelection): Create correct event. Clear the fields correctly,
+	including the supporting datastructures.
+	(clone): Also clone the supporting datastructures and nullify
+	changeSupport field.
+	(getMaxSelectionRow): Delegate to list selection model.
+	(getMinSelectionRow): Delegate to list selection model.
+	(getPath): Removed unneeded method.
+	(getPropertyChangeListeners): Handle null changeSupport field
+	correctly.
+	(getRow): Handle null rowMapper field correctly.
+	(getSelectionRows): Handle invisible rows correctly.
+	(insureRowContinuity): Replaced by more efficient and correct
+	implementation.
+	(isRowSelected): Delegate to list selection model.
+	(notifyPathChange): Made more efficient by use of PathPlaceHolder
+	class.
+	(removePropertyChangeListener): Handle null changeSupport field.
+	(removeSelectionPaths): Mostly rewritten to handle the different
+	selection modes correctly.
+	(removeSelectionPath): Delegate to removeSelectionPaths().
+	(resetRowSelection): Handle list selection model.
+	(selectOne): Removed unneeded field.
+	(setRowMapper): Reset the row selection.
+	(setSelectionMode): Check for invalid mode and set to
+	DISCONTINUOUS_TREE_SELECTION in this case. Fire property change.
+	(setSelectionPaths): Mostly rewritten to handle the different
+	selection modes correctly.
+	(setSelectionPath): Delegate to setSelectionPaths().
+	(updateLeadIndex): Made more efficient.
+
+2006-10-11  Francis Kung  <fkung@redhat.com>
+
+	* gnu/java/awt/peer/gtk/BufferedImageGraphics.java
+	(buffer, locked): New fields.
+	(constructors): Initialize new variables.
+	(createBuffer): New method.
+	(draw): Implement custom composites.
+	(drawComposite): New method.
+	(drawGlyphVector): Implement custom composites.
+	(drawImage): Implement custom composites.
+	(drawRenderedImage): Implement custom composites.
+	(fill): Implement custom composites.
+	(getBufferCM): New method.
+	(getNativeCM): New method.
+	(updateBufferedImage): Fix premultiplication.
+	* gnu/java/awt/peer/gtk/CairoGraphics2D.java
+	(copy): Copy composite.
+	(drawImage): Set background properly.
+	(getBufferCM): New method.
+	(setComposite): Reset alpha composite when using custom composite.
+	* gnu/java/awt/peer/gtk/CairoSurface.java
+	(cairoColorModel): New field.
+	(nativeColorModel): Renamed.
+	(constructor): Use renamed createCairoSampleModel method.
+	(createCairoSampleModel): New method.
+	(createNativeSampleModel): Renamed.
+	(getBufferedImage): Use renamed cairoColorModel field.
+	* gnu/java/awt/peer/gtk/GtkVolatileImage.java
+	(gdkColorModel): New field.
+	(createGdkSampleModel): New method.
+	(getPixels): Added comments.
+	(getSnapshot): Use GDK colour and sample models.
+	* gnu/java/awt/peer/gtk/VolatileImageGraphics.java
+	(createBuffer): Use GDK colour and sample models.
+	(getNativeCM): Added comments.
+	* java/awt/image/BufferedImage.java
+	(constructor): Set premultiplied flag properly.
+	
+2006-10-11  Edwin Steiner  <edwin.steiner@gmx.net>
+
+	* native/jni/java-nio/gnu_java_nio_VMChannel.c
+	(Java_gnu_java_nio_VMChannel_lock): Special case Long.MAX_VALUE.
+
+2006-10-10  Francis Kung  <fkung@redhat.com>
+
+	PR 29372
+	* gnu/java/awt/peer/gtk/CairoGraphics2D.java
+	(createPath): Added isDraw parameter.
+	(draw): Updated createPath call.
+	(fill): Updated createPath call.
+
+2006-10-10  Tom Tromey  <tromey@redhat.com>
+
+	PR classpath/29362:
+	* gnu/xml/transform/TransformerImpl.java (transform): Only strip if
+	there is a stylesheet.
+
+2006-10-10  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/Toolkit.java
+	(getDefaultTookit): Make method synchronized to avoid
+	accidentally creating more than one toolkits from different
+	threads.
+
+2006-10-10  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/LightweightDispatcher.java
+	(handleMouseEvent): Redispatch MOUSE_WHEEL events too.
+	(redispatch): Transfer the button to the redispatched event.
+
+2006-10-10  Francis Kung  <fkung@redhat.com>
+
+	* java/awt/image/ColorModel.java (coerceData): Implemented.
+
+2006-10-09  Christian Elias Naur  <elias@oddlabs.com>
+
+	* vm/reference/java/lang/VMClassLoader.java:
+	(defineClassWithTransformers): Use proper class name format.
+
+2006-10-09  Gary Benson  <gbenson@redhat.com>
+
+	* java/net/ServerSocket.java
+	(implAccept): Add security check.
+	(accept): Close socket if security check fails.
+	(setSocketFactory): Add security check and already-set check.
+
+2006-10-09  Roman Kennke  <kennke@aicas.com>
+
+	PR 29325
+	* javax/swing/JSplitPane.java
+	(dividerLocation): New field. Stores the divider location.
+	(JSplitPane): Initialize dividerLocation with -1.
+	(addImpl): Removed unneeded local variables.
+	(getDividerLocation): Manage dividerLocation in the JSplitPane
+	class, not in the UI.
+	(setDividerLocation): Manage dividerLocation in the JSplitPane
+	class, not in the UI. Only call the UI method for notification.
+	* javax/swing/plaf/basic/BasicSplitPaneUI.java
+	(BasicHorizontalLayoutManager.layoutContainer): Fetch divider
+	location from the JSplitPane. Honour the minimumSize, but only
+	if the divider location hasn't been set explicitly.
+	(BasicHorizontalLayoutManager.minimumLayoutSize): Removed unneeded
+	statement.
+	(BasicHorizontalLayoutManager.preferredLayoutSize): Removed unneeded
+	statement.
+	(BasicHorizontalLayoutManager.resetToPreferredSizes): Don't touch
+	the divider location.
+	(dividerLocationSet): New field.
+	(dividerLocation): Removed field.
+	(createActionMap): Fetch and set divider location on the JSplitPane.
+	(getDividerLocation): Return the actual real divider location.
+	(getMaximumSize): Removed unneeded cast.
+	(getPreferredSize): Removed unneeded cast.
+	(getMinimumSize): Removed unneeded cast.
+	(installUI): Initialize dividerLocationSet with false.
+	(uninstallUI): Initialize dividerLocationSet with false.
+	(setDividerLocation): Set dividerLocationSet to true.
+
+2006-10-09  Robert Schuster  <robertschuster@fsfe.org>
+
+	* native/jni/java-net/gnu_java_net/VMPlainSocketImpl.c:
+	(Java_gnu_java_net_VMPlainSocketImpl_joinGroup): Properly
+	convert jstring into char *.
+	(Java_gnu_java_net_VMPlainSocketImpl_joinGroup6): Dito.
+	(Java_gnu_java_net_VMPlainSocketImpl_leaveGroup): Dito.
+	(Java_gnu_java_net_VMPlainSocketImpl_leaveGroup6): Dito.
+	(getif_address): Added const modifier to second argument.
+	(getif_index): Dito.
+
+2006-10-09  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JTree.java
+	(isSelected): Added API docs.
+
+2006-10-09  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JTree.java
+	(isSelected): Delegate to the selection model directly.
+
+2006-10-09  Robert Schuster  <robertschuster@fsfe.org>
+
+	* gnu/java/nio/KqueueSelectorImpl.java: Renamed field
+	sizeof_struct_kevent to _sizeof_struct_kevent.
+
+2006-10-07  Audrius Meskauskas  <AudriusA@Bioinformatics.org>
+
+	* tools/gnu/classpath/tools/rmic/RMICException.java:
+	javadoc corrections, reformatted.
+
+2006-10-07  Christian Elias Naur  <elias@oddlabs.com>
+
+	* gnu/java/lang/InstrumentationImpl.java:
+	Made constructor package visible.
+
+2006-10-05  Gary Benson  <gbenson@redhat.com>
+
+	* java/net/Socket.java
+	(Socket): Perform security check on address not hostname.
+
 2006-10-04  Roman Kennke  <kennke@aicas.com>
 
 	* javax/swing/tree/VariableHeightLayoutCache.java

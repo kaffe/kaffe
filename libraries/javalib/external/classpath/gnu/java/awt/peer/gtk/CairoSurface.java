@@ -72,15 +72,13 @@ public class CairoSurface extends WritableRaster
    */
   long bufferPointer;
 
-  // nativeGetPixels will return [0]=red, [1]=green, [2]=blue, [3]=alpha
-  static ColorModel nativeColorModel = new DirectColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB),
-                                                       32,
-                                                       0x000000FF,
-                                                       0x0000FF00,
-                                                       0x00FF0000,
-                                                       0xFF000000,
-                                                       true,
-                                                       Buffers.smallestAppropriateTransferType(32));
+  static ColorModel cairoColorModel = new DirectColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB),
+                                                           32, 0x00FF0000,
+                                                           0x0000FF00,
+                                                           0x000000FF,
+                                                           0xFF000000,
+                                                           true,
+                                                           Buffers.smallestAppropriateTransferType(32));
 
   /**
    * Allocates and clears the buffer and creates the cairo surface.
@@ -147,7 +145,7 @@ public class CairoSurface extends WritableRaster
    */
   public CairoSurface(int width, int height)
   {
-    super(createNativeSampleModel(width, height),
+    super(createCairoSampleModel(width, height),
 	      null, new Point(0, 0));
 
     if(width <= 0 || height <= 0)
@@ -260,7 +258,9 @@ public class CairoSurface extends WritableRaster
    */    
   public static BufferedImage getBufferedImage(CairoSurface surface)
   {
-    return new BufferedImage(nativeColorModel, surface, true, new Hashtable());
+    return new BufferedImage(cairoColorModel, surface,
+                             cairoColorModel.isAlphaPremultiplied(),
+                             new Hashtable());
   }
 
   private class CairoDataBuffer extends DataBuffer
@@ -326,10 +326,10 @@ public class CairoSurface extends WritableRaster
   /**
    * Creates a SampleModel that matches Cairo's native format
    */
-  protected static SampleModel createNativeSampleModel(int w, int h)
+  protected static SampleModel createCairoSampleModel(int w, int h)
   {
     return new SinglePixelPackedSampleModel(DataBuffer.TYPE_INT, w, h,
-                                            new int[]{0x000000FF, 0x0000FF00,
-                                                      0x00FF0000, 0xFF000000});    
+                                            new int[]{0x00FF0000, 0x0000FF00,
+                                                      0x000000FF, 0xFF000000});    
   }
 }

@@ -38,23 +38,27 @@ exception statement from your version. */
 
 package gnu.java.awt.peer.gtk;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.awt.Toolkit;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferInt;
 import java.awt.image.ColorModel;
+import java.awt.image.DataBufferInt;
 import java.awt.image.DirectColorModel;
-import java.awt.image.RenderedImage;
 import java.awt.image.ImageObserver;
+import java.awt.image.ImageProducer;
+import java.awt.image.Raster;
+import java.awt.image.RenderedImage;
 import java.util.WeakHashMap;
 
 /**
@@ -68,7 +72,13 @@ public class BufferedImageGraphics extends CairoGraphics2D
   /**
    * the buffered Image.
    */
-  private BufferedImage image;
+  private BufferedImage image, buffer;
+  
+  /**
+   * Allows us to lock the image from updates (if we want to perform a few
+   * intermediary operations on the cairo surface, then update it all at once)
+   */
+  private boolean locked;
 
   /**
    * Image size.
@@ -105,6 +115,8 @@ public class BufferedImageGraphics extends CairoGraphics2D
     this.image = bi;
     imageWidth = bi.getWidth();
     imageHeight = bi.getHeight();
+    locked = false;
+    
     if(bi.getColorModel().equals(rgb32))
       {
 	hasFastCM = true;
@@ -113,7 +125,7 @@ public class BufferedImageGraphics extends CairoGraphics2D
     else if(bi.getColorModel().equals(argb32))
       {
 	hasFastCM = true;
-	hasAlpha = false;
+	hasAlpha = true;
       }
     else
       hasFastCM = false;
@@ -163,6 +175,7 @@ public class BufferedImageGraphics extends CairoGraphics2D
     cairo_t = surface.newCairoContext();
     imageWidth = copyFrom.imageWidth;
     imageHeight = copyFrom.imageHeight;
+    locked = false;
     copy( copyFrom, cairo_t );
     setClip(0, 0, surface.width, surface.height);
   }
@@ -172,6 +185,9 @@ public class BufferedImageGraphics extends CairoGraphics2D
    */
   private void updateBufferedImage(int x, int y, int width, int height)
   {  
+    if (locked)
+      return;
+    
     int[] pixels = surface.getPixels(imageWidth * imageHeight);
 
     if( x > imageWidth || y > imageHeight )
@@ -184,18 +200,18 @@ public class BufferedImageGraphics extends CairoGraphics2D
     if( y + height > imageHeight ) 
       height = imageHeight - y;
     
-    boolean wasPremultiplied = image.isAlphaPremultiplied();
-    image.coerceData(true);
-
-    if( !hasFastCM )
+    // The setRGB method assumes (or should assume) that pixels are NOT
+    // alpha-premultiplied, but Cairo stores data with premultiplication
+    // (thus the pixels returned in getPixels are premultiplied).
+    // This is ignored for consistency, however, since in
+    // CairoGrahpics2D.drawImage we also use non-premultiplied data
+    if(!hasFastCM)
       image.setRGB(x, y, width, height, pixels, 
 		   x + y * imageWidth, imageWidth);
     else
       System.arraycopy(pixels, y * imageWidth, 
 		       ((DataBufferInt)image.getRaster().getDataBuffer()).
 		       getData(), y * imageWidth, height * imageWidth);
-    
-    image.coerceData(wasPremultiplied);
   }
 
   /**
@@ -228,36 +244,207 @@ public class BufferedImageGraphics extends CairoGraphics2D
    */
   public void draw(Shape s)
   {
-    super.draw(s);
-    Rectangle r = s.getBounds();
-    updateBufferedImage(r.x, r.y, r.width, r.height);
+    if (comp == null || comp instanceof AlphaComposite)
+      {
+        super.draw(s);
+        Rectangle r = s.getBounds();
+        updateBufferedImage(r.x, r.y, r.width, r.height);
+      }
+    else
+      {
+        createBuffer();
+        
+        Graphics2D g2d = (Graphics2D)buffer.getGraphics();
+        g2d.setStroke(this.getStroke());
+        g2d.setColor(this.getColor());
+        g2d.draw(s);
+        
+        drawComposite(s.getBounds2D(), null);
+      }
   }
 
   public void fill(Shape s)
   {
-    super.fill(s);
-    Rectangle r = s.getBounds();
-    updateBufferedImage(r.x, r.y, r.width, r.height);
+    if (comp == null || comp instanceof AlphaComposite)
+      {
+        super.fill(s);
+        Rectangle r = s.getBounds();
+        updateBufferedImage(r.x, r.y, r.width, r.height);
+      }
+    else
+      {
+        createBuffer();
+        
+        Graphics2D g2d = (Graphics2D)buffer.getGraphics();
+        g2d.setPaint(this.getPaint());
+        g2d.setColor(this.getColor());
+        g2d.fill(s);
+        
+        drawComposite(s.getBounds2D(), null);
+      }
   }
 
   public void drawRenderedImage(RenderedImage image, AffineTransform xform)
   {
-    super.drawRenderedImage(image, xform);
-    updateBufferedImage(0, 0, imageWidth, imageHeight);
+    if (comp == null || comp instanceof AlphaComposite)
+      {
+        super.drawRenderedImage(image, xform);
+        updateBufferedImage(0, 0, imageWidth, imageHeight);
+      }
+    else
+      {
+        createBuffer();
+
+        Graphics2D g2d = (Graphics2D)buffer.getGraphics();
+        g2d.setRenderingHints(this.getRenderingHints());
+        g2d.drawRenderedImage(image, xform);
+        
+        drawComposite(buffer.getRaster().getBounds(), null);
+      }
+
   }
 
   protected boolean drawImage(Image img, AffineTransform xform,
 			      Color bgcolor, ImageObserver obs)
   {
-    boolean rv = super.drawImage(img, xform, bgcolor, obs);
-    updateBufferedImage(0, 0, imageWidth, imageHeight);
-    return rv;
+    if (comp == null || comp instanceof AlphaComposite)
+      {
+        boolean rv = super.drawImage(img, xform, bgcolor, obs);
+        updateBufferedImage(0, 0, imageWidth, imageHeight);
+        return rv;
+      }
+    else
+      {
+        // Get buffered image of source
+        if( !(img instanceof BufferedImage) )
+          {
+            ImageProducer source = img.getSource();
+            if (source == null)
+              return false;
+            img = Toolkit.getDefaultToolkit().createImage(source);
+          }
+        BufferedImage bImg = (BufferedImage) img;
+        
+        // Find translated bounds
+        Point2D origin = new Point2D.Double(bImg.getMinX(), bImg.getMinY());
+        Point2D pt = new Point2D.Double(bImg.getWidth() + bImg.getMinX(),
+                                        bImg.getHeight() + bImg.getMinY());
+        if (xform != null)
+          {
+            origin = xform.transform(origin, origin);
+            pt = xform.transform(pt, pt);
+          }
+        
+        // Create buffer and draw image
+        createBuffer();
+        
+        Graphics2D g2d = (Graphics2D)buffer.getGraphics();
+        g2d.setRenderingHints(this.getRenderingHints());
+        g2d.drawImage(img, xform, obs);
+
+        // Perform compositing
+        return drawComposite(new Rectangle2D.Double(origin.getX(),
+                                                    origin.getY(),
+                                                    pt.getX(), pt.getY()),
+                             obs);
+      }
   }
 
   public void drawGlyphVector(GlyphVector gv, float x, float y)
   {
-    super.drawGlyphVector(gv, x, y);
-    updateBufferedImage(0, 0, imageWidth, imageHeight);
+    if (comp == null || comp instanceof AlphaComposite)
+      {
+        super.drawGlyphVector(gv, x, y);
+        updateBufferedImage(0, 0, imageWidth, imageHeight);
+      }
+    else
+      {
+        createBuffer();
+
+        Graphics2D g2d = (Graphics2D)buffer.getGraphics();
+        g2d.setPaint(this.getPaint());
+        g2d.setStroke(this.getStroke());
+        g2d.drawGlyphVector(gv, x, y);
+        
+        Rectangle2D bounds = gv.getLogicalBounds();
+        bounds = new Rectangle2D.Double(x + bounds.getX(), y + bounds.getY(),
+                                        bounds.getWidth(), bounds.getHeight());
+        drawComposite(bounds, null);
+      }
+  }
+  
+  private boolean drawComposite(Rectangle2D bounds, ImageObserver observer)
+  {
+    // Clip source to visible areas that need updating
+    Rectangle2D clip = this.getClipBounds();
+    Rectangle2D.intersect(bounds, clip, bounds);
+    
+    BufferedImage buffer2 = buffer;
+    if (!bounds.equals(buffer2.getRaster().getBounds()))
+      buffer2 = buffer2.getSubimage((int)bounds.getX(), (int)bounds.getY(),
+                                    (int)bounds.getWidth(),
+                                    (int)bounds.getHeight());
+    
+    // Get destination clip to bounds
+    double[] points = new double[] {bounds.getX(), bounds.getY(),
+                                    bounds.getMaxX(), bounds.getMaxY()};
+    transform.transform(points, 0, points, 0, 2);
+    
+    Rectangle2D deviceBounds = new Rectangle2D.Double(points[0], points[1],
+                                                       points[2] - points[0],
+                                                       points[3] - points[1]);
+    
+    Rectangle2D.intersect(deviceBounds, this.getClipInDevSpace(), deviceBounds);
+    
+    BufferedImage current = image;
+    current = current.getSubimage((int)deviceBounds.getX(),
+                                  (int)deviceBounds.getY(),
+                                  (int)deviceBounds.getWidth(),
+                                  (int)deviceBounds.getHeight());
+
+    // Perform actual composite operation
+    compCtx.compose(buffer2.getRaster(), current.getRaster(),
+                    current.getRaster());
+    
+    // Prevent the clearRect in CairoGraphics2D.drawImage from clearing
+    // our composited image
+    locked = true;
+    
+    // This MUST call directly into the "action" method in CairoGraphics2D,
+    // not one of the wrappers, to ensure that the composite isn't processed
+    // more than once!
+    boolean rv = super.drawImage(current,
+                                 AffineTransform.getTranslateInstance(bounds.getX(),
+                                                                      bounds.getY()),
+                                 new Color(0,0,0,0), null);
+    locked = false;
+    return rv;
+  }
+  
+  private void createBuffer()
+  {
+    if (buffer == null)
+      {
+        buffer = new BufferedImage(image.getWidth(), image.getHeight(),
+                                   BufferedImage.TYPE_INT_ARGB);
+      }
+    else
+      {
+        Graphics2D g2d = ((Graphics2D)buffer.getGraphics());
+        
+        g2d.setBackground(new Color(0,0,0,0));
+        g2d.clearRect(0, 0, buffer.getWidth(), buffer.getHeight());
+      }
+  }
+  
+  protected ColorModel getNativeCM()
+  {
+    return image.getColorModel();
+  }
+  
+  protected ColorModel getBufferCM()
+  {
+    return ColorModel.getRGBdefault();
   }
 }
 

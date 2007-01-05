@@ -160,6 +160,8 @@ final class LightweightDispatcher
             if (isDragging(ev))
               redispatch(ev, mouseEventTarget, id);
             break;
+          case MouseEvent.MOUSE_WHEEL:
+            redispatch(ev, mouseEventTarget, id);
           }
         ev.consume();
       }
@@ -314,7 +316,7 @@ final class LightweightDispatcher
             retargeted = new MouseEvent(target, id, ev.getWhen(),
                                        ev.getModifiers() | ev.getModifiersEx(),
                                        x, y, ev.getClickCount(),
-                                       ev.isPopupTrigger());
+                                       ev.isPopupTrigger(), ev.getButton());
           }
 
         if (target == source)

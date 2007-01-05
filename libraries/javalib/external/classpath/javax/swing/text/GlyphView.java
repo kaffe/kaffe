@@ -467,12 +467,12 @@ public class GlyphView extends View implements TabableView, Cloneable
   /**
    * The start offset within the document for this view.
    */
-  private int startOffset;
+  private int offset;
 
   /**
    * The end offset within the document for this view.
    */
-  private int endOffset;
+  private int length;
 
   /**
    * Creates a new <code>GlyphView</code> for the given <code>Element</code>.
@@ -482,8 +482,8 @@ public class GlyphView extends View implements TabableView, Cloneable
   public GlyphView(Element element)
   {
     super(element);
-    startOffset = -1;
-    endOffset = -1;
+    offset = 0;
+    length = 0;
   }
 
   /**
@@ -699,10 +699,11 @@ public class GlyphView extends View implements TabableView, Cloneable
    */
   public int getStartOffset()
   {
-    int start = startOffset;
-    if (start < 0)
-      start = super.getStartOffset();
-    return start;
+    Element el = getElement();
+    int offs = el.getStartOffset();
+    if (length > 0)
+      offs += offset;
+    return offs;
   }
 
   /**
@@ -714,10 +715,13 @@ public class GlyphView extends View implements TabableView, Cloneable
    */
   public int getEndOffset()
   {
-    int end = endOffset;
-    if (end < 0)
-      end = super.getEndOffset();
-    return end;
+    Element el = getElement();
+    int offs;
+    if (length > 0)
+      offs = el.getStartOffset() + offset + length;
+    else
+      offs = el.getEndOffset();
+    return offs;
   }
 
   /**
@@ -1029,11 +1033,12 @@ public class GlyphView extends View implements TabableView, Cloneable
    */
   public View createFragment(int p0, int p1)
   {
+    checkPainter();
+    Element el = getElement();
     GlyphView fragment = (GlyphView) clone();
-    if (p0 != getStartOffset())
-      fragment.startOffset = p0;
-    if (p1 != getEndOffset())
-      fragment.endOffset = p1;
+    fragment.offset = p0 - el.getStartOffset();
+    fragment.length = p1 - p0;
+    fragment.glyphPainter = glyphPainter.getPainter(fragment, p0, p1);
     return fragment;
   }
 

@@ -624,8 +624,12 @@ public abstract class ColorModel implements Transparency
     return cspace;
   }
 
-  public abstract ColorModel coerceData(WritableRaster raster,
-                                        boolean isAlphaPremultiplied);
+  public ColorModel coerceData(WritableRaster raster,
+                               boolean isAlphaPremultiplied)
+  {
+    // This method should always be overridden, but is not abstract.
+    throw new UnsupportedOperationException();
+  }
 
   protected void coerceDataWorker(WritableRaster raster,
                                   boolean isAlphaPremultiplied)

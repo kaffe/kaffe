@@ -236,7 +236,6 @@ public abstract class CairoGraphics2D extends Graphics2D
     nativePointer = init(cairo_t_pointer);
     paint = g.paint;
     stroke = g.stroke;
-    comp = g.comp;
     setRenderingHints(g.hints);
     
     Color foreground;
@@ -965,27 +964,30 @@ public abstract class CairoGraphics2D extends Graphics2D
       compCtx.dispose();
     compCtx = null;
 
-    if (comp == null)
-      comp = AlphaComposite.SrcOver;
-    
     if (comp instanceof AlphaComposite)
       {
 	AlphaComposite a = (AlphaComposite) comp;
-	cairoSetOperator(nativePointer, a.getRule());
+        cairoSetOperator(nativePointer, a.getRule());
       }
       
     else
       {
-        // FIXME: this check is only required "if this Graphics2D
-        // context is drawing to a Component on the display screen".
-        SecurityManager sm = System.getSecurityManager();
-        if (sm != null)
-          sm.checkPermission(new AWTPermission("readDisplayPixels"));
-
-        // FIXME: implement general Composite support
-        //throw new java.lang.UnsupportedOperationException();
-        // this is in progress!  yay!
-        compCtx = comp.createContext(getNativeCM(), getNativeCM(), hints);
+        cairoSetOperator(nativePointer, AlphaComposite.SRC_OVER);
+        
+        if (comp != null)
+          {
+            // FIXME: this check is only required "if this Graphics2D
+            // context is drawing to a Component on the display screen".
+            SecurityManager sm = System.getSecurityManager();
+            if (sm != null)
+              sm.checkPermission(new AWTPermission("readDisplayPixels"));
+    
+            // FIXME: implement general Composite support
+            //throw new java.lang.UnsupportedOperationException();
+            // this is in progress!  yay!
+            //compCtx = comp.createContext(getNativeCM(), getNativeCM(), hints);
+            compCtx = comp.createContext(getBufferCM(), getNativeCM(), hints);
+          }
       }
   }
   
@@ -1003,6 +1005,12 @@ public abstract class CairoGraphics2D extends Graphics2D
     // for now, so that the build doesn't break.
     return null;
   }
+  
+  // This may be overridden by some subclasses
+  protected ColorModel getBufferCM()
+  {
+    return getNativeCM();
+  }
 
   ///////////////////////// DRAWING PRIMITIVES ///////////////////////////////////
 
@@ -1017,13 +1025,13 @@ public abstract class CairoGraphics2D extends Graphics2D
         return;
       }
 
-    createPath(s);
+    createPath(s, true);
     cairoStroke(nativePointer);
   }
 
   public void fill(Shape s)
   {
-    createPath(s);
+    createPath(s, false);
 
     double alpha = 1.0;
     if (comp instanceof AlphaComposite)
@@ -1031,7 +1039,7 @@ public abstract class CairoGraphics2D extends Graphics2D
     cairoFill(nativePointer, alpha);
   }
 
-  private void createPath(Shape s)
+  private void createPath(Shape s, boolean isDraw)
   {
     cairoNewPath(nativePointer);
 
@@ -1039,8 +1047,8 @@ public abstract class CairoGraphics2D extends Graphics2D
     if (s instanceof Rectangle2D)
       {
         Rectangle2D r = (Rectangle2D) s;
-        cairoRectangle(nativePointer, shifted(r.getX(), shiftDrawCalls),
-                       shifted(r.getY(), shiftDrawCalls), r.getWidth(),
+        cairoRectangle(nativePointer, shifted(r.getX(),shiftDrawCalls && isDraw),
+                       shifted(r.getY(), shiftDrawCalls && isDraw), r.getWidth(),
                        r.getHeight());
       }
 
@@ -1070,9 +1078,9 @@ public abstract class CairoGraphics2D extends Graphics2D
           }
 
         cairoArc(nativePointer,
-                 shifted(e.getCenterX() / xscale, shiftDrawCalls),
-                 shifted(e.getCenterY() / yscale, shiftDrawCalls), radius, 0,
-                 Math.PI * 2);
+                 shifted(e.getCenterX() / xscale, shiftDrawCalls && isDraw),
+                 shifted(e.getCenterY() / yscale, shiftDrawCalls && isDraw),
+                 radius, 0, Math.PI * 2);
 
         if (xscale != 1 || yscale != 1)
           cairoRestore(nativePointer);
@@ -1081,7 +1089,7 @@ public abstract class CairoGraphics2D extends Graphics2D
     // All other shapes are broken down and drawn in steps using the
     // PathIterator
     else
-      walkPath(s.getPathIterator(null), shiftDrawCalls);
+      walkPath(s.getPathIterator(null), shiftDrawCalls && isDraw);
   }
 
   /**
@@ -1358,9 +1366,6 @@ public abstract class CairoGraphics2D extends Graphics2D
     int width = b.getWidth();
     int height = b.getHeight();
     
-    boolean wasPremultplied = b.isAlphaPremultiplied();
-    b.coerceData(true);
-
     // If this BufferedImage has a BufferedImageGraphics object, 
     // use the cached CairoSurface that BIG is drawing onto
     
@@ -1380,31 +1385,32 @@ public abstract class CairoGraphics2D extends Graphics2D
 	((CairoSurface)raster).drawSurface(nativePointer, i2u, alpha,
                                            getInterpolation());
         updateColor();
-        b.coerceData(wasPremultplied);
 	return true;
       }
 	    
     if( bgcolor != null )
       {
-	// Fill a rectangle with the background color 
-	// to composite the image onto.
-	Paint oldPaint = paint;
-	AffineTransform oldTransform = transform;
-	setPaint( bgcolor );
-	setTransform( invertedXform );
-	fillRect(0, 0, width, height);
-	setTransform( oldTransform );
-	setPaint( oldPaint );
+        Color oldColor = bg;
+        setBackground(bgcolor);
+        
+        double[] origin = new double[] {0,0};
+        xform.transform(origin, 0, origin, 0, 1);
+        clearRect((int)origin[0], (int)origin[1], width, height);
+        
+        setBackground(oldColor);
       }
 
     int[] pixels = b.getRGB(0, 0, width, height, null, 0, width);
+    
+    // FIXME: The above method returns data in the standard ARGB colorspace,
+    // meaning data should NOT be alpha pre-multiplied; however Cairo expects
+    // data to be premultiplied.
 
     drawPixels(nativePointer, pixels, width, height, width, i2u, alpha,
                getInterpolation());
 
     // Cairo seems to lose the current color which must be restored.
     updateColor();
-    b.coerceData(wasPremultplied);
     return true;
   }
 

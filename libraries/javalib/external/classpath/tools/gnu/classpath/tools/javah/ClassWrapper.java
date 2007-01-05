@@ -338,4 +338,9 @@ public class ClassWrapper
     out.println();
     out.println("#endif // " + xname);
   }
+
+  public String toString()
+  {
+    return name;
+  }
 }

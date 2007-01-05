@@ -291,7 +291,7 @@ public class Socket
 
     SecurityManager sm = System.getSecurityManager();
     if (sm != null)
-      sm.checkConnect(raddr.getHostName(), rport);
+      sm.checkConnect(raddr.getHostAddress(), rport);
 
     // bind socket
     SocketAddress bindaddr =

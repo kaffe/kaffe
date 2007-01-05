@@ -926,4 +926,13 @@ public class JViewport extends JComponent implements Accessible
     super.paintImmediately2(x, y, w, h);
     isPaintRoot = false;
   }
+
+  /**
+   * Returns true when the JViewport is using a backbuffer, so that we
+   * can update our backbuffer correctly.
+   */
+  boolean isPaintRoot()
+  {
+    return scrollMode == BACKINGSTORE_SCROLL_MODE;
+  }
 }

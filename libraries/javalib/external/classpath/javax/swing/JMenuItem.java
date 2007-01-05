@@ -39,7 +39,6 @@ exception statement from your version. */
 package javax.swing;
 
 import java.awt.Component;
-import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
@@ -75,6 +74,11 @@ public class JMenuItem extends AbstractButton implements Accessible,
 
   /** Combination of keyboard keys that can be used to activate this menu item */
   private KeyStroke accelerator;
+
+  /**
+   * Indicates if we are currently dragging the mouse.
+   */
+  private boolean isDragging;
 
   /**
    * Creates a new JMenuItem object.
@@ -319,71 +323,21 @@ public class JMenuItem extends AbstractButton implements Accessible,
   /**
    * Process mouse events forwarded from MenuSelectionManager.
    *
-   * @param event event forwarded from MenuSelectionManager
+   * @param ev event forwarded from MenuSelectionManager
    * @param path path to the menu element from which event was generated
    * @param manager MenuSelectionManager for the current menu hierarchy
    */
-  public void processMouseEvent(MouseEvent event, MenuElement[] path,
+  public void processMouseEvent(MouseEvent ev, MenuElement[] path,
                                 MenuSelectionManager manager)
   {
-    // Fire MenuDragMouseEvents if mouse is being dragged.
-    boolean dragged
-      = (event.getModifiersEx() & InputEvent.BUTTON1_DOWN_MASK) != 0;
-    if (dragged)
-      processMenuDragMouseEvent(createMenuDragMouseEvent(event, path, manager));
-
-    switch (event.getID())
-      {
-      case MouseEvent.MOUSE_CLICKED:
-	break;
-      case MouseEvent.MOUSE_ENTERED:
-	if (isRolloverEnabled())
-	  model.setRollover(true);
-	break;
-      case MouseEvent.MOUSE_EXITED:
-	if (isRolloverEnabled())
-	  model.setRollover(false);
-
-	// for JMenu last element on the path is its popupMenu.
-	// JMenu shouldn't me disarmed.	
-	if (! (path[path.length - 1] instanceof JPopupMenu) && ! dragged)
-	  setArmed(false);
-	break;
-      case MouseEvent.MOUSE_PRESSED:
-	if ((event.getModifiersEx() & InputEvent.BUTTON1_DOWN_MASK) != 0)
-	  {
-	    model.setArmed(true);
-	    model.setPressed(true);
-	  }
-	break;
-      case MouseEvent.MOUSE_RELEASED:
-	break;
-      case MouseEvent.MOUSE_MOVED:
-	break;
-      case MouseEvent.MOUSE_DRAGGED:
-	break;
-      }
-  }
-
-  /**
-   * Creates MenuDragMouseEvent.
-   *
-   * @param event MouseEvent that occured while mouse was pressed.
-   * @param path Path the the menu element where the dragging event was
-   *        originated
-   * @param manager MenuSelectionManager for the current menu hierarchy.
-   *
-   * @return new MenuDragMouseEvent
-   */
-  private MenuDragMouseEvent createMenuDragMouseEvent(MouseEvent event,
-                                                      MenuElement[] path,
-                                                      MenuSelectionManager manager)
-  {
-    return new MenuDragMouseEvent((Component) event.getSource(),
-                                  event.getID(), event.getWhen(),
-                                  event.getModifiers(), event.getX(),
-                                  event.getY(), event.getClickCount(),
-                                  event.isPopupTrigger(), path, manager);
+    MenuDragMouseEvent e = new MenuDragMouseEvent(ev.getComponent(),
+                                                  ev.getID(), ev.getWhen(),
+                                                  ev.getModifiers(), ev.getX(),
+                                                  ev.getY(),
+                                                  ev.getClickCount(),
+                                                  ev.isPopupTrigger(), path,
+                                                  manager);
+    processMenuDragMouseEvent(e);
   }
 
   /**
@@ -419,16 +373,20 @@ public class JMenuItem extends AbstractButton implements Accessible,
     switch (event.getID())
       {
       case MouseEvent.MOUSE_ENTERED:
+        isDragging = false;
 	fireMenuDragMouseEntered(event);
 	break;
       case MouseEvent.MOUSE_EXITED:
+        isDragging = false;
 	fireMenuDragMouseExited(event);
 	break;
       case MouseEvent.MOUSE_DRAGGED:
+        isDragging = true;
 	fireMenuDragMouseDragged(event);
 	break;
       case MouseEvent.MOUSE_RELEASED:
-	fireMenuDragMouseReleased(event);
+        if (isDragging)
+          fireMenuDragMouseReleased(event);
 	break;
       }
   }

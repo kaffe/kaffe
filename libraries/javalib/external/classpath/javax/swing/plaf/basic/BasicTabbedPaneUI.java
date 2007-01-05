@@ -957,81 +957,50 @@ public class BasicTabbedPaneUI extends TabbedPaneUI implements SwingConstants
     protected void normalizeTabRuns(int tabPlacement, int tabCount, int start,
                                     int max)
     {
-      if (tabPlacement == SwingUtilities.TOP
-          || tabPlacement == SwingUtilities.BOTTOM)
+      boolean horizontal = tabPlacement == TOP || tabPlacement == BOTTOM;
+      int currentRun = runCount - 1;
+      double weight = 1.25;
+      for (boolean adjust = true; adjust == true;)
         {
-          // We should only do this for runCount - 1, cause we can
-          // only shift that many times between runs.
-          for (int i = 1; i < runCount; i++)
+          int last = lastTabInRun(tabCount, currentRun);
+          int prevLast = lastTabInRun(tabCount, currentRun - 1);
+          int end;
+          int prevLength;
+          if (horizontal)
             {
-              Rectangle currRun = rects[lastTabInRun(tabCount, i)];
-              Rectangle nextRun = rects[lastTabInRun(tabCount,
-                                                     getNextTabRun(i))];
-              int spaceInCurr = currRun.x + currRun.width;
-              int spaceInNext = nextRun.x + nextRun.width;
-
-              int diffNow = spaceInCurr - spaceInNext;
-              int diffLater = (spaceInCurr - currRun.width)
-              - (spaceInNext + currRun.width);
-              
-              while (Math.abs(diffLater) < Math.abs(diffNow)
-                  && spaceInNext + currRun.width < max)
+              end = rects[last].x + rects[last].width;
+              prevLength = (int) (maxTabWidth * weight);
+            }
+          else
+            {
+              end = rects[last].y + rects[last].height;
+              prevLength = (int) (maxTabWidth * weight * 2);
+            }
+          if (max - end > prevLength)
+            {
+              tabRuns[currentRun] = prevLast;
+              if (horizontal)
+                rects[prevLast].x = start;
+              else
+                rects[prevLast].y = start;
+              for (int i = prevLast + 1; i <= last; i++)
                 {
-                  tabRuns[i]--;
-                  spaceInNext += currRun.width;
-                  spaceInCurr -= currRun.width;
-                  currRun = rects[lastTabInRun(tabCount, i)];
-                  diffNow = spaceInCurr - spaceInNext;
-                  diffLater = (spaceInCurr - currRun.width)
-                  - (spaceInNext + currRun.width);
-                }
-              
-              // Fixes the bounds of all tabs in the current
-              // run.
-              int first = tabRuns[i];
-              int last = lastTabInRun(tabCount, i);
-              int currX = start;
-              for (int j = first; j <= last; j++)
-                {
-                  rects[j].x = currX;
-                  currX += rects[j].width;
+                  if (horizontal)
+                    rects[i].x = rects[i - 1].x + rects[i - 1].width;
+                  else
+                    rects[i].y = rects[i - 1].y + rects[i - 1].height;
                 }
             }
-        }
-      else
-        {
-          for (int i = 1; i < runCount; i++)
+          else if (currentRun == runCount - 1)
+            adjust = false;
+          if (currentRun - 1 > 0)
+            currentRun -= 1;
+          else
             {
-              Rectangle currRun = rects[lastTabInRun(tabCount, i)];
-              Rectangle nextRun = rects[lastTabInRun(tabCount,
-                                                     getNextTabRun(i))];
-              int spaceInCurr = currRun.y + currRun.height;
-              int spaceInNext = nextRun.y + nextRun.height;
-
-              int diffNow = spaceInCurr - spaceInNext;
-              int diffLater = (spaceInCurr - currRun.height)
-              - (spaceInNext + currRun.height);
-              while (Math.abs(diffLater) < Math.abs(diffNow)
-                  && spaceInNext + currRun.height < max)
-                {
-                  tabRuns[i]--;
-                  spaceInNext += currRun.height;
-                  spaceInCurr -= currRun.height;
-                  currRun = rects[lastTabInRun(tabCount, i)];
-                  diffNow = spaceInCurr - spaceInNext;
-                  diffLater = (spaceInCurr - currRun.height)
-                  - (spaceInNext + currRun.height);
-                }
-
-              // Fixes the bounds of tabs in the current run. 
-              int first = tabRuns[i];
-              int last = lastTabInRun(tabCount, i);
-              int currY = start;
-              for (int j = first; j <= last; j++)
-                {
-                  rects[j].y = currY;
-                  currY += rects[j].height;
-                }
+              // Check again, but with higher ratio to avoid
+              // clogging up the last run.
+              currentRun = runCount - 1;
+              weight += 0.25;
             }
         }
     }

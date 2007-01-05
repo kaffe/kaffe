@@ -1,4 +1,4 @@
-/* BRView.java -- HTML BR tag view
+/* WindowResizeEvent.java -- Used to synchronize the AWT and peer sizes
    Copyright (C) 2006 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
@@ -36,35 +36,50 @@ obligated to do so.  If you do not wish to do so, delete this
 exception statement from your version. */
 
 
-package javax.swing.text.html;
+package gnu.java.awt;
 
-import javax.swing.text.Element;
+import java.awt.AWTEvent;
+import java.awt.Component;
 
 /**
- * Handled the HTML BR tag.
+ * This is used to update the AWT's knowledge about a Window's size when
+ * the user changes the window bounds.
+ *
+ * This event is _not_ posted to the eventqueue, but rather dispatched directly
+ * via Window.dispatchEvent(). It is the cleanest way we could find to update
+ * the AWT's knowledge of the window size. Small testprograms showed the
+ * following:
+ * - Component.reshape() and its derivatives are _not_ called. This makes sense
+ *   as it could end up in loops,because this calls back into the peers.
+ * - Intercepting event dispatching for any events in
+ *   EventQueue.dispatchEvent() showed that the size is still updated. So it
+ *   is not done via an event dispatched over the eventqueue.
+ *
+ * Possible other candidates for implementation would have been:
+ * - Call a (private) callback method in Window/Component from the native
+ *   side.
+ * - Call a (private) callback method in Window/Component via reflection.
+ *
+ * Both is uglier than sending this event directly. Note however that this
+ * is impossible to test, as Component.dispatchEvent() is final and can't be
+ * intercepted from outside code. But this impossibility to test the issue from
+ * outside code also means that this shouldn't raise any compatibility issues.
  */
-class BRView
-  extends InlineView
+public class ComponentReshapeEvent
+  extends AWTEvent
 {
-  /**
-   * Creates the new BR view.
-   * 
-   * @param elem the HTML element, representing the view.
-   */
-  public BRView(Element elem)
+
+  public int x;
+  public int y;
+  public int width;
+  public int height;
+
+  public ComponentReshapeEvent(Component c, int x, int y, int width, int height)
   {
-    super(elem);
-  }
-  
-  /**
-   * Always return ForcedBreakWeight for the X_AXIS, BadBreakWeight for the
-   * Y_AXIS.
-   */
-  public int getBreakWeight(int axis, float pos, float len)
-  {
-    if (axis == X_AXIS)
-      return ForcedBreakWeight;
-    else
-      return super.getBreakWeight(axis, pos, len);
+    super(c, 1999);
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
   }
 }

@@ -1,5 +1,5 @@
 /* RMICException.java --
-  Copyright (c) 2003 Free Software Foundation, Inc.
+  Copyright (c) 2003, 2006 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -18,32 +18,37 @@ along with GNU Classpath; see the file COPYING.  If not, write to the
 Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
 02111-1307 USA. */
 
+
 package gnu.classpath.tools.rmic;
 
 /**
- * Thrown by the underlying compiler used by RMIC when it fails to compile a file.
- *
+ * Thrown by the underlying compiler used by RMIC when it fails to compile a
+ * file.
+ * 
  * @author Dalibor Topic <robilad@kaffe.org>
  */
+public class RMICException
+    extends Exception
+{
+  /**
+   * Create an exception with a message. The cause remains uninitialized.
+   * 
+   * @param message the message string
+   * @see #initCause(Throwable)
+   */
+  public RMICException(String message)
+  {
+    super(message);
+  }
 
-public class RMICException extends Exception {
-	/**
-	 * Create an exception with a message. The cause remains uninitialized.
-	 *
-	 * @param s the message string
-	 * @see #initCause(Throwable)
-	 */
-	public RMICException(String message) {
-		super(message);
-	}
-
-	/**
-	 * Create an exception with a message and a cause.
-	 *
-	 * @param s the message string
-	 * @param cause the cause of this exception
-	 */
-	public RMICException(String message, Throwable cause) {
-		super(message, cause);
-	}
+  /**
+   * Create an exception with a message and a cause.
+   * 
+   * @param message the message string
+   * @param cause the cause of this exception
+   */
+  public RMICException(String message, Throwable cause)
+  {
+    super(message, cause);
+  }
 }

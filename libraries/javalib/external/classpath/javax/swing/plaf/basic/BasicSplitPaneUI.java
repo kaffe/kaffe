@@ -320,8 +320,17 @@ public class BasicSplitPaneUI extends SplitPaneUI
           Dimension dims = split.getSize();
           int loc = getInitialLocation(insets);
           int available = getAvailableSize(dims, insets);
-          sizes[0] = getDividerLocation(split) - loc;
+          sizes[0] = split.getDividerLocation();
           sizes[1] = available - sizes[0] - sizes[2];
+
+          // According to a Mauve test we only honour the minimum
+          // size of the components, when the dividerLocation hasn't
+          // been excplicitly set.
+          if (! dividerLocationSet)
+            {
+              sizes[0] = Math.max(sizes[0], minimumSizeOfComponent(0));
+              sizes[1] = Math.max(sizes[1], minimumSizeOfComponent(1));
+            }
           // The size of the divider won't change.
 
           // Layout component#1.
@@ -363,7 +372,6 @@ public class BasicSplitPaneUI extends SplitPaneUI
       Dimension dim = new Dimension();
       if (target instanceof JSplitPane)
         {
-          JSplitPane split = (JSplitPane) target;
           int primary = 0;
           int secondary = 0;
           for (int i = 0; i < components.length; i++)
@@ -401,7 +409,6 @@ public class BasicSplitPaneUI extends SplitPaneUI
       Dimension dim = new Dimension();
       if (target instanceof JSplitPane)
         {
-          JSplitPane split = (JSplitPane) target;
           int primary = 0;
           int secondary = 0;
           for (int i = 0; i < components.length; i++)
@@ -460,8 +467,6 @@ public class BasicSplitPaneUI extends SplitPaneUI
     {
       for (int i = 0; i < components.length; i++)
         resetSizeAt(i);
-      setDividerLocation(splitPane,
-                         getInitialLocation(splitPane.getInsets()) + sizes[0]);
     }
 
     /**
@@ -857,7 +862,13 @@ public class BasicSplitPaneUI extends SplitPaneUI
   /** The JSplitPane that this UI draws. */
   protected JSplitPane splitPane;
 
-  private int dividerLocation;
+  /**
+   * True, when setDividerLocation() has been called at least
+   * once on the JSplitPane, false otherwise.
+   *
+   * This is package private to avoid a synthetic accessor method.
+   */
+  boolean dividerLocationSet;
 
   /**
    * Creates a new BasicSplitPaneUI object.
@@ -889,6 +900,7 @@ public class BasicSplitPaneUI extends SplitPaneUI
     if (c instanceof JSplitPane)
       {
         splitPane = (JSplitPane) c;
+        dividerLocationSet = false;
         installDefaults();
         installListeners();
         installKeyboardActions();
@@ -906,6 +918,7 @@ public class BasicSplitPaneUI extends SplitPaneUI
     uninstallListeners();
     uninstallDefaults();
 
+    dividerLocationSet = false;
     splitPane = null;
   }
 
@@ -1054,8 +1067,10 @@ public class BasicSplitPaneUI extends SplitPaneUI
             new AbstractAction("negativeIncrement") {
               public void actionPerformed(ActionEvent event)
               {
-                setDividerLocation(splitPane, Math.max(dividerLocation 
-                    - KEYBOARD_DIVIDER_MOVE_OFFSET, 0));
+                int oldLoc = splitPane.getDividerLocation();
+                int newLoc =
+                  Math.max(oldLoc - KEYBOARD_DIVIDER_MOVE_OFFSET, 0);
+                splitPane.setDividerLocation(newLoc);
               }
             }
     );
@@ -1063,8 +1078,10 @@ public class BasicSplitPaneUI extends SplitPaneUI
             new AbstractAction("positiveIncrement") {
               public void actionPerformed(ActionEvent event)
               {
-                setDividerLocation(splitPane, dividerLocation 
-                    + KEYBOARD_DIVIDER_MOVE_OFFSET);
+                int oldLoc = splitPane.getDividerLocation();
+                int newLoc =
+                  Math.max(oldLoc + KEYBOARD_DIVIDER_MOVE_OFFSET, 0);
+                splitPane.setDividerLocation(newLoc);
               }
             }
     );
@@ -1354,7 +1371,7 @@ public class BasicSplitPaneUI extends SplitPaneUI
    */
   public void setDividerLocation(JSplitPane jc, int location)
   {
-    dividerLocation = location;
+    dividerLocationSet = true;
     splitPane.revalidate();
     splitPane.repaint();
   }
@@ -1368,7 +1385,12 @@ public class BasicSplitPaneUI extends SplitPaneUI
    */
   public int getDividerLocation(JSplitPane jc)
   {
-    return dividerLocation;
+    int loc;
+    if (jc.getOrientation() == JSplitPane.HORIZONTAL_SPLIT)
+      loc = divider.getX();
+    else
+      loc = divider.getY();
+    return loc;
   }
 
   /**
@@ -1441,7 +1463,7 @@ public class BasicSplitPaneUI extends SplitPaneUI
    */
   public Dimension getPreferredSize(JComponent jc)
   {
-    return layoutManager.preferredLayoutSize((Container) jc);
+    return layoutManager.preferredLayoutSize(jc);
   }
 
   /**
@@ -1453,7 +1475,7 @@ public class BasicSplitPaneUI extends SplitPaneUI
    */
   public Dimension getMinimumSize(JComponent jc)
   {
-    return layoutManager.minimumLayoutSize((Container) jc);
+    return layoutManager.minimumLayoutSize(jc);
   }
 
   /**
@@ -1465,7 +1487,7 @@ public class BasicSplitPaneUI extends SplitPaneUI
    */
   public Dimension getMaximumSize(JComponent jc)
   {
-    return layoutManager.maximumLayoutSize((Container) jc);
+    return layoutManager.maximumLayoutSize(jc);
   }
 
   /**

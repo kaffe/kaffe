@@ -63,7 +63,10 @@ import java.util.Set;
  */
 public class KqueueSelectorImpl extends AbstractSelector
 {
-  private static final int sizeof_struct_kevent;
+  // Prepended underscore to field name to make it distinct
+  // from the method with the similar name.
+  private static final int _sizeof_struct_kevent;
+
   private static final int MAX_DOUBLING_CAPACITY = 16384;
   private static final int CAP_INCREMENT = 1024;
   private static final int INITIAL_CAPACITY;
@@ -80,10 +83,10 @@ public class KqueueSelectorImpl extends AbstractSelector
       }
 
     if (kqueue_supported ())
-      sizeof_struct_kevent = sizeof_struct_kevent();
+      _sizeof_struct_kevent = sizeof_struct_kevent();
     else
-      sizeof_struct_kevent = -1;
-    INITIAL_CAPACITY = 16 * sizeof_struct_kevent;
+      _sizeof_struct_kevent = -1;
+    INITIAL_CAPACITY = 16 * _sizeof_struct_kevent;
   }
   
   /**
@@ -205,7 +208,7 @@ public class KqueueSelectorImpl extends AbstractSelector
             key.interestOps = 0;
           }
         
-        int events_size = (2 * sizeof_struct_kevent) * keys.size();
+        int events_size = (2 * _sizeof_struct_kevent) * keys.size();
         int num_events = 0;
 
         for (Iterator it = keys.entrySet().iterator(); it.hasNext(); )
@@ -256,7 +259,7 @@ public class KqueueSelectorImpl extends AbstractSelector
             if (blockedThread.isInterrupted())
               timeout = 0;
             n = kevent(kq, events, num_events,
-                       events.capacity() / sizeof_struct_kevent, timeout);
+                       events.capacity() / _sizeof_struct_kevent, timeout);
           }
         finally
           {
@@ -267,7 +270,7 @@ public class KqueueSelectorImpl extends AbstractSelector
           }
 
         //System.out.println("dump of keys selected:");
-        //dump_selection_keys((ByteBuffer) events.duplicate().limit(n * sizeof_struct_kevent));
+        //dump_selection_keys((ByteBuffer) events.duplicate().limit(n * _sizeof_struct_kevent));
         
         // Commit the operations we've just added in the call to kevent.
         for (Iterator it = keys.values().iterator(); it.hasNext(); )
@@ -280,8 +283,8 @@ public class KqueueSelectorImpl extends AbstractSelector
         int x = 0;
         for (int i = 0; i < n; i++)
           {
-            events.position(x).limit(x + sizeof_struct_kevent);
-            x += sizeof_struct_kevent;
+            events.position(x).limit(x + _sizeof_struct_kevent);
+            x += _sizeof_struct_kevent;
             int y = fetch_key(events.slice());
             KqueueSelectionKeyImpl key =
               (KqueueSelectionKeyImpl) keys.get(new Integer(y));
@@ -370,7 +373,7 @@ public class KqueueSelectorImpl extends AbstractSelector
   {
     synchronized (keys)
     {
-      if (events.capacity() < (2 * sizeof_struct_kevent) * keys.size())
+      if (events.capacity() < (2 * _sizeof_struct_kevent) * keys.size())
         {
           int cap = events.capacity();
           if (cap >= MAX_DOUBLING_CAPACITY)
@@ -380,7 +383,7 @@ public class KqueueSelectorImpl extends AbstractSelector
           
           events = ByteBuffer.allocateDirect(cap);
         }
-      else if (events.capacity() > 4 * (sizeof_struct_kevent) * keys.size() + 1
+      else if (events.capacity() > 4 * (_sizeof_struct_kevent) * keys.size() + 1
                && events.capacity() > INITIAL_CAPACITY)
         {
           int cap = events.capacity();
@@ -437,7 +440,7 @@ public class KqueueSelectorImpl extends AbstractSelector
   
   /**
    * Return the size of a <code>struct kevent</code> on this system.
-   * 
+   *
    * @return The size of <code>struct kevent</code>.
    */
   private static native int sizeof_struct_kevent();

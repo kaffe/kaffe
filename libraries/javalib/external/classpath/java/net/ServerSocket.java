@@ -345,6 +345,19 @@ public class ServerSocket
 
 	throw e;
       }
+    catch (SecurityException e)
+      {
+	try
+	  {
+	    socket.close();
+	  }
+	catch (IOException e2)
+	  {
+	    // Ignore.
+	  }
+
+	throw e;
+      }
 
     return socket;
   }
@@ -367,9 +380,6 @@ public class ServerSocket
     if (isClosed())
       throw new SocketException("ServerSocket is closed");
 
-    // FIXME: Add a security check to make sure we're allowed to 
-    // connect to the remote host.
-
     // The Sun spec says that if we have an associated channel and
     // it is in non-blocking mode, we throw an IllegalBlockingModeException.
     // However, in our implementation if the channel itself initiated this
@@ -380,6 +390,11 @@ public class ServerSocket
 
     impl.accept(socket.impl);
     socket.bound = true;
+
+    SecurityManager sm = System.getSecurityManager();
+    if (sm != null)
+      sm.checkAccept(socket.getInetAddress().getHostAddress(),
+		     socket.getPort());
   }
 
   /**
@@ -603,6 +618,13 @@ public class ServerSocket
   public static synchronized void setSocketFactory(SocketImplFactory fac)
     throws IOException
   {
+    if (factory != null)
+      throw new SocketException("SocketFactory already defined");
+
+    SecurityManager sm = System.getSecurityManager();
+    if (sm != null)
+      sm.checkSetFactory();
+
     factory = fac;
   }
 }

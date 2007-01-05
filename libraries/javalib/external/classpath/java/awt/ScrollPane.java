@@ -393,7 +393,7 @@ setScrollPosition(int x, int y)
     h.setValue(x);
   if (v != null)
     v.setValue(y);
-
+  
   ScrollPanePeer spp = (ScrollPanePeer)getPeer();
   if (spp != null)
     spp.setScrollPosition(x, y);
@@ -453,7 +453,7 @@ removeNotify()
   if ((list != null) && (list.length > 0))
     remove(list[0]);
 
-  super.addImpl(component, constraints, -1);
+  super.addImpl(component, constraints, index);
 
   doLayout();
 }
@@ -518,11 +518,12 @@ layout()
   * not have layout managers.
   *
   * @param layoutManager Ignored
+  * @throws AWTError Always throws this error when called. 
   */
 public final void
 setLayout(LayoutManager layoutManager)
 {
-  return;
+  throw new AWTError("ScrollPane controls layout");
 }
 
 /*************************************************************************/
@@ -553,14 +554,35 @@ paramString()
          + getX() + ","
          + getY() + ","
          + getWidth() + "x" + getHeight() + ","
-         + "ScrollPosition=(" + scrollPosition.getX() + "," 
-                              + scrollPosition.getY() + "),"
+         + getIsValidString() + ","
+         + "ScrollPosition=(" + scrollPosition.x + "," 
+                              + scrollPosition.y + "),"
          + "Insets=(" + insets.top + ","
                       + insets.left + ","
                       + insets.bottom + ","
                       + insets.right + "),"
-         + "ScrollbarDisplayPolicy=" + getScrollbarDisplayPolicy() + ","
+         + "ScrollbarDisplayPolicy=" + getScrollbarDisplayPolicyString() + ","
          + "wheelScrollingEnabled=" + isWheelScrollingEnabled();
+}
+
+private String
+getScrollbarDisplayPolicyString()
+{
+  if (getScrollbarDisplayPolicy() == 0)
+    return "as-needed";
+  else if (getScrollbarDisplayPolicy() == 1)
+    return "always";
+  else
+    return "never";
+}
+
+private String 
+getIsValidString()
+{
+  if (isValid())
+    return "valid";
+  else
+    return "invalid";
 }
 
   /**

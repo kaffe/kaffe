@@ -282,12 +282,12 @@ public class VolatileImageGraphics extends ComponentGraphics
     if (buffer == null)
       {
         WritableRaster rst;
-        rst = Raster.createWritableRaster(CairoSurface.
-                                          createNativeSampleModel(owner.width,
+        rst = Raster.createWritableRaster(GtkVolatileImage.createGdkSampleModel(owner.width,
                                                                   owner.height),
                                           new Point(0,0));
         
-        buffer = new BufferedImage(CairoSurface.nativeColorModel, rst, true,
+        buffer = new BufferedImage(GtkVolatileImage.gdkColorModel, rst,
+                                   GtkVolatileImage.gdkColorModel.isAlphaPremultiplied(),
                                    new Hashtable());
       }
     else
@@ -301,7 +301,12 @@ public class VolatileImageGraphics extends ComponentGraphics
   
   protected ColorModel getNativeCM()
   {
-    return CairoSurface.nativeColorModel;
+    // We should really return GtkVolatileImage.gdkColorModel ,
+    // but CairoGraphics2D doesn't handle alpha premultiplication properly (see
+    // the fixme in drawImage) so we use the naive Cairo model instead to trick
+    // the compositing context.
+    // Because getNativeCM() == getBufferCM() for this peer, it doesn't break.
+    return CairoSurface.cairoColorModel;
   }
 }
 
