@@ -659,7 +659,10 @@ public class Parser
     else
       text = textProcessor.preprocess(buffer);
 
-    if (text != null && text.length > 0)
+    if (text != null && text.length > 0
+        // According to the specs we need to discard whitespace immediately
+        // before a closing tag.
+        && (text.length > 1 || text[0] != ' ' || ! TAG_CLOSE.matches(this)))
       {
         TagElement pcdata = new TagElement(dtd.getElement("#pcdata"));
         attributes = htmlAttributeSet.EMPTY_HTML_ATTRIBUTE_SET;
@@ -1178,6 +1181,13 @@ public class Parser
       {
         validator.validateTag(tag, attributes);
         handleEmptyTag(tag);
+        HTML.Tag h = tag.getHTMLTag();
+        // When a block tag is closed, consume whitespace that follows after
+        // it.
+        // For some unknown reason a FRAME tag is not treated as block element.
+        // However in this case it should be treated as such.
+        if (h.isBlock() || h == HTML.Tag.FRAME)
+          optional(WS);
       }
     catch (ChangedCharSetException ex)
       {
@@ -1193,8 +1203,8 @@ public class Parser
    */
   private void _handleEndTag(TagElement tag)
   {
-    validator.closeTag(tag);
-    _handleEndTag_remaining(tag);
+    if (validator.closeTag(tag))
+       _handleEndTag_remaining(tag);
   }
 
   /**
@@ -1213,6 +1223,11 @@ public class Parser
       preformatted--;
     if (preformatted < 0)
       preformatted = 0;
+
+    // When a block tag is closed, consume whitespace that follows after
+    // it.
+    if (h.isBlock())
+      optional(WS);
 
     if (h == HTML.Tag.TITLE)
       {
@@ -1456,7 +1471,12 @@ public class Parser
         if (te.getElement().type == DTDConstants.EMPTY)
           _handleEmptyTag(te);
         else
-          _handleStartTag(te);
+          {
+            // According to the specs we need to consume whitespace following
+            // immediately after a opening tag.
+            optional(WS);
+            _handleStartTag(te);
+          }
       }
   }
 

@@ -38,6 +38,9 @@ exception statement from your version. */
 
 package javax.swing.text;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.Shape;
 
 import javax.swing.SizeRequirements;
@@ -101,19 +104,6 @@ public class ParagraphView extends FlowView implements TabExpander
       else
         align = super.getAlignment(axis);
       return align;
-    }
-
-    /**
-     * Allows rows to span the whole parent view.
-     */
-    public float getMaximumSpan(int axis)
-    {
-      float max;
-      if (axis == X_AXIS)
-        max = Float.MAX_VALUE;
-      else
-        max = super.getMaximumSpan(axis);
-      return max;
     }
 
     /**

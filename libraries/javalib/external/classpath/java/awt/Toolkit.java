@@ -41,6 +41,7 @@ package java.awt;
 
 import gnu.classpath.SystemProperties;
 import gnu.java.awt.peer.GLightweightPeer;
+import gnu.java.awt.peer.headless.HeadlessToolkit;
 
 import java.awt.datatransfer.Clipboard;
 import java.awt.dnd.DragGestureEvent;
@@ -551,6 +552,7 @@ public abstract class Toolkit
   {
     if (toolkit != null)
       return toolkit;
+
     String toolkit_name = SystemProperties.getProperty("awt.toolkit",
                                                        default_toolkit_name);
     try
@@ -580,8 +582,18 @@ public abstract class Toolkit
       }
     catch (Throwable t)
       {
-	AWTError e = new AWTError("Cannot load AWT toolkit: " + toolkit_name);
-	throw (AWTError) e.initCause(t);
+        // Check for the headless property.
+        if (GraphicsEnvironment.isHeadless())
+          {
+            toolkit = new HeadlessToolkit();
+            return toolkit;
+          }
+        else
+          {
+            AWTError e = new AWTError("Cannot load AWT toolkit: "
+                                      + toolkit_name);
+            throw (AWTError) e.initCause(t);
+          }
       }
   }
 

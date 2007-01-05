@@ -183,6 +183,10 @@ public class ButtonGroup implements Serializable
         
         if (old != null)
           old.setSelected(false);
+        
+        if (m != null)
+          sel.setSelected(true);
+        
         AbstractButton button = findButton(old);
         if (button != null)
           button.repaint();

@@ -1272,7 +1272,7 @@ Java_gnu_java_nio_VMChannel_getsockname (JNIEnv *env, jclass clazz __attribute__
     {
       addr6 = (struct sockaddr_in6 *) sockaddr;
       memcpy (nameptr, &(addr6->sin6_addr.s6_addr), 16);
-      memcpy (nameptr, &(addr6->sin6_port), 2);
+      memcpy (nameptr + 16, &(addr6->sin6_port), 2);
       return 16;
     }
 #endif /* HAVE_INET6 */
@@ -1331,7 +1331,7 @@ Java_gnu_java_nio_VMChannel_getpeername (JNIEnv *env, jclass clazz __attribute__
     {
       addr6 = (struct sockaddr_in6 *) sockaddr;
       memcpy (nameptr, &(addr6->sin6_addr.s6_addr), 16);
-      memcpy (nameptr, &(addr6->sin6_port), 2);
+      memcpy (nameptr + 16, &(addr6->sin6_port), 2);
       return 16;
     }
 #endif /* HAVE_INET6 */

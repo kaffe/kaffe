@@ -52,6 +52,24 @@ public class FontSize
   private String value;
 
   /**
+   * The actual font size.
+   */
+  private int size;
+
+  /**
+   * The index of one of the standard sizes that this font size maps to.
+   * This is -1 if this fontsize doesn't map to one of the standard sizes.
+   *
+   * @see #SCALE
+   */
+  private int sizeIndex;
+
+  /**
+   * True when this font size is relative.
+   */
+  private boolean isRelative;
+
+  /**
    * The default size for 'medium' absolute size. The other absolute sizes
    * are calculated from this.
    */
@@ -70,6 +88,27 @@ public class FontSize
   public FontSize(String val)
   {
     value = val;
+    sizeIndex = -1;
+    isRelative = false;
+    size = mapValue();
+  }
+
+  /**
+   * Returns the font size value.
+   *
+   * @return the font size value
+   */
+  public int getValue(int p)
+  {
+    if (isRelative)
+      mapRelative(p);
+    return size;
+  }
+
+  public int getValue()
+  {
+    assert ! isRelative;
+    return size;
   }
 
   /**
@@ -77,17 +116,21 @@ public class FontSize
    *
    * @return the converted real value in point
    */
-  public int getValue()
+  private int mapValue()
   {
     int intVal;
     if (value.contains("pt"))
       intVal = mapPoints();
     else if (value.contains("px"))
       intVal = mapPixels();
+    else if (value.contains("em") || value.contains("%")
+        || value.contains("larger") || value.contains("smaller"))
+      {
+        intVal = -1;
+        isRelative = true;
+      }
     else
       intVal = mapAbsolute();
-    // FIXME: Allow relative font values, ('larger' and 'smaller'). This
-    // requires knowledge about the parent element's font size.
     return intVal;
   }
 
@@ -111,10 +154,65 @@ public class FontSize
    */
   private int mapPixels()
   {
-    int end = value.indexOf("pt");
+    int end = value.indexOf("px");
+    if (end == -1)
+      end = value.length();
     String number = value.substring(0, end);
-    int intVal = Integer.parseInt(number);
-    return intVal;
+    try
+      {
+        int intVal = Integer.parseInt(number);
+        return intVal;
+      }
+    catch (NumberFormatException ex)
+      {
+        return DEFAULT_FONT_SIZE;
+      }
+  }
+
+  private int mapPercent(int par)
+  {
+    int end = value.indexOf("%");
+    if (end == -1)
+      end = value.length();
+    String number = value.substring(0, end);
+    try
+      {
+        int intVal = Integer.parseInt(number);
+        return intVal * par / 100;
+      }
+    catch (NumberFormatException ex)
+      {
+        System.err.println("couldn't map value: '" + value + "'");
+        return DEFAULT_FONT_SIZE;
+      }
+  }
+
+  private int mapEM(int par)
+  {
+    int end = value.indexOf("em");
+    if (end == -1)
+      end = value.length();
+    String number = value.substring(0, end);
+    try
+      {
+        float factor = Float.parseFloat(number);
+        // FIXME: Should be relative to the parent element's size.
+        return (int) (factor * par);
+      }
+    catch (NumberFormatException ex)
+      {
+        return DEFAULT_FONT_SIZE;
+      }
+  }
+
+  private int mapSmaller(int par)
+  {
+    return (int) (par * 0.9);
+  }
+
+  private int mapLarger(int par)
+  {
+    return (int) (par * 0.9);
   }
 
   /**
@@ -143,6 +241,7 @@ public class FontSize
     // FIXME: Scale the real medium size of the document, rather than the
     // constant here.
     int intVal = (int) (scale * DEFAULT_FONT_SIZE);
+    sizeIndex = index;
     return intVal;
   }
 
@@ -152,5 +251,23 @@ public class FontSize
   public String toString()
   {
     return value;
+  }
+
+  private int mapRelative(int par)
+  {
+    if (value.indexOf('%') != -1)
+      size = mapPercent(par);
+    else if (value.indexOf("em") != -1)
+      size = mapEM(par);
+    else if (value.indexOf("larger") != -1)
+      size = mapLarger(par);
+    else if (value.indexOf("smaller") != -1)
+      size = mapSmaller(par);
+    return size;
+  }
+
+  public boolean isRelative()
+  {
+    return isRelative;
   }
 }

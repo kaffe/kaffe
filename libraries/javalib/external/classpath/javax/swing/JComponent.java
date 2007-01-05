@@ -847,7 +847,12 @@ public abstract class JComponent extends Container implements Serializable
       t.put(key, value);
     else
       t.remove(key);
-    firePropertyChange(key.toString(), old, value);
+
+    // When both old and new value are null, no event is fired. This is
+    // different from what firePropertyChange() normally does, so we add this
+    // check here.
+    if (old != null || value != null)
+      firePropertyChange(key.toString(), old, value);
   }
 
   /**

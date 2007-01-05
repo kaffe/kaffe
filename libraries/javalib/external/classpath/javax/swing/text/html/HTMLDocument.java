@@ -42,6 +42,7 @@ import gnu.classpath.NotImplementedException;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,6 +52,8 @@ import java.util.Vector;
 import javax.swing.DefaultButtonModel;
 import javax.swing.JEditorPane;
 import javax.swing.JToggleButton;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.UndoableEditEvent;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -88,7 +91,17 @@ public class HTMLDocument extends DefaultStyledDocument
   boolean preservesUnknownTags = true;
   int tokenThreshold = Integer.MAX_VALUE;
   HTMLEditorKit.Parser parser;
-  
+
+  /**
+   * Indicates whether this document is inside a frame or not.
+   */
+  private boolean frameDocument;
+
+  /**
+   * Package private to avoid accessor methods.
+   */
+  String baseTarget;
+
   /**
    * Constructs an HTML document using the default buffer size and a default
    * StyleSheet.
@@ -183,8 +196,6 @@ public class HTMLDocument extends DefaultStyledDocument
   protected Element createLeafElement(Element parent, AttributeSet a, int p0,
                                       int p1)
   {
-    RunElement el = new RunElement(parent, a, p0, p1);
-    el.addAttribute(StyleConstants.NameAttribute, HTML.Tag.CONTENT);
     return new RunElement(parent, a, p0, p1);
   }
 
@@ -366,11 +377,119 @@ public class HTMLDocument extends DefaultStyledDocument
   }
 
   public void processHTMLFrameHyperlinkEvent(HTMLFrameHyperlinkEvent event)
-  throws NotImplementedException
   {
-    // TODO: Implement this properly.
+    String target = event.getTarget();
+    Element el = event.getSourceElement();
+    URL url = event.getURL();
+    if (target.equals("_self"))
+      {
+        updateFrame(el, url);
+      }
+    else if (target.equals("_parent"))
+      {
+        updateFrameSet(el.getParentElement(), url);
+      }
+    else
+      {
+        Element targetFrame = findFrame(target);
+        if (targetFrame != null)
+          updateFrame(targetFrame, url);
+      }
   }
-  
+
+  /**
+   * Finds the named frame inside this document.
+   *
+   * @param target the name to look for
+   *
+   * @return the frame if there is a matching frame, <code>null</code>
+   *         otherwise
+   */
+  private Element findFrame(String target)
+  {
+    ElementIterator i = new ElementIterator(this);
+    Element next = null;
+    while ((next = i.next()) != null)
+      {
+        AttributeSet atts = next.getAttributes();
+        if (atts.getAttribute(StyleConstants.NameAttribute) == HTML.Tag.FRAME)
+          {
+            String name = (String) atts.getAttribute(HTML.Attribute.NAME);
+            if (name != null && name.equals(target))
+              break;
+          }
+      }
+    return next;
+  }
+
+  /**
+   * Updates the frame that is represented by the specified element to
+   * refer to the specified URL.
+   *
+   * @param el the element
+   * @param url the new url
+   */
+  private void updateFrame(Element el, URL url)
+  {
+    try
+      {
+        writeLock();
+        DefaultDocumentEvent ev =
+          new DefaultDocumentEvent(el.getStartOffset(), 1,
+                                   DocumentEvent.EventType.CHANGE);
+        AttributeSet elAtts = el.getAttributes();
+        AttributeSet copy = elAtts.copyAttributes();
+        MutableAttributeSet matts = (MutableAttributeSet) elAtts;
+        ev.addEdit(new AttributeUndoableEdit(el, copy, false));
+        matts.removeAttribute(HTML.Attribute.SRC);
+        matts.addAttribute(HTML.Attribute.SRC, url.toString());
+        ev.end();
+        fireChangedUpdate(ev);
+        fireUndoableEditUpdate(new UndoableEditEvent(this, ev));
+      }
+    finally
+      {
+        writeUnlock();
+      }
+  }
+
+  /**
+   * Updates the frameset that is represented by the specified element
+   * to create a frame that refers to the specified URL.
+   *
+   * @param el the element
+   * @param url the url
+   */
+  private void updateFrameSet(Element el, URL url)
+  {
+    int start = el.getStartOffset();
+    int end = el.getEndOffset();
+    
+    StringBuilder html = new StringBuilder();
+    html.append("<frame");
+    if (url != null)
+      {
+        html.append(" src=\"");
+        html.append(url.toString());
+        html.append("\"");
+      }
+    html.append('>');
+    if (getParser() == null)
+      setParser(new HTMLEditorKit().getParser());
+    try
+      {
+        setOuterHTML(el, html.toString());
+      }
+    catch (BadLocationException ex)
+      {
+        ex.printStackTrace();
+      }
+    catch (IOException ex)
+      {
+        ex.printStackTrace();
+      }
+  }
+
   /**
    * Gets an iterator for the given HTML.Tag.
    * @param t the requested HTML.Tag
@@ -453,6 +572,8 @@ public class HTMLDocument extends DefaultStyledDocument
       String name = null;
       if (tag != null)
         name = tag.toString();
+      if (name == null)
+        name = super.getName();
       return name;
     }
   }
@@ -489,6 +610,8 @@ public class HTMLDocument extends DefaultStyledDocument
       String name = null;
       if (tag != null)
         name = tag.toString();
+      if (name == null)
+        name = super.getName();
       return name;
     }
     
@@ -510,7 +633,17 @@ public class HTMLDocument extends DefaultStyledDocument
    * @author Anthony Balkissoon abalkiss at redhat dot com
    */
   public class HTMLReader extends HTMLEditorKit.ParserCallback
-  {    
+  {
+    /**
+     * The maximum token threshold. We don't grow it larger than this.
+     */
+    private static final int MAX_THRESHOLD = 10000;
+
+    /**
+     * The threshold growth factor.
+     */
+    private static final int GROW_THRESHOLD = 5;
+
     /**
      * Holds the current character attribute set *
      */
@@ -522,12 +655,6 @@ public class HTMLDocument extends DefaultStyledDocument
      * A stack for character attribute sets *
      */
     Stack charAttrStack = new Stack();
-
-    /**
-     * The parse stack. This stack holds HTML.Tag objects that reflect the
-     * current position in the parsing process.
-     */
-    Stack parseStack = new Stack();
    
     /** A mapping between HTML.Tag objects and the actions that handle them **/
     HashMap tagToAction;
@@ -570,6 +697,16 @@ public class HTMLDocument extends DefaultStyledDocument
     boolean inPreTag = false;
 
     /**
+     * True when we are inside a paragraph (P, H1-H6, P-IMPLIED).
+     */
+    boolean inParagraph = false;
+
+    /**
+     * True when we are currently inside an implied paragraph.
+     */
+    boolean inImpliedParagraph = false;
+
+    /**
      * This is true when we are inside a style tag. This will add text
      * content inside this style tag beeing parsed as CSS.
      *
@@ -599,12 +736,11 @@ public class HTMLDocument extends DefaultStyledDocument
      */
     Document textAreaDocument;
 
-    void print (String line)
-    {
-      if (debug)
-        System.out.println (line);
-    }
-    
+    /**
+     * The token threshold. This gets increased while loading.
+     */
+    private int threshold;
+
     public class TagAction
     {
       /**
@@ -811,7 +947,8 @@ public class HTMLDocument extends DefaultStyledDocument
        */
       public void start(HTML.Tag t, MutableAttributeSet a)
       {
-        blockOpen(t, a);
+        super.start(t, a);
+        inParagraph = true;
       }
       
       /**
@@ -820,7 +957,8 @@ public class HTMLDocument extends DefaultStyledDocument
        */
       public void end(HTML.Tag t)
       {
-        blockClose(t);
+        super.end(t);
+        inParagraph = false;
       } 
     }
 
@@ -881,7 +1019,6 @@ public class HTMLDocument extends DefaultStyledDocument
         throws NotImplementedException
       {
         // FIXME: Implement.
-        print ("AreaAction.start not implemented");
       }
       
       /**
@@ -892,7 +1029,6 @@ public class HTMLDocument extends DefaultStyledDocument
         throws NotImplementedException
       {
         // FIXME: Implement.
-        print ("AreaAction.end not implemented");
       } 
     }
 
@@ -938,22 +1074,9 @@ public class HTMLDocument extends DefaultStyledDocument
        * of tags associated with this Action.
        */
       public void start(HTML.Tag t, MutableAttributeSet a)
-        throws NotImplementedException
       {
-        // FIXME: Implement.
-        print ("BaseAction.start not implemented");
+        baseTarget = (String) a.getAttribute(HTML.Attribute.TARGET);
       }
-      
-      /**
-       * Called when an end tag is seen for one of the types of tags associated
-       * with this Action.
-       */
-      public void end(HTML.Tag t)
-        throws NotImplementedException
-      {
-        // FIXME: Implement.
-        print ("BaseAction.end not implemented");
-      } 
     }
     
     class HeadAction extends BlockAction
@@ -966,7 +1089,6 @@ public class HTMLDocument extends DefaultStyledDocument
         throws NotImplementedException
       {
         // FIXME: Implement.
-        print ("HeadAction.start not implemented: "+t);
         super.start(t, a);
       }
       
@@ -991,29 +1113,71 @@ public class HTMLDocument extends DefaultStyledDocument
       }
     }
     
-    class LinkAction extends TagAction
+    class LinkAction extends HiddenAction
     {
       /**
        * This method is called when a start tag is seen for one of the types
        * of tags associated with this Action.
        */
       public void start(HTML.Tag t, MutableAttributeSet a)
-        throws NotImplementedException
       {
-        // FIXME: Implement.
-        print ("LinkAction.start not implemented");
+        super.start(t, a);
+        String type = (String) a.getAttribute(HTML.Attribute.TYPE);
+        if (type == null)
+          type = "text/css";
+        if (type.equals("text/css"))
+          {
+            String rel = (String) a.getAttribute(HTML.Attribute.REL);
+            String media = (String) a.getAttribute(HTML.Attribute.MEDIA);
+            String title = (String) a.getAttribute(HTML.Attribute.TITLE);
+            if (media == null)
+              media = "all";
+            else
+              media = media.toLowerCase();
+            if (rel != null)
+              {
+                rel = rel.toLowerCase();
+                if ((media.indexOf("all") != -1
+                     || media.indexOf("screen") != -1)
+                    && (rel.equals("stylesheet")))
+                  {
+                    String href = (String) a.getAttribute(HTML.Attribute.HREF);
+                    URL url = null;
+                    try
+                      {
+                        url = new URL(baseURL, href);
+                      }
+                    catch (MalformedURLException ex)
+                      {
+                        try
+                          {
+                            url = new URL(href);
+                          }
+                        catch (MalformedURLException ex2)
+                          {
+                            url = null;
+                          }
+                      }
+                    if (url != null)
+                      {
+                        try
+                          {
+                            getStyleSheet().importStyleSheet(url);
+                          }
+                        catch (Exception ex)
+                          {
+                            // Don't let exceptions and runtime exceptions
+                            // in CSS parsing disprupt the HTML parsing
+                            // process. But inform the user/developer
+                            // on the console about it.
+                            ex.printStackTrace();
+                          }
+                      }
+                  }                  
+              }
+          }
       }
       
-      /**
-       * Called when an end tag is seen for one of the types of tags associated
-       * with this Action.
-       */
-      public void end(HTML.Tag t)
-        throws NotImplementedException
-      {
-        // FIXME: Implement.
-        print ("LinkAction.end not implemented");
-      } 
     }
     
     class MapAction extends TagAction
@@ -1026,7 +1190,6 @@ public class HTMLDocument extends DefaultStyledDocument
         throws NotImplementedException
       {
         // FIXME: Implement.
-        print ("MapAction.start not implemented");
       }
       
       /**
@@ -1037,7 +1200,6 @@ public class HTMLDocument extends DefaultStyledDocument
         throws NotImplementedException
       {
         // FIXME: Implement.
-        print ("MapAction.end not implemented");
       } 
     }
     
@@ -1051,7 +1213,6 @@ public class HTMLDocument extends DefaultStyledDocument
         throws NotImplementedException
       {
         // FIXME: Implement.
-        print ("MetaAction.start not implemented");
       }
       
       /**
@@ -1062,7 +1223,6 @@ public class HTMLDocument extends DefaultStyledDocument
         throws NotImplementedException
       {
         // FIXME: Implement.
-        print ("MetaAction.end not implemented");
       } 
     }
 
@@ -1097,7 +1257,6 @@ public class HTMLDocument extends DefaultStyledDocument
         throws NotImplementedException
       {
         // FIXME: Implement.
-        print ("TitleAction.start not implemented");
       }
       
       /**
@@ -1108,7 +1267,6 @@ public class HTMLDocument extends DefaultStyledDocument
         throws NotImplementedException
       {
         // FIXME: Implement.
-        print ("TitleAction.end not implemented");
       } 
     }    
     
@@ -1120,13 +1278,11 @@ public class HTMLDocument extends DefaultStyledDocument
     public HTMLReader(int offset, int popDepth, int pushDepth,
                       HTML.Tag insertTag)
     {
-      print ("HTMLReader created with pop: "+popDepth
-                          + " push: "+pushDepth + " offset: "+offset
-                          + " tag: "+insertTag);
       this.insertTag = insertTag;
       this.offset = offset;
       this.popDepth = popDepth;
       this.pushDepth = pushDepth;
+      threshold = getTokenThreshold();
       initTags();
     }
     
@@ -1264,18 +1420,28 @@ public class HTMLDocument extends DefaultStyledDocument
      */
     public void flush() throws BadLocationException
     {
-      DefaultStyledDocument.ElementSpec[] elements;
-      elements = new DefaultStyledDocument.ElementSpec[parseBuffer.size()];
-      parseBuffer.copyInto(elements);
-      parseBuffer.removeAllElements();
-      if (offset == 0)
-        create(elements);
-      else
-        insert(offset, elements);
-
-      offset += HTMLDocument.this.getLength() - offset;
+      flushImpl();
     }
-    
+
+    /**
+     * Flushes the buffer and handle partial inserts.
+     *
+     */
+    private void flushImpl()
+      throws BadLocationException
+    {
+      int oldLen = getLength();
+      int size = parseBuffer.size();
+      ElementSpec[] elems = new ElementSpec[size];
+      parseBuffer.copyInto(elems);
+      if (oldLen == 0)
+        create(elems);
+      else
+        insert(offset, elems);
+      parseBuffer.removeAllElements();
+      offset += getLength() - oldLen;
+    }
+
     /**
      * This method is called by the parser to indicate a block of 
      * text was encountered.  Should insert the text appropriately.
@@ -1412,7 +1578,6 @@ public class HTMLDocument extends DefaultStyledDocument
     public void handleEndOfLineString(String eol)
     {
       // FIXME: Implement.
-      print ("HTMLReader.handleEndOfLineString not implemented yet");
     }
     
     /**
@@ -1473,17 +1638,17 @@ public class HTMLDocument extends DefaultStyledDocument
      */
     protected void blockOpen(HTML.Tag t, MutableAttributeSet attr)
     {
-      printBuffer();
+      if (inImpliedParagraph)
+        blockClose(HTML.Tag.IMPLIED);
+
       DefaultStyledDocument.ElementSpec element;
 
-      parseStack.push(t);
       AbstractDocument.AttributeContext ctx = getAttributeContext();
       AttributeSet copy = attr.copyAttributes();
       copy = ctx.addAttribute(copy, StyleConstants.NameAttribute, t);
       element = new DefaultStyledDocument.ElementSpec(copy,
                                DefaultStyledDocument.ElementSpec.StartTagType);
       parseBuffer.addElement(element);
-      printBuffer();
     }
 
     /**
@@ -1494,32 +1659,30 @@ public class HTMLDocument extends DefaultStyledDocument
      */
     protected void blockClose(HTML.Tag t)
     {
-      printBuffer();
       DefaultStyledDocument.ElementSpec element;
+
+      if (inImpliedParagraph)
+        {
+          inImpliedParagraph = false;
+          inParagraph = false;
+          if (t != HTML.Tag.IMPLIED)
+            blockClose(HTML.Tag.IMPLIED);
+        }
 
       // If the previous tag is a start tag then we insert a synthetic
       // content tag.
       DefaultStyledDocument.ElementSpec prev;
-      prev = (DefaultStyledDocument.ElementSpec)
-	      parseBuffer.get(parseBuffer.size() - 1);
-      if (prev.getType() == DefaultStyledDocument.ElementSpec.StartTagType)
+      prev = parseBuffer.size() > 0 ? (DefaultStyledDocument.ElementSpec)
+                                parseBuffer.get(parseBuffer.size() - 1) : null;
+      if (prev != null &&
+          prev.getType() == DefaultStyledDocument.ElementSpec.StartTagType)
         {
-          AbstractDocument.AttributeContext ctx = getAttributeContext();
-          AttributeSet attributes = ctx.getEmptySet();
-          attributes = ctx.addAttribute(attributes, StyleConstants.NameAttribute,
-                                        HTML.Tag.CONTENT);
-          element = new DefaultStyledDocument.ElementSpec(attributes,
-			  DefaultStyledDocument.ElementSpec.ContentType,
-                                    new char[0], 0, 0);
-          parseBuffer.add(element);
+          addContent(new char[]{' '}, 0, 1);
         }
 
       element = new DefaultStyledDocument.ElementSpec(null,
 				DefaultStyledDocument.ElementSpec.EndTagType);
       parseBuffer.addElement(element);
-      printBuffer();
-      if (parseStack.size() > 0)
-        parseStack.pop();
     }
     
     /**
@@ -1548,6 +1711,13 @@ public class HTMLDocument extends DefaultStyledDocument
     protected void addContent(char[] data, int offs, int length,
                               boolean generateImpliedPIfNecessary)
     {
+      if (generateImpliedPIfNecessary && (! inParagraph) && (! inPreTag))
+        {
+          blockOpen(HTML.Tag.IMPLIED, new SimpleAttributeSet());
+          inParagraph = true;
+          inImpliedParagraph = true;
+        }
+
       AbstractDocument.AttributeContext ctx = getAttributeContext();
       DefaultStyledDocument.ElementSpec element;
       AttributeSet attributes = null;
@@ -1564,16 +1734,16 @@ public class HTMLDocument extends DefaultStyledDocument
                                 DefaultStyledDocument.ElementSpec.ContentType,
                                 data, offs, length);
       
-      printBuffer();
       // Add the element to the buffer
       parseBuffer.addElement(element);
-      printBuffer();
 
-      if (parseBuffer.size() > HTMLDocument.this.getTokenThreshold())
+      if (parseBuffer.size() > threshold)
         {
+          if (threshold <= MAX_THRESHOLD)
+            threshold *= GROW_THRESHOLD;
           try
             {
-              flush();
+              flushImpl();
             }
           catch (BadLocationException ble)
             {
@@ -1590,6 +1760,13 @@ public class HTMLDocument extends DefaultStyledDocument
      */
     protected void addSpecialElement(HTML.Tag t, MutableAttributeSet a)
     {
+      if (t != HTML.Tag.FRAME && ! inParagraph && ! inImpliedParagraph)
+        {
+          blockOpen(HTML.Tag.IMPLIED, new SimpleAttributeSet());
+          inParagraph = true;
+          inImpliedParagraph = true;
+        }
+
       a.addAttribute(StyleConstants.NameAttribute, t);
       
       // The two spaces are required because some special elements like HR
@@ -1598,17 +1775,10 @@ public class HTMLDocument extends DefaultStyledDocument
       DefaultStyledDocument.ElementSpec spec =
         new DefaultStyledDocument.ElementSpec(a.copyAttributes(),
 	  DefaultStyledDocument.ElementSpec.ContentType, 
-          new char[] {' ', ' '}, 0, 2 );
+          new char[] {' '}, 0, 1 );
       parseBuffer.add(spec);
     }
     
-    void printBuffer()
-    {      
-      print ("\n*********BUFFER**********");
-      for (int i = 0; i < parseBuffer.size(); i ++)
-        print ("  "+parseBuffer.get(i));
-      print ("***************************");
-    }
   }
   
   /**
@@ -1688,10 +1858,6 @@ public class HTMLDocument extends DefaultStyledDocument
       }
     };
       
-    // Set the parent HTML tag.
-    reader.parseStack.push(parent.getAttributes().getAttribute(
-      StyleConstants.NameAttribute));
-
     return reader;
   }   
   
@@ -1897,5 +2063,39 @@ public void setOuterHTML(Element elem, String htmlText)
         att = sas;
       }
     super.insertUpdate(evt, att);
+  }
+
+  /**
+   * Returns <code>true</code> when this document is inside a frame,
+   * <code>false</code> otherwise.
+   *
+   * @return <code>true</code> when this document is inside a frame,
+   *         <code>false</code> otherwise
+   */
+  boolean isFrameDocument()
+  {
+    return frameDocument;
+  }
+
+  /**
+   * Set <code>true</code> when this document is inside a frame,
+   * <code>false</code> otherwise.
+   *
+   * @param frameDoc <code>true</code> when this document is inside a frame,
+   *                 <code>false</code> otherwise
+   */
+  void setFrameDocument(boolean frameDoc)
+  {
+    frameDocument = frameDoc;
+  }
+
+  /**
+   * Returns the target that is specified in the base tag, if this is the case.
+   *
+   * @return the target that is specified in the base tag, if this is the case
+   */
+  String getBaseTarget()
+  {
+    return baseTarget;
   }
 }

@@ -1039,20 +1039,22 @@ public class MetalIconFactory implements Serializable
       g.drawLine(x + 6, y + 14, x, y + 8);
       g.drawLine(x, y + 7, x, y + 1);
       
-      // Fill the icon.
-      if (MetalLookAndFeel.getCurrentTheme() instanceof OceanTheme
-          && enabled)
-        {
-          String gradient;
-          if (focus)
-            gradient = "Slider.focusGradient";
-          else
-            gradient = "Slider.gradient";
-          MetalUtils.paintGradient(g, x + 1, y + 2, 12, 13,
-                                   SwingConstants.VERTICAL, gradient,
-                                   gradientMask);
-        }
-      else
+// The following is commented out until the masking for the gradient painting 
+// is working correctly
+//      // Fill the icon.
+//      if (MetalLookAndFeel.getCurrentTheme() instanceof OceanTheme
+//          && enabled)
+//        {
+//          String gradient;
+//          if (focus)
+//            gradient = "Slider.focusGradient";
+//          else
+//            gradient = "Slider.gradient";
+//          MetalUtils.paintGradient(g, x + 1, y + 2, 12, 13,
+//                                   SwingConstants.VERTICAL, gradient,
+//                                   gradientMask);
+//        }
+//      else
         {
           if (focus)
             g.setColor(MetalLookAndFeel.getPrimaryControlShadow());
@@ -1700,20 +1702,22 @@ public class MetalIconFactory implements Serializable
       g.drawLine(x + 8, y + 14, x + 1, y + 14);
       g.drawLine(x, y + 13, x, y + 1);
       
-      // Fill the icon.
-      if (MetalLookAndFeel.getCurrentTheme() instanceof OceanTheme
-          && enabled)
-        {
-          String gradient;
-          if (focus)
-            gradient = "Slider.focusGradient";
-          else
-            gradient = "Slider.gradient";
-          MetalUtils.paintGradient(g, x + 2, y + 1, 13, 12,
-                                   SwingConstants.HORIZONTAL, gradient,
-                                   gradientMask);
-        }
-      else
+//    The following is commented out until the masking for the gradient painting 
+//    is working correctly
+//      // Fill the icon.
+//      if (MetalLookAndFeel.getCurrentTheme() instanceof OceanTheme
+//          && enabled)
+//        {
+//          String gradient;
+//          if (focus)
+//            gradient = "Slider.focusGradient";
+//          else
+//            gradient = "Slider.gradient";
+//          MetalUtils.paintGradient(g, x + 2, y + 1, 13, 12,
+//                                   SwingConstants.HORIZONTAL, gradient,
+//                                   gradientMask);
+//        }
+//      else
         {
           if (focus)
             g.setColor(MetalLookAndFeel.getPrimaryControlShadow());

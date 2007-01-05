@@ -89,12 +89,12 @@ public class Utilities
 
     // The font metrics of the current selected font.
     FontMetrics metrics = g.getFontMetrics();
+
     int ascent = metrics.getAscent();
 
     // The current x and y pixel coordinates.
     int pixelX = x;
 
-    int pixelWidth = 0;
     int pos = s.offset;
     int len = 0;
     
@@ -103,39 +103,43 @@ public class Utilities
     for (int offset = s.offset; offset < end; ++offset)
       {
         char c = buffer[offset];
-        if (c == '\t')
+        switch (c)
           {
+          case '\t':
             if (len > 0) {
               g.drawChars(buffer, pos, len, pixelX, y);
-              pixelX += pixelWidth;
-              pixelWidth = 0;
+              pixelX += metrics.charsWidth(buffer, pos, len);
+              len = 0;
             }
             pos = offset+1;
-            len = 0;
+            if (e != null)
+              pixelX = (int) e.nextTabStop((float) pixelX, startOffset + offset
+                                           - s.offset);
+            else
+              pixelX += metrics.charWidth(' ');
+            x = pixelX;
+            break;
+          case '\n':
+          case '\r':
+            if (len > 0) {
+              g.drawChars(buffer, pos, len, pixelX, y);
+              pixelX += metrics.charsWidth(buffer, pos, len);
+              len = 0;
+            }
+            x = pixelX;
+            break;
+          default:
+            len += 1;
           }
-        
-	switch (c)
-	  {
-	  case '\t':
-	    // In case we have a tab, we just 'jump' over the tab.
-	    // When we have no tab expander we just use the width of ' '.
-	    if (e != null)
-	      pixelX = (int) e.nextTabStop(pixelX,
-                                           startOffset + offset - s.offset);
-	    else
-	      pixelX += metrics.charWidth(' ');
-	    break;
-	  default:
-            ++len;
-	    pixelWidth += metrics.charWidth(buffer[offset]);
-	    break;
-	  }
       }
 
     if (len > 0)
-      g.drawChars(buffer, pos, len, pixelX, y);
+      {
+        g.drawChars(buffer, pos, len, pixelX, y);
+        pixelX += metrics.charsWidth(buffer, pos, len);
+      }
     
-    return pixelX + pixelWidth;
+    return pixelX;
   }
 
   /**
@@ -163,7 +167,9 @@ public class Utilities
     // The current maximum width.
     int maxWidth = 0;
 
-    for (int offset = s.offset; offset < (s.offset + s.count); ++offset)
+    int end = s.offset + s.count;
+    int count = 0;
+    for (int offset = s.offset; offset < end; offset++)
       {
 	switch (buffer[offset])
 	  {
@@ -179,21 +185,18 @@ public class Utilities
 	  case '\n':
 	    // In case we have a newline, we must 'draw'
 	    // the buffer and jump on the next line.
-	    pixelX += metrics.charWidth(buffer[offset]);
-	    maxWidth = Math.max(maxWidth, pixelX - x);
-	    pixelX = x;
-	    break;
-	  default:
-	    // Here we draw the char.
-	    pixelX += metrics.charWidth(buffer[offset]);
-	    break;
-	  }
+	    pixelX += metrics.charsWidth(buffer, offset - count, count);
+            count = 0;
+            break;
+          default:
+            count++;
+          }
       }
 
     // Take the last line into account.
-    maxWidth = Math.max(maxWidth, pixelX - x);
+    pixelX += metrics.charsWidth(buffer, end - count, count);
 
-    return maxWidth;
+    return pixelX - x;
   }
 
   /**
@@ -228,43 +231,41 @@ public class Utilities
                                               int x, TabExpander te, int p0,
                                               boolean round)
   {
-    // At the end of the for loop, this holds the requested model location
-    int pos;
+    int found = s.count;
     int currentX = x0;
-    int width = 0;
+    int nextX = currentX;
     
-    for (pos = 0; pos < s.count; pos++)
+    int end = s.offset + s.count;
+    for (int pos = s.offset; pos < end && found == s.count; pos++)
       {
-        char nextChar = s.array[s.offset+pos];
-        
-        if (nextChar == 0)
-            break;
+        char nextChar = s.array[pos];
         
         if (nextChar != '\t')
-          width = fm.charWidth(nextChar);
+          nextX += fm.charWidth(nextChar);
         else
           {
             if (te == null)
-              width = fm.charWidth(' ');
+              nextX += fm.charWidth(' ');
             else
-              width = ((int) te.nextTabStop(currentX, pos)) - currentX;
+              nextX += ((int) te.nextTabStop(nextX, p0 + pos - s.offset));
           }
         
-        if (round)
+        if (x >= currentX && x < nextX)
           {
-            if (currentX + (width>>1) > x)
-              break;
+            // Found position.
+            if ((! round) || ((x - currentX) < (nextX - x)))
+              {
+                found = pos - s.offset;
+              }
+            else
+              {
+                found = pos + 1 - s.offset;
+              }
           }
-        else
-          {
-            if (currentX + width > x)
-              break;
-          }
-        
-        currentX += width;
+        currentX = nextX;
       }
 
-    return pos;
+    return found;
   }
 
   /**

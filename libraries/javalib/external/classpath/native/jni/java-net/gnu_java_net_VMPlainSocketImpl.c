@@ -46,7 +46,9 @@ exception statement from your version. */
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/time.h>
+#ifdef HAVE_IFADDRS_H
 #include <ifaddrs.h>
+#endif
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <net/if.h>
@@ -877,7 +879,7 @@ Java_gnu_java_net_VMPlainSocketImpl_leaveGroup6 (JNIEnv *env,
 static uint32_t
 getif_address (JNIEnv *env, const char *ifname)
 {
-#ifdef HAVE_GETIFADDRS
+#if defined (HAVE_IFADDRS_H) && defined (HAVE_GETIFADDRS)
   struct ifaddrs *ifaddrs, *i;
   uint32_t addr = 0;
   int foundaddr = 0;
@@ -913,13 +915,13 @@ getif_address (JNIEnv *env, const char *ifname)
   JCL_ThrowException (env, "java/lang/InternalError",
                       "getifaddrs not available");
   return 0;
-#endif /* HAVE_GETIFADDRS */
+#endif /* HAVE_IFADDRS_H && HAVE_GETIFADDRS */
 }
 
 static int
 getif_index (JNIEnv *env, const char *ifname)
 {
-#ifdef HAVE_GETIFADDRS
+#if defined (HAVE_IFADDRS_H) && defined (HAVE_GETIFADDRS)
   struct ifaddrs *ifaddrs, *i;
   char *lastname = NULL;
   int index = 1;

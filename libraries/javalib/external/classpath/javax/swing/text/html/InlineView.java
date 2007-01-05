@@ -76,6 +76,11 @@ public class InlineView
   private float longestWord;
 
   /**
+   * Indicates if we may wrap or not.
+   */
+  private boolean nowrap;
+
+  /**
    * Creates a new <code>InlineView</code> that renders the specified element.
    *
    * @param element the element for this view
@@ -155,8 +160,13 @@ public class InlineView
   
   public int getBreakWeight(int axis, float pos, float len)
   {
-    // FIXME: Implement this.
-    return super.getBreakWeight(axis, pos, len);
+    int weight;
+    if (nowrap) { if (getText(getStartOffset(), getEndOffset()).toString().contains("Web"))
+      System.err.println("Web NOWRAP");
+      weight = BadBreakWeight;}
+    else
+      weight = super.getBreakWeight(axis, pos, len);
+    return weight;
   }
 
   public View breakView(int axis, int offset, float pos, float len)
@@ -201,7 +211,12 @@ public class InlineView
       b = true;
     setSuperscript(b);
 
-    // TODO: Handle white-space: nowrap property.
+    // Fetch nowrap setting.
+    o = atts.getAttribute(CSS.Attribute.WHITE_SPACE);
+    if (o != null && o.equals("nowrap"))
+      nowrap = true;
+    else
+      nowrap = false;
   }
 
   /**

@@ -325,7 +325,7 @@ public class DatagramSocket
 
 	SecurityManager s = System.getSecurityManager();
 	if (s != null)
-	  s.checkConnect(localAddr.getHostName(), -1);
+	  s.checkConnect(localAddr.getHostAddress(), -1);
       }
     catch (SecurityException e)
       {
@@ -525,7 +525,7 @@ public class DatagramSocket
 
     SecurityManager sm = System.getSecurityManager();
     if (sm != null)
-      sm.checkConnect(address.getHostName(), port);
+      sm.checkConnect(address.getHostAddress(), port);
 
     try
       {
@@ -608,7 +608,7 @@ public class DatagramSocket
 
     SecurityManager s = System.getSecurityManager();
     if (s != null && isConnected())
-      s.checkAccept(p.getAddress().getHostName(), p.getPort());
+      s.checkAccept(p.getAddress().getHostAddress(), p.getPort());
   }
 
   /**

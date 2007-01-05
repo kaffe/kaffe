@@ -177,6 +177,12 @@ public class TexturePaintContext
             // The modulo operation gives us the replication effect.
             dx = ((dx - minX) % width) + minX;  
             dy = ((dy - minY) % height) + minY;
+            
+            // Handle possible negative values (replicating above the top-left)
+            if (dx < 0)
+              dx += width;
+            if (dy < 0)
+              dy += height;
 
             // Copy the pixel.
             pixel = source.getDataElements(dx, dy, pixel);

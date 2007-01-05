@@ -187,27 +187,13 @@ public class ParagraphView
                                                             SizeRequirements r)
   {
     r = super.calculateMinorAxisRequirements(axis, r);
-    if (setCSSSpan(r, axis))
+    if (! setCSSSpan(r, axis))
       {
-        // If we have set the span from CSS, then we need to adjust
-        // the margins.
-        SizeRequirements parent = super.calculateMinorAxisRequirements(axis,
-                                                                       null);
         int margin = axis == X_AXIS ? getLeftInset() + getRightInset()
                                     : getTopInset() + getBottomInset();
         r.minimum -= margin;
         r.preferred -= margin;
         r.maximum -= margin;
-      }
-    else
-      {
-        float min = 0;
-        int n = getLayoutViewCount();
-        for (int i = 0; i < n; i++)
-          min = Math.max(getLayoutView(i).getMinimumSpan(axis), min);
-        r.minimum = (int) min;
-        r.preferred = Math.max(r.preferred, r.minimum);
-        r.maximum = Math.max(r.maximum, r.preferred);
       }
     return r;
   }

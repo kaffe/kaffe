@@ -14,7 +14,7 @@ JNIEXPORT jlong JNICALL Java_gnu_java_awt_peer_gtk_CairoGraphics2D_init (JNIEnv 
 JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_CairoGraphics2D_disposeNative (JNIEnv *env, jobject, jlong);
 JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_CairoGraphics2D_drawPixels (JNIEnv *env, jobject, jlong, jintArray, jint, jint, jint, jdoubleArray, jdouble, jint);
 JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_CairoGraphics2D_setGradient (JNIEnv *env, jobject, jlong, jdouble, jdouble, jdouble, jdouble, jint, jint, jint, jint, jint, jint, jint, jint, jboolean);
-JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_CairoGraphics2D_setPaintPixels (JNIEnv *env, jobject, jlong, jintArray, jint, jint, jint, jboolean);
+JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_CairoGraphics2D_setPaintPixels (JNIEnv *env, jobject, jlong, jintArray, jint, jint, jint, jboolean, jint, jint);
 JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_CairoGraphics2D_cairoSetMatrix (JNIEnv *env, jobject, jlong, jdoubleArray);
 JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_CairoGraphics2D_cairoScale (JNIEnv *env, jobject, jlong, jdouble, jdouble);
 JNIEXPORT void JNICALL Java_gnu_java_awt_peer_gtk_CairoGraphics2D_cairoSetOperator (JNIEnv *env, jobject, jlong, jint);

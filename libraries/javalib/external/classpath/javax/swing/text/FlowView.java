@@ -488,7 +488,7 @@ public abstract class FlowView extends BoxView
           if (v.getBreakWeight(axis, 0, Integer.MAX_VALUE)
               >= ForcedBreakWeight)
             {
-              max = Math.max(pref, pref);
+              max = Math.max(max, pref);
               pref = 0;
             }
         }

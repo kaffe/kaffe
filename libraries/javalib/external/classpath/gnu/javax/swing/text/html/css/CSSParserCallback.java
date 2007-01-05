@@ -62,7 +62,7 @@ public interface CSSParserCallback
    *
    * @param selector the selector of the statement.
    */
-  void startStatement(String selector);
+  void startStatement(Selector[] selector);
 
   /**
    * Signals the end of a statement.

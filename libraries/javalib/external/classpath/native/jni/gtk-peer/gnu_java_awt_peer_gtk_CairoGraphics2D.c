@@ -148,7 +148,8 @@ Java_gnu_java_awt_peer_gtk_CairoGraphics2D_setGradient
 JNIEXPORT void JNICALL
 Java_gnu_java_awt_peer_gtk_CairoGraphics2D_setPaintPixels
  (JNIEnv *env __attribute__((unused)), jobject obj __attribute__((unused)),
-  jlong pointer, jintArray jarr, jint w, jint h, jint stride, jboolean repeat)
+  jlong pointer, jintArray jarr, jint w, jint h, jint stride, jboolean repeat,
+  jint x, jint y)
 {
   struct cairographics2d *gr = NULL;
   jint *jpixels = NULL;
@@ -184,12 +185,12 @@ Java_gnu_java_awt_peer_gtk_CairoGraphics2D_setPaintPixels
   gr->pattern = cairo_pattern_create_for_surface (gr->pattern_surface);
   g_assert (gr->pattern != NULL);
   
+  cairo_set_source_surface(gr->cr, gr->pattern_surface, x, y);
+  
   if (repeat)
-  	cairo_pattern_set_extend (gr->pattern, CAIRO_EXTEND_REPEAT);
+  	cairo_pattern_set_extend(cairo_get_source(gr->cr), CAIRO_EXTEND_REPEAT);
   else
-  	cairo_pattern_set_extend (gr->pattern, CAIRO_EXTEND_NONE);
-  	
-  cairo_set_source (gr->cr, gr->pattern);
+  	cairo_pattern_set_extend(cairo_get_source(gr->cr), CAIRO_EXTEND_NONE);
 }
 
 JNIEXPORT void JNICALL

@@ -54,7 +54,7 @@ public class Length
   /**
    * The converted value.
    */
-  private float floatValue;
+  protected float floatValue;
 
   /**
    * Indicates when the value is a percentage value.
@@ -71,22 +71,30 @@ public class Length
     value = val;
     int i = value.indexOf("px");
     int percent = value.indexOf("%");
-    floatValue = 0.0F;
-    if (i != -1)
+    try
       {
-        String sub = value.substring(0, i);
-        floatValue = Float.parseFloat(sub);
+        floatValue = 0.0F;
+        if (i != -1)
+          {
+            String sub = value.substring(0, i);
+            floatValue = Float.parseFloat(sub);
+          }
+        else if (percent != -1)
+          {
+            isPercentage = true;
+            String sub = value.substring(0, percent);
+            floatValue = Float.parseFloat(sub) / 100;
+          }
+        else
+          {
+            // TODO: Implement other length options.
+            floatValue = Float.parseFloat(value);
+          }
       }
-    else if (percent != -1)
+    catch (NumberFormatException ex)
       {
-        isPercentage = true;
-        String sub = value.substring(0, percent);
-        floatValue = Float.parseFloat(sub) / 100;
-      }
-    else
-      {
-        // TODO: Implement other length options.
-        floatValue = Float.parseFloat(value);
+        // Don't let such small problems interrupt CSS parsing.
+        System.err.println("couldn't parse: " + val);
       }
   }
 
@@ -104,13 +112,16 @@ public class Length
    * Returns the absolute span for the case when this length value is
    * a relative value.
    *
-   * @param span the target span
+   * @param available the target span
    *
    * @return the absolute span
    */
-  public float getValue(float span)
+  public float getValue(float available)
   {
-    return span * floatValue;
+    float span = floatValue;
+    if (isPercentage)
+      span *= available;
+    return span;
   }
 
   /**

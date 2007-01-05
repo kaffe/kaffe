@@ -163,8 +163,10 @@ public class GLightweightPeer
 
   public FontMetrics getFontMetrics(Font f)
   {
-    // Nothing to do here for lightweights.
-    return null;
+    // We shouldn't end up here, but if we do we can still try do something
+    // reasonable.
+    Toolkit tk = Toolkit.getDefaultToolkit();
+    return tk.getFontMetrics(f);
   }
 
   /* Returning null here tells the Component object that called us to
@@ -201,7 +203,31 @@ public class GLightweightPeer
 
   public void handleEvent(AWTEvent e)
   {
-    // Nothing to do here for lightweights.
+    // This can only happen when an application posts a PaintEvent for
+    // a lightweight component directly. We still support painting for
+    // this case.
+    if (e instanceof PaintEvent)
+      {
+        PaintEvent pe = (PaintEvent) e;
+        Component target = (Component) e.getSource();
+        if (target != null && target.isShowing())
+          {
+            Graphics g = target.getGraphics();
+            if (g != null)
+              {
+                try
+                  {
+                    Rectangle clip = pe.getUpdateRect();
+                    g.setClip(clip);
+                    target.paint(g);
+                  }
+                finally
+                  {
+                    g.dispose();
+                  }
+              }
+          }
+      }
   }
 
   public void hide()

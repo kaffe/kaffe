@@ -683,6 +683,58 @@ public class DefaultStyledDocument extends AbstractDocument implements
       return ret;
     }
 
+    /**
+     * Creates a document in response to a call to
+     * {@link DefaultStyledDocument#create(ElementSpec[])}.
+     *
+     * @param len the length of the inserted text
+     * @param data the specs for the elements
+     * @param ev the document event
+     */
+    void create(int len, ElementSpec[] data, DefaultDocumentEvent ev)
+    {
+      prepareEdit(offset, len);
+      Element el = root;
+      int index = el.getElementIndex(0);
+      while (! el.isLeaf())
+        {
+          Element child = el.getElement(index);
+          Edit edit = new Edit(el, index, false);
+          elementStack.push(edit);
+          el = child;
+          index = el.getElementIndex(0);
+        }
+      Edit ed = (Edit) elementStack.peek();
+      Element child = ed.e.getElement(ed.index);
+      ed.added.add(createLeafElement(ed.e, child.getAttributes(), getLength(),
+                                     child.getEndOffset()));
+      ed.removed.add(child);
+      while (elementStack.size() > 1)
+        pop();
+      int n = data.length;
+
+      // Reset root element's attributes.
+      AttributeSet newAtts = null;
+      if (n > 0 && data[0].getType() == ElementSpec.StartTagType)
+        newAtts = data[0].getAttributes();
+      if (newAtts == null)
+        newAtts = SimpleAttributeSet.EMPTY;
+      MutableAttributeSet mAtts = (MutableAttributeSet) root.getAttributes();
+      ev.addEdit(new AttributeUndoableEdit(root, newAtts, true));
+      mAtts.removeAttributes(mAtts);
+      mAtts.addAttributes(newAtts);
+
+      // Insert the specified elements.
+      for (int i = 1; i < n; i++)
+        insertElement(data[i]);
+
+      // Pop remaining stack.
+      while (elementStack.size() > 0)
+        pop();
+
+      finishEdit(ev);
+    }
+
     private boolean canJoin(Element e0, Element e1)
     {
       boolean ret = false;
@@ -987,6 +1039,8 @@ public class DefaultStyledDocument extends AbstractDocument implements
           ElementEdit ee = new ElementEdit(parent, index, removed, added);
           ev.addEdit(ee);
 	}
+      edits.clear();
+      elementStack.clear();
     }
 
     /**
@@ -1034,7 +1088,7 @@ public class DefaultStyledDocument extends AbstractDocument implements
           createFracture(data);
           i = 0;
         }
-      
+
       // Handle each ElementSpec individually.
       for (; i < data.length; i++)
         {
@@ -1069,14 +1123,13 @@ public class DefaultStyledDocument extends AbstractDocument implements
       if (offset == 0 && fracturedParent != null
           && data[0].getType() == ElementSpec.EndTagType)
         {
-          for (int p = 0;
+          int p;
+          for (p = 0;
                p < data.length && data[p].getType() == ElementSpec.EndTagType;
-               p++)
-            {
-              Edit edit = insertPath[insertPath.length - p - 1];
-              edit.index--;
-              edit.removed.add(0, edit.e.getElement(edit.index));
-            }
+               p++);
+          Edit edit = insertPath[insertPath.length - p - 1];
+          edit.index--;
+          edit.removed.add(0, edit.e.getElement(edit.index));
         }
     }
 
@@ -2379,18 +2432,24 @@ public class DefaultStyledDocument extends AbstractDocument implements
         if (length == 0)
           return;
 
-        UndoableEdit edit = content.insertString(offset,
-                                                 contentBuffer.toString());
+        Content c = getContent();
+        UndoableEdit edit = c.insertString(offset,
+                                           contentBuffer.toString());
 
         // Create the DocumentEvent with the ElementEdit added
         DefaultDocumentEvent ev = new DefaultDocumentEvent(offset,
                                                            length,
                                                            DocumentEvent.EventType.INSERT);
+
         ev.addEdit(edit);
 
         // Finally we must update the document structure and fire the insert
         // update event.
         buffer.insert(offset, length, data, ev);
+
+        super.insertUpdate(ev, null);
+
+        ev.end();
         fireInsertUpdate(ev);
         fireUndoableEditUpdate(new UndoableEditEvent(this, ev));
       }
@@ -2410,13 +2469,15 @@ public class DefaultStyledDocument extends AbstractDocument implements
    */
   protected void create(ElementSpec[] data)
   {
-    writeLock();
     try
       {
+
         // Clear content if there is some.
         int len = getLength();
         if (len > 0)
           remove(0, len);
+
+        writeLock();
 
         // Now we insert the content.
         StringBuilder b = new StringBuilder();
@@ -2429,38 +2490,18 @@ public class DefaultStyledDocument extends AbstractDocument implements
         Content content = getContent();
         UndoableEdit cEdit = content.insertString(0, b.toString());
 
+        len = b.length();
         DefaultDocumentEvent ev =
           new DefaultDocumentEvent(0, b.length(),
                                    DocumentEvent.EventType.INSERT);
         ev.addEdit(cEdit);
 
-        // We do a little trick here to get the new structure: We instantiate
-        // a new ElementBuffer with a new root element, insert into that root
-        // and then reparent the newly created elements to the old root
-        // element.
-        BranchElement createRoot =
-          (BranchElement) createBranchElement(null, null);
-        Element dummyLeaf = createLeafElement(createRoot, null, 0, 1);
-        createRoot.replace(0, 0, new Element[]{ dummyLeaf });
-        ElementBuffer createBuffer = new ElementBuffer(createRoot);
-        createBuffer.insert(0, b.length(), data, new DefaultDocumentEvent(0, b.length(), DocumentEvent.EventType.INSERT));
-        // Now the new root is the first child of the createRoot.
-        Element newRoot = createRoot.getElement(0);
-        BranchElement root = (BranchElement) getDefaultRootElement();
-        Element[] added = new Element[newRoot.getElementCount()];
-        for (int i = 0; i < added.length; ++i)
-          {
-            added[i] = newRoot.getElement(i);
-            ((AbstractElement) added[i]).element_parent = root;
-          }
-        Element[] removed = new Element[root.getElementCount()];
-        for (int i = 0; i < removed.length; ++i)
-          removed[i] = root.getElement(i);
+        buffer.create(len, data, ev);
 
-        // Replace the old elements in root with the new and update the event.
-        root.replace(0, removed.length, added);
-        ev.addEdit(new ElementEdit(root, 0, removed, added));
+        // For the bidi update.
+        super.insertUpdate(ev, null);
 
+        ev.end();
         fireInsertUpdate(ev);
         fireUndoableEditUpdate(new UndoableEditEvent(this, ev));
       }

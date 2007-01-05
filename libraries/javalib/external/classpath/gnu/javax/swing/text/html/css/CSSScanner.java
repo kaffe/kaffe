@@ -509,6 +509,7 @@ class CSSScanner
       {
         parseBuffer[tokenEnd] = (char) ch;
         tokenEnd++;
+        ch = read();
       }
 
     // Push back last read character since it doesn't belong to the IDENT.

@@ -90,6 +90,11 @@ public class GtkComponentPeer extends GtkGenericPeer
 
   Insets insets;
 
+  /**
+   * The current repaint area.
+   */
+  protected Rectangle paintArea;
+
   /* this isEnabled differs from Component.isEnabled, in that it
      knows if a parent is disabled.  In that case Component.isEnabled 
      may return true, but our isEnabled will always return false */
@@ -308,13 +313,20 @@ public class GtkComponentPeer extends GtkGenericPeer
     // seems expensive.  However, the graphics state does not carry
     // over between calls to paint, and resetting the graphics object
     // may even be more costly than simply creating a new one.
-    Graphics g = getGraphics();
-
-    g.setClip(event.getUpdateRect());
-
-    awtComponent.paint(g);
-
-    g.dispose();
+    synchronized (paintArea)
+      {
+        Graphics g = getGraphics();
+        try
+          {
+            g.setClip(paintArea);
+            awtComponent.paint(g);
+          }
+        finally
+          {
+            g.dispose();
+            paintArea = null;
+          }
+      }
   }
 
   // This method and its overrides are the only methods in the peers
@@ -327,13 +339,20 @@ public class GtkComponentPeer extends GtkGenericPeer
         || (awtComponent.getWidth() < 1 || awtComponent.getHeight() < 1))
       return;
 
-    Graphics g = getGraphics();
-
-    g.setClip(event.getUpdateRect());
-
-    awtComponent.update(g);
-
-    g.dispose();
+    synchronized (paintArea)
+    {
+      Graphics g = getGraphics();
+      try
+        {
+          g.setClip(paintArea);
+          awtComponent.update(g);
+        }
+      finally
+        {
+          g.dispose();
+          paintArea = null;
+        }
+    }
   }
 
   public boolean isFocusTraversable () 
@@ -754,7 +773,14 @@ public class GtkComponentPeer extends GtkGenericPeer
 
   public void coalescePaintEvent (PaintEvent e)
   {
-    
+    synchronized (this)
+    {
+      Rectangle newRect = e.getUpdateRect();
+      if (paintArea == null)
+        paintArea = newRect;
+      else
+        Rectangle.union(paintArea, newRect, paintArea);
+    }
   }
 
   public void updateCursorImmediately ()

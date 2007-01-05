@@ -68,7 +68,7 @@ public abstract class CompositeView
    * initialized in {@link #getInsideAllocation} and reused and modified in
    * {@link #childAllocation(int, Rectangle)}.
    */
-  Rectangle insideAllocation;
+  private final Rectangle insideAllocation = new Rectangle();
 
   /**
    * The insets of this <code>CompositeView</code>. This is initialized
@@ -134,7 +134,7 @@ public abstract class CompositeView
   public void setParent(View parent)
   {
     super.setParent(parent);
-    if (parent != null && ((children == null) || children.length == 0))
+    if (parent != null && numChildren == 0)
       loadChildren(getViewFactory());
   }
 
@@ -282,12 +282,12 @@ public abstract class CompositeView
                   }
               }
           }
-        else
-          {
-            throw new BadLocationException("Position " + pos
-                                           + " is not represented by view.", pos);
-          }    
       }
+
+    if (ret == null)
+      throw new BadLocationException("Position " + pos
+                                     + " is not represented by view.", pos);
+
     return ret;
   }
 
@@ -527,24 +527,17 @@ public abstract class CompositeView
     if (a == null)
       return null;
 
-    Rectangle alloc = a.getBounds();
+    // Try to avoid allocation of Rectangle here.
+    Rectangle alloc = a instanceof Rectangle ? (Rectangle) a : a.getBounds();
+
     // Initialize the inside allocation rectangle. This is done inside
     // a synchronized block in order to avoid multiple threads creating
     // this instance simultanously.
-    Rectangle inside;
-    synchronized(this)
-      {
-        inside = insideAllocation;
-        if (inside == null)
-          {
-            inside = new Rectangle();
-            insideAllocation = inside;
-          }
-      }
-    inside.x = alloc.x + left;
-    inside.y = alloc.y + top;
-    inside.width = alloc.width - left - right;
-    inside.height = alloc.height - top - bottom;
+    Rectangle inside = insideAllocation;
+    inside.x = alloc.x + getLeftInset();
+    inside.y = alloc.y + getTopInset();
+    inside.width = alloc.width - getLeftInset() - getRightInset();
+    inside.height = alloc.height - getTopInset() - getBottomInset();
     return inside;
   }
 

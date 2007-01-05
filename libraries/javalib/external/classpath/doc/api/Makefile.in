@@ -488,21 +488,21 @@ clean-local:
 
 create_html:
 	-$(MKDIR) html > /dev/null 2>&1
-	$(GJDOC) \
-	-use \
-	-sourcepath "$(sourcepath)" \
-	-encoding UTF-8 \
-	-breakiterator \
-	-licensetext \
-	-linksource \
-	-splitindex \
-	-validhtml \
-	-d html \
-	-doctitle "GNU Classpath $(VERSION)" \
-	-windowtitle "GNU Classpath $(VERSION) Documentation" \
-	-header $(classpathbox) -footer $(classpathbox) \
-	-subpackages java:javax:org
-	touch create_html
+@CREATE_API_DOCS_TRUE@	$(GJDOC) \
+@CREATE_API_DOCS_TRUE@	-use \
+@CREATE_API_DOCS_TRUE@	-sourcepath "$(sourcepath)" \
+@CREATE_API_DOCS_TRUE@	-encoding UTF-8 \
+@CREATE_API_DOCS_TRUE@	-breakiterator \
+@CREATE_API_DOCS_TRUE@	-licensetext \
+@CREATE_API_DOCS_TRUE@	-linksource \
+@CREATE_API_DOCS_TRUE@	-splitindex \
+@CREATE_API_DOCS_TRUE@	-validhtml \
+@CREATE_API_DOCS_TRUE@	-d html \
+@CREATE_API_DOCS_TRUE@	-doctitle "GNU Classpath $(VERSION)" \
+@CREATE_API_DOCS_TRUE@	-windowtitle "GNU Classpath $(VERSION) Documentation" \
+@CREATE_API_DOCS_TRUE@	-header $(classpathbox) -footer $(classpathbox) \
+@CREATE_API_DOCS_TRUE@	-subpackages java:javax:org
+@CREATE_API_DOCS_TRUE@	touch create_html
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

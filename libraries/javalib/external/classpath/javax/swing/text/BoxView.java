@@ -38,6 +38,7 @@ exception statement from your version. */
 
 package javax.swing.text;
 
+import java.awt.Container;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.Shape;
@@ -105,6 +106,8 @@ public class BoxView
     myAxis = axis;
     layoutValid[0] = false;
     layoutValid[1] = false;
+    requirementsValid[X_AXIS] = false;
+    requirementsValid[Y_AXIS] = false;
     span[0] = 0;
     span[1] = 0;
     requirements[0] = new SizeRequirements();
@@ -141,7 +144,10 @@ public class BoxView
    */
   public void setAxis(int axis)
   {
+    boolean changed = axis != myAxis;
     myAxis = axis;
+    if (changed)
+      preferenceChanged(null, true, true);
   }
 
   /**
@@ -222,35 +228,20 @@ public class BoxView
    */
   public void replace(int offset, int length, View[] views)
   {
-    int oldNumChildren = getViewCount();
-
     // Actually perform the replace.
     super.replace(offset, length, views);
 
     // Resize and copy data for cache arrays.
     int newItems = views != null ? views.length : 0;
-    int delta = newItems - length;
-    int src = offset + length;
-    int numMove = oldNumChildren - src;
-    int dst = src + delta;
-    offsets[X_AXIS] = replaceLayoutArray(offsets[X_AXIS], offset,
-                                         oldNumChildren, delta, src, dst,
-                                         numMove);
-    spans[X_AXIS] = replaceLayoutArray(spans[X_AXIS], offset,
-                                       oldNumChildren, delta, src, dst,
-                                       numMove);
-    offsets[Y_AXIS] = replaceLayoutArray(offsets[Y_AXIS], offset,
-                                         oldNumChildren, delta, src, dst,
-                                         numMove);
-    spans[Y_AXIS] = replaceLayoutArray(spans[Y_AXIS], offset,
-                                       oldNumChildren, delta, src, dst,
-                                       numMove);
-
-    // Invalidate layout information.
-    layoutValid[X_AXIS] = false;
-    requirementsValid[X_AXIS] = false;
-    layoutValid[Y_AXIS] = false;
-    requirementsValid[Y_AXIS] = false;
+    int minor = 1 - myAxis;
+    offsets[myAxis] = replaceLayoutArray(offsets[myAxis], offset, newItems);
+    spans[myAxis] = replaceLayoutArray(spans[myAxis], offset, newItems);
+    layoutValid[myAxis] = false;
+    requirementsValid[myAxis] = false;
+    offsets[minor] = replaceLayoutArray(offsets[minor], offset, newItems);
+    spans[minor] = replaceLayoutArray(spans[minor], offset, newItems);
+    layoutValid[minor] = false;
+    requirementsValid[minor] = false;
   }
 
   /**
@@ -261,25 +252,23 @@ public class BoxView
    *
    * @return the replaced array
    */
-  private int[] replaceLayoutArray(int[] oldArray, int offset, int numChildren,
-                                   int delta, int src, int dst, int numMove)
+  private int[] replaceLayoutArray(int[] oldArray, int offset, int newItems)
 
   {
-    int[] newArray;
-    if (numChildren + delta > oldArray.length)
-      {
-        int newLength = Math.max(2 * oldArray.length, numChildren + delta);
-        newArray = new int[newLength];
-        System.arraycopy(oldArray, 0, newArray, 0, offset);
-        System.arraycopy(oldArray, src, newArray, dst, numMove);
-      }
-    else
-      {
-        newArray = oldArray;
-        System.arraycopy(newArray, src, newArray, dst, numMove);
-      }
+    int num = getViewCount();
+    int[] newArray = new int[num];
+    System.arraycopy(oldArray, 0, newArray, 0, offset);
+    System.arraycopy(oldArray, offset, newArray, offset + newItems,
+                     num - newItems - offset);
     return newArray;
   }
+
+  /**
+   * A Rectangle instance to be reused in the paint() method below.
+   */
+  private final Rectangle tmpRect = new Rectangle();
+
+  private Rectangle clipRect = new Rectangle();
 
   /**
    * Renders the <code>Element</code> that is associated with this
@@ -290,26 +279,95 @@ public class BoxView
    */
   public void paint(Graphics g, Shape a)
   {
-    Rectangle alloc;
-    if (a instanceof Rectangle)
-      alloc = (Rectangle) a;
-    else
-      alloc = a.getBounds();
+    // Try to avoid allocation if possible (almost all cases).
+    Rectangle alloc = a instanceof Rectangle ? (Rectangle) a : a.getBounds();
 
-    int x = alloc.x + getLeftInset();
-    int y = alloc.y + getTopInset();
+    // This returns a cached instance.
+    alloc = getInsideAllocation(alloc);
 
-    Rectangle clip = g.getClipBounds();
-    Rectangle tmp = new Rectangle();
-    int count = getViewCount();
-    for (int i = 0; i < count; ++i)
+    // The following algorithm optimizes painting of a BoxView by taking
+    // advantage of the layout order of the box children.
+    //
+    // 1. It first searches a child that which's allocation is inside the clip.
+    //    This is accomplished by an efficient binary search. This assumes
+    //    that the children of the BoxView are laid out in the same order
+    //    as their index within the view. This is true for the BoxView, but
+    //    might not be the case for all subclasses.
+    // 2. Starting from the found view, it paints the children in both
+    //    directions until the first view is hit that is outside the clip.
+
+    // First we search a child view that is inside the clip.
+
+    // Fetch the clip rect and calculate the center point of it.
+    clipRect = g.getClipBounds(clipRect);
+    int cX = clipRect.x + clipRect.width / 2;
+    int cY = clipRect.y + clipRect.height / 2;
+
+    int viewCount = getViewCount();
+    int up = viewCount;
+    int low = 0;
+    int mid = (up - low) / 2;
+    View start = getView(mid);
+
+    int newMid;
+    // Use another cached instance here to avoid allocations during
+    // painting.
+    tmpRect.setBounds(alloc);
+    // This modifies tmpRect.
+    childAllocation(mid, tmpRect);
+    while (! clipRect.intersects(tmpRect))
       {
-        tmp.x = x + getOffset(X_AXIS, i);
-        tmp.y = y + getOffset(Y_AXIS, i);
-        tmp.width = getSpan(X_AXIS, i);
-        tmp.height = getSpan(Y_AXIS, i);
-        if (tmp.intersects(clip))
-          paintChild(g, tmp, i);
+        if (isBefore(cX, cY, tmpRect))
+          {
+            up = mid;
+            newMid = (up - low) / 2 + low;
+            mid = (newMid == mid) ? newMid - 1 : newMid;
+          }
+        else if (isAfter(cX, cY, tmpRect))
+          {
+            low = mid;
+            newMid = (up - low) / 2 + low;
+            mid = (newMid == mid) ? newMid + 1 : newMid;
+          }
+        else
+          break;
+        if (mid >= 0 && mid < viewCount)
+          {
+            start = getView(mid);
+            tmpRect.setBounds(alloc);
+            childAllocation(mid, tmpRect);
+          }
+        else
+          break;
+      }
+
+    if (mid >= 0 && mid < viewCount)
+      {
+        // Ok, we found one view that is inside the clip rect. Now paint the
+        // children before it that are inside the clip.
+        boolean inClip = true;
+        for (int i = mid - 1; i >= 0 && inClip; i--)
+          {
+            start = getView(i);
+            tmpRect.setBounds(alloc);
+            childAllocation(i, tmpRect);
+            inClip = clipRect.intersects(tmpRect);
+            if (inClip)
+              paintChild(g, tmpRect, i);
+          }
+
+        // Now paint the found view and all views after it that lie inside the
+        // clip.
+        inClip = true;
+        for (int i = mid; i < viewCount && inClip; i++)
+          {
+            start = getView(i);
+            tmpRect.setBounds(alloc);
+            childAllocation(i, tmpRect);
+            inClip = clipRect.intersects(tmpRect);
+            if (inClip)
+              paintChild(g, tmpRect, i);
+          }
       }
   }
 
@@ -742,49 +800,32 @@ public class BoxView
    */
   protected void layout(int width, int height)
   {
-    int[] newSpan = new int[]{ width, height };
-    int count = getViewCount();
+    layoutAxis(X_AXIS, width);
+    layoutAxis(Y_AXIS, height);
+  }
 
-    // Update minor axis as appropriate. We need to first update the minor
-    // axis layout because that might affect the children's preferences along
-    // the major axis.
-    int minorAxis = myAxis == X_AXIS ? Y_AXIS : X_AXIS;
-    if ((! isLayoutValid(minorAxis)) || newSpan[minorAxis] != span[minorAxis])
+  private void layoutAxis(int axis, int s)
+  {
+    if (span[axis] != s)
+      layoutValid[axis] = false;
+    if (! layoutValid[axis])
       {
-        layoutValid[minorAxis] = false;
-        span[minorAxis] = newSpan[minorAxis];
-        layoutMinorAxis(span[minorAxis], minorAxis, offsets[minorAxis],
-                        spans[minorAxis]);
+        span[axis] = s;
+        updateRequirements(axis);
+        if (axis == myAxis)
+          layoutMajorAxis(span[axis], axis, offsets[axis], spans[axis]);
+        else
+          layoutMinorAxis(span[axis], axis, offsets[axis], spans[axis]);
+        layoutValid[axis] = true;
 
-        // Update the child view's sizes.
-        for (int i = 0; i < count; ++i)
+        // Push out child layout.
+        int viewCount = getViewCount();
+        for (int i = 0; i < viewCount; i++)
           {
-            getView(i).setSize(spans[X_AXIS][i], spans[Y_AXIS][i]);
+            View v = getView(i);
+            v.setSize(spans[X_AXIS][i], spans[Y_AXIS][i]);
           }
-        layoutValid[minorAxis] = true;
       }
-
-
-    // Update major axis as appropriate.
-    if ((! isLayoutValid(myAxis)) || newSpan[myAxis] != span[myAxis])
-      {
-        layoutValid[myAxis] = false;
-        span[myAxis] = newSpan[myAxis];
-        layoutMajorAxis(span[myAxis], myAxis, offsets[myAxis],
-                        spans[myAxis]);
-
-        // Update the child view's sizes.
-        for (int i = 0; i < count; ++i)
-          {
-            getView(i).setSize(spans[X_AXIS][i], spans[Y_AXIS][i]);
-          }
-        layoutValid[myAxis] = true;
-      }
-
-    if (layoutValid[myAxis] == false)
-	  System.err.println("WARNING: Major axis layout must be valid after layout");
-    if (layoutValid[minorAxis] == false)
-      System.err.println("Minor axis layout must be valid after layout");
   }
 
   /**
@@ -807,7 +848,7 @@ public class BoxView
       {
         View child = getView(i);
         spans[i] = (int) child.getPreferredSpan(axis);
-        sumPref = spans[i];
+        sumPref += spans[i];
       }
 
     // Try to adjust the spans so that we fill the targetSpan.
@@ -1048,9 +1089,11 @@ public class BoxView
   {
     if (axis != X_AXIS && axis != Y_AXIS)
       throw new IllegalArgumentException("Illegal axis argument");
-    int weight = 1;
-    if (axis == myAxis)
-      weight = 0;
+    updateRequirements(axis);
+    int weight = 0;
+    if ((requirements[axis].preferred != requirements[axis].minimum)
+        || (requirements[axis].preferred != requirements[axis].maximum))
+      weight = 1;
     return weight;
   }
 
@@ -1077,8 +1120,30 @@ public class BoxView
   protected void forwardUpdate(DocumentEvent.ElementChange ec, DocumentEvent e,
                                Shape a, ViewFactory vf)
   {
-    // FIXME: What to do here?
+    boolean wasValid = isLayoutValid(myAxis);
     super.forwardUpdate(ec, e, a, vf);
+    // Trigger repaint when one of the children changed the major axis.
+    if (wasValid && ! isLayoutValid(myAxis))
+      {
+        Container c = getContainer();
+        if (a != null && c != null)
+          {
+            int pos = e.getOffset();
+            int index = getViewIndexAtPosition(pos);
+            Rectangle r = getInsideAllocation(a);
+            if (myAxis == X_AXIS)
+              {
+                r.x += offsets[myAxis][index];
+                r.width -= offsets[myAxis][index];
+              }
+            else
+              {
+                r.y += offsets[myAxis][index];
+                r.height -= offsets[myAxis][index];
+              }
+            c.repaint(r.x, r.y, r.width, r.height);
+          }
+      }
   }
 
   public int viewToModel(float x, float y, Shape a, Position.Bias[] bias)

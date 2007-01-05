@@ -41,7 +41,9 @@ exception statement from your version. */
 
 #include <sys/types.h>
 #include <sys/socket.h>
+#ifdef HAVE_IFADDRS_H
 #include <ifaddrs.h>
+#endif
 #include <netinet/in.h>
 #include <errno.h>
 #include <stdlib.h>
@@ -111,7 +113,7 @@ free_netif_list (JNIEnv *env, struct netif_entry *list)
 JNIEXPORT jobjectArray JNICALL
 Java_java_net_VMNetworkInterface_getVMInterfaces (JNIEnv * env, jclass clazz)
 {
-#ifdef HAVE_GETIFADDRS
+#if defined (HAVE_IFADDRS_H) && defined (HAVE_GETIFADDRS)
   struct ifaddrs *ifaddrs, *i;
   struct netif_entry *iflist = NULL, *e;
   jobjectArray netifs;

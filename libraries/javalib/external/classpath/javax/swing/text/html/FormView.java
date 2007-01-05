@@ -44,24 +44,32 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 
 import javax.swing.ButtonModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JEditorPane;
 import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.event.HyperlinkEvent;
 import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.ComponentView;
 import javax.swing.text.Document;
 import javax.swing.text.Element;
+import javax.swing.text.ElementIterator;
 import javax.swing.text.StyleConstants;
 
 /**
@@ -109,6 +117,214 @@ public class FormView
     {
       String data = getImageData(ev.getPoint());
       imageSubmit(data);
+    }
+  }
+
+  /**
+   * Actually submits the form data.
+   */
+  private class SubmitThread
+    extends Thread
+  {
+    /**
+     * The submit data.
+     */
+    private String data;
+
+    /**
+     * Creates a new SubmitThread.
+     *
+     * @param d the submit data
+     */
+    SubmitThread(String d)
+    {
+      data = d;
+    }
+
+    /**
+     * Actually performs the submit.
+     */
+    public void run()
+    {
+      if (data.length() > 0)
+        {
+          final String method = getMethod();
+          final URL actionURL = getActionURL();
+          final String target = getTarget();
+          URLConnection conn;
+          final JEditorPane editor = (JEditorPane) getContainer();
+          final HTMLDocument doc = (HTMLDocument) editor.getDocument();
+          HTMLEditorKit kit = (HTMLEditorKit) editor.getEditorKit();
+          if (kit.isAutoFormSubmission())
+            {
+              try
+                {
+                  final URL url;
+                  if (method != null && method.equals("post"))
+                    {
+                      // Perform POST.
+                      url = actionURL;
+                      conn = url.openConnection();
+                      postData(conn);
+                    }
+                  else
+                    {
+                      // Default to GET.
+                      url = new URL(actionURL + "?" + data);
+                    }
+                  Runnable loadDoc = new Runnable()
+                  {
+                    public void run()
+                    {
+                      if (doc.isFrameDocument())
+                        {
+                          editor.fireHyperlinkUpdate(createSubmitEvent(method,
+                                                                     actionURL,
+                                                                     target));
+                        }
+                      else
+                        {
+                          try
+                          {
+                            editor.setPage(url);
+                          }
+                          catch (IOException ex)
+                          {
+                            // Oh well.
+                            ex.printStackTrace();
+                          }
+                        }
+                    }
+                  };
+                  SwingUtilities.invokeLater(loadDoc);
+                }
+              catch (MalformedURLException ex)
+                {
+                  ex.printStackTrace();
+                }
+              catch (IOException ex)
+                {
+                  ex.printStackTrace();
+                }
+            }
+          else
+            {
+              editor.fireHyperlinkUpdate(createSubmitEvent(method,actionURL,
+                                                           target));
+            }
+        }
+    }
+
+    /**
+     * Determines the submit method.
+     *
+     * @return the submit method
+     */
+    private String getMethod()
+    {
+      AttributeSet formAtts = getFormAttributes();
+      String method = null;
+      if (formAtts != null)
+        {
+          method = (String) formAtts.getAttribute(HTML.Attribute.METHOD);
+        }
+      return method;
+    }
+
+    /**
+     * Determines the action URL.
+     *
+     * @return the action URL
+     */
+    private URL getActionURL()
+    {
+      AttributeSet formAtts = getFormAttributes();
+      HTMLDocument doc = (HTMLDocument) getElement().getDocument();
+      URL url = doc.getBase();
+      if (formAtts != null)
+        {
+          String action =
+            (String) formAtts.getAttribute(HTML.Attribute.ACTION);
+          if (action != null)
+            {
+              try
+                {
+                  url = new URL(url, action);
+                }
+              catch (MalformedURLException ex)
+                {
+                  url = null;
+                }
+            }
+        }
+      return url;
+    }
+
+    /**
+     * Fetches the target attribute.
+     *
+     * @return the target attribute or _self if none is present
+     */
+    private String getTarget()
+    {
+      AttributeSet formAtts = getFormAttributes();
+      String target = null;
+      if (formAtts != null)
+        {
+          target = (String) formAtts.getAttribute(HTML.Attribute.TARGET);
+          if (target != null)
+            target = target.toLowerCase();
+        }
+      if (target == null)
+        target = "_self";
+      return target;
+    }
+
+    /**
+     * Posts the form data over the specified connection.
+     *
+     * @param conn the connection
+     */
+    private void postData(URLConnection conn)
+    {
+      // TODO: Implement.
+    }
+
+    /**
+     * Determines the attributes from the relevant form tag.
+     *
+     * @return the attributes from the relevant form tag, <code>null</code>
+     *         when there is no form tag
+     */
+    private AttributeSet getFormAttributes()
+    {
+      AttributeSet atts = null;
+      Element form = getFormElement();
+      if (form != null)
+        atts = form.getAttributes();
+      return atts;
+    }
+
+    /**
+     * Creates the submit event that should be fired.
+     *
+     * This is package private to avoid accessor methods.
+     *
+     * @param method the submit method
+     * @param actionURL the action URL
+     * @param target the target
+     *
+     * @return the submit event
+     */
+    FormSubmitEvent createSubmitEvent(String method, URL actionURL,
+                                      String target)
+    {
+      FormSubmitEvent.MethodType m = "post".equals(method)
+                                     ? FormSubmitEvent.MethodType.POST
+                                     : FormSubmitEvent.MethodType.GET;
+      return new FormSubmitEvent(FormView.this,
+                                 HyperlinkEvent.EventType.ACTIVATED,
+                                 actionURL, getElement(), target, m, data);
     }
   }
 
@@ -340,7 +556,7 @@ public class FormView
         AttributeSet atts = el.getAttributes();
         String type = (String) atts.getAttribute(HTML.Attribute.TYPE);
         if (type.equals("submit"))
-          submitData(""); // FIXME: How to fetch the actual form data?
+          submitData(getFormData());
       }
     // FIXME: Implement the remaining actions.
   }
@@ -353,7 +569,8 @@ public class FormView
    */
   protected void submitData(String data)
   {
-    // FIXME: Implement this.
+    SubmitThread submitThread = new SubmitThread(data);
+    submitThread.start();
   }
 
   /**
@@ -389,5 +606,141 @@ public class FormView
         data = name + ".x=" + p.x + "&" + name + ".y=" + p.y; 
       }
     return data;
+  }
+
+  /**
+   * Determines and returns the enclosing form element if there is any.
+   *
+   * This is package private to avoid accessor methods.
+   *
+   * @return the enclosing form element, or <code>null</code> if there is no
+   *         enclosing form element
+   */
+  Element getFormElement()
+  {
+    Element form = null;
+    Element el = getElement();
+    while (el != null && form == null)
+      {
+        AttributeSet atts = el.getAttributes();
+        if (atts.getAttribute(StyleConstants.NameAttribute) == HTML.Tag.FORM)
+          form = el;
+        else
+          el = el.getParentElement();
+      }
+    return form;
+  }
+
+  /**
+   * Determines the form data that is about to be submitted.
+   *
+   * @return the form data
+   */
+  private String getFormData()
+  {
+    Element form = getFormElement();
+    StringBuilder b = new StringBuilder();
+    if (form != null)
+      {
+        ElementIterator i = new ElementIterator(form);
+        Element next;
+        while ((next = i.next()) != null)
+          {
+            if (next.isLeaf())
+              {
+                AttributeSet atts = next.getAttributes();
+                String type = (String) atts.getAttribute(HTML.Attribute.TYPE);
+                if (type != null && type.equals("submit")
+                    && next != getElement())
+                  {
+                    // Skip this. This is not the actual submit trigger.
+                  }
+                else if (type == null || ! type.equals("image"))
+                  {
+                    getElementFormData(next, b);
+                  }
+              }
+          }
+      }
+    return b.toString();
+  }
+
+  /**
+   * Fetches the form data from the specified element and appends it to
+   * the data string.
+   *
+   * @param el the element from which to fetch form data
+   * @param b the data string
+   */
+  private void getElementFormData(Element el, StringBuilder b)
+  {
+    AttributeSet atts = el.getAttributes();
+    String name = (String) atts.getAttribute(HTML.Attribute.NAME);
+    if (name != null)
+      {
+        String value = null;
+        HTML.Tag tag = (HTML.Tag) atts.getAttribute(StyleConstants.NameAttribute);
+        if (tag == HTML.Tag.INPUT)
+          value = getInputFormData(atts);
+        // TODO:  Implement textarea and select.
+        if (name != null && value != null)
+          {
+            addData(b, name, value);
+          }
+      }
+  }
+
+  /**
+   * Fetches form data from an input tag.
+   *
+   * @param atts the attributes from which to fetch the data
+   *
+   * @return the field value
+   */
+  private String getInputFormData(AttributeSet atts)
+  {
+    String type = (String) atts.getAttribute(HTML.Attribute.TYPE);
+    Object model = atts.getAttribute(StyleConstants.ModelAttribute);
+    String value = null;
+    if (type.equals("text") || type.equals("password"))
+      {
+        Document doc = (Document) model;
+        try
+          {
+            value = doc.getText(0, doc.getLength());
+          }
+        catch (BadLocationException ex)
+          {
+            // Sigh.
+            assert false;
+          }
+      }
+    else if (type.equals("hidden") || type.equals("submit"))
+      {
+        value = (String) atts.getAttribute(HTML.Attribute.VALUE);
+        if (value == null)
+          value = "";
+      }
+    // TODO: Implement the others. radio, checkbox and file.
+    return value;
+  }
+
+  /**
+   * Actually adds the specified data to the string. It URL encodes
+   * the name and value and handles separation of the fields.
+   *
+   * @param b the string at which the form data to be added
+   * @param name the name of the field
+   * @param value the value
+   */
+  private void addData(StringBuilder b, String name, String value)
+  {
+    if (b.length() > 0)
+      b.append('&');
+    String encName = URLEncoder.encode(name);
+    b.append(encName);
+    b.append('=');
+    String encValue = URLEncoder.encode(value);
+    b.append(encValue);
   }
 }

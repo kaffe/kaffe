@@ -5,7 +5,6 @@ JAVA_DEPEND = java.dep
 ## this file and restart the make process again
 sinclude $(JAVA_DEPEND)
 
-propertydirs :=  $(shell cd $(top_srcdir)/resource && $(FIND) gnu java javax org META-INF -type d ! -name CVS -print)
 propertyfiles :=  $(shell cd $(top_srcdir)/resource && $(FIND) gnu java javax org -name \*\.properties -print)
 cssfiles := $(shell cd $(top_srcdir) && $(FIND) gnu java javax org -name \*\.css -print)
 metafiles :=  $(shell cd $(top_srcdir)/resource && $(FIND) META-INF -name CVS -prune -o -name \*\.in -prune -o -type f -print)
@@ -104,24 +103,25 @@ glibj.zip: classes compile-classes resources
 endif # USE_PREBUILT_GLIBJ_ZIP
 
 resources: copy-vmresources.sh
-	if ! test -d gnu; then mkdir gnu; fi
-	if ! test -d gnu/java; then mkdir gnu/java; fi
-	if ! test -d gnu/java/locale; then mkdir gnu/java/locale; fi
-	if ! test -d gnu/javax/swing/plaf/gtk/icons; then mkdir -p gnu/javax/swing/plaf/gtk/icons; fi
-	@list='$(propertydirs)'; for p in $$list; do \
-	  if ! test -d $$p; then mkdir $$p; fi; \
-	done
 	@list='$(propertyfiles)'; for p in $$list; do \
+          dirname=`dirname $$p`; \
+          if ! test -d "$$dirname"; then mkdir -p "$$dirname"; fi; \
 	  cp $(top_srcdir)/resource/$$p $$p; \
 	done
 	@list='$(cssfiles)'; for p in $$list; do \
+          dirname=`dirname $$p`; \
+          if ! test -d "$$dirname"; then mkdir -p "$$dirname"; fi; \
 	  cp $(top_srcdir)/$$p $$p; \
 	done
 	@list='$(metafiles)'; for p in $$list; do \
+          dirname=`dirname $$p`; \
+          if ! test -d "$$dirname"; then mkdir -p "$$dirname"; fi; \
 	  cp $(top_srcdir)/resource/$$p $$p; \
 	done
 	@$(SHELL) ./copy-vmresources.sh
 	@list='$(iconfiles)'; for p in $$list; do \
+          dirname=`dirname $$p`; \
+          if ! test -d "$$dirname"; then mkdir -p "$$dirname"; fi; \
 	  cp $(top_srcdir)/$$p $$p; \
 	done
 	touch resources

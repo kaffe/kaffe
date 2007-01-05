@@ -278,44 +278,27 @@ public class GlyphView extends View implements TabableView, Cloneable
     public void paint(GlyphView view, Graphics g, Shape a, int p0,
                       int p1)
     {
-      Color oldColor = g.getColor();
-      int height = (int) getHeight(view);
+      updateFontMetrics(view);
+      Rectangle r = a instanceof Rectangle ? (Rectangle) a : a.getBounds();
+      TabExpander tabEx = view.getTabExpander();
       Segment txt = view.getText(p0, p1);
-      Rectangle bounds = a.getBounds();
-      TabExpander tabEx = null;
-      View parent = view.getParent();
-      if (parent instanceof TabExpander)
-        tabEx = (TabExpander) parent;
 
-      int width = Utilities.getTabbedTextWidth(txt, g.getFontMetrics(),
-                                               bounds.x, tabEx, txt.offset);
-      // Fill the background of the text run.
-      Color background = view.getBackground();
-      if (background != null)
+      // Find out the X location at which we have to paint.
+      int x = r.x;
+      int p = view.getStartOffset();
+      if (p != p0)
         {
-          g.setColor(background);
-          g.fillRect(bounds.x, bounds.y, width, height);
+          int width = Utilities.getTabbedTextWidth(txt, fontMetrics,x, tabEx,
+                                                   p);
+          x += width;
         }
-      // Draw the actual text.
-      g.setColor(view.getForeground());
-      g.setFont(view.getFont());
-      int ascent = g.getFontMetrics().getAscent();
-      Utilities.drawTabbedText(txt, bounds.x, bounds.y + ascent, g, tabEx,
-                               txt.offset);
+      // Find out Y location.
+      int y = r.y + fontMetrics.getHeight() - fontMetrics.getDescent();
 
-      if (view.isStrikeThrough())
-        {
-          int strikeHeight = (int) (getAscent(view) / 2);
-          g.drawLine(bounds.x, bounds.y + strikeHeight, bounds.x + width,
-                     bounds.y + strikeHeight);
-        }
-      if (view.isUnderline())
-        {
-          int lineHeight = (int) getAscent(view);
-          g.drawLine(bounds.x, bounds.y + lineHeight, bounds.x + width,
-                     bounds.y + lineHeight);
-        }
-      g.setColor(oldColor);
+      // Render the thing.
+      g.setFont(fontMetrics.getFont());
+      Utilities.drawTabbedText(txt, x, y, g, tabEx, p0);
+
     }
 
     /**
@@ -497,6 +480,16 @@ public class GlyphView extends View implements TabableView, Cloneable
   private int length;
 
   /**
+   * The x location against which the tab expansion is done.
+   */
+  private float tabX;
+
+  /**
+   * The tab expander that is used in this view.
+   */
+  private TabExpander tabExpander;
+
+  /**
    * Creates a new <code>GlyphView</code> for the given <code>Element</code>.
    *
    * @param element the element that is rendered by this GlyphView
@@ -555,11 +548,29 @@ public class GlyphView extends View implements TabableView, Cloneable
     int p0 = getStartOffset();
     int p1 = getEndOffset();
 
+    Rectangle r = a instanceof Rectangle ? (Rectangle) a : a.getBounds();
     Container c = getContainer();
-    // Paint layered highlights if there are any.
+
+    Color fg = getForeground();
+    JTextComponent tc = null;
     if (c instanceof JTextComponent)
       {
-        JTextComponent tc = (JTextComponent) c;
+        tc = (JTextComponent) c;
+        if (! tc.isEnabled())
+          fg = tc.getDisabledTextColor();
+      }
+    Color bg = getBackground();
+    if (bg != null)
+      {
+        g.setColor(bg);
+        System.err.println("fill background: " + bg);
+        g.fillRect(r.x, r.y, r.width, r.height);
+      }
+
+    
+    // Paint layered highlights if there are any.
+    if (tc != null)
+      {
         Highlighter h = tc.getHighlighter();
         if (h instanceof LayeredHighlighter)
           {
@@ -568,7 +579,45 @@ public class GlyphView extends View implements TabableView, Cloneable
           }
       }
 
-    getGlyphPainter().paint(this, g, a, p0, p1);
+    g.setColor(fg);
+    glyphPainter.paint(this, g, a, p0, p1);
+    boolean underline = isUnderline();
+    boolean striked = isStrikeThrough();
+    if (underline || striked)
+      {
+        View parent = getParent();
+        // X coordinate.
+        if (parent != null && parent.getEndOffset() == p1)
+          {
+            // Strip whitespace.
+            Segment s = getText(p0, p1);
+            while (s.count > 0 && Character.isWhitespace(s.array[s.count - 1]))
+              {
+                p1--;
+                s.count--;
+              }
+          }
+        int x0 = r.x;
+        int p = getStartOffset();
+        TabExpander tabEx = getTabExpander();
+        if (p != p0)
+          x0 += (int) glyphPainter.getSpan(this, p, p0, tabEx, x0);
+        int x1 = x0 + (int) glyphPainter.getSpan(this, p0, p1, tabEx, x0);
+        // Y coordinate.
+        int y = r.y + r.height - (int) glyphPainter.getDescent(this);
+        if (underline)
+          {
+            int yTmp = y;
+            yTmp += 1;
+            g.drawLine(x0, yTmp, x1, yTmp);
+          }
+        if (striked)
+          {
+            int yTmp = y;
+            yTmp -= (int) glyphPainter.getAscent(this);
+            g.drawLine(x0, yTmp, x1, yTmp);
+          }
+      }
   }
 
 
@@ -658,13 +707,7 @@ public class GlyphView extends View implements TabableView, Cloneable
    */
   public TabExpander getTabExpander()
   {
-    TabExpander te = null;
-    View parent = getParent();
-
-    if (parent instanceof TabExpander)
-      te = (TabExpander) parent;
-    
-    return te;
+    return tabExpander;
   }
 
   /**
@@ -678,8 +721,16 @@ public class GlyphView extends View implements TabableView, Cloneable
   public float getTabbedSpan(float x, TabExpander te)
   {
     checkPainter();
+    TabExpander old = tabExpander;
+    tabExpander = te;
+    if (tabExpander != old)
+      {
+        // Changing the tab expander will lead to a relayout in the X_AXIS.
+        preferenceChanged(null, true, false);
+      }
+    tabX = x;
     return getGlyphPainter().getSpan(this, getStartOffset(),
-                                     getEndOffset(), te, x);
+                                     getEndOffset(), tabExpander, x);
   }
 
   /**
@@ -693,23 +744,8 @@ public class GlyphView extends View implements TabableView, Cloneable
    */
   public float getPartialSpan(int p0, int p1)
   {
-    Element el = getElement();
-    Document doc = el.getDocument();
-    Segment seg = new Segment();
-    try
-      {
-        doc.getText(p0, p1 - p0, seg);
-      }
-    catch (BadLocationException ex)
-      {
-	AssertionError ae;
-        ae = new AssertionError("BadLocationException must not be thrown "
-				+ "here");
-	ae.initCause(ex);
-	throw ae;
-      }
-    FontMetrics fm = null; // Fetch font metrics somewhere.
-    return Utilities.getTabbedTextWidth(seg, fm, 0, null, p0);
+    checkPainter();
+    return glyphPainter.getSpan(this, p0, p1, tabExpander, tabX);
   }
 
   /**
@@ -746,6 +782,8 @@ public class GlyphView extends View implements TabableView, Cloneable
     return offs;
   }
 
+  private Segment cached = new Segment();
+
   /**
    * Returns the text segment that this view is responsible for.
    *
@@ -756,10 +794,9 @@ public class GlyphView extends View implements TabableView, Cloneable
    */
   public Segment getText(int p0, int p1)
   {
-    Segment txt = new Segment();
     try
       {
-        getDocument().getText(p0, p1 - p0, txt);
+        getDocument().getText(p0, p1 - p0, cached);
       }
     catch (BadLocationException ex)
       {
@@ -770,7 +807,7 @@ public class GlyphView extends View implements TabableView, Cloneable
 	throw ae;
       }
 
-    return txt;
+    return cached;
   }
 
   /**
@@ -938,6 +975,8 @@ public class GlyphView extends View implements TabableView, Cloneable
         if (p0 != getStartOffset() || end != getEndOffset())
           {
             brokenView = createFragment(p0, end);
+            if (brokenView instanceof GlyphView)
+              ((GlyphView) brokenView).tabX = pos;
           }
       }
     return brokenView;
@@ -1007,7 +1046,7 @@ public class GlyphView extends View implements TabableView, Cloneable
    */
   public void changedUpdate(DocumentEvent e, Shape a, ViewFactory vf)
   {
-    preferenceChanged(this, true, true);
+    preferenceChanged(null, true, true);
   }
 
   /**
@@ -1022,7 +1061,7 @@ public class GlyphView extends View implements TabableView, Cloneable
    */
   public void insertUpdate(DocumentEvent e, Shape a, ViewFactory vf)
   {
-    preferenceChanged(this, true, false);
+    preferenceChanged(null, true, false);
   }
 
   /**
@@ -1037,7 +1076,7 @@ public class GlyphView extends View implements TabableView, Cloneable
    */
   public void removeUpdate(DocumentEvent e, Shape a, ViewFactory vf)
   {
-    preferenceChanged(this, true, false);
+    preferenceChanged(null, true, false);
   }
 
   /**

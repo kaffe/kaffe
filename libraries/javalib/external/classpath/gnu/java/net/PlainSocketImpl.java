@@ -342,6 +342,9 @@ public class PlainSocketImpl extends SocketImpl
     that.impl.getState().setChannelFD(c.getState());
     that.channel = new SocketChannelImpl(c);
     that.setOption(SO_REUSEADDR, Boolean.TRUE);
+    // Reset the inherited timeout.
+    that.setOption(SO_TIMEOUT, Integer.valueOf(0));
+
   }
 
   /**

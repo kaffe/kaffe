@@ -40,6 +40,8 @@ package javax.swing;
 
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -58,6 +60,7 @@ import javax.accessibility.AccessibleText;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.plaf.TextUI;
+import javax.swing.text.AbstractDocument;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.Document;
@@ -507,6 +510,121 @@ public class JEditorPane extends JTextComponent
     }
   }
 
+  /**
+   * A special stream that can be cancelled.
+   */
+  private class PageStream
+    extends FilterInputStream
+  {
+    /**
+     * True when the stream has been cancelled, false otherwise.
+     */
+    private boolean cancelled;
+
+    protected PageStream(InputStream in)
+    {
+      super(in);
+      cancelled = false;
+    }
+
+    private void checkCancelled()
+      throws IOException
+    {
+      if (cancelled)
+        throw new IOException("Stream has been cancelled");
+    }
+
+    void cancel()
+    {
+      cancelled = true;
+    }
+
+    public int read()
+      throws IOException
+    {
+      checkCancelled();
+      return super.read();
+    }
+
+    public int read(byte[] b, int off, int len)
+      throws IOException
+    {
+      checkCancelled();
+      return super.read(b, off, len);
+    }
+
+    public long skip(long n)
+      throws IOException
+    {
+      checkCancelled();
+      return super.skip(n);
+    }
+
+    public int available()
+      throws IOException
+    {
+      checkCancelled();
+      return super.available();
+    }
+
+    public void reset()
+      throws IOException
+    {
+      checkCancelled();
+      super.reset();
+    }
+  }
+
+  /**
+   * The thread that loads documents asynchronously.
+   */
+  private class PageLoader
+    implements Runnable
+  {
+    private Document doc;
+    private InputStream in;
+    private URL old;
+    private URL page;
+    PageLoader(Document doc, InputStream in, int prio, URL old, URL page)
+    {
+      this.doc = doc;
+      this.in = in;
+      this.old = old;
+      this.page = page;
+    }
+
+    public void run()
+    {
+      try
+        {
+          read(in, doc);
+          synchronized (JEditorPane.this)
+          {
+            loading = null;
+          }
+        }
+      catch (IOException ex)
+        {
+          UIManager.getLookAndFeel().provideErrorFeedback(JEditorPane.this);
+        }
+      finally
+        {
+          if (SwingUtilities.isEventDispatchThread())
+            firePropertyChange("page", old, page);
+          else
+            {
+              SwingUtilities.invokeLater(new Runnable()
+              {
+                public void run()
+                {
+                  firePropertyChange("page", old, page);
+                }
+              });
+            }
+      }
+     }
+  }
+
   private static final long serialVersionUID = 3140472492599046285L;
   
   private EditorKit editorKit;
@@ -518,6 +636,11 @@ public class JEditorPane extends JTextComponent
   
   // A mapping between content types and used EditorKits
   HashMap editorMap;  
+
+  /**
+   * The currently loading stream, if any.
+   */
+  private PageStream loading;
 
   public JEditorPane()
   {
@@ -936,16 +1059,60 @@ public class JEditorPane extends JTextComponent
     if (page == null)
       throw new IOException("invalid url");
 
-    URL old = getPage();;
-    InputStream in = getStream(page);
-    if (editorKit != null)
+    URL old = getPage();
+    // Reset scrollbar when URL actually changes.
+    if (! page.equals(old) && page.getRef() == null)
+      scrollRectToVisible(new Rectangle(0, 0, 1, 1));
+
+    // Only reload if the URL doesn't point to the same file.
+    // This is not the same as equals because there might be different
+    // URLs on the same file with different anchors.
+    if (old == null || ! old.sameFile(page))
       {
-        Document doc = editorKit.createDefaultDocument();
-        doc.putProperty(Document.StreamDescriptionProperty, page);
-        read(in, doc);
-        setDocument(doc);
+        InputStream in = getStream(page);
+        if (editorKit != null)
+          {
+            Document doc = editorKit.createDefaultDocument();
+            doc.putProperty(Document.StreamDescriptionProperty, page);
+
+            // Cancel loading stream, if there is any.
+            synchronized (this)
+              {
+                if (loading != null)
+                  {
+                    loading.cancel();
+                    loading = null;
+                  }
+              }
+            int prio = -1;
+            if (doc instanceof AbstractDocument)
+              {
+                AbstractDocument aDoc = (AbstractDocument) doc;
+                prio = aDoc.getAsynchronousLoadPriority();
+              }
+            if (prio >= 0)
+              {
+                // Load asynchronously.
+                setDocument(doc);
+                synchronized (this)
+                  {
+                    loading = new PageStream(in);
+                  }
+                PageLoader loader = new PageLoader(doc, loading, prio, old,
+                                                   page);
+                Thread loadThread = new Thread(loader);
+                loadThread.setPriority(prio);
+                loadThread.start();
+              }
+            else
+              {
+                // Load synchronously.
+                PageLoader loader = new PageLoader(doc, in, prio, old, page);
+                loader.run();
+                setDocument(doc);
+              }
+          }
       }
-    firePropertyChange("page", old, page);
   }
 
   /**

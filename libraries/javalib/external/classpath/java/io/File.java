@@ -754,8 +754,9 @@ public class File implements Serializable, Comparable
     String files[] = VMFile.list(path);
     
     // Check if an error occured in listInternal().
+    // This is an unreadable directory, pretend there is nothing inside.
     if (files == null)
-      return null;
+      return new String[0];
 
     if (filter == null)
       return files;

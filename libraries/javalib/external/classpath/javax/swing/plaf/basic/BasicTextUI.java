@@ -378,7 +378,7 @@ public abstract class BasicTextUI extends TextUI
     {
       if (view != null)
         {
-          Rectangle b = s.getBounds();
+          Rectangle b = s instanceof Rectangle ? (Rectangle) s : s.getBounds();
           view.setSize(b.width, b.height);
           view.paint(g, s);
         }
@@ -997,6 +997,11 @@ public abstract class BasicTextUI extends TextUI
             rootView.setSize(d.width - i.left - i.right,
                              d.height - i.top - i.bottom);
           }
+        else
+          {
+            // Not laid out yet. Force some pseudo size.
+            rootView.setSize(Integer.MAX_VALUE, Integer.MAX_VALUE);
+          }
         w = rootView.getPreferredSpan(View.X_AXIS);
         h = rootView.getPreferredSpan(View.Y_AXIS);
       }
@@ -1092,7 +1097,6 @@ public abstract class BasicTextUI extends TextUI
             AbstractDocument aDoc = (AbstractDocument) doc;
             aDoc.readLock();
           }
-        
         paintSafely(g);
       }
     finally
@@ -1273,12 +1277,26 @@ public abstract class BasicTextUI extends TextUI
                                        Position.Bias[] biasRet)
     throws BadLocationException
   {
-    // A comment in the spec of NavigationFilter.getNextVisualPositionFrom()
-    // suggests that this method should be implemented by forwarding the call
-    // the root view.
-    return rootView.getNextVisualPositionFrom(pos, b,
-                                              getVisibleEditorRect(),
-                                              direction, biasRet);
+    int offset = -1;
+    Document doc = textComponent.getDocument();
+    if (doc instanceof AbstractDocument)
+      ((AbstractDocument) doc).readLock();
+    try
+      {
+        Rectangle alloc = getVisibleEditorRect();
+        if (alloc != null)
+          {
+            rootView.setSize(alloc.width, alloc.height);
+            offset = rootView.getNextVisualPositionFrom(pos, b, alloc,
+                                                        direction, biasRet);
+          }
+      }
+    finally
+      {
+        if (doc instanceof AbstractDocument)
+          ((AbstractDocument) doc).readUnlock();
+      }
+    return offset;
   }
 
   /**
@@ -1388,7 +1406,25 @@ public abstract class BasicTextUI extends TextUI
    */
   public int viewToModel(JTextComponent t, Point pt, Position.Bias[] biasReturn)
   {
-    return rootView.viewToModel(pt.x, pt.y, getVisibleEditorRect(), biasReturn);
+    int offset = -1;
+    Document doc = textComponent.getDocument();
+    if (doc instanceof AbstractDocument)
+      ((AbstractDocument) doc).readLock();
+    try
+      {
+        Rectangle alloc = getVisibleEditorRect();
+        if (alloc != null)
+          {
+            rootView.setSize(alloc.width, alloc.height);
+            offset = rootView.viewToModel(pt.x, pt.y, alloc, biasReturn);
+          }
+      }
+    finally
+      {
+        if (doc instanceof AbstractDocument)
+          ((AbstractDocument) doc).readUnlock();
+      }
+    return offset;
   }
 
   /**
@@ -1420,6 +1456,11 @@ public abstract class BasicTextUI extends TextUI
   }
 
   /**
+   * A cached Insets instance to be reused below.
+   */
+  private Insets cachedInsets;
+
+  /**
    * Returns the allocation to give the root view.
    *
    * @return the allocation to give the root view
@@ -1437,7 +1478,7 @@ public abstract class BasicTextUI extends TextUI
     if (width <= 0 || height <= 0)
       return null;
 	
-    Insets insets = textComponent.getInsets();
+    Insets insets = textComponent.getInsets(cachedInsets);
     return new Rectangle(insets.left, insets.top,
 			 width - insets.left - insets.right,
 			 height - insets.top - insets.bottom);
@@ -1488,4 +1529,5 @@ public abstract class BasicTextUI extends TextUI
   {
     // The default implementation does nothing.
   }
+
 }

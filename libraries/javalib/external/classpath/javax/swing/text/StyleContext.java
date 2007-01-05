@@ -48,10 +48,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.EventListener;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.WeakHashMap;
 
 import javax.swing.event.ChangeEvent;
@@ -467,7 +469,8 @@ public class StyleContext
   /**
    * A pool of immutable AttributeSets.
    */
-  private transient WeakHashMap attributeSetPool = new WeakHashMap();
+  private transient Map attributeSetPool =
+    Collections.synchronizedMap(new WeakHashMap());
 
   /**
    * Creates a new instance of the style context. Add the default style
@@ -545,7 +548,7 @@ public class StyleContext
     throws ClassNotFoundException, IOException
   {
     search = new SimpleAttributeSet();
-    attributeSetPool = new WeakHashMap();
+    attributeSetPool = Collections.synchronizedMap(new WeakHashMap());
     in.defaultReadObject();
   }
 
@@ -650,7 +653,8 @@ public class StyleContext
     return defaultStyleContext;
   }
 
-  public AttributeSet addAttribute(AttributeSet old, Object name, Object value)
+  public synchronized AttributeSet addAttribute(AttributeSet old, Object name,
+                                                Object value)
   {
     AttributeSet ret;
     if (old.getAttributeCount() + 1 < getCompressionThreshold())
@@ -670,7 +674,8 @@ public class StyleContext
     return ret;
   }
 
-  public AttributeSet addAttributes(AttributeSet old, AttributeSet attributes)
+  public synchronized AttributeSet addAttributes(AttributeSet old,
+                                                 AttributeSet attributes)
   {
     AttributeSet ret;
     if (old.getAttributeCount() + attributes.getAttributeCount()
@@ -701,7 +706,8 @@ public class StyleContext
     cleanupPool();
   }
 
-  public AttributeSet removeAttribute(AttributeSet old, Object name)
+  public synchronized AttributeSet removeAttribute(AttributeSet old,
+                                                   Object name)
   {
     AttributeSet ret;
     if (old.getAttributeCount() - 1 <= getCompressionThreshold())
@@ -721,7 +727,8 @@ public class StyleContext
     return ret;
   }
 
-  public AttributeSet removeAttributes(AttributeSet old, AttributeSet attributes)
+  public synchronized AttributeSet removeAttributes(AttributeSet old,
+                                                    AttributeSet attributes)
   {
     AttributeSet ret;
     if (old.getAttributeCount() <= getCompressionThreshold())
@@ -741,7 +748,8 @@ public class StyleContext
     return ret;
   }
 
-  public AttributeSet removeAttributes(AttributeSet old, Enumeration names)
+  public synchronized AttributeSet removeAttributes(AttributeSet old,
+                                                    Enumeration names)
   {
     AttributeSet ret;
     if (old.getAttributeCount() <= getCompressionThreshold())

@@ -294,7 +294,7 @@ public class FreetypeGlyphVector extends GlyphVector
   {
     int[] rval;
 
-    if( codeReturn == null )
+    if( codeReturn == null || codeReturn.length < numEntries)
       rval = new int[ numEntries ];
     else
       rval = codeReturn;
@@ -395,7 +395,7 @@ public class FreetypeGlyphVector extends GlyphVector
   public float[] getGlyphPositions(int beginGlyphIndex, int numEntries, 
 				   float[] positionReturn)
   {
-    if (positionReturn == null)
+    if (positionReturn == null || positionReturn.length < (numEntries * 2))
       positionReturn = new float[numEntries*2];
     
     System.arraycopy(glyphPositions, beginGlyphIndex*2, positionReturn, 0,

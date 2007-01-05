@@ -850,11 +850,13 @@ public class Thread implements Runnable
    * are no guarantees which thread will be next to run, but most VMs will
    * choose the highest priority thread that has been waiting longest.
    *
-   * @param ms the number of milliseconds to sleep.
+   * @param ms the number of milliseconds to sleep, or 0 for forever
    * @throws InterruptedException if the Thread is (or was) interrupted;
    *         it's <i>interrupted status</i> will be cleared
    * @throws IllegalArgumentException if ms is negative
    * @see #interrupt()
+   * @see #notify()
+   * @see #wait(long)
    */
   public static void sleep(long ms) throws InterruptedException
   {
@@ -874,13 +876,15 @@ public class Thread implements Runnable
    * immediately when time expires, because some other thread may be
    * active.  So don't expect real-time performance.
    *
-   * @param ms the number of milliseconds to sleep
+   * @param ms the number of milliseconds to sleep, or 0 for forever
    * @param ns the number of extra nanoseconds to sleep (0-999999)
    * @throws InterruptedException if the Thread is (or was) interrupted;
    *         it's <i>interrupted status</i> will be cleared
    * @throws IllegalArgumentException if ms or ns is negative
    *         or ns is larger than 999999.
    * @see #interrupt()
+   * @see #notify()
+   * @see #wait(long, int)
    */
   public static void sleep(long ms, int ns) throws InterruptedException
   {

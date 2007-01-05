@@ -625,10 +625,12 @@ public abstract class View implements SwingConstants
                               DocumentEvent ev, Shape shape)
   {
     if (ec != null && shape != null)
-      preferenceChanged(null, true, true);
-    Container c = getContainer();
-    if (c != null)
-      c.repaint();
+      {
+        preferenceChanged(null, true, true);
+        Container c = getContainer();
+        if (c != null)
+          c.repaint();
+      }
   }
 
   /**

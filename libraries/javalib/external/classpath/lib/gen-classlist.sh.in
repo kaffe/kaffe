@@ -55,7 +55,9 @@ for dir in $vm_dirlist; do
 done
 
 # Only include generated files once.
-if test ! "${top_builddir}" -ef "@top_srcdir@"; then
+abs_top_builddir=`cd "${top_builddir}"; pwd`
+abs_top_srcdir=`cd "@top_srcdir@"; pwd`
+if test "$abs_top_builddir" != "$abs_top_srcdir"; then
   echo "Adding generated files in builddir '${top_builddir}'."
   # Currently the only generated files are in gnu.*.
   (cd ${top_builddir}; @FIND@ gnu -follow -name '*.java' -print) |
@@ -95,7 +97,7 @@ rm vm.add
 rm tmp.omit
 
 new=
-if test -e ${top_builddir}/lib/classes.2; then
+if test -f ${top_builddir}/lib/classes.2; then
   p=`diff ${top_builddir}/lib/classes.2 ${top_builddir}/lib/classes.1`
   if test "$p" != ""; then
     new="true"

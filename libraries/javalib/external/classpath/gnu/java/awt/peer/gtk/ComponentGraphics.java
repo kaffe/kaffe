@@ -480,57 +480,6 @@ public class ComponentGraphics extends CairoGraphics2D
     return super.drawImage(bimg, x, y, width, height, observer);
   }
 
-  public void drawLine(int x1, int y1, int x2, int y2)
-  {
-    lock();
-    try
-      {
-        if (comp == null || comp instanceof AlphaComposite)
-          super.drawLine(x1, y1, x2, y2);
-        
-        else
-          draw(new Line2D.Double(x1, y1, x2, y2));
-      }
-    finally
-      {
-        unlock();
-      }
-  }
-
-  public void drawRect(int x, int y, int width, int height)
-  {
-    lock();
-    try
-      {
-        if (comp == null || comp instanceof AlphaComposite)
-          super.drawRect(x, y, width, height);
-        
-        else
-          draw(new Rectangle2D.Double(x, y, width, height));
-      }
-    finally
-      {
-        unlock();
-      }
-  }
-
-  public void fillRect(int x, int y, int width, int height)
-  {
-    lock();
-    try
-      {
-        if (comp == null || comp instanceof AlphaComposite)
-          super.fillRect(x, y, width, height);
-        
-        else
-          fill(new Rectangle2D.Double(x, y, width, height));
-      }
-    finally
-      {
-        unlock();
-      }
-  }
-
   public void setClip(Shape s)
   {
     lock();

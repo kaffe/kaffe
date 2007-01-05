@@ -823,10 +823,7 @@ public abstract class Component
    */
   public boolean isShowing()
   {
-    if (! visible || peer == null)
-      return false;
-
-    return parent == null ? false : parent.isShowing();
+    return visible && peer != null && (parent == null || parent.isShowing());
   }
 
   /**
@@ -3626,6 +3623,12 @@ public abstract class Component
               coalesced = existingEvent;
             else if (r2.contains(r1))
               coalesced = newEvent;
+          }
+        else
+          {
+            // Replace the event and let the heavyweight figure out the expanding
+            // of the repaint area.
+            coalesced = newEvent;
           }
         break;
       default:

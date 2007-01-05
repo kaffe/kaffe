@@ -71,6 +71,7 @@ import java.awt.geom.Arc2D;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.GeneralPath;
+import java.awt.geom.Line2D;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
@@ -134,6 +135,7 @@ public abstract class CairoGraphics2D extends Graphics2D
    * The current paint
    */
   Paint paint;
+  boolean customPaint;
 
   /**
    * The current stroke
@@ -255,6 +257,8 @@ public abstract class CairoGraphics2D extends Graphics2D
           bg = new Color(g.bg.getRGB());
       }
 
+    firstClip = g.firstClip;
+    originalClip = g.originalClip;
     clip = g.getClip();
 
     if (g.transform == null)
@@ -311,6 +315,11 @@ public abstract class CairoGraphics2D extends Graphics2D
 				       int width, int height, int dx, int dy);
 
 
+  /**
+   * Find the bounds of this graphics context, in device space.
+   * 
+   * @return the bounds in device-space
+   */
   protected abstract Rectangle2D getRealBounds();
 
   ////// Native Methods ////////////////////////////////////////////////////
@@ -336,7 +345,8 @@ public abstract class CairoGraphics2D extends Graphics2D
                                   int g2, int b2, int a2, boolean cyclic);
   
   private native void setPaintPixels(long pointer, int[] pixels, int w,
-                                       int h, int stride, boolean repeat);
+                                       int h, int stride, boolean repeat,
+                                       int x, int y);
 
   /**
    * Set the current transform matrix
@@ -691,6 +701,7 @@ public abstract class CairoGraphics2D extends Graphics2D
     if (paint instanceof Color)
       {
         setColor((Color) paint);
+        customPaint = false;
       }
     else if (paint instanceof TexturePaint)
       {
@@ -708,7 +719,8 @@ public abstract class CairoGraphics2D extends Graphics2D
 	AffineTransformOp op = new AffineTransformOp(at, getRenderingHints());
 	BufferedImage texture = op.filter(img, null);
 	int[] pixels = texture.getRGB(0, 0, width, height, null, 0, width);
-	setPaintPixels(nativePointer, pixels, width, height, width, true);
+	setPaintPixels(nativePointer, pixels, width, height, width, true, 0, 0);
+        customPaint = false;
       }
     else if (paint instanceof GradientPaint)
       {
@@ -721,36 +733,90 @@ public abstract class CairoGraphics2D extends Graphics2D
                     c1.getRed(), c1.getGreen(), c1.getBlue(), c1.getAlpha(),
                     c2.getRed(), c2.getGreen(), c2.getBlue(), c2.getAlpha(),
                     gp.isCyclic());
+        customPaint = false;
       }
     else
       {
-        // Get bounds in device space
-        int minX = 0;
-        int minY = 0;
-        int width = (int)getRealBounds().getWidth();
-        int height = (int)getRealBounds().getHeight();
-        
-        Point2D origin = transform.transform(new Point2D.Double(minX, minY),
-                                             null);
-        Point2D extreme = transform.transform(new Point2D.Double(width + minX,
-                                                                 height + minY),
-                                              null);
-        minX = (int)origin.getX();
-        minY = (int)origin.getY();
-        width = (int)extreme.getX() - minX;
-        height = (int)extreme.getY() - minY;
+        customPaint = true;
+      }        
+  }
+  
+  /**
+   * Sets a custom paint
+   * 
+   * @param bounds the bounding box, in user space
+   */
+  protected void setCustomPaint(Rectangle bounds)
+  {
+    if (paint instanceof Color || paint instanceof TexturePaint
+        || paint instanceof GradientPaint)
+      return;
+    
+    int userX = bounds.x;
+    int userY = bounds.y;
+    int userWidth = bounds.width;
+    int userHeight = bounds.height;
+    
+    // Find bounds in device space
+    Point2D origin = transform.transform(new Point2D.Double(userX, userY),
+                                         null);
+    Point2D extreme = transform.transform(new Point2D.Double(userWidth + userX,
+                                                             userHeight + userY),
+                                          null);
+    int deviceX = (int)origin.getX();
+    int deviceY = (int)origin.getY();
+    int deviceWidth = (int)Math.ceil(extreme.getX() - origin.getX());
+    int deviceHeight = (int)Math.ceil(extreme.getY() - origin.getY());
 
-        // Get raster of the paint background
-        PaintContext pc = paint.createContext(ColorModel.getRGBdefault(),
-                                              new Rectangle(minX, minY,
-                                                            width, height),
-                                              getRealBounds(),
-                                              transform, hints);
+    // Get raster of the paint background
+    PaintContext pc = paint.createContext(CairoSurface.cairoColorModel,
+                                          new Rectangle(deviceX, deviceY,
+                                                        deviceWidth,
+                                                        deviceHeight),
+                                          bounds,
+                                          transform, hints);
+    
+    Raster raster = pc.getRaster(deviceX, deviceY, deviceWidth,
+                                 deviceHeight);
+    
+    // Clear the transform matrix in Cairo, since the raster returned by the
+    // PaintContext is already in device-space
+    AffineTransform oldTx = new AffineTransform(transform);
+    setTransformImpl(new AffineTransform());    
+
+    // Set pixels in cairo, aligning the top-left of the background image
+    // to the top-left corner in device space
+    if (pc.getColorModel().equals(CairoSurface.cairoColorModel)
+        && raster.getSampleModel().getTransferType() == DataBuffer.TYPE_INT)
+      {
+        // Use a fast copy if the paint context can uses a Cairo-compatible
+        // color model
+        setPaintPixels(nativePointer,
+                       (int[])raster.getDataElements(0, 0, deviceWidth,
+                                                     deviceHeight, null),
+                       deviceWidth, deviceHeight, deviceWidth, false,
+                       deviceX, deviceY);
+      }
+    
+    else if (pc.getColorModel().equals(CairoSurface.cairoCM_opaque)
+            && raster.getSampleModel().getTransferType() == DataBuffer.TYPE_INT)
+      {
+        // We can also optimize if the context uses a similar color model
+        // but without an alpha channel; we just add the alpha
+        int[] pixels = (int[])raster.getDataElements(0, 0, deviceWidth,
+                                                     deviceHeight, null);
         
-        Raster raster = pc.getRaster(minX, minY, width, height);
+        for (int i = 0; i < pixels.length; i++)
+          pixels[i] = 0xff000000 | (pixels[i] & 0x00ffffff);
         
-        // Work around colorspace issues, and force use of the
-        // BufferedImage.getRGB method... this can be improved upon.
+        setPaintPixels(nativePointer, pixels, deviceWidth, deviceHeight,
+                       deviceWidth, false, deviceX, deviceY);
+      }
+    
+    else
+      {
+        // Fall back on wrapping the raster in a BufferedImage, and 
+        // use BufferedImage.getRGB() to do color-model conversion 
         WritableRaster wr = Raster.createWritableRaster(raster.getSampleModel(),
                                                         new Point(raster.getMinX(),
                                                                   raster.getMinY()));
@@ -760,15 +826,15 @@ public abstract class CairoGraphics2D extends Graphics2D
                                                pc.getColorModel().isAlphaPremultiplied(),
                                                null);
         
-        // Set pixels in cairo
         setPaintPixels(nativePointer,
-                       img2.getRGB(0, 0, width, height, null, 0, width),
-                       width, height, width, false);
-        //  setPaintPixels(nativePointer,
-        //                 raster.getPixels(0, 0, width, height, (int[])null),
-        //                 width, height, width, false);
-        // doesn't work... but would be much more efficient!
+                       img2.getRGB(0, 0, deviceWidth, deviceHeight, null, 0,
+                                   deviceWidth),
+                       deviceWidth, deviceHeight, deviceWidth, false,
+                       deviceX, deviceY);
       }
+    
+    // Restore transform
+    setTransformImpl(oldTx);    
   }
 
   public Stroke getStroke()
@@ -797,6 +863,33 @@ public abstract class CairoGraphics2D extends Graphics2D
 	else
 	  cairoSetDash(nativePointer, new double[0], 0, 0.0);
       }
+  }
+
+  /**
+   * Utility method to find the bounds of a shape, including the stroke width.
+   * 
+   * @param s the shape
+   * @return the bounds of the shape, including stroke width
+   */
+  protected Rectangle findStrokedBounds(Shape s)
+  {
+    Rectangle r = s.getBounds();
+    
+    if (stroke instanceof BasicStroke)
+      {
+        int strokeWidth = (int)Math.ceil(((BasicStroke)stroke).getLineWidth());
+        r.x -= strokeWidth / 2;
+        r.y -= strokeWidth / 2;
+        r.height += strokeWidth;
+        r.width += strokeWidth;
+      }
+    else
+      {
+        Shape s2 = stroke.createStrokedShape(s);
+        r = s2.getBounds();
+      }
+    
+    return r;
   }
 
   public void setPaintMode()
@@ -1023,6 +1116,12 @@ public abstract class CairoGraphics2D extends Graphics2D
         return;
       }
 
+    if (customPaint)
+      {
+        Rectangle r = findStrokedBounds(s);
+        setCustomPaint(r);
+      }
+    
     createPath(s, true);
     cairoStroke(nativePointer);
   }
@@ -1031,6 +1130,9 @@ public abstract class CairoGraphics2D extends Graphics2D
   {
     createPath(s, false);
 
+    if (customPaint)
+      setCustomPaint(s.getBounds());
+    
     double alpha = 1.0;
     if (comp instanceof AlphaComposite)
       alpha = ((AlphaComposite) comp).getAlpha();
@@ -1045,9 +1147,25 @@ public abstract class CairoGraphics2D extends Graphics2D
     if (s instanceof Rectangle2D)
       {
         Rectangle2D r = (Rectangle2D) s;
-        cairoRectangle(nativePointer, shifted(r.getX(),shiftDrawCalls && isDraw),
-                       shifted(r.getY(), shiftDrawCalls && isDraw), r.getWidth(),
-                       r.getHeight());
+        
+        // Pixels need to be shifted in draw operations to ensure that they
+        // light up entire pixels, but we also need to make sure the rectangle
+        // does not get distorted by this shifting operation
+        double x = shiftX(r.getX(),shiftDrawCalls && isDraw);
+        double y = shiftY(r.getY(), shiftDrawCalls && isDraw);
+        double w = Math.round(r.getWidth());
+        double h = Math.round(r.getHeight());
+        cairoRectangle(nativePointer, x, y, w, h);
+      }
+    
+    // Lines are easy too
+    else if (s instanceof Line2D)
+      {
+        Line2D l = (Line2D) s;
+        cairoMoveTo(nativePointer, shiftX(l.getX1(), shiftDrawCalls && isDraw),
+                  shiftY(l.getY1(), shiftDrawCalls && isDraw));
+        cairoLineTo(nativePointer, shiftX(l.getX2(), shiftDrawCalls && isDraw),
+                  shiftY(l.getY2(), shiftDrawCalls && isDraw));
       }
 
     // We can optimize ellipses too; however we don't bother optimizing arcs:
@@ -1076,8 +1194,8 @@ public abstract class CairoGraphics2D extends Graphics2D
           }
 
         cairoArc(nativePointer,
-                 shifted(e.getCenterX() / xscale, shiftDrawCalls && isDraw),
-                 shifted(e.getCenterY() / yscale, shiftDrawCalls && isDraw),
+                 shiftX(e.getCenterX() / xscale, shiftDrawCalls && isDraw),
+                 shiftY(e.getCenterY() / yscale, shiftDrawCalls && isDraw),
                  radius, 0, Math.PI * 2);
 
         if (xscale != 1 || yscale != 1)
@@ -1133,15 +1251,14 @@ public abstract class CairoGraphics2D extends Graphics2D
     // to draw a single pixel. This is emulated by drawing
     // a one pixel sized rectangle.
     if (x1 == x2 && y1 == y2)
-      cairoFillRect(nativePointer, x1, y1, 1, 1);
+      fill(new Rectangle(x1, y1, 1, 1));
     else
-      cairoDrawLine(nativePointer, x1 + 0.5, y1 + 0.5, x2 + 0.5, y2 + 0.5);
+      draw(new Line2D.Double(x1, y1, x2, y2));
   }
 
   public void drawRect(int x, int y, int width, int height)
   {
-    cairoDrawRect(nativePointer, shifted(x, shiftDrawCalls),
-                  shifted(y, shiftDrawCalls), width, height);
+    draw(new Rectangle(x, y, width, height));
   }
 
   public void fillArc(int x, int y, int width, int height, int startAngle,
@@ -1154,10 +1271,7 @@ public abstract class CairoGraphics2D extends Graphics2D
 
   public void fillRect(int x, int y, int width, int height)
   {
-    fill(new Rectangle(x, y, width, height));
-    // TODO: If we want to use the more efficient
-    //cairoFillRect(nativePointer, x, y, width, height);
-    // we need to override this method in subclasses
+    fill (new Rectangle(x, y, width, height));
   }
 
   public void fillPolygon(int[] xPoints, int[] yPoints, int nPoints)
@@ -1392,8 +1506,11 @@ public abstract class CairoGraphics2D extends Graphics2D
         setBackground(bgcolor);
         
         double[] origin = new double[] {0,0};
+        double[] dimensions = new double[] {width, height};
         xform.transform(origin, 0, origin, 0, 1);
-        clearRect((int)origin[0], (int)origin[1], width, height);
+        xform.deltaTransform(dimensions, 0, dimensions, 0, 1);
+        clearRect((int)origin[0], (int)origin[1],
+                  (int)dimensions[0], (int)dimensions[1]);
         
         setBackground(oldColor);
       }
@@ -1523,8 +1640,14 @@ public abstract class CairoGraphics2D extends Graphics2D
   {
     if (str == null || str.length() == 0)
       return;
-    (new TextLayout( str, getFont(), getFontRenderContext() )).
-      draw(this, x, y);
+    GdkFontPeer fontPeer = (GdkFontPeer) font.getPeer();
+    TextLayout tl = (TextLayout) fontPeer.textLayoutCache.get(str);
+    if (tl == null)
+      {
+        tl = new TextLayout( str, getFont(), getFontRenderContext() );
+        fontPeer.textLayoutCache.put(str, tl);
+      }
+    tl.draw(this, x, y);
   }
 
   public void drawString(String str, int x, int y)
@@ -1544,6 +1667,9 @@ public abstract class CairoGraphics2D extends Graphics2D
     if( gv.getNumGlyphs() <= 0 )
       return;
 
+    if (customPaint)
+      setCustomPaint(gv.getOutline().getBounds());
+    
     if (comp instanceof AlphaComposite)
       alpha = ((AlphaComposite) comp).getAlpha();
     if (gv instanceof FreetypeGlyphVector && alpha == 1.0)
@@ -1553,9 +1679,10 @@ public abstract class CairoGraphics2D extends Graphics2D
         float[] positions = gv.getGlyphPositions (0, n, null);
 
         setFont (gv.getFont ());
-	synchronized( this.font ) 
+        GdkFontPeer fontPeer = (GdkFontPeer) font.getPeer();
+	synchronized (fontPeer) 
 	  { 
-	    cairoDrawGlyphVector(nativePointer, (GdkFontPeer)getFont().getPeer(),
+	    cairoDrawGlyphVector(nativePointer, fontPeer,
 				 x, y, n, codes, positions);
 	  }
       }
@@ -1593,9 +1720,7 @@ public abstract class CairoGraphics2D extends Graphics2D
 
   public FontMetrics getFontMetrics(Font f)
   {
-    // the reason we go via the toolkit here is to try to get
-    // a cached object. the toolkit keeps such a cache.
-    return Toolkit.getDefaultToolkit().getFontMetrics(f);
+    return ((GdkFontPeer) f.getPeer()).getFontMetrics(f);
   }
 
   public void setFont(Font f)
@@ -1612,7 +1737,11 @@ public abstract class CairoGraphics2D extends Graphics2D
         ((ClasspathToolkit)(Toolkit.getDefaultToolkit()))
         .getFont(f.getName(), f.getAttributes());    
     
-    cairoSetFont(nativePointer, (GdkFontPeer)getFont().getPeer());
+    GdkFontPeer fontpeer = (GdkFontPeer) getFont().getPeer();
+    synchronized (fontpeer)
+      {
+        cairoSetFont(nativePointer, fontpeer);
+      }
   }
 
   public Font getFont()
@@ -1732,12 +1861,33 @@ public abstract class CairoGraphics2D extends Graphics2D
   }
 
   /**
-   * Shifts coordinates by 0.5.
+   * Shifts an x-coordinate by 0.5 in device space.
    */
-  private double shifted(double coord, boolean doShift)
+  private double shiftX(double coord, boolean doShift)
   {
     if (doShift)
-      return Math.floor(coord) + 0.5;
+      {
+        double shift = 0.5;
+        if (!transform.isIdentity())
+          shift /= transform.getScaleX();
+        return Math.round(coord) + shift;
+      }
+    else
+      return coord;
+  }
+
+  /**
+   * Shifts a y-coordinate by 0.5 in device space.
+   */
+  private double shiftY(double coord, boolean doShift)
+  {
+    if (doShift)
+      {
+        double shift = 0.5;
+        if (!transform.isIdentity())
+          shift /= transform.getScaleY();
+        return Math.round(coord) + shift;
+      }
     else
       return coord;
   }
@@ -1758,35 +1908,35 @@ public abstract class CairoGraphics2D extends Graphics2D
 	switch (seg)
 	  {
 	  case PathIterator.SEG_MOVETO:
-	    x = shifted(coords[0], doShift);
-	    y = shifted(coords[1], doShift);
+	    x = shiftX(coords[0], doShift);
+	    y = shiftY(coords[1], doShift);
 	    cairoMoveTo(nativePointer, x, y);
 	    break;
 	  case PathIterator.SEG_LINETO:
-	    x = shifted(coords[0], doShift);
-	    y = shifted(coords[1], doShift);
+	    x = shiftX(coords[0], doShift);
+	    y = shiftY(coords[1], doShift);
 	    cairoLineTo(nativePointer, x, y);
 	    break;
 	  case PathIterator.SEG_QUADTO:
 	    // splitting a quadratic bezier into a cubic:
 	    // see: http://pfaedit.sourceforge.net/bezier.html
-	    double x1 = x + (2.0 / 3.0) * (shifted(coords[0], doShift) - x);
-	    double y1 = y + (2.0 / 3.0) * (shifted(coords[1], doShift) - y);
+	    double x1 = x + (2.0 / 3.0) * (shiftX(coords[0], doShift) - x);
+	    double y1 = y + (2.0 / 3.0) * (shiftY(coords[1], doShift) - y);
 
-	    double x2 = x1 + (1.0 / 3.0) * (shifted(coords[2], doShift) - x);
-	    double y2 = y1 + (1.0 / 3.0) * (shifted(coords[3], doShift) - y);
+	    double x2 = x1 + (1.0 / 3.0) * (shiftX(coords[2], doShift) - x);
+	    double y2 = y1 + (1.0 / 3.0) * (shiftY(coords[3], doShift) - y);
 
-	    x = shifted(coords[2], doShift);
-	    y = shifted(coords[3], doShift);
+	    x = shiftX(coords[2], doShift);
+	    y = shiftY(coords[3], doShift);
 	    cairoCurveTo(nativePointer, x1, y1, x2, y2, x, y);
 	    break;
 	  case PathIterator.SEG_CUBICTO:
-	    x = shifted(coords[4], doShift);
-	    y = shifted(coords[5], doShift);
-	    cairoCurveTo(nativePointer, shifted(coords[0], doShift),
-	                 shifted(coords[1], doShift),
-	                 shifted(coords[2], doShift),
-	                 shifted(coords[3], doShift), x, y);
+	    x = shiftX(coords[4], doShift);
+	    y = shiftY(coords[5], doShift);
+	    cairoCurveTo(nativePointer, shiftX(coords[0], doShift),
+	                 shiftY(coords[1], doShift),
+	                 shiftX(coords[2], doShift),
+	                 shiftY(coords[3], doShift), x, y);
 	    break;
 	  case PathIterator.SEG_CLOSE:
 	    cairoClosePath(nativePointer);

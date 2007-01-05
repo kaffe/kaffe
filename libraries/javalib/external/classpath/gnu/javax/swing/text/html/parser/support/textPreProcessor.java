@@ -65,22 +65,14 @@ public class textPreProcessor
     int b = text.length - 1;
 
     // Remove leading/trailing whitespace, leaving at most one character
-    try
-      {
-        while (Constants.bWHITESPACE.get(text[a])
-               && Constants.bWHITESPACE.get(text[a + 1]))
-          a++;
+    int len = text.length;
+    while (a + 1 < len && Constants.bWHITESPACE.get(text[a])
+           && Constants.bWHITESPACE.get(text[a + 1]))
+      a++;
 
-        while (b > a && Constants.bWHITESPACE.get(text[b])
+    while (b > a && Constants.bWHITESPACE.get(text[b])
                && Constants.bWHITESPACE.get(text[b - 1]))
-          b--;
-      }
-    catch (ArrayIndexOutOfBoundsException sx)
-      {
-        // A text fragment, consisting from spaces and line breaks only,
-        // mutates into single space.
-        return new char[] { ' ' };
-      }
+      b--;
 
     a_text.setLength(0);
 

@@ -786,7 +786,7 @@ public class JSlider extends JComponent implements SwingConstants, Accessible,
       {
         for (Enumeration list = labelTable.elements(); list.hasMoreElements();)
           {
-            Object o = (JLabel) list.nextElement();
+            Object o = list.nextElement();
             if (o instanceof JComponent)
               {
                 JComponent jc = (JComponent) o;

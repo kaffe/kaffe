@@ -1903,10 +1903,11 @@ public class Collections
    * sorts the array, and then iterates over the list setting each element from
    * the array.
    *
-   * @param l the List to sort
+   * @param l the List to sort (<code>null</code> not permitted)
    * @throws ClassCastException if some items are not mutually comparable
    * @throws UnsupportedOperationException if the List is not modifiable
-   * @throws NullPointerException if some element is null
+   * @throws NullPointerException if the list is <code>null</code>, or contains
+   *     some element that is <code>null</code>.
    * @see Arrays#sort(Object[])
    */
   public static void sort(List l)
@@ -1922,13 +1923,15 @@ public class Collections
    * sorts the array, and then iterates over the list setting each element from
    * the array.
    *
-   * @param l the List to sort
+   * @param l the List to sort (<code>null</code> not permitted)
    * @param c the Comparator specifying the ordering for the elements, or
-   *        null for natural ordering
+   *        <code>null</code> for natural ordering
    * @throws ClassCastException if c will not compare some pair of items
    * @throws UnsupportedOperationException if the List is not modifiable
-   * @throws NullPointerException if null is compared by natural ordering
-   *        (only possible when c is null)
+   * @throws NullPointerException if the List is <code>null</code> or 
+   *         <code>null</code> is compared by natural ordering (only possible 
+   *         when c is <code>null</code>)
+   *         
    * @see Arrays#sort(Object[], Comparator)
    */
   public static void sort(List l, Comparator c)

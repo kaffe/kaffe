@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.EventListener;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -158,14 +159,10 @@ public abstract class AbstractDocument implements Document, Serializable
   private int numReaders = 0;
   
   /**
-   * Tells if there are one or more writers waiting.
+   * The number of current writers. If this is > 1 then the same thread entered
+   * the write lock more than once.
    */
-  private int numWritersWaiting = 0;  
-
-  /**
-   * A condition variable that readers and writers wait on.
-   */
-  private Object documentCV = new Object();
+  private int numWriters = 0;  
 
   /** An instance of a DocumentFilter.FilterBypass which allows calling
    * the insert, remove and replace method without checking for an installed
@@ -315,7 +312,8 @@ public abstract class AbstractDocument implements Document, Serializable
    * @throws BadLocationException if <code>offset</code> is not a valid
    *         location in the documents content model
    */
-  public Position createPosition(final int offset) throws BadLocationException
+  public synchronized Position createPosition(final int offset)
+    throws BadLocationException
   {
     return content.createPosition(offset);
   }
@@ -432,7 +430,7 @@ public abstract class AbstractDocument implements Document, Serializable
    * @return the thread that currently modifies this <code>Document</code>
    *         if there is one, otherwise <code>null</code>
    */
-  protected final Thread getCurrentWriter()
+  protected final synchronized Thread getCurrentWriter()
   {
     return currentWriter;
   }
@@ -1022,25 +1020,21 @@ public abstract class AbstractDocument implements Document, Serializable
    * Blocks until a read lock can be obtained.  Must block if there is
    * currently a writer modifying the <code>Document</code>.
    */
-  public final void readLock()
+  public final synchronized void readLock()
   {
-    if (currentWriter != null && currentWriter.equals(Thread.currentThread()))
-      return;
-    synchronized (documentCV)
+    try
       {
-        while (currentWriter != null || numWritersWaiting > 0)
+        while (currentWriter != null)
           {
-            
-            try
-              {
-                documentCV.wait();
-              }
-            catch (InterruptedException ie)
-              {
-                throw new Error("interrupted trying to get a readLock");
-              }
+            if (currentWriter == Thread.currentThread())
+              return;
+            wait();
           }
-          numReaders++;
+        numReaders++;
+      }
+    catch (InterruptedException ex)
+      {
+        throw new Error("Interrupted during grab read lock");
       }
   }
 
@@ -1048,7 +1042,7 @@ public abstract class AbstractDocument implements Document, Serializable
    * Releases the read lock. If this was the only reader on this
    * <code>Document</code>, writing may begin now.
    */
-  public final void readUnlock()
+  public final synchronized void readUnlock()
   {
     // Note we could have a problem here if readUnlock was called without a
     // prior call to readLock but the specs simply warn users to ensure that
@@ -1075,21 +1069,14 @@ public abstract class AbstractDocument implements Document, Serializable
 
     // FIXME: the reference implementation throws a 
     // javax.swing.text.StateInvariantError here
-    if (numReaders == 0)
+    if (numReaders <= 0)
       throw new IllegalStateException("document lock failure");
     
-    synchronized (documentCV)
-    {
-      // If currentWriter is not null, the application code probably had a 
-      // writeLock and then tried to obtain a readLock, in which case 
-      // numReaders wasn't incremented
-      if (currentWriter == null)
-        {
-          numReaders --;
-          if (numReaders == 0 && numWritersWaiting != 0)
-            documentCV.notify();
-        }
-    }
+    // If currentWriter is not null, the application code probably had a 
+    // writeLock and then tried to obtain a readLock, in which case 
+    // numReaders wasn't incremented
+    numReaders--;
+    notify();
   }
 
   /**
@@ -1113,12 +1100,21 @@ public abstract class AbstractDocument implements Document, Serializable
    */
   public void remove(int offset, int length) throws BadLocationException
   {
-    if (documentFilter == null)
-      removeImpl(offset, length);
-    else
-      documentFilter.remove(getBypass(), offset, length);
+    writeLock();
+    try
+      {
+        DocumentFilter f = getDocumentFilter();
+        if (f == null)
+          removeImpl(offset, length);
+        else
+          f.remove(getBypass(), offset, length);
+      }
+    finally
+      {
+        writeUnlock();
+      }
   }
-  
+
   void removeImpl(int offset, int length) throws BadLocationException
   {
     // The RI silently ignores all requests that have a negative length.
@@ -1135,21 +1131,12 @@ public abstract class AbstractDocument implements Document, Serializable
           new DefaultDocumentEvent(offset, length,
                                    DocumentEvent.EventType.REMOVE);
     
-        try
-        {
-          writeLock();
-        
-          // The order of the operations below is critical!        
-          removeUpdate(event);
-          UndoableEdit temp = content.remove(offset, length);
-        
-          postRemoveUpdate(event);
-          fireRemoveUpdate(event);
-        }
-        finally
-          {
-            writeUnlock();
-          }
+        // The order of the operations below is critical!        
+        removeUpdate(event);
+        UndoableEdit temp = content.remove(offset, length);
+
+        postRemoveUpdate(event);
+        fireRemoveUpdate(event);
       }
   }
 
@@ -1343,26 +1330,25 @@ public abstract class AbstractDocument implements Document, Serializable
    * Blocks until a write lock can be obtained.  Must wait if there are 
    * readers currently reading or another thread is currently writing.
    */
-  protected final void writeLock()
+  protected synchronized final void writeLock()
   {
-    if (currentWriter != null && currentWriter.equals(Thread.currentThread()))
-      return;
-    synchronized (documentCV)
+    try
       {
-        numWritersWaiting++;
-        while (numReaders > 0)
+        while (numReaders > 0 || currentWriter != null)
           {
-            try
+            if (Thread.currentThread() == currentWriter)
               {
-                documentCV.wait();
+                numWriters++;
+                return;
               }
-            catch (InterruptedException ie)
-              {
-                throw new Error("interruped while trying to obtain write lock");
-              }
+            wait();
           }
-        numWritersWaiting --;
         currentWriter = Thread.currentThread();
+        numWriters = 1;
+      }
+    catch (InterruptedException ex)
+      {
+        throw new Error("Interupted during grab write lock");
       }
   }
 
@@ -1370,16 +1356,14 @@ public abstract class AbstractDocument implements Document, Serializable
    * Releases the write lock. This allows waiting readers or writers to
    * obtain the lock.
    */
-  protected final void writeUnlock()
+  protected final synchronized void writeUnlock()
   {
-    synchronized (documentCV)
-    {
-        if (Thread.currentThread().equals(currentWriter))
-          {
-            currentWriter = null;
-            documentCV.notifyAll();
-          }
-    }
+    if (--numWriters <= 0)
+      {
+        numWriters = 0;
+        currentWriter = null;
+        notifyAll();
+      }
   }
 
   /**
@@ -2384,6 +2368,11 @@ public abstract class AbstractDocument implements Document, Serializable
     /** The serialization UID (compatible with JDK1.5). */
     private static final long serialVersionUID = 5230037221564563284L;
 
+    /**
+     * The threshold that indicates when we switch to using a Hashtable.
+     */
+    private static final int THRESHOLD = 10;
+    
     /** The starting offset of the change. */
     private int offset;
 
@@ -2394,15 +2383,18 @@ public abstract class AbstractDocument implements Document, Serializable
     private DocumentEvent.EventType type;
 
     /**
-     * Maps <code>Element</code> to their change records.
+     * Maps <code>Element</code> to their change records. This is only
+     * used when the changes array gets too big. We can use an
+     * (unsync'ed) HashMap here, since changes to this are (should) always
+     * be performed inside a write lock. 
      */
-    Hashtable changes;
+    private HashMap changes;
 
     /**
      * Indicates if this event has been modified or not. This is used to
      * determine if this event is thrown.
      */
-    boolean modified;
+    private boolean modified;
 
     /**
      * Creates a new <code>DefaultDocumentEvent</code>.
@@ -2417,7 +2409,6 @@ public abstract class AbstractDocument implements Document, Serializable
       this.offset = offset;
       this.length = length;
       this.type = type;
-      changes = new Hashtable();
       modified = false;
     }
 
@@ -2431,9 +2422,27 @@ public abstract class AbstractDocument implements Document, Serializable
     public boolean addEdit(UndoableEdit edit)
     {
       // XXX - Fully qualify ElementChange to work around gcj bug #2499.
-      if (edit instanceof DocumentEvent.ElementChange)
+
+      // Start using Hashtable when we pass a certain threshold. This
+      // gives a good memory/performance compromise.
+      if (changes == null && edits.size() > THRESHOLD)
         {
-          modified = true;
+          changes = new HashMap();
+          int count = edits.size();
+          for (int i = 0; i < count; i++)
+            {
+              Object o = edits.elementAt(i);
+              if (o instanceof DocumentEvent.ElementChange)
+                {
+                  DocumentEvent.ElementChange ec =
+                    (DocumentEvent.ElementChange) o;
+                  changes.put(ec.getElement(), ec);
+                }
+            }
+        }
+
+      if (changes != null && edit instanceof DocumentEvent.ElementChange)
+        {
           DocumentEvent.ElementChange elEdit =
             (DocumentEvent.ElementChange) edit;
           changes.put(elEdit.getElement(), elEdit);
@@ -2492,7 +2501,27 @@ public abstract class AbstractDocument implements Document, Serializable
     public DocumentEvent.ElementChange getChange(Element elem)
     {
       // XXX - Fully qualify ElementChange to work around gcj bug #2499.
-      return (DocumentEvent.ElementChange) changes.get(elem);
+      DocumentEvent.ElementChange change = null;
+      if (changes != null)
+        {
+          change = (DocumentEvent.ElementChange) changes.get(elem);
+        }
+      else
+        {
+          int count = edits.size();
+          for (int i = 0; i < count && change == null; i++)
+            {
+              Object o = edits.get(i);
+              if (o instanceof DocumentEvent.ElementChange)
+                {
+                  DocumentEvent.ElementChange ec =
+                    (DocumentEvent.ElementChange) o;
+                  if (elem.equals(ec.getElement()))
+                    change = ec;
+                }
+            }
+        }
+      return change;
     }
     
     /**

@@ -39,10 +39,13 @@ exception statement from your version. */
 package gnu.javax.swing.text.html.css;
 
 import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.StringTokenizer;
 
 /**
  * A parser for CSS stylesheets.
@@ -156,7 +159,15 @@ public class CSSParser
   {
     StringBuilder selector = new StringBuilder();
     parseSelector(selector);
-    callback.startStatement(selector.toString());
+    StringTokenizer selSplitter =
+      new StringTokenizer(selector.toString(), ",");
+    Selector[] sels = new Selector[selSplitter.countTokens()];
+    for (int i = 0; selSplitter.hasMoreTokens(); i++)
+      {
+        String sel = selSplitter.nextToken().trim();
+        sels[i] = new Selector(sel);
+      }
+    callback.startStatement(sels);
     // Read any number of whitespace.
     int token;
     do
@@ -258,7 +269,7 @@ public class CSSParser
             StringBuilder value = new StringBuilder();
             if (parseValue(value))
               {
-                callback.declaration(property, value.toString());
+                callback.declaration(property, value.toString().trim());
               }
             else
               {
@@ -296,7 +307,9 @@ public class CSSParser
     throws IOException
   {
     // FIXME: Handle block and ATKEYWORD.
-    return parseAny(s);
+    boolean success = parseAny(s);
+    while (parseAny(s));
+    return success;
   }
 
   /**
@@ -439,15 +452,32 @@ public class CSSParser
   {
     try
       {
-        String name = "/javax/swing/text/html/default.css";
-        InputStream in = CSSScanner.class.getResourceAsStream(name);
+        InputStream in;
+        if (args.length > 0)
+          {
+            File file = new File(args[0]);
+            in = new FileInputStream(file);
+          }
+        else
+          {
+            String name = "/javax/swing/text/html/default.css";
+            in = CSSScanner.class.getResourceAsStream(name);
+          }
         BufferedInputStream bin = new BufferedInputStream(in);
         InputStreamReader r = new InputStreamReader(bin);
         CSSParserCallback cb = new CSSParserCallback()
         {
-          public void startStatement(String selector)
+          public void startStatement(Selector[] selector)
           {
-            System.out.println("startStatement: " + selector);
+            System.out.print("startStatement: ");
+            for (int i = 0; i < selector.length; i++)
+              {
+                System.out.print(selector[i]);
+                if (i < selector.length - 1)
+                  System.out.print(',');
+                else
+                  System.out.println();
+              }
           }
           public void endStatement()
           {

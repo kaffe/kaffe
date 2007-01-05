@@ -69,7 +69,7 @@ public final class DecimalFormatSymbols implements Cloneable, Serializable
   {
     try
       {
-	return super.clone ();
+        return super.clone();
       }
     catch(CloneNotSupportedException e)
       {

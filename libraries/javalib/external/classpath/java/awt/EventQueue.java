@@ -584,8 +584,11 @@ public class EventQueue
                 prev = null;
                 // Tell our EventDispatchThread that it can end
                 // execution.
-                dispatchThread.interrupt();
-                dispatchThread = null;
+                if (dispatchThread != null)
+                  {
+                    dispatchThread.interrupt();
+                    dispatchThread = null;
+                  }
               }
           }
       }

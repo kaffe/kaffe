@@ -88,6 +88,11 @@ public class CairoSurface extends WritableRaster
                                                        0xFF000000,
                                                        true,
                                                        Buffers.smallestAppropriateTransferType(32));
+  
+  // This CM corresponds to the CAIRO_FORMAT_RGB24 type in Cairo 
+  static ColorModel cairoCM_opaque = new DirectColorModel(24, 0x00FF0000,
+                                                          0x0000FF00,
+                                                          0x000000FF);
   /**
    * Allocates and clears the buffer and creates the cairo surface.
    * @param width, height - the image size

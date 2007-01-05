@@ -38,6 +38,7 @@ exception statement from your version. */
 
 package javax.swing;
 
+import gnu.classpath.SystemProperties;
 import gnu.java.awt.LowPriorityEvent;
 
 import java.applet.Applet;
@@ -57,6 +58,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.WeakHashMap;
+
+import javax.swing.text.JTextComponent;
 
 /**
  * <p>The repaint manager holds a set of dirty regions, invalid components,
@@ -261,7 +264,9 @@ public class RepaintManager
     invalidComponents = new ArrayList();
     repaintWorker = new RepaintWorker();
     doubleBufferMaximumSize = new Dimension(2000,2000);
-    doubleBufferingEnabled = true;
+    doubleBufferingEnabled =
+      SystemProperties.getProperty("gnu.swing.doublebuffering", "true")
+                      .equals("true");
     offscreenBuffers = new WeakHashMap();
   }
 
@@ -426,7 +431,6 @@ public class RepaintManager
   {
     if (w <= 0 || h <= 0 || !component.isShowing())
       return;
-
     component.computeVisibleRect(rectCache);
     SwingUtilities.computeIntersection(x, y, w, h, rectCache);
 

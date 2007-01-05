@@ -150,6 +150,25 @@ public class WritableRaster extends Raster
                   sampleModelTranslateY + childMinY - parentY),
         this);
   }
+  
+  public Raster createChild(int parentX, int parentY, int width,
+                            int height, int childMinX, int childMinY,
+                            int[] bandList)
+  {
+    if (parentX < minX || parentX + width > minX + this.width
+        || parentY < minY || parentY + height > minY + this.height)
+      throw new RasterFormatException("Child raster extends beyond parent");
+    
+    SampleModel sm = (bandList == null) ?
+      sampleModel :
+      sampleModel.createSubsetSampleModel(bandList);
+
+    return new WritableRaster(sm, dataBuffer,
+        new Rectangle(childMinX, childMinY, width, height),
+        new Point(sampleModelTranslateX + childMinX - parentX,
+                  sampleModelTranslateY + childMinY - parentY),
+        this);
+  }
 
   public void setDataElements(int x, int y, Object inData)
   {

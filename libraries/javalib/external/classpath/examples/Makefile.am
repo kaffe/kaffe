@@ -36,11 +36,14 @@ BUILT_SOURCES = $(EXAMPLE_ZIP)
 # the png icons we use in some of the examples.
 EXAMPLE_ICONS = $(srcdir)/gnu/classpath/examples/icons/*.png
 
+# the html pages we use in the swing demo example.
+EXAMPLE_HTML = $(srcdir)/gnu/classpath/examples/swing/*.html
+
 # The example specific README files.
 READMES = $(srcdir)/gnu/classpath/examples/CORBA/swing/README.html
 
 # All the files we find "interesting"
-ALL_EXAMPLE_FILES = $(EXAMPLE_JAVA_FILES) $(EXAMPLE_C_FILES) $(EXAMPLE_CH_FILES) $(EXAMPLE_ICONS) $(READMES)
+ALL_EXAMPLE_FILES = $(EXAMPLE_JAVA_FILES) $(EXAMPLE_C_FILES) $(EXAMPLE_CH_FILES) $(EXAMPLE_ICONS) $(EXAMPLE_HTML) $(READMES)
 
 # Some architecture independent data to be installed.
 example_DATA = $(EXAMPLE_ZIP) README
@@ -100,6 +103,8 @@ dist-hook:
 $(EXAMPLE_ZIP): $(EXAMPLE_JAVA_FILES)
 	mkdir -p classes/gnu/classpath/examples/icons
 	cp $(EXAMPLE_ICONS) classes/gnu/classpath/examples/icons
+	mkdir -p classes/gnu/classpath/examples/swing
+	cp $(EXAMPLE_HTML) classes/gnu/classpath/examples/swing
 	$(JCOMPILER) -d classes $(EXAMPLE_JAVA_FILES) 
 	(cd classes; \
 	if test "$(ZIP)" != ""; then $(ZIP) -r ../$(EXAMPLE_ZIP) .; fi; \

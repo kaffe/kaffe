@@ -608,28 +608,8 @@ public class HTMLWriter
 
     closeOutUnwantedEmbeddedTags(attrSet);
 
-    // NOTE: 20061030 - fchoong - GNU CP uses a different implimentation of
-    // the IMPLIED tag.
-    boolean fg_gnu_cp_implied_tag = false;
-
-    if (matchNameAttribute(attrSet, HTML.Tag.P))
-      {
-        //writeAllAttributes(attrSet);
-
-        Enumeration attrNameEnum = attrSet.getAttributeNames();
-
-        while (attrNameEnum.hasMoreElements())
-          {
-            Object key = attrNameEnum.nextElement();
-            Object value = attrSet.getAttribute(key);
-
-            if (key.equals("_implied_") && value.toString().equals("true"))
-              fg_gnu_cp_implied_tag = true;
-          } // while(attrNameEnum.hasMoreElements())
-      } // if(matchNameAttribute(attrSet, HTML.Tag.P))
-
     // handle the tag
-    if (synthesizedElement(paramElem) || fg_gnu_cp_implied_tag)
+    if (synthesizedElement(paramElem))
       {
         if (matchNameAttribute(attrSet, HTML.Tag.CONTENT))
           {
@@ -640,8 +620,7 @@ public class HTMLWriter
           {
             comment(currElem);
           } // else if(matchNameAttribute(attrSet, HTML.Tag.COMMENT))
-        else if (matchNameAttribute(attrSet, HTML.Tag.IMPLIED)
-                 || fg_gnu_cp_implied_tag) // NOTE: GNU CP specific
+        else if (matchNameAttribute(attrSet, HTML.Tag.IMPLIED))
           {
             int child_elem_count = currElem.getElementCount();
                 
@@ -782,28 +761,8 @@ public class HTMLWriter
     if (fg_is_fragment_parent_elem || (fg_pass_start_elem
         && fg_pass_end_elem == false) || fg_is_start_and_end_elem)
     {
-      // NOTE: 20061030 - fchoong - GNU CP uses a different implimentation of
-      // the IMPLIED tag.
-      boolean fg_gnu_cp_implied_tag = false;
-
-      if (matchNameAttribute(attrSet, HTML.Tag.P))
-        {
-          //writeAllAttributes(attrSet);
-
-          Enumeration attrNameEnum = attrSet.getAttributeNames();
-
-          while (attrNameEnum.hasMoreElements())
-            {
-              Object key = attrNameEnum.nextElement();
-              Object value = attrSet.getAttribute(key);
-
-              if (key.equals("_implied_") && value.toString().equals("true"))
-                fg_gnu_cp_implied_tag = true;
-            } // while(attrNameEnum.hasMoreElements())
-        } // if(matchNameAttribute(attrSet, HTML.Tag.P))
-
       // handle the tag
-      if (synthesizedElement(paramElem) || fg_gnu_cp_implied_tag)
+      if (synthesizedElement(paramElem))
         {
           if (matchNameAttribute(attrSet, HTML.Tag.CONTENT))
             {
@@ -862,8 +821,7 @@ public class HTMLWriter
             {
               comment(currElem);
             } // else if(matchNameAttribute(attrSet, HTML.Tag.COMMENT))
-          else if (matchNameAttribute(attrSet, HTML.Tag.IMPLIED)
-            || fg_gnu_cp_implied_tag) // NOTE: GNU CP specific
+          else if (matchNameAttribute(attrSet, HTML.Tag.IMPLIED))
             {
               int child_elem_count = currElem.getElementCount();
 

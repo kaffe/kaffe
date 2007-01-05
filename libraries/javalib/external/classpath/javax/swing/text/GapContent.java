@@ -39,16 +39,13 @@ exception statement from your version. */
 package javax.swing.text;
 
 import java.io.Serializable;
-import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
-import java.util.WeakHashMap;
 
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
@@ -71,7 +68,7 @@ public class GapContent
   /**
    * A {@link Position} implementation for <code>GapContent</code>.
    */
-  private class GapContentPosition
+  class GapContentPosition
     implements Position
   {
 
@@ -80,39 +77,6 @@ public class GapContent
      * mark into the buffer array.
      */
     Mark mark;
-
-    /**
-     * Creates a new GapContentPosition object.
-     * 
-     * @param offset the offset of this Position
-     */
-    GapContentPosition(int offset)
-    {
-      // Try to find the mark in the positionMarks array, and store the index
-      // to it.
-      synchronized (GapContent.this)
-        {
-          // Try to make space.
-          garbageCollect();
-          Mark m = new Mark(offset);
-          int i = search(marks, m);
-          if (i >= 0) // mark found
-            {
-              m = (Mark) marks.get(i);
-            }
-          else
-            {
-              i = -i - 1;
-              marks.add(i, m);
-            }
-          m.refCount++;
-          mark = m;
-        }
-
-      // Register this position in the death queue, so we can cleanup the marks
-      // when this position object gets GC'ed.
-      new WeakReference(this, queueOfDeath);
-    }
 
     /**
      * Returns the current offset of this Position within the content.
@@ -133,18 +97,12 @@ public class GapContent
    * be garbage collected while we still hold a reference to the Mark object. 
    */
   private class Mark
-    implements Comparable
+    extends WeakReference
   {
     /**
      * The actual mark into the buffer.
      */
     int mark;
-
-    /**
-     * The number of GapContentPosition object that reference this mark. If
-     * it reaches zero, it get's deleted by {@link GapContent#garbageCollect()}.
-     */
-    int refCount;
 
     /**
      * Creates a new Mark object for the specified offset.
@@ -153,9 +111,14 @@ public class GapContent
      */
     Mark(int offset)
     {
+      super(null);
       mark = offset;
-      if (mark >= gapStart && mark != 0)
-        mark += (gapEnd - gapStart);
+    }
+
+    Mark(int offset, GapContentPosition pos, ReferenceQueue queue)
+    {
+      super(pos, queue);
+      mark = offset;
     }
 
     /**
@@ -165,34 +128,23 @@ public class GapContent
      */
     int getOffset()
     {
-      assert mark == 0 || mark <= gapStart || mark >= gapEnd :
-             "Invalid mark: " + mark + ", gapStart: " + gapStart
-             + ", gapEnd: " + gapEnd;
-
       int res = mark;
-      if (mark >= gapEnd)
+      if (mark >= gapStart)
         res -= (gapEnd - gapStart);
-      return res;
+      return Math.max(0, res);
     }
 
     /**
-     * Implementation of Comparable.
+     * Returns the GapContentPosition that is associated ith this mark.
+     * This fetches the weakly referenced position object.
+     *
+     * @return the GapContentPosition that is associated ith this mark
      */
-    public int compareTo(Object o)
+    GapContentPosition getPosition()
     {
-      Mark other = (Mark) o;
-      return mark - other.mark;
+      return (GapContentPosition) get();
     }
-    /**
-     * Adjustment for equals().
-     */
-    public boolean equals(Object o)
-    {
-      if (o == null || !(o instanceof Mark))
-        return false;
-      else
-        return ((Mark) o).mark == mark;
-    }
+
   }
 
   /**
@@ -367,7 +319,15 @@ public class GapContent
    */
   ArrayList marks;
 
-  WeakHashMap positions;
+  /**
+   * The number of unused marks.
+   */
+  private int garbageMarks;
+
+  /**
+   * A 'static' mark that is used for searching.
+   */
+  private Mark searchMark = new Mark(0);
 
   /**
    * Queues all references to GapContentPositions that are about to be
@@ -398,7 +358,6 @@ public class GapContent
     gapStart = 1;
     gapEnd = size;
     buffer[0] = '\n';
-    positions = new WeakHashMap();
     marks = new ArrayList();
     queueOfDeath = new ReferenceQueue();
   }
@@ -612,27 +571,33 @@ public class GapContent
     // and luckily enough the GapContent can very well deal with offsets
     // outside the buffer bounds. So I removed that check.
 
+    // First do some garbage collections.
+    while (queueOfDeath.poll() != null)
+      garbageMarks++;
+    if (garbageMarks > Math.max(5, marks.size() / 10))
+      garbageCollect();
+
     // We try to find a GapContentPosition at the specified offset and return
     // that. Otherwise we must create a new one.
-    GapContentPosition pos = null;
-    Set positionSet = positions.keySet();
-    for (Iterator i = positionSet.iterator(); i.hasNext();)
+    Mark m;
+    GapContentPosition pos;
+    int index = offset;
+    if (offset >= gapStart)
+      index += (gapEnd - gapStart);
+    searchMark.mark = index;
+    int insertIndex = search(searchMark);
+    if (!(insertIndex < marks.size()
+          && (m = (Mark) marks.get(insertIndex)).mark == index
+          && (pos = m.getPosition()) != null))
       {
-        GapContentPosition p = (GapContentPosition) i.next();
-        if (p.getOffset() == offset)
-          {
-            pos = p;
-            break;
-          }
+        // Create new position if none was found.
+        pos = new GapContentPosition();
+        m = new Mark(index, pos, queueOfDeath);
+        pos.mark = m;
+        marks.add(insertIndex, m);
       }
-
-    // If none was found, then create and return a new one.
-    if (pos == null)
-      {
-        pos = new GapContentPosition(offset);
-        positions.put(pos, null);
-      }
-
+    // Otherwise use the found position.
+      
     return pos;
   }
 
@@ -649,18 +614,29 @@ public class GapContent
     assert newSize > (gapEnd - gapStart) : "The new gap size must be greater "
                                            + "than the old gap size";
 
-    int delta = newSize - gapEnd + gapStart;
-    // Update the marks after the gapEnd.
-    adjustPositionsInRange(gapEnd, -1, delta);
+    int oldEnd = getGapEnd();
+    int oldSize = getArrayLength();
+    int upper = oldSize - oldEnd;
+    int size = (newSize + 1) * 2;
+    int newEnd = size - upper;
 
     // Copy the data around.
-    char[] newBuf = (char[]) allocateArray(length() + newSize);
-    System.arraycopy(buffer, 0, newBuf, 0, gapStart);
-    System.arraycopy(buffer, gapEnd, newBuf, gapStart + newSize, buffer.length
-        - gapEnd);
-    gapEnd = gapStart + newSize;
+    char[] newBuf = (char[]) allocateArray(size);
+    System.arraycopy(buffer, 0, newBuf, 0, Math.min(size, oldSize));
     buffer = newBuf;
+    gapEnd = newEnd;
+    if (upper != 0)
+      System.arraycopy(buffer, oldEnd, buffer, newEnd, upper);
 
+    // Adjust marks.
+    int delta = gapEnd - oldEnd;
+    int adjIndex = searchFirst(oldEnd);
+    int count = marks.size();
+    for (int i = adjIndex; i < count; i++)
+      {
+        Mark m = (Mark) marks.get(i);
+        m.mark += delta;
+      }
   }
 
   /**
@@ -670,28 +646,44 @@ public class GapContent
    */
   protected void shiftGap(int newGapStart)
   {
-    if (newGapStart == gapStart)
-      return;
-    int newGapEnd = newGapStart + gapEnd - gapStart;
-    if (newGapStart < gapStart)
-      {
-        // Update the positions between newGapStart and (old) gapStart. The marks
-        // must be shifted by (gapEnd - gapStart).
-        adjustPositionsInRange(newGapStart, gapStart, gapEnd - gapStart);
-        System.arraycopy(buffer, newGapStart, buffer, newGapEnd, gapStart
-                         - newGapStart);
-        gapStart = newGapStart;
-        gapEnd = newGapEnd;
-      }
+    int oldStart = gapStart;
+    int delta = newGapStart - oldStart;
+    int oldEnd = gapEnd;
+    int newGapEnd = oldEnd + delta;
+    int size = oldEnd - oldStart;
+
+    // Shift gap in array.
+    gapStart = newGapStart;
+    gapEnd = newGapEnd;
+    if (delta > 0)
+      System.arraycopy(buffer, oldEnd, buffer, oldStart, delta);
     else
+      System.arraycopy(buffer, newGapStart, buffer, newGapEnd, -delta);
+
+    // Adjust marks.
+    if (delta > 0)
       {
-        // Update the positions between newGapEnd and (old) gapEnd. The marks
-        // must be shifted by (gapEnd - gapStart).
-        adjustPositionsInRange(gapEnd, newGapEnd, -(gapEnd - gapStart));
-        System.arraycopy(buffer, gapEnd, buffer, gapStart, newGapStart
-                         - gapStart);
-        gapStart = newGapStart;
-        gapEnd = newGapEnd;
+        int adjIndex = searchFirst(oldStart);
+        int count = marks.size();
+        for (int i = adjIndex; i < count; i++)
+          {
+            Mark m = (Mark) marks.get(i);
+            if (m.mark >= newGapEnd)
+              break;
+            m.mark -= size;
+          }
+      }
+    else if (delta < 0)
+      {
+        int adjIndex = searchFirst(newGapStart);
+        int count = marks.size();
+        for (int i = adjIndex; i < count; i++)
+          {
+            Mark m = (Mark) marks.get(i);
+            if (m.mark >= oldEnd)
+              break;
+            m.mark += size;
+          }
       }
     resetMarksAtZero();
   }
@@ -711,7 +703,18 @@ public class GapContent
 
     assert newGapStart < gapStart : "The new gap start must be less than the "
                                     + "old gap start.";
-    setPositionsInRange(newGapStart, gapStart, false);
+
+    // Adjust positions.
+    int adjIndex = searchFirst(newGapStart);
+    int count = marks.size();
+    for (int i = adjIndex; i < count; i++)
+      {
+        Mark m = (Mark) marks.get(i);
+        if (m.mark > gapStart)
+          break;
+        m.mark = gapEnd;
+      }
+
     gapStart = newGapStart;
     resetMarksAtZero();
   }
@@ -731,7 +734,19 @@ public class GapContent
 
     assert newGapEnd > gapEnd : "The new gap end must be greater than the "
                                 + "old gap end.";
-    setPositionsInRange(gapEnd, newGapEnd, false);
+
+    // Adjust marks.
+    int adjIndex = searchFirst(gapEnd);
+    int count = marks.size();
+    for (int i = adjIndex; i < count; i++)
+      {
+        Mark m = (Mark) marks.get(i);
+        if (m.mark >= newGapEnd)
+          break;
+        m.mark = newGapEnd;
+      }
+
+    
     gapEnd = newGapEnd;
     resetMarksAtZero();
   }
@@ -757,23 +772,88 @@ public class GapContent
   protected void replace(int position, int rmSize, Object addItems,
                          int addSize)
   {
-    if (gapStart != position)
-      shiftGap(position);
-      
-    // Remove content
-    if (rmSize > 0) 
-      shiftGapEndUp(gapEnd + rmSize);
-
-    // If gap is too small, enlarge the gap.
-    if ((gapEnd - gapStart) <= addSize)
-      shiftEnd((addSize - gapEnd + gapStart + 1) * 2 + gapEnd + DEFAULT_BUFSIZE);
-
-    // Add new items to the buffer.
-    if (addItems != null)
+    if (addSize == 0)
       {
-        System.arraycopy(addItems, 0, buffer, gapStart, addSize);
-        gapStart += addSize;
+        removeImpl(position, rmSize);
+        return;
       }
+    else if (rmSize > addSize)
+      {
+        removeImpl(position + addSize, rmSize - addSize);
+      }
+    else
+      {
+        int endSize = addSize - rmSize;
+        int end = addImpl(position + rmSize, endSize);
+        System.arraycopy(addItems, rmSize, buffer, end, endSize);
+        addSize = rmSize;
+      }
+    System.arraycopy(addItems, 0, buffer, position, addSize);
+  }
+
+  /**
+   * Adjusts the positions and gap in response to a remove operation.
+   *
+   * @param pos the position at which to remove
+   * @param num the number of removed items
+   */
+  private void removeImpl(int pos, int num)
+  {
+    if (num > 0)
+      {
+        int end = pos + num;
+        int newGapSize = (gapEnd - gapStart) + num;
+        if (end <= gapStart)
+          {
+            if (gapStart != end)
+              {
+                shiftGap(end);
+              }
+            shiftGapStartDown(gapStart - num);
+          }
+        else if (pos >= gapStart)
+          {
+            if (gapStart != pos)
+              {
+                shiftGap(pos);
+              }
+            shiftGapEndUp(gapStart + newGapSize);
+          }
+        else
+          {
+            shiftGapStartDown(pos);
+            shiftGapEndUp(gapStart + newGapSize);
+          }
+      }
+  }
+
+  /**
+   * Adjusts the positions and gap in response to an add operation.
+   *
+   * @param pos the position at which to add
+   * @param num the number of added items
+   *
+   * @return the adjusted position
+   */
+  private int addImpl(int pos, int num)
+  {
+    int size = gapEnd - gapStart;
+    if (num == 0)
+      {
+        if (pos > gapStart)
+          pos += size;
+        return pos;
+      }
+
+    shiftGap(pos);
+    if (num >= size)
+      {
+        shiftEnd(getArrayLength() - size + num);
+        size = gapEnd - gapStart;
+      }
+
+    gapStart += num;
+    return pos;
   }
 
   /**
@@ -808,95 +888,34 @@ public class GapContent
    */
   protected Vector getPositionsInRange(Vector v, int offset, int length)
   {
-    Vector res = v;
-    if (res == null)
-      res = new Vector();
-
-    int endOffs = offset + length;
-
-    Set positionSet = positions.keySet();
-    for (Iterator i = positionSet.iterator(); i.hasNext();)
+    int end = offset + length;
+    int startIndex;
+    int endIndex;
+    if (offset < gapStart)
       {
-        GapContentPosition p = (GapContentPosition) i.next();
-        int offs = p.getOffset();
-        if (offs >= offset && offs <= endOffs)
-          res.add(new UndoPosRef(p.mark));
+        if (offset == 0)
+          startIndex = 0;
+        else
+          startIndex = searchFirst(offset);
+        if (end >= gapStart)
+          endIndex = searchFirst(end + (gapEnd - gapStart) + 1);
+        else
+          endIndex = searchFirst(end + 1);
       }
-
-    return res;
+    else
+      {
+        startIndex = searchFirst(offset + (gapEnd - gapStart));
+        endIndex = searchFirst(end + (gapEnd - gapStart) + 1);
+      }
+    if (v == null)
+      v = new Vector();
+    for (int i = startIndex; i < endIndex; i++)
+      {
+        v.add(new UndoPosRef((Mark) marks.get(i)));
+      }
+    return v;
   }
   
-  /**
-   * Crunches all positions in the specified range to either the start or
-   * end of that interval. The interval boundaries are meant to be inclusive
-   * [start, end].
-   *
-   * @param start the start offset of the range
-   * @param end the end offset of the range
-   * @param toStart a boolean indicating if the positions should be crunched
-   *        to the start (true) or to the end (false)
-   */
-  private void setPositionsInRange(int start, int end, boolean toStart)
-  {
-    synchronized (this)
-      {
-        // Find the start and end indices in the positionMarks array.
-        Mark m = new Mark(0); // For comparison / search only.
-        m.mark = start;
-        int startIndex = search(marks, m);
-        if (startIndex < 0) // Translate to insertion index, if not found.
-          startIndex = - startIndex - 1;
-        m.mark = end;
-        int endIndex = search(marks, m);
-        if (endIndex < 0) // Translate to insertion index - 1, if not found.
-          endIndex = - endIndex - 2;
-
-        // Actually adjust the marks.
-        for (int i = startIndex; i <= endIndex; i++)
-          ((Mark) marks.get(i)).mark = toStart ? start : end;
-      }
-
-  }
-
-  /**
-   * Adjusts the mark of all <code>Position</code>s that are in the range 
-   * specified by <code>offset</code> and </code>length</code> within 
-   * the buffer array by <code>increment</code>
-   *
-   * @param startOffs the start offset of the range to search
-   * @param endOffs the length of the range to search, -1 means all to the end
-   * @param incr the increment
-   */
-  private void adjustPositionsInRange(int startOffs, int endOffs, int incr)
-  {
-    synchronized (this)
-      {
-        // Find the start and end indices in the positionMarks array.
-        Mark m = new Mark(0); // For comparison / search only.
-
-        m.mark = startOffs;
-        int startIndex = search(marks, m);
-        if (startIndex < 0) // Translate to insertion index, if not found.
-          startIndex = - startIndex - 1;
-
-        m.mark = endOffs;
-        int endIndex;
-        if (endOffs == -1)
-          endIndex = marks.size() - 1;
-        else
-          {
-            endIndex = search(marks, m);
-            if (endIndex < 0) // Translate to insertion index - 1, if not found.
-              endIndex = - endIndex - 2;
-          }
-        // Actually adjust the marks.
-        for (int i = startIndex; i <= endIndex; i++) {
-          ((Mark) marks.get(i)).mark += incr;
-        }
-      }
-
-  }
-
   /**
    * Resets all <code>Position</code> that have an offset of <code>0</code>,
    * to also have an array index of <code>0</code>. This might be necessary
@@ -977,30 +996,6 @@ public class GapContent
   }
 
   /**
-   * Polls the queue of death for GapContentPositions, updates the
-   * corresponding reference count and removes the corresponding mark
-   * if the refcount reaches zero.
-   *
-   * This is package private to avoid accessor synthetic methods.
-   */
-  void garbageCollect()
-  {
-    Reference ref = queueOfDeath.poll();
-    while (ref != null)
-      {
-        if (ref != null)
-          {
-            GapContentPosition pos = (GapContentPosition) ref.get();
-            Mark m = pos.mark;
-            m.refCount--;
-            if (m.refCount == 0)
-              marks.remove(m);
-          }
-        ref = queueOfDeath.poll();
-      }
-  }
-
-  /**
    * Searches the first occurance of object <code>o</code> in list
    * <code>l</code>. This performs a binary search by calling
    * {@link Collections#binarySearch(List, Object)} and when an object has been
@@ -1008,22 +1003,93 @@ public class GapContent
    * list. The meaning of the return value is the same as in
    * <code>Collections.binarySearch()</code>.
    *
-   * @param l the list to search through
    * @param o the object to be searched
    *
    * @return the index of the first occurance of o in l, or -i + 1 if not found
    */
-  int search(List l, Object o)
+  int search(Mark o)
   {
-    int i = Collections.binarySearch(l, o);
-    while (i > 0)
+    int foundInd = 0;
+    boolean found = false;
+    int low = 0;
+    int up = marks.size() - 1;
+    int mid = 0;
+    if (up > -1)
       {
-        Object o2 = l.get(i - 1);
-        if (o2.equals(o))
-          i--;
+        int cmp = 0;
+        Mark last = (Mark) marks.get(up);
+        cmp = compare(o, last);
+        if (cmp > 0)
+          {
+            foundInd = up + 1;
+            found = true;
+          }
         else
+          {
+            while (low <= up && ! found)
+              {
+                mid = low + (up - low) / 2;
+                Mark m = (Mark) marks.get(mid);
+                cmp = compare(o, m);
+                if (cmp == 0)
+                  {
+                    foundInd = mid;
+                    found = true;
+                  }
+                else if (cmp < 0)
+                  up = mid - 1;
+                else
+                  low = mid + 1;
+              }
+
+            if (! found)
+              foundInd = cmp < 0 ? mid : mid + 1;
+          }
+      }
+    return foundInd;
+  }
+
+  private int searchFirst(int index)
+  {
+    searchMark.mark = Math.max(index, 1);
+    int i = search(searchMark);
+    for (int j = i - 1; j >= 0; j--)
+      {
+        Mark m = (Mark) marks.get(j);
+        if (m.mark != index)
           break;
+        i--;
       }
     return i;
+  }
+
+  /**
+   * Compares two marks.
+   *
+   * @param m1 the first mark
+   * @param m2 the second mark
+   *
+   * @return negative when m1 < m2, positive when m1 > m2 and 0 when equal
+   */
+  private int compare(Mark m1, Mark m2)
+  {
+    return m1.mark - m2.mark;
+  }
+
+  /**
+   * Collects and frees unused marks.
+   */
+  private void garbageCollect()
+  {
+    int count = marks.size();
+    ArrayList clean = new ArrayList();
+    for (int i = 0; i < count; i++)
+      {
+        Mark m = (Mark) marks.get(i);
+        if (m.get() != null)
+          clean.add(m);
+      }
+    marks = clean;
+    garbageMarks = 0;
   }
 }

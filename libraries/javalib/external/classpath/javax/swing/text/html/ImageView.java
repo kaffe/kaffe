@@ -2,17 +2,19 @@ package javax.swing.text.html;
 
 import gnu.javax.swing.text.html.CombinedAttributes;
 import gnu.javax.swing.text.html.ImageViewIconFactory;
+import gnu.javax.swing.text.html.css.Length;
 
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.Rectangle;
 import java.awt.Shape;
+import java.awt.Toolkit;
+import java.awt.image.ImageObserver;
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
@@ -29,20 +31,84 @@ import javax.swing.text.html.HTML.Attribute;
 public class ImageView extends View
 {
   /**
+   * Tracks image loading state and performs the necessary layout updates.
+   */
+  class Observer
+    implements ImageObserver
+  {
+
+    public boolean imageUpdate(Image image, int flags, int x, int y, int width, int height)
+    {
+      boolean widthChanged = false;
+      if ((flags & ImageObserver.WIDTH) != 0
+          && ! getElement().getAttributes().isDefined(HTML.Attribute.WIDTH))
+        widthChanged = true;
+      boolean heightChanged = false;
+      if ((flags & ImageObserver.HEIGHT) != 0
+          && ! getElement().getAttributes().isDefined(HTML.Attribute.HEIGHT))
+        widthChanged = true;
+      if (widthChanged || heightChanged)
+        preferenceChanged(ImageView.this, widthChanged, heightChanged);
+      return (flags & ALLBITS) != 0;
+    }
+    
+  }
+
+  /**
    * True if the image loads synchronuosly (on demand). By default, the image
    * loads asynchronuosly.
    */
   boolean loadOnDemand;
-  
+
   /**
    * The image icon, wrapping the image,
    */
-  ImageIcon imageIcon;
+  Image image;
  
   /**
    * The image state.
    */
   byte imageState = MediaTracker.LOADING;
+
+  /**
+   * True when the image needs re-loading, false otherwise.
+   */
+  private boolean reloadImage;
+
+  /**
+   * True when the image properties need re-loading, false otherwise.
+   */
+  private boolean reloadProperties;
+
+  /**
+   * True when the width is set as CSS/HTML attribute.
+   */
+  private boolean haveWidth;
+
+  /**
+   * True when the height is set as CSS/HTML attribute.
+   */
+  private boolean haveHeight;
+
+  /**
+   * True when the image is currently loading.
+   */
+  private boolean loading;
+
+  /**
+   * The current width of the image.
+   */
+  private int width;
+
+  /**
+   * The current height of the image.
+   */
+  private int height;
+
+  /**
+   * Our ImageObserver for tracking the loading state.
+   */
+  private ImageObserver observer;
 
   /**
    * Creates the image view that represents the given element.
@@ -52,25 +118,34 @@ public class ImageView extends View
   public ImageView(Element element)
   {
     super(element);
+    observer = new Observer();
+    reloadProperties = true;
+    reloadImage = true;
   }
  
   /**
    * Load or reload the image. This method initiates the image reloading. After
    * the image is ready, the repaint event will be scheduled. The current image,
    * if it already exists, will be discarded.
-   * 
-   * @param itsTime
-   *          also load if the "on demand" property is set
    */
-  void reloadImage(boolean itsTime)
+  private void reloadImage()
   {
-    URL url = getImageURL();
-    if (url == null)
-      imageState = (byte) MediaTracker.ERRORED;
-    else if (!(loadOnDemand && !itsTime))
-      imageIcon = new ImageIcon(url);
-    else
-      imageState = (byte) MediaTracker.LOADING;
+    loading = true;
+    reloadImage = false;
+    haveWidth = false;
+    haveHeight = false;
+    image = null;
+    width = 0;
+    height = 0;
+    try
+      {
+        loadImage();
+        updateSize();
+      }
+    finally
+      {
+        loading = false;
+      }
   }
   
   /**
@@ -159,10 +234,8 @@ public class ImageView extends View
    */
   public Image getImage()
   {
-    if (imageIcon == null)
-      return null;
-    else
-      return imageIcon.getImage();
+    updateState();
+    return image;
   }
   
   /**
@@ -245,9 +318,9 @@ public class ImageView extends View
 
     if (axis == View.X_AXIS)
       {
-        Object w = attrs.getAttribute(Attribute.WIDTH);
-        if (w != null)
-          return Integer.parseInt(w.toString());
+        Object w = attrs.getAttribute(CSS.Attribute.WIDTH);
+        if (w instanceof Length)
+          return ((Length) w).getValue();
         else if (image != null)
           return image.getWidth(getContainer());
         else
@@ -255,9 +328,9 @@ public class ImageView extends View
       }
     else if (axis == View.Y_AXIS)
       {
-        Object w = attrs.getAttribute(Attribute.HEIGHT);
-        if (w != null)
-          return Integer.parseInt(w.toString());
+        Object w = attrs.getAttribute(CSS.Attribute.HEIGHT);
+        if (w instanceof Length)
+          return ((Length) w).getValue();
         else if (image != null)
           return image.getHeight(getContainer());
         else
@@ -291,7 +364,7 @@ public class ImageView extends View
   {
     return getAltText();
   }
-  
+
   /**
    * Paints the image or one of the two image state icons. The image is resized
    * to the shape bounds. If there is no image available, the alternative text
@@ -305,83 +378,22 @@ public class ImageView extends View
    */
   public void paint(Graphics g, Shape bounds)
   {
-    Rectangle r = bounds.getBounds();
-
-    if (imageIcon == null)
-
+    updateState();
+    Rectangle r = bounds instanceof Rectangle ? (Rectangle) bounds
+                                              : bounds.getBounds();
+    Image image = getImage();
+    if (image != null)
       {
-        // Loading image on demand, rendering the loading icon so far.
-        reloadImage(true);
-         
-        // The reloadImage sets the imageIcon, unless the URL is broken 
-        // or malformed.
-        if (imageIcon != null)
-          {
-            if (imageIcon.getImageLoadStatus() != MediaTracker.COMPLETE)
-              {
-                // Render "not ready" icon, unless the image is ready
-                // immediately.
-                renderIcon(g, r, getLoadingImageIcon());
-                // Add the listener to repaint when the icon will be ready.
-                imageIcon.setImageObserver(getContainer());
-                return;
-              }
-          }
-        else
-          {
-            renderIcon(g, r, getNoImageIcon());
-            return;
-          }
+        g.drawImage(image, r.x, r.y, r.width, r.height, observer);
       }
-
-    imageState = (byte) imageIcon.getImageLoadStatus();
-
-    switch (imageState)
+    else
       {
-      case MediaTracker.ABORTED:
-      case MediaTracker.ERRORED:
-        renderIcon(g, r, getNoImageIcon());
-        break;
-      case MediaTracker.LOADING:
-      // If the image is not loaded completely, we still render it, as the
-      // partial image may be available.
-      case MediaTracker.COMPLETE:
-      {
-        // Paint the scaled image.
-        Image scaled = imageIcon.getImage().getScaledInstance(
-                                                              r.width,
-                                                              r.height,
-                                                              Image.SCALE_DEFAULT);
-        ImageIcon painter = new ImageIcon(scaled);
-        painter.paintIcon(getContainer(), g, r.x, r.y);
-      }
-        break;
-      }
-  }
-  
-  /**
-   * Render "no image" icon and the alternative "no image" text. The text is
-   * rendered right from the icon and is aligned to the icon bottom.
-   */
-  private void renderIcon(Graphics g, Rectangle bounds, Icon icon)
-  {
-    Shape current = g.getClip();
-    try
-      {
-        g.setClip(bounds);
+        Icon icon = getNoImageIcon();
         if (icon != null)
-          {
-            icon.paintIcon(getContainer(), g, bounds.x, bounds.y);
-            g.drawString(getAltText(), bounds.x + icon.getIconWidth(),
-                         bounds.y + icon.getIconHeight());
-          }
-      }
-    finally
-      {
-        g.setClip(current);
+          icon.paintIcon(getContainer(), g, r.x, r.y);
       }
   }
-  
+
   /**
    * Set if the image should be loaded only when needed (synchronuosly). By
    * default, the image loads asynchronuosly. If the image is not yet ready, the
@@ -398,9 +410,7 @@ public class ImageView extends View
    */
   protected void setPropertiesFromAttributes()
   {
-    // In the current implementation, nothing is cached yet, unless the image
-    // itself.
-    imageIcon = null;
+    // FIXME: Implement this properly.
   }
   
   /**
@@ -436,9 +446,90 @@ public class ImageView extends View
    */
   public void setSize(float width, float height)
   {
-    if (imageIcon == null)
-      reloadImage(false);
+    updateState();
+    // TODO: Implement this when we have an alt view for the alt=... attribute.
   }  
-  
 
+  /**
+   * This makes sure that the image and properties have been loaded.
+   */
+  private void updateState()
+  {
+    if (reloadImage)
+      reloadImage();
+    if (reloadProperties)
+      setPropertiesFromAttributes();
+  }
+
+  /**
+   * Actually loads the image.
+   */
+  private void loadImage()
+  {
+    URL src = getImageURL();
+    Image newImage = null;
+    if (src != null)
+      {
+        // Call getImage(URL) to allow the toolkit caching of that image URL.
+        newImage = Toolkit.getDefaultToolkit().getImage(src);
+        if (newImage != null && getLoadsSynchronously())
+          {
+            // Load image synchronously.
+            MediaTracker tracker = new MediaTracker(getContainer());
+            tracker.addImage(newImage, 0);
+            try
+              {
+                tracker.waitForID(0);
+              }
+            catch (InterruptedException ex)
+              {
+                Thread.interrupted();
+              }
+            
+          }
+      }
+    image = newImage;
+  }
+
+  /**
+   * Updates the size parameters of the image.
+   */
+  private void updateSize()
+  {
+    int newW = 0;
+    int newH = 0;
+    Image newIm = getImage();
+    if (newIm != null)
+      {
+        AttributeSet atts = getAttributes();
+        // Fetch width.
+        Length l = (Length) atts.getAttribute(CSS.Attribute.WIDTH);
+        if (l != null)
+          {
+            newW = (int) l.getValue();
+            haveWidth = true;
+          }
+        else
+          {
+            newW = newIm.getWidth(observer);
+          }
+        // Fetch height.
+        l = (Length) atts.getAttribute(CSS.Attribute.HEIGHT);
+        if (l != null)
+          {
+            newH = (int) l.getValue();
+            haveHeight = true;
+          }
+        else
+          {
+            newW = newIm.getWidth(observer);
+          }
+        // Go and trigger loading.
+        Toolkit tk = Toolkit.getDefaultToolkit();
+        if (haveWidth || haveHeight)
+          tk.prepareImage(newIm, width, height, observer);
+        else
+          tk.prepareImage(newIm, -1, -1, observer);
+      }
+  }
 }

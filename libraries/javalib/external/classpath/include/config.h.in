@@ -103,6 +103,9 @@
 /* Define if you have the iconv() function. */
 #undef HAVE_ICONV
 
+/* Define to 1 if you have the <ifaddrs.h> header file. */
+#undef HAVE_IFADDRS_H
+
 /* Define if inet6 structures are defined in netinet/in.h. */
 #undef HAVE_INET6
 

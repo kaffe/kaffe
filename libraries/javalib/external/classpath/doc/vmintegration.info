@@ -112,7 +112,7 @@ that actually runs Java.
      is emerging as the preferred platform for quickly testing a new
      build of GNU Classpath.  Licensed under the GPL.
 
-   * Jikes RVM (http://oss.software.ibm.com/jikesrvm) A free runtime
+   * Jikes RVM (http://jikesrvm.sourceforge.net/) A free runtime
      environment for Java, written in Java.  Works out-of-the-box with
      pure GNU Classpath.  Features an optimizing JIT.  Runs on the x86
      and PowerPC architectures, on the AIX, Linux, and Mac OS/X
@@ -2134,8 +2134,7 @@ File: vmintegration.info,  Node: JNI Version,  Next: VM Threading Model,  Prev: 
 
 Classpath currently uses only JNI 1.1, except for one JNI 1.2 function
 in the JNI Invocation API: GetEnv().  And GetEnv() is only used in the
-"portable native sync" code, so it's only actually used by Jikes RVM
-and Kaffe.
+now deprecated "portable native sync" code.
 
    A future direction will probably be to require that all VMs provide
 JNI 1.2.  If this poses problems, please raise them on the classpath
@@ -2147,38 +2146,89 @@ File: vmintegration.info,  Node: VM Threading Model,  Next: Boot Library Path Pr
 7.2 VM Threading Model
 ======================
 
-Classpath's AWT peers use GTK+.  GTK+ uses GLIB.  Normally, Classpath
-will initialize GLIB's "gthreads" to use the platform's native
-threading model(1)
+VM authors can implement a number of different threading models. When
+native code is also threaded there is the potential for one threading
+model to deadlock the other. The Java Native Interface Programmer's
+Guide and Specification
+(http://java.sun.com/docs/books/jni/html/other.html#29406) suggests
+consulting VM documentation in such situations. Classpath uses existing
+libraries, for example the AWT peers can use the GTK+ graphics library.
+As these libraries assume a different threading model, there is the
+potential for the native code to deadlock a VM.
 
-   If the Java runtime doesn't use the native threading model, then you
-will want Classpath to tell GLIB to use the Java threading primitives
-instead.  Otherwise, GLIB would use the native threading model to
-perform operations such as creating thread-local data, and that just
-doesn't work on systems (such as Kaffe in some configurations, and such
-as Jikes RVM) that use m:n threading.
+   The different threading models available to a VM author are:
+  1. Native threads: Map a Java thread to an underlying operating system
+     thread (normally a POSIX compatible pthread). This approach reduces
+     the potential for deadlock as there is only one thread scheduling
+     mechanism.
 
-   Historically, enabling the Java threading primitives had been done at
-build time, by configuring classpath with the `--portable-native-sync'
-option.  This had bad consequences, though - it meant that the prebuild
-GNU Classpath package distributed with Debian GNU/Linux would not be
-usable with VMs that could otherwise have used it.  Instead, we
-encourage the use of the Java system property
-`gnu.classpath.awt.gtk.portable.native.sync'.  A VM that wants GLIB to
-use the Java threading primitives should modify
-`VMRuntime.insertSystemProperties()' to include code like the following:
+  2. Green threads 1: Green threads are threads scheduled by the VM,
+     typically by switching swapping registers. In early VMs green
+     threads were seen as advantageous as they didn't require the
+     operating system to resechedule, save and swap all of a threads
+     registers. The green thread 1 model switches thread on an
+     externally created event, such as a timer interrupt. An example of
+     a VM using this approach is Kaffe configured with its jthreads
+     model.
 
-     static void insertSystemProperties(Properties P)
-   ...
-     P.put("gnu.classpath.awt.gtk.portable.native.sync", "true");
+  3. Green threads 2: The essential difference with this model is to
+     not switch threads on an event, but at fixed points in the code
+     being executed by the VM. Points chosen could be backward branches
+     (loops) or method calls. This approach can be advantageous to
+     nonconservative garbage collectors, as non-running threads would
+     be at known points and can have fixed register maps. It can also
+     reduce the number of registers it is necessary to swap when
+     switching threads.
 
-   So, the configure option `--portable-native-sync' is deprecated, and
-should go away in a subsequent release of GNU Classpath.
+  4. M:N threading: a flaw to green threading is that it is unable to
+     use multiple processors. M:N threading fixes this problem by
+     running groups of green threads on multiple underlying native
+     threads. An example of a VM using this approach is the Jikes RVM,
+     which uses M:N threading combined with the green thread 2 model.
 
-   ---------- Footnotes ----------
+   An example of the problem of mixing threading models is:
+   * A Java thread calls a native method. The native method aquires a
+     lock.
 
-   (1) The native threading model is pthreads on Linux and AIX, the two
-platforms Classpath currently runs on.
+   * The native method calls back into the VM.
+
+   * An event triggers the VM to reschedule the currently running
+     thread.
+
+   * A new VM thread, executing on the same underlying native thread,
+     calls a native method.
+
+   * The native method tries to aquire the lock already aquired
+     earlier. As the lock is busy the thread waits and allows the
+     operating system to reschedule native threads.
+
+   * The operating system reschedules the VM thread again, but the lock
+     is still busy and in some threading models will remain busy forever
+     (the VM is deadlocked).
+
+   VMs that don't use the underlying operating system thread scheduling
+mechanism need to avoid deadlock. One now deprecated approach was to
+build Classpath and VMs on top of a wrapper thread library (aka
+portable native sync). The wrapper thread library used was GLIB's
+"gthreads". This approach has been deprecated because:
+  1. The wrapper library is only in use by some native libraries. For
+     example, GTK+ uses the gthread library but QT does not.
+
+  2. The wrapper library can't be in use prior to the VM starting as
+     the VM must replace the wrapper libraries functions with its own.
+     This prevents the VM from running as a plugin in an application
+     that already uses the wrapper library.
+
+   An alternative approach is for the VM to detect deadlocked native
+code and swap Java threads off of that native thread. The VM can't,
+however, swap two blocked native threads that are potentially
+deadlocking each other on a lock. The lock will be associated with the
+native thread. To prevent this from happening the VM must hijack
+functions that operate on locks. This is done by redifining the lock
+functions inside the VM and configuring the linker so that it uses the
+VMs symbol in preference to that of the external thread support
+library. The VM's lock function can then reschedule Java threads if it
+must wait for the lock.
 
 
 File: vmintegration.info,  Node: Boot Library Path Property,  Prev: VM Threading Model,  Up: Miscellaneous VM Requirements
@@ -2205,68 +2255,67 @@ if it exists on your platform.
 Tag Table:
 Node: Top502
 Node: Introduction1291
-Node: Initialization5865
-Node: Classpath Hooks6278
-Node: java.lang7592
-Node: java.lang.VMClass8279
-Node: java.lang.VMObject14231
-Node: java.lang.VMClassLoader15844
-Node: java.lang.VMSystem18696
-Node: java.lang.VMThrowable21441
-Node: java.lang.VMCompiler22461
-Node: java.lang.VMDouble23440
-Node: java.lang.VMFloat24705
-Node: java.lang.VMProcess25401
-Node: java.lang.VMRuntime26954
-Node: java.lang.VMString29517
-Node: java.lang.VMThread30337
-Node: java.lang.VMMath34005
-Node: gnu.classpath36540
-Node: gnu.classpath.VMStackWalker37005
-Node: gnu.classpath.VMSystemProperties38071
-Node: gnu.classpath.Unsafe39433
-Node: java.util41222
-Node: java.util.VMTimeZone41685
-Node: java.io42601
-Node: java.io.VMFile43330
-Node: java.io.VMObjectInputStream46201
-Node: java.io.VMObjectStreamClass46882
-Node: java.security47712
-Node: java.security.VMAccessController48014
-Node: java.security.VMSecureRandom49215
-Node: java.net50227
-Node: java.net.VMInetAddress50668
-Node: java.net.VMNetworkInterface51461
-Node: java.nio51893
-Node: java.nio.VMDirectByteBuffer52396
-Node: java.nio.channels53844
-Node: java.nio.channels.VMChannels54261
-Node: gnu.java.nio55029
-Node: gnu.java.nio.VMPipe55443
-Node: gnu.java.nio.VMSelector55960
-Node: java.lang.reflect56506
-Node: java.lang.reflect.VMArray56926
-Node: gnu.java.lang57333
-Node: gnu.java.lang.VMInstrumentationImpl57716
-Node: gnu.java.lang.management59964
-Node: gnu.java.lang.management.VMRuntimeMXBeanImpl60698
-Node: gnu.java.lang.management.VMClassLoadingMXBeanImpl62796
-Node: gnu.java.lang.management.VMThreadMXBeanImpl64241
-Node: gnu.java.lang.management.VMMemoryMXBeanImpl69168
-Node: gnu.java.lang.management.VMCompilationMXBeanImpl70938
-Node: gnu.java.lang.management.VMMemoryPoolMXBeanImpl72550
-Node: gnu.java.lang.management.VMMemoryManagerMXBeanImpl75883
-Node: gnu.java.lang.management.VMGarbageCollectorMXBeanImpl76976
-Node: java.lang.management78119
-Node: java.lang.management.VMManagementFactory78479
-Node: Classpath Callbacks79407
-Node: VM Hooks81175
-Node: JNI Implementation85374
-Node: JVMTI Implementation87236
-Node: Miscellaneous VM Requirements88379
-Node: JNI Version88690
-Node: VM Threading Model89250
-Ref: VM Threading Model-Footnote-190866
-Node: Boot Library Path Property90978
+Node: Initialization5861
+Node: Classpath Hooks6274
+Node: java.lang7588
+Node: java.lang.VMClass8275
+Node: java.lang.VMObject14227
+Node: java.lang.VMClassLoader15840
+Node: java.lang.VMSystem18692
+Node: java.lang.VMThrowable21437
+Node: java.lang.VMCompiler22457
+Node: java.lang.VMDouble23436
+Node: java.lang.VMFloat24701
+Node: java.lang.VMProcess25397
+Node: java.lang.VMRuntime26950
+Node: java.lang.VMString29513
+Node: java.lang.VMThread30333
+Node: java.lang.VMMath34001
+Node: gnu.classpath36536
+Node: gnu.classpath.VMStackWalker37001
+Node: gnu.classpath.VMSystemProperties38067
+Node: gnu.classpath.Unsafe39429
+Node: java.util41218
+Node: java.util.VMTimeZone41681
+Node: java.io42597
+Node: java.io.VMFile43326
+Node: java.io.VMObjectInputStream46197
+Node: java.io.VMObjectStreamClass46878
+Node: java.security47708
+Node: java.security.VMAccessController48010
+Node: java.security.VMSecureRandom49211
+Node: java.net50223
+Node: java.net.VMInetAddress50664
+Node: java.net.VMNetworkInterface51457
+Node: java.nio51889
+Node: java.nio.VMDirectByteBuffer52392
+Node: java.nio.channels53840
+Node: java.nio.channels.VMChannels54257
+Node: gnu.java.nio55025
+Node: gnu.java.nio.VMPipe55439
+Node: gnu.java.nio.VMSelector55956
+Node: java.lang.reflect56502
+Node: java.lang.reflect.VMArray56922
+Node: gnu.java.lang57329
+Node: gnu.java.lang.VMInstrumentationImpl57712
+Node: gnu.java.lang.management59960
+Node: gnu.java.lang.management.VMRuntimeMXBeanImpl60694
+Node: gnu.java.lang.management.VMClassLoadingMXBeanImpl62792
+Node: gnu.java.lang.management.VMThreadMXBeanImpl64237
+Node: gnu.java.lang.management.VMMemoryMXBeanImpl69164
+Node: gnu.java.lang.management.VMCompilationMXBeanImpl70934
+Node: gnu.java.lang.management.VMMemoryPoolMXBeanImpl72546
+Node: gnu.java.lang.management.VMMemoryManagerMXBeanImpl75879
+Node: gnu.java.lang.management.VMGarbageCollectorMXBeanImpl76972
+Node: java.lang.management78115
+Node: java.lang.management.VMManagementFactory78475
+Node: Classpath Callbacks79403
+Node: VM Hooks81171
+Node: JNI Implementation85370
+Node: JVMTI Implementation87232
+Node: Miscellaneous VM Requirements88375
+Node: JNI Version88686
+Node: VM Threading Model89210
+Node: Boot Library Path Property93675
 
 End Tag Table

@@ -39,8 +39,6 @@ exception statement from your version. */
 package javax.swing.text.html;
 
 
-import gnu.classpath.NotImplementedException;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -82,7 +80,7 @@ import javax.swing.text.html.parser.ParserDelegator;
 /* Move these imports here after javax.swing.text.html to make it compile
    with jikes.  */
 import gnu.javax.swing.text.html.parser.GnuParserDelegator;
-import gnu.javax.swing.text.html.parser.HTML_401Swing;
+import gnu.javax.swing.text.html.parser.HTML_401F;
 
 /**
  * @author Lillian Angel (langel at redhat dot com)
@@ -245,10 +243,25 @@ public class HTMLEditorKit
           {
             url = null;
           }
-        // TODO: Handle frame documents and target here.
-        HyperlinkEvent ev =
-          new HyperlinkEvent(editor, HyperlinkEvent.EventType.ACTIVATED, url,
-                             href, el);
+        HyperlinkEvent ev;
+        if (doc.isFrameDocument())
+          {
+            String target = null;
+            if (anchor != null)
+              target = (String) anchor.getAttribute(HTML.Attribute.TARGET);
+            if (target == null || target.equals(""))
+              target = doc.getBaseTarget();
+            if (target == null || target.equals(""))
+              target = "_self";
+            ev = new HTMLFrameHyperlinkEvent(editor,
+                                            HyperlinkEvent.EventType.ACTIVATED,
+                                            url, href, el, target);
+          }
+        else
+          {
+            ev = new HyperlinkEvent(editor, HyperlinkEvent.EventType.ACTIVATED,
+                                    url, href, el);
+          }
         return ev;
       }
     }
@@ -290,7 +303,7 @@ public class HTMLEditorKit
        * Tag to check for in the document.
        */
       protected HTML.Tag parentTag;
-      
+
       /**
        * Initializes all fields.
        * 
@@ -394,20 +407,9 @@ public class HTMLEditorKit
                                       Element insertElement,
                                       String html, HTML.Tag parentTag,
                                       HTML.Tag addTag)
-        throws NotImplementedException
       {
-        /*
-        As its name implies, this protected method is used when HTML is inserted at a
-        boundary. (A boundary in this case is an offset in doc that exactly matches the
-        beginning offset of the parentTag.) It performs the extra work required to keep
-        the tag stack in shape and then calls insertHTML(). The editor and doc argu-
-        ments are the editor pane and document where the HTML should go. The offset
-        argument represents the cursor location or selection start in doc. The insert-
-        Element and parentTag arguments are used to calculate the proper number of
-        tag pops and pushes before inserting the HTML (via html and addTag, which are
-        passed directly to insertHTML()).
-        */
-        // FIXME: not implemented
+        insertAtBoundry(editor, doc, offset, insertElement,
+                        html, parentTag, addTag);
       }
       
       /**
@@ -433,8 +435,50 @@ public class HTMLEditorKit
                                      String html, HTML.Tag parentTag,
                                      HTML.Tag addTag)
       {
-        insertAtBoundary(editor, doc, offset, insertElement,
-                         html, parentTag, addTag);
+        Element parent = insertElement;
+        Element el;
+        // Find common parent element.
+        if (offset > 0 || insertElement == null)
+          {
+            el = doc.getDefaultRootElement();
+            while (el != null && el.getStartOffset() != offset
+                   && ! el.isLeaf())
+              el = el.getElement(el.getElementIndex(offset));
+            parent = el != null ? el.getParentElement() : null;
+          }
+        if (parent != null)
+          {
+            int pops = 0;
+            int pushes = 0;
+            if (offset == 0 && insertElement != null)
+              {
+                el = parent;
+                while (el != null && ! el.isLeaf())
+                  {
+                    el = el.getElement(el.getElementIndex(offset));
+                    pops++;
+                  }
+              }
+            else
+              {
+                el = parent;
+                offset--;
+                while (el != null && ! el.isLeaf())
+                  {
+                    el = el.getElement(el.getElementIndex(offset));
+                    pops++;
+                  }
+                el = parent;
+                offset++;
+                while (el != null && el != insertElement)
+                  {
+                    el = el.getElement(el.getElementIndex(offset));
+                    pushes++;
+                  }
+              }
+            pops = Math.max(0, pops - 1);
+            insertHTML(editor, doc, offset, html, pops, pushes, addTag);
+          }
       }
       
       /**
@@ -444,16 +488,97 @@ public class HTMLEditorKit
        */
       public void actionPerformed(ActionEvent ae)
       {
-        Object source = ae.getSource();
-        if (source instanceof JEditorPane)
+        JEditorPane source = getEditor(ae);
+        if (source != null)
           {
-            JEditorPane pane = ((JEditorPane) source);
-            Document d = pane.getDocument();
-            if (d instanceof HTMLDocument)
-              insertHTML(pane, (HTMLDocument) d, 0, html, 0, 0, addTag);
-            // FIXME: is this correct parameters?
+            HTMLDocument d = getHTMLDocument(source);
+            int offset = source.getSelectionStart();
+            int length = d.getLength();
+            boolean inserted = true;
+            if (! tryInsert(source, d, offset, parentTag, addTag))
+              {
+                inserted = tryInsert(source, d, offset, alternateParentTag,
+                                     alternateAddTag);
+              }
+            if (inserted)
+              adjustSelection(source, d, offset, length);
           }
-        // FIXME: else not implemented
+      }
+
+      /**
+       * Tries to insert the html chunk to the specified <code>addTag</code>.
+       *
+       * @param pane the editor
+       * @param doc the document
+       * @param offset the offset at which to insert
+       * @param tag the tag at which to insert
+       * @param addTag the add tag
+       *
+       * @return <code>true</code> when the html has been inserted successfully,
+       *         <code>false</code> otherwise
+       */
+      private boolean tryInsert(JEditorPane pane, HTMLDocument doc, int offset,
+                                HTML.Tag tag, HTML.Tag addTag)
+      {
+        boolean inserted = false;
+        Element el = findElementMatchingTag(doc, offset, tag);
+        if (el != null && el.getStartOffset() == offset)
+          {
+            insertAtBoundary(pane, doc, offset, el, html, tag, addTag);
+            inserted = true;
+          }
+        else if (offset > 0)
+          {
+            int depth = elementCountToTag(doc, offset - 1, tag);
+            if (depth != -1)
+              {
+                insertHTML(pane, doc, offset, html, depth, 0, addTag);
+                inserted = true;
+              }
+          }
+        return inserted;
+      }
+
+      /**
+       * Adjusts the selection after an insertion has been performed.
+       *
+       * @param pane the editor pane
+       * @param doc the document
+       * @param offset the insert offset
+       * @param oldLen the old document length
+       */
+      private void adjustSelection(JEditorPane pane, HTMLDocument doc,
+                                   int offset, int oldLen)
+      {
+        int newLen = doc.getLength();
+        if (newLen != oldLen && offset < newLen)
+          {
+            if (offset > 0)
+              {
+                String text;
+                try
+                  {
+                    text = doc.getText(offset - 1, 1);
+                  }
+                catch (BadLocationException ex)
+                  {
+                    text = null;
+                  }
+                if (text != null && text.length() > 0
+                    && text.charAt(0) == '\n')
+                  {
+                    pane.select(offset, offset);
+                  }
+                else
+                  {
+                    pane.select(offset + 1, offset + 1);
+                  }
+              }
+            else
+              {
+                pane.select(1, 1);
+              }
+          }
       }
   }
   
@@ -646,15 +771,12 @@ public class HTMLEditorKit
           else if (tag.equals(HTML.Tag.IMG))
             view = new ImageView(element);
           
-          // FIXME: Uncomment when the views have been implemented
           else if (tag.equals(HTML.Tag.CONTENT))
             view = new InlineView(element);
           else if (tag == HTML.Tag.HEAD)
             view = new NullView(element);
           else if (tag.equals(HTML.Tag.TABLE))
             view = new javax.swing.text.html.TableView(element);
-          else if (tag.equals(HTML.Tag.TD))
-            view = new ParagraphView(element);
           else if (tag.equals(HTML.Tag.HR))
             view = new HRuleView(element);
           else if (tag.equals(HTML.Tag.BR))
@@ -663,16 +785,17 @@ public class HTMLEditorKit
                    || tag.equals(HTML.Tag.TEXTAREA))
             view = new FormView(element);
 
-          /*
           else if (tag.equals(HTML.Tag.MENU) || tag.equals(HTML.Tag.DIR)
                    || tag.equals(HTML.Tag.UL) || tag.equals(HTML.Tag.OL))
             view = new ListView(element);
-          else if (tag.equals(HTML.Tag.OBJECT))
-            view = new ObjectView(element);
           else if (tag.equals(HTML.Tag.FRAMESET))
             view = new FrameSetView(element);
           else if (tag.equals(HTML.Tag.FRAME))
-            view = new FrameView(element); */
+            view = new FrameView(element);
+          // FIXME: Uncomment when the views have been implemented
+          /*
+          else if (tag.equals(HTML.Tag.OBJECT))
+            view = new ObjectView(element); */
         }
       if (view == null)
         {
@@ -887,8 +1010,36 @@ public class HTMLEditorKit
   /**
    * Actions for HTML 
    */
-  private static final Action[] defaultActions = {
-    // FIXME: Add default actions for html
+  private static final Action[] defaultActions =
+  {
+    new InsertHTMLTextAction("InsertTable",
+                             "<table border=1><tr><td></td></tr></table>",
+                             HTML.Tag.BODY, HTML.Tag.TABLE),
+    new InsertHTMLTextAction("InsertTableRow",
+                             "<table border=1><tr><td></td></tr></table>",
+                             HTML.Tag.TABLE, HTML.Tag.TR,
+                             HTML.Tag.BODY, HTML.Tag.TABLE),
+    new InsertHTMLTextAction("InsertTableCell",
+                             "<table border=1><tr><td></td></tr></table>",
+                             HTML.Tag.TR, HTML.Tag.TD,
+                             HTML.Tag.BODY, HTML.Tag.TABLE),
+    new InsertHTMLTextAction("InsertUnorderedList",
+                             "<ul><li></li></ul>",
+                             HTML.Tag.BODY, HTML.Tag.UL),
+    new InsertHTMLTextAction("InsertUnorderedListItem",
+                             "<ul><li></li></ul>",
+                             HTML.Tag.UL, HTML.Tag.LI,
+                             HTML.Tag.BODY, HTML.Tag.UL),
+    new InsertHTMLTextAction("InsertOrderedList",
+                             "<ol><li></li></ol>",
+                             HTML.Tag.BODY, HTML.Tag.OL),
+    new InsertHTMLTextAction("InsertOrderedListItem",
+                             "<ol><li></li></ol>",
+                             HTML.Tag.OL, HTML.Tag.LI,
+                             HTML.Tag.BODY, HTML.Tag.OL),
+    new InsertHTMLTextAction("InsertPre",
+                             "<pre></pre>", HTML.Tag.BODY, HTML.Tag.PRE)
+    // TODO: The reference impl has an InsertHRAction too.
   };
   
   /**
@@ -929,13 +1080,22 @@ public class HTMLEditorKit
   
   /** The editor pane used. */
   JEditorPane editorPane;
-    
+
+  /**
+   * Whether or not the editor kit handles form submissions.
+   *
+   * @see #isAutoFormSubmission()
+   * @see #setAutoFormSubmission(boolean)
+   */
+  private boolean autoFormSubmission;
+
   /**
    * Constructs an HTMLEditorKit, creates a StyleContext, and loads the style sheet.
    */
   public HTMLEditorKit()
   {
     linkController = new LinkController();
+    autoFormSubmission = true;
   }
   
   /**
@@ -958,8 +1118,15 @@ public class HTMLEditorKit
    */
   public Document createDefaultDocument()
   {
-    HTMLDocument document = new HTMLDocument(getStyleSheet());
+    // Protect the shared stylesheet.
+    StyleSheet styleSheet = getStyleSheet();
+    StyleSheet ss = new StyleSheet();
+    ss.addStyleSheet(styleSheet);
+
+    HTMLDocument document = new HTMLDocument(ss);
     document.setParser(getParser());
+    document.setAsynchronousLoadPriority(4);
+    document.setTokenThreshold(100);
     return document;
   }
 
@@ -973,7 +1140,7 @@ public class HTMLEditorKit
   {
     if (parser == null)
       {
-        parser = new GnuParserDelegator(HTML_401Swing.getInstance());
+        parser = new GnuParserDelegator(HTML_401F.getInstance());
       }
     return parser;
   }
@@ -1271,5 +1438,41 @@ public class HTMLEditorKit
   public void setStyleSheet(StyleSheet s)
   {
     styleSheet = s;
+  }
+
+  /**
+   * Returns <code>true</code> when forms should be automatically submitted
+   * by the editor kit. Set this to <code>false</code> when you want to
+   * intercept form submission. In this case you'd want to listen for
+   * hyperlink events on the document and handle FormSubmitEvents specially.
+   *
+   * The default is <code>true</code>.
+   *
+   * @return <code>true</code> when forms should be automatically submitted
+   *         by the editor kit, <code>false</code> otherwise
+   *
+   * @since 1.5
+   *
+   * @see #setAutoFormSubmission(boolean)
+   * @see FormSubmitEvent
+   */
+  public boolean isAutoFormSubmission()
+  {
+    return autoFormSubmission;
+  }
+
+  /**
+   * Sets whether or not the editor kit should automatically submit forms.
+   *  
+   * @param auto <code>true</code> when the editor kit should handle form
+   *        submission, <code>false</code> otherwise
+   *
+   * @since 1.5
+   *
+   * @see #isAutoFormSubmission()
+   */
+  public void setAutoFormSubmission(boolean auto)
+  {
+    autoFormSubmission = auto;
   }
 }

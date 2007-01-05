@@ -357,7 +357,8 @@ if test "x${COMPILE_JNI}" = xyes; then
                     fcntl.h \
 		    sys/mman.h \
 		    magic.h \
-                    sys/event.h sys/epoll.h])
+                    sys/event.h sys/epoll.h \
+		    ifaddrs.h])
 
   AC_EGREP_HEADER(uint32_t, stdint.h, AC_DEFINE(HAVE_INT32_DEFINED, 1, [Define to 1 if you have uint32_t]))
   AC_EGREP_HEADER(uint32_t, inttypes.h, AC_DEFINE(HAVE_INT32_DEFINED, 1, [Define to 1 if you have uint32_t]))

@@ -1,3 +1,1679 @@
+2006-11-30  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/html/FormSubmitEvent.java: New class.
+	* javax/swing/text/html/FormView.java
+	(SubmitThread): New class for submitting data in a separate thread.
+	(actionPerformed): Fetch the actual for data.
+	(addData): New helper method.
+	(getElementFormData): New helper method.
+	(getFormData): New helper method.
+	(getInputFormData): New helper method.
+	(submitData): Implemented.
+	* javax/swing/text/html/FrameView.java
+	(createComponent): Add this as hyperlink listener.
+	Set the target document as frame document.
+	(getTopEditorPane): New helper method.
+	(hyperlinkUpdate): Implementation of the HyperlinkListener interface.
+	(handleHyperlinkEvent): New helper method.
+	(handleFormSubmitEvent): New helper method.
+	* javax/swing/text/html/HTMLDocument.java
+	(HTMLReader.BaseAction.start): Track the base target.
+	(HTMLReader.BaseAction.end): Removed.
+	(baseTarget): New field.
+	(frameDocument): New field.
+	(getBaseTarget): New property accessor.
+	(isFrameDocument): New property accessor.
+	(processHTMLFrameHyperlinkEvent): Implemented.
+	(setFrameDocument): New property accessor.
+	(updateFrame): New helper method.
+	(updateFrameSet): New helper method.
+	* javax/swing/text/html/HTMLEditorKit.java
+	(LinkController.createHyperlinkEvent): Handle frame documents.
+	(autoFormSubmission): New field.
+	(HTMLEditorKit): Set autoFormSubmission to true.
+	(isAutoFormSubmission): New property accessor.
+	(setAutoFormSubmission): New property accessor.
+
+2006-11-30  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/ElementIterator.java
+	(ElementRef): New inner class.
+	(currentDepth): Removed.
+	(currentElement): Removed.
+	(previousItem): Removed.
+	(stack): New field. Holds the iteration stack.
+	(state): Removed.
+	(ElementIterator(Document)): Removed init of removed fields.
+	(ElementIterator(Element)): Removed init of removed fields.
+	(current): Changed to stack based algorithm.
+	(deepestLeaf): New helper method.
+	(depth): Changed to stack based algorithm.
+	(first): Changed to stack based algorithm.
+	(next): Changed to stack based algorithm.
+	(previous): Changed to stack based algorithm.
+
+2006-11-30  Francis Kung  <fkung@redhat.com>
+
+	* .settings/org.eclipse.jdt.core.prefs: Set compilar compliance to 1.4.
+	* .externalToolBuilders/ClasspathJar.launch: Include sun.* classses.
+
+2006-11-30  Francis Kung  <fkung@redhat.com>
+
+	* gnu/java/awt/peer/gtk/BufferedImageGraphics.java
+	(draw): Set transform in buffered composite.
+	(drawComposite): Do not transform bounds; round bounds.
+	(drawGlyphVector):  Set transform in buffered composite.
+	(drawRenderedImage):  Set transform in buffered composite.
+	(fill):  Set transform in buffered composite.
+	(updateBufferedImage): Fix scanline & height calculations.
+	* gnu/java/awt/peer/gtk/CairoGraphics2D.java
+	(createPath): Simplify width & height calculation.
+	(drawImage): Also transform width & height.
+
+2006-11-30  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/html/FrameSetView.java: New class. Implements
+	HTML framesets.
+	* javax/swing/text/html/FrameView.java: New class. Implements
+	HTML frames.
+	* javax/swing/text/html/HTMLDocument.java:
+	(HTMLReader.addSpecialElement): Only add one artificial space.
+	* javax/swing/text/html/HTMLEditorKit.java
+	(HTMLFactory.create): Uncomment code for FrameSetView and FrameView.
+	* gnu/javax/swing/text/html/parser/support/Parser.java
+	(_handleEmptyTag): Also consume whitespace after frame tags.
+
+2006-11-30  Gary Benson  <gbenson@redhat.com>
+
+	* java/lang/Thread.java: Javadoc fixes.
+
+2006-11-29  Tania Bento  <tbento@redhat.com>
+
+	* tools/gnu/classpath/tools/appletviewer/TagParser.java:
+	(parseParams): Unescape 'val' before putting it into the Map.
+	(unescapeString): New private method.
+
+2006-11-29  Tom Tromey  <tromey@redhat.com>
+
+	* tools/gnu/classpath/tools/getopt/package.html: New file.
+
+2006-11-29  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/plaf/metal/MetalIconFactory.java
+	(HorizontalSliderThumbIcon.paintIcon()): Commented out gradient paint,
+	(VerticalSliderThumbIcon.paintIcon()): Likewise.
+
+2006-11-29  Mario Torre  <neugens@limasoftware.net>
+
+	* java/text/NumberFormat.java (getCurrencyInstance): Replaced dollar sign
+	with the default international currency sign \u00A4.
+	* java/text/DecimalFormat.java (scanFix): Fix to use the localized symbol
+	table for string formatting.
+	(formatInternal): likewise.
+	(scanNegativePattern): likewise.
+	(applyPattern): likewise.
+	* java/text/DecimalFormatSymbols.java (clone): Revert to old version as
+	Locale is immutable and does not need clone.
+
+2006-11-29  Francis Kung  <fkung@redhat.com>
+
+	* gnu/java/awt/peer/gtk/CairoGraphics2D.java
+	(drawLine): Remove hard-coded pixel shifting.
+
+2006-11-29  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/Component.java
+	(isShowing): Simplified condition code and avoid unnecessary
+	if-codepaths.
+	(coalesceEvents): Always coalesce paint events and let the peer
+	figure out the expanding of the repaint area.
+	* gnu/java/awt/peer/swing/SwingComponentPeer.java
+	(currentPaintEvents): Removed. Replaced by paintArea.
+	(paintArea): New field. Tracks the dirty area.
+	(SwingComponentPeer): Removed init of currentPaintEvents.
+	(coalescePaintEvent): Simplified to only union the dirty regions.
+	(handleEvent): Paint dirty region that was tracked in paintArea.
+	* gnu/java/awt/peer/gtk/GtkComponentPeer.java
+	(paintArea): New field. Tracks the dirty region.
+	(coalescePaintEvent): Implemented to track the dirty region.
+	(paintComponent): Use the dirty region in paintArea. Protect
+	state by putting the paint and dispose code in a try-finally.
+	(updateComponent): Use the dirty region in paintArea. Protect
+	state by putting the paint and dispose code in a try-finally.
+
+2006-11-29  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/font/TextLayout.java
+	(getVisualHighlightShape): Removed debug output.
+
+2006-11-28  Dalibor Topic  <robilad@kaffe.org>
+
+        * native/jni/java-lang/java_lang_VMDouble.c:
+        (parseDoubleFromChars) New function. Factored out from ...
+        (Java_java_lang_VMDouble_parseDouble): Factored out the parsing.
+        (dtoa_toString): New function. Factored out from ...
+        (Java_java_lang_VMDouble_toString) : Factored out the conversion.
+        Changed conversion mode to 2, as modes 0 and 1 don't round
+        as the API spec demands. Invoke conversion function as often
+        as necessary with growing precision until a reversible
+        representation of the double in form of a string is reached.
+
+2006-11-28  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JComponent.java
+	(putClientProperty): Do not fire event when both old and new
+	value are == null.
+
+2006-11-27  Casey Marshall  <csm@gnu.org>
+
+	* java/util/jar/JarEntry.java (certs): removed.
+	(jarfile): new field.
+	(getCertificates): read the certificates from the containing JarFile.
+	* java/util/jar/JarFile.java (JarEnumeration.nextElement): don't
+	fill in 'certs,' fill in 'jarfile' for the entry.
+	(getEntry): likewise.
+	
+2006-11-27  Francis Kung  <fkung@redhat.com>
+
+	* java/awt/image/WritableRaster.java
+	(createChild): Implemented.
+
+2006-11-27  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/font/TextLayout.java
+	(TextLayout(TextLayout,int,int)): Also layout the new runs.
+	(getVisualHighlightShape): Implemented.
+	(layoutRuns): Fixed boundary so that the last run is also laid out.
+	(left): New helper method.
+	(right): New helper method.
+
+2006-11-27  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/font/TextLayout.java
+	(getCaretShape(TextHitInfo,Rectangle2D)): Implemented.
+	(getCaretShape(TextHitInfo)): Use natural bounds.
+	(getCaretShapes(int,Rectangle2D,CaretPolicy)): New API method.
+	(getCaretShapes(int,Rectangle2D)): Delegate to new method
+	above with DEFAULT_CARET_POLICY.
+	(getCaretShapes(int)): Use natural bounds.
+
+2006-11-27  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/font/TextLayout.java
+	(Run.font): New field.
+	(Run.location): New field.
+	(Run.Run): Initialize font.
+	(font): Removed field. This is moved into Run as the actual font
+	is something run-specific.
+	(TextLayout(String,Font,FontRenderContext)): Set font on the
+	single runs. Layout the runs here.
+	(TextLayout(TextLayout,int,int)): Copy over the run fonts.
+	(findRunAtIndex): New helper method.
+	(getCaretInfo): Implemented.
+	(layoutRuns): New helper method.
+	(toString): Don't put font in output string.
+
+2006-11-27  Raif S. Naffah  <classpath@naffah-raif.name>
+
+	* AUTHORS: Added Jeroen Fritjers.
+
+2006-11-27  neugens  <neugens@nirvana.limasoftware.net>
+
+	* java/text/DecimalFormat.java (formatInternal): Add an explicit test
+	for FieldPosition to be null.
+	Check if the factional part is just 0 and can be omitted from the
+	result.
+	(scanNegativePattern): Fixed index out of bound exception when searching
+	for international currency symbol in negative pattern.	
+
+2006-11-27  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* java/beans/beancontext/BeanContextSupport.java:
+	(readObject(ObjectInputStream)): Implemented.
+	(writeObject(ObjectOutputStream)): Likewise.
+	(BCSChild.getTargetChild()): Added.
+	(bcsPreDeserializationHook()): Implemented.
+	(bcsPreSerializationHook()): Likewise.
+	(childDeserializedHook(Object,BCSChild)): Likewise.
+	(isSerializing()): Likewise.
+	(readChildren(ObjectInputStream)): Likewise.
+	(writeChildren(ObjectOutputStream)): Likewise.
+	
+2006-11-26  Roger Sayle  <roger <at> eyesopen.com>
+	    Ian Lance Taylor  <ian <at> airs.com>
+	    Paolo Bonzini <bonzini <at> gnu.org>
+
+	Fixes bug #25557.
+
+	* lib/gen-classlist.sh.in:  Avoid using test's -ef operator for
+	increased portability.  Likewise, use -f instead of -e.
+
+2006-11-26  Mark Wielaard  <mark@klomp.org>
+
+	* lib/Makefile.am (propertydirs): Removed.
+	(resources): Explicitly create all dirs.
+
+2006-11-26  Mark Wielaard  <mark@klomp.org>
+
+	* gnu/java/net/PlainSocketImpl.java (accept): Reset timeout on Socket.
+
+2006-11-26  Dalibor Topic  <robilad@kaffe.org>
+
+	* native/target/.cvsignore,
+	native/target/generic/.cvsignore,
+	native/target/Linux/.cvsignore:
+	Removed no longer used files.
+
+	* native/target: Removed no longer used directory.
+
+2006-11-26  Dalibor Topic  <robilad@kaffe.org>
+
+	Fixes bug #29133.
+
+	* libraries/clib/nio/gnu_java_nio_VMSelector.c
+	(Java_gnu_java_nio_VMSelector_select):
+	Use strerror if strerror_r is not available.
+
+	Reported by:  Michael Franz <mvfranz@gmail.com>,
+		      Riccardo Mottola <zuse@libero.it>
+
+2006-11-26  Dalibor Topic  <robilad@kaffe.org>
+
+	Fixes bug #26756.
+	
+	* native/jni/midi-dssi/Makefile.am (AM_CFLAGS): Removed 
+	STRICT_WARNING_CFLAGS since it caused the build to fail 
+	on GNU/Linux.
+
+2006-11-26  Ian Rogers  <ian.rogers@manchester.ac.uk>
+
+	* doc/vmintegration.texinfo: Update VM Threading Model section.
+
+2006-11-26  Tom Tromey  <tromey@redhat.com>
+
+	* native/jni/java-net/java_net_VMNetworkInterface.c: Conditionally
+	include ifaddrs.h.
+	(Java_java_net_VMNetworkInterface_getVMInterfaces): Updated
+	conditional.
+	* native/jni/java-net/gnu_java_net_VMPlainSocketImpl.c:
+	Conditionally include ifaddrs.h.
+	(getif_address): Updated conditional.
+	(getif_index): Likewise.
+	* configure.ac: Check for ifaddrs.h.
+
+2006-11-25  Mark Wielaard  <mark@klomp.org>
+
+	* java/io/File.java (list): Return empty list for unreadable dirs.
+
+2006-11-25  Mark Wielaard  <mark@klomp.org>
+
+	* gnu/java/awt/peer/gtk/CairoGraphics2D.java (drawGlyphVector):
+	Synchronize on font peer.
+	(setFont): Likewise.
+	* gnu/java/awt/peer/gtk/GdkFontPeer.java (getFontMetrics): Mark
+	synchronized.
+	(getTextMetrics): Likewise.
+
+2006-11-25  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/GapContent.java
+	(getPositionsInRange): Rewritten to use the more efficient
+	binary search searchFirst() and avoid an NPE that was caused
+	by GC'ed positions.
+
+2006-11-25  Mark Wielaard  <mark@klomp.org>
+
+	* javax/swing/text/CompositeView.java (modelToView): Never return
+	null.
+
+2006-11-25  Mark Wielaard  <mark@klomp.org>
+
+	* javax/swing/text/html/TableView.java (calculateColumnRequirements):
+	Check whether rowView instanceof RowView.
+	(updateGrid): Likewise.
+
+2006-11-25  Mario Torre  <neugens@nirvana.limasoftware.net>
+
+	PR28462
+	* java/text/DecimalFormat.java: Almost new rewrite, and update to 1.5.
+	* java/text/NumberFormat.java (format): all format methods, fixed
+	FieldPosition argument should never be null.
+	(format(Object, StringBuffer, FieldPosition)): fixed signature,
+	method is not final.
+	* java/text/DecimalFormatSymbols.java (clone): fixed to also clone
+	locale.
+	* AUTHORS: added my name to the file.
+
+2006-11-25  Mark Wielaard  <mark@klomp.org>
+
+	* javax/swing/text/html/StyleSheet.java (paint): Guard against
+	getChildAllocation() returning null.
+
+2006-11-25  Mark Wielaard  <mark@klomp.org>
+
+	* gnu/javax/swing/text/html/css/Selector.java (calculateSpecificity):
+	Use clazzIndex for id substring.
+
+2006-11-25  Mark Wielaard  <mark@klomp.org>
+
+	* java/awt/EventQueue.java (pop): Only terminate dispatchThread when
+	it is still running.
+
+2006-11-25  Mark Wielaard  <mark@klomp.org>
+
+	Fixes bug #28822
+	* doc/api/Makefile.am (create_html): Guard GJDOC invocation with
+	CREATE_API_DOCS
+
+2006-11-24  Tania Bento  <tbento@redhat.com>
+
+	* java/awt/font/TextHitInfo.java
+	(equals(TextHitInfo)): If TextHitInfo parameter is null, return false.
+	(beforeOffset): Decreased first parameter by 1.
+
+2006-11-24  Francis Kung  <fkung@redhat.com>
+
+	* gnu/java/awt/peer/gtk/BufferedImageGraphics.java
+	(constructor): Check sample model when setting fastCM flag.
+	(updateBufferedImage): Check scanline and sample model offsets before
+	copying data directly into the image data buffer.
+
+2006-11-24  Francis Kung  <fkung@redhat.com>
+
+	* gnu/java/awt/java2d/QuadSegment.java
+	(offsetSubdivided): Handle special straight-line cases.
+
+2006-11-24  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/dnd/DropTarget.java
+	(DropTargetAutoScroller.HYSTERESIS): New constant.
+	(DropTargetAutoScroller.DELAY): New constant.
+	(DropTargetAutoScroller.inner): New field. A cached
+	Rectangle instance.
+	(DropTargetAutoScroller.outer): New field. A cached
+	Rectangle instance.
+	(DropTargetAutoScroller.timer): New field. The actual timer.
+	(DropTargetAutoScroller.DropTargetAutoScroller):
+	Initialize timer.
+	(DropTargetAutoScroller.actionPerformed): Implemented.
+	(DropTargetAutoScroller.stop): Implemented.
+	(DropTargetAutoScroller.updateLocation): Implemented.
+	(clearAutoscroll): Stop the autoscroller before nullifying it.
+	(createDropTargetAutoScroller): Don't set the field here,
+	only return a new instance.
+	(dragEnter): Only do something when active. Initialize
+	auto scrolling.
+	(dragExit): Only do something when active. Stop auto scrolling.
+	(dragOver): Only do something when active. Update auto scrolling.
+	(drop): Only do something when active. Update auto scrolling.
+	(dropActionChanged): Only do something when active. Update
+	auto scrolling.
+	(initializeAutoScrolling): Check if component is an instance
+	of Autoscroll, otherwise do nothing.
+	(setActive): Disable autoscrolling when deactivating.
+	(setComponent): When component is set to null, disable autoscrolling.
+
+2006-11-24  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/beans/beancontext/BeanContextServicesSupport.java
+	(getChildBeanContextServicesListener): Implemented.
+
+2006-11-23  Roman Kennke  <kennke@aicas.com>
+
+	* gnu/java/awt/peer/headless/HeadlessGraphicsEnvironment.java
+	(createGraphics): Use constructor to create new instance of
+	BufferedImageGraphics.
+	* java/awt/Toolkit.java
+	(getDefaultToolkit): Really try to get a real toolkit. Only
+	use HeadlessToolkit if no other is available.
+	* gnu/java/awt/peer/gtk/GtkToolkit.java
+	(checkHeadless): New helper method. Checks for headless environment
+	and throws HeadlessException if appropriate.
+	(createButton): Check for headless.
+	(createCanvas): Check for headless.
+	(createCheckbox): Check for headless.
+	(createCheckboxMenuItem): Check for headless.
+	(createChoice): Check for headless.
+	(createDialog): Check for headless.
+	(createDragGestureRecognizer): Check for headless.
+	(createDragSourceContextPeer): Check for headless.
+	(createEmbeddedWindow): Check for headless.
+	(createFileDialog): Check for headless.
+	(createFrame): Check for headless.
+	(createCheckbox): Check for headless.
+	(createLabel): Check for headless.
+	(createList): Check for headless.
+	(createMenu): Check for headless.
+	(createMenuBar): Check for headless.
+	(createMenuItem): Check for headless.
+	(createPanel): Check for headless.
+	(createPopupMenu): Check for headless.
+	(createScrollbar): Check for headless.
+	(createScrollPane): Check for headless.
+	(createTextArea): Check for headless.
+	(createTextField): Check for headless.
+	(createWindow): Check for headless.
+
+2006-11-23  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/beans/beancontext/BeanContextSupport.java
+	(deserialize): Implemented,
+	(serialize): Implemented.
+
+2006-11-23  Roman Kennke  <kennke@aicas.com>
+
+	* gnu/java/awt/peer/headless/HeadlessGraphicsEnvironment.java
+	(createGraphics): Try to use Cairo graphics if available.
+
+2006-11-22  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/beans/beancontext/BeanContextSupport.java
+	(toArray): Added API docs,
+	(toArray(Object[])): Added API docs, removed NotImplementedException.
+
+2006-11-22  Tania Bento  <tbento@redhat.com>
+
+	* javax/swing/JRootPane.java
+	(setLayeredPane): Added documentation; throw 
+	IllegalComponentStateException if layered pane parameter is null.
+
+2006-11-22  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/beans/beancontext/BeanContextSupport.java
+	(avoidingGui): Removed NotImplementedException.
+
+2006-11-22  Francis Kung  <fkung@redhat.com>
+
+	* gnu/java/awt/peer/gtk/BufferedImageGraphics.java
+	(drawGlyphVector): Clip updated area to glyph bounds.
+	* gnu/java/awt/peer/gtk/CairoGraphics2D.java
+	(createPath): Eliminate distortion when pixel-shifting rectangles; separate
+	x-coordinate and y-coordinate pixel shifting.
+	(shifted): Removed method.
+	(shiftX): New method, recognising scaling transforms.
+	(shiftY): New method, recognising scaling transforms.
+	(walkPath): Separate x-coordinate and y-coordinate pixel shifting.
+
+2006-11-22  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/font/TextLayout.java
+	(hash): New field. Caches the hash code.
+	(hashCode): Implemented.
+
+2006-11-22  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/image/ImageFilter.java
+	Reformat whole class.
+	(getFilterInstance): Don't touch the consumer field. Don't check
+	consumer.
+	(imageComplete): Don't check consumer.
+	(setColorModel): Don't check consumer.
+	(setDimensions): Don't check consumer.
+	(setHints): Don't check consumer.
+	(setPixels): Don't check consumer.
+	(setProperties): Pass the original property too.
+	* java/awt/image/IndexColorModel.java
+	(IndexColorModel(int,int,byte[],byte[],byte[],int)): Set the
+	transparent pixel by calling the new helper method.
+	(IndexColorModel(int,int,byte[],int,boolean,int)): Set the
+	transparent pixel by calling the new helper method.
+	(IndexColorModel(int,int,int[],int,boolean,int,int)): Set the
+	transparent pixel by calling the new helper method.
+	(coerceData): Removed. This is not needed.
+	(getAlpha): Simply return value from color map. The transparent
+	pixel has to be there.
+	(setTransparentPixel): New helper method. Inserts the transparent
+	pixel.
+	* java/awt/image/RGBImageFilter.java
+	Reformat whole class.
+	(convertColorModelToDefault): Removed. No longer needed.
+	(filterIndexColorModel): Don't handle transparent pixels
+	separately.
+	(filterRGBPixels): Set pixels on consumer already.
+	(makeColor): Removed. No longer needed.
+	* java/awt/image/ReplicateScaleFilter.java
+	(replicatePixels): Removed.
+	(setDimension): Correctly compute destination size, avoid double
+	calculations.
+	(setPixels): Avoid double calculations. Fixed some boundary cases.
+	(setupSources): New helper method.
+	* java/awt/image/SampleModel.java
+	(setDataElements): Also handle TYPE_SHORT, TYPE_FLOAT
+	and TYPE_DOUBLE.
+	* java/awt/image/SinglePixelPackedSampleModel.java
+	(setDataElements(int,int,int,int,Object,DataBuffer)): Removed.
+	This is not needed as the superclass already copies line
+	by line.
+	(setDataElements(int,int,Object,DataBuffer)): Simplified code,
+	removed some checks that the RI also doesn't perform. Call
+	DataBuffer.setElem().
+
+2006-11-22  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/text/TextLayout.java
+	(getLogicalRangesForVisualSelection): Implemented.
+
+2006-11-21  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/text/TextLayout.java
+	(Run.isLeftToRight): New helper method.
+	(logicalToVisual): New field. Maps logical indices to visual
+	indices.
+	(visualToLogical): New field. Maps visual indices to logical
+	indices.
+	(TextLayout): Setup mappings.
+	(setupMappings): New method for setting up the mappings.
+	(getCharacterLevel): Reorganized code.
+	(getNextLeftHit(int)): Implemented.
+	(getNextLeftHit(int,CaretPolicy)): New method.
+	(getNextLeftHit(TextHitInfo)): Implemented.
+	(getNextRightHit(int)): Implemented.
+	(getNextRightHit(int,CaretPolicy)): New method.
+	(getNextRightHit(TextHitInfo)): New method.
+	(getVisualOtherHit): Implemented.
+	(checkHitInfo): New helper methods for checking parameters.
+	(hitToCaret): New helper method. Maps hit infos to caret locations.
+	(caretToHit): New helper method. Maps caret locations to hit infos.
+	(isCharacterLTR): New helper method.
+	(CaretPolicy.getStrongCaret): Implemented.
+
+2006-11-21  Francis Kung  <fkung@redhat.com>
+
+	* gnu/java/awt/peer/gtk/BufferedImageGraphics.java
+	(draw): Include stroke width when calculating bounds.
+	(updateBufferedImage): Round bounds more generously, handle negative
+	height/width values, and clip more intelligently.
+	* gnu/java/awt/peer/gtk/CairoGraphics2D.java
+	(createPath): Add shortcut optimization for lines.
+	(draw): Include stroke width when calculating bounds.
+	(drawLine): Delegate to main draw() method.
+	(drawRect): Likewise.
+	(fillRect): Delegate to main fill() method.
+	(findStrokedBounds): New method.
+	(setCustomPaint): Round bounds more generously.
+	* gnu/java/awt/peer/gtk/ComponentGraphics.java
+	(drawLine): Removed.
+	(drawRect): Removed.
+	(fillRect): Removed.
+
+2006-11-21  Francis Kung  <fkung@redhat.com>
+
+	* gnu/java/awt/java2d/TexturePaintContext.java
+	(getRaster): Handle negative coordinate values.
+	* gnu/java/awt/peer/gtk/CairoGraphics2D.java
+	(setPaint): Moved custom paint processing to a new method.
+	(setPaintPixels): Added x, y parameters.
+	(getRealBounds): Added documentation.
+	(copy): Copy clipping information.
+	(drawLine): Process custom paints.
+	(setCustomPaint): New method.
+	(fill): Process custom paints.
+	(drawGlyphVector): Process custom paints.
+	(drawRect): Process custom paints.
+	(draw): Process custom paints.
+	* gnu/java/awt/peer/gtk/CairoSurface.java
+	(cairoCM_opaque): New constant.
+	* gnu/java/awt/peer/gtk/BufferedImageGraphics.java
+	(argb32): Removed constant.
+	(rgb32): Removed constant.
+	(BufferedImageGraphics(BufferedImage)): Updated constant names.
+	(BufferedImageGraphics(BufferedImageGraphics)): Copy color model flags.
+	(updateBufferedImage): Transform to device-space before updating.
+	* include/gnu_java_awt_peer_gtk_CairoGraphics2D.h
+	(Java_gnu_java_awt_peer_gtk_CairoGraphics2D_setPaintPixels): Added x, y
+	parameters.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_CairoGraphics2D.c
+	(Java_gnu_java_awt_peer_gtk_CairoGraphics2D_setPaintPixels): Set pattern
+	source at designated x, y origin.
+
+2006-11-21  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/text/TextLayout.java
+	(Run): New inner helper class.
+	(length): New field.
+	(naturalBounds): New field.
+	(offset): New field.
+	(runIndices): Removed. This is now encapsulate in a Run object.
+	(runs): Changed to Run[].
+	(string): Changed to char[].
+	(totalAdvance): New field. Caches advance value.
+	(TextLayout(String,Font,FontRenderContext)): Change to store
+	string as char[] and run layout as Run[]. Clean out empty
+	run items.
+	(TextLayout(TextLayout,int,int)): Change to store
+	string as char[] and run layout as Run[].
+	(clone): Call private constructor for maximum efficiency.
+	(determineWhitespace): Adapted to use char[] data.
+	(draw): Adapted to use Run objects.
+	(getAdvance): Cache computed total advance.
+	(getBlackBoxBounds): Adapted to use Run objects.
+	(getCaretInfo): Use natural layout bounds.
+	(getCharacterCount): Return length field.
+	(getLogicalHighlightShape): Adapted to use Run objects.
+	(getNaturalBounds): New helper method. Calculates and returns the
+	natural bounds of this text layout.
+	(getOutline): Adapted to use Run objects.
+	(getStringProperties): Adapted to use char[] data.
+	(getVisibleAdvance): Adapted to use char[] and Run data.
+	(handleJustify): Adapted to use char[] and Run data.
+	(hitTestChar(float,float,Rectangle2D)): Implemented.
+	(hitTestChar(float,float)): Use natural bounds.
+	(setCharIndices): Adapted to use char[] and Run data.
+	(toString): Adapted to use char[] and Run data.
+	* java/text/Bidi.java
+	(requiresBidi): Exclude paragraph separators from bidi-triggers.
+
+2006-11-21  Roman Kennke  <kennke@aicas.com>
+
+	* gnu/java/awt/peer/gtk/GdkFontMetrics.java:
+	Removed. This is now an inner class in GdkFontPeer.
+	* gnu/java/awt/peer/gtk/CairoGraphics2D.java
+	(drawString(float,float)): Use text layout cache from
+	GdkFontPeer.
+	(getFontMetrics): Delegate to GdkFontPeer.
+	* gnu/java/awt/peer/gtk/FreetypeGlyphVector.java
+	(getGlyphCodes): Also check array size.
+	(getGlyphPositions): Also check array size.
+	* gnu/java/awt/peer/gtk/GdkFontPeer.java
+	(GdkFontLineMetrics.fm): Removed.
+	(GdkFontLineMetrics.strikeThroughOffset): Removed.
+	(GdkFontLineMetrics.strikeThroughThickness): Removed.
+	(GdkFontLineMetrics.underlineOffset): Removed.
+	(GdkFontLineMetrics.underlineThickness): Removed.
+	(GdkFontLineMetrics.GdkFontLineMetrics): Don't take
+	FontMetrics argument. Don't init removed fields.
+	(GdkFontLineMetrics.getAscent): Return font peer's field.
+	(GdkFontLineMetrics.getDescent): Return font peer's field.
+	(GdkFontLineMetrics.getHeight): Return font peer's field.
+	(GdkFontLineMetrics.getLeading): Return font peer's field.
+	(GdkFontLineMetrics.getNumChars): Reformat.
+	(GdkFontLineMetrics.getStrikeThroughOffset): Return half ascent.
+	(GdkFontLineMetrics.getStrikeThroughThickness): Return 1.
+	(GdkFontLineMetrics.getUnderlineOffset): Return font peer's field.
+	(GdkFontLineMetrics.getUnderlineThickness): Return font peer's field.
+	(GdkFontMetrics): Moved class in here as inner class. 
+	Make it use the font peer's fields and for the char(s) width
+	and string width method, use TextLayout to measure the actual widths.
+	(ascent): New field.
+	(bundle): Removed.
+	(DEFAULT_CTX): New constant field.
+	(descent): New field.
+	(FONT_METRICS_ASCENT): New constant.
+	(FONT_METRICS_DESCENT): New constant.
+	(FONT_METRICS_HEIGHT): New constant.
+	(FONT_METRICS_MAX_ADVANCE): New constant.
+	(FONT_METRICS_MAX_ASCENT): New constant.
+	(FONT_METRICS_MAX_DESCENT): New constant.
+	(FONT_METRICS_UNDERLINE_OFFSET): New constant.
+	(FONT_METRICS_UNDERLINE_THICKNESS): New constant.
+	(height): New field.
+	(maxAdvance): New field.
+	(maxAscent): New field.
+	(maxDescent): New field.
+	(metrics): New field. Stores a FontMetrics for this font.
+	(textLayoutCache): New field. Caches TextLayout instances.
+	(underlineOffset): New field.
+	(underlineThickness): New field.
+	(cinit): Don't initialize resource bundle.
+	(GdkFontPeer): Setup the metrics.
+	(getFontMetrics): Return stored metrics if possible.
+	(getLineMetrics): Adapt to new constructor.
+	(initFont): New helper method.
+	(setupMetrics): New helper method.
+	* gnu/java/awt/peer/gtk/GtkToolkit.java
+	(LRUCache): Made class a static class.
+	(getFontMetrics): Delegate to GdkFontPeer.
+	* native/jni/gtk-peer/gdkfont.h
+	Added new constant defines.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GdkFontPeer.c
+	(getFontMetrics): Rewritten to fetch the font metrics from
+	FreeType.
+
+2006-11-20  Tania Bento  <tbento@redhat.com>
+
+	* javax/swing/ButtonGroup.java:
+	(setSelected): Select the ButtonModel if all conditions
+	are met.
+
+2006-11-20  Tania Bento  <tbento@redhat.com>
+
+	* javax/swing/JSlider.java:
+	(updateLabelUIs): Removed casting.
+
+2006-11-20  Mark Wielaard  <mark@klomp.org>
+
+	* gnu/java/util/regex/RE.java (messages): Don't initialize.
+	(bundle): New static final String field.
+	(getLocalizedMessage): Initialize messages when still null.
+	* gnu/java/util/regex/RESyntax.java (SYNTAX_IS_FINAL): Removed.
+	(set): Use RE.getLocalizedMessage().
+	(clear): Likewise.
+	(setLineSeparator): Likewise.
+
+2006-11-20  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/html/StyleSheet.java
+	(linked): New field.
+	(styleSheet): Replaced by linked.
+	(addStyleSheet): Use an arraylist for simplicity.
+	(getRule): Removed useless instantiation.
+	(getStyleSheets): Convert array list to array.
+	(removeStyleSheet): Use an arraylist for simplicity.
+	(resolveStyle): Include styles from linked lists.
+
+2006-11-20  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/BoxView.java
+	(BoxView): Initialize with invalid req's.
+	(forwardUpdate): Trigger repaint when children changed the
+	major axis.
+	(getResizeWeight): Return resizable when the pref differs from
+	the min or the pref differs from the max size.
+	(layoutMajorAxis): Actually sum up the preferred sizes.
+	(paint): Made binary search more robust.
+	(replace): Let arrays shrink when needed.
+	(replaceLayoutArray): Let arrays shrink when needed.
+	(setAxis): Trigger preferenceChanged.
+	* javax/swing/text/CompositeView.java
+	(getInsideAllocation): Call insets method to take account
+	of overriding subclasses.
+	* javax/swing/text/DefaultStyledDocument.java
+	(ElementBuffer.finishEdit): Clear the stack and edits buffer.
+	(ElementBuffer.insertUpdate): Only remove the found element, not
+	all.
+	* javax/swing/text/GlyphView.java
+	(insertUpdate): Pass null in preferenceChanged.
+	(removeUpdate): Pass null in preferenceChanged.
+	(changedUpdate): Pass null in preferenceChanged.
+	* javax/swing/text/Utilities.java
+	(drawTabbedText): Avoid single calls to charWidth() and instead
+	call charsWidth() on whole chunks.
+	* javax/swing/text/html/HTMLDocument.java
+	(BlockElement.getName): Fall back to super when necessary.
+	(RunElement.getName): Fall back to super when necessary.
+	(HTMLReader.MAX_THRESHOLD): New constant field.
+	(HTMLReader.GROW_THRESHOLD): New constant field.
+	(HTMLReader.theshold): New field.
+	(HTMLReader.HTMLReader): Fetch threshold from document.
+	(HTMLReader.addContent): Sucessivly grow the threshold.
+	(createLeafElement): Don't create two elemens and don't set
+	attribute.
+	* javax/swing/text/html/TableView.java
+	(RowView.replace): Invalidate grid.
+	(gridValid): Made package private.
+	(layoutMinorAxis): Mark all rows as invalid.
+	(replace): Invalidate grid.
+
+2006-11-20  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/AbstractDocument.java
+	(DefaultDocumentEvent.changes): Changed to be a HashMap.
+	(DefaultDocumentEvent.modified): Made private.
+	(DefaultDocumentEvent.THRESHOLD): New constant field.
+	(DefaultDocumentEvent.DefaultDocumentEvent): Don't initialize
+	changes table.
+	(DefaultDocumentEvent.addEdit): Switch to hashmap only when
+	exceeding threshold.
+	(DefaultDocumentEvent.getChange): Use iterative approach
+	when we have no hashmap yet.
+	(documentCV): Removed.
+	(numWriters): Renamed from numWritersWaiting.
+	(createPosition): Reformat.
+	(getCurrentWriter): Synchronized.
+	(readLock): Implement more straightforward.
+	(readUnlock): Implement more straightforward.
+	(writeLock): Implement more straightforward.
+	(writeUnlock): Implement more straightforward.
+	(remove): Write-lock here.
+	(removeImpl): Don't write-lock here.
+
+2006-11-20  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JEditorPane.java
+	(setPage): Set priority on loading thread.
+
+2006-11-20  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/basic/BasicTextUI.java
+	(RootView.paint): Avoid allocation.
+	(cachedInsets): New field. Caches an Insets instance.
+	(getNextVisualPositionFrom): Read-lock the document to avoid
+	thread nastiness. Push allocation.
+	(getPreferredSize): Push fake allocation when not yet laid out.
+	(getVisibleEditorRect): Use cached insets.
+	(viewToModel): Read-lock the document to avoid
+	thread nastiness. Push allocation.
+
+2006-11-20  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/StyleContext.java
+	(attributeSetPool): Synchronize this map.
+	(addAttribute): Synchronize this method.
+	(addAttributes: Synchronize this method.
+	(readObject): Install synchronized map on target object.
+	(removeAttribute): Synchronize this method.
+	(removeAttributes): Synchronize this method.
+	(removeAttributes): Synchronize this method.	
+	
+2006-11-20  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/GapContent.java
+	(GapContentPosition.GapContentPosition): Removed constructor.
+	(Mark): Made subclass of WeakReference to refer directly to
+	the associated position.
+	(Mark.refCount): Removed.
+	(Mark.Mark(int,GapContentPosition,ReferenceQueue):
+	New constructor. Used to reference a position and register the
+	reference queue.
+	(Mark.Mark(index)): Call super and don't adjust mark offset.
+	(Mark.compareTo): Removed.
+	(Mark.equals): Removed.
+	(Mark.getOffset): Return at least null. Removed assert.
+	(Mark.getPosition): New helper method.
+	(garbageMarks): New field.
+	(positions): Removed.
+	(searchMark): New field.
+	(GapContent): Removed init of positions map.
+	(addImpl): New helper method.
+	(adjustPositionsInRange): Removed.
+	(compare): New helper method.
+	(createPosition): Rewritten for new datastructures. This now
+	performs a much more efficient binary search for finding
+	a position at the requested offste.
+	(garbageCollect): Rewritten to collect unused marks.
+	(getPositionsInRange): Adjusted for new data structures.
+	(removeImpl): New helper method.
+	(replace): Use new addImpl() and removeImpl() helper method for
+	correctly adjusting the positions and gap.
+	(search): Rewritten. Implements a more suitable binary search.
+	(searchFirst): New helper method.
+	(setPositionsInRange): Removed.
+	(shiftEnd): Update the marks here.
+	(shiftGap): Update the marks here.
+	(shiftGapEndUp): Update the marks here.
+	(shiftGapStartDown): Update the marks here.
+
+2006-11-20  Marco Trudel <mtrudel@gmx.ch>
+
+	* java/util/jar/JarFile.java (digestAlgorithms): New field used to cache
+	digest algorithm implementations.
+	(readSignatures): Parse the manifest once and reuse that data.
+	Add support for line breaks.
+	(verifyHashes): Use the parsed manifest entry.
+	(readManifestEntry): Removed.
+
+2006-11-20  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* java/beans/beancontext/BeanContextServicesSupport.java:
+	Added more documentation.
+	(addService(Class,BeanContextServiceProvider,boolean)):
+	Synchronized over global hierarchy lock.
+	(bcsPreDeserializationHook(ObjectInputStream)): Implemented.
+	(bcsPreSerializationHook(ObjectOutputStream)): Implemented.
+	(childJustRemovedHook(Object,BCSChild)): Implemented.
+	(createBCSSServiceProvider(Class,BeanContextServiceProvider)):
+	Implemented.
+	(fireServiceRevoked(BeanContextServiceRevokedEvent)):
+	Added revocation-only listeners.
+	(getBeanContextServicesPeer()): Implemented.
+	(getCurrentServiceClasses(Class)): Synchronized over global
+	hierarchy lock.
+	(getCurrentServiceSelectors(Class)): Synchronized over global
+	hierarchy lock, and fixed FIXME.
+	(getService(BeanContextChild,Object,Class,Object,
+	BeanContextServiceRevokedListener)): Implemented.
+	(hasService(Class)): Synchronized over global hierarchy lock.
+	(releaseService(BeanContextChild,Object,Object)): Implemented.
+	(revokeService(Class,BeanContextServiceProvider,boolean)): Implemented.
+	* java/beans/beancontext/BeanContextSupport.java:
+	(remove(Object, boolean)): Documentation correction.
+	
+2006-11-19  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/JEditorPane.java
+	(PageStream): New inner class.
+	(PageLoader): New inner class.
+	(loading): New field.
+	(setPage): Implemented asynchronous loading.
+	* javax/swing/text/DefaultStyledDocument.java
+	(ElementBuffer.create): New helper method.
+	(create): Use new ElementBuffer method instead of hack.
+	* javax/swing/text/html/HTMLDocument.java
+	(HTMLReader.flushImpl): New helper method.
+	(HTMLReader.addContent): Use flushImpl().
+	(HTMLReader.blockClose): Added null check.
+	(HTMLReader.flush): Use flushImpl().
+	* javax/swing/text/html/HTMLEditorKit.java
+	(createDefaultDocument): Set load priority to 4 and token threshold
+	to 100.
+	* javax/swing/text/html/TableView.java
+	(insertUpdate): Overridden to provide correct view factory.
+	(removeUpdate): Overridden to provide correct view factory.
+	(changedUpdate): Overridden to provide correct view factory.
+
+2006-11-19  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/BoxView.java
+	(clipRect): New field.
+	(tmpRect): New field.
+	(layout): Reorganized code. Now uses layoutAxis() helper method.
+	(layoutAxis): New helper method.
+	(paint): Optimized by using cached Rectangle objects and
+	a binary search for child views inside the clip.
+	* javax/swing/text/CompositeView.java
+	(insideAllocation): Made private and initialized in constructor.
+	(getInsideAllocation): Removed initialization block for
+	insideAllocation field. Avoid unnecessary allocations.
+	* javax/swing/text/GlyphView.java
+	(DefaultGlyphPainter.paint): Only paint the actual glyphs here
+	The remaining stuff (background, underline and striking) is
+	done in the GlpyhView itself. Avoid unnecessary allocations.
+	(cached): A cached Segment instance.
+	(getText): Return cached segment.
+	(paint): Paint underline, strike and background here. Avoid
+	unecessary allocs.
+
+2006-11-19  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/html/StyleSheet.java
+	(getFontSize): Removed debug output.
+	(ListPainter.tmpRect): New field.
+	(ListPainter.paint): Align bullet vertically centered to
+	the first line of the paragraph.
+
+2006-11-17  Roman Kennke  <kennke@aicas.com>
+
+	* gnu/javax/swing/text/html/css/CSSParser.java
+	(parseDeclaration): Trim string before reporting.
+	* gnu/javax/swing/text/html/css/FontSize.java
+	(size): New field.
+	(isRelative): New field.
+	(sizeIndex): New field.
+	(FontSize): Initialize new fields.
+	(getValue): Changed to call getValue(int).
+	(getValue(int)): New method. Implements relative font sizes.
+	(isRelative): New method.
+	(mapAbsolute): Store index.
+	(mapEM): New helper method.
+	(mapLarger): New helper method.
+	(mapPercent): New helper method.
+	(mapRelative): New helper method.
+	(mapSmaller): New helper method.
+	(mapValue): New helper method.
+	* javax/swing/text/html/CSS.java
+	(parseBackgroundShorthand): Create CSSColor directly.
+	* javax/swing/text/html/StyleSheet.java
+	(addRule): Invalidate resolved styles.
+	(getFont): Call new getFontSize() method to resolve relative
+	font sizes.
+	(getFontSize): New helper method. Resolves relative font sizes.
+	(translateHTMLToCSS): Create CSS objects directly.
+
+2006-11-13  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* gnu/java/util/regex/RETokenNamedProperty.java:
+	(getHandler(String)): Add support for 'all'.
+
+2006-11-18  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* gnu/javax/management/Server.java:
+	Initial implementation of a GNU management server.
+	* javax/management/MBeanPermission.java,
+	* javax/management/MBeanRegistration.java,
+	* javax/management/MBeanTrustPermission.java:
+	Implemented.
+	
+2006-11-17  Mark Wielaard  <mark@klomp.org>
+
+	* docs/www.gnu.org/newsitems.txt: Add Sun GPL news announcement.
+
+2006-11-17  Gary Benson  <gbenson@redhat.com>
+
+	* java/net/DatagramSocket.java (getLocalAddress, connect,
+	receive): Perform security check on address not hostname.
+
+2006-11-16  Roman Kennke  <kennke@aicas.com>
+
+	* gnu/javax/swing/text/html/parser/support/Parser.java
+	(_handleText): Fixed condition for consuming whitespace.
+	Removed validator check, this is superfluous now.
+
+2006-11-16  Roman Kennke  <kennke@aicas.com>
+
+	* gnu/javax/swing/text/html/css/CSSParser.java
+	(parseRuleset): Support 'combined' selectors.
+	(main): Adapt callback for combined selectors support.
+	* gnu/javax/swing/text/html/css/CSSParserCallback.java
+	(startStatement): Take selector array as argument, to
+	support combined selectors.
+	* javax/swing/text/html/BlockView.java
+	(calculateMinorAxisRequirements): Fetch and apply alignment.
+	* javax/swing/text/html/StyleSheet.java
+	(CSSStyle): Inverted the constants for correct precedence.
+	(CSSStyleSheetParserCallback.styles): New field. Stores the current
+	styles.
+	(CSSStyleSheetParserCallback.style): Removed.
+	(CSSStyleSheetParserCallback.declaration): Update multiple styles.
+	(CSSStyleSheetParserCallback.end): Push multiple styles.
+	(CSSStyleSheetParserCallback.start): Initialize multiple styles.
+
+2006-11-16  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/FlowView.java
+	(LogicalView.getPreferredSpan): Calculate maximum correctly.
+	* javax/swing/text/GlyphView.java
+	(tabExpander): New field.
+	(tabX): New field.
+	(breakView): Set tabX on broken view.
+	(getPartialSpan): Let the painter fetch the span.
+	(getTabbedSpan): Update the tab expander field. Maybe trigger
+	relayout.
+	(getTabExpander): Simply return the stored expander.
+	* javax/swing/text/Utilities.java
+	(getTabbedTextOffset): Made algoritm a little smarter and more
+	efficient.
+	(getTabbedTextWidth): Don't add single char widths, instead add
+	chunks of characters.
+	* javax/swing/text/html/ParagraphView.java
+	(calculateMinorAxisRequirements): Adjust margin only when the
+	CSS span is not fixed.
+
+2006-11-16  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/beans/beancontext/BeanContextSupport.java
+	(getChildBeanContextMembershipListener): Implemented,
+	(getChildPropertyChangeListener): Implemented,
+	(getChildSerializable): Implemented,
+	(getChildVetoableChangeListener): Implemented,
+	(getChildVisibility): Implemented,
+	(setDesignTime): Use same property name as Sun's implementation.
+
+2006-11-16  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/beans/DesignMode.java: Reformatted and removed a FIXME,
+	* java/beans/Statement.java
+	(toString): Updated to match reference implementation.
+
+2006-11-15  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/html/HTMLEditorKit.java
+	(InsertHTMLTextAction.actionPerformed): Also try inserting
+	the alternate tag. Adjust the selection accordingly.
+	(InsertHTMLTextAction.adjustSelection): New helper method.
+	Adjusts the selection after an insertion.
+	(insertAtBoundary): Delegate to deprecated method.
+	(insertAtBoundry): Implemented missing method.
+	(tryInsert): New helper method.
+	(defaultActions): Implemented to fill the array with
+	a couple of InsertHTMLTextActions.
+
+2006-11-15  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/html/ImageView.java
+	(Observer): New class. Observes image loading.
+	(haveHeight): New field.
+	(haveWidth): New field.
+	(height): New field.
+	(width): New field.
+	(image): New field.
+	(imageIcon): New field.
+	(loading): New field.
+	(observer): New field.
+	(reloadImage): New field.
+	(reloadProperties): New field.
+	(ImageView): Initialize observer and some flags.
+	(getImage): Update the image state and return the image.
+	(loadImage): New helper method. Actually starts loading.
+	(paint): Rewritten to paint the image directly, not via Icon.
+	(reloadImage): Rewritten. Loads the image and its properties.
+	(renderIcon): Removed. No more necessary.
+	(setPropertiesFromAttributes): Don't nullify image here.
+	Added comment about missing impl.
+	(setSize): Added comment about missing impl.
+	(updateSize): New helper method. Updates the size attributes.
+	(updateState): New helper method. Makes sure the image
+	and its properties are valid.
+
+2006-11-15  Roman Kennke  <kennke@aicas.com>
+
+	* gnu/javax/swing/text/html/parser/support/Parser.java
+	(_handleEndTag_remaining): Consume whitespace after a closing
+	block like tag.
+
+2006-11-15  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/html/HTMLDocument.java
+	(HTMLReader.ParagraphAction.end): Call super instead of blockClose()
+	directly.
+	(HTMLReader.ParagraphAction.start): Call super instead of blockOpen()
+	directly.
+	(HTMLReader.parseStack): Removed.
+	(HTMLReader.blockClose): Simply call addContent() with ' '
+	instead of doing more complicated stuff. Removed parseStack
+	handling.
+	(HTMLReader.blockOpen): Removed parseStack handling.
+	(getInsertingReader): Removed parseStack init.
+	* gnu/javax/swing/text/html/parser/htmlValidator.java
+	(closeTag): Return true only when the tag actually should be
+	closed.
+	* gnu/javax/swing/text/html/parser/support/Parser.java
+	(_handleEndTag): Only actually close the tag when the validator
+	allows it.
+
+2006-11-15  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/html/CSS.java
+	(Attribute.BORDER_SPACING): New field for the CSS border-spacing
+	attribute.
+	* javax/swing/text/html/StyleSheet.java
+	(BoxPainter.bottomPadding): New field.
+	(BoxPainter.leftPadding): New field.
+	(BoxPainter.rightPadding): New field.
+	(BoxPainter.topPadding): New field.
+	(BoxPainter.BoxPainter): Fetch the MARGIN and PADDING* attributes
+	too.
+	(BoxPainter.getInset): Recognize and include the padding.
+	(translateHTMLToCSS): Added mapping for CELLPADDING and CELLSPACING.
+	 javax/swing/text/html/TableView.java
+	(RowView.calculateMajorAxisRequirements): Adjust req's for
+	cellSpacing.
+	(RowView.layoutMajorAxis): Adjust multi-column span for cellSpacing.
+	(cellSpacing): New field.
+	(columnRequirements): Made package private to avoid accessor method.
+	(calculateMinorAxisRequirements): Include cellSpacing.
+	(calculateMajorAxisRequirements): Overridden to include cellSpacing.
+	(layoutMajorAxis): Likewise.
+	(layoutColumns): Respect cellSpacing.
+	(setParent): Overridden to fetch the CSS attributes when view gets
+	connected.
+	(setPropertiesFromAttributes): New method. Fetches the cell
+	spacing from the CSS attributes.
+
+2006-11-15  Roman Kennke  <kennke@aicas.com>
+
+	* gnu/javax/swing/text/html/parser/support/Parser.java
+	(_handleText): Consume whitespace directly before a closing tag.
+	(restOfTag): Consume whitespace directly after opening.
+	* gnu/javax/swing/text/html/parser/support/textPreProcessor.java
+	(preprocess): Don't perform array boundary checking by
+	catch AIOOBE, instead check the boundary in loop condition.
+	* gnu/javax/swing/text/html/parser/support/low/Constants.java
+	(TAG_CLOSE): New constants. Describes the token pattern for
+	a closing tag.
+
+2006-11-14  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/html/ImageView.java
+	(getPreferredSpan): Use CSS length values.
+	* javax/swing/text/html/TableView.java
+	(CellView.calculateMajorAxisRequirements): Overridden to
+	set the maximum reqs to maximum.
+	(RowView.getMaximumSize): For the X_AXIS, set the maximum
+	span to maximum.
+	(RowView.getMinimumSpan): Overridden. For the X_AXIS, return
+	the total column reqs.
+	(RowView.getPreferredSpan): Overridden. For the X_AXIS, return
+	the total column reqs.
+	* gnu/javax/swing/text/html/css/CSSColor.java
+	(convertValue): Catch NumberFormatExceptions for more robustness.
+	* gnu/javax/swing/text/html/css/FontSize.java
+	(mapPixels): Actually map px values. Catch NFE for more robustness.
+
+2006-11-14  Roman Kennke  <kennke@aicas.com>
+
+	* gnu/java/awt/font/autofit/AxisHints.java,
+	* gnu/java/awt/font/autofit/Constants.java,
+	* gnu/java/awt/font/autofit/GlyphHints.java,
+	* nu/java/awt/font/autofit/Latin.java,
+	* nu/java/awt/font/autofit/LatinAxis.java,
+	* gnu/java/awt/font/autofit/LatinMetrics.java,
+	* gnu/java/awt/font/autofit/Scaler.java,
+	* gnu/java/awt/font/autofit/Script.java,
+	* gnu/java/awt/font/autofit/ScriptMetrics.java,
+	* gnu/java/awt/font/autofit/Segment.java,
+	* gnu/java/awt/font/autofit/Width.java:
+	New classes. This is some skeleton stuff for the FreeType-alike
+	auto-gridfitter.
+	* gnu/java/awt/font/opentype/CharGlyphMap.java: Made class public.
+	* gnu/java/awt/font/opentype/OpenTypeFont.java
+	(unitsPerEm): Made field public.
+	(getRawGlyphOutline): New method. Fetches the raw outline.
+	* gnu/java/awt/font/opentype/Scaler.java
+	(getRawGlyphOutline): New method. Fetches the raw outline.
+	* gnu/java/awt/font/opentype/truetype/GlyphLoader.java
+	(loadGlyph): New method. This is used to load raw outlines.
+	* gnu/java/awt/font/opentype/truetype/TrueTypeScaler.java
+	(getRawOutline): New method. Fetches the raw outline.
+	* gnu/java/awt/font/opentype/truetype/Zone.java:
+	Made class public.
+
+2006-11-14  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/RepaintManager.java
+	(RepaintManager): Fetch the default state for the double buffering
+	from a system property gnu.swing.doublebuffering.
+
+2006-11-14  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/basic/BasicLabelUI.java
+	(cachedInsets): New field.
+	(getFontMetrics): New helper method. Fetches the font metrics
+	from the component or the toolkit.
+	(getPreferredSize): Use getFontMetrics() helper method for
+	fetching the font metrics.
+	(paint): Use getFontMetrics() helper method for
+	fetching the font metrics. Only paint if icon or text
+	are != null. Use cached insets.
+	(paintDisabledText): Don't store/restore color object. The
+	JComponent painting mechanism takes care of this by calling
+	create().
+	(paintEnabledText): Don't store/restore color object. The
+	JComponent painting mechanism takes care of this by calling
+	create().
+
+2006-11-14  Roman Kennke  <kennke@aicas.com>
+
+	* gnu/java/awt/peer/GLightweightPeer.java
+	(handleEvent): Try to do something reasonable and trigger painting
+	for the lightweight component.
+	(getFontMetrics): Fetch and return a font metrics object from
+	the Toolkit.
+
+2006-11-13  Andreas Tobler  <a.tobler@schweiz.org>
+
+	* AUTHORS: Add myself.
+
+2006-11-13  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* AUTHORS: Add Tania Bento, Thomas Fitzsimmons, Francis Kung and
+	Dalibor Topic.  Re-order 'K' section.  Remove trailing space from
+	Roman Kennke's entry.
+
+2006-11-13  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/image/IndexColorModel.java
+	(createCompatibleSampleModel): Implemented missing method.
+
+2006-11-11  Andreas Tobler  <a.tobler@schweiz.org>
+
+	* gnu/java/awt/peer/gtk/GtkImageConsumer.java (setPixels): Handle data
+	from big endian systems correctly.
+
+2006-11-11  Roman Kennke  <kennke@aicas.com>
+
+	* gnu/javax/swing/text/html/css/CSSColor.java
+	(isValidColor): New helper method. Checks strings if they
+	form a valid color value.
+	* gnu/javax/swing/text/html/css/Length.java
+	(Length): Catch number format exceptions.
+	* javax/swing/text/html/CSS.java
+	(addInternal): New method. Checks for shorthand CSS attributes
+	and parses them.
+	(parseBackgroundShorthand): New method. Parses the background
+	shorthand attribute.
+	* javax/swing/text/html/HTMLDocument.java
+	(HTMLReader.LinkAction): Made class a subclass of HiddenAction.
+	(HTMLReader.LinkAction.start): Implemented to load the linked
+	stylesheet.
+	(HTMLReader.LinkAction.end): Removed. This is not needed.
+	* javax/swing/text/html/StyleSheet.java
+	(CSSStyleSheetParserCallback.declaration): Push declaration
+	through CSS.addInternal() to parse shorthand attributes.
+	(addCSSAttribute): Push declaration through CSS.addInternal()
+	to parse shorthand attributes.
+	(importStyleSheet): Implemented. This adds a stylesheet from
+	an URL.
+	* javax/swing/text/html/TableView.java
+	(calculateColumnRequirements): Increase column index for
+	non CellView children to avoid endless loop.
+	* javax/swing/text/CompositeView.java
+	(setParent): Comparen with numChildren not with real arraylength.
+
+2006-11-11  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/beans/beancontext/BeanContextSupport.java
+	(getChildBeanContextChild): Implemented.
+
+2006-11-10  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/View.java
+	(updateLayout): Only repaint when needed.
+
+2006-11-10  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/util/Collections.java
+	(sort(List)): Minor API doc addition,
+	(sort(List, Comparator)): Likewise.
+
+2006-11-10  David Fu  <fchoong@netbeans.jp>
+
+	* javax/swing/text/html/HTMLWriter.java
+	(traverse): Removed Classpath specific handling of implied
+	tags.
+	(traverseHtmlFragment): Removed Classpath specific handling of
+	implied	tags.
+
+2006-11-10  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/ParagraphView.java
+	(Row.getMaximumSize): Removed. This method is not necessary.
+	* javax/swing/text/html/TableView.java
+	(CellView): Moved attribute init to setPropertiesFromAttributes().
+	(setPropertiesFromAttributes): Fetch attributes here.
+	(RowView.RowView): Documented.
+	(RowView.getMaximumSpan): Overridden to restrict the max span
+	in the Y direction.
+	(RowView.layoutMajorAxis): Correctly layout the spans.
+	(columnWidths): New field. Stores the width attributes of
+	the columns.
+	(calculateColumnRequirements): Added support for relative
+	 (== percent) width attributes.
+	(calculateMajorAxisRequirements): Removed.
+	(calculateMinorAxisRequirements): Removed unnecessary code.
+	(getMaximumSpan): Overridden to restrict the table's width.
+	(layoutColumns): Documented. Implement more clever table layout,
+	i.e. for relative columns etc.
+	(layoutMinorAxis): Don't mark rows invalid.
+	(updateGrid): Added docs. Initialize column widths.
+
+2006-11-09  Roman Kennke  <kennke@aicas.com>
+
+	* gnu/java/awt/peer/headless/HeadlessGraphicsEnvironment,
+	* gnu/java/awt/peer/headless/HeadlessToolkit: New classes.
+	Implement basic headless toolkit.
+	* java/awt/Toolkit.java
+	(getDefaultToolkit): Check headless property and create
+	headless toolkit when true.
+
+2006-11-09  Ingo Proetel  <proetel@aicas.com>
+2006-11-09  Roman Kennke  <kennke@aicas.com>
+
+	* gnu/java/awt/peer/swing/SwingButtonPeer.java
+	(SwingButton.button): New field.
+	(SwingButton.SwingButton): Added constructor.
+	(SwingButton.isShowing): Access button field instead of
+	the surrounding class.
+	(SwingButton.getParent): Access button field instead of
+	the surrounding class.
+	(SwingButtonPeer): Call new SwingButton constructor.
+	* gnu/java/awt/peer/swing/SwingComponent.java:
+	Several documentation updates.
+	* gnu/java/awt/peer/swing/SwingComponentPeer.java
+	(currentPaintEvents): New field.
+	(peerFont): New field.
+	(SwingComponentPeer): Initialize currentPaintEvents fields.
+	(coalescePaintEvents): Implemented.
+	(dispose): Unregister peer from heavyweight list of its container.
+	(getGraphics): Fetch graphics from parent component.
+	(handleEvent): Discard paint event if its coalesced.
+	(init): Register component with its container for proper painting.
+	(paint): Call peerPaint().
+	(peerPaint): Added argument that indicates if we should update.
+	Call paint or update on the actual AWT component.
+	(peerPaintComponent): New method. Paints the peer (Swing) component.
+	(setFont): Set peerFont field.
+	* gnu/java/awt/peer/swing/SwingContainerPeer.java
+	(backbuffer): New field.
+	(focusOwner): New field.
+	(heavyweightDescendents): New field.
+	(SwingContainerPeer): Take Container as argument. Don't call init
+	yet.
+	(addHeavyweightDescendent): New method.
+	(getFocusOwner): New helper method.
+	(getInsets): Delegate to insets().
+	(handleKeyEvent): Dispatch event to focus owner.
+	(handleMouseEvent): Dispatch to child component.
+	(isDoubleBuffering): New helper method.
+	(peerPaint): Overridden to implement container painting with
+	double buffering.
+	(peerPaintChildren): New method. Paints the descendents of this
+	container.
+	(removeHeavyweightDescendent): New helper method.	
+	* gnu/java/awt/peer/swing/SwingFramePeer.java
+	(peerPaint): Removed.
+	(peerPaintComponent): Overridden to paint the menu bar.
+	* gnu/java/awt/peer/swing/SwingLabelPeer.java
+	(SwingLabel.label): New field.
+	(SwingLabel.SwingLabel): Added constructor with Label argument.
+	(SwingLabel.getGraphics): Implemented to fetch the graphics from
+	the actual AWT component.
+	(SwingLabel.getParent): Implemented to fetch the parent from
+	the AWT component.
+	(SwingLabel.isShowing): Access the label field.
+	(SwingLabelPeer): Set alignment from label.
+	* gnu/java/awt/peer/swing/SwingListPeer.java: New class.
+	* gnu/java/awt/peer/swing/SwingMenuBarPeer.java: Documentation
+	fixlet.
+	* gnu/java/awt/peer/swing/SwingPanelPeer.java:
+	Don't be a lighweight peer.
+	(SwingPanelPeer): Call init.
+	* gnu/java/awt/peer/swing/SwingTextAreaPeer.java: New class.
+	* gnu/java/awt/peer/swing/SwingTextFieldPeer.java
+	(SwingTextField.textField): New field.
+	(SwingTextField.SwingTextField): New constructor.
+	(SwingTextField.isShowing): Access field not enclosing class.
+	(SwingTextField.getGraphics): New method.
+	(SwingTextField.getParent): New method.
+	(SwingTextFieldPeer): Call new constructor.
+	(select): Renamed arguments.
+	* gnu/java/awt/peer/swing/SwingWindowPeer.java
+	(SwingWindowPeer): Call init.
+
+2006-11-09  Tania Bento  <tbento@redhat.com>
+
+	* javax/swing/JLabel.java
+	(JLabel(Icon)): Changed documentation; Changed text to null.
+	(JLabel(Icon,int)): Likewise.
+	(JLabel(text)): Changed documenation.
+	(JLabel(text,int)): Likewise.
+	(JLabel(text,Icon,int)): Changed documentation; Throw 
+	IllegalArgumentException if int is not one of LEFT, RIGHT,
+	CENTER, LEADING or TRAILING.
+
+2006-11-09  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/beans/beancontext/BeanContextSupport.java
+	(BeanContextSupport): Use correct dtime default,
+	(BeanContextSupport(BeanContext)): Likewise,
+	(BeanContextSupport(BeanContext, Locale)): Likewise, plus renamed
+	locale argument,
+	(BeanContextSupport(BeanContext, Locale, boolean)): Likewise,
+	(BeanContextSupport(BeanContext, Locale, boolean, boolean)): Likewise.
+
+2006-11-09  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/beans/beancontext/BeanContextSupport.java
+	(getBeanContextPeer): Implemented.
+
+2006-11-09  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/html/BlockView.java
+	(cssHeight): Removed.
+	(cssWidth): Removed.
+	(cssSpans): New field. Replaces the two fields above.
+	(BlockView): Allocate cssSpans array.
+	(layoutMinorAxis): Fetch and use child span, not this view's span.
+	(setCSSSpan): Adjusted to use cssSpans array.
+	(setPropertiesFromAttributes): Adjusted to use cssSpans array.
+
+2006-11-09  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/html/InlineView.java
+	(nowrap): New field.
+	(getBreakWeight): Add support for nowrap.
+	(setPropertiesFromAttributes): Fetch the nowrap setting.
+
+2006-11-09  Roman Kennke  <kennke@aicas.com>
+
+	* gnu/javax/swing/text/html/css/CSSParser.java
+	(parseRuleset): Use new Selector class.
+	(parseValue): Parse multiple anys, not only one.
+	(main): Allow stylesheet be specified on the command line.
+	Use new Selector class.
+	* gnu/javax/swing/text/html/css/CSSParserCallback.java
+	(startStatement): Use Selector class.
+	* gnu/javax/swing/text/html/css/CSSScanner.java
+	(readName): Actually read a character in the loop to avoid
+	endless loop.
+	* gnu/javax/swing/text/html/css/Length.java
+	(getValue): Only multiply when we have a percentage value.
+	* gnu/javax/swing/text/html/css/Selector.java:
+	New class. Provides handling of CSS selectors.
+	* javax/swing/text/html/StyleSheet.java
+	(CSSStyle.PREC_AUTHOR_IMPORTANT): New constant field.
+	(CSSStyle.PREC_AUTHOR_NORMAL): New constant field.
+	(CSSStyle.PREC_NORM): New constant field.
+	(CSSStyle.PREC_UA): New constant field.
+	(CSSStyle.PREC_USER_IMPORTANT): New constant field.
+	(CSSStyle.precedence): New field.
+	(CSSStyle.priority): Removed.
+	(CSSStyle.selector): New field.
+	(CSSStyle.CSSStyle(int,Selector)): Initialize with Selector
+	and precendence.
+	(CSSStyle.compareTo): Adjusted to use the precedence and
+	specificity of the selector.
+	(CSSStyleSheetParserCallback.precedence): New field.
+	(CSSStyleSheetParserCallback.selector): Removed.
+	(CSSStyleSheetParserCallback.style): New field.
+	(CSSStyleSheetParserCallback.CSSStyleSheetParserCallback):
+	Initialize with precedence.
+	(CSSStyleSheetParserCallback.declaration): Don't look up
+	existing rule, simply create new one.
+	(CSSStyleSheetParserCallback.endStatement): Append style
+	to stylesheet.
+	(CSSStyleSheetParserCallback.startStatement): Use new Selector
+	class.
+	(css): Changed to be ArrayList.
+	(addRule): Create parser with author-normal precendence.
+	(getRule): Fixed implementation.
+	(loadRules): Create parser with UA precendence.
+	(resolveStyle): Use Selector class for resolving and matching
+	stylesheet rules.
+	(translateHTMLToCSS): Added mappings for a couple of HTML
+	attributes.
+
+2006-11-09  David Gilbert  <david.gilbert@object-refinery.com>
+
+	Fixes bug #29770
+	* java/beans/SimpleBeanInfo.java
+	(loadImage): Check for nulls.
+
+2006-11-09  Robert Schuster  <robertschuster@fsfe.org>
+
+	* native/jni/java-nio/gnu_java_nio_VMChannel.c:
+	(getpeername): Added 16 byte offset to memcpy operation.
+
+2006-11-09  Robert Schuster  <robertschuster@fsfe.org>
+
+	* native/jni/java-nio/gnu_java_nio_VMChannel.c:
+	(getsockname): Added 16 byte offset to memcpy operation.
+
+2006-11-08  Mark Wielaard  <mark@klomp.org>
+
+	Fixes bug #29754
+	* java/io/OutputStreamWriter.java
+	(OutputStreamWriter(OutputStream,Charset)): Set encodingName.
+	(OutputStreamWriter(OutputStream,CharsetEncoder)): Likewise.
+
+2006-11-08  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/html/HTMLEditorKit.java
+	(getParser): Use plain HTML_401F DTD.
+	* javax/swing/text/html/HTMLDocument.java
+	(HTMLReader.print): Removed method and all calls to it.
+	(HTMLReader.printBuffer): Removed method and all calls to it.
+	(HTMLReader.inImpliedParagraph): New field.
+	(HTMLReader.inParagraph): New field.
+	(HTMLReader.addContent): Create implied p-tag if necessary.
+	(HTMLReader.addSpecialElement): Create implied p-tag if necessary.
+	(HTMLReader.blockClose): Close implied p-tag if necessary.
+	(HTMLReader.blockOpen): Close implied p-tag if necessary.
+	* gnu/javax/swing/text/html/parser/HTML_401Swing.java: Removed.
+
+2006-11-08  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/html/HTMLEditorKit.java
+	(HTMLFactory.create): Removed mapping for TD tag. This
+	is done in TableView.
+	* javax/swing/text/html/TableView.java:
+	Implemented from scratch.
+
+2006-11-07  Roman Kennke  <kennke@aicas.com>
+
+	* gnu/javax/swing/text/html/parser/support/Parser.java
+	(_handleText): Check if text content is actually allowed before
+	passing empty text fragments on to the parser callbacks.
+
+2006-11-07  Mark Wielaard  <mark@klomp.org>
+
+	* gnu/java/net/protocol/jar/Handler.java (parseURL): Flatten jar
+	path.
+	(flat): New method.
+
+2006-11-07  Tania Bento  <tbento@redhat.com>
+
+	* java/awt/FlowLayout.java
+	(getSize): If parent does not have a component, then a 
+	different formula is used to calcuate the width.
+
+2006-11-07  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/html/HTMLEditorKit.java
+	(HTMLFactory.create): Include ListView.
+	* javax/swing/text/html/ListView.java
+	(paint): Removed comment.
+	* javax/swing/text/html/StyleSheet.java
+	(CSSStyle.priority): New field.
+	(CSSStyle.CSSStyle(int)): New constructor with priority.
+	(CSSStyle.compareTo): New method. Used for sorting the styles.
+	(CSSStyleSheetParserCallback.declaration): Store the style
+	with the complete selector.
+	(ListPainter.attributes): Renamed as field.
+	(ListPainter.styleSheet): New field.
+	(ListPainter.type): New field.
+	(ListPainter.ListPainter): Pass StyleSheet to constructor.
+	(ListPainter.paint): Provide simplistic implementation.
+	(getListPainter): Pass StyleSheet to constructor.
+	(resolveStyle): Fixed CSS style resolving.
+
+2006-11-07  Roman Kennke  <kennke@aicas.com>
+
+	* gnu/javax/swing/text/html/css/BorderWidth.java:
+	New class. Handles CSS border width values.
+	* gnu/javax/swing/text/html/css/Length.java
+	(floatValue): Made protected so that BorderWidth can access it.
+	* javax/swing/text/html/CSS.java
+	(Attribute.BORDER_BOTTOM_COLOR): New static field.
+	(Attribute.BORDER_BOTTOM_STYLE): New static field.
+	(Attribute.BORDER_LEFT_COLOR): New static field.
+	(Attribute.BORDER_LEFT_STYLE): New static field.
+	(Attribute.BORDER_RIGHT_COLOR): New static field.
+	(Attribute.BORDER_RIGHT_STYLE): New static field.
+	(Attribute.BORDER_TOP_COLOR): New static field.
+	(Attribute.BORDER_TOP_STYLE): New static field.
+	(getValue): Added some mappings for the border color and
+	border width values.
+	* javax/swing/text/html/CSSBorder.java: New class. Implements
+	CSS borders.
+	* javax/swing/text/html/StyleSheet.java
+	(BoxPainter.background): New field.
+	(BoxPainter.border): New field.
+	(BoxPainter.bottomInset): Documented.
+	(BoxPainter.leftInset): Documented.
+	(BoxPainter.rightInset): Documented.
+	(BoxPainter.topInset): Documented.
+	(BoxPainter.BoxPainter): Added support for borders and background.
+	(BoxPainter.getInset): Add border insets.
+	(BoxPainter.paint): Implemented. Paints the background and the
+	CSS border.
+	(addRule): Be less picky about parse and IO exceptions.
+	(getBoxPainter): Adjust to new BoxPainter constructor.
+
+2006-11-07  Andreas  <a.tobler@schweiz.org>
+
+	* examples/Makefile.am: Add rule to install the *.html files we use
+	in the Swing Demo.
+
 2006-11-06  Francis Kung  <fkung@redhat.com>
 
 	* gnu/java/awt/peer/gtk/ComponentGraphics.java

@@ -23850,6 +23850,7 @@ fi
 
 
 
+
 for ac_header in unistd.h sys/types.h sys/config.h sys/ioctl.h \
 		    asm/ioctls.h \
 		    inttypes.h stdint.h utime.h sys/utime.h sys/filio.h \
@@ -23859,7 +23860,8 @@ for ac_header in unistd.h sys/types.h sys/config.h sys/ioctl.h \
                     fcntl.h \
 		    sys/mman.h \
 		    magic.h \
-                    sys/event.h sys/epoll.h
+                    sys/event.h sys/epoll.h \
+		    ifaddrs.h
 do
 as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
 if { as_var=$as_ac_Header; eval "test \"\${$as_var+set}\" = set"; }; then

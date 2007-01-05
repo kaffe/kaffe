@@ -40,6 +40,8 @@ package gnu.javax.swing.text.html.css;
 
 import java.awt.Color;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Converts CSS color values into AWT Color values.
@@ -108,9 +110,16 @@ public class CSSColor
       val1 = (String) COLOR_MAP.get(val1);
     if (val1 != null)
       {
-        String hexVal = val1.substring(1);
-        int rgb = Integer.parseInt(hexVal, 16);
-        color = new Color(rgb);
+        String hexVal = val1.substring(1).trim();
+        try
+          {
+            int rgb = Integer.parseInt(hexVal, 16);
+            color = new Color(rgb);
+          }
+        catch (NumberFormatException ex)
+          {
+            color = Color.BLACK;
+          }
       }
     else
       color = null;
@@ -130,5 +139,32 @@ public class CSSColor
   public String toString()
   {
     return value;
+  }
+
+  /**
+   * Returns <code>true</code> if the specified value is a valid color value,
+   * <code>false</code> otherwise.
+   *
+   * @param val the value to check
+   *
+   * @return <code>true</code> if the specified value is a valid color value,
+   *         <code>false</code> otherwise
+   */
+  public static boolean isValidColor(String val)
+  {
+    boolean ret = false;
+    if (val.charAt(0) == '#')
+      ret = true;
+    else
+      {
+        Set colors = COLOR_MAP.keySet();
+        for (Iterator i = colors.iterator(); i.hasNext() && ret == false;)
+          {
+            String color = (String) i.next();
+            if (color.equalsIgnoreCase(val))
+              ret = true;
+          }
+      }
+    return ret;
   }
 }

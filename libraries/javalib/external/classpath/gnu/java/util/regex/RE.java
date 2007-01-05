@@ -130,7 +130,11 @@ public class RE extends REToken {
   private static final String VERSION = "1.1.5-dev";
 
   // The localized strings are kept in a separate file
-  private static ResourceBundle messages = PropertyResourceBundle.getBundle("gnu/java/util/regex/MessagesBundle", Locale.getDefault());
+  // Used by getLocalizedMessage().
+  private static ResourceBundle messages;
+
+  // Name of the bundle that contains the localized messages.
+  private static final String bundle = "gnu/java/util/regex/MessagesBundle";
 
   // These are, respectively, the first and last tokens in our linked list
   // If there is only one token, firstToken == lastToken
@@ -266,6 +270,8 @@ public class RE extends REToken {
 
   // Retrieves a message from the ResourceBundle
   static final String getLocalizedMessage(String key) {
+    if (messages == null)
+      messages = PropertyResourceBundle.getBundle(bundle, Locale.getDefault());
     return messages.getString(key);
   }
 
