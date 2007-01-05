@@ -37,7 +37,7 @@ exception statement from your version. */
 
 package gnu.classpath.tools.appletviewer;
 
-import gnu.classpath.tools.getopt.ClasspathToolParser;
+import gnu.classpath.tools.common.ClasspathToolParser;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.OptionGroup;

@@ -81,7 +81,7 @@ public class BasicRadioButtonUI extends BasicToggleButtonUI
    */
   public BasicRadioButtonUI()
   {
-    icon = getDefaultIcon();
+    // nothing to do
   }
 
   /**
@@ -93,6 +93,7 @@ public class BasicRadioButtonUI extends BasicToggleButtonUI
   protected void installDefaults(AbstractButton b)
   {
     super.installDefaults(b);
+    icon = UIManager.getIcon(getPropertyPrefix() + "icon");
   }
 
   /**
@@ -116,7 +117,7 @@ public class BasicRadioButtonUI extends BasicToggleButtonUI
    */
   public Icon getDefaultIcon()
   {
-    return UIManager.getIcon(getPropertyPrefix() + "icon");
+    return icon;
   }
 
   /**

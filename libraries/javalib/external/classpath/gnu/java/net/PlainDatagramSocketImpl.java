@@ -41,6 +41,7 @@ package gnu.java.net;
 import gnu.java.nio.VMChannel;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.lang.reflect.Field;
 import java.net.DatagramPacket;
 import java.net.DatagramSocketImpl;
@@ -49,6 +50,7 @@ import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.SocketAddress;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
 
 /**
@@ -259,7 +261,18 @@ public final class PlainDatagramSocketImpl extends DatagramSocketImpl
           throw new NullPointerException();
         if (port <= 0)
           throw new SocketException("invalid port " + port);
-        channel.send(buf, new InetSocketAddress(remote, port));
+        while (true)
+          {
+            try
+              {
+                channel.send(buf, new InetSocketAddress(remote, port));
+                break;
+              }
+            catch (InterruptedIOException ioe)
+              {
+                // Ignore; interrupted system call.
+              }
+          }
       }
   }
 
@@ -278,7 +291,23 @@ public final class PlainDatagramSocketImpl extends DatagramSocketImpl
         ByteBuffer buf = ByteBuffer.wrap(packet.getData(),
                                          packet.getOffset(),
                                          packet.getLength());
-        SocketAddress addr = channel.receive(buf);
+        SocketAddress addr = null;
+        while (true)
+          {
+            try
+              {
+                addr = channel.receive(buf);
+                break;
+              }
+            catch (SocketTimeoutException ste)
+              {
+                throw ste;
+              }
+            catch (InterruptedIOException iioe)
+              {
+                // Ignore. Loop.
+              }
+          }
         if (addr != null)
           packet.setSocketAddress(addr);
         packet.setLength(buf.position() - packet.getOffset());

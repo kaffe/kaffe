@@ -46,24 +46,35 @@ import java.io.PrintStream;
 public class CniIncludePrinter
     extends Printer
 {
-
-  protected CniIncludePrinter(Main classpath)
+  protected CniIncludePrinter(Main classpath, File outFile, boolean isDir,
+                              boolean force)
   {
-    super(classpath);
+    super(classpath, outFile, isDir, force);
   }
 
-  public void printClass(File outputDir, ClassWrapper klass) throws IOException
+  protected void writePreambleImpl(PrintStream ps)
+  {
+    // does nothing
+  }
+
+  protected PrintStream getPrintStreamImpl(FileOutputStream fos,
+                                           ClassWrapper klass)
+  {
+    return new PrintStream(fos);
+  }
+
+  public void printClass(ClassWrapper klass) throws IOException
   {
     // Never write Object or Class. This is a hack, maybe
     // the user would like to see what they look like...
     if (klass.name.equals("java/lang/Object")
         || klass.name.equals("java/lang/Class"))
       return;
-    File klassFile = new File(outputDir, klass.name + ".h");
-    klassFile.getParentFile().mkdirs();
-    PrintStream ps = new PrintStream(new FileOutputStream(klassFile));
+    PrintStream ps = getPrintStream(klass.name + ".h", klass);
+    if (ps == null)
+      return;
+    ps.println();
     klass.printFully(ps);
     ps.close();
   }
-
 }

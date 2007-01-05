@@ -44,6 +44,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.Rectangle;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.AbstractButton;
@@ -81,6 +82,11 @@ public class BasicButtonUI extends ButtonUI
    * BasicGraphicsUtils.getPreferredButtonSize().
    */
   static Rectangle textR = new Rectangle();
+
+  /**
+   * Cached Insets instance, used in paint().
+   */
+  static Insets cachedInsets;
 
   /**
    * The shared button UI.
@@ -257,6 +263,10 @@ public class BasicButtonUI extends ButtonUI
         b.addMouseListener(listener);
         b.addMouseMotionListener(listener);
       }
+    // Fire synthetic property change event to let the listener update
+    // the TextLayout cache.
+    listener.propertyChange(new PropertyChangeEvent(b, "font", null,
+                                                    b.getFont()));
   }
 
   /**
@@ -329,6 +339,7 @@ public class BasicButtonUI extends ButtonUI
         uninstallListeners(b);
         uninstallDefaults(b);
         BasicHTML.updateRenderer(b, "");
+        b.putClientProperty(BasicGraphicsUtils.CACHED_TEXT_LAYOUT, null);
       }
   }
 
@@ -433,7 +444,7 @@ public class BasicButtonUI extends ButtonUI
   {
     AbstractButton b = (AbstractButton) c;
 
-    Insets i = c.getInsets();
+    Insets i = c.getInsets(cachedInsets);
     viewR.x = i.left;
     viewR.y = i.top;
     viewR.width = c.getWidth() - i.left - i.right;
@@ -558,22 +569,7 @@ public class BasicButtonUI extends ButtonUI
   protected void paintText(Graphics g, JComponent c, Rectangle textRect,
                            String text) 
   {	
-    paintText(g, (AbstractButton) c, textRect, text);
-  }
-
-  /**
-   * Paints the "text" property of an {@link AbstractButton}.
-   *
-   * @param g The graphics context to paint with
-   * @param b The button to paint the state of
-   * @param textRect The area in which to paint the text
-   * @param text The text to paint
-   *
-   * @since 1.4
-   */
-  protected void paintText(Graphics g, AbstractButton b, Rectangle textRect,
-			   String text)
-  {
+    AbstractButton b = (AbstractButton) c;
     Font f = b.getFont();
     g.setFont(f);
     FontMetrics fm = g.getFontMetrics(f);
@@ -593,6 +589,22 @@ public class BasicButtonUI extends ButtonUI
         BasicGraphicsUtils.drawString(b, g, text, -1, textRect.x,
                                       textRect.y + fm.getAscent());
       }
+  }
+
+  /**
+   * Paints the "text" property of an {@link AbstractButton}.
+   *
+   * @param g The graphics context to paint with
+   * @param b The button to paint the state of
+   * @param textRect The area in which to paint the text
+   * @param text The text to paint
+   *
+   * @since 1.4
+   */
+  protected void paintText(Graphics g, AbstractButton b, Rectangle textRect,
+			   String text)
+  {
+    paintText(g, (JComponent) b, textRect, text);
   } 
 
   /**

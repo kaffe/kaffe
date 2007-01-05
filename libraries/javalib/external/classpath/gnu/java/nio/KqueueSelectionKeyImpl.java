@@ -44,19 +44,18 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
+import java.nio.channels.spi.AbstractSelectionKey;
 
 /**
  * @author Casey Marshall (csm@gnu.org)
  */
-public class KqueueSelectionKeyImpl extends SelectionKey
+public class KqueueSelectionKeyImpl extends AbstractSelectionKey
 {
   int interestOps;
   int readyOps;
-  ByteBuffer nstate;
-  boolean valid;
+  int activeOps = 0;
   int key;
-  boolean readEverEnabled = false;
-  boolean writeEverEnabled = false;
+  int fd;
 
   /** The selector we were created for. */
   private final KqueueSelectorImpl selector;
@@ -74,17 +73,6 @@ public class KqueueSelectionKeyImpl extends SelectionKey
     natChannel = (VMChannelOwner) channel;
     interestOps = 0;
     readyOps = 0;
-    valid = true;
-  }
-
-  /* (non-Javadoc)
-   * @see java.nio.channels.SelectionKey#cancel()
-   */
-  //@Override
-  public void cancel()
-  {
-    selector.doCancel(this);
-    valid = false;
   }
 
   /* (non-Javadoc)
@@ -112,30 +100,12 @@ public class KqueueSelectionKeyImpl extends SelectionKey
   public SelectionKey interestOps(int ops)
   {
     if (!isValid())
-      throw new IllegalStateException();
+      throw new IllegalStateException("key is invalid");
     if ((ops & ~channel.validOps()) != 0)
-      throw new IllegalArgumentException();
-    this.interestOps = ops;
-    try
-      {
-        selector.updateOps(this,
-                           natChannel.getVMChannel().getState().getNativeFD(),
-                           false);
-      }
-    catch (IOException ioe)
-      {
-        throw new IllegalStateException("channel is invalid");
-      }
+      throw new IllegalArgumentException("channel does not support all operations");
+    
+    selector.setInterestOps(this, ops);
     return this;
-  }
-
-  /* (non-Javadoc)
-   * @see java.nio.channels.SelectionKey#isValid()
-   */
-  //@Override
-  public boolean isValid()
-  {
-    return valid && selector.isOpen();
   }
 
   /* (non-Javadoc)
@@ -159,8 +129,8 @@ public class KqueueSelectionKeyImpl extends SelectionKey
   public String toString()
   {
     if (!isValid())
-      return super.toString() + " [ <<invalid>> ]";
-    return super.toString() + " [ interest ops: {"
+      return super.toString() + " [ fd: " + fd + " <<invalid>> ]";
+    return super.toString() + " [ fd: " + fd + " interest ops: {"
       + ((interestOps & OP_ACCEPT) != 0 ? " OP_ACCEPT" : "")
       + ((interestOps & OP_CONNECT) != 0 ? " OP_CONNECT" : "")
       + ((interestOps & OP_READ) != 0 ? " OP_READ" : "")
@@ -171,5 +141,49 @@ public class KqueueSelectionKeyImpl extends SelectionKey
       + ((readyOps & OP_READ) != 0 ? " OP_READ" : "")
       + ((readyOps & OP_WRITE) != 0 ? " OP_WRITE" : "")
       + " } ]";
+  }
+  
+  public int hashCode()
+  {
+    return fd;
+  }
+  
+  public boolean equals(Object o)
+  {
+    if (!(o instanceof KqueueSelectionKeyImpl))
+      return false;
+    KqueueSelectionKeyImpl that = (KqueueSelectionKeyImpl) o;
+    return that.fd == this.fd && that.channel.equals(this.channel);
+  }
+  
+  
+  boolean isReadActive()
+  {
+    return (activeOps & (OP_READ | OP_ACCEPT)) != 0;
+  }
+
+  boolean isReadInterested()
+  {
+    return (interestOps & (OP_READ | OP_ACCEPT)) != 0;
+  }
+  
+  boolean isWriteActive()
+  {
+    return (activeOps & (OP_WRITE | OP_CONNECT)) != 0;
+  }
+  
+  boolean isWriteInterested()
+  {
+    return (interestOps & (OP_WRITE | OP_CONNECT)) != 0;
+  }
+  
+  boolean needCommitRead()
+  {
+    return isReadActive() == (!isReadInterested());
+  }
+
+  boolean needCommitWrite()
+  {
+    return isWriteActive() == (!isWriteInterested());
   }
 }

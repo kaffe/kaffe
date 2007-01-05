@@ -2635,6 +2635,7 @@ public class JTable
     setModel(dm == null ? createDefaultDataModel() : dm);
     setAutoCreateColumnsFromModel(autoCreate);
     initializeLocalVars();
+    
     // The following four lines properly set the lead selection indices.
     // After this, the UI will handle the lead selection indices.
     // FIXME: this should probably not be necessary, if the UI is installed
@@ -2642,11 +2643,13 @@ public class JTable
     // own, but certain variables need to be set before the UI can be installed
     // so we must get the correct order for all the method calls in this
     // constructor.
-    selectionModel.setAnchorSelectionIndex(0);    
-    selectionModel.setLeadSelectionIndex(0);
-    columnModel.getSelectionModel().setAnchorSelectionIndex(0);
-    columnModel.getSelectionModel().setLeadSelectionIndex(0);
-    updateUI();
+    // These four lines are not needed.  A Mauve test that shows this is
+    // gnu.testlet.javax.swing.JTable.constructors(linesNotNeeded).
+    // selectionModel.setAnchorSelectionIndex(-1);
+    // selectionModel.setLeadSelectionIndex(-1);
+    // columnModel.getSelectionModel().setAnchorSelectionIndex(-1);
+    // columnModel.getSelectionModel().setLeadSelectionIndex(-1);
+    updateUI(); 
   }
   
   /**
@@ -2675,10 +2678,12 @@ public class JTable
     setRowHeight(16);
     this.rowMargin = 1;
     this.rowSelectionAllowed = true;
+    
     // this.accessibleContext = new AccessibleJTable();
     this.cellEditor = null;
+    
     // COMPAT: Both Sun and IBM have drag enabled
-    this.dragEnabled = true;
+    this.dragEnabled = false;
     this.preferredViewportSize = new Dimension(450,400);
     this.showHorizontalLines = true;
     this.showVerticalLines = true;
@@ -3267,7 +3272,7 @@ public class JTable
             cellRect.x += cMargin / 2;
             cellRect.width -= cMargin;
           }
-      }
+      } 
 
     return cellRect;
   }
@@ -3446,7 +3451,9 @@ public class JTable
    */
   public TableCellRenderer getCellRenderer(int row, int column)
   {
-    TableCellRenderer renderer = columnModel.getColumn(column).getCellRenderer();
+    TableCellRenderer renderer = null;
+    if (columnModel.getColumnCount() > 0)
+      renderer = columnModel.getColumn(column).getCellRenderer();
     if (renderer == null)
       {
         int mcolumn = convertColumnIndexToModel(column);
@@ -3563,7 +3570,7 @@ public class JTable
 
     return renderer.getTableCellRendererComponent(this,
                                                   dataModel.getValueAt(row, 
-						                       convertColumnIndexToModel(column)),
+                                                                       convertColumnIndexToModel(column)),
                                                   isSel,
                                                   hasFocus,
                                                   row, column);
@@ -4441,7 +4448,7 @@ public class JTable
   {
     TableColumn resizingColumn = null;
     
-    int ncols = getColumnCount();
+    int ncols = columnModel.getColumnCount();
     if (ncols < 1)
       return;
 
@@ -4450,7 +4457,7 @@ public class JTable
 
     if (tableHeader != null)
       resizingColumn = tableHeader.getResizingColumn();
-
+     
     for (int i = 0; i < ncols; ++i)
       {
         TableColumn col = columnModel.getColumn(i);
@@ -4459,7 +4466,7 @@ public class JTable
         if (resizingColumn == col)
           rCol = i;
       }
-
+ 
     int spill = getWidth() - prefSum;
 
     if (resizingColumn != null)
@@ -4525,9 +4532,11 @@ public class JTable
       }
     else
       {
-        TableColumn [] cols = new TableColumn[ncols];
+        TableColumn[] cols = new TableColumn[ncols];
+
         for (int i = 0; i < ncols; ++i)
           cols[i] = columnModel.getColumn(i);
+
         distributeSpill(cols, spill);
       }
     
@@ -4740,7 +4749,7 @@ public class JTable
     if ((index0 < 0 || index0 > (getRowCount()-1)
          || index1 < 0 || index1 > (getRowCount()-1)))
       throw new IllegalArgumentException("Row index out of range.");
-      	
+        
     getSelectionModel().addSelectionInterval(index0, index1);
   }
   

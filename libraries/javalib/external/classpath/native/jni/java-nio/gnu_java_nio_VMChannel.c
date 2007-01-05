@@ -1587,7 +1587,7 @@ Java_gnu_java_nio_VMChannel_lock (JNIEnv *env,
   fl.l_type   = (shared ? F_RDLCK : F_WRLCK);
   fl.l_whence = SEEK_SET;
 
-  if (cpnio_fcntl (fd, (wait ? F_SETLKW : F_SETLK), (int) &fl) == -1)
+  if (cpnio_fcntl (fd, (wait ? F_SETLKW : F_SETLK), (long) &fl) == -1)
     {
       if (errno != EAGAIN)
         JCL_ThrowException (env, IO_EXCEPTION, strerror (errno));
@@ -1620,7 +1620,7 @@ Java_gnu_java_nio_VMChannel_unlock (JNIEnv *env,
   fl.l_type   = F_UNLCK;
   fl.l_whence = SEEK_SET;
 
-  if (cpnio_fcntl (fd, F_SETLK, (int) &fl) == -1)
+  if (cpnio_fcntl (fd, F_SETLK, (long) &fl) == -1)
     {
       JCL_ThrowException (env, IO_EXCEPTION, strerror (errno));
     }

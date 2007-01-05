@@ -39,7 +39,6 @@ exception statement from your version. */
 package java.net;
 
 import gnu.java.net.PlainSocketImpl;
-import gnu.java.nio.VMChannel;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -1223,17 +1222,8 @@ public class Socket
    */
   public boolean isClosed()
   {
-    if (impl == null)
-      return true;
-    if (impl instanceof PlainSocketImpl)
-      {
-        VMChannel vmchannel = ((PlainSocketImpl) impl).getVMChannel();
-        if (vmchannel == null)
-          return false;  // Not created yet.
-        VMChannel.State state = vmchannel.getState();
-        return state.isClosed();
-      }
-    return false;
+    SocketChannel channel = getChannel();
+    return impl == null || (channel != null && ! channel.isOpen());
   }
 
   /**

@@ -887,7 +887,7 @@ public class JTabbedPane extends JComponent implements Serializable,
 
         if (model != null)
           {
-            if (changeListener != null)
+            if (changeListener == null)
               changeListener = createChangeListener();
             model.addChangeListener(changeListener);
           }
@@ -1054,7 +1054,10 @@ public class JTabbedPane extends JComponent implements Serializable,
       }
 
     if (getSelectedIndex() == -1)
-      setSelectedIndex(0);
+      {
+        setSelectedIndex(0);
+        fireStateChanged();
+      }
 
     revalidate();
     repaint();

@@ -908,7 +908,6 @@ public abstract class AbstractButton extends JComponent
     // hard-coded here and the 'Button.iconTextGap' setting in the 
     // UI defaults is ignored, at least by the MetalLookAndFeel
     iconTextGap = 4;
-    updateUI();
   }
 
   /**
@@ -969,6 +968,8 @@ public abstract class AbstractButton extends JComponent
 
     if (icon != null)
       default_icon = icon;
+    
+    updateUI();
  }
  
   /**

@@ -448,14 +448,28 @@ int cpio_closeDir (void *handle)
 }
 
 
-int cpio_readDir (void *handle, const char **filename)
+int cpio_readDir (void *handle, char *filename)
 {
+#ifdef HAVE_READDIR_R
+  struct dirent dent;
+#endif /* HAVE_READDIR_R */
   struct dirent *dBuf;
 
+#ifdef HAVE_READDIR_R
+  readdir_r ((DIR *) handle, &dent, &dBuf);
+#else
   dBuf = readdir((DIR *)handle);
-  if (dBuf == NULL)
-    return errno;
+#endif /* HAVE_READDIR_R */
 
-  *filename = dBuf->d_name;
+  if (dBuf == NULL)
+    {
+      /* Some OS's (OS X) return NULL on end-of-dir, but
+         don't set errno to anything. */
+      if (errno == 0)
+        return ENOENT; /* Whatever. */
+      return errno;
+    }
+
+  strncpy (filename, dBuf->d_name, FILENAME_MAX);
   return 0;
 }

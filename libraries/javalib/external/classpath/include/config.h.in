@@ -43,6 +43,9 @@
 /* Define to 1 if you have the <dssi.h> header file. */
 #undef HAVE_DSSI_H
 
+/* Define to 1 if you have the `epoll_create' function. */
+#undef HAVE_EPOLL_CREATE
+
 /* Define to 1 if you have the `execve' function. */
 #undef HAVE_EXECVE
 
@@ -181,6 +184,9 @@
 /* Define to 1 if you have the `read' function. */
 #undef HAVE_READ
 
+/* Define to 1 if you have the `readdir_r' function. */
+#undef HAVE_READDIR_R
+
 /* Define to 1 if you have the `readlink' function. */
 #undef HAVE_READLINK
 
@@ -237,6 +243,9 @@
 
 /* Define to 1 if you have the <sys/config.h> header file. */
 #undef HAVE_SYS_CONFIG_H
+
+/* Define to 1 if you have the <sys/epoll.h> header file. */
+#undef HAVE_SYS_EPOLL_H
 
 /* Define to 1 if you have the <sys/event.h> header file. */
 #undef HAVE_SYS_EVENT_H

@@ -175,14 +175,15 @@ public final class SocketChannelImpl extends SocketChannel
     connectionPending = !connected;
     return connected;
   }
-    
-  public boolean finishConnect ()
+
+  public boolean finishConnect()
     throws IOException
   {
     if (!isOpen())
       throw new ClosedChannelException();
-    
-    if (isConnected())
+
+    InetSocketAddress remote = channel.getPeerAddress();
+    if (remote != null)
       {
         connectionPending = false;
         return true;
@@ -196,6 +197,10 @@ public final class SocketChannelImpl extends SocketChannel
 
   public boolean isConnected()
   {
+    // Wait until finishConnect is called before transitioning to
+    // connected.
+    if (connectionPending)
+      return false;
     try
       {
         InetSocketAddress remote = channel.getPeerAddress();

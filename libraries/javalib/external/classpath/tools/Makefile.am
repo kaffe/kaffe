@@ -23,12 +23,14 @@ endif
 
 if USE_ASM
 javah = gjavah
+rmic = grmic
 endif
 
 if CREATE_WRAPPERS
 bin_SCRIPTS =
 bin_PROGRAMS = gappletviewer gjarsigner gkeytool \
-	gjar gnative2ascii gserialver $(javah)
+	gjar gnative2ascii gserialver $(javah) grmiregistry \
+	gtnameserv gorbd grmid $(rmic)
 
 AM_CPPFLAGS = -Wall \
 	-I$(top_srcdir)/include \
@@ -65,23 +67,50 @@ gserialver_CFLAGS = \
 	-DTOOLPACKAGE="\"serialver\"" \
 	-DTOOLNAME="\"gserialver\""
 
+grmiregistry_SOURCES = toolwrapper.c
+grmiregistry_CFLAGS = \
+	-DTOOLPACKAGE="\"rmiregistry\"" \
+	-DTOOLNAME="\"grmiregistry\""
+
+gtnameserv_SOURCES = toolwrapper.c
+gtnameserv_CFLAGS = \
+	-DTOOLPACKAGE="\"tnameserv\"" \
+	-DTOOLNAME="\"gtnameserv\""
+
+gorbd_SOURCES = toolwrapper.c
+gorbd_CFLAGS = \
+	-DTOOLPACKAGE="\"orbd\"" \
+	-DTOOLNAME="\"gorbd\""
+
+grmid_SOURCES = toolwrapper.c
+grmid_CFLAGS = \
+	-DTOOLPACKAGE="\"rmid\"" \
+	-DTOOLNAME="\"grmid\""
+
 if USE_ASM
 gjavah_SOURCES = toolwrapper.c
 gjavah_CFLAGS = \
 	-DTOOLPACKAGE="\"javah\"" \
 	-DTOOLNAME="\"gjavah\""
+
+grmic_SOURCES = toolwrapper.c
+grmic_CFLAGS = \
+	-DTOOLPACKAGE="\"rmic\"" \
+	-DTOOLNAME="\"grmic\""
 endif
 
 else
 bin_SCRIPTS = gappletviewer gjarsigner gkeytool \
-	gjar gnative2ascii gserialver $(javah)
+	gjar gnative2ascii gserialver $(javah) grmiregistry \
+	gtnameserv gorbd grmid $(rmic)
 bin_PROGRAMS =
 endif
 EXTRA_DIST = toolwrapper.c gappletviewer.in gjarsigner.in gkeytool.in \
-	gjar.in gnative2ascii.in gserialver.in gjavah.in
+	gjar.in gnative2ascii.in gserialver.in gjavah.in grmiregistry.in \
+	gtnameserv.in gorbd.in grmid.in grmic.in
 
 # All our example java source files
-TOOLS_JAVA_FILES = $(srcdir)/gnu/classpath/tools/*.java $(srcdir)/gnu/classpath/tools/*/*.java $(srcdir)/gnu/classpath/tools/*/*/*.java
+TOOLS_JAVA_FILES = $(srcdir)/gnu/classpath/tools/*/*.java
 
 # The zip files with classes we want to produce.
 TOOLS_ZIP = tools.zip
@@ -89,26 +118,14 @@ TOOLS_ZIP = tools.zip
 # Extra objects that will not exist until configure-time
 BUILT_SOURCES = $(TOOLS_ZIP)
 
-# The templates that must be included into the generated zip file.
-GRMIC_TEMPLATES = $(srcdir)/gnu/classpath/tools/giop/grmic/templates/*.jav
-RMIC_TEMPLATES = $(srcdir)/gnu/classpath/tools/rmi/rmic/templates/*.jav
-
-TOOLS_TEMPLATES = $(GRMIC_TEMPLATES) $(RMIC_TEMPLATES)
-
-# This covers the built-in help texts, both for giop and rmic subpackages.
-GIOP_HELPS = $(srcdir)/gnu/classpath/tools/giop/*.txt
-RMI_HELPS = $(srcdir)/gnu/classpath/tools/rmi/*.txt
-
-TOOLS_HELPS = $(GIOP_HELPS) $(RMI_HELPS)
-
-# The tool specific README files.
-READMES = $(srcdir)/gnu/classpath/tools/giop/README
+# RMIC templates that must be included in the generated zip file.
+RMIC_TEMPLATES = $(srcdir)/gnu/classpath/tools/rmic/templates/*.jav
 
 # All the files we find "interesting"
-ALL_TOOLS_FILES = $(TOOLS_JAVA_FILES) $(TOOLS_TEMPLATES) $(TOOLS_HELPS) $(READMES)
+ALL_TOOLS_FILES = $(TOOLS_JAVA_FILES) $(RMIC_TEMPLATES)
 
 # Some architecture independent data to be installed.
-TOOLS_DATA = $(TOOLS_ZIP) README
+TOOLS_DATA = $(TOOLS_ZIP)
 
 # Where we want these data files installed.
 TOOLSdir = $(pkgdatadir)
@@ -132,20 +149,29 @@ dist-hook:
 # immediately.  And copy the template files we use to the classes dir
 # so they get also included.
 $(TOOLS_ZIP): $(TOOLS_JAVA_FILES)
-	mkdir -p classes/gnu/classpath/tools/giop/grmic/templates
-	mkdir -p classes/gnu/classpath/tools/rmi/rmic/templates
 	mkdir -p classes/gnu/classpath/tools/appletviewer
+	mkdir -p classes/gnu/classpath/tools/common
+	mkdir -p classes/gnu/classpath/tools/getopt
+	mkdir -p classes/gnu/classpath/tools/jar
 	mkdir -p classes/gnu/classpath/tools/jarsigner
 	mkdir -p classes/gnu/classpath/tools/keytool
-	cp $(RMIC_TEMPLATES) classes/gnu/classpath/tools/rmi/rmic/templates
-	cp $(GRMIC_TEMPLATES) classes/gnu/classpath/tools/giop/grmic/templates
-	cp $(RMI_HELPS) classes/gnu/classpath/tools/rmi/
-	cp $(GIOP_HELPS) classes/gnu/classpath/tools/giop/
+	mkdir -p classes/gnu/classpath/tools/native2ascii
+	mkdir -p classes/gnu/classpath/tools/orbd
+	mkdir -p classes/gnu/classpath/tools/rmid
+	mkdir -p classes/gnu/classpath/tools/rmiregistry
+	mkdir -p classes/gnu/classpath/tools/serialver
+	mkdir -p classes/gnu/classpath/tools/tnameserv
 	find $(srcdir)/gnu/classpath/tools -name '*.java' -print > classes.lst
 	if test -z "$(PATH_TO_ASM)"; then \
 	  mv classes.lst classes.tmp; \
 	  fgrep -v /javah/ classes.tmp > classes.lst; \
+	  mv classes.lst classes.tmp; \
+	  fgrep -v /rmic/ classes.tmp > classes.lst; \
 	  rm -f classes.tmp;\
+	else \
+	  mkdir -p classes/gnu/classpath/tools/javah; \
+	  mkdir -p classes/gnu/classpath/tools/rmic/templates; \
+	  cp $(RMIC_TEMPLATES) classes/gnu/classpath/tools/rmic/templates; \
 	fi
 	$(JCOMPILER) -d classes @classes.lst
 	(cd classes; \

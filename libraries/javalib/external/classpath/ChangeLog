@@ -1,3 +1,1170 @@
+2006-10-04  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/tree/VariableHeightLayoutCache.java
+	(getBounds): When rect is null, create a new Rectangle.
+
+2006-10-04  Christian Thalinger  <twisti@complang.tuwien.ac.at>
+
+	* native/jni/java-nio/javanio.c (cpnio_read, cpnio_readv)
+	(cpnio_write, cpnio_writev, cpnio_socket, cpnio_connect)
+	(cpnio_accept, cpnio_sendto, cpnio_recvfrom, cpnio_fcntl)
+	(cpnio_select): Use CPNIO_EXPORT.
+	* native/jni/java-nio/javanio.h (CPNIO_EXPORT): Define to static
+	inline instead of extern inline, as newer GCCs changed their
+	behavior.
+
+2006-10-04  Gary Benson  <gbenson@redhat.com>
+
+	* java/net/InetAddress.java: Updated javadoc.
+	(<clinit>, getByLiteral): Throw InternalError on failures.
+
+2006-10-03  Francis Kung  <fkung@redhat.com>
+
+	* gnu/java/awt/peer/gtk/CairoGraphics2D.java
+	(compCtx): New field for composite context.
+	(copy): Copy composite.
+	(dispose): Dispose of composite context.
+	(getNativeCM): New method.
+	(setComposite): Discard old composite context and set up new context.
+	(setRenderingHints): Update composite context.
+	* gnu/java/awt/peer/gtk/CairoSurface.java
+	(nativeColorModel): New field, renamed from nativeModel.
+	(nativeModel): Renamed field to nativeColorModel.
+	(CairoSurface(int, int)): Call new method to create sample model.
+	(createNativeSampleModel): New method.
+	(getBufferedImage): Updated variable name.
+	* gnu/java/awt/peer/gtk/VolatileImageGraphics.java
+	(buffer): New field.
+	(createBuffer): New method.
+	(draw): New method.
+	(drawComposite): New method.
+	(drawGlyphVector): New method.
+	(drawImage(Image, AffineTransform, Color, ImageObserver)): New method.
+	(drawImage(Image, int, int, ImageObserver)): Check composite.
+	(drawImage(Image, int, int, int, int, ImageObserver)): Check composite.
+	(fill): New method.
+	(getNativeCM): New method.
+	* native/jni/gtk-peer/gnu_java_awt_peer_gtk_GtkVolatileImage.c
+	(Java_gnu_java_awt_peer_gtk_GtkVolatileImage_nativeGetPixels): Use 
+	intermediary pixbuf to grab on-screen pixels.
+
+2006-10-03  Tom Tromey  <tromey@redhat.com>
+
+	PR classpath/28987:
+	* java/util/IdentityHashMap.java (tombstone): Removed.
+	(emptyslot): Removed.
+	(nullslot): New field.
+	(IdentityHashMap): Don't fill array.
+	(clear): Fill with null.
+	(hash): Now final.  Use linear probing.
+	(xform): New method.
+	(unxform): Likewise.
+	(removeAtIndex): Likewise.
+	(clone, containsKey, containsValue, entrySet, get, hashCode,
+	keySet, put, remove, values): Updated.
+	(IdentityIterator, IdentityEntry): Likewise.
+	(writeObject): Likewise.
+
+2006-10-03  Tom Tromey  <tromey@redhat.com>
+
+	* java/util/Locale.java (hashcode): Updated javadoc.
+	(hashcodeCache): Removed.
+	(Locale): Updated.
+	(hashCode): Updated.
+	(writeObject): New method.
+	(readObject): Updated.
+
+2006-10-02  Francis Kung  <fkung@redhat.com>
+
+	* gnu/java/awt/peer/gtk/BufferedImageGraphics.java
+	(updateBufferedImage): Recognise that raw data is alpha-premultiplied.
+	* gnu/java/awt/peer/gtk/CairoGraphics2D.java
+	(clearRect): Paint background colour with AlphaComposite.SRC rule.
+	(drawImage(Image, AffineTransform, Color, ImageObserver)): Alpha
+	pre-multiply data before drawing.
+	(fillRect): Draw using regular fill() method.
+	(setComposite): Handle null case with AlphaComposite.SrcOver default.
+	* gnu/java/awt/peer/gtk/CairoSurface.java
+	(nativeModel): Use correct value for alpha premultiplication (true).
+	* java/awt/image/BufferedImage.java
+	(coerceData): Update isPremultiplied field.
+
+2006-10-02  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* gnu/classpath/ListenerData.java:
+	New class for holding listener data.
+	* gnu/java/lang/management/MemoryMXBeanImpl.java:
+	ListenerData class moved to its own file.
+	* javax/management/MBeanServerDelegate.java,
+	* javax/management/MBeanServerDelegateMBean.java,
+	* javax/management/MBeanServerNotification.java:
+	Implemented.
+
+2006-10-02  Tania Bento  <tbento@redhat.com>
+
+	* java/ast/Rectangle.java:
+	(Rectangle(Rectangle)): Do not throw NPE.
+	(Rectangle(Point, Dimension)): Same.
+	(Rectangle(Point)): Same.
+	(Rectangle(Dimension)): Same.
+
+2006-09-29  Casey Marshall  <csm@gnu.org>
+
+	PR 29190
+	* gnu/java/nio/EpollSelectionKeyImpl.java: extend
+	`AbstractSelectionKey.'
+	(cancel, isValid): removed.
+	* gnu/java/nio/EpollSelectorImpl.java (cancelledKeys): removed.
+	(events): new field.
+	(INITIAL_CAPACITY, MAX_DOUBLING_CAPACITY, CAPACITY_INCREMENT): new
+	fields.
+	(<clinit>): initialize those constants.
+	(<init>): don't initialize `cancelledKeys;' initialize `events.'
+	(doSelect): deregister cancelled keys; remove keys attached to
+	closed channels; wrap `epoll_wait' in `begin' and `end' calls; use
+	`events' buffer; reallocate `events' buffer if needed.
+	(register): reallocate `events' buffer if needed.
+	(reallocateBuffer): new method.
+	(cancel): removed.
+
+2006-09-29  Roman Kennke  <kennke@aicas.com>
+
+	PR 28929
+	* javax/swing/JViewport.java
+	(cinit): Renamed system property to gnu.swing.scrollmode
+	to avoid bloat. Default to BACKINGSTORE, this is much
+	more reliable.
+	(repaint): Forward repaint() to parent as is specified.
+
+2006-09-29  Tania Bento  <tbento@redhat.com>
+
+	* javax/swing/plaf/basic/BasicTableUI.java
+	(getPreferredSize): The number of iterations for the for-loop should be
+	the number of columns in the table's column model, not the number of
+	columns of the table.
+	* javax/swing/JTable.java
+	(JTable(TableModel, TableColumnModel, ListSelectionModel): Removed 4
+	lines that are not needed.
+	(initializeLocalVars): dragEnabled should be set to false, not true.
+	(getCellRenderer): Added a check to prevent an
+	ArrayIndexOutOfBoundsException.
+	(doLayout): The number of iterations for the for-loops should be the
+	number of columns in the table's column model, not the number of columns
+	of the table.
+
+2006-09-29  Roman Kennke  <kennke@aicas.com>
+
+	* gnu/java/awt/java2d/AbstractGraphics2D.java: Updated
+	API docs.
+	(isOptimized): Initialize with true.
+	(paintRaster): Removed unneeded field.
+	(shapeCache): New static field. Caches certain shapes for reuse.
+	(computeIntersection): Removed unneeded casts.
+	(drawArc): Use shape cache.
+	(drawImage): Removed unneeded statement.
+	(drawLine): Use shape cache. Pass untranslated coordinates
+	to rawDrawLine().
+	(drawOval): Use shape cache.
+	(drawPolygon): Use shape cache.
+	(drawRect): Overridden to provide accelerated rectangle drawing
+	if possible and to use the shape cache.
+	(drawRoundRect): Use shape cache.
+	(fillArc): Use shape cache.
+	(fillOval): Use shape cache.
+	(fillPolygon): Use shape cache.
+	(fillRect): Pass untranslated coordinates to rawFillRect().
+	Use shape cache.
+	(fillRoundRect): Use shape cache.
+	(fillScanlineAA): Removed unneeded statement.
+	(fillScanline): Updated API docs.
+	(fillShapeAntialias): Removed unnecessary cast.
+	(fillShapeImpl): Update API docs. Removed unnecessary cast.
+	(fillShape): Updated API docs.
+	(getShapeCache): New helper method.
+	* gnu/java/awt/java2d/ShapeCache.java: New class. Caches
+	certain shapes for reuse in AbstractGraphics2D.
+
+2006-09-28  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* javax/management/BadBinaryOpValueExpException.java:
+	(getExp()): Implemented.
+	* javax/management/MBeanConnection.java:
+	Renamed to MBeanServerConnection.
+	* javax/management/MBeanServer.java:
+	(setAttribute(Attribute)): Fixed...
+	(setAttribute(ObjectName,Attribute)): to this.
+	* javax/management/MBeanServerConnection.java:
+	Renamed from MBeanConnection.
+	* javax/management/QueryExp.java:
+	Extend Serializable.
+	* javax/management/ValueExp.java:
+	Likewise.
+	* javax/management/loading/ClassLoaderRepository.java:
+	(loadClass(String)): Throw ClassNotFoundException.
+	(loadClassBefore(ClassLoader,String)): Likewise.
+	(loadClassWithout(String, ClassLoader): Fixed...
+	(loadClassWithout(ClassLoader,String)): to this.
+	
+2006-09-28  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/tree/DefaultTreeCellRenderer.java
+	(DefaultTreeCellRenderer): Fetch drawsFocusBorderAroundIcon
+	property from UIManager.
+	(paint): Rewritten to use super's implementation and only paint
+	background and focus indicator before.
+	(paintFocus): New helper method.
+	(getXOffset): New helper method.
+
+2006-09-28  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+	
+	* javax/management/BadBinaryOpValueExpException.java,
+	* javax/management/MBeanConnection.java,
+	* javax/management/MBeanServer.java,
+	* javax/management/ObjectInstance.java:
+	Implemented.
+	* javax/management/ObjectName.java:
+	(setMBeanServer(MBeanServer)): Implemented.
+	* javax/management/QueryExp.java,
+	* javax/management/ValueExp.java,
+	* javax/management/loading/ClassLoaderRepository.java:
+	Implemented.
+
+2006-09-27  Robert Schuster  <robertschuster@fsfe.org>
+
+	* gnu/java/nio/VMChannelOwner.java: Removed unneeded imports.
+
+2006-09-27  Robert Schuster  <robertschuster@fsfe.org>
+
+	* vm/reference/gnu/java/nio/VMChannel.java: Removed unneeded imports.
+	* vm/reference/gnu/java/nio/VMPipe.java: Removed unneeded imports.
+	* gnu/java/nio/EpollSelectorImpl.java:
+	(doSelect): Use Integer.valueOf() instead of constructor call.
+	(register): Use Integer.valueOf() instead of constructor call.
+
+2006-09-27  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/Container.java
+	(addContainerListener): Activate newEventsOnly for the component.
+	Ignore null listeners.
+
+2006-09-27  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/EventQueue.java
+	(Queue): New inner class. Implements the actual queue.
+	(LOW_PRIORITY): New constant field.
+	(NORM_PRIORITY): New constant field.
+	(queueHead): Removed. Moved into Queue.
+	(queueTail): Removed. Moved into Queue.
+	(queues): New field.
+	(EventQueue): Initialize two internal queues, one for
+	normal events, one for low priority events.
+	(getNextEventImpl): New helper method, fetches the next event.
+	(getNextEvent): Use getNextEventImpl() for fetching the event.
+	(peekEvent): Use getNextEventImpl() for fetching the event.
+	(peekEvent(int)): Search for event in all queues.
+	(postEventImpl(AWTEvent)): Moved actual posting into
+	postEventImpl(AWTEvent,int). Prioritize events here.
+	(postEventImpl(AWTEvent,int)): Take priority parameter and insert
+	event into correct queue. Re-enable event coalescing.
+	* gnu/java/awt/LowPriorityEvent.java: New marker interface.
+	* javax/swing/RepaintManager.java
+	(RepaintWorkerEvent): New internal class. This is a low priority
+	event for the repaint worker.
+	(addDirtyRegion): Use new internal invokeLater() for sending
+	a low priority event.
+	(addInvalidComponent): Use new internal invokeLater() for sending
+	a low priority event.
+	(commitBuffer): Added some null checks.
+	(invokeLater): New helper method. Sends a low priority
+	repaint worker event on the event queue.
+
+2006-09-27  Roman Kennke  <kennke@aicas.com>
+
+	PR 29036
+	PR 29161
+	* javax/swing/plaf/basic/BasicButtonUI.java
+	(cachedInsets): New field.
+	(installListeners): Fire synthetic property change to initialize
+	TEXT_LAYOUT_CACHE for the button because the font has been
+	installed before.
+	(uninstallUI): Clear the TEXT_LAYOUT_CACHE for the button.
+	(paint): Use cached insets.
+	(paintText): Let new method forward to old one, not vice versa.
+	* javax/swing/plaf/basic/BasicMenuItemUI.java
+	(defaultAcceleratorLabelGap): Removed unused field.
+	(MenuGap): Removed unused field.
+	(propertyChangeListener): Made private.
+	(getAcceleratorRect): Removed unused method.
+	(getAcceleratorText): Removed unused method.
+	(getPath): Removed unnecessary cast.
+	(installListeners): Fire synthetic property change to initialize
+	TEXT_LAYOUT_CACHE for the button because the font has been
+	installed before.
+	(uninstallUI): Clear the TEXT_LAYOUT_CACHE for the button.
+	(layoutMenuItem): Removed unused statements.
+	
+2006-09-27  Roman Kennke  <kennke@aicas.com>
+
+	PR 29218
+	* javax/swing/tree/DefaultTreeModel.java
+	(isLeaf): Check if the node allows children when
+	asksAllowsChildren is true, otherwise fall back
+	to return the node's leaf property.
+
+2006-09-27  Mario Torre  <neugens@limasoftware.net>
+
+	* scripts/check_jni_methods.sh: removed methods from the
+	ignore list:
+	Java_gnu_java_util_prefs_gconf_GConfNativePeer_finalize_1class
+	Java_gnu_java_util_prefs_gconf_GConfNativePeer_init_1id_1cache
+	Java_gnu_java_util_prefs_gconf_GConfNativePeer_init_1class
+	Java_gnu_java_util_prefs_gconf_GConfNativePeer_gconf_1escape_1key
+	Java_gnu_java_util_prefs_gconf_GConfNativePeer_gconf_1unescape_1key
+	* native/jni/gconf-peer/GConfNativePeer.c: fixed coding style
+	to better follow the GNU style.
+	* include/gnu_java_util_prefs_gconf_GConfNativePeer.h.
+	regenerated header file for GConfNativePeer.
+
+2006-09-27  Robert Schuster  <robertschuster@fsfe.org>
+
+	* INSTALL: Added information about grmic being built when ASM
+	is available, added information about gconf dependency, indented
+	Qt4 dependency section.
+	* configure.ac: Added information about grmic being built when ASM
+	is available.
+
+2006-09-27  Ian Rogers  <ian.rogers@manchester.ac.uk>
+
+	* native/jni/classpath/jcl.c (JNI_OnLoad): Don't call
+	DeleteGlobalRef on a local ref.
+
+2006-09-24  Mario Torre  <neugens@limasoftware.net>
+
+	* scripts/check_jni_methods.sh: added two new methods in the
+	ignore list:
+	Java_gnu_java_util_prefs_gconf_GConfNativePeer_gconf_1escape_1key
+	and
+	Java_gnu_java_util_prefs_gconf_GConfNativePeer_gconf_1unescape_1key
+	* native/jni/gconf-peer/GConfNativePeer.c:
+	(Java_gnu_java_util_prefs_gconf_GConfNativePeer_gconf_1client_1all_1keys):
+	refacored method name, renamed from
+	Java_gnu_java_util_prefs_gconf_GConfNativePeer_gconf_1client_1gconf_1client_1all_1keys.
+	Added code to unescape escaped GConf key names.
+	(Java_gnu_java_util_prefs_gconf_GConfNativePeer_gconf_1client_1all_1nodes):
+	refacored method name, renamed from
+	Java_gnu_java_util_prefs_gconf_GConfNativePeer_gconf_1client_1gconf_1client_1all_1nodes.
+	Added code to unescape escaped GConf key names.
+	(Java_gnu_java_util_prefs_gconf_GConfNativePeer_gconf_1escape_1key):
+	new function.
+	(Java_gnu_java_util_prefs_gconf_GConfNativePeer_gconf_1unescape_1key):
+	new function.
+	* gnu/java/util/prefs/gconf/GConfNativePeer.java: removed
+	version javadoc tag.
+	(escapeString): new method.
+	(unescapeString): likewise.
+	(gconf_escape_key): new native method.
+	(gconf_unescape_key): likewise.
+	(gconf_client_suggest_sync): update native method signature, now
+	explicity throws BackingStoreException.
+	(gconf_client_all_nodes): update native method signature, now
+	explicity throws BackingStoreException. Refactored method name,
+	renamed from gconf_client_gconf_client_all_nodes.
+	(gconf_client_all_keys): update native method signature, now
+	explicity throws BackingStoreException. Refactored method name,
+	renamed from gconf_client_gconf_client_all_keys.
+	(getKeys): refactored to use the new method name
+	gconf_client_all_keys.
+	(getChildrenNodes): refactored to use the new method name
+	gconf_client_all_nodes.
+	* gnu/java/util/prefs/GConfBasedPreferences.java: removed
+	version javadoc tag.
+	(GConfBasedPreferences): Added code to escape node names from
+	invalid characters so that GConf now accept invalid node names.
+	(GConfBasedPreferences): Moved code to register the current
+	node to the list of nodes watched by GConf outside the constructor.
+	(childSpi): Added code to register the current node to the
+	list of nodes watched by GConf.
+	(getGConfKey): Added code to escape key names from
+	invalid characters so that GConf now accept invalid key names.
+
+2006-09-26  Tom Tromey  <tromey@redhat.com>
+
+	* tools/gnu/classpath/tools/javah/Printer.java (Printer): Don't
+	call mkdirs in output-directory case.
+	(getPrintStream): Create output directory.
+	* tools/gnu/classpath/tools/javah/Main.java (makeOutputDirectory):
+	Don't call mkdirs.
+
+2006-09-27  Raif S. Naffah  <raif@swiftdsl.com.au>
+
+	* tools/gnu/classpath/tools/javah/CniIncludePrinter.java (CniIncludePrinter):
+	Accept three additional arguments.
+	(writePreambleImpl): New method.
+	(getPrintStreamImpl): Likewise.
+	(printClass): Adapted to use new methods in Printer superclass.
+	* tools/gnu/classpath/tools/javah/CniStubPrinter.java: Likewise.
+	* tools/gnu/classpath/tools/javah/JniIncludePrinter.java: Likewise.
+	* tools/gnu/classpath/tools/javah/JniStubPrinter.java: Likewise.
+	* tools/gnu/classpath/tools/javah/Main.java (outFileName): New field.
+	(force): Likewise.
+	(getParser): Add support for -o option.
+	Check that only one of -d or -o is defined.
+	Add support for -jni option.
+	Add support for -force option.
+	(makeOutputFile): New method.
+	(writeHeaders): Removed File argument from signature.
+	(run): Take into account newly added fields.
+	Invoke concrete PrintStream implementations with augmented constructors.
+	* tools/gnu/classpath/tools/javah/Printer.java (outputFileObject): New field.
+	(isDirectory): Likewise.
+	(force): Likewise.
+	(wrotePreamble): Likewise.
+	(Printer): Changed ctor to accept three additional arguments.
+	(printClass): Changed signature to accept one ClassWrapper argument.
+	(writePreambleImpl): New abstract method.
+	(getPrintStreamImpl): Likewise.
+	(getPrintStream): New method.
+	(writePreamble): Likewise.
+
+2006-09-26  Tania Bento  <tbento@redhat.com>
+
+	* java/awt/GridLayout.java
+	(toString): There is no common before hgap.
+	* java/awt/Rectangle.java
+	(Rectangle(Rectangle)): Throw NPE if Rectangle is null.
+	(Rectangle(Point, Rectangle)): Throw NPE if either Point or 
+	Rectangle is null.
+	(Rectangle(Point)): Throw NPE if Point is null.
+	(Rectangle(Dimension)): Throw NPE if Dimension is null.
+
+2006-09-26  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/plaf/metal/MetalIconFactory.java
+	(FileIcon16.paintIcon): Apply vertical shift by the number of pixels
+	returned by getShift(),
+	(FileIcon16.getShift): Updated API docs,
+	(FolderIcon16.paintIcon): Apply vertical shift by the number of pixels
+	returned by getShift(),
+	(FolderIcon16.getShift): Updated API docs,
+	(TreeFolderIcon.getShift): Likewise,
+	(TreeLeafIcon.getShift): Likewise.
+
+2006-09-26  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/plaf/metal/MetalIconFactory.java
+	(FileIcon16.paintIcon): Fetch colors from look and feel,
+	(FolderIcon16.paintIcon): Likewise.
+
+2006-09-25  Casey Marshall  <csm@gnu.org>
+
+	* gnu/java/nio/FileChannelImpl.java (read): revert back to using
+	`readScattering.'
+	(write): revert back to using `writeGathering.'
+	* vm/reference/gnu/java/nio/VMChannel.java (writeGathering): find
+	the first buffer that has data remaining, and start at that one.
+
+2006-09-25  Tom Tromey  <tromey@redhat.com>
+
+	* native/jni/gconf-peer/Makefile.am (libgconfpeer_la_LDFLAGS): New
+	variable.
+
+2006-09-25  Tom Tromey  <tromey@redhat.com>
+
+	* tools/.cvsignore: Updated.
+
+2006-09-25  Tom Tromey  <tromey@redhat.com>
+
+	PR libgcj/29178:
+	* gnu/java/nio/charset/US_ASCII.java (Encoder.canEncode): New method.
+	(Encoder.canEncode): Likewise.
+	(Encoder.encodeLoop): Return unmappable for all non-ASCII characters.
+	* gnu/java/nio/charset/ByteCharset.java (Encoder.canEncode): New
+	method.
+	(Encoder.canEncode): Likewise.
+	* gnu/java/nio/charset/ISO_8859_1.java (Encoder.canEncode): New
+	method.
+	(Encoder.canEncode): Likewise.
+
+2006-09-25  Tom Tromey  <tromey@redhat.com>
+
+	* native/fdlibm/mprec.c (mprec_calloc): Renamed.
+	(Balloc): Updated.
+
+2006-09-25  Francis Kung  <fkung@redhat.com>
+
+	* java/awt/image/ColorModel.java
+	(coerceData): Made abstract.
+	(coerceDataWorker): New protected method.
+	* java/awt/image/ComponentColorModel.java
+	(coerceData): Return new instance of proper ColorModel.
+	* java/awt/image/DirectColorModel.java
+	(coerceData): Return new instance of proper ColorModel.
+	* java/awt/image/IndexColorModel.java
+	(coerceData): New method.
+
+2006-09-24  Casey Marshall  <csm@gnu.org>
+
+	* gnu/java/nio/FileChannelImpl.java
+	(read): call `read' in a loop, don't use `readScattering.'
+	(write): call `write' in a loop, don't use `writeGathering.'
+
+2006-09-24  Mark Wielaard  <mark@klomp.org>
+
+	* configure.ac: Move -pedantic from WARNING to STRICT flags.
+
+2006-09-24  Jeroen Frijters  <jeroen@frijters.net>
+
+	* java/nio/channels/spi/AbstractSelectableChannel.java
+	(register): Set interestOps and attachment when the key already
+	exists.
+
+2006-09-24  Jeroen Frijters  <jeroen@frijters.net>
+
+	* java/net/ServerSocket.java
+	(bind(SocketAddress,int)): Added support for null address.
+	Throw proper exception if already bound.
+	Handle unresolved addresses correctly. Ignore exceptions that
+	happen during close in error path (to prevent losing the original
+	exception.)
+
+2006-09-24  Mark Wielaard  <mark@klomp.org>
+
+	Suggested by Aaron M. Ucko <ucko@debian.org>
+	Fixes bug #29203
+	* native/fdlibm/mprec.c (ulp): Define L as int32_t.
+
+2006-09-24  Jeroen Frijters  <jeroen@frijters.net>
+
+	* java/nio/channels/spi/AbstractSelectableChannel.java
+	(implCloseChannel): Cancel all keys after closing the channel.
+
+2006-09-22  Casey Marshall  <csm@gnu.org>
+
+	* gnu/java/nio/EpollSelectorImpl.java (doSelect): remove keys
+	after we delete them.
+	(selectedKeys): return an empty set if nothing's been selected.
+	* native/jni/java-nio/gnu_java_nio_EpollSelectorImpl.c
+	(Java_gnu_java_nio_EpollSelectorImpl_epoll_1delete): don't
+	throw an exception on EBADF.
+	(Java_gnu_java_nio_EpollSelectorImpl_epoll_1wait): don't
+	throw exception on EINTR, just return 0.
+	
+2006-09-22  Casey Marshall  <csm@gnu.org>
+
+	* native/jni/java-io/java_io_VMFile.c (Java_java_io_VMFile_list):
+	remove `const' from `filename.'
+	* native/jni/native-lib/cpio.c (cpio_readDir): remove `const' from
+	`filename.'
+	* native/jni/native-lib/cpio.h (cpio_readDir): likewise.
+
+2006-09-22  Casey Marshall  <csm@gnu.org>
+
+	* configure.ac (AC_CHECK_FUNCS): check for `readdir_r.'
+	* native/jni/java-io/java_io_VMFile.c (Java_java_io_VMFile_list):
+	allocate `filename,' and handle changes to `cpio_readDir.'
+	* native/jni/native-lib/cpio.c (cpio_readDir): use `readdir_r' if
+	available; copy the filename into the destination buffer; return
+	an error code if readdir returns NULL, but errno is 0.
+	* native/jni/native-lib/cpio.h (cpio_readDir): change second
+	parameter to `const char *.'
+
+2006-09-23  Andrew John Hughes  <gnu_andrew@member.fsf.org>
+
+	* javax/management/ObjectName.java:
+	Implemented.
+	
+2006-09-22  Thomas Fitzsimmons  <fitzsim@redhat.com>
+
+	* resource/gnu/classpath/tools/orbd: New directory.
+	* resource/gnu/classpath/tools/rmic: Likewise.
+	* resource/gnu/classpath/tools/rmid: Likewise.
+	* resource/gnu/classpath/tools/rmiregistry: Likewise.
+	* resource/gnu/classpath/tools/tnameserv: Likewise.
+	* tools/gnu/classpath/tools/giop: Move contents to...
+	* tools/gnu/classpath/tools/orbd,
+	tools/gnu/classpath/tools/tnameserv: New directories.
+	* tools/gnu/classpath/tools/rmi/rmic: Move contents to...
+	* tools/gnu/classpath/tools/rmic: New directory.
+	* tools/gnu/classpath/tools/rmi/rmid: Move contents to...
+	* tools/gnu/classpath/tools/rmid: New directory.
+	* tools/gnu/classpath/tools/rmi/registry: Move contents to...
+	* tools/gnu/classpath/tools/rmiregistry: New directory.
+	* resource/gnu/classpath/tools/orbd/messages.properties: New file.
+	* resource/gnu/classpath/tools/rmic/messages.properties: Likewise.
+	* resource/gnu/classpath/tools/rmid/messages.properties: Likewise.
+	* resource/gnu/classpath/tools/rmiregistry/messages.properties:
+	Likewise.
+	* resource/gnu/classpath/tools/tnameserv/messages.properties:
+	Likewise.
+	* tools/gnu/classpath/tools/orbd/Main.java,
+	tools/gnu/classpath/tools/orbd/Messages.java,
+	tools/gnu/classpath/tools/orbd/PersistentContext.java,
+	tools/gnu/classpath/tools/orbd/PersistentContextMap.java,
+	tools/gnu/classpath/tools/orbd/PersistentMap.java,
+	tools/gnu/classpath/tools/rmic/AbstractMethodGenerator.java,
+	tools/gnu/classpath/tools/rmic/CompilationError.java,
+	tools/gnu/classpath/tools/rmic/Generator.java,
+	tools/gnu/classpath/tools/rmic/GiopIo.java,
+	tools/gnu/classpath/tools/rmic/HashFinder.java,
+	tools/gnu/classpath/tools/rmic/Main.java,
+	tools/gnu/classpath/tools/rmic/Messages.java,
+	tools/gnu/classpath/tools/rmic/MethodGenerator.java,
+	tools/gnu/classpath/tools/rmic/RMICException.java,
+	tools/gnu/classpath/tools/rmic/RmiMethodGenerator.java,
+	tools/gnu/classpath/tools/rmic/RmicBackend.java,
+	tools/gnu/classpath/tools/rmic/SourceGiopRmicCompiler.java,
+	tools/gnu/classpath/tools/rmic/SourceRmicCompiler.java,
+	tools/gnu/classpath/tools/rmic/Variables.java,
+	tools/gnu/classpath/tools/rmic/WrapUnWrapper.java,
+	tools/gnu/classpath/tools/rmic/templates,
+	tools/gnu/classpath/tools/rmid/ActivationSystemImpl.java,
+	tools/gnu/classpath/tools/rmid/ActivationSystemImpl_Stub.java,
+	tools/gnu/classpath/tools/rmid/Main.java,
+	tools/gnu/classpath/tools/rmid/Messages.java,
+	tools/gnu/classpath/tools/rmid/PersistentBidiHashTable.java,
+	tools/gnu/classpath/tools/rmiregistry/Main.java,
+	tools/gnu/classpath/tools/rmiregistry/Messages.java,
+	tools/gnu/classpath/tools/rmiregistry/PersistentHashTable.java,
+	tools/gnu/classpath/tools/rmiregistry/RegistryImpl.java,
+	tools/gnu/classpath/tools/rmiregistry/RegistryImpl_Skel.java,
+	tools/gnu/classpath/tools/rmiregistry/RegistryImpl_Stub.java,
+	tools/gnu/classpath/tools/tnameserv/Main.java,
+	tools/gnu/classpath/tools/tnameserv/Messages.java: New files.
+	* tools/gnu/classpath/tools/rmic/ClassRmicCompiler.java: Import
+	RMIC.java from cp-tools.
+	* configure.ac (AC_CONFIG_FILES): Add tools/grmiregistry,
+	tools/gtnameserv, tools/gorbd, tools/grmid and tools/grmic.
+	(AC_CONFIG_COMMANDS): Add grmiregistry, gtnameserv, gorbd, grmid
+	and grmic.
+	* examples/Makefile.am (GLIBJ_CLASSPATH): Add tools.zip.
+	* gnu/CORBA/NamingService/NamingServiceTransient.java (main):
+	Rename...
+	(start): New method.
+	* tools/Makefile.am: Add build support for new tool wrappers.
+	* tools/gorbd.in: New file.
+	* tools/grmic.in: Likewise.
+	* tools/grmid.in: Likewise.
+	* tools/grmiregistry.in: Likewise.
+	* tools/gtnameserv.in: Likewise.
+	* tools/gnu/classpath/tools/AbstractMethodGenerator.java: Move to...
+	* tools/gnu/classpath/tools/rmic/AbstractMethodGenerator.java: New
+	file.
+	* tools/gnu/classpath/tools/HelpPrinter.java: Remove file.
+	* tools/gnu/classpath/tools/rmi/Persistent.java: Move to...
+	* tools/gnu/classpath/tools/common/Persistent.java: New file.
+
+2006-09-22  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	Fixes bug #29047
+	* gnu/java/util/regex/RETokenRepeated.java
+	(findMatch): Rewriten without using recursive calls,
+	(FindMatchControlStack): New class,
+	(FindMatchControl): New class,
+	(TryAnotherResult): New class,
+	(tryAnother): New method.
+
+2006-09-22  Gary Benson  <gbenson@redhat.com>
+
+	* java/net/SocketPermission.java
+	(processHostport): Cope with IPv6 addresses with a
+	one-digit first component.
+
+2006-09-22  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/Component.java
+	(enableEvents): Set newEventsOnly flag.
+	* java/awt/Container.java
+	(dispatchEventImpl): Consume event if lightweight dispatcher
+	dispatched the event. Don't call processEvent() here, this
+	is already done in Component.dispatchEventImpl(). For
+	heavyweights or when the lightweight dispatcher could
+	not dispatch, fall back to calling super.
+	(dispatchNoLightweight): New helper method to avoid
+	recursivly calling the lightweight dispatcher.
+	* java/awt/LightweightDispatcher.java
+	(dragButton): Removed field.
+	(dragTarget): Removed field.
+	(mouseEventTarget): New field.
+	(convertPointToChild): Removed method.
+	(dispatchEvent): Don't depend on component beeing
+	a window.
+	(findTarget): Improved algorithm for finding a target.
+	Before we went down to the deepest component and went
+	up again to find a suitable target. Now we go
+	down only once, without going up.
+	(handleMouseEvent): Broke method down into some smaller
+	helper methods.
+	(isDragging): New helper method.
+	(isMouseListening): New helper method.
+	(redispatch): New helper method.
+	(trackEnterExit): New helper method.
+
+2006-09-22  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/SizeSequence.java
+	(getSize): Return 0 if index is out of bounds.
+
+2006-09-21  Tom Tromey  <tromey@redhat.com>
+
+	* tools/gnu/classpath/tools/javah/PathOptionGroup.java
+	(PathOptionGroup): Make -I a joined option.
+	* tools/gnu/classpath/tools/keytool/CACertCmd.java: Updated.
+	* tools/gnu/classpath/tools/keytool/CertReqCmd.java: Updated.
+	* tools/gnu/classpath/tools/keytool/DeleteCmd.java: Updated.
+	* tools/gnu/classpath/tools/keytool/ExportCmd.java: Updated.
+	* tools/gnu/classpath/tools/keytool/GenKeyCmd.java: Updated.
+	* tools/gnu/classpath/tools/keytool/IdentityDBCmd.java: Updated.
+	* tools/gnu/classpath/tools/keytool/ImportCmd.java: Updated.
+	* tools/gnu/classpath/tools/keytool/KeyCloneCmd.java: Updated.
+	* tools/gnu/classpath/tools/keytool/KeyPasswdCmd.java: Updated.
+	* tools/gnu/classpath/tools/keytool/ListCmd.java: Updated.
+	* tools/gnu/classpath/tools/keytool/MainCmd.java: Updated.
+	* tools/gnu/classpath/tools/keytool/PrintCertCmd.java: Updated.
+	* tools/gnu/classpath/tools/keytool/SelfCertCmd.java: Updated.
+	* tools/gnu/classpath/tools/keytool/StorePasswdCmd.java: Updated.
+	* tools/gnu/classpath/tools/appletviewer/Main.java: Updated.
+	* tools/gnu/classpath/tools/jar/Main.java: Updated.
+	* tools/gnu/classpath/tools/jarsigner/Main.java: Updated.
+	* tools/gnu/classpath/tools/javah/Main.java: Updated.
+	* tools/gnu/classpath/tools/native2ascii/Main.java: Updated.
+	* tools/gnu/classpath/tools/serialver/SerialVer.java: Updated.
+	* resource/gnu/classpath/tools/getopt/Messages.properties: Removed
+	unused entries.
+	* resource/gnu/classpath/tools/common/Messages.properties: New file.
+	* tools/gnu/classpath/tools/common/Messages.java: New file.
+	* tools/gnu/classpath/tools/getopt/Messages.java: Now package-private.
+	* tools/gnu/classpath/tools/common/ClasspathToolParser.java: Moved
+	from getopt.
+	(ClasspathToolParser): Add -J option here.
+	(ClasspathToolParser): Call other constructor in this class.
+	* tools/gnu/classpath/tools/getopt/Parser.java (handleLongOption):
+	Handle joined options.
+	(handleShortOptions): Likewise.
+	(handleShortOption): Removed.
+	(finalGroup): New field.
+	(Parser): Initialize new field.  Don't add -J option.
+	(addFinal): New method.
+	* tools/gnu/classpath/tools/getopt/OptionGroup.java (printHelp): Use
+	isJoined.
+	* tools/gnu/classpath/tools/getopt/Option.java (isJoined): New method.
+	(Option): Check short option for validity.
+	(Option): New constructors.
+	(joined): New field.
+
+2006-09-21  csm  <csm@pollux.local>
+
+	* gnu/java/net/PlainDatagramSocketImpl.java (send): ignore
+	`InterruptedIOException;' try again if it gets thrown.
+	(receive): likewise, but re-throw `SocketTimeoutException.'
+	* gnu/java/nio/EpollSelectorImpl.java (doSelect): just return 0
+	if we have nothing to select.
+
+2006-09-21  Francis Kung  <fkung@redhat.com>
+
+	* gnu/java/awt/peer/gtk/FreetypeGlyphVector.java:
+	(getLogicalBounds): Respect glyph transformations.
+	(getGlyphOutline): Added null pointer check.
+	(getGlyphTransform): Do not generate identity transform (API permits null).
+	(setGlyphPosition): Do not invalidate transform.
+	(setGlyphTransform): Do not modify glyph position.
+
+2006-09-21  Francis Kung  <fkung@redhat.com>
+
+	* java/awt/image/ColorModel.java (coerceData): Set alpha premultiplied flag.
+
+2006-09-21  Francis Kung  <fkung@redhat.com>
+
+	* java/awt/image/ColorModel.java (coerceData): Return proper colour model.
+	* java/awt/image/ComponentColorModel.java (coerceData): Likewise.
+	* java/awt/image/DirectColorModel.java (coerceData): Likewise.
+
+2006-09-21  Tania Bento  <tbento@redhat.com>
+
+	* javax/swing/JTabbedPane.java:
+	(insertTab): Notify ChangeListeners if the tab inserted is selected.
+	(setModel): A ChangeListener should be created only if there does not 
+	currently exist one.
+
+2006-09-21  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/plaf/basic/BasicInternalFrameTitlePane.java
+	(MaximizeAction.actionPerformed): Change icon on maxButton.
+
+2006-09-21  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/basic/BasicScrollPaneUI.java
+	(syncScrollPaneWithViewport): Fixed typo (hsb vs. vsb).
+	Use more efficient getViewPosition() and getViewSize() methods
+	to avoid creating a rectangle.
+	(HSBChangeListener.stateChanged): Update the view position
+	unconditionally. Let the Viewport figure out if something
+	changed.
+	(VSBChangeListener.stateChanged): Update the view position
+	unconditionally. Let the Viewport figure out if something
+	changed.
+	* javax/swing/JViewport.java
+	(ViewListener.componentResized): Fire state change, because
+	the extentSize changes.
+	(extentSize): Removed unneeded field.
+	(viewSize): Removed unneeded field.
+	(getExtentSize): Return the viewport's size here.
+	(getViewRect): Reformatted.
+	(getViewSize): Reordered for only one return statement.
+	(paintImmediately2): Fixed up javadoc.
+	(paint): Removed unneeded statement.
+	(setExtentSize): Set viewport size and check for actual change
+	of value.
+	(setViewPosition): Simplified condition. Set scrollUnderway
+	true and don't set isViewSizeSet. Avoid creating one Point
+	object.
+	(setViewSize): Fixed != comparison with equals(). Set scrollUnderway
+	to false.
+	* javax/swing/JScrollBar.java
+	(ScrollBarListener): New class. Forwards change events from
+	the model as adjustment events.
+	(sbChangeListener): New field.
+	(JScrollBar): Install listener on new model.
+	(fireAdjustmentValueChanged(int,int,int)): Delegate to new helper
+	method.
+	(fireAdjustmentValueChanged(int,int,int,boolean)): New helper
+	method to allow custom isAdjusting value.
+	(setMaximum): Only forward to model.
+	(setMinimum): Only forward to model.
+	(setValue): Only forward to model.
+	(setVisibleAmount): Only forward to model.
+	(setValues): Only forward to model.
+	(setModel): Update the change listener.
+
+2006-09-20  Roman Kennke  <kennke@aicas.com>
+
+	PR 29036
+	* javax/swing/plaf/metal/DefaultMetalTheme.java
+	(PLAIN_CONTROL_TEXT_FONT): New constant field.
+	(BOLD_CONTROL_TEXT_FONT): New constant field.
+	(PLAIN_MENU_TEXT_FONT): New constant field.
+	(BOLD_MENU_TEXT_FONT): New constant field.
+	(controlTextFont): Removed.
+	(menuTextFont): Removed.
+	(CONTROL_TEXT_FONT): New constant field.
+	(MENU_TEXT_FONT): New constant field.
+	(getControlTextFont): Use getFont() helper method for fetching
+	the correct font.
+	(getMenuTextFont): Use getFont() helper method for fetching
+	the correct font.
+	(getFont): New helper method.
+	(isBoldMetal): New helper method.
+
+2006-09-20  Casey Marshall  <csm@gnu.org>
+
+	* NEWS: mention epoll selector along with the kqueue one.
+
+2006-09-20  Casey Marshall  <csm@gnu.org>
+
+	* native/jni/java-nio/gnu_java_nio_EpollSelectorImpl.c
+	(Java_gnu_java_nio_EpollSelectorImpl_epoll_1delete): ignore ENOENT.
+
+2006-09-20  Francis Kung  <fkung@redhat.com>
+
+	PR 29011
+	* gnu/java/awt/peer/gtk/FreetypeGlyphVector.java:
+	(getGlyphTransform): Use translation instead of scale.
+	(performDefaultLayout): Increment position values instead of resetting, and
+	pre-increment instead of post-increment.
+	(setGlyphTransform): Handle null case with identity transform.
+
+2006-09-20  Casey Marshall  <csm@gnu.org>
+
+	* configure.ac (AC_CHECK_HEADERS): check for `sys/epoll.h.'
+	(AC_CHECK_FUNCS): check for `epoll_create.'
+	* gnu/java/nio/EpollSelectionKeyImpl.java: new file.
+	* gnu/java/nio/EpollSelectorImpl.java: new file.
+	* gnu/java/nio/SelectorProviderImpl.java (epoll_failed): new class
+	field.
+	(openSelector): return epoll selector if requested and available.
+	* include/Makefile.am (H_FILES): add gnu_java_nio_EpollSelectorImpl.h.
+	(gnu_java_nio_EpollSelectorImpl.h): new target.
+	* include/gnu_java_nio_EpollSelectorImpl.h: new file.
+	* native/jni/java-nio/Makefile.am (libjavanio_la_SOURCES): add
+	gnu_java_nio_EpollSelectorImpl.c.
+	* native/jni/java-nio/gnu_java_nio_EpollSelectorImpl.c: new file.
+
+2006-09-20  Casey Marshall  <csm@gnu.org>
+
+	* gnu/java/nio/SocketChannelImpl.java (finishConnect): don't
+	call `isConnected.'
+	(isConnected): return false if `connectionPending' is true.
+
+2006-09-20  Francis Kung  <fkung@redhat.com>
+
+	PR 29011
+	* gnu/java/awt/peer/gtk/FreetypeGlyphVector.java:
+	(constructor): Expanded glyphPositions array to accomodate Y-coordinates.
+	(getGlyphOutline): Call getGylphTransform to generate transform.
+	(getGylphPosition): Read position directly out of array.
+	(getGlyphPositions): Read positions directly out of array.
+	(getGlyphTransform): Generate transform based on gylphPositions array.
+	(performDefaultLayout): Populate glyphPositions array instead of transforms.
+	(setGlyphPosition): Set position directly into array.
+	(setGlyphTransform): Update positions array as well.
+
+2006-09-20  David Daney  <ddaney@avtrex.com>
+
+	PR classpath/28661
+	* gnu/java/net/protocol/http/HTTPURLConnection.java (connect):  Add
+	default content-type for POST method.
+
+2006-09-20  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/plaf/basic/BasicRadioButtonUI.java
+	(BasicRadioButtonUI): Don't fetch icon here,
+	(installDefaults): Initialise icon here,
+	(getDefaultIcon): Just return icon.
+
+2006-09-20  Mark Wielaard  <mark@klomp.org>
+
+	* native/jni/java-nio/Makefile.am (libjavanio_la_SOURCES):
+	Add gnu_java_nio_channels_FileChannelImpl.c and javanio.h.
+	(EXTRA_DIST): Include javanio.c.
+
+2006-09-20  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* java/awt/geom/RoundRectangle2D.java:
+	(getPathIterator): Reimplemented,
+	and updated various API doc comments.
+
+2006-09-20  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/Container.java
+	(addImpl): Set the new component's parent after it has been
+	added to the array. Call addNotify() and invalidate()
+	after the component has been added, so that the peer
+	gets to know about the component structure when it is created.
+	* java/awt/Window.java
+	(dispatchEventImpl): Only revalidate when window is resized,
+	let the other stuff be processed by the superclass.
+	(dispose): Post WINDOW_CLOSED event only when some listener
+	is registered or event is explicitly enabled.
+	(show): Post WINDOW_OPENED event when appropriate.
+
+2006-09-20  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/Component.java
+	(addNotify): Invalidate here. Fetch peer font.
+	(getFont): Delegate to helper method, to protect from
+	overriding client code. Lock the tree while fetching the font.
+	(getFontImpl): New helper method. Moved code from getFont() in
+	here.
+	(removeNotify): Nullify peerFont too.
+	(setFont): Synchronize on tree and component to avoid threading
+	issues. Update the peerFont correctly.
+	(validate): Update the peer font if necessary, before validating.
+	(getGraphics): Revert to recursive graphics fetching.
+	Set component font on the Graphics object.
+	(translateEvent): Removed unnecessary cast.
+	* java/awt/Container.java
+	(invalidateTree): Made final and private. Made implementation
+	slightly more efficient.
+	(setFont): Get old and new font via getFont() to account for
+	the real font, and only invalidate the tree when they are not
+	the same and not equal.
+	(visitChild): Set the font of the child on the component graphics.
+	* java/awt/Frame.java
+	(setMenuBar): Create local reference of peer for thread safety.
+	Only call simple invalidate, not invalidateTree().
+
+2006-09-19  Cameron McCormack  <cam@mcc.id.au>
+
+	PR 29012
+	* gnu/java/awt/peer/gtk/BufferedImageGraphics.java:
+	(constructor): Copy image field.
+
+2006-09-19  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/JMenuBar.java
+	(getHelpMenu): Implemented to throw an Error, and added API docs,
+	(getMargin): Added API docs,
+	(setMargin): Likewise.
+
+2006-09-19  David Gilbert  <david.gilbert@object-refinery.com>
+
+	* javax/swing/AbstractButton.java
+	(AbstractButton): Don't call updateUI(),
+	* javax/swing/JButton.java
+	(JButton(String, Icon)): Call setModel() before init(),
+	* javax/swing/JMenuItem.java
+	(JMenuItem()): Delegate to another constructor,
+	(JMenuItem(Icon)): Likewise,
+	(JMenuItem(Action)): Set model,
+	(JMenuItem(String, Icon)): Likewise,
+	* javax/swing/JToggleButton.java
+	(init): Call setModel() before init().
+
+2006-09-19  Mark Wielaard  <mark@klomp.org>
+
+	Fixes bug #29137
+	* java/util/logging/LogManager.java (addLogger): Always check for
+	existing children of a new Logger.
+
+2006-09-19  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/plaf/basic/BasicScrollPaneUI.java
+	(HSBChangeListener.stateChanged): Moved handling of header to
+	syncScrollPaneWithViewport().
+	(VSBChangeListener.stateChanged): Moved handling of header to
+	syncScrollPaneWithViewport().
+	(ViewportChangedHandler.stateChanged): Removed unused statements.
+	(syncScrollPaneWithViewport): Added null checks. Use setValues
+	rather then the single setter methods to avoid multiple
+	adjustments and side effects. Also snyc the headers here.
+	(updateScrollBarDisplayPolicy): Revalidate and repaint here.
+	(uninstallUI): Removed unnecessary cast and this qualifier as well
+	as the call to super.
+
+2006-09-19  Gary Benson  <gbenson@redhat.com>
+
+	* java/net/ResolverCache.java: New class (a DNS cache).
+	* java/net/InetAddress.java
+	(internalGetCanonicalHostName, getAllByName): Use the above.
+
+2006-09-19  Jeroen Frijters  <jeroen@frijters.net>
+
+	* gnu/java/nio/SocketChannelImpl.java: Removed unused import.
+	* java/net/ServerSocket.java
+	(port): New field.
+	(bind): Set port field.
+	(close): Set impl to null.
+	(isClosed): Check impl and channel instead of using VMChannel.
+	(toString): Use port field and getLocalPort() method.
+	* java/net/Socket.java
+	(isClosed): Check impl and channel instead of using VMChannel.
+
+2006-09-18  Casey Marshall  <csm@gnu.org>
+
+	* native/jni/java-net/gnu_java_net_VMPlainSocketImpl.c
+	(Java_gnu_java_net_VMPlainSocketImpl_listen): remove debug printf.
+
+2006-09-18  Tom Tromey  <tromey@redhat.com>
+
+	* gnu/javax/net/ssl/provider/SSLSocket.java (isBound, isClosed,
+	isConnected): Removed old comment.
+	(getRemoteSocketAddress): Uncommented.
+	(setOOBInline, getOOBInline, setKeepAlive, getKeepAlive,
+	setTrafficClass, getTrafficClass, setReuseAddress,
+	getReuseAddress, shutdownInput, shutdownOutput, isInputShutdown,
+	isOutputShutdown): Uncommented.
+
+2006-09-18  David Pirkle  <dpirkle@symyx.com>
+
+	Fixes PR 28589
+	* gnu/xml/transform/XSLURIResolver.java: Test SAXSource for specific
+	  input stream during resolution.
+
+2006-09-18  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/LightweightDispatcher.java
+	(findTarget): Correctly translate child coordinates.
+	Use Component.eventTypeEnabled() for checking if a component
+	has a certain event enabled.
+	(handleMouseEvent): Find the correct mouse event target.
+ 	Use Component.eventTypeEnabled() for checking if a component
+	has a certain event enabled.
+
+2006-09-18  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/Component.java
+	(show): Test for the peer beeing lightweight directly.
+	(paintAll): Validate before painting. Don't paint when not
+	showing. Call peer.paint() when the component is heavyweight.
+	(repaint): Delegate to the parent when lightweight, rather
+	than skipping to the nearest heavyweight.
+	(createImage): Added null check to prevent NPE.
+	(dispatchEvent): Moved old event dispatching and toolkit
+	event dispatching to dispatchEventImpl.
+	(addComponentListener): Don't enable event. Only add listener
+	when not null. Switch to new event dispatching only.
+	(addFocusListener): Likewise.
+	(addHierarchyListener): Likewise.
+	(addHierarchyBoundsListener): Likewise.
+	(addKeyListener): Likewise.
+	(addMouseListener): Likewise.
+	(addMouseMotionListener): Likewise.
+	(addMouseWheelListener): Likewise.
+	(addInputMethodListener): Likewise.
+	(coalesceEvents): For mouse events coalesce them only when
+	their modifiers are equal. For paint events coalesce the events
+	when one contains the other, without going through complicated
+	heuristics.
+	(dispatchEventImpl): Moved old event dispatching and toolkit
+	event dispatching to dispatchEventImpl.
+	(coalescePaintEvents): Removed.
+	(HeavyweightInLightweightListener.componentHidden):
+	Fixed condition.
+	* java/awt/Container.java
+	(addImpl): Don't enable events on lightweights.
+	(remove): Reordered operations. Don't remove any listeners.
+	Throw ArrayIndexOutOfBoundsException when index >= ncomponents.
+	Only removeNotify() when peer is != null. Only invalidate if 
+	not already invalid. Only fire ContainerEvent if there is
+	an interested listener or the event is enabled. Dispatch this
+	event directly without the event queue.
+	(removeAll): Likewise.
+	(paintComponents): Only paint when showing. Also paint heavyweights.
+	Don't paint the container itself.
+	(removeNotify): Create local variables for improved thread safety.
+	(addNotifyContainerChildren): Don't enable events for lightweights.
+
+2006-09-18  Roman Kennke  <kennke@aicas.com>
+
+	* java/awt/EventQueue.java
+	(INITIAL_QUEUE_DEPTH): Removed obsolete field.
+	(next_in): Removed obsolete field.
+	(next_out): Removed obsolete field.
+	(queueHead): New field. Markes the head of the queue.
+	(queueTail): New field. Markes the tail of the queue.
+	(queue): Removed obsolete field.
+	(EventQueue): Documented empty block.
+	(getNextEvent): Changed array based implementation to single-linked
+	list based implementation.
+	(invokeAndWait): Use an Object as synchronization object rather
+	than the current thread.
+	(peekEvent(int)): Changed array based implementation to single-linked
+	list based implementation.
+	(peekEvent()): Changed array based implementation to single-linked
+	list based implementation.
+	(pop()): Changed array based implementation to single-linked
+	list based implementation.
+	(postEvent): Foward to postEventImpl.
+	(postEventImpl): Changed array based implementation to single-linked
+	list based implementation.
+	(push): Changed array based implementation to single-linked
+	list based implementation.
+	* java/awt/AWTEvent.java
+	(queueNext): New field. Implements a single-linked list for
+	the EventQueue.
+
+2006-09-17  Mark Wielaard  <mark@klomp.org>
+
+	* javax/swing/text/html/HTMLEditorKit (getStyleSheet): Load
+	resource from HTMLEditorKit.class.
+
+2006-09-17  Mark Wielaard  <mark@klomp.org>
+
+	* javax/swing/plaf/basic/BasicToolBarUI.java
+	(setBorderToNonRollover): Check whether border is null.
+	(setBorderToRollover): Likewise.
+
+2006-09-17  Mark Wielaard  <mark@klomp.org>
+
+	* javax/swing/JTree.java (setLeadSelectionPath): Handle null path.
+
+2006-09-17  Mark Wielaard  <mark@klomp.org>
+
+	* native/jni/java-nio/javanio.c (cpnio_fcntl): Last argument is long.
+	* native/jni/java-nio/javanio.h (cpnio_fcntl): Likewise.
+	* native/jni/java-nio/gnu_java_nio_VMChannel.c
+	(Java_gnu_java_nio_VMChannel_lock): Likewise.
+	(Java_gnu_java_nio_VMChannel_unlock): Likewise.
+
 2006-09-17  Casey Marshall  <csm@gnu.org>
 
 	* native/jni/classpath/jcl.c (JNI_OnLoad): mark `reserved' as

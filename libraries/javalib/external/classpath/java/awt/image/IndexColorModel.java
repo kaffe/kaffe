@@ -694,4 +694,21 @@ public class IndexColorModel extends ColorModel
 
     return im;
   }
+  
+  public ColorModel coerceData (WritableRaster raster,
+                                boolean isAlphaPremultiplied)
+  {
+    if (this.isAlphaPremultiplied == isAlphaPremultiplied || !hasAlpha())
+      return this;
+        
+    /* TODO: provide better implementation based on the
+       assumptions we can make due to the specific type of the
+       color model. */
+    super.coerceDataWorker(raster, isAlphaPremultiplied);
+    
+    ColorModel cm = new IndexColorModel(pixel_bits, map_size, rgb, 0, hasAlpha, trans,
+                                        transferType);
+    cm.isAlphaPremultiplied = !(cm.isAlphaPremultiplied);
+    return cm;
+  } 
 }

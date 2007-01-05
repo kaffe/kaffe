@@ -79,6 +79,6 @@ JNIEXPORT int cpio_rename (const char *old_name, const char *new_name);
 
 JNIEXPORT int cpio_openDir (const char *dirname, void **handle);
 JNIEXPORT int cpio_closeDir (void *handle);
-JNIEXPORT int cpio_readDir (void *handle, const char **filename);
+JNIEXPORT int cpio_readDir (void *handle, char *filename);
 
 #endif

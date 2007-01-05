@@ -39,8 +39,8 @@ exception statement from your version. */
 package gnu.classpath.tools.keytool;
 
 import gnu.classpath.Configuration;
+import gnu.classpath.tools.common.ClasspathToolParser;
 import gnu.classpath.tools.common.ProviderUtil;
-import gnu.classpath.tools.getopt.ClasspathToolParser;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.OptionGroup;

@@ -340,13 +340,16 @@ public class Frame extends Window implements MenuContainer
 	  parent.remove(menuBar);
 	menuBar.setParent(this);
 
-	if (peer != null)
-	  {
-	    if (menuBar != null)
-	      menuBar.addNotify();
-	    invalidateTree();
-	    ((FramePeer) peer).setMenuBar(menuBar);
-	  }
+        // Create local copy for thread safety.
+        FramePeer p = (FramePeer) peer;
+        if (p != null)
+          {
+            if (menuBar != null)
+              menuBar.addNotify();
+            if (valid)
+              invalidate();
+            p.setMenuBar(menuBar);
+          }
       }
   }
 

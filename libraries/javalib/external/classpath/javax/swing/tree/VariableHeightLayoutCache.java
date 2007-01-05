@@ -339,6 +339,12 @@ public class VariableHeightLayoutCache
       return null;
     if (dirty)
       update();
+
+    // The RI allows null arguments for rect, in which case a new Rectangle
+    // is created.
+    if (rect == null)
+      rect = new Rectangle();
+
     Object last = path.getLastPathComponent();
     NodeRecord r = (NodeRecord) nodes.get(last);
     if (r == null)

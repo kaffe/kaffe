@@ -19,9 +19,9 @@ New in release 0.93 (UNRELEASED)
 * Added aton method to vm/reference/java/net/VMInetAddress.java.
 * NetworkInterface has been implemented for systems that provide the
   `getifaddrs' function.
-* A java.nio.channels.Selector implementation based on the
-  kqueue/kevent notification mechanism has been added for Mac OS X and
-  BSD systems.
+* java.nio.channels.Selector implementations have been added that use
+  the kqueue notification mechanism on Mac OS X and *BSD, and that use
+  the epoll notification mechanism on Linux 2.6.
 * java.nio has been refactored to support more non-blocking operations
   natively. Blocking IO classes have been refactored to call
   non-blocking classes. Non-blocking accepts, connects, and

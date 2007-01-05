@@ -155,7 +155,6 @@ Java_gnu_java_net_VMPlainSocketImpl_listen (JNIEnv *env,
   /* listen is not a blocking system call */
   if ((ret = listen (fd, backlog)) == -1)
     JCL_ThrowException (env, IO_EXCEPTION, strerror (errno));
-  printf("listen returns %d\n", ret);
 }
 
 

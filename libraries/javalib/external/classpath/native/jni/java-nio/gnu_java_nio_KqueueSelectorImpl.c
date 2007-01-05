@@ -66,6 +66,8 @@ exception statement from your version.  */
 /* #define TRACE(fmt, ...) */
 /* #endif */
 
+/* #define TRACE_KQUEUE 1 */
+
 
 #define throw_not_supported(env) JCL_ThrowException (env, "java/lang/UnsupportedOperationException", "kqueue/kevent support not available")
 
@@ -157,53 +159,67 @@ Java_gnu_java_nio_KqueueSelectorImpl_implClose (JNIEnv *env,
 JNIEXPORT void JNICALL
 Java_gnu_java_nio_KqueueSelectorImpl_kevent_1set (JNIEnv *env,
                                                   jclass clazz __attribute__((unused)),
-                                                  jobject nstate, jint fd,
-                                                  jint ops, jint key, jboolean delete)
+                                                  jobject nstate, jint i, jint fd,
+                                                  jint ops, jint active, jint key)
 {
 #if defined(HAVE_KQUEUE) && defined(HAVE_KEVENT)
-  struct kevent *kev = (struct kevent *) (*env)->GetDirectBufferAddress (env, nstate);
-  short ident = kev->ident;
+  struct kevent *kev;
+  short ident;
 
-  if (fd != 0)
-    ident = fd;
+  kev = (struct kevent *) (*env)->GetDirectBufferAddress (env, nstate);
+
+#ifdef TRACE_KQUEUE
+  printf ("kevent_set fd:%d p:%p i:%d ops:%x active:%x key:%x\n",
+          fd, (void *) kev, i, ops, active, key);
+#endif /* TRACE_KQUEUE */
+
+  if (kev == NULL)
+    {
+      JCL_ThrowException (env, "java/lang/InternalError",
+                          "GetDirectBufferAddress returned NULL!");
+      return;
+    }
+
+  ident = fd;
+  memset (&kev[i], 0, sizeof (struct kevent));
 
   if ((ops & KEY_OP_READ) || (ops & KEY_OP_ACCEPT))
     {
-      /* Add the event if we never added it before. */
-      if (kev[0].flags == 0 && JNI_FALSE == delete)
-        EV_SET(&kev[0], ident, EVFILT_READ, EV_ADD, 0, 0, (void *) key);
-      /* Otherwise, delete or reenable it. */
-      else if (kev[0].flags != 0)
-        EV_SET(&kev[0], ident, EVFILT_READ, (JNI_TRUE == delete) ? EV_DELETE : EV_ENABLE,
-               0, 0, (void *) key);
+      /* Add event if it wasn't previously added. */
+      if (!(active & KEY_OP_READ) && !(active & KEY_OP_ACCEPT))
+        EV_SET(&kev[i], ident, EVFILT_READ, EV_ADD, 0, 0, (void *) key);
     }
   else
     {
-      /* Means we've added this event before, and need to disable it. */
-      if (kev[0].flags != 0)
-        EV_SET(&kev[0], ident, EVFILT_READ, EV_DISABLE, 0, 0, (void *) key);
+      /* Delete event if it was previously added */
+      if ((active & KEY_OP_READ) || (active & KEY_OP_ACCEPT))
+        EV_SET(&kev[i], ident, EVFILT_READ, EV_DELETE, 0, 0, (void *) key);
     }
 
   /* Do the same thing for the write filter. */
   if ((ops & KEY_OP_WRITE) || (ops & KEY_OP_CONNECT))
     {
-      if (kev[1].flags == 0 && JNI_FALSE == delete)
-        EV_SET(&kev[1], ident, EVFILT_WRITE, EV_ADD, 0, 0, (void *) key);
-      else if (kev[1].flags != 0)
-        EV_SET(&kev[1], ident, EVFILT_WRITE, (JNI_TRUE == delete) ? EV_DELETE : EV_ENABLE,
-               0, 0, (void *) key);
+      if (!(active & KEY_OP_WRITE) && !(active & KEY_OP_CONNECT))
+        EV_SET(&kev[i], ident, EVFILT_WRITE, EV_ADD, 0, 0, (void *) key);
     }
   else
     {
-      if (kev[1].flags != 0)
-        EV_SET(&kev[1], ident, EVFILT_WRITE, EV_DISABLE, 0, 0, (void *) key);
+      if ((active & KEY_OP_WRITE) || (active & KEY_OP_CONNECT))
+        EV_SET(&kev[i], ident, EVFILT_WRITE, EV_DELETE, 0, 0, (void *) key);
     }
+
+#ifdef TRACE_KQUEUE
+  printf (" set kevent %2d:  ident:%u filter:%x flags:%o fflags:%o data:%p udata:%p\n",
+          i, (unsigned) kev[i].ident, kev[i].filter, kev[i].flags, kev[i].fflags,
+          (void *) kev[i].data, kev[i].udata);
+#endif /* TRACE_KQUEUE */
 #else
   (void) nstate;
+  (void) i;
   (void) fd;
   (void) ops;
   (void) key;
-  (void) delete;
+  (void) active;
   throw_not_supported (env);
 #endif /* HAVE_KQUEUE && HAVE_KEVENT */
 }
@@ -218,7 +234,7 @@ JNIEXPORT jint JNICALL
 Java_gnu_java_nio_KqueueSelectorImpl_kevent (JNIEnv *env,
                                              jobject this __attribute__((unused)),
                                              jint kq, jobject nstate, jint nevents,
-                                             jlong timeout)
+                                             jint maxevents, jlong timeout)
 {
 #if defined(HAVE_KQUEUE) && defined(HAVE_KEVENT)
   struct timespec tv;
@@ -228,10 +244,13 @@ Java_gnu_java_nio_KqueueSelectorImpl_kevent (JNIEnv *env,
 
 #ifdef TRACE_KQUEUE
   int i;
+
+  printf ("[%d] kevent nevents:%d maxevents:%d timeout:%lld\n", kq, nevents, maxevents, timeout);
+  printf ("[%d] addding/deleting %d events\n", kq, nevents);
   for (i = 0; i < nevents; i++)
     {
-      printf ("kevent [%d]: ident:%u filter:%x flags:%o fflags:%o data:%p udata:%p\n",
-              i, (unsigned) kev[i].ident, kev[i].filter, kev[i].flags, kev[i].fflags,
+      printf ("[%d] kevent input [%d]: ident:%u filter:%x flags:%o fflags:%o data:%p udata:%p\n",
+              kq, i, (unsigned) kev[i].ident, kev[i].filter, kev[i].flags, kev[i].fflags,
               (void *) kev[i].data, kev[i].udata);
     }
 #endif
@@ -245,7 +264,7 @@ Java_gnu_java_nio_KqueueSelectorImpl_kevent (JNIEnv *env,
       t = &tv;
     }
 
-  ret = kevent (kq, (const struct kevent *) kev, nevents, kev, nevents, t);
+  ret = kevent (kq, (const struct kevent *) kev, nevents, kev, maxevents, t);
 
   if (ret == -1)
     {
@@ -258,8 +277,8 @@ Java_gnu_java_nio_KqueueSelectorImpl_kevent (JNIEnv *env,
 #ifdef TRACE_KQUEUE
   for (i = 0; i < ret; i++)
     {
-      printf ("kevent [%d]: ident:%u filter:%x flags:%o fflags:%o data:%p udata:%p\n",
-              i, (unsigned) kev[i].ident, kev[i].filter, kev[i].flags, kev[i].fflags,
+      printf ("[%d] kevent output [%d]: ident:%u filter:%x flags:%o fflags:%o data:%p udata:%p\n",
+              kq, i, (unsigned) kev[i].ident, kev[i].filter, kev[i].flags, kev[i].fflags,
               (void *) kev[i].data, kev[i].udata);
     }
 #endif
@@ -269,6 +288,7 @@ Java_gnu_java_nio_KqueueSelectorImpl_kevent (JNIEnv *env,
   (void) kq;
   (void) nstate;
   (void) nevents;
+  (void) maxevents;
   (void) timeout;
   throw_not_supported (env);
   return -1;
@@ -311,6 +331,12 @@ Java_gnu_java_nio_KqueueSelectorImpl_ready_1ops (JNIEnv *env,
 #if defined(HAVE_KQUEUE) && defined(HAVE_KEVENT)
   struct kevent *kev = (struct kevent *) (*env)->GetDirectBufferAddress (env, nstate);
   jint ready = 0;
+
+  if ((kev->flags & EV_ERROR) == EV_ERROR)
+    {
+      printf ("!!! error selecting fd %d: %s", (int) (kev->ident), strerror ((int) (kev->data)));
+      return 0;
+    }
 
   /* We poll for READ for OP_READ and OP_ACCEPT. */
   if (kev->filter == EVFILT_READ)

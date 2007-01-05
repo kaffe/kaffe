@@ -2355,7 +2355,7 @@ public class JTree extends JComponent implements Scrollable, Accessible
     if (selectionModel != null)
       {
         TreePath oldValue = selectionModel.getLeadSelectionPath();
-        if (path.equals(oldValue))
+        if (path == oldValue || path != null && path.equals(oldValue))
           return;
        
         // Repaint the previous and current rows with the lead selection path.

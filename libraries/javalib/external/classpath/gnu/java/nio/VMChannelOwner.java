@@ -38,9 +38,6 @@ exception statement from your version. */
 
 package gnu.java.nio;
 
-import java.nio.channels.Channel;
-import java.nio.channels.Selector;
-
 /**
  * This interface is meant to be implemented by any {@link Channel}
  * implementation we support that uses a platform-specific {@link VMChannel}

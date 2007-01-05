@@ -158,6 +158,7 @@ public class BufferedImageGraphics extends CairoGraphics2D
   
   BufferedImageGraphics(BufferedImageGraphics copyFrom)
   {
+    image = copyFrom.image;
     surface = copyFrom.surface;
     cairo_t = surface.newCairoContext();
     imageWidth = copyFrom.imageWidth;
@@ -182,6 +183,9 @@ public class BufferedImageGraphics extends CairoGraphics2D
       width = imageWidth - x;
     if( y + height > imageHeight ) 
       height = imageHeight - y;
+    
+    boolean wasPremultiplied = image.isAlphaPremultiplied();
+    image.coerceData(true);
 
     if( !hasFastCM )
       image.setRGB(x, y, width, height, pixels, 
@@ -190,6 +194,8 @@ public class BufferedImageGraphics extends CairoGraphics2D
       System.arraycopy(pixels, y * imageWidth, 
 		       ((DataBufferInt)image.getRaster().getDataBuffer()).
 		       getData(), y * imageWidth, height * imageWidth);
+    
+    image.coerceData(wasPremultiplied);
   }
 
   /**

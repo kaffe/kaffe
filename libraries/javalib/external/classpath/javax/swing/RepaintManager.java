@@ -38,13 +38,18 @@ exception statement from your version. */
 
 package javax.swing;
 
+import gnu.java.awt.LowPriorityEvent;
+
 import java.applet.Applet;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.Window;
+import java.awt.event.InvocationEvent;
 import java.awt.image.VolatileImage;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -71,6 +76,32 @@ import java.util.WeakHashMap;
  */
 public class RepaintManager
 {
+  /**
+   * An InvocationEvent subclass that implements LowPriorityEvent. This is used
+   * to defer the execution of RepaintManager requests as long as possible on
+   * the event queue. This way we make sure that all available input is
+   * processed before getting active with the RepaintManager. This allows
+   * for better optimization (more validate and repaint requests can be
+   * coalesced) and thus has a positive effect on performance for GUI
+   * applications under heavy load.
+   */
+  private static class RepaintWorkerEvent
+    extends InvocationEvent
+    implements LowPriorityEvent
+  {
+
+    /**
+     * Creates a new RepaintManager event.
+     *
+     * @param source the source
+     * @param runnable the runnable to execute
+     */
+    public RepaintWorkerEvent(Object source, Runnable runnable)
+    {
+      super(source, runnable);
+    }
+  }
+  
   /**
    * The current repaint managers, indexed by their ThreadGroups.
    */
@@ -340,7 +371,7 @@ public class RepaintManager
     if (! repaintWorker.isLive())
       {
         repaintWorker.setLive(true);
-        SwingUtilities.invokeLater(repaintWorker);
+        invokeLater(repaintWorker);
       }
   }
 
@@ -405,7 +436,7 @@ public class RepaintManager
         if (! repaintWorker.isLive())
           {
             repaintWorker.setLive(true);
-            SwingUtilities.invokeLater(repaintWorker);
+            invokeLater(repaintWorker);
           }
       }
   }
@@ -693,13 +724,18 @@ public class RepaintManager
 	root = root.getParent();
       }
 
-    Graphics g = root.getGraphics();
-    Image buffer = (Image) offscreenBuffers.get(root);
-
-    // Make sure we have a sane clip at this point.
-    g.clipRect(x, y, w, h);
-    g.drawImage(buffer, 0, 0, root);
-    g.dispose();
+    if (root != null)
+      {
+        Graphics g = root.getGraphics();
+        Image buffer = (Image) offscreenBuffers.get(root);
+        if (buffer != null)
+          {
+            // Make sure we have a sane clip at this point.
+            g.clipRect(x, y, w, h);
+            g.drawImage(buffer, 0, 0, root);
+            g.dispose();
+          }
+      }
   }
 
   /**
@@ -790,5 +826,19 @@ public class RepaintManager
   public String toString()
   {
     return "RepaintManager";
+  }
+
+  /**
+   * Sends an RepaintManagerEvent to the event queue with the specified
+   * runnable. This is similar to SwingUtilities.invokeLater(), only that the
+   * event is a low priority event in order to defer the execution a little
+   * more.
+   */
+  private void invokeLater(Runnable runnable)
+  {
+    Toolkit tk = Toolkit.getDefaultToolkit();
+    EventQueue evQueue = tk.getSystemEventQueue();
+    InvocationEvent ev = new RepaintWorkerEvent(this, runnable);
+    evQueue.postEvent(ev);
   }
 }

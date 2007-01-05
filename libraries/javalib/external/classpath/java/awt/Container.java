@@ -39,7 +39,6 @@ exception statement from your version. */
 
 package java.awt;
 
-import java.awt.event.ComponentListener;
 import java.awt.event.ContainerEvent;
 import java.awt.event.ContainerListener;
 import java.awt.event.HierarchyEvent;
@@ -324,23 +323,6 @@ public class Container extends Component
         // we are.
         if (comp.parent != null)
           comp.parent.remove(comp);
-        comp.parent = this;
-
-        if (peer != null)
-          {
-	    // Notify the component that it has a new parent.
-	    comp.addNotify();
-
-            if (comp.isLightweight ())
-	      {
-		enableEvents (comp.eventMask);
-		if (!isLightweight ())
-		  enableEvents (AWTEvent.PAINT_EVENT_MASK);
-	      }
-          }
-
-        // Invalidate the layout of the added component and its ancestors.
-        comp.invalidate();
 
         if (component == null)
           component = new Component[4]; // FIXME, better initial size?
@@ -365,6 +347,9 @@ public class Container extends Component
             ++ncomponents;
           }
 
+        // Give the new component a parent.
+        comp.parent = this;
+
         // Update the counter for Hierarchy(Bounds)Listeners.
         int childHierarchyListeners = comp.numHierarchyListeners;
         if (childHierarchyListeners > 0)
@@ -374,6 +359,18 @@ public class Container extends Component
         if (childHierarchyBoundsListeners > 0)
           updateHierarchyListenerCount(AWTEvent.HIERARCHY_BOUNDS_EVENT_MASK,
                                        childHierarchyListeners);
+
+        // Invalidate the layout of this container.
+        if (valid)
+          invalidate();
+
+        // Create the peer _after_ the component has been added, so that
+        // the peer gets to know about the component hierarchy.
+        if (peer != null)
+          {
+            // Notify the component that it has a new parent.
+            comp.addNotify();
+          }
 
         // Notify the layout manager.
         if (layoutMgr != null)
@@ -394,13 +391,15 @@ public class Container extends Component
         // We previously only sent an event when this container is showing.
         // Also, the event was posted to the event queue. A Mauve test shows
         // that this event is not delivered using the event queue and it is
-        // also sent when the container is not showing. 
-        ContainerEvent ce = new ContainerEvent(this,
-                                               ContainerEvent.COMPONENT_ADDED,
-                                               comp);
-        ContainerListener[] listeners = getContainerListeners();
-        for (int i = 0; i < listeners.length; i++)
-          listeners[i].componentAdded(ce);
+        // also sent when the container is not showing.
+        if (containerListener != null
+            || (eventMask & AWTEvent.CONTAINER_EVENT_MASK) != 0)
+          {
+            ContainerEvent ce = new ContainerEvent(this,
+                                                ContainerEvent.COMPONENT_ADDED,
+                                                comp);
+            dispatchEvent(ce);
+          }
 
         // Notify hierarchy listeners.
         comp.fireHierarchyEvent(HierarchyEvent.HIERARCHY_CHANGED, comp,
@@ -417,17 +416,15 @@ public class Container extends Component
   {
     synchronized (getTreeLock ())
       {
+        if (index < 0 || index >= ncomponents)
+          throw new ArrayIndexOutOfBoundsException();
+
         Component r = component[index];
+        if (peer != null)
+          r.removeNotify();
 
-        ComponentListener[] list = r.getComponentListeners();
-        for (int j = 0; j < list.length; j++)
-              r.removeComponentListener(list[j]);
-        
-        r.removeNotify();
-
-        System.arraycopy(component, index + 1, component, index,
-                         ncomponents - index - 1);
-        component[--ncomponents] = null;
+        if (layoutMgr != null)
+          layoutMgr.removeLayoutComponent(r);
 
         // Update the counter for Hierarchy(Bounds)Listeners.
         int childHierarchyListeners = r.numHierarchyListeners;
@@ -439,20 +436,23 @@ public class Container extends Component
           updateHierarchyListenerCount(AWTEvent.HIERARCHY_BOUNDS_EVENT_MASK,
                                        -childHierarchyListeners);
 
-        invalidate();
-
-        if (layoutMgr != null)
-          layoutMgr.removeLayoutComponent(r);
-
         r.parent = null;
 
-        if (isShowing ())
+        System.arraycopy(component, index + 1, component, index,
+                         ncomponents - index - 1);
+        component[--ncomponents] = null;
+
+        if (valid)
+          invalidate();
+
+        if (containerListener != null
+            || (eventMask & AWTEvent.CONTAINER_EVENT_MASK) != 0)
           {
             // Post event to notify of removing the component.
             ContainerEvent ce = new ContainerEvent(this,
-                                               ContainerEvent.COMPONENT_REMOVED,
-                                               r);
-            getToolkit().getSystemEventQueue().postEvent(ce);
+                                              ContainerEvent.COMPONENT_REMOVED,
+                                              r);
+            dispatchEvent(ce);
           }
 
         // Notify hierarchy listeners.
@@ -496,25 +496,14 @@ public class Container extends Component
         // super.removeAll() ).
         // By doing it this way, user code cannot prevent the correct
         // removal of components.
-        for ( int index = 0; index < ncomponents; index++)
+        while (ncomponents > 0)
           {
-            Component r = component[index];
+            ncomponents--;
+            Component r = component[ncomponents];
+            component[ncomponents] = null;
 
-            ComponentListener[] list = r.getComponentListeners();
-            for (int j = 0; j < list.length; j++)
-              r.removeComponentListener(list[j]);
-            
-            r.removeNotify();
-
-            // Update the counter for Hierarchy(Bounds)Listeners.
-            int childHierarchyListeners = r.numHierarchyListeners;
-            if (childHierarchyListeners > 0)
-              updateHierarchyListenerCount(AWTEvent.HIERARCHY_EVENT_MASK,
-                                           -childHierarchyListeners);
-            int childHierarchyBoundsListeners = r.numHierarchyBoundsListeners;
-            if (childHierarchyBoundsListeners > 0)
-              updateHierarchyListenerCount(AWTEvent.HIERARCHY_BOUNDS_EVENT_MASK,
-                                           -childHierarchyListeners);
+            if (peer != null)
+              r.removeNotify();
 
             if (layoutMgr != null)
               layoutMgr.removeLayoutComponent(r);
@@ -533,6 +522,17 @@ public class Container extends Component
                 dispatchEvent(ce);
               }
 
+            // Update the counter for Hierarchy(Bounds)Listeners.
+            int childHierarchyListeners = r.numHierarchyListeners;
+            if (childHierarchyListeners > 0)
+              updateHierarchyListenerCount(AWTEvent.HIERARCHY_EVENT_MASK,
+                                           -childHierarchyListeners);
+            int childHierarchyBoundsListeners = r.numHierarchyBoundsListeners;
+            if (childHierarchyBoundsListeners > 0)
+              updateHierarchyListenerCount(AWTEvent.HIERARCHY_BOUNDS_EVENT_MASK,
+                                           -childHierarchyListeners);
+
+
             // Send HierarchyEvent if necessary.
             fireHierarchyEvent(HierarchyEvent.HIERARCHY_CHANGED, r, this,
                                HierarchyEvent.PARENT_CHANGED);
@@ -541,8 +541,6 @@ public class Container extends Component
 
         if (valid)
           invalidate();
-        
-        ncomponents = 0;
       }
   }
 
@@ -619,24 +617,20 @@ public class Container extends Component
   /**
    * Recursively invalidates the container tree.
    */
-  void invalidateTree()
+  private final void invalidateTree()
   {
     synchronized (getTreeLock())
       {
-        super.invalidate();  // Clean cached layout state.
         for (int i = 0; i < ncomponents; i++)
           {
             Component comp = component[i];
-            comp.invalidate();
             if (comp instanceof Container)
               ((Container) comp).invalidateTree();
+            else if (comp.valid)
+              comp.invalidate();
           }
-
-        if (layoutMgr != null && layoutMgr instanceof LayoutManager2)
-          {
-            LayoutManager2 lm2 = (LayoutManager2) layoutMgr;
-            lm2.invalidateLayout(this);
-          }
+        if (valid)
+          invalidate();
       }
   }
 
@@ -687,13 +681,11 @@ public class Container extends Component
 
   public void setFont(Font f)
   {
-    if( (f != null && (font == null || !font.equals(f)))
-        || f == null)
+    Font oldFont = getFont();
+    super.setFont(f);
+    Font newFont = getFont();
+    if (newFont != oldFont && (oldFont == null || ! oldFont.equals(newFont)))
       {
-        super.setFont(f);
-        // FIXME: Although it might make more sense to invalidate only
-        // those children whose font == null, Sun invalidates all children.
-        // So we'll do the same.
         invalidateTree();
       }
   }
@@ -795,8 +787,9 @@ public class Container extends Component
             LayoutManager l = layoutMgr;
             if (l instanceof LayoutManager2)
               maxSize = ((LayoutManager2) l).maximumLayoutSize(this);
-            else
+            else {
               maxSize = super.maximumSizeImpl();
+            }
             size = maxSize;
           }
       }
@@ -931,8 +924,8 @@ public class Container extends Component
    */
   public void paintComponents(Graphics g)
   {
-    paint(g);
-    visitChildren(g, GfxPaintAllVisitor.INSTANCE, true);
+    if (isShowing())
+      visitChildren(g, GfxPaintAllVisitor.INSTANCE, false);
   }
 
   /**
@@ -954,7 +947,12 @@ public class Container extends Component
    */
   public synchronized void addContainerListener(ContainerListener listener)
   {
-    containerListener = AWTEventMulticaster.add(containerListener, listener);
+    if (listener != null)
+      {
+        containerListener = AWTEventMulticaster.add(containerListener,
+                                                    listener);
+        newEventsOnly = true;
+      }
   }
 
   /**
@@ -1258,8 +1256,14 @@ public class Container extends Component
   {
     synchronized (getTreeLock ())
       {
-        for (int i = 0; i < ncomponents; ++i)
-          component[i].removeNotify();
+        int ncomps = ncomponents;
+        Component[] comps = component;
+        for (int i = ncomps - 1; i >= 0; --i)
+          {
+            Component comp = comps[i];
+            if (comp != null)
+              comp.removeNotify();
+          }
         super.removeNotify();
       }
   }
@@ -1877,6 +1881,7 @@ public class Container extends Component
                              bounds.height);
     try
       {
+        g2.setFont(comp.getFont());
         visitor.visit(comp, g2);
       }
     finally
@@ -1885,20 +1890,40 @@ public class Container extends Component
       }
   }
 
+  /**
+   * Overridden to dispatch events to lightweight descendents.
+   *
+   * @param e the event to dispatch.
+   */
   void dispatchEventImpl(AWTEvent e)
   {
-    boolean dispatched =
-      LightweightDispatcher.getInstance().dispatchEvent(e);
-    if (! dispatched)
+    LightweightDispatcher dispatcher = LightweightDispatcher.getInstance(); 
+    if (! isLightweight() && dispatcher.dispatchEvent(e))
       {
-        if ((e.id <= ContainerEvent.CONTAINER_LAST
-            && e.id >= ContainerEvent.CONTAINER_FIRST)
-            && (containerListener != null
-                || (eventMask & AWTEvent.CONTAINER_EVENT_MASK) != 0))
-          processEvent(e);
-        else
-          super.dispatchEventImpl(e);
+        // Some lightweight descendent got this event dispatched. Consume
+        // it and let the peer handle it.
+        e.consume();
+        ComponentPeer p = peer;
+        if (p != null)
+          p.handleEvent(e);
       }
+    else
+      {
+        super.dispatchEventImpl(e);
+      }
+  }
+
+  /**
+   * This is called by the lightweight dispatcher to avoid recursivly
+   * calling into the lightweight dispatcher.
+   *
+   * @param e the event to dispatch
+   *
+   * @see LightweightDispatcher#redispatch(MouseEvent, Component, int)
+   */
+  void dispatchNoLightweight(AWTEvent e)
+  {
+    super.dispatchEventImpl(e);
   }
 
   /**
@@ -2059,12 +2084,6 @@ public class Container extends Component
         for (int i = ncomponents;  --i >= 0; )
           {
             component[i].addNotify();
-            if (component[i].isLightweight ())
-	      {
-		enableEvents(component[i].eventMask);
-		if (peer != null && !isLightweight ())
-		  enableEvents (AWTEvent.PAINT_EVENT_MASK);
-	      }
           }
       }
   }

@@ -140,7 +140,7 @@ public class Window extends Container implements Accessible
     this();
     graphicsConfiguration = gc;
   }
-  
+
   /**
    * Initializes a new instance of <code>Window</code> with the specified
    * parent.  The window will initially be invisible.
@@ -255,8 +255,6 @@ public class Window extends Container implements Accessible
   {
     synchronized (getTreeLock())
       {
-        if (parent != null && ! parent.isDisplayable())
-          parent.addNotify();
         if (peer == null)
           addNotify();
 
@@ -298,6 +296,15 @@ public class Window extends Container implements Accessible
             if (initialFocusOwner != null)
               initialFocusOwner.requestFocusInWindow();
 
+            // Post WINDOW_OPENED from here.
+            if (windowListener != null
+                || (eventMask & AWTEvent.WINDOW_EVENT_MASK) != 0)
+              {
+                WindowEvent ev = new WindowEvent(this,
+                                                 WindowEvent.WINDOW_OPENED);
+                Toolkit tk = Toolkit.getDefaultToolkit();
+                tk.getSystemEventQueue().postEvent(ev);
+              }
             shown = true;
           }
       }
@@ -349,9 +356,15 @@ public class Window extends Container implements Accessible
 	  component[i].removeNotify();
 	this.removeNotify();
 
-        // Post a WINDOW_CLOSED event.
-        WindowEvent we = new WindowEvent(this, WindowEvent.WINDOW_CLOSED);
-        getToolkit().getSystemEventQueue().postEvent(we);
+    // Post WINDOW_CLOSED from here.
+    if (windowListener != null
+        || (eventMask & AWTEvent.WINDOW_EVENT_MASK) != 0)
+      {
+        WindowEvent ev = new WindowEvent(this,
+                                         WindowEvent.WINDOW_OPENED);
+        Toolkit tk = Toolkit.getDefaultToolkit();
+        tk.getSystemEventQueue().postEvent(ev);
+      }
       }
   }
 
@@ -586,33 +599,12 @@ public class Window extends Container implements Accessible
 
   void dispatchEventImpl(AWTEvent e)
   {
-    // Make use of event id's in order to avoid multiple instanceof tests.
-    if (e.id <= WindowEvent.WINDOW_LAST 
-        && e.id >= WindowEvent.WINDOW_FIRST
-        && (windowListener != null
-	    || windowFocusListener != null
-	    || windowStateListener != null
-	    || (eventMask & AWTEvent.WINDOW_EVENT_MASK) != 0))
-      processEvent(e);
-    else 
+    if (e.getID() == ComponentEvent.COMPONENT_RESIZED)
       {
-	if (peer != null && (e.id == ComponentEvent.COMPONENT_RESIZED
-	    || e.id == ComponentEvent.COMPONENT_MOVED))
-            {
-	    Rectangle bounds = peer.getBounds();
-	    x = bounds.x;
-	    y = bounds.y;
-	    height = bounds.height;
-	    width = bounds.width;
-	    
-	    if (e.id == ComponentEvent.COMPONENT_RESIZED)
-	      {
-		invalidate();
-		validate();
-	      }
-	  }
-	super.dispatchEventImpl(e);
+        invalidate();
+        validate();
       }
+    super.dispatchEventImpl(e);
   }
 
   /**

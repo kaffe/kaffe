@@ -39,17 +39,100 @@
 package gnu.classpath.tools.javah;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 
 public abstract class Printer
 {
   protected Main classpath;
 
-  protected Printer(Main classpath)
+  /**
+   * The {@link File} object that denotes either a directory (when the
+   * <code>-d</code> option was used), or a file (when the <code>-o</code>
+   * option was used) on the command line.
+   */
+  protected File outputFileObject;
+
+  /**
+   * Set to <code>true</code> if the field <code>outputFileObject</code> denotes
+   * a directory; i.e. for each input class file, one JNI header file will be
+   * generated in that directory.
+   * <p>
+   * Set to <code>false</code> if the field <code>outputFileObject</code>
+   * denotes a file; i.e. all generated headers will be written to that file.
+   */
+  protected boolean isDirectory;
+
+  /**
+   * Set to <code>true</code> if the output file(s) should always be written.
+   * <p>
+   * When set to <code>false</code>, the contents of the header/stub are only
+   * written to the file if it does not already exist.
+   */
+  protected boolean force;
+
+  /**
+   * Set to <code>true</code> if all output is directed to one file, and the
+   * common preamble text has already been generated.
+   */
+  protected boolean wrotePreamble;
+
+  protected Printer(Main classpath, File outFile, boolean isDir, boolean force)
   {
     this.classpath = classpath;
+    if (outFile == null)
+      throw new IllegalArgumentException("File argument MUST NOT be null");
+    outputFileObject = outFile;
+    isDirectory = isDir;
+    if (! isDirectory)
+      {
+        File parent = outputFileObject.getParentFile();
+        if (parent != null)
+          parent.mkdirs();
+      }
+    this.force = force;
   }
 
-  public abstract void printClass(File outputDir, ClassWrapper klass)
-      throws IOException;
+  public abstract void printClass(ClassWrapper klass) throws IOException;
+
+  protected abstract void writePreambleImpl(PrintStream ps);
+
+  protected abstract PrintStream getPrintStreamImpl(FileOutputStream fos,
+                                                    ClassWrapper klass);
+
+  protected PrintStream getPrintStream(String fullName, ClassWrapper klass)
+      throws FileNotFoundException
+  {
+    PrintStream result;
+    FileOutputStream fos;
+    if (isDirectory)
+      {
+        File outFile = new File(outputFileObject, fullName);
+        if (outFile.exists() && ! force)
+          return null;
+        File parent = outFile.getParentFile();
+        if (parent != null)
+          parent.mkdirs();
+        fos = new FileOutputStream(outFile);
+        result = getPrintStreamImpl(fos, klass);
+        writePreamble(result);
+      }
+    else
+      {
+        // the first time we open this file, wrotePreamble is false
+        fos = new FileOutputStream(outputFileObject, wrotePreamble);
+        result = getPrintStreamImpl(fos, klass);
+        if (! wrotePreamble)
+          writePreamble(result);
+      }
+    return result;
+  }
+
+  protected void writePreamble(PrintStream out)
+  {
+    writePreambleImpl(out);
+    wrotePreamble = true;
+  }
 }

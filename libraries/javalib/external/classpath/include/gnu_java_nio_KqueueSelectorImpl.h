@@ -7,6 +7,18 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#undef gnu_java_nio_KqueueSelectorImpl_MAX_DOUBLING_CAPACITY
+#define gnu_java_nio_KqueueSelectorImpl_MAX_DOUBLING_CAPACITY 16384L
+#undef gnu_java_nio_KqueueSelectorImpl_CAP_INCREMENT
+#define gnu_java_nio_KqueueSelectorImpl_CAP_INCREMENT 1024L
+#undef gnu_java_nio_KqueueSelectorImpl_OP_ACCEPT
+#define gnu_java_nio_KqueueSelectorImpl_OP_ACCEPT 16L
+#undef gnu_java_nio_KqueueSelectorImpl_OP_CONNECT
+#define gnu_java_nio_KqueueSelectorImpl_OP_CONNECT 8L
+#undef gnu_java_nio_KqueueSelectorImpl_OP_READ
+#define gnu_java_nio_KqueueSelectorImpl_OP_READ 1L
+#undef gnu_java_nio_KqueueSelectorImpl_OP_WRITE
+#define gnu_java_nio_KqueueSelectorImpl_OP_WRITE 4L
 /*
  * Class:     gnu_java_nio_KqueueSelectorImpl
  * Method:    kqueue_supported
@@ -42,18 +54,18 @@ JNIEXPORT void JNICALL Java_gnu_java_nio_KqueueSelectorImpl_implClose
 /*
  * Class:     gnu_java_nio_KqueueSelectorImpl
  * Method:    kevent_set
- * Signature: (Ljava/nio/ByteBuffer;IIIZ)V
+ * Signature: (Ljava/nio/ByteBuffer;IIIII)V
  */
 JNIEXPORT void JNICALL Java_gnu_java_nio_KqueueSelectorImpl_kevent_1set
-  (JNIEnv *, jclass, jobject, jint, jint, jint, jboolean);
+  (JNIEnv *, jclass, jobject, jint, jint, jint, jint, jint);
 
 /*
  * Class:     gnu_java_nio_KqueueSelectorImpl
  * Method:    kevent
- * Signature: (ILjava/nio/ByteBuffer;IJ)I
+ * Signature: (ILjava/nio/ByteBuffer;IIJ)I
  */
 JNIEXPORT jint JNICALL Java_gnu_java_nio_KqueueSelectorImpl_kevent
-  (JNIEnv *, jclass, jint, jobject, jint, jlong);
+  (JNIEnv *, jclass, jint, jobject, jint, jint, jlong);
 
 /*
  * Class:     gnu_java_nio_KqueueSelectorImpl

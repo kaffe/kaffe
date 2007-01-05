@@ -1,5 +1,5 @@
 /* jcl.c
-   Copyright (C) 1998, 2005 Free Software Foundation, Inc.
+   Copyright (C) 1998, 2005, 2006 Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -72,11 +72,7 @@ JNI_OnLoad (JavaVM *vm, void *reserved __attribute__((unused)))
 #if SIZEOF_VOID_P == 8
   rawDataClass = (*env)->FindClass (env, "gnu/classpath/Pointer64");
   if (rawDataClass != NULL)
-    {
-      jclass tmp = rawDataClass;
-      rawDataClass = (*env)->NewGlobalRef (env, rawDataClass);
-      (*env)->DeleteGlobalRef (env, tmp);
-    }
+    rawDataClass = (*env)->NewGlobalRef (env, rawDataClass);
 
   if (rawDataClass != NULL)
     {
@@ -87,11 +83,7 @@ JNI_OnLoad (JavaVM *vm, void *reserved __attribute__((unused)))
 #if SIZEOF_VOID_P == 4
   rawDataClass = (*env)->FindClass (env, "gnu/classpath/Pointer32");
   if (rawDataClass != NULL)
-    {
-      jclass tmp = rawDataClass;
-      rawDataClass = (*env)->NewGlobalRef (env, rawDataClass);
-      (*env)->DeleteGlobalRef (env, tmp);
-    }
+    rawDataClass = (*env)->NewGlobalRef (env, rawDataClass);
 
   if (rawDataClass != NULL)
     {

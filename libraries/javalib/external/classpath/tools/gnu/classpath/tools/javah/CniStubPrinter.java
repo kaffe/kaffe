@@ -41,6 +41,7 @@ package gnu.classpath.tools.javah;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
 
@@ -50,10 +51,10 @@ import org.objectweb.asm.tree.MethodNode;
 public class CniStubPrinter
     extends Printer
 {
-
-  protected CniStubPrinter(Main classpath)
+  protected CniStubPrinter(Main classpath, File outFile, boolean isDir,
+                           boolean force)
   {
-    super(classpath);
+    super(classpath, outFile, isDir, force);
   }
 
   private void printDecl(CniPrintStream out, String className, MethodNode method)
@@ -72,24 +73,34 @@ public class CniStubPrinter
     out.print(")");
   }
 
-  public void printClass(File outputDir, ClassWrapper klass) throws IOException
+  protected void writePreambleImpl(PrintStream out)
   {
-    if (! klass.hasNativeMethod())
-      return;
-    File klassFile = new File(outputDir, klass.name + ".cc");
-    klassFile.getParentFile().mkdirs();
-    String className = klass.name.replaceAll("/", "::");
-
-    CniPrintStream out = new CniPrintStream(new FileOutputStream(klassFile));
     out.println("// This file is intended to give you a head start on implementing native");
     out.println("// methods using CNI.");
     out.println("// Be aware: running 'gcjh -stubs' once more for this class may");
     out.println("// overwrite any edits you have made to this file.");
     out.println();
-
-    out.println("#include <" + klass.name + ".h>");
     out.println("#include <gcj/cni.h>");
     out.println("#include <java/lang/UnsupportedOperationException.h>");
+  }
+
+  protected PrintStream getPrintStreamImpl(FileOutputStream fos,
+                                           ClassWrapper klass)
+  {
+    return new CniPrintStream(fos);
+  }
+
+  public void printClass(ClassWrapper klass) throws IOException
+  {
+    if (! klass.hasNativeMethod())
+      return;
+    String className = klass.name.replaceAll("/", "::");
+    CniPrintStream out = (CniPrintStream) getPrintStream(klass.name + ".cc",
+                                                         klass);
+    if (out == null)
+      return;
+    out.println();
+    out.println("#include <" + klass.name + ".h>");
     out.println();
 
     Iterator i = klass.methods.iterator();
@@ -115,5 +126,4 @@ public class CniStubPrinter
       }
     out.close();
   }
-
 }

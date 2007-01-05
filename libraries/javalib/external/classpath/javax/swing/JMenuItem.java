@@ -81,8 +81,7 @@ public class JMenuItem extends AbstractButton implements Accessible,
    */
   public JMenuItem()
   {
-    super();
-    init(null, null);
+    this(null, null);
   }
 
   /**
@@ -94,8 +93,7 @@ public class JMenuItem extends AbstractButton implements Accessible,
   {
     // FIXME: The requestedFocusEnabled property should
     // be set to false, when only icon is set for menu item.
-    super();
-    init(null, icon);
+    this(null, icon);
   }
 
   /**
@@ -117,6 +115,7 @@ public class JMenuItem extends AbstractButton implements Accessible,
   {
     super();
     super.setAction(action);
+    setModel(new DefaultButtonModel());
     init(null, null);
     if (action != null)
       {
@@ -148,6 +147,7 @@ public class JMenuItem extends AbstractButton implements Accessible,
   public JMenuItem(String text, Icon icon)
   {
     super();
+    setModel(new DefaultButtonModel());
     init(text, icon);
   }
 
@@ -174,7 +174,6 @@ public class JMenuItem extends AbstractButton implements Accessible,
   protected void init(String text, Icon icon)
   {
     super.init(text, icon);
-    setModel(new DefaultButtonModel());
 
     // Initializes properties for this menu item, that are different
     // from Abstract button properties. 

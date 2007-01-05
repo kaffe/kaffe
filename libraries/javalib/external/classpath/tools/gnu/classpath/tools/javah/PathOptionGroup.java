@@ -96,7 +96,7 @@ public class PathOptionGroup
         setPath(classpath, path);
       }
     });
-    add(new Option('I', "Add directory to class path", "DIR")
+    add(new Option('I', "Add directory to class path", "DIR", true)
     {
       public void parsed(String path) throws OptionException
       {

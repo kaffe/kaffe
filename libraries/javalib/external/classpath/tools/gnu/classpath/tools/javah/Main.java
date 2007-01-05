@@ -38,7 +38,7 @@
 
 package gnu.classpath.tools.javah;
 
-import gnu.classpath.tools.getopt.ClasspathToolParser;
+import gnu.classpath.tools.common.ClasspathToolParser;
 import gnu.classpath.tools.getopt.Option;
 import gnu.classpath.tools.getopt.OptionException;
 import gnu.classpath.tools.getopt.Parser;
@@ -70,6 +70,9 @@ public class Main
   // The output directory.
   String outputDir;
 
+  // The output file name used if/when -o option is used.
+  String outFileName;
+
   // The loader that we use to load class files.
   URLClassLoader loader;
 
@@ -84,6 +87,9 @@ public class Main
 
   // True if we're emitting CNI code.
   boolean cni;
+
+  // True if output files should always be written.
+  boolean force;
 
   // Map class names to class wrappers.
   HashMap classMap = new HashMap();
@@ -184,7 +190,22 @@ public class Main
       {
         if (outputDir != null)
           throw new OptionException("-d already seen");
+        if (outFileName != null)
+          throw new OptionException("only one of -d or -o may be used");
         outputDir = dir;
+      }
+    });
+    result.add(new Option('o',
+                          "Set output file (only one of -d or -o may be used)",
+                          "FILE")
+    {
+      public void parsed(String fileName) throws OptionException
+      {
+        if (outFileName != null)
+          throw new OptionException("-o already seen");
+        if (outputDir != null)
+          throw new OptionException("only one of -d or -o may be used");
+        outFileName = fileName;
       }
     });
     result.add(new Option("cmdfile", "Read command file", "FILE")
@@ -212,6 +233,15 @@ public class Main
         stubs = true;
       }
     });
+    result.add(new Option("jni", "Emit JNI stubs or header (default)")
+    {
+      public void parsed(String arg0) throws OptionException
+      {
+        if (cni)
+          throw new OptionException("only one of -jni or -cni may be used");
+        cni = false;
+      }
+    });
     result.add(new Option("cni", "Emit CNI stubs or header (default JNI)")
     {
       public void parsed(String arg0) throws OptionException
@@ -226,6 +256,13 @@ public class Main
         verbose = true;
       }
     });
+    result.add(new Option("force", "Output files should always be written")
+    {
+      public void parsed(String arg0) throws OptionException
+      {
+        force = true;
+      }
+    });
     return result;
   }
 
@@ -235,15 +272,40 @@ public class Main
     if (outputDir == null)
       outputFile = new File(".");
     else
-      {
-        outputFile = new File(outputDir);
-        outputFile.mkdirs();
-      }
+      outputFile = new File(outputDir);
     return outputFile;
   }
 
-  private void writeHeaders(ArrayList klasses, Printer printer,
-                            File outputDirFile) throws IOException
+  /**
+   * @return The {@link File} object where the generated code will be written.
+   *         Returns <code>null</code> if the option <code>-force</code> was
+   *         specified on the command line and the designated file already
+   *         exists.
+   * @throws IOException if <code>outFileName</code> is not a writable file.
+   */
+  private File makeOutputFile() throws IOException
+  {
+    File result = new File(outFileName);
+    if (result.exists())
+      {
+        if (! result.isFile())
+          throw new IOException("'" + outFileName + "' is not a file");
+        if (! force)
+          {
+            if (verbose)
+              System.err.println("["+ outFileName
+                                 + " already exists.  Use -force to overwrite]");
+            return null;
+          }
+        if (! result.delete())
+          throw new IOException("Was unable to delete existing file: "
+                                + outFileName);
+      }
+    return result;
+  }
+
+  private void writeHeaders(ArrayList klasses, Printer printer)
+      throws IOException
   {
     Iterator i = klasses.iterator();
     while (i.hasNext())
@@ -251,7 +313,7 @@ public class Main
         ClassWrapper klass = (ClassWrapper) i.next();
         if (verbose)
           System.err.println("[writing " + klass + "]");
-        printer.printClass(outputDirFile, klass);
+        printer.printClass(klass);
       }
   }
 
@@ -261,21 +323,25 @@ public class Main
     String[] classNames = p.parse(args);
     loader = classpath.getLoader();
 
-    File outputFile = makeOutputDirectory();
+    boolean isDirectory = outFileName == null;
+    File outputFile = isDirectory ? makeOutputDirectory() : makeOutputFile();
+    if (outputFile == null)
+      return;
+
     Printer printer;
     if (! cni)
       {
         if (stubs)
-          printer = new JniStubPrinter(this);
+          printer = new JniStubPrinter(this, outputFile, isDirectory, force);
         else
-          printer = new JniIncludePrinter(this);
+          printer = new JniIncludePrinter(this, outputFile, isDirectory, force);
       }
     else
       {
         if (stubs)
-          printer = new CniStubPrinter(this);
+          printer = new CniStubPrinter(this, outputFile, isDirectory, force);
         else
-          printer = new CniIncludePrinter(this);
+          printer = new CniIncludePrinter(this, outputFile, isDirectory, force);
       }
 
     // First we load all of the files. That way if
@@ -324,7 +390,7 @@ public class Main
         results.add(klass);
       }
 
-    writeHeaders(results, printer, outputFile);
+    writeHeaders(results, printer);
   }
 
   public ArrayList getClassTextList(String name)

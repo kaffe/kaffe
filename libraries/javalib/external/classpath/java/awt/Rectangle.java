@@ -119,7 +119,6 @@ public class Rectangle extends Rectangle2D implements Shape, Serializable
    * coordinates of the specified rectangle.
    *
    * @param r the rectangle to copy from
-   * @throws NullPointerException if r is null
    * @since 1.1
    */
   public Rectangle(Rectangle r)
@@ -168,7 +167,6 @@ public class Rectangle extends Rectangle2D implements Shape, Serializable
    *
    * @param p the upper left corner of the rectangle
    * @param d the width and height of the rectangle
-   * @throws NullPointerException if p or d is null
    */
   public Rectangle(Point p, Dimension d)
   {
@@ -185,7 +183,7 @@ public class Rectangle extends Rectangle2D implements Shape, Serializable
    * @param p the upper left corner of the rectangle
    */
   public Rectangle(Point p)
-  {
+  { 
     x = p.x;
     y = p.y;
   }
@@ -198,7 +196,7 @@ public class Rectangle extends Rectangle2D implements Shape, Serializable
    * @param d the width and height of the rectangle
    */
   public Rectangle(Dimension d)
-  {
+  {  
     width = d.width;
     height = d.height;
   }

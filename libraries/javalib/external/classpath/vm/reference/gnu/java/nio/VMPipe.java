@@ -38,7 +38,6 @@ exception statement from your version. */
 package gnu.java.nio;
 
 import java.io.IOException;
-import java.nio.channels.spi.SelectorProvider;
 import gnu.classpath.Configuration;
 
 /**

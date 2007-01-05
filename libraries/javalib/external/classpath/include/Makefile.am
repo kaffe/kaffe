@@ -128,6 +128,7 @@ $(GCONF_PREFS_FILES) \
 $(top_srcdir)/include/gnu_java_net_VMPlainDatagramSocketImpl.h \
 $(top_srcdir)/include/gnu_java_net_VMPlainSocketImpl.h \
 $(top_srcdir)/include/gnu_java_net_local_LocalSocketImpl.h \
+$(top_srcdir)/include/gnu_java_nio_EpollSelectorImpl.h \
 $(top_srcdir)/include/gnu_java_nio_FileChannelImpl.h \
 $(top_srcdir)/include/gnu_java_nio_KqueueSelectorImpl.h \
 $(top_srcdir)/include/gnu_java_nio_VMChannel.h \
@@ -226,6 +227,9 @@ $(top_srcdir)/include/gnu_java_nio_FileChannelImpl.h: $(top_srcdir)/gnu/java/nio
 
 $(top_srcdir)/include/gnu_java_nio_KqueueSelectorImpl.h: $(top_srcdir)/gnu/java/nio/KqueueSelectorImpl.java
 	$(JAVAH) -o $@ gnu.java.nio.KqueueSelectorImpl
+
+$(top_srcdir)/include/gnu_java_nio_EpollSelectorImpl.h: $(top_srcdir)/gnu/java/nio/EpollSelectorImpl.java
+	$(JAVAH) -o $@ gnu.java.nio.EpollSelectorImpl
 
 $(top_srcdir)/include/gnu_java_nio_charset_iconv_IconvDecoder.h: $(top_srcdir)/gnu/java/nio/charset/iconv/IconvDecoder.java
 	$(JAVAH) -o $@ gnu.java.nio.charset.iconv.IconvDecoder

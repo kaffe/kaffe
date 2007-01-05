@@ -110,10 +110,12 @@ Java_gnu_java_awt_peer_gtk_GtkVolatileImage_nativeGetPixels
   /* jint *pixeldata, *jpixdata; */
   jint *jpixdata;
   GdkPixmap *pixmap;
+  GdkPixbuf *pixbuf;
   jintArray jpixels;
   int width, height, depth, size;
   jclass cls;
   jfieldID field;
+  guchar *pixels;
 
   cls = (*env)->GetObjectClass (env, obj);
   field = (*env)->GetFieldID (env, cls, "width", "I");
@@ -131,11 +133,19 @@ Java_gnu_java_awt_peer_gtk_GtkVolatileImage_nativeGetPixels
 
   /* get depth in bytes */
   depth = gdk_drawable_get_depth( pixmap ) >> 3;
-  size = width * height * 4;
+  size = width * height;
   jpixels = (*env)->NewIntArray ( env, size );
   jpixdata = (*env)->GetIntArrayElements (env, jpixels, NULL);
-  /*  memcpy (jpixdata, pixeldata, size * sizeof( jint )); */
-
+  
+  pixbuf = gdk_pixbuf_new( GDK_COLORSPACE_RGB, TRUE, 8, width, height );
+  gdk_pixbuf_get_from_drawable( pixbuf, pixmap, NULL, 0, 0, 0, 0, width, height );
+  
+  if (pixbuf != NULL)
+    {
+      pixels = gdk_pixbuf_get_pixels(pixbuf);
+      memcpy (jpixdata, pixels, size * sizeof(jint));
+    }
+    
   (*env)->ReleaseIntArrayElements (env, jpixels, jpixdata, 0);
 
   gdk_threads_leave();

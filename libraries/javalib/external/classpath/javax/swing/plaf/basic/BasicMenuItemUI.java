@@ -180,17 +180,9 @@ public class BasicMenuItemUI extends MenuItemUI
   private ItemListener itemListener;
 
   /**
-   * Number of spaces between accelerator and menu item's label.
+   * A PropertyChangeListener to make UI updates after property changes.
    */
-  private int defaultAcceleratorLabelGap = 10;
-
-  /**
-   * The gap between different menus on the MenuBar.
-   */
-  private int MenuGap = 10;
-  
-  /** A PropertyChangeListener to make UI updates after property changes **/
-  PropertyChangeHandler propertyChangeListener;
+  private PropertyChangeHandler propertyChangeListener;
 
   /**
    * The view rectangle used for layout of the menu item.
@@ -262,7 +254,6 @@ public class BasicMenuItemUI extends MenuItemUI
                 || property.equals("font"))
                && SystemProperties.getProperty("gnu.javax.swing.noGraphics2D")
                == null)
-               
         {
           AbstractButton b = (AbstractButton) e.getSource();
           String text = b.getText();
@@ -414,7 +405,7 @@ public class BasicMenuItemUI extends MenuItemUI
     Component c = menuItem;
     while (c instanceof MenuElement)
       {
-        path.add(0, (MenuElement) c);
+        path.add(0, c);
 
         if (c instanceof JPopupMenu)
           c = ((JPopupMenu) c).getInvoker();
@@ -603,6 +594,11 @@ public class BasicMenuItemUI extends MenuItemUI
     menuItem.addMenuKeyListener(menuKeyListener);
     menuItem.addItemListener(itemListener);
     menuItem.addPropertyChangeListener(propertyChangeListener);
+    // Fire synthetic property change event to let the listener update
+    // the TextLayout cache.
+    propertyChangeListener.propertyChange(new PropertyChangeEvent(menuItem,
+                                                                  "font", null,
+                                                          menuItem.getFont()));
   }
 
   /**
@@ -935,6 +931,7 @@ public class BasicMenuItemUI extends MenuItemUI
     uninstallListeners();
     uninstallDefaults();
     uninstallComponents(menuItem);
+    c.putClientProperty(BasicGraphicsUtils.CACHED_TEXT_LAYOUT, null);
     menuItem = null;
   }
 
@@ -949,47 +946,6 @@ public class BasicMenuItemUI extends MenuItemUI
   public void update(Graphics g, JComponent c)
   {
     paint(g, c);
-  }
-
-  /**
-   * Return text representation of the specified accelerator
-   * 
-   * @param accelerator
-   *          Accelerator for which to return string representation
-   * @return $String$ Text representation of the given accelerator
-   */
-  private String getAcceleratorText(KeyStroke accelerator)
-  {
-    // convert keystroke into string format
-    String modifiersText = "";
-    int modifiers = accelerator.getModifiers();
-    char keyChar = accelerator.getKeyChar();
-    int keyCode = accelerator.getKeyCode();
-
-    if (modifiers != 0)
-      modifiersText = KeyEvent.getKeyModifiersText(modifiers)
-                      + acceleratorDelimiter;
-
-    if (keyCode == KeyEvent.VK_UNDEFINED)
-      return modifiersText + keyChar;
-    else
-      return modifiersText + KeyEvent.getKeyText(keyCode);
-  }
-
-  /**
-   * Calculates and return rectange in which accelerator should be displayed
-   * 
-   * @param accelerator
-   *          accelerator for which to return the display rectangle
-   * @param fm
-   *          The font metrics used to measure the text
-   * @return $Rectangle$ reactangle which will be used to display accelerator
-   */
-  private Rectangle getAcceleratorRect(KeyStroke accelerator, FontMetrics fm)
-  {
-    int width = fm.stringWidth(getAcceleratorText(accelerator));
-    int height = fm.getHeight();
-    return new Rectangle(0, 0, width, height);
   }
 
   /**
@@ -1309,9 +1265,6 @@ public class BasicMenuItemUI extends MenuItemUI
    */
   private void layoutMenuItem(JMenuItem m, String accelText)
   {
-    int width = m.getWidth();
-    int height = m.getHeight();
-
     // Fetch the fonts.
     Font font = m.getFont();
     FontMetrics fm = m.getFontMetrics(font);

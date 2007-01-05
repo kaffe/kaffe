@@ -347,6 +347,7 @@ public class BufferedImage extends Image
   public void coerceData(boolean premultiplied)
   {
     colorModel = colorModel.coerceData(raster, premultiplied);
+    isPremultiplied = premultiplied;
   }
 
   public WritableRaster copyData(WritableRaster dest)

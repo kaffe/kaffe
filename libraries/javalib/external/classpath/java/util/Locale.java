@@ -1,5 +1,5 @@
 /* Locale.java -- i18n locales
-   Copyright (C) 1998, 1999, 2001, 2002, 2005  Free Software Foundation, Inc.
+   Copyright (C) 1998, 1999, 2001, 2002, 2005, 2006  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -188,17 +188,11 @@ public final class Locale implements Serializable, Cloneable
   private String variant;
 
   /**
-   * This is where the JDK caches its hashcode. This is is only here
-   * for serialization purposes. The actual cache is hashcodeCache
+   * This is the cached hashcode. When writing to stream, we write -1.
    *
    * @serial should be -1 in serial streams
    */
-  private int hashcode = -1;
-
-  /**
-   * This is the cached hashcode. 
-   */
-  private transient int hashcodeCache;
+  private int hashcode;
 
   /**
    * Array storing all available locales.
@@ -330,7 +324,7 @@ public final class Locale implements Serializable, Cloneable
     this.language = language;
     this.country = country;
     this.variant = variant;
-    hashcodeCache = language.hashCode() ^ country.hashCode() ^ variant.hashCode();
+    hashcode = language.hashCode() ^ country.hashCode() ^ variant.hashCode();
   }
 
   /**
@@ -905,7 +899,7 @@ public final class Locale implements Serializable, Cloneable
    */
   public int hashCode()
   {
-    return hashcodeCache;
+    return hashcode;
   }
 
   /**
@@ -929,6 +923,24 @@ public final class Locale implements Serializable, Cloneable
   }
 
   /**
+   * Write the locale to an object stream.
+   *
+   * @param s the stream to write to
+   * @throws IOException if the write fails
+   * @serialData The first three fields are Strings representing language,
+   *             country, and variant. The fourth field is a placeholder for 
+   *             the cached hashcode, but this is always written as -1, and 
+   *             recomputed when reading it back.
+   */
+  private void writeObject(ObjectOutputStream s)
+    throws IOException
+  {
+    ObjectOutputStream.PutField fields = s.putFields();
+    fields.put("hashcode", -1);
+    s.defaultWriteObject();
+  }
+
+  /**
    * Reads a locale from the input stream.
    *
    * @param s the stream to read from
@@ -943,6 +955,6 @@ public final class Locale implements Serializable, Cloneable
     language = language.intern();
     country = country.intern();
     variant = variant.intern();
-    hashcodeCache = language.hashCode() ^ country.hashCode() ^ variant.hashCode();
+    hashcode = language.hashCode() ^ country.hashCode() ^ variant.hashCode();
   }
 } // class Locale

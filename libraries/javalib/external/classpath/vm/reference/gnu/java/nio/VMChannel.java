@@ -39,12 +39,7 @@ exception statement from your version. */
 package gnu.java.nio;
 
 import gnu.classpath.Configuration;
-import gnu.classpath.Pointer;
 import gnu.classpath.jdwp.exception.NotImplementedException;
-import gnu.java.net.PlainSocketImpl;
-import gnu.java.nio.PipeImpl.SinkChannelImpl;
-import gnu.java.nio.PipeImpl.SourceChannelImpl;
-import gnu.java.nio.FileChannelImpl;
 
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -196,7 +191,7 @@ public final class VMChannel
   {
     if (offset + length > dsts.length)
       throw new IndexOutOfBoundsException("offset + length > dsts.length");
-    
+
     return readScattering(nfd.getNativeFD(), dsts, offset, length);
   }
   
@@ -275,6 +270,21 @@ public final class VMChannel
     if (offset + length > srcs.length)
       throw new IndexOutOfBoundsException("offset + length > srcs.length");
     
+    // A gathering write is limited to 16 buffers; when writing, ensure
+    // that we have at least one buffer with something in it in the 16
+    // buffer window starting at offset.
+    while (!srcs[offset].hasRemaining() && offset < srcs.length)
+      offset++;
+    
+    // There are no buffers with anything to write.
+    if (offset == srcs.length)
+      return 0;
+
+    // If we advanced `offset' so far that we don't have `length'
+    // buffers left, reset length to only the remaining buffers.
+    if (length > srcs.length - offset)
+      length = srcs.length - offset;
+
     return writeGathering(nfd.getNativeFD(), srcs, offset, length);
   }
   
@@ -673,10 +683,10 @@ public final class VMChannel
     
     public String toString()
     {
-      if (!valid)
-        return "<<invalid>>";
       if (closed)
         return "<<closed>>";
+      if (!valid)
+        return "<<invalid>>";
       return String.valueOf(native_fd);
     }
     

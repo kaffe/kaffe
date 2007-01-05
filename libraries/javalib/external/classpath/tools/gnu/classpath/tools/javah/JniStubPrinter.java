@@ -41,6 +41,7 @@ package gnu.classpath.tools.javah;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
 
@@ -50,26 +51,34 @@ import org.objectweb.asm.tree.MethodNode;
 public class JniStubPrinter
     extends Printer
 {
-
-  protected JniStubPrinter(Main classpath)
+  protected JniStubPrinter(Main classpath, File outFile, boolean isDir,
+                           boolean force)
   {
-    super(classpath);
+    super(classpath, outFile, isDir, force);
   }
 
-  public void printClass(File outputDir, ClassWrapper klass) throws IOException
+  protected void writePreambleImpl(PrintStream out)
+  {
+    out.println("/* This file is intended to give you a head start on implementing native");
+    out.println("   methods using JNI.");
+    out.println("   Be aware: running gcjh or compatible tool with '-stubs' option once more");
+    out.println("   for the same input may overwrite any edits you have made to this file.  */");
+  }
+
+  protected PrintStream getPrintStreamImpl(FileOutputStream fos,
+                                           ClassWrapper klass)
+  {
+    return new JniPrintStream(classpath, fos, klass);
+  }
+
+  public void printClass(ClassWrapper klass) throws IOException
   {
     if (! klass.hasNativeMethod())
       return;
     String xname = JniHelper.mangle(klass.name);
-    File outFile = new File(outputDir, xname + ".c");
-
-    JniPrintStream out = new JniPrintStream(classpath,
-                                            new FileOutputStream(outFile),
-                                            klass);
-    out.println("/* This file is intended to give you a head start on implementing native");
-    out.println("   methods using CNI.");
-    out.println("   Be aware: running 'gcjh -stubs' once more for this class may");
-    out.println("   overwrite any edits you have made to this file.  */");
+    JniPrintStream out = (JniPrintStream) getPrintStream(xname + ".c", klass);
+    if (out == null)
+      return;
     out.println();
     out.print("#include <");
     out.print(xname);
@@ -94,5 +103,4 @@ public class JniStubPrinter
       }
     out.close();
   }
-
 }

@@ -593,7 +593,7 @@ Java_java_io_VMFile_list (JNIEnv * env, jobject obj
   int result;
   char **filelist;
   void *handle;
-  const char *filename;
+  char *filename = (char *) JCL_malloc (env, FILENAME_MAX);
   unsigned long int filelist_count, max_filelist_count;
   char **tmp_filelist;
   jclass str_clazz;
@@ -630,7 +630,7 @@ Java_java_io_VMFile_list (JNIEnv * env, jobject obj
   max_filelist_count = REALLOC_SIZE;
 
   /* read the files from the directory */
-  result = cpio_readDir (handle, &filename);
+  result = cpio_readDir (handle, filename);
   while (result == CPNATIVE_OK)
     {
       if ((strcmp (filename, ".") != 0) && (strcmp (filename, "..") != 0))
@@ -666,8 +666,10 @@ Java_java_io_VMFile_list (JNIEnv * env, jobject obj
 	}
 
       /* read next directory entry */
-      result = cpio_readDir (handle, &filename);
+      result = cpio_readDir (handle, filename);
     }
+
+  JCL_free (env, filename);
 
   /* close directory */
   result = cpio_closeDir (handle);
@@ -693,6 +695,9 @@ Java_java_io_VMFile_list (JNIEnv * env, jobject obj
       JCL_free (env, filelist);
       return 0;
     }
+
+  (*env)->DeleteLocalRef (env, str_clazz);
+
   for (i = 0; i < filelist_count; i++)
     {
       /* create new string */

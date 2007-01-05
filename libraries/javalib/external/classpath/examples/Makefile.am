@@ -1,5 +1,5 @@
 ## Input file for automake to generate the Makefile.in used by configure
-GLIBJ_CLASSPATH='$(top_builddir)/lib':'$(top_builddir)/lib/glibj.zip'
+GLIBJ_CLASSPATH='$(top_builddir)/lib':'$(top_builddir)/lib/glibj.zip':'$(top_builddir)/tools/tools.zip'
 
 # Setup the compiler to use the GNU Classpath library we just build
 if FOUND_GCJ
