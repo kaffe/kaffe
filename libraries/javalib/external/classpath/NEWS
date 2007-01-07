@@ -1,3 +1,7 @@
+New in release 0.94 (UNRELEASED)
+
+* The ASM library is now included.  A separate copy is no longer needed.
+
 New in release 0.93 (UNRELEASED)
 
 * CORBA objects that exist on the same virtual machine and only are connected

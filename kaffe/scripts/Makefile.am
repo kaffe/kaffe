@@ -15,7 +15,7 @@ EXTRA_DIST = nm2as.awk
 
 SCRIPTFILES_SUN=\
 		jar javah javap \
-		native2ascii rmic serialver
+		native2ascii serialver
 
 if SUN_COMPAT
 SUBDIRS = compat

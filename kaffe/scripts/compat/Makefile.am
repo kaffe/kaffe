@@ -8,7 +8,9 @@
 
 if SUN_COMPAT
 jrebin_SCRIPTS = java
-bin_SCRIPTS = javac
+bin_SCRIPTS = \
+	javac \
+	rmic
 endif
 
 install-exec-local:

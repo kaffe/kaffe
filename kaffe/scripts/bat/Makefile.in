@@ -281,7 +281,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 with_engine = @with_engine@
 EXTRA_DIST = appletviewer jar javac javadoc javakey javap jdb native2ascii \
-	rmic rmiregistry serialver
+	rmiregistry serialver
 
 all: all-am
 

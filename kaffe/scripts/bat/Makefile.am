@@ -7,4 +7,4 @@
 # of this file. 
 
 EXTRA_DIST = appletviewer jar javac javadoc javakey javap jdb native2ascii \
-	rmic rmiregistry serialver
+	rmiregistry serialver

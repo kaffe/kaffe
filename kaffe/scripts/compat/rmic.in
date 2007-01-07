@@ -1,0 +1,6 @@
+#! /bin/sh
+# delegate rmic to grmic
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+exec @bindir@/grmic ${1+"$@"}
+exit $?

@@ -1,3 +1,63 @@
+2007-01-07  Dalibor Topic  <robilad@kaffe.org>
+
+	* THIRDPARTY: Removed license information for components that are
+	part of GNU Classpath, and added a pointer to its license information
+	file instead.
+
+	Replaced kaffe's copy of rmic from GNU Classpath tools project with 
+	the merged in version from GNU Classpath.
+
+	* configure.ac (AC_CONFIG_FILES): Removed kaffe/scripts/rmic and added
+	kaffe/scripts/compat/rmic.
+
+	* kaffe/scripts/Makefile.am (SCRIPTFILES_SUN): Removed rmic.
+
+	* kaffe/scripts/bat/Makefile.am (EXTRA_DIST): Removed rmic.
+
+	* kaffe/scripts/compat/Makefile.am (bin_SCRIPTS): Added rmic.
+
+	* libraries/javalib/external/classpath/ : Resynced up to 2006-12-07.
+
+	* libraries/javalib/external/classpath/tools/Makefile.am: Fixed to work for jikes.
+
+	* tools/javatools/Makefile.am  (dist_tools_JAVA): Removed 
+	gnu/classpath/tools/rmi/rmic/RMIC.java,
+	gnu/classpath/tools/rmi/rmic/RMICException.java,
+	gnu/classpath/tools/rmi/rmic/Variables.java,
+        org/objectweb/asm153/Attribute.java,
+        org/objectweb/asm153/ByteVector.java,
+        org/objectweb/asm153/ClassReader.java,
+        org/objectweb/asm153/ClassVisitor.java,
+        org/objectweb/asm153/ClassWriter.java,
+        org/objectweb/asm153/CodeVisitor.java,
+        org/objectweb/asm153/CodeWriter.java,
+        org/objectweb/asm153/Constants.java,
+        org/objectweb/asm153/Edge.java,
+        org/objectweb/asm153/Item.java,
+        org/objectweb/asm153/Label.java,
+        and org/objectweb/asm153/Type.java.
+
+	* kaffe/scripts/rmic.in,
+	kaffe/scripts/bat/rmic,
+	tools/javatools/gnu/classpath/tools/rmi/rmic/RMIC.java,
+	tools/javatools/gnu/classpath/tools/rmi/rmic/RMICException.java,
+	tools/javatools/gnu/classpath/tools/rmi/rmic/Variables.java,
+	tools/javatools/org/objectweb/asm153/Attribute.java,
+	tools/javatools/org/objectweb/asm153/ByteVector.java,
+	tools/javatools/org/objectweb/asm153/ClassReader.java,
+	tools/javatools/org/objectweb/asm153/ClassVisitor.java,
+	tools/javatools/org/objectweb/asm153/ClassWriter.java,
+	tools/javatools/org/objectweb/asm153/CodeVisitor.java,
+	tools/javatools/org/objectweb/asm153/CodeWriter.java,
+	tools/javatools/org/objectweb/asm153/Constants.java,
+	tools/javatools/org/objectweb/asm153/Edge.java,
+	tools/javatools/org/objectweb/asm153/Item.java,
+	tools/javatools/org/objectweb/asm153/Label.java,
+	tools/javatools/org/objectweb/asm153/Type.java:
+	Removed.
+
+	* kaffe/scripts/compat/rmic.in: New file.
+
 2007-01-05  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/external/classpath/ : Resynced with GNU Classpath 

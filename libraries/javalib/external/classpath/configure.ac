@@ -806,31 +806,6 @@ AM_CONDITIONAL(USE_ESCHER, test x$use_escher = xtrue)
 AC_SUBST(PATH_TO_ESCHER)
 
 dnl -----------------------------------------------------------
-dnl Build javah using ASM library
-dnl -----------------------------------------------------------
-AC_ARG_WITH([asm],
-	 AS_HELP_STRING([--with-asm=ABS.PATH],
-	                [specify path to ASM jar to enable gjavah and grmic build]))
-case "$with_asm" in
-"")
-        use_asm=false
-        ;;
-"no")
-        use_asm=false
-        ;;
-"yes")
-        AC_MSG_ERROR([Please supply an absolute path to ASM jar])
-        ;;
-*)
-        use_asm=true
-        PATH_TO_ASM=$with_asm
-        ;;
-esac
-
-AM_CONDITIONAL(USE_ASM, test x$use_asm = xtrue)
-AC_SUBST(PATH_TO_ASM)
-
-dnl -----------------------------------------------------------
 dnl Check if local socket support should be included.
 dnl -----------------------------------------------------------
 AC_ARG_ENABLE([local-sockets],
@@ -913,7 +888,8 @@ tools/grmiregistry
 tools/gtnameserv
 tools/gorbd
 tools/grmid
-tools/grmic])
+tools/grmic
+tools/gjavah])
 AC_CONFIG_COMMANDS([gappletviewer],[chmod 755 tools/gappletviewer])
 AC_CONFIG_COMMANDS([gjarsigner],[chmod 755 tools/gjarsigner])
 AC_CONFIG_COMMANDS([gkeytool],[chmod 755 tools/gkeytool])
@@ -925,11 +901,7 @@ AC_CONFIG_COMMANDS([gtnameserv],[chmod 755 tools/gtnameserv])
 AC_CONFIG_COMMANDS([gorbd],[chmod 755 tools/gorbd])
 AC_CONFIG_COMMANDS([grmid],[chmod 755 tools/grmid])
 AC_CONFIG_COMMANDS([grmic],[chmod 755 tools/grmic])
-
-  if test "$use_asm" = true; then
-    AC_CONFIG_FILES([tools/gjavah])
-    AC_CONFIG_COMMANDS([gjavah], [chmod 755 tools/gjavah])
-  fi
+AC_CONFIG_COMMANDS([gjavah], [chmod 755 tools/gjavah])
 fi
 
 AC_CONFIG_COMMANDS([gen-classlist],[chmod 755 lib/gen-classlist.sh])

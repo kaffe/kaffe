@@ -711,7 +711,10 @@ public class JEditorPane extends JTextComponent
       {
         try
         {
-          e = (EditorKit) Class.forName(className).newInstance();
+          // XXX - This should actually depend on the classloader
+          // registered with the type. See registerEditorKitForContentType.
+          ClassLoader ldr = ClassLoader.getSystemClassLoader();
+          e = (EditorKit) Class.forName(className, true, ldr).newInstance();
         }
         catch (Exception e2)
         {    

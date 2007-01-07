@@ -43,13 +43,18 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.LinkedList;
 
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -59,6 +64,7 @@ import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
+import javax.swing.text.html.FormSubmitEvent;
 
 /**
  * Parses and displays HTML content.
@@ -77,11 +83,11 @@ public class HtmlDemo extends JPanel
       String urlStr = url.getText();
       try
         {
-          html.setPage(url.getText());
+          setPage(new URL(url.getText()));
         }
-      catch (IOException ex)
+      catch (MalformedURLException ex)
         {
-          System.err.println("exception while loading: " + ex);
+          // Do something more useful here.
           ex.printStackTrace();
         }
     }
@@ -125,24 +131,24 @@ public class HtmlDemo extends JPanel
   {
     setLayout(new BorderLayout());
 
+    JEditorPane.registerEditorKitForContentType("text/html",
+                                             BrowserEditorKit.class.getName());
     html.setEditable(false);
     html.addHyperlinkListener(new HyperlinkListener()
     {
 
       public void hyperlinkUpdate(HyperlinkEvent event)
       {
-        URL u = event.getURL();
-        if (u != null)
+        if (event instanceof FormSubmitEvent)
           {
-            try
+            submitForm((FormSubmitEvent) event);
+          }
+        else
+          {
+            URL u = event.getURL();
+            if (u != null)
               {
-                url.setText(u.toString());
-                html.setPage(u.toString());
-                history.addLast(u);
-              }
-            catch (IOException ex)
-              {
-                ex.printStackTrace();
+                setPage(u);
               }
           }
       }
@@ -266,6 +272,93 @@ public class HtmlDemo extends JPanel
          frame.setVisible(true);
        }
      });
+  }
+
+  /**
+   * Helper method to navigate to a new URL.
+   *
+   * @param u the new URL to navigate to
+   */
+  void setPage(URL u)
+  {
+    try
+      {
+        url.setText(u.toString());
+        html.setPage(u.toString());
+        history.addLast(u);
+      }
+    catch (IOException ex)
+      {
+        // Do something more useful here.
+        ex.printStackTrace();
+      }
+  }
+
+  /**
+   * Submits a form when a FormSubmitEvent is received. The HTML API
+   * provides automatic form submit but when this is enabled we don't
+   * receive any notification and can't update our location field.
+   *
+   * @param ev the form submit event
+   */
+  void submitForm(FormSubmitEvent ev)
+  {
+    URL url = ev.getURL();
+    String data = ev.getData();
+    FormSubmitEvent.MethodType method = ev.getMethod();
+    if (method == FormSubmitEvent.MethodType.POST)
+      {
+        try
+          {
+            URLConnection conn = url.openConnection();
+            postData(conn, data);
+          }
+        catch (IOException ex)
+          {
+            // Deal with this.
+            ex.printStackTrace();
+          }
+      }
+    else
+      {
+        try
+          {
+            url = new URL(url.toString() + "?" + data);
+          }
+        catch (MalformedURLException ex)
+          {
+            ex.printStackTrace();
+          }
+      }
+    setPage(url);
+  }
+
+  /**
+   * Posts the form data for forms with HTTP POST method.
+   *
+   * @param conn the connection
+   * @param data the form data
+   */
+  private void postData(URLConnection conn, String data)
+  {
+    conn.setDoOutput(true);
+    PrintWriter out = null;
+    try
+      {
+        out = new PrintWriter(new OutputStreamWriter(conn.getOutputStream()));
+        out.print(data);
+        out.flush();
+      }
+    catch (IOException ex)
+      {
+        // Deal with this!
+        ex.printStackTrace();
+      }
+    finally
+      {
+        if (out != null)
+          out.close();
+      }
   }
 
   /**

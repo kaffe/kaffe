@@ -53317,8 +53317,6 @@ ac_config_files="$ac_config_files kaffe/scripts/jdb"
 
 ac_config_files="$ac_config_files kaffe/scripts/javadoc"
 
-ac_config_files="$ac_config_files kaffe/scripts/rmic"
-
 ac_config_files="$ac_config_files kaffe/scripts/rmiregistry"
 
 ac_config_files="$ac_config_files kaffe/scripts/serialver"
@@ -53328,6 +53326,8 @@ ac_config_files="$ac_config_files kaffe/scripts/native2ascii"
 ac_config_files="$ac_config_files kaffe/scripts/compat/java"
 
 ac_config_files="$ac_config_files kaffe/scripts/compat/javac"
+
+ac_config_files="$ac_config_files kaffe/scripts/compat/rmic"
 
 ac_config_files="$ac_config_files po/Makefile.in"
 
@@ -54332,12 +54332,12 @@ do
     "kaffe/scripts/javap") CONFIG_FILES="$CONFIG_FILES kaffe/scripts/javap" ;;
     "kaffe/scripts/jdb") CONFIG_FILES="$CONFIG_FILES kaffe/scripts/jdb" ;;
     "kaffe/scripts/javadoc") CONFIG_FILES="$CONFIG_FILES kaffe/scripts/javadoc" ;;
-    "kaffe/scripts/rmic") CONFIG_FILES="$CONFIG_FILES kaffe/scripts/rmic" ;;
     "kaffe/scripts/rmiregistry") CONFIG_FILES="$CONFIG_FILES kaffe/scripts/rmiregistry" ;;
     "kaffe/scripts/serialver") CONFIG_FILES="$CONFIG_FILES kaffe/scripts/serialver" ;;
     "kaffe/scripts/native2ascii") CONFIG_FILES="$CONFIG_FILES kaffe/scripts/native2ascii" ;;
     "kaffe/scripts/compat/java") CONFIG_FILES="$CONFIG_FILES kaffe/scripts/compat/java" ;;
     "kaffe/scripts/compat/javac") CONFIG_FILES="$CONFIG_FILES kaffe/scripts/compat/javac" ;;
+    "kaffe/scripts/compat/rmic") CONFIG_FILES="$CONFIG_FILES kaffe/scripts/compat/rmic" ;;
     "po/Makefile.in") CONFIG_FILES="$CONFIG_FILES po/Makefile.in" ;;
     "tools/Makefile") CONFIG_FILES="$CONFIG_FILES tools/Makefile" ;;
     "tools/gjdoc/javalib/version.properties") CONFIG_FILES="$CONFIG_FILES tools/gjdoc/javalib/version.properties" ;;

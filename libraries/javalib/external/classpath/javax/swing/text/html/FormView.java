@@ -45,6 +45,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -54,13 +56,15 @@ import javax.swing.ButtonModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
+import javax.swing.JList;
 import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.JToggleButton;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.HyperlinkEvent;
@@ -165,7 +169,7 @@ public class FormView
                       // Perform POST.
                       url = actionURL;
                       conn = url.openConnection();
-                      postData(conn);
+                      postData(conn, data);
                     }
                   else
                     {
@@ -285,9 +289,26 @@ public class FormView
      *
      * @param conn the connection
      */
-    private void postData(URLConnection conn)
+    private void postData(URLConnection conn, String data)
     {
-      // TODO: Implement.
+      conn.setDoOutput(true);
+      PrintWriter out = null;
+      try
+        {
+          out = new PrintWriter(new OutputStreamWriter(conn.getOutputStream()));
+          out.print(data);
+          out.flush();
+        }
+      catch (IOException ex)
+        {
+          // Deal with this!
+          ex.printStackTrace();
+        }
+      finally
+        {
+          if (out != null)
+            out.close();
+        }
     }
 
     /**
@@ -390,15 +411,15 @@ public class FormView
           }
         else if (type.equals("checkbox"))
           {
-            JCheckBox c = new JCheckBox();
-            if (model != null)
+            if (model instanceof ResetableToggleButtonModel)
               {
-                boolean sel = atts.getAttribute(HTML.Attribute.CHECKED) != null;
-                ((JToggleButton.ToggleButtonModel) model).setSelected(sel);
-                c.setModel((ButtonModel) model);
+                ResetableToggleButtonModel m =
+                  (ResetableToggleButtonModel) model;
+                JCheckBox c = new JCheckBox();
+                c.setModel(m);
+                comp = c;
+                maxIsPreferred = true;
               }
-            comp = c;
-            maxIsPreferred = true;
           }
         else if (type.equals("image"))
           {
@@ -434,24 +455,21 @@ public class FormView
               tf.setColumns(20);
             if (model != null)
               tf.setDocument((Document) model);
-            String value = (String) atts.getAttribute(HTML.Attribute.VALUE);
-            if (value != null)
-              tf.setText(value);
             tf.addActionListener(this);
             comp = tf;
             maxIsPreferred = true;
           }
         else if (type.equals("radio"))
           {
-            JRadioButton c = new JRadioButton();
-            if (model != null)
+            if (model instanceof ResetableToggleButtonModel)
               {
-                boolean sel = atts.getAttribute(HTML.Attribute.CHECKED) != null;
-                ((JToggleButton.ToggleButtonModel) model).setSelected(sel);
-                c.setModel((ButtonModel) model);
+                ResetableToggleButtonModel m =
+                  (ResetableToggleButtonModel) model;
+                JRadioButton c = new JRadioButton();
+                c.setModel(m);
+                comp = c;
+                maxIsPreferred = true;
               }
-            comp = c;
-            maxIsPreferred = true;
           }
         else if (type.equals("reset"))
           {
@@ -492,9 +510,6 @@ public class FormView
               tf.setColumns(20);
             if (model != null)
               tf.setDocument((Document) model);
-            String value = (String) atts.getAttribute(HTML.Attribute.VALUE);
-            if (value != null)
-              tf.setText(value);
             tf.addActionListener(this);
             comp = tf;
             maxIsPreferred = true;
@@ -512,7 +527,25 @@ public class FormView
                                JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
                                JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
       }
-    // FIXME: Implement the remaining components.
+    else if (tag == HTML.Tag.SELECT)
+      {
+        if (model instanceof SelectListModel)
+          {
+            SelectListModel slModel = (SelectListModel) model;
+            JList list = new JList(slModel);
+            int size = HTML.getIntegerAttributeValue(atts, HTML.Attribute.SIZE,
+                                                     1);
+            list.setVisibleRowCount(size);
+            list.setSelectionModel(slModel.getSelectionModel());
+            comp = new JScrollPane(list);
+          }
+        else if (model instanceof SelectComboBoxModel)
+          {
+            SelectComboBoxModel scbModel = (SelectComboBoxModel) model;
+            comp = new JComboBox(scbModel);
+          }
+        maxIsPreferred = true;
+      }
     return comp;
   }
 
@@ -557,6 +590,8 @@ public class FormView
         String type = (String) atts.getAttribute(HTML.Attribute.TYPE);
         if (type.equals("submit"))
           submitData(getFormData());
+        else if (type.equals("reset"))
+          resetForm();
       }
     // FIXME: Implement the remaining actions.
   }
@@ -680,14 +715,80 @@ public class FormView
       {
         String value = null;
         HTML.Tag tag = (HTML.Tag) atts.getAttribute(StyleConstants.NameAttribute);
-        if (tag == HTML.Tag.INPUT)
-          value = getInputFormData(atts);
-        // TODO:  Implement textarea and select.
-        if (name != null && value != null)
+        if (tag == HTML.Tag.SELECT)
           {
-            addData(b, name, value);
+            getSelectData(atts, b);
+          }
+        else
+          {
+            if (tag == HTML.Tag.INPUT)
+              value = getInputFormData(atts);
+            else if (tag == HTML.Tag.TEXTAREA)
+              value = getTextAreaData(atts);
+            if (name != null && value != null)
+              {
+                addData(b, name, value);
+              }
           }
       }
+  }
+
+  /**
+   * Fetches form data from select boxes.
+   *
+   * @param atts the attributes of the element
+   *
+   * @param b the form data string to append to
+   */
+  private void getSelectData(AttributeSet atts, StringBuilder b)
+  {
+    String name = (String) atts.getAttribute(HTML.Attribute.NAME);
+    if (name != null)
+      {
+        Object m = atts.getAttribute(StyleConstants.ModelAttribute);
+        if (m instanceof SelectListModel)
+          {
+            SelectListModel sl = (SelectListModel) m;
+            ListSelectionModel lsm = sl.getSelectionModel();
+            for (int i = 0; i < sl.getSize(); i++)
+              {
+                if (lsm.isSelectedIndex(i))
+                  {
+                    Option o = (Option) sl.getElementAt(i);
+                    addData(b, name, o.getValue());
+                  }
+              }
+          }
+        else if (m instanceof SelectComboBoxModel)
+          {
+            SelectComboBoxModel scb = (SelectComboBoxModel) m;
+            Option o = (Option) scb.getSelectedItem();
+            if (o != null)
+              addData(b, name, o.getValue());
+          }
+      }
+  }
+
+  /**
+   * Fetches form data from a textarea.
+   *
+   * @param atts the attributes
+   *
+   * @return the form data
+   */
+  private String getTextAreaData(AttributeSet atts)
+  {
+    Document doc = (Document) atts.getAttribute(StyleConstants.ModelAttribute);
+    String data;
+    try
+      {
+        data = doc.getText(0, doc.getLength());
+      }
+    catch (BadLocationException ex)
+      {
+        data = null;
+      }
+    return data;
   }
 
   /**
@@ -742,5 +843,28 @@ public class FormView
     b.append('=');
     String encValue = URLEncoder.encode(value);
     b.append(encValue);
+  }
+
+  /**
+   * Resets the form data to their initial state.
+   */
+  private void resetForm()
+  {
+    Element form = getFormElement();
+    if (form != null)
+      {
+        ElementIterator iter = new ElementIterator(form);
+        Element next;
+        while ((next = iter.next()) != null)
+          {
+            if (next.isLeaf())
+              {
+                AttributeSet atts = next.getAttributes();
+                Object m = atts.getAttribute(StyleConstants.ModelAttribute);
+                if (m instanceof ResetableModel)
+                  ((ResetableModel) m).reset();
+              }
+          }
+      }
   }
 }

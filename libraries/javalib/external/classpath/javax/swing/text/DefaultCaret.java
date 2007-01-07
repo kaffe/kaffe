@@ -1075,8 +1075,6 @@ public class DefaultCaret extends Rectangle
         handleHighlight();
 
         appear();
-
-        adjustVisibility(this);
       }
   }
 
@@ -1114,8 +1112,6 @@ public class DefaultCaret extends Rectangle
         clearHighlight();
         
         appear();
-        
-        adjustVisibility(this);
       }
   }
   
@@ -1154,7 +1150,12 @@ public class DefaultCaret extends Rectangle
             // e.printStackTrace();
           }
         if (area != null)
-          damage(area);
+          {
+            adjustVisibility(area);
+            if (getMagicCaretPosition() == null)
+              setMagicCaretPosition(new Point(area.x, area.y));
+            damage(area);
+          }
       }
     repaint();
   }  

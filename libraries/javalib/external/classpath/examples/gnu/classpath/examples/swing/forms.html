@@ -41,6 +41,7 @@ exception statement from your version. -->
     <title>HTML text styles</title>
   </head>
   <body>
+  <form>
   <a href="welcome.html">Back to start page</a>
   <h1>Some form elements</h1>
   <h2>Textarea</h2>
@@ -48,6 +49,12 @@ exception statement from your version. -->
   Hello GNU Classpath world. This text should show up in a text area
   that has a size of 30 columns and 5 rows
   </textarea>
+
+  <h2>Input fields</h2>
+  <p>
+  <input type="text" value="This is a normal textfield">
+  <input type="password" value="secret password">
+  </p>
 
   <h2>Buttons</h2>
   <p>
@@ -58,12 +65,34 @@ exception statement from your version. -->
 
   <h2>Checkboxes and Radiobuttons</h2>
   <p>
-  <input type="checkbox">Check this!</input>
-  <input type="checkbox">Or this</input>
+  <input type="checkbox" name="2">Check this!</input>
+  <input type="checkbox" name="2">Or this</input>
   </p>
   <p>
-  <input type="radio">A radio button</input>
-  <input type="radio">Another radio</input>
+  <input type="radio" name="1">A radio button</input>
+  <input type="radio" name="1">Another radio</input>
   </p>
+  <h2>Select lists and combo boxes</h2>
+  <p>
+  <select>
+    <option>Value1</option>
+    <option>Value2</option>
+    <option>Value3</option>
+    <option label="Labeled value 4">Value4</option>
+    <option>Value5</option>
+    <option>Value6</option>
+  </select>
+  </p>
+  <p>
+  <select size="3">
+    <option>Value1</option>
+    <option>Value2</option>
+    <option>Value3</option>
+    <option label="Labeled value 4">Value4</option>
+    <option>Value5</option>
+    <option>Value6</option>
+  </select>
+  </p>
+  </form>
   </body>
 </html>

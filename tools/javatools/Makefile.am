@@ -30,9 +30,6 @@ dist_tools_JAVA = \
 	gnu/classpath/tools/javap/GnuByteCodeJavap.java \
 	gnu/classpath/tools/javap/Javap.java \
 	gnu/classpath/tools/javap/JavapMain.java \
-	gnu/classpath/tools/rmi/rmic/RMIC.java \
-	gnu/classpath/tools/rmi/rmic/RMICException.java \
-	gnu/classpath/tools/rmi/rmic/Variables.java \
 	gnu/classpath/tools/Util.java \
 	gnu/bytecodecvssnap/Access.java \
 	gnu/bytecodecvssnap/ArrayClassLoader.java \
@@ -77,16 +74,4 @@ dist_tools_JAVA = \
 	gnu/bytecodecvssnap/Variable.java \
 	gnu/bytecodecvssnap/ZipArchive.java \
 	gnu/bytecodecvssnap/ZipLoader.java \
-	gnu/bytecodecvssnap/dump.java \
-	org/objectweb/asm153/Attribute.java \
-	org/objectweb/asm153/ByteVector.java \
-	org/objectweb/asm153/ClassReader.java \
-	org/objectweb/asm153/ClassVisitor.java \
-	org/objectweb/asm153/ClassWriter.java \
-	org/objectweb/asm153/CodeVisitor.java \
-	org/objectweb/asm153/CodeWriter.java \
-	org/objectweb/asm153/Constants.java \
-	org/objectweb/asm153/Edge.java \
-	org/objectweb/asm153/Item.java \
-	org/objectweb/asm153/Label.java \
-	org/objectweb/asm153/Type.java
+	gnu/bytecodecvssnap/dump.java 

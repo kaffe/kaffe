@@ -1,3 +1,108 @@
+2006-12-07  Mark Wielaard  <mark@klomp.org>
+
+	* javax/swing/JEditorPane.java (createEditorKitForContentType):
+	Always load from system class loader.
+
+2006-12-07  Mark Wielaard  <mark@klomp.org>
+
+	* java/net/URL.java (URL(URL,String,URLStreamHandler,boolean)): New
+	private constructor.
+	(URL(URL,String,URLStreamHandler)): Call new constructor.
+	(URL(URL,String)): Likewise.
+	(URL(String)): Likewise.
+
+2006-12-07  Tom Tromey  <tromey@redhat.com>
+
+	* NEWS: Mention ASM.
+	* INSTALL: Don't mention --with-asm.
+	* tools/external/README: New file.
+	* tools/toolwrapper.c (main): Don't use ASM_JAR.
+	* tools/gjavah.in: Don't use PATH_TO_ASM.
+	* tools/grmic.in: Likewise.
+	* tools/Makefile.am (GLIBJ_CLASSPATH): Removed PATH_TO_ASM, added
+	'asm'.
+	(javah, rmic): Removed variables.
+	(bin_PROGRAMS): Updated.
+	(gappletviewer_CFLAGS): Don't define ASM_JAR.
+	(gjarsigner_CFLAGS): Likewise.
+	(gkeytool_CFLAGS): Likewise.
+	(gjar_CFLAGS): Likewise.
+	(gnative2ascii_CFLAGS): Likewise.
+	(gserialver_CFLAGS): Likewise.
+	(grmiregistry_CFLAGS): Likewise.
+	(gtnameserv_CFLAGS): Likewise.
+	(gorbd_CFLAGS): Likewise.
+	(grmid_CFLAGS): Likewise.
+	(gjavah_CFLAGS): Likewise.
+	(grmic_CFLAGS): Likewise.
+	(bin_SCRIPTS): Updated.
+	(TOOLS_JAVA_FILES): Updated.
+	($(TOOLS_ZIP)): Compile ASM sources.  Copy resource files.
+	* configure.ac: Removed --with-asm.  Always build gjavah.
+
+2006-12-06  Roman Kennke  <kennke@aicas.com>
+
+	* examples/gnu/classpath/examples/swing/BrowserEditorKit.java:
+	New class.
+	* examples/gnu/classpath/examples/swing/HtmlDemo.java
+	(LoadActionListener): Call setPage() helper method.
+	(createContent): Register tweaked editor kit. For FormSubmitEvents
+	call submitForm(), otherwise setPage().
+	(postData): Helper method for posting form data.
+	(setPage): Helper method for navigating to a new URL.
+	(submitForm): Helper method for submitting a form.
+	* examples/gnu/classpath/examples/swing/forms.html:
+	Added text/password fields and select boxes.
+	* examples/gnu/classpath/examples/swing/welcome.html: Fixed typo.
+
+2006-12-06  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/html/FormView.java
+	(SubmitThread.postData): Implemented.
+	(SubmitThread.run): Pass data to postData().
+	(actionPerformed): Reset form when reset button is activated.
+	(createComponent): Add support for select lists and comboboxes.
+	Don't set value of text and password fields here, this is done
+	now in HTMLDocument for consistency.
+	(getElementFormData): Add support for fetching form data from
+	select lists and comboboxes as well as textareas.
+	(getSelectData): New helper method. Fetches form data from
+	select boxes.
+	(getTextAreaData): New helper method. Fetches form data from
+	textareas.
+	(resetForm): New helper method. Resets the entire form.
+	* javax/swing/text/html/HTMLDocument.java
+	(HTMLReader.FormAction.end): Handle SELECT and OPTION tags.
+	(HTMLReader.FormAction.start): Handle SELECT and OPTION tags.
+	(HTMLReader.FormAction.setModel): Initialize text and password
+	values here. Also, use the resetable special models.
+	Group radio buttons into ButtonGroup for exclusive selection.
+	(HTMLReader.FormTagAction): New class. Handles FORM tags.
+	(HTMLReader.buttonGroups): New field.
+	(HTMLReader.numOptions): New field.
+	(HTMLReader.option): New field.
+	(HTMLReader.selectModel): New field.
+	(HTMLReader.textAreaDocument): Make ResetablePlainDocument.
+	(HTMLReader.handleText): Handle OPTION text.
+	(HTMLReader.initTags): Map FORM tags to FormTagAction.
+	(HTMLReader.textAreaContent): Set initial content.
+	* javax/swing/text/html/Option.java
+	(Option): Make copy of attribute set. Initialize selected state.
+	(getValue): Fetch value from attribute set.
+	* javax/swing/text/html/ResetableModel.java: New interface.
+	* javax/swing/text/html/ResetablePlainDocument.java: New class.
+	Supports resetting the state.
+	* javax/swing/text/html/ResetableToggleButtonModel.java: Likewise.
+	* javax/swing/text/html/SelectComboBoxModel.java: Likewise.
+	* javax/swing/text/html/SelectListModel.java: Likewise.
+
+2006-12-06  Roman Kennke  <kennke@aicas.com>
+
+	* javax/swing/text/DefaultCaret.java
+	(appear): Adjust visibility here.
+	(setDotImpl): Don't adjust visibility here.
+	(moveDotImpl): Don't adjust visibility here.
+
 2006-12-06  Roman Kennke  <kennke@aicas.com>
 
 	* gnu/java/awt/peer/gtk/AsyncImage.java

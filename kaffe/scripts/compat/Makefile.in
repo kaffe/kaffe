@@ -42,7 +42,7 @@ build_triplet = @build@
 host_triplet = @host@
 subdir = kaffe/scripts/compat
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(srcdir)/java.in $(srcdir)/javac.in
+	$(srcdir)/java.in $(srcdir)/javac.in $(srcdir)/rmic.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/acx_pthread.m4 $(top_srcdir)/m4/alsa.m4 \
@@ -68,7 +68,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(SHELL) $(top_srcdir)/scripts/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h
-CONFIG_CLEAN_FILES = java javac
+CONFIG_CLEAN_FILES = java javac rmic
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(jrebindir)"
 binSCRIPT_INSTALL = $(INSTALL_SCRIPT)
 jrebinSCRIPT_INSTALL = $(INSTALL_SCRIPT)
@@ -287,7 +287,10 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 with_engine = @with_engine@
 @SUN_COMPAT_TRUE@jrebin_SCRIPTS = java
-@SUN_COMPAT_TRUE@bin_SCRIPTS = javac
+@SUN_COMPAT_TRUE@bin_SCRIPTS = \
+@SUN_COMPAT_TRUE@	javac \
+@SUN_COMPAT_TRUE@	rmic
+
 all: all-am
 
 .SUFFIXES:
@@ -323,6 +326,8 @@ $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 java: $(top_builddir)/config.status $(srcdir)/java.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 javac: $(top_builddir)/config.status $(srcdir)/javac.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+rmic: $(top_builddir)/config.status $(srcdir)/rmic.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 install-binSCRIPTS: $(bin_SCRIPTS)
 	@$(NORMAL_INSTALL)

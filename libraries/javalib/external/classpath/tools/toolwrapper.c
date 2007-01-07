@@ -136,7 +136,7 @@ main (int argc, const char** argv)
 	  goto destroy;
 	}
 
-      vm_args.options[vm_args.nOptions++].optionString = "-Xbootclasspath/p:" TOOLS_ZIP ASM_JAR;
+      vm_args.options[vm_args.nOptions++].optionString = "-Xbootclasspath/p:" TOOLS_ZIP;
     }
 
   /* Terminate vm_args.options with a NULL element. */

@@ -49,16 +49,16 @@ import java.util.HashMap;
 import java.util.Stack;
 import java.util.Vector;
 
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultButtonModel;
 import javax.swing.JEditorPane;
-import javax.swing.JToggleButton;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.Document;
 import javax.swing.text.Element;
 import javax.swing.text.ElementIterator;
 import javax.swing.text.GapContent;
@@ -729,7 +729,28 @@ public class HTMLDocument extends DefaultStyledDocument
      *
      * This is package private to avoid accessor methods.
      */
-    Document textAreaDocument;
+    ResetablePlainDocument textAreaDocument;
+
+    /**
+     * The current model of a select tag. Can be a ComboBoxModel or a
+     * ListModel depending on the type of the select box.
+     */
+    Object selectModel;
+
+    /**
+     * The current option beeing read.
+     */
+    Option option;
+
+    /**
+     * The current number of options in the current select model.
+     */
+    int numOptions;
+
+    /**
+     * The current button groups mappings.
+     */
+    HashMap buttonGroups;
 
     /**
      * The token threshold. This gets increased while loading.
@@ -834,13 +855,59 @@ public class HTMLDocument extends DefaultStyledDocument
         else if (t == HTML.Tag.TEXTAREA)
           {
             inTextArea = true;
-            textAreaDocument = new PlainDocument();
+            textAreaDocument = new ResetablePlainDocument();
             a.addAttribute(StyleConstants.ModelAttribute, textAreaDocument);
           }
-        // TODO: Handle select and option tags.
-
-        // Build the element.
-        super.start(t, a);
+        else if (t == HTML.Tag.SELECT)
+          {
+            int size = HTML.getIntegerAttributeValue(a, HTML.Attribute.SIZE,
+                                                     1);
+            boolean multi = a.getAttribute(HTML.Attribute.MULTIPLE) != null;
+            if (size > 1 || multi)
+              {
+                SelectListModel m = new SelectListModel();
+                if (multi)
+                  m.getSelectionModel().setSelectionMode(ListSelectionModel
+                                                 .MULTIPLE_INTERVAL_SELECTION);
+                selectModel = m;
+              }
+            else
+              {
+                selectModel = new SelectComboBoxModel();
+              }
+            a.addAttribute(StyleConstants.ModelAttribute, selectModel);
+          }
+        if (t == HTML.Tag.OPTION)
+          {
+            option = new Option(a);
+            if (selectModel instanceof SelectListModel)
+              {
+                SelectListModel m = (SelectListModel) selectModel;
+                m.addElement(option);
+                if (option.isSelected())
+                  {
+                    m.getSelectionModel().addSelectionInterval(numOptions,
+                                                               numOptions);
+                    m.addInitialSelection(numOptions);
+                  }
+              }
+            else if (selectModel instanceof SelectComboBoxModel)
+              {
+                SelectComboBoxModel m = (SelectComboBoxModel) selectModel;
+                m.addElement(option);
+                if (option.isSelected())
+                  {
+                    m.setSelectedItem(option);
+                    m.setInitialSelection(option);
+                  }
+              }
+            numOptions++;
+          }
+        else
+          {
+            // Build the element.
+            super.start(t, a);
+          }
       }
       
       /**
@@ -849,15 +916,24 @@ public class HTMLDocument extends DefaultStyledDocument
        */
       public void end(HTML.Tag t)
       {
-        if (t == HTML.Tag.TEXTAREA)
+        if (t == HTML.Tag.OPTION)
           {
-            inTextArea = false;
+            option = null;
           }
-
-        // TODO: Handle select and option tags.
-
-        // Finish the element.
-        super.end(t);
+        else
+          {
+            if (t == HTML.Tag.TEXTAREA)
+              {
+                inTextArea = false;
+              }
+            else if (t == HTML.Tag.SELECT)
+              {
+                selectModel = null;
+                numOptions = 0;
+              }
+            // Finish the element.
+            super.end(t);
+          }
       }
 
       private void setModel(String type, MutableAttributeSet attrs)
@@ -871,9 +947,22 @@ public class HTMLDocument extends DefaultStyledDocument
           }
         else if (type.equals("text") || type.equals("password"))
           {
-            // TODO: Handle fixed length input fields.
-            attrs.addAttribute(StyleConstants.ModelAttribute,
-                               new PlainDocument());
+            String text = (String) attrs.getAttribute(HTML.Attribute.VALUE);
+            ResetablePlainDocument doc = new ResetablePlainDocument();
+            if (text != null)
+              {
+                doc.setInitialText(text);
+                try
+                  {
+                    doc.insertString(0, text, null);
+                  }
+                catch (BadLocationException ex)
+                  {
+                    // Shouldn't happen.
+                    assert false;
+                  }
+              }
+            attrs.addAttribute(StyleConstants.ModelAttribute, doc);
           }
         else if (type.equals("file"))
           {
@@ -882,14 +971,50 @@ public class HTMLDocument extends DefaultStyledDocument
           }
         else if (type.equals("checkbox") || type.equals("radio"))
           {
-            JToggleButton.ToggleButtonModel model =
-              new JToggleButton.ToggleButtonModel();
-            // TODO: Handle radio button via ButtonGroups.
+            ResetableToggleButtonModel model =
+              new ResetableToggleButtonModel();
+            if (attrs.getAttribute(HTML.Attribute.SELECTED) != null)
+              {
+                model.setSelected(true);
+                model.setInitial(true);
+              }
+            if (type.equals("radio"))
+              {
+                String name = (String) attrs.getAttribute(HTML.Attribute.NAME);
+                if (name != null)
+                  {
+                    if (buttonGroups == null)
+                      buttonGroups = new HashMap();
+                    ButtonGroup group = (ButtonGroup) buttonGroups.get(name);
+                    if (group == null)
+                      {
+                        group = new ButtonGroup();
+                        buttonGroups.put(name, group);
+                      }
+                    model.setGroup(group);
+                  }
+              }
             attrs.addAttribute(StyleConstants.ModelAttribute, model);
           }
       }
     }
-    
+
+    /**
+     * Called for form tags.
+     */
+    class FormTagAction
+      extends BlockAction
+    {
+      /**
+       * Clears the button group mapping.
+       */
+      public void end(HTML.Tag t)
+      {
+        super.end(t);
+        buttonGroups = null;
+      } 
+    }
+
     /**
      * This action indicates that the content between starting and closing HTML
      * elements (like script - /script) should not be visible. The content is
@@ -1327,7 +1452,7 @@ public class HTMLDocument extends DefaultStyledDocument
       tagToAction.put(HTML.Tag.DT, paragraphAction);
       tagToAction.put(HTML.Tag.EM, characterAction);
       tagToAction.put(HTML.Tag.FONT, convertAction);
-      tagToAction.put(HTML.Tag.FORM, blockAction);
+      tagToAction.put(HTML.Tag.FORM, new FormTagAction());
       tagToAction.put(HTML.Tag.FRAME, specialAction);
       tagToAction.put(HTML.Tag.FRAMESET, blockAction);
       tagToAction.put(HTML.Tag.H1, paragraphAction);
@@ -1454,6 +1579,8 @@ public class HTMLDocument extends DefaultStyledDocument
             textAreaContent(data);
           else if (inPreTag)
             preContent(data);
+          else if (option != null)
+            option.setLabel(new String(data));
           else if (inStyleTag)
             {
               if (styles == null)
@@ -1588,7 +1715,9 @@ public class HTMLDocument extends DefaultStyledDocument
       try
         {
           int offset = textAreaDocument.getLength();
-          textAreaDocument.insertString(offset, new String(data), null);
+          String text = new String(data);
+          textAreaDocument.setInitialText(text);
+          textAreaDocument.insertString(offset, text, null);
         }
       catch (BadLocationException ex)
         {
