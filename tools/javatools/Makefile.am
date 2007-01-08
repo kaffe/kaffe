@@ -3,7 +3,6 @@ SRCDIRS = gnu
 toolslib_DATA = $(CLASSFILE)
 LIBDIR = lib
 JAR_CMD1 = ($(FASTJAR) cf $(CLASSFILE) -C $(LIBDIR) $(SRCDIRS))
-JAR_CMD2 = ($(FASTJAR) uf $(CLASSFILE) -C $(srcdir) org)
 
 CPATH =  .:$(LIBDIR):$(GLIBJ_ZIP)
 AM_JAVACFLAGS = -classpath $(CPATH)
@@ -13,7 +12,6 @@ JAVAROOT = $(LIBDIR)
 $(CLASSFILE): classdist_tools.stamp
 	rm -f $(CLASSFILE)
 	$(JAR_CMD1)
-	$(JAR_CMD2)
 
 clean-local:
 	rm -rf $(LIBDIR) $(CLASSFILE)
