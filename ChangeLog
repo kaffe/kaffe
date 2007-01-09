@@ -1,5 +1,10 @@
 2007-01-08  Dalibor Topic  <robilad@kaffe.org>
 
+	* developers/autogen.sh, FAQ/FAQ.automake:
+	Use autoconf 2.61.
+
+2007-01-08  Dalibor Topic  <robilad@kaffe.org>
+
 	Small fix for make distcheck.
 
 	* tools/javatools/Makefile.am (JAR_CMD2): Removed since

@@ -2,7 +2,7 @@
 IMPORTANT NOTE:
 
 - in order to modify the Makefiles and configure.in, you need rather
-recent versions of autoconf and automake: autoconf 2.60 and automake
+recent versions of autoconf and automake: autoconf 2.61 and automake
 1.10.
 
 - in order to rebuild Makefile.in files and the configure script 
