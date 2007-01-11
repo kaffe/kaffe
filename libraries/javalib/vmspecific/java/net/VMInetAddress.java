@@ -120,7 +120,16 @@ class VMInetAddress implements Serializable
   public static byte[][] getHostByName(String hostname)
     throws UnknownHostException
   {
-    return impl.getHostByName(hostname);
+    // impl.getHostByName(hostname) returns byte[][],
+    // but it may look like Object[].
+    // See include/Arrays.h -- HArrayOfArray and HArrayOfObject are identical.
+    Object[] addrobjs = impl.getHostByName(hostname);
+    byte[][] addrs = new byte[addrobjs.length][];
+    for (int i = 0; i < addrs.length; i++)
+    {
+        addrs[i] = (byte[]) addrobjs[i];
+    }
+    return addrs;
   }
 
   /**
