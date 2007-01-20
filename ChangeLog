@@ -1,3 +1,11 @@
+2007-01-20  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* libraries/javalib/external/classpath/java/text/DecimalFormat.java,
+	libraries/javalib/external/classpath/java/text/SimpleDateFormat.java,
+	libraries/javalib/external/classpath/native/jni/native-lib/cpnet.c,
+	libraries/javalib/external/classpath/native/jni/native-lib/cpnet.h:
+	Copied from GNU Classpath. Some bugs have been fixed.
+
 2007-01-11  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/vmspecific/java/net/VMInetAddress.java
