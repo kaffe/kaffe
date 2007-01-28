@@ -1,3 +1,9 @@
+2007-01-28  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* libraries/javalib/external/classpath/native/jni/java-nio/gnu_java_nio_VMChannel.c,
+	libraries/javalib/external/classpath/native/jni/java-nio/javanio.c:
+	Copied from GNU Classpath. Some bugs have been fixed.
+
 2007-01-20  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/external/classpath/java/text/DecimalFormat.java,
