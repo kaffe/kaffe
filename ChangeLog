@@ -1,3 +1,8 @@
+2007-02-09  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* libraries/javalib/external/classpath/gnu/java/util/regex/RETokenChar.java :
+	Copied from GNU Classpath. Some bugs have been fixed.
+
 2007-01-28  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/external/classpath/native/jni/java-nio/gnu_java_nio_VMChannel.c,
