@@ -1,6 +1,6 @@
 # Xynth-based AWT support for standard Java libraries
 #
-# Copyright (c) 2006
+# Copyright (c) 2006 - 2007
 #       Alper Akcan <alper@kaffe.org>
 #
 

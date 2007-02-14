@@ -1,6 +1,6 @@
 
 /*
- * Copyright (c) 2006
+ * Copyright (c) 2006 - 2007
  *	Alper Akcan <alper@kaffe.org>, All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -119,7 +119,7 @@ KAFFE_FONT_FUNC_DECL (jint, Java_java_awt_Toolkit_fntStringWidth, jstring jStr)
 	s_font_get_glyph(font);
 	AWT_FREE(str);
 	DEBUGF("Leave");
-	return font->img->w;
+	return font->glyph.img->w;
 }
 
 KAFFE_FONT_FUNC_DECL (jobject, Java_java_awt_Toolkit_fntGetWidths)
@@ -136,11 +136,10 @@ KAFFE_FONT_FUNC_DECL (jobject, Java_java_awt_Toolkit_fntGetWidths)
 	jw = (*env)->GetIntArrayElements(env, widths, &isCopy);
 	for (n = 0; n < 256; n++) {
 		sprintf(str, "%c", n);
-		s_font_set_str(font, str);
-		s_font_get_glyph(font);
-		jw[n] = font->img->w;
+		jw[n] = s_font_get_width(font, str);
 		jw[n] = (jw[n] < 0) ? 0 : jw[n];
 	}
 	(*env)->ReleaseIntArrayElements(env, widths, jw, 0);
+	DEBUGF("Leave");
 	return widths;
 }

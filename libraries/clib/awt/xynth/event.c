@@ -1,6 +1,6 @@
 
 /*
- * Copyright (c) 2006
+ * Copyright (c) 2006 - 2007
  *	Alper Akcan <alper@kaffe.org>, All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -137,7 +137,7 @@ jobject event_handler_mouse (JNIEnv *env, xynth_event_t *xevent)
 			jevent = (*env)->CallStaticObjectMethod(env, MouseEvent, getMouseEvent, idx, JMOUSE_MOVED, 0, event->mouse->x, event->mouse->y);
 		}
 	}
-	DEBUGF("Leave %d", xevent->window->client->id);
+	DEBUGF("Leave %d", xevent->window->id);
 	return jevent;
 }
 
@@ -192,7 +192,7 @@ jobject event_handler_focus (JNIEnv *env, xynth_event_t *xevent)
 		return NULL;
 	}
 	event = xevent->event;
-	if (xevent->window->client->pri == 0) {
+	if (xevent->window->pri == 0) {
 		jevent = (*env)->CallStaticObjectMethod(env, FocusEvent, getFocusEvent, idx, JFOCUS_GAINED, JNI_FALSE);
 	} else {
 		jevent = (*env)->CallStaticObjectMethod(env, FocusEvent, getFocusEvent, idx, JFOCUS_LOST, JNI_FALSE);
@@ -266,7 +266,7 @@ jint Java_java_awt_Toolkit_evtRegisterSource (JNIEnv* env UNUSED, jclass clazz U
 void xynth_kaffe_atevent (s_window_t *window, s_event_t *event)
 {
 	xynth_event_t *xevent;
-	DEBUGF("Enter id: %d", window->client->id);
+	DEBUGF("Enter id: %d", window->id);
 	switch (event->type & EVENT_MASK) {
 		case QUIT_EVENT:
 		case MOUSE_EVENT:

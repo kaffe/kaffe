@@ -1,6 +1,6 @@
 
 /*
- * Copyright (c) 2006
+ * Copyright (c) 2006 - 2007
  *	Alper Akcan <alper@kaffe.org>, All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -25,9 +25,9 @@ jboolean Java_java_awt_Toolkit_tlkInit (JNIEnv *env UNUSED, jclass clazz UNUSED,
 	xynth->eventq = (xynth_eventq_t *) AWT_MALLOC(sizeof(xynth_eventq_t));
 	s_list_init(&(xynth->eventq->list));
 	s_thread_mutex_init(&(xynth->eventq->mut));
-	s_client_init(&(xynth->root));
+	s_window_init(&(xynth->root));
 	s_window_new(xynth->root, WINDOW_MAIN, NULL);
-	s_thread_create(s_client_main, xynth->root);
+	s_thread_create(s_window_main, xynth->root);
 	xynth->nwindows = XYNTH_NWINDOWS;
 	xynth->windows = AWT_CALLOC(xynth->nwindows, sizeof(window_rec_t));
 	
@@ -44,8 +44,8 @@ jboolean Java_java_awt_Toolkit_tlkInit (JNIEnv *env UNUSED, jclass clazz UNUSED,
 	xynth->keymap[S_KEYCODE_ZERO] = 0x30;
 	xynth->keymap[S_KEYCODE_MINUS] = 0x0;
 	xynth->keymap[S_KEYCODE_EQUAL] = 0x3d;
-	xynth->keymap[S_KEYCODE_DELETE] = -'\b';
-	xynth->keymap[S_KEYCODE_TAB] = -'\t';
+	xynth->keymap[S_KEYCODE_DELETE] = 0x08;
+	xynth->keymap[S_KEYCODE_TAB] = 0x9;
 	xynth->keymap[S_KEYCODE_q] = 0x51;
 	xynth->keymap[S_KEYCODE_w] = 0x57;
 	xynth->keymap[S_KEYCODE_e] = 0x45;
@@ -58,7 +58,7 @@ jboolean Java_java_awt_Toolkit_tlkInit (JNIEnv *env UNUSED, jclass clazz UNUSED,
 	xynth->keymap[S_KEYCODE_p] = 0x50;
 	xynth->keymap[S_KEYCODE_BRACKETLEFT] = 0x5b;
 	xynth->keymap[S_KEYCODE_BRACKETRIGHT] = 0x5d;
-	xynth->keymap[S_KEYCODE_RETURN] = -'\n';
+	xynth->keymap[S_KEYCODE_RETURN] = 0xa;
 	xynth->keymap[S_KEYCODE_LEFTCONTROL] = 0x11;
 	xynth->keymap[S_KEYCODE_a] = 0x41;
 	xynth->keymap[S_KEYCODE_s] = 0x53;

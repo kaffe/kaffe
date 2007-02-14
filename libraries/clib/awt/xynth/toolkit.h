@@ -1,6 +1,6 @@
 
 /*
- * Copyright (c) 2006
+ * Copyright (c) 2006 - 2007
  *	Alper Akcan <alper@kaffe.org>, All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 

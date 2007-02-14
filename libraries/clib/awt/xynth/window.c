@@ -1,6 +1,6 @@
 
 /*
- * Copyright (c) 2006
+ * Copyright (c) 2006 - 2007
  *	Alper Akcan <alper@kaffe.org>, All rights reserved.
  *
  * See the file "license.terms" for information on usage and redistribution 
@@ -40,13 +40,13 @@ jobject Java_java_awt_Toolkit_wndCreateFrame (JNIEnv *env, jclass clazz UNUSED, 
 	jobject jwindow;
 	DEBUGF("Enter");
 	str = java2CString(env, jTitle);
-	s_client_init(&window);
+	s_window_init(&window);
 	s_window_new(window, WINDOW_CHILD, xynth->root);
 	s_window_set_coor(window, WINDOW_NOFORM, x, y, width, height);
 	s_window_set_title(window, str);
 	s_fillbox(window->surface, 0, 0, window->surface->width, window->surface->height, clrBack);
-	s_client_atevent(window, xynth_kaffe_atevent);
-	s_client_main(window);
+	s_window_atevent(window, xynth_kaffe_atevent);
+	s_window_main(window);
 	jwindow = JCL_NewRawDataObject(env, window);
 	source_idx_register(xynth, UNVEIL_WINDOW(jwindow), xynth->root);
 	DEBUGF("title: %s, x: %d, y: %d, w: %d, h: %d, cursor: %d, clrback: %d, resize: %d", str, x, y, width, height, clrBack, isResizable);
@@ -62,12 +62,12 @@ jobject Java_java_awt_Toolkit_wndCreateWindow (JNIEnv *env, jclass clazz UNUSED,
 	s_window_t *window;
 	DEBUGF("Enter");
 	owner = UNVEIL_WINDOW(nowner);
-	s_client_init(&window);
+	s_window_init(&window);
 	s_window_new(window, WINDOW_CHILD | WINDOW_NOFORM, owner);
 	s_window_set_coor(window, WINDOW_NOFORM, x, y, width, height);
 	s_fillbox(window->surface, 0, 0, window->surface->width, window->surface->height, clrBack);
-	s_client_atevent(window, xynth_kaffe_atevent);
-	s_client_main(window);
+	s_window_atevent(window, xynth_kaffe_atevent);
+	s_window_main(window);
 	jwindow = JCL_NewRawDataObject(env, window);
 	source_idx_register(xynth, UNVEIL_WINDOW(jwindow), owner);
 	DEBUGF("Leave");
@@ -83,13 +83,13 @@ jobject Java_java_awt_Toolkit_wndCreateDialog (JNIEnv *env, jclass clazz UNUSED,
 	DEBUGF("Enter");
 	str = java2CString(env, jTitle);
 	owner = UNVEIL_WINDOW(nowner);
-	s_client_init(&window);
+	s_window_init(&window);
 	s_window_new(window, WINDOW_CHILD, owner);
 	s_window_set_coor(window, WINDOW_NOFORM, x, y, width, height);
 	s_window_set_title(window, str);
 	s_fillbox(window->surface, 0, 0, window->surface->width, window->surface->height, clrBack);
-	s_client_atevent(window, xynth_kaffe_atevent);
-	s_client_main(window);
+	s_window_atevent(window, xynth_kaffe_atevent);
+	s_window_main(window);
 	jwindow = JCL_NewRawDataObject(env, window);
 	source_idx_register(xynth, UNVEIL_WINDOW(jwindow), owner);
 	AWT_FREE(str);
@@ -108,7 +108,7 @@ void Java_java_awt_Toolkit_wndSetVisible (JNIEnv *env UNUSED, jclass clazz UNUSE
 		DEBUGF("Could not find idx for window");
 		return;
 	}
-	DEBUGF("window->client->id: %d", window->client->id);
+	DEBUGF("window->id: %d", window->id);
 	if (showIt) {
 		s_window_show(window);
 	} else {
@@ -151,6 +151,6 @@ void Java_java_awt_Toolkit_wndDestroyWindow (JNIEnv *env UNUSED, jclass clazz UN
 		DEBUGF("Could not find idx for window");
 		return;
 	}
-	s_client_quit(window);
+	s_window_quit(window);
 	DEBUGF("Leave");
 }
