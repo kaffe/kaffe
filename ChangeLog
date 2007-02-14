@@ -8,8 +8,8 @@
 	libraries/clib/awt/xynth/graphic.c,
 	libraries/clib/awt/xynth/image.c,
 	libraries/clib/awt/xynth/toolkit.c,
-	libraries/clib/awt/toolkit.h,
-	libraries/clib/awt/window.c : Minor improvements.
+	libraries/clib/awt/xynth/toolkit.h,
+	libraries/clib/awt/xynth/window.c : Minor improvements.
 
 2007-02-09  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
