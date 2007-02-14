@@ -1,3 +1,16 @@
+2007-02-14 Alper Akcan <alper@kaffe.org>
+
+	* libraries/clib/awt/xynth/Makefile.am,
+	libraries/clib/awt/xynth/Makefile.in,
+	libraries/clib/awt/xynth/color.c,
+	libraries/clib/awt/xynth/event.c,
+	libraries/clib/awt/xynth/font.c,
+	libraries/clib/awt/xynth/graphic.c,
+	libraries/clib/awt/xynth/image.c,
+	libraries/clib/awt/xynth/toolkit.c,
+	libraries/clib/awt/toolkit.h,
+	libraries/clib/awt/window.c : Minor improvements.
+
 2007-02-09  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* libraries/javalib/external/classpath/gnu/java/util/regex/RETokenChar.java :
