@@ -1,3 +1,8 @@
+2007-04-04 Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* kaffe/kaffevm/readClass.c(readClass): Return NULL when to throw
+	UnsupportedClassVersionError. Accept class files of version 1.5.
+
 2007-02-14 Alper Akcan <alper@kaffe.org>
 
 	* libraries/clib/awt/xynth/Makefile.am,
