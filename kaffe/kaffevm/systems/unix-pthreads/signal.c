@@ -39,6 +39,10 @@
 #define	EXCEPTIONFRAMEPTR	&frame
 #endif /* TRANSLATOR */
 
+#ifndef	SIGNAL_ARGS
+#define	SIGNAL_ARGS(sig, sc) int sig
+#endif
+
 #ifndef STACK_STRUCT
 #define STACK_STRUCT stack_t
 #endif
