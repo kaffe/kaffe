@@ -1,3 +1,7 @@
+2007-04-22  Sascha Hauer <s.hauer@pengutronix.de>
+
+	* config/arm/linux/md.c: put the arm jit back into business for kernels >2.6.9.
+
 2007-04-14 Kiyo Inaba <inaba@src.ricoh.co.jp>
 
 	* kaffe/kaffe/kaffevm/systems/unix-pthreads/signal.c: Add macro

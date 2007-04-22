@@ -35,7 +35,7 @@ init_md(void)
 void flush_dcache(void *start, void *end) {
   __asm __volatile ("mov r0, %0\n"
 		    "mov r1, %1\n"
-		    "mov r2, #4\n"		/* this is VM_EXEC from linux/mm.h, needed for Kernel 2.6 */
+		    "mov r2, #0\n"
 		    "swi " __sys1(__ARM_NR_cacheflush) "\n"
 		    : /* no return value */
 		    : "r" ((long)start), "r" ((long)end)
