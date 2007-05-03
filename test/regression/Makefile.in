@@ -561,7 +561,10 @@ TEST_GNU_CRYPTO = \
 	TestGnuCrypto.java
 
 TEST_Overflow = Overflow.java
-XFAIL_TESTS = 
+XFAIL_TESTS = \
+	TestSerialVersions.java \
+	TestSerialPersistent.java 
+
 EXTRA_DIST = $(ALWAYS_TESTS) \
 	$(TEST_Overflow) \
 	CLTestConc_run.java \

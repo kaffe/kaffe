@@ -301,7 +301,9 @@ else
 TESTS = $(ALWAYS_TESTS)
 endif
 
-XFAIL_TESTS =
+XFAIL_TESTS = \
+	TestSerialVersions.java \
+	TestSerialPersistent.java 
 
 EXTRA_DIST = $(ALWAYS_TESTS) \
 	$(TEST_Overflow) \
