@@ -1,3 +1,8 @@
+2007-05-09  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
+	* config/m68k/jit-m68k.def,
+	config/m68k/jit3-m68k.def: Reorder function definitions.
+
 2007-05-03  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/external/classpath/tools/Makefile.am:

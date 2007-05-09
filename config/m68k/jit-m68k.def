@@ -1256,19 +1256,6 @@ define_insn(prologue, prologue_xxC)
 #endif
 }
 
-define_insn(epilogue, epilogue_xxx)
-{
-	KaffeJIT_setEpilogueLabel ((uintp)CODEPC);
-
-#if defined(HAVE_NO_MOVEM)
-#else
-	op_moveml_pr(REG_sp, RESTOREMASK);
-#endif
-
-	op_unlk_a(REG_fp);
-	op_rts();
-}
-
 define_insn(eprologue, eprologue_xxx)
 {
 	int framesize = (maxLocal - maxArgs + maxStack + maxTemp) * SLOTSIZE;
@@ -1284,6 +1271,19 @@ define_insn(eprologue, eprologue_xxx)
 #endif
 
 	op_moveal_aa(REG_a0, REG_sp);
+}
+
+define_insn(epilogue, epilogue_xxx)
+{
+	KaffeJIT_setEpilogueLabel ((uintp)CODEPC);
+
+#if defined(HAVE_NO_MOVEM)
+#else
+	op_moveml_pr(REG_sp, RESTOREMASK);
+#endif
+
+	op_unlk_a(REG_fp);
+	op_rts();
 }
 
 #if defined(JIT3)
@@ -1476,6 +1476,16 @@ define_insn(move_double, moved_RxR)
 
 /* --------------------------------------------------------------------- */
 
+define_insn(add_int, addi_RRR)
+{
+	int r = rreg_int(2);
+	int w = rwreg_int(0);
+
+	assert(rreg_int(1) == w);
+
+	op_addl_dd(r, w);
+}
+
 define_insn(add_int_const, addi_RRC)
 {
 	int o = const_int(2);
@@ -1491,16 +1501,6 @@ define_insn(add_int_const, addi_RRC)
 	}
 }
 
-define_insn(add_int, addi_RRR)
-{
-	int r = rreg_int(2);
-	int w = rwreg_int(0);
-
-	assert(rreg_int(1) == w);
-
-	op_addl_dd(r, w);
-}
-
 define_insn(adc_int, adci_RRR)
 {
 	int r = rreg_int(2);
@@ -1509,6 +1509,16 @@ define_insn(adc_int, adci_RRR)
 	assert(rreg_int(1) == w);
 
 	op_addxl_dd(r, w);
+}
+
+define_insn(add_ref, addr_RRR)
+{
+	int r = rreg_int(2);
+	int w = rwreg_ref(0);
+
+	assert(rreg_ref(1) == w);
+
+	op_addal_da(r, w);
 }
 
 define_insn(add_ref_const, addr_RRC)
@@ -1531,16 +1541,6 @@ define_insn(add_ref_const, addr_RRC)
 	}
 }
 
-define_insn(add_ref, addr_RRR)
-{
-	int r = rreg_int(2);
-	int w = rwreg_ref(0);
-
-	assert(rreg_ref(1) == w);
-
-	op_addal_da(r, w);
-}
-
 define_insn(add_float, addf_RRR)
 {
 	int r = rreg_float(2);
@@ -1561,6 +1561,16 @@ define_insn(add_double, addd_RRR)
 	op_fdaddx_ff(r, w);
 }
 
+define_insn(sub_int, subi_RRR)
+{
+	int r = rreg_int(2);
+	int w = rwreg_int(0);
+
+	assert(rreg_int(1) == w);
+
+	op_subl_dd(r, w);
+}
+
 define_insn(sub_int_const, subi_RRC)
 {
 	int o = const_int(2);
@@ -1574,16 +1584,6 @@ define_insn(sub_int_const, subi_RRC)
 	else {
 		op_subl_id(o, rw);
 	}
-}
-
-define_insn(sub_int, subi_RRR)
-{
-	int r = rreg_int(2);
-	int w = rwreg_int(0);
-
-	assert(rreg_int(1) == w);
-
-	op_subl_dd(r, w);
 }
 
 define_insn(sbc_int, sbci_RRR)
@@ -1650,16 +1650,6 @@ define_insn(neg_double, negd_RxR)
 	op_fdnegx_ff(r, w);
 }
 
-define_insn(mul_int_const, muli_RRC)
-{
-	int o = const_int(2);
-	int rw = rwreg_int(0);
-
-	assert(rreg_int(1) == rw);
-
-	op_mulsl_id(o, rw);
-}
-
 define_insn(mul_int, muli_RRR)
 {
 	int r = rreg_int(2);
@@ -1668,6 +1658,16 @@ define_insn(mul_int, muli_RRR)
 	assert(rreg_int(1) == w);
 
 	op_mulsl_dd(r, w);
+}
+
+define_insn(mul_int_const, muli_RRC)
+{
+	int o = const_int(2);
+	int rw = rwreg_int(0);
+
+	assert(rreg_int(1) == rw);
+
+	op_mulsl_id(o, rw);
 }
 
 define_insn(mul_float, mulf_RRR)
@@ -1755,16 +1755,6 @@ define_insn(rem_double, remd_RRR)
 
 /* --------------------------------------------------------------------- */
 
-define_insn(and_int_const, andi_RRC)
-{
-	int o = const_int(2);
-	int rw = rwreg_int(0);
-
-	assert(rreg_int(1) == rw);
-
-	op_andl_id(o, rw);
-}
-
 define_insn(and_int, andi_RRR)
 {
 	int r = rreg_int(2);
@@ -1773,6 +1763,16 @@ define_insn(and_int, andi_RRR)
 	assert(rreg_int(1) == w);
 
 	op_andl_dd(r, w);
+}
+
+define_insn(and_int_const, andi_RRC)
+{
+	int o = const_int(2);
+	int rw = rwreg_int(0);
+
+	assert(rreg_int(1) == rw);
+
+	op_andl_id(o, rw);
 }
 
 define_insn(or_int, ori_RRR)
@@ -1795,16 +1795,6 @@ define_insn(xor_int, xori_RRR)
 	op_eorl_dd(r, w);
 }
 
-define_insn(ashr_int_const, ashri_RRC)
-{
-	int o = const_int(2);
-	int rw = rwreg_int(0);
-
-	assert(rreg_int(1) == rw);
-
-	op_asr_id(o, rw);
-}
-
 define_insn(ashr_int, ashri_RRR)
 {
 	int r = rreg_int(2);
@@ -1815,14 +1805,14 @@ define_insn(ashr_int, ashri_RRR)
 	op_asr_dd(r, w);
 }
 
-define_insn(lshr_int_const, lshri_RRC)
+define_insn(ashr_int_const, ashri_RRC)
 {
 	int o = const_int(2);
 	int rw = rwreg_int(0);
 
 	assert(rreg_int(1) == rw);
 
-	op_lsr_id(o, rw);
+	op_asr_id(o, rw);
 }
 
 define_insn(lshr_int, lshri_RRR)
@@ -1835,14 +1825,14 @@ define_insn(lshr_int, lshri_RRR)
 	op_lsr_dd(r, w);
 }
 
-define_insn(lshl_int_const, lshli_RRC)
+define_insn(lshr_int_const, lshri_RRC)
 {
 	int o = const_int(2);
 	int rw = rwreg_int(0);
 
 	assert(rreg_int(1) == rw);
 
-	op_lsl_id(o, rw);
+	op_lsr_id(o, rw);
 }
 
 define_insn(lshl_int, lshli_RRR)
@@ -1853,6 +1843,176 @@ define_insn(lshl_int, lshli_RRR)
 	assert(rreg_int(1) == w);
 
 	op_lsl_dd(r, w);
+}
+
+define_insn(lshl_int_const, lshli_RRC)
+{
+	int o = const_int(2);
+	int rw = rwreg_int(0);
+
+	assert(rreg_int(1) == rw);
+
+	op_lsl_id(o, rw);
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(load_offset_int, loadi_RRC)
+{
+	int o = const_int(2);
+	int r = rreg_ref(1);
+	int w = wreg_int(0);
+
+	op_movel_od(r, o, w);
+}
+
+define_insn(load_offset_ref, loadr_RRC)
+{
+	int o = const_int(2);
+	int r = rreg_ref(1);
+	int w = wreg_ref(0);
+
+	assert(o >= -0x8000 && o < 0x8000);
+	op_moveal_oa(r, o, w);
+}
+
+define_insn(store_offset_int, storei_xRRC)
+{
+	int o = const_int(2);
+	int w = rreg_ref(1);
+	int r = rreg_int(0);
+
+	assert(o >= -0x8000 && o < 0x8000);
+	op_movel_do(r, w, o);
+}
+
+define_insn(store_offset_ref, storer_xRRC)
+{
+	int o = const_int(2);
+	int w = rreg_ref(1);
+	int r = rreg_ref(0);
+
+	assert(o >= -0x8000 && o < 0x8000);
+	op_movel_ao(r, w, o);
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(load_byte, loadb_RxR)
+{
+	int r = rreg_ref(2);
+	int w = wreg_int(0);
+
+	op_moveb_Id(r, w);
+	op_extbl_d(w);
+}
+
+define_insn(load_char, loadc_RxR)
+{
+	int r = rreg_ref(2);
+	int w = wreg_int(0);
+
+	op_clrl_d(w);
+	op_movew_Id(r, w);
+}
+
+define_insn(load_short, loads_RxR)
+{
+	int r = rreg_ref(2);
+	int w = wreg_int(0);
+
+	op_movew_Id(r, w);
+	op_extwl_d(w);
+}
+
+define_insn(load_int, loadi_RxR)
+{
+	int r = rreg_ref(2);
+	int w = wreg_int(0);
+
+	op_movel_Id(r, w);
+}
+
+define_insn(load_ref, loadr_RxR)
+{
+	int r = rreg_ref(2);
+	int w = wreg_ref(0);
+
+	op_moveal_Ia(r, w);
+}
+
+define_insn(load_float, loadf_RxR)
+{
+	int r = rreg_ref(2);
+	int w = wreg_float(0);
+
+	op_fsmoves_If(r, w);
+}
+
+define_insn(load_double, loadd_RxR)
+{
+	int r = rreg_ref(2);
+	int w = wreg_double(0);
+
+	op_fdmoved_If(r, w);
+}
+
+define_insn(store_byte, storeb_xRR)
+{
+	int r = rreg_int(2);
+	int w = rreg_ref(1);
+
+	op_moveb_dI(r, w);
+}
+
+define_insn(store_short, stores_xRR)
+{
+	int r = rreg_int(2);
+	int w = rreg_ref(1);
+
+	op_movew_dI(r, w);
+}
+
+define_insn(store_int, storei_xRR)
+{
+	int r = rreg_int(2);
+	int w = rreg_ref(1);
+
+	op_movel_dI(r, w);
+}
+
+define_insn(store_ref, storer_xRR)
+{
+	int r = rreg_ref(2);
+	int w = rreg_ref(1);
+
+	op_movel_aI(r, w);
+}
+
+define_insn(store_float, storef_xRR)
+{
+	int r = rreg_float(2);
+	int w = rreg_ref(1);
+
+	op_fmoves_fI(r, w);
+}
+
+define_insn(store_double, stored_xRR)
+{
+	int r = rreg_double(2);
+	int w = rreg_ref(1);
+
+	op_fmoved_fI(r, w);
+}
+
+/* --------------------------------------------------------------------- */
+
+define_insn(cmp_int, cmpi_xRR)
+{
+	int r1 = rreg_int(1);
+	int r2 = rreg_int(2);
+
+	op_cmpl_dd(r2, r1);
 }
 
 define_insn(cmp_int_const, cmpi_xRC)
@@ -1868,12 +2028,12 @@ define_insn(cmp_int_const, cmpi_xRC)
 	}
 }
 
-define_insn(cmp_int, cmpi_xRR)
+define_insn(cmp_ref, cmpr_xRR)
 {
-	int r1 = rreg_int(1);
-	int r2 = rreg_int(2);
+	int r1 = rreg_ref(1);
+	int r2 = rreg_ref(2);
 
-	op_cmpl_dd(r2, r1);
+	op_cmpal_aa(r2, r1);
 }
 
 define_insn(cmp_ref_const, cmpr_xRC)
@@ -1887,14 +2047,6 @@ define_insn(cmp_ref_const, cmpr_xRC)
 	else {
 		op_tst_a(r);
 	}
-}
-
-define_insn(cmp_ref, cmpr_xRR)
-{
-	int r1 = rreg_ref(1);
-	int r2 = rreg_ref(2);
-
-	op_cmpal_aa(r2, r1);
 }
 
 #if !defined(HAVE_NO_SWAP_ANY)
@@ -1936,156 +2088,6 @@ define_insn(swap_any, swap_RxR)
 	}
 }
 #endif
-
-/* --------------------------------------------------------------------- */
-
-define_insn(load_int, loadi_RxR)
-{
-	int r = rreg_ref(2);
-	int w = wreg_int(0);
-
-	op_movel_Id(r, w);
-}
-
-define_insn(load_offset_int, loadi_RRC)
-{
-	int o = const_int(2);
-	int r = rreg_ref(1);
-	int w = wreg_int(0);
-
-	op_movel_od(r, o, w);
-}
-
-define_insn(load_ref, loadr_RxR)
-{
-	int r = rreg_ref(2);
-	int w = wreg_ref(0);
-
-	op_moveal_Ia(r, w);
-}
-
-define_insn(load_offset_ref, loadr_RRC)
-{
-	int o = const_int(2);
-	int r = rreg_ref(1);
-	int w = wreg_ref(0);
-
-	assert(o >= -0x8000 && o < 0x8000);
-	op_moveal_oa(r, o, w);
-}
-
-define_insn(load_float, loadf_RxR)
-{
-	int r = rreg_ref(2);
-	int w = wreg_float(0);
-
-	op_fsmoves_If(r, w);
-}
-
-define_insn(load_double, loadd_RxR)
-{
-	int r = rreg_ref(2);
-	int w = wreg_double(0);
-
-	op_fdmoved_If(r, w);
-}
-
-define_insn(load_byte, loadb_RxR)
-{
-	int r = rreg_ref(2);
-	int w = wreg_int(0);
-
-	op_moveb_Id(r, w);
-	op_extbl_d(w);
-}
-
-define_insn(load_char, loadc_RxR)
-{
-	int r = rreg_ref(2);
-	int w = wreg_int(0);
-
-	op_clrl_d(w);
-	op_movew_Id(r, w);
-}
-
-define_insn(load_short, loads_RxR)
-{
-	int r = rreg_ref(2);
-	int w = wreg_int(0);
-
-	op_movew_Id(r, w);
-	op_extwl_d(w);
-}
-
-define_insn(store_int, storei_xRR)
-{
-	int r = rreg_int(2);
-	int w = rreg_ref(1);
-
-	op_movel_dI(r, w);
-}
-
-define_insn(store_offset_int, storei_xRRC)
-{
-	int o = const_int(2);
-	int w = rreg_ref(1);
-	int r = rreg_int(0);
-
-	assert(o >= -0x8000 && o < 0x8000);
-	op_movel_do(r, w, o);
-}
-
-define_insn(store_ref, storer_xRR)
-{
-	int r = rreg_ref(2);
-	int w = rreg_ref(1);
-
-	op_movel_aI(r, w);
-}
-
-define_insn(store_offset_ref, storer_xRRC)
-{
-	int o = const_int(2);
-	int w = rreg_ref(1);
-	int r = rreg_ref(0);
-
-	assert(o >= -0x8000 && o < 0x8000);
-	op_movel_ao(r, w, o);
-}
-
-define_insn(store_float, storef_xRR)
-{
-	int r = rreg_float(2);
-	int w = rreg_ref(1);
-
-	op_fmoves_fI(r, w);
-}
-
-define_insn(store_double, stored_xRR)
-{
-	int r = rreg_double(2);
-	int w = rreg_ref(1);
-
-	op_fmoved_fI(r, w);
-}
-
-define_insn(store_byte, storeb_xRR)
-{
-	int r = rreg_int(2);
-	int w = rreg_ref(1);
-
-	op_moveb_dI(r, w);
-}
-
-define_insn(store_short, stores_xRR)
-{
-	int r = rreg_int(2);
-	int w = rreg_ref(1);
-
-	op_movew_dI(r, w);
-}
-
-/* --------------------------------------------------------------------- */
 
 define_insn(cvt_int_byte, cvtib_RxR)
 {
@@ -2300,20 +2302,12 @@ m68k_pusharg_single(sequence *s)
 	}
 }
 
-define_insn(pusharg_int_const, pushi_xCC)
-{
-	int o = const_int(1);
-
-	op_movel_ip(o, REG_sp);
-}
-
-
 define_insn(pusharg_int, pushi_xRC)
 {
 	m68k_pusharg_single(s);
 }
 
-define_insn(pusharg_ref_const, pushr_xCC)
+define_insn(pusharg_int_const, pushi_xCC)
 {
 	int o = const_int(1);
 
@@ -2323,6 +2317,13 @@ define_insn(pusharg_ref_const, pushr_xCC)
 define_insn(push_ref, pushr_xRC)
 {
 	m68k_pusharg_single(s);
+}
+
+define_insn(pusharg_ref_const, pushr_xCC)
+{
+	int o = const_int(1);
+
+	op_movel_ip(o, REG_sp);
 }
 
 define_insn(push_float, pushf_xRC)
