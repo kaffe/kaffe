@@ -10,11 +10,8 @@
  */
 
 #ifdef KAFFE_VMDEBUG
-extern char _dbg_vm_jit_translate;
-extern void kprintf(char *, ...);
-#define	debug(MSG)	 { if( _dbg_vm_jit_translate) { kprintf("[%s:%d] 0x%x:\t", __FUNCTION__, __LINE__, CODEPC); fprintf MSG; } }
-#define DBOUT stderr
-
+int jit_debug;
+#define	debug(x)        (jit_debug ? dprintf("%x:\t", CODEPC), dprintf x : 0)
 #else
 #define	debug(x)
 #endif
@@ -291,40 +288,40 @@ extern void kprintf(char *, ...);
  */
 /* register := register x register */
 #define	op_rrr(CC,ALU,SFT,SFTVAL,DST,SRC1,SRC2) \
-  LOUT = 0x00000000|(CC)|(ALU)|(SFT)|((SFTVAL)<<7)|((DST)<<12)|((SRC1)<<16)|(SRC2)
+  LOUT(0x00000000|(CC)|(ALU)|(SFT)|((SFTVAL)<<7)|((DST)<<12)|((SRC1)<<16)|(SRC2))
 
 /* register := register x constant */
 #define	op_rrc(CC,ALU,DST,SRC1,IMM,IMMSFT) \
-  LOUT = 0x02000000|(CC)|(ALU)|((DST)<<12)|((SRC1)<<16)|((IMMSFT)<<8)|((IMM)&0xFF)
+  LOUT(0x02000000|(CC)|(ALU)|((DST)<<12)|((SRC1)<<16)|((IMMSFT)<<8)|((IMM)&0xFF))
 
 /* register := register x register */
 #define	op_muladd_rrr(CC,MULOP,DST,SRC1,SRC2) \
-  LOUT = 0x00000090|(CC)|(MULOP)|((DST)<<16)|(SRC1)|((SRC2)<<8)
+  LOUT(0x00000090|(CC)|(MULOP)|((DST)<<16)|(SRC1)|((SRC2)<<8))
 
 /* Not used or debugged: see 3.8.5
 #define	op_muladd_rrrr(CC,MULOP,DST,SRC1,SRC2,SRC3) \
-  LOUT = 0x00200090|(CC)|(MULOP)|((DST)<<16)|(SRC1)|((SRC2)<<8)|((SRC3)<<12)
+  LOUT(0x00200090|(CC)|(MULOP)|((DST)<<16)|(SRC1)|((SRC2)<<8)|((SRC3)<<12))
 */
 
 #define	op_branch(CC,DST) \
-  LOUT = 0x0A000000|(CC)|(((DST)>>2)&0x00FFFFFF)
+  LOUT(0x0A000000|(CC)|(((DST)>>2)&0x00FFFFFF))
 
 #define	op_branch_linked(CC,DST) \
-  LOUT = 0x0B000000|(CC)|(((DST)>>2)&0x00FFFFFF)
+  LOUT(0x0B000000|(CC)|(((DST)>>2)&0x00FFFFFF))
 
 /* Load/Store Word or Unsigned Byte, see 3.11
  * ldr REG, [IDX, +/- IDX2] or
  * str REG, [IDX, +/- IDX2]
  */
 #define	op_mem_rrr(CC,MEM,SFT,SFTVAL,REG,IDX,IDX2) \
-  LOUT = 0x04000000|(CC)|(MEM)|(SFT)|((SFTVAL)<<7)|((IDX)<<16)|((REG)<<12)|(IDX2)
+  LOUT(0x04000000|(CC)|(MEM)|(SFT)|((SFTVAL)<<7)|((IDX)<<16)|((REG)<<12)|(IDX2))
 
 /* Load/Store Word or Unsigned Byte, see 3.11
  * ldr REG, [IDX +/- OFF]
  * str REG, [IDX +/- OFF]
  */
 #define	op_mem_rrc(CC,MEM,REG,IDX,OFF) \
-  LOUT = 0x04000000|(CC)|(MEM)|((REG)<<12)|((IDX)<<16)|((OFF)&0xFFF)
+  LOUT(0x04000000|(CC)|(MEM)|((REG)<<12)|((IDX)<<16)|((OFF)&0xFFF))
 
 /* Load and Store Halfword or Load Signed Byte with an immediate 8-bit offset 
  * ldr{h|sh|sb} REG, [IDX +/- OFF]
@@ -334,10 +331,10 @@ extern void kprintf(char *, ...);
  * NB: you cannot use this instruction to store a byte.
  */
 #define	op_mem_hb_rrc(CC,MEM,SGN,SIZE,REG,IDX,OFF) \
-  LOUT = 0x00400090|(CC)|(MEM)|(SGN)|(SIZE)|((IDX)<<16)|((REG)<<12)|((OFF)&0xF)|(((OFF)&0xF0)<<4)
+  LOUT(0x00400090|(CC)|(MEM)|(SGN)|(SIZE)|((IDX)<<16)|((REG)<<12)|((OFF)&0xF)|(((OFF)&0xF0)<<4))
 
 #define	op_f_rrr(CC,FALU,PREC,RND,DST,SRC1,SRC2) \
-  LOUT = 0x0E000100|(CC)|(FALU)|(PREC)|(RND)|((DST)<<12)|((SRC1)<<16)|(SRC2)
+  LOUT(0x0E000100|(CC)|(FALU)|(PREC)|(RND)|((DST)<<12)|((SRC1)<<16)|(SRC2))
 
 
 /*
@@ -355,16 +352,16 @@ extern void kprintf(char *, ...);
  * Floating point memory operation
  */
 #define	op_fmem_rrc(CC,MEM,MPREC,REG,IDX,OFF) \
-  LOUT = 0x0C000100|(CC)|(MEM)|(MPREC)|((REG)<<12)|((IDX)<<16)|((OFF)&0xFF)
+  LOUT(0x0C000100|(CC)|(MEM)|(MPREC)|((REG)<<12)|((IDX)<<16)|((OFF)&0xFF))
 
 #define	op_push_m(T,BITS) \
-  LOUT = 0x08000000|CC_AL|MULTI_STORE|MULTI_DB|((T)<<16)|(BITS)
+  LOUT(0x08000000|CC_AL|MULTI_STORE|MULTI_DB|((T)<<16)|(BITS))
 
 /*
  * Redefine push to use auto index & writeback (like C calling convention)
  */
 #define	op_push_prologue(T,BITS) \
-  LOUT = 0x08000000|CC_AL|MULTI_STORE|MULTI_DB|MEM_WRTBCK|((T)<<16)|(BITS)
+  LOUT(0x08000000|CC_AL|MULTI_STORE|MULTI_DB|MEM_WRTBCK|((T)<<16)|(BITS))
 
 /*
  * Note that this generates the same opcode as used in the normal C
@@ -372,7 +369,7 @@ extern void kprintf(char *, ...);
  * this particular usage.
  */
 #define	op_pop_epilogue(T,BITS) \
-  LOUT = 0x08000000|CC_AL|MULTI_LOAD|MULTI_DB|((T)<<16)|(BITS)
+  LOUT(0x08000000|CC_AL|MULTI_LOAD|MULTI_DB|((T)<<16)|(BITS))
 
 /*
  * A pop that decrements the SP.  This would normally match an op_push
@@ -380,7 +377,7 @@ extern void kprintf(char *, ...);
  * epilogue pop.
  */
 #define	op_pop_m(T,BITS) \
-  LOUT = 0x08000000|CC_AL| MULTI_LOAD | MULTI_IA | MEM_WRTBCK |((T)<<16)|(BITS)
+  LOUT(0x08000000|CC_AL| MULTI_LOAD | MULTI_IA | MEM_WRTBCK |((T)<<16)|(BITS))
 
 /*
  * Define the instruction macros for later use.
@@ -615,7 +612,7 @@ define_insn(prologue, prologue_xxx)
 	 */
 
 	op_push_prologue(SP,BPC|BFP|BIP|BLR|BR4|BR5|BR6|BR7|BR8|BR9|BR10);
-	debug((DBOUT,"maxStack = %d, maxLocal = %d, maxTemp = %d\n", maxStack, maxLocal, maxTemp));
+	debug(("maxStack = %d, maxLocal = %d, maxTemp = %d\n", maxStack, maxLocal, maxTemp));
 
 	//
 	// Set R9 to be the entry of the procedure. We set it to PC-16
@@ -688,7 +685,7 @@ define_insn(epilogue, epilogue_xxx)
 
 	/* Should restore floating point state here !!! F4-F7 */
 
-	debug((DBOUT,"maxStack = %d, maxLocal = %d, maxTemp = %d\n", maxStack, maxLocal, maxTemp));
+	debug(("maxStack = %d, maxLocal = %d, maxTemp = %d\n", maxStack, maxLocal, maxTemp));
 	/*
 	 * Pushed as
 	 * FP	-> FP
@@ -712,7 +709,7 @@ define_insn(check_stack_limit, check_stack_limit_xRC)
         l->at = CODEPC;
 
 	op_load_offset(r, CONSTPOOL_BASE, -128);
-	debug((DBOUT,"load_label_const r%d, ?\n", r));
+	debug(("load_label_const r%d, ?\n", r));
 
 	op_mov(LR, PC);
 	op_mov(PC, r);
@@ -729,7 +726,7 @@ define_insn(spill_int, spill_Rxx)
 	assert(__I12const_rangecheck(o));
 	op_store_offset(r, FP, o);
 
-	debug((DBOUT,"spill_int %d, [FP, %d]\n", r, o));
+	debug(("spill_int %d, [FP, %d]\n", r, o));
 }
 
 define_insn(spill_float, fspill_Rxx)
@@ -741,7 +738,7 @@ define_insn(spill_float, fspill_Rxx)
 	assert( (o & 0x3) == 0);
 	op_fstore_offset(r, FP, o >> 2);
 
-	debug((DBOUT,"spill_float %d, [FP, %d]\n", r, o));
+	debug(("spill_float %d, [FP, %d]\n", r, o));
 }
 
 define_insn(spill_double, fspilll_Rxx)
@@ -753,7 +750,7 @@ define_insn(spill_double, fspilll_Rxx)
 	assert( (o & 0x3) == 0);
 	op_fstorel_offset(r, FP, o >> 2);
 
-	debug((DBOUT,"spill_double %d, [FP, %d]\n", r, o));
+	debug(("spill_double %d, [FP, %d]\n", r, o));
 }
 
 define_insn(reload_int, reload_Rxx)
@@ -764,7 +761,7 @@ define_insn(reload_int, reload_Rxx)
 	assert(__I12const_rangecheck(o));
 	op_load_offset(r, FP, o);
 
-	debug((DBOUT,"reload_int %d, [FP, %d]\n", r, o));
+	debug(("reload_int %d, [FP, %d]\n", r, o));
 }
 
 define_insn(reload_float, freload_Rxx)
@@ -776,7 +773,7 @@ define_insn(reload_float, freload_Rxx)
 	assert( (o & 0x3) == 0);
 	op_fload_offset(r, FP, o >> 2);
 
-	debug((DBOUT,"reload_float %d, [FP, %d]\n", r, o));
+	debug(("reload_float %d, [FP, %d]\n", r, o));
 }
 
 define_insn(reload_double, freloadl_Rxx)
@@ -788,7 +785,7 @@ define_insn(reload_double, freloadl_Rxx)
 	assert( (o & 0x3) == 0);
 	op_floadl_offset(r, FP, o >> 2);
 
-	debug((DBOUT,"reload_double %d, [FP, %d]\n", r, o));
+	debug(("reload_double %d, [FP, %d]\n", r, o));
 }
 
 void
@@ -814,7 +811,7 @@ define_insn(move_int_const, move_RxC)
 		if ((sval & 0xFFFFFF00) == 0) {
 			op_mov_c(w, sval, (32 - shift) % 32);
 
-			debug((DBOUT,"move_int_const %d, %d (0x%x) via shift (%d, %d)\n", w, val, val, sval, shift));
+			debug(("move_int_const %d, %d (0x%x) via shift (%d, %d)\n", w, val, val, sval, shift));
 
 			return;
 		}
@@ -836,7 +833,7 @@ define_insn(move_int_const, move_RxC)
 	op_add_c(w, w, (val >> 16) & 0x000000FF, 16);
 	op_add_c(w, w, (val >> 24) & 0x000000FF, 8);
 
-	debug((DBOUT,"move_int_const %d, %d (0x%x)\n", w, val, val));
+	debug(("move_int_const %d, %d (0x%x)\n", w, val, val));
 }
 
 //
@@ -859,7 +856,7 @@ define_insn(move_label_const, move_RxL)
 	op_add_c(w, w, 0, 24);
 	op_add_c(w, w, 0, 16);
 	op_add_c(w, w, 0, 8);
-	debug((DBOUT,"move_label_const %d, ?\n", w));
+	debug(("move_label_const %d, ?\n", w));
 }
 
 define_insn(load_constpool_int, ld_RxL)
@@ -873,7 +870,7 @@ define_insn(load_constpool_int, ld_RxL)
 	// force the MEM_SUBOFF flag to be set..
 	//
 	op_load_offset(w, CONSTPOOL_BASE, -128);
-	debug((DBOUT,"load_label_const %d, ?\n", w));
+	debug(("load_label_const %d, ?\n", w));
 }
 
 define_insn(load_constpool_float, fld_RxL)
@@ -887,7 +884,7 @@ define_insn(load_constpool_float, fld_RxL)
 	// force the MEM_SUBOFF flag to be set..
 	//
 	op_fload_offset(w, CONSTPOOL_BASE, -128);
-	debug((DBOUT,"load_label_const %d, ?\n", w));
+	debug(("load_label_const %d, ?\n", w));
 }
 
 define_insn(load_constpool_double, fldl_RxL)
@@ -901,7 +898,7 @@ define_insn(load_constpool_double, fldl_RxL)
 	// force the MEM_SUBOFF flag to be set..
 	//
 	op_floadl_offset(w, CONSTPOOL_BASE, -128);
-	debug((DBOUT,"load_label_const %d, ?\n", w));
+	debug(("load_label_const %d, ?\n", w));
 }
 
 define_insn(move_int, move_RxR)
@@ -911,7 +908,7 @@ define_insn(move_int, move_RxR)
 
 	op_mov(w, r);
 
-	debug((DBOUT,"move_int %d, %d\n", w, r));
+	debug(("move_int %d, %d\n", w, r));
 }
 
 define_insn(move_float, fmove_RxR)
@@ -921,7 +918,7 @@ define_insn(move_float, fmove_RxR)
 
 	op_fmov(w, r);
 
-	debug((DBOUT,"move_float %d, %d\n", w, r));
+	debug(("move_float %d, %d\n", w, r));
 }
 
 define_insn(move_float_const, fmove_RxC)
@@ -953,7 +950,7 @@ define_insn(move_float_const, fmove_RxC)
 
 	op_fmov(w, r);
 
-	debug((DBOUT,"move_float_const %d, %f(0x%x)\n", w, o,r ));
+	debug(("move_float_const %d, %f(0x%x)\n", w, o,r ));
 }
 
 define_insn(move_double, fmovel_RxR)
@@ -963,7 +960,7 @@ define_insn(move_double, fmovel_RxR)
 
 	op_fmovl(w, r);
 
-	debug((DBOUT,"move_double %d, %d\n", w, r));
+	debug(("move_double %d, %d\n", w, r));
 }
 
 define_insn(move_double_const, fmovel_RxC)
@@ -995,7 +992,7 @@ define_insn(move_double_const, fmovel_RxC)
 
 	op_fmovl(w, r);
 
-	debug((DBOUT,"move_double_const %d, %f(0x%x)\n", w, o,r ));
+	debug(("move_double_const %d, %f(0x%x)\n", w, o,r ));
 }
 
 
@@ -1009,7 +1006,7 @@ define_insn(add_int, add_RRR)
 
 	op_add(w, r1, r2);
 
-	debug((DBOUT,"add_int %d, %d, %d\n", w, r1, r2));
+	debug(("add_int %d, %d, %d\n", w, r1, r2));
 }
 
 define_insn(add_int_const, add_RRC)
@@ -1020,10 +1017,10 @@ define_insn(add_int_const, add_RRC)
 
 	if ( o < 0 ) {
 		op_sub_const(w, r1, -o);
-		debug((DBOUT,"sub_int_const %d, %d, %d\n", w, r1, -o));
+		debug(("sub_int_const %d, %d, %d\n", w, r1, -o));
 	} else {
 		op_add_const(w, r1, o);
-		debug((DBOUT,"add_int_const %d, %d, %d\n", w, r1, o));
+		debug(("add_int_const %d, %d, %d\n", w, r1, o));
 	}
 }
 
@@ -1035,7 +1032,7 @@ define_insn(adc_int, adc_RRR)
 
 	op_adc(w, r1, r2);
 
-	debug((DBOUT,"adc_int %d, %d, %d\n", w, r1, r2));
+	debug(("adc_int %d, %d, %d\n", w, r1, r2));
 }
 
 define_insn(add_float, fadd_RRR)
@@ -1046,7 +1043,7 @@ define_insn(add_float, fadd_RRR)
 
 	op_fadd(w, r1, r2);
 
-	debug((DBOUT,"add_float %d, %d, %d\n", w, r1, r2));
+	debug(("add_float %d, %d, %d\n", w, r1, r2));
 }
 
 define_insn(add_double, faddl_RRR)
@@ -1057,7 +1054,7 @@ define_insn(add_double, faddl_RRR)
 
 	op_faddl(w, r1, r2);
 
-	debug((DBOUT,"add_double %d, %d, %d\n", w, r1, r2));
+	debug(("add_double %d, %d, %d\n", w, r1, r2));
 }
 
 define_insn(sub_int, sub_RRR)
@@ -1068,7 +1065,7 @@ define_insn(sub_int, sub_RRR)
 
 	op_sub(w, r1, r2);
 
-	debug((DBOUT,"sub_int %d, %d, %d\n", w, r1, r2));
+	debug(("sub_int %d, %d, %d\n", w, r1, r2));
 }
 
 define_insn(sub_int_const, sub_RRC)
@@ -1079,13 +1076,13 @@ define_insn(sub_int_const, sub_RRC)
 
 	if ( o < 0 ) {
 		op_add_const(w, r1, -o);
-		debug((DBOUT,"add_int_const %d, %d, %d\n", w, r1, -o));
+		debug(("add_int_const %d, %d, %d\n", w, r1, -o));
 	} else {
 		op_sub_const(w, r1, o);
-		debug((DBOUT,"add_int_const %d, %d, %d\n", w, r1, o));
+		debug(("add_int_const %d, %d, %d\n", w, r1, o));
 	}
 
-	debug((DBOUT,"sub_int_const %d, %d, %d\n", w, r1, 0));
+	debug(("sub_int_const %d, %d, %d\n", w, r1, 0));
 }
 
 define_insn(sbc_int, sbc_RRR)
@@ -1096,7 +1093,7 @@ define_insn(sbc_int, sbc_RRR)
 
 	op_sbc(w, r1, r2);
 
-	debug((DBOUT,"sbc_int %d, %d, %d\n", w, r1, r2));
+	debug(("sbc_int %d, %d, %d\n", w, r1, r2));
 }
 
 define_insn(sub_float, fsub_RRR)
@@ -1107,7 +1104,7 @@ define_insn(sub_float, fsub_RRR)
 
 	op_fsub(w, r1, r2);
 
-	debug((DBOUT,"sub_float %d, %d, %d\n", w, r1, r2));
+	debug(("sub_float %d, %d, %d\n", w, r1, r2));
 }
 
 define_insn(sub_double, fsubl_RRR)
@@ -1118,7 +1115,7 @@ define_insn(sub_double, fsubl_RRR)
 
 	op_fsubl(w, r1, r2);
 
-	debug((DBOUT,"sub_double %d, %d, %d\n", w, r1, r2));
+	debug(("sub_double %d, %d, %d\n", w, r1, r2));
 }
 
 define_insn(mul_int, mul_RRR)
@@ -1129,7 +1126,7 @@ define_insn(mul_int, mul_RRR)
 
 	op_mul(w, r1, r2);
 
-	debug((DBOUT,"mul_int %d, %d, %d\n", w, r1, r2));
+	debug(("mul_int %d, %d, %d\n", w, r1, r2));
 }
 
 define_insn(mul_float, fmul_RRR)
@@ -1140,7 +1137,7 @@ define_insn(mul_float, fmul_RRR)
 
 	op_fmul(w, r1, r2);
 
-	debug((DBOUT,"mul_float %d, %d, %d\n", w, r1, r2));
+	debug(("mul_float %d, %d, %d\n", w, r1, r2));
 }
 
 define_insn(mul_double, fmull_RRR)
@@ -1151,7 +1148,7 @@ define_insn(mul_double, fmull_RRR)
 
 	op_fmull(w, r1, r2);
 
-	debug((DBOUT,"mul_double %d, %d, %d\n", w, r1, r2));
+	debug(("mul_double %d, %d, %d\n", w, r1, r2));
 }
 
 define_insn(div_float, fdiv_RRR)
@@ -1162,7 +1159,7 @@ define_insn(div_float, fdiv_RRR)
 
 	op_fdiv(w, r1, r2);
 
-	debug((DBOUT,"div_float %d, %d, %d\n", w, r1, r2));
+	debug(("div_float %d, %d, %d\n", w, r1, r2));
 }
 
 define_insn(div_double, fdivl_RRR)
@@ -1173,7 +1170,7 @@ define_insn(div_double, fdivl_RRR)
 
 	op_fdivl(w, r1, r2);
 
-	debug((DBOUT,"div_double %d, %d, %d\n", w, r1, r2));
+	debug(("div_double %d, %d, %d\n", w, r1, r2));
 }
 
 /* --------------------------------------------------------------------- */
@@ -1186,7 +1183,7 @@ define_insn(and_int, and_RRR)
 
 	op_and(w, r1, r2);
 
-	debug((DBOUT,"and_int %d, %d, %d\n", w, r1, r2));
+	debug(("and_int %d, %d, %d\n", w, r1, r2));
 }
 
 define_insn(and_int_const, and_RRC)
@@ -1197,7 +1194,7 @@ define_insn(and_int_const, and_RRC)
 
 	op_and_const(w, r1, o);
 
-	debug((DBOUT,"and_int_const %d, %d, %d\n", w, r1, 0));
+	debug(("and_int_const %d, %d, %d\n", w, r1, 0));
 }
 
 
@@ -1209,7 +1206,7 @@ define_insn(or_int, or_RRR)
 
 	op_or(w, r1, r2);
 
-	debug((DBOUT,"or_int %d, %d, %d\n", w, r1, r2));
+	debug(("or_int %d, %d, %d\n", w, r1, r2));
 }
 
 define_insn(xor_int, xor_RRR)
@@ -1220,7 +1217,7 @@ define_insn(xor_int, xor_RRR)
 
 	op_eor(w, r1, r2);
 
-	debug((DBOUT,"xor_int %d, %d, %d\n", w, r1, r2));
+	debug(("xor_int %d, %d, %d\n", w, r1, r2));
 }
 
 define_insn(ashr_int, ashr_RRR)
@@ -1231,7 +1228,7 @@ define_insn(ashr_int, ashr_RRR)
 
 	op_ashr(w, r1, r2);
 
-	debug((DBOUT,"ashr_int %d, %d, %d\n", w, r1, r2));
+	debug(("ashr_int %d, %d, %d\n", w, r1, r2));
 }
 
 define_insn(lshr_int, lshr_RRR)
@@ -1242,7 +1239,7 @@ define_insn(lshr_int, lshr_RRR)
 
 	op_lshr(w, r1, r2);
 
-	debug((DBOUT,"lshr_int %d, %d, %d\n", w, r1, r2));
+	debug(("lshr_int %d, %d, %d\n", w, r1, r2));
 }
 
 define_insn(lshl_int, lshl_RRR)
@@ -1253,7 +1250,7 @@ define_insn(lshl_int, lshl_RRR)
 
 	op_lshl(w, r1, r2);
 
-	debug((DBOUT,"lshl_int %d, %d, %d\n", w, r1, r2));
+	debug(("lshl_int %d, %d, %d\n", w, r1, r2));
 }
 
 //
@@ -1269,23 +1266,13 @@ define_insn(lshl_int_const, lshl_RRC)
 
 	op_lshl_const(w, r, v);
 
-	debug((DBOUT,"shll %d, %d, LSL %d\n", w, r, v));
+	debug(("shll %d, %d, LSL %d\n", w, r, v));
 }
 
 
 /* --------------------------------------------------------------------- */
 //
 // Load/store offset
-
-define_insn(load_offset_int, load_RRC)
-{
-	int v = const_int(2);
-	int r = rreg_int(1);
-	int w = wreg_int(0);
-
-	op_load_offset(w, r, v);
-	debug((DBOUT,"ld %d, [%d+%d]\n", w, r, v));
-}
 
 define_insn(store_offset_int, store_RRC)
 {
@@ -1294,7 +1281,7 @@ define_insn(store_offset_int, store_RRC)
 	int r1 = rreg_int(1);
 
 	op_store_offset(r0, r1, v);
-	debug((DBOUT,"st %d, [%d+%d]\n", r1, r0, v));
+	debug(("st %d, [%d+%d]\n", r1, r0, v));
 }
 
 
@@ -1307,7 +1294,7 @@ define_insn(load_byte, loadb_RxR)
 
 	op_load_sb(w, r);
 
-	debug((DBOUT,"load_byte %d, [%d]\n", w, r));
+	debug(("load_byte %d, [%d]\n", w, r));
 }
 
 define_insn(load_char, loadc_RxR)
@@ -1317,7 +1304,7 @@ define_insn(load_char, loadc_RxR)
 
 	op_load_sh(w, r);
 
-	debug((DBOUT,"load_char %d, [%d]\n", w, r));
+	debug(("load_char %d, [%d]\n", w, r));
 }
 
 define_insn(load_short, loads_RxR)
@@ -1327,7 +1314,7 @@ define_insn(load_short, loads_RxR)
 
 	op_load_sh(w, r);
 
-	debug((DBOUT,"load_short %d, [%d]\n", w, r));
+	debug(("load_short %d, [%d]\n", w, r));
 }
 
 define_insn(load_int, load_RxR)
@@ -1337,7 +1324,17 @@ define_insn(load_int, load_RxR)
 
 	op_load(w, r);
 
-	debug((DBOUT,"ld %d, [%d]\n", w, r));
+	debug(("ld %d, [%d]\n", w, r));
+}
+
+define_insn(load_offset_int, load_RRC)
+{
+	int o = const_int(2);
+	int r = rreg_int(1);
+	int w = wreg_int(0);
+
+	op_load_offset(w, r, o);
+	debug(("ld %d, [%d+%d]\n", w, r, o));
 }
 
 define_insn(load_float, fload_RxR)
@@ -1347,7 +1344,7 @@ define_insn(load_float, fload_RxR)
 
 	op_fload(w, r);
 
-	debug((DBOUT,"load_float %d, [%d]\n", w, r));
+	debug(("load_float %d, [%d]\n", w, r));
 }
 
 define_insn(load_double, floadl_RxR)
@@ -1357,7 +1354,7 @@ define_insn(load_double, floadl_RxR)
 
 	op_floadl(w, r);
 
-	debug((DBOUT,"load_double %d, [%d]\n", w, r));
+	debug(("load_double %d, [%d]\n", w, r));
 }
 
 define_insn(store_byte, storeb_xRR)
@@ -1366,7 +1363,7 @@ define_insn(store_byte, storeb_xRR)
 	int r = rreg_int(1);
 
 	op_store_b(w, r);
-	debug((DBOUT,"store_byte %d, [%d]\n", r, w));
+	debug(("store_byte %d, [%d]\n", r, w));
 }
 
 define_insn(store_short, stores_xRR)
@@ -1376,7 +1373,7 @@ define_insn(store_short, stores_xRR)
 
 	op_store_h(w, r);
 
-	debug((DBOUT,"store_short %d, [%d]\n", r, w));
+	debug(("store_short %d, [%d]\n", r, w));
 }
 
 define_insn(store_int, store_xRR)
@@ -1386,7 +1383,7 @@ define_insn(store_int, store_xRR)
 
 	op_store(r, w);
 
-	debug((DBOUT,"store_int %d, [%d]\n", r, w));
+	debug(("store_int %d, [%d]\n", r, w));
 }
 
 define_insn(store_float, fstore_RxR)
@@ -1396,7 +1393,7 @@ define_insn(store_float, fstore_RxR)
 
 	op_fstore(r, w);
 
-	debug((DBOUT,"store_float %d, [%d]\n", r, w));
+	debug(("store_float %d, [%d]\n", r, w));
 }
 
 define_insn(store_double, fstorel_RxR)
@@ -1406,7 +1403,7 @@ define_insn(store_double, fstorel_RxR)
 
 	op_fstorel(r, w);
 
-	debug((DBOUT,"store_double %d, [%d]\n", r, w));
+	debug(("store_double %d, [%d]\n", r, w));
 }
 
 /* --------------------------------------------------------------------- */
@@ -1418,7 +1415,7 @@ define_insn(cmp_int, cmp_xRR)
 
 	op_cmp(r1, r2);
 
-	debug((DBOUT,"cmp_int r%d, r%d\n", r1, r2));
+	debug(("cmp_int r%d, r%d\n", r1, r2));
 }
 
 define_insn(cmp_int_const, cmp_xRC)
@@ -1428,7 +1425,7 @@ define_insn(cmp_int_const, cmp_xRC)
 
 	op_cmp_const(r, o);
 
-	debug((DBOUT,"cmp_int_const r%d, #%d\n", r, o));
+	debug(("cmp_int_const r%d, #%d\n", r, o));
 }
 
 define_insn(cmp_ref, cmpref_xRR)
@@ -1438,7 +1435,7 @@ define_insn(cmp_ref, cmpref_xRR)
 
 	op_cmp(r1, r2);
 
-	debug((DBOUT,"cmp_ref r%d, r%d\n", r1, r2));
+	debug(("cmp_ref r%d, r%d\n", r1, r2));
 }
 
 define_insn(cmp_ref_const, cmpref_xRC)
@@ -1448,7 +1445,7 @@ define_insn(cmp_ref_const, cmpref_xRC)
 
 	op_cmp_const(r, o);
 
-	debug((DBOUT,"cmp_ref_const r%d, #%d\n", r, o));
+	debug(("cmp_ref_const r%d, #%d\n", r, o));
 }
 
 
@@ -1459,7 +1456,7 @@ define_insn(cvt_int_float, cvtif_RxR)
 	int r = rreg_int(2); /* CHECKME */
 	int w = wreg_float(0);
 	op_cvt_i2f(w,r);
-	debug((DBOUT,"cvt_int_float %d, %d\n", w, r));
+	debug(("cvt_int_float %d, %d\n", w, r));
 }
 
 define_insn(cvt_int_double, cvtid_RxR)
@@ -1467,7 +1464,7 @@ define_insn(cvt_int_double, cvtid_RxR)
 	int r = rreg_int(2);
 	int w = wreg_double(0);
 	op_cvt_i2d(w,r);
-	debug((DBOUT,"cvt_int_double %d, %d\n", w, r));
+	debug(("cvt_int_double %d, %d\n", w, r));
 }
 
 define_insn(cvt_float_int, cvtfi_RxR)
@@ -1475,7 +1472,7 @@ define_insn(cvt_float_int, cvtfi_RxR)
 	int r = rreg_float(2);
 	int w = wreg_int(0);
 	op_cvt_f2i(w,r);
-	debug((DBOUT,"cvt_float_int r%d, f%d\n", w, r));
+	debug(("cvt_float_int r%d, f%d\n", w, r));
 }
 
 define_insn(cvt_int_double, cvtdi_RxR)
@@ -1483,7 +1480,7 @@ define_insn(cvt_int_double, cvtdi_RxR)
 	int r = rreg_double(2);
 	int w = wreg_int(0);
 	op_cvt_f2i(w,r);
-	debug((DBOUT,"cvt_double_int %d, %d\n", w, r));
+	debug(("cvt_double_int %d, %d\n", w, r));
 }
 
 #if 0
@@ -1491,12 +1488,12 @@ define_insn(cvt_int_double, cvtdi_RxR)
 define_insn(cvt_long_float, cvtlf_RxR)
 {
 	/* Is a long a 64-bit quantity? */
-	debug((DBOUT,"NOT IMPLEMENTED: cvt_long_float\n"));
+	debug(("NOT IMPLEMENTED: cvt_long_float\n"));
 }
 
 define_insn(cvt_long_double, cvtld_RxR)
 {
-	debug((DBOUT,"NOT IMPLEMENTED: cvt_long_double\n"));
+	debug(("NOT IMPLEMENTED: cvt_long_double\n"));
     }
 #endif
 
@@ -1505,7 +1502,7 @@ define_insn(cvt_float_double, cvtfd_RxR)
 	int r = rreg_float(2);
 	int w = wreg_double(0);
 	op_fmovl(w,r);
-	debug((DBOUT,"cvt_float_double f%d, f%d\n",w,r));
+	debug(("cvt_float_double f%d, f%d\n",w,r));
 }
 
 define_insn(cvt_double_float, cvtdf_RxR)
@@ -1513,7 +1510,7 @@ define_insn(cvt_double_float, cvtdf_RxR)
 	int r = rreg_double(2);
 	int w = wreg_float(0);
 	op_fmov(w,r);
-	debug((DBOUT,"cvt_double_float f%d, f%d\n",w,r));
+	debug(("cvt_double_float f%d, f%d\n",w,r));
 }
 
 /* --------------------------------------------------------------------- */
@@ -1522,9 +1519,9 @@ define_insn(build_key, set_word_xxC)
 {
 	jint val = const_int(2);
 
-	LOUT = val;
+	LOUT(val);
 
-	debug((DBOUT,"build_key %d", val));
+	debug(("build_key %d", val));
 }
 
 define_insn(build_code_ref, set_wordpc_xxC)
@@ -1534,9 +1531,9 @@ define_insn(build_code_ref, set_wordpc_xxC)
 	l->type |= Llong|Labsolute;
 	l->at = CODEPC;
 	l->from = CODEPC;
-	LOUT = 0;
+	LOUT(0);
 
-	debug((DBOUT,"build_code_ref (@0x%x from 0x%x)\n", l->at, l->from));
+	debug(("build_code_ref (@0x%x from 0x%x)\n", l->at, l->from));
 }
 
 /* --------------------------------------------------------------------- */
@@ -1547,7 +1544,7 @@ define_insn(set_label, set_label_xxC)
 
 	l->to = CODEPC;
 
-	debug((DBOUT,"set_label (@0x%x to 0x%x)\n", l->at, l->to));
+	debug(("set_label (@0x%x to 0x%x)\n", l->at, l->to));
 }
 
 define_insn(branch, branch_xCC)
@@ -1595,7 +1592,7 @@ define_insn(branch, branch_xCC)
 		abort();
 	}
 
-	debug((DBOUT,"branch type %d at 0x%x from 0x%x\n", bt, l -> at, l -> from));
+	debug(("branch type %d at 0x%x from 0x%x\n", bt, l -> at, l -> from));
 }
 
 //
@@ -1642,7 +1639,7 @@ define_insn(call, call_xRC)
 	op_mov(LR, PC);
 	op_mov(PC, r);
 
-	debug((DBOUT,"call [%d]\n", r));
+	debug(("call [%d]\n", r));
 }
 
 define_insn(branch_indirect, branch_indirect_xRC)
@@ -1650,7 +1647,7 @@ define_insn(branch_indirect, branch_indirect_xRC)
 	int r = rreg_int(1);
 	assert(const_int(2) == ba);
 	op_mov(PC, r);
-	debug((DBOUT,"branch_indirect [r%d]\n", r));
+	debug(("branch_indirect [r%d]\n", r));
 }
 
 define_insn(push_int, push_xRC)
@@ -1670,7 +1667,7 @@ define_insn(push_int, push_xRC)
 	else {
 		r = rreg_int(1);
 		op_push(SP, r);
-		debug((DBOUT,"push_int via push SP,r%d\n", r));
+		debug(("push_int via push SP,r%d\n", r));
 	}
 
 }
@@ -1699,7 +1696,7 @@ define_insn(push_float, fpush_xRC)
 		 */
 		op_pop_m(SP, (1 << w));
 		register_reserve(w);
-		debug((DBOUT,"push_float via elaborate mov r(%d) := f%d\n", w, r));
+		debug(("push_float via elaborate mov r(%d) := f%d\n", w, r));
 		break;
 
 	default:
@@ -1708,7 +1705,7 @@ define_insn(push_float, fpush_xRC)
 		 */
 		r = rreg_float(1);
 		op_fpush(SP, r);
-		debug((DBOUT,"push_float via SP, f%d\n", r));
+		debug(("push_float via SP, f%d\n", r));
 		break;
 	}
 }
@@ -1739,7 +1736,7 @@ define_insn(push_double, fpushl_xRC)
 		op_pop_m(SP, (1 << w) | (1 << (w+1)));
 		register_reserve(w);
 		register_reserve(w+1);
-		debug((DBOUT,"push_double via elaborate mov r(%d,%d) := f%d\n", w, w+1, r));
+		debug(("push_double via elaborate mov r(%d,%d) := f%d\n", w, w+1, r));
 		break;
 
 	case 3:
@@ -1754,7 +1751,7 @@ define_insn(push_double, fpushl_xRC)
 		/* Pop the first word */
 		op_pop_m(SP, (1 << w));
 		register_reserve(w);
-		debug((DBOUT,"push_double via partial register, partial stack SP, f%d\n", r));
+		debug(("push_double via partial register, partial stack SP, f%d\n", r));
 		break;
 
 	default:
@@ -1763,7 +1760,7 @@ define_insn(push_double, fpushl_xRC)
 		 */
 		r = rreg_double(1);
 		op_fpushl(SP, r);
-		debug((DBOUT,"push_double via SP, f%d\n", r));
+		debug(("push_double via SP, f%d\n", r));
 		break;
 	}
 }
@@ -1784,9 +1781,9 @@ define_insn(popargs, popargs_xxC)
 		assert(__I8const_rangecheck(o >> 2));
 		op_add_c(SP, SP, (o >> 2), 30);
 
-		debug((DBOUT,"popargs SP, SP, %d\n", o));
+		debug(("popargs SP, SP, %d\n", o));
 	} else {
-		debug((DBOUT,"null popargs with %d args\n", const_int(2)));
+		debug(("null popargs with %d args\n", const_int(2)));
 	}
 }
 
@@ -1796,7 +1793,7 @@ define_insn(returnarg_int, returnarg_xxR)
 
 	xop_mov(R0, r);
 
-	debug((DBOUT,"returnarg_int R0,%d\n", r));
+	debug(("returnarg_int R0,%d\n", r));
 }
 
 define_insn(returnarg_long, returnargl_xxR)
@@ -1809,7 +1806,7 @@ define_insn(returnarg_long, returnargl_xxR)
 	r1 = _slowSlotRegister(r, Rint, rread);
 	r2 = _slowSlotRegister(r+1, Rint, rread);
 
-	debug((DBOUT,"returnarg_long R0,%d,%d\n", r1, r2));
+	debug(("returnarg_long R0,%d,%d\n", r1, r2));
 
 	/* Return long is a bit complicated since part of the source may
 	 * be the destination.
@@ -1840,7 +1837,7 @@ define_insn(returnarg_float, freturnarg_xxR)
 
 	xop_fmov(F0, r);
 
-	debug((DBOUT,"returnarg_float R0,%d\n", r));
+	debug(("returnarg_float R0,%d\n", r));
 }
 
 define_insn(returnarg_double, freturnargl_xxR)
@@ -1849,14 +1846,14 @@ define_insn(returnarg_double, freturnargl_xxR)
 
 	xop_fmovl(F0, r);
 
-	debug((DBOUT,"returnarg_double R0,%d\n", r));
+	debug(("returnarg_double R0,%d\n", r));
 }
 
 define_insn(return_int, return_Rxx)
 {
 	forceRegister(seq_dst(s), R0, Rint);
 
-	debug((DBOUT,"return_int R0\n"));
+	debug(("return_int R0\n"));
 }
 
 define_insn(return_long, returnl_Rxx)
@@ -1864,21 +1861,21 @@ define_insn(return_long, returnl_Rxx)
 	forceRegister(seq_dst(s), R0, Rint);
 	forceRegister(seq_dst(s)+1, R1, Rint);
 
-	debug((DBOUT,"return_long R0,R1\n"));
+	debug(("return_long R0,R1\n"));
 }
 
 define_insn(return_float, freturn_Rxx)
 {
 	forceRegister(seq_dst(s), Reg_F0, Rfloat);
 
-	debug((DBOUT,"return_float F0\n"));
+	debug(("return_float F0\n"));
 }
 
 define_insn(return_double, freturnl_Rxx)
 {
 	forceRegister(seq_dst(s), Reg_F0, Rdouble);
 
-	debug((DBOUT,"return_double F0\n"));
+	debug(("return_double F0\n"));
 }
 
 /* --------------------------------------------------------------------- */
@@ -1899,13 +1896,13 @@ define_insn(fake_call_constpool, fakecall_xCC)
         froml->at = CODEPC;
 
 	op_load_offset(LR, CONSTPOOL_BASE, -128);
-	debug((DBOUT,"load_label_const lr, ?\n"));
+	debug(("load_label_const lr, ?\n"));
 
         tol->type = Lconstant | Labsolute | Loffset12;
         tol->at = CODEPC;
 
 	op_load_offset(R0, CONSTPOOL_BASE, -128);
-	debug((DBOUT,"load_label_const r0, ?\n"));
+	debug(("load_label_const r0, ?\n"));
 
 	op_mov(PC, R0);
 }
@@ -1924,7 +1921,7 @@ define_insn(fake_call, fakecall_xCC)
 	op_add_c(LR, LR, 0, 24);
 	op_add_c(LR, LR, 0, 16);
 	op_add_c(LR, LR, 0, 8);
-	debug((DBOUT,"move_label_const lr, ?\n"));
+	debug(("move_label_const lr, ?\n"));
 
         tol->type |= Labsolute | Llong8x8x8x8;
         tol->at = CODEPC;
@@ -1933,7 +1930,7 @@ define_insn(fake_call, fakecall_xCC)
 	op_add_c(R0, R0, 0, 24);
 	op_add_c(R0, R0, 0, 16);
 	op_add_c(R0, R0, 0, 8);
-	debug((DBOUT,"move_label_const r0, ?\n"));
+	debug(("move_label_const r0, ?\n"));
 
 	op_mov(PC, R0);
 }

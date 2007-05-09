@@ -1,3 +1,7 @@
+2007-05-10  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
+	* config/arm/jit3-arm.def: Updated to new LOUT etc scheme.
+
 2007-05-09  Kiyo Inaba <inaba@src.ricoh.co.jp>
 
 	* config/m68k/jit-m68k.def,
