@@ -158,14 +158,14 @@ JNIEXPORT int cpio_availableBytes (int fd, jlong *bytes_available)
   off_t n;
   int result;
 
-  *bytes_available = 0
+  *bytes_available = 0;
   if ((fstat (fd, &statBuffer) == 0) && S_ISREG (statBuffer.st_mode))
     {
       n = lseek (fd, 0, SEEK_CUR);
       if (n != -1) 
        { 
          *bytes_available = statBuffer.st_size - n; 
-         result = 0;
+         result = CPNATIVE_OK;
        } 
       else 
        { 
@@ -189,7 +189,7 @@ JNIEXPORT int cpio_availableBytes (int fd, jlong *bytes_available)
   FD_SET (fd,&filedescriptset);
   memset (&tv, 0, sizeof(tv));
 
-  switch (select (fd+1, &filedescriptset, NULL, NULL, &timeval)) \
+  switch (select (fd+1, &filedescriptset, NULL, NULL, &tv))
     {
     case -1: 
       result=errno; 
@@ -350,6 +350,76 @@ int cpio_setFileReadonly (const char *filename)
     return errno;
 
   return 0;
+}
+
+int cpio_chmod (const char *filename, int permissions)
+{
+  struct stat statbuf;
+  int perms = 0;
+
+  if (stat(filename, &statbuf) < 0)
+    return errno;
+  
+  /* check for permission flags */
+  if (permissions & CPFILE_FLAG_USR)
+    {
+      if (permissions & CPFILE_FLAG_READ)
+        perms |= S_IRUSR;
+  
+      if (permissions & CPFILE_FLAG_WRITE)
+        perms |= S_IWUSR;
+        
+      if (permissions & CPFILE_FLAG_EXEC)
+        perms |= S_IXUSR;
+    }
+  else
+    {
+      if (permissions & CPFILE_FLAG_READ)
+        perms |= (S_IRUSR | S_IRGRP | S_IROTH);
+        
+      if (permissions & CPFILE_FLAG_WRITE)
+        perms |= (S_IWUSR | S_IWGRP | S_IWOTH);
+        
+      if (permissions & CPFILE_FLAG_EXEC)
+        perms |= (S_IXUSR | S_IXGRP | S_IXOTH);
+    }
+  
+  if (permissions & CPFILE_FLAG_OFF)
+    perms = statbuf.st_mode & ~perms;
+  else
+    perms = statbuf.st_mode | perms;
+  
+  if (chmod(filename, perms) < 0)
+    return errno;
+  
+  return 0;
+}
+
+int cpio_checkAccess (const char *filename, unsigned int flag)
+{
+  struct stat statbuf;
+  unsigned int perms = 0;
+ 
+  if (stat(filename, &statbuf) < 0)
+    return errno;
+  
+  switch (flag)
+    {
+    case CPFILE_FLAG_READ:
+      perms = R_OK;
+      break;
+      
+    case CPFILE_FLAG_WRITE:
+      perms = W_OK;
+      break;
+      
+    case CPFILE_FLAG_EXEC:
+    default:
+      perms = X_OK;
+      break;
+    }
+  
+  return (access (filename, perms));
 }
 
 int cpio_isFileExists (const char *filename)

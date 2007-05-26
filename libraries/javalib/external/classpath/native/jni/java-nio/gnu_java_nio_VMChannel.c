@@ -1,5 +1,5 @@
 /* gnu_java_nio_VMChannel.c -
-   Copyright (C) 2003, 2004, 2005, 2006  Free Software Foundation, Inc.
+   Copyright (C) 2003, 2004, 2005, 2006, 2007  Free Software Foundation, Inc.
 
 This file is part of GNU Classpath.
 
@@ -43,7 +43,6 @@ exception statement from your version. */
 #include <config-int.h>
 
 #include <sys/types.h>
-#include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
@@ -66,6 +65,14 @@ exception statement from your version. */
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
 #endif /* HAVE_FCNTL_H */
+
+#if defined(HAVE_SYS_IOCTL_H)
+#define BSD_COMP /* Get FIONREAD on Solaris2 */
+#include <sys/ioctl.h>
+#endif
+#if defined(HAVE_SYS_FILIO_H) /* Get FIONREAD on Solaris 2.5 */
+#include <sys/filio.h>
+#endif
 
 #define CONNECT_EXCEPTION "java/net/ConnectException"
 #define IO_EXCEPTION "java/io/IOException"
@@ -1575,6 +1582,8 @@ Java_gnu_java_nio_VMChannel_available (JNIEnv *env,
                                        jclass c __attribute__((unused)),
                                        jint fd)
 {
+#if defined (FIONREAD)
+
   jint avail = 0;
 
 /*   NIODBG("fd: %d", fd); */
@@ -1583,6 +1592,53 @@ Java_gnu_java_nio_VMChannel_available (JNIEnv *env,
 /*   NIODBG("avail: %d", avail); */
 
   return avail;
+
+#elif defined(HAVE_FSTAT)
+
+  jint avail = 0;
+
+  struct stat statBuffer;
+  off_t n;
+
+  if ((fstat (fd, &statBuffer) == 0) && S_ISREG (statBuffer.st_mode))
+    {
+      n = lseek (fd, 0, SEEK_CUR);
+      if (n != -1) 
+        { 
+	  avail = statBuffer.st_size - n;
+	  return avail;
+        } 
+    }
+  JCL_ThrowException (env, IO_EXCEPTION, strerror (errno));
+
+#elif defined(HAVE_SELECT)
+
+  jint avail = 0;
+  fd_set filedescriptset;
+  struct timeval tv;
+
+  FD_ZERO (&filedescriptset);
+  FD_SET (fd,&filedescriptset);
+  memset (&tv, 0, sizeof(tv));
+
+  switch (select (fd+1, &filedescriptset, NULL, NULL, &tv))
+    {
+      case -1:
+        break;
+      case  0:
+        avail = 0;
+	return avail;
+      default:
+        avail = 1;
+	return avail;
+    }
+  JCL_ThrowException (env, IO_EXCEPTION, strerror (errno));
+
+#else
+
+  JCL_ThrowException (env, IO_EXCEPTION, "No native method for available");
+
+#endif
 }
 
 
@@ -1609,8 +1665,6 @@ Java_gnu_java_nio_VMChannel_open (JNIEnv *env,
   int nmode = 0;
   int ret;
   const char *npath;
-  mode_t mask = umask (0);
-  umask (mask);
 
   if ((mode & CPNIO_READ) && (mode & CPNIO_WRITE))
     nmode = O_RDWR;
@@ -1630,7 +1684,7 @@ Java_gnu_java_nio_VMChannel_open (JNIEnv *env,
 
 /*   NIODBG("path: %s; mode: %x", npath, nmode); */
 
-  ret = open (npath, nmode, 0777 & ~mask);
+  ret = open (npath, nmode, 0666);
 
 /*   NIODBG("ret: %d\n", ret); */
 

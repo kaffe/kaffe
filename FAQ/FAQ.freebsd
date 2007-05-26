@@ -1,0 +1,27 @@
+FAQ for FreeBSD
+===============
+
+BufferedInputStreamAvailableTest.java fails.
+--------------------------------------------
+
+This is due to GNU Classpath's native library. See this bug report
+for details.
+
+http://gcc.gnu.org/bugzilla/show_bug.cgi?id=31927
+
+A workaround for this problem follows.
+
+Go to libraries/javalib/external/classpath/native/jni and edit
+java-nio/gnu_java_nio_VMChannel.c and native-lib/cpio.c.
+
+These have functions named Java_gnu_java_nio_VMChannel_available
+and cpio_availableBytes respectively.
+
+These have a line which reads
+
+#if defined (FIONREAD)
+
+Change this line so that this #if part may be ignored.
+
+#if defined (FIONREAD) && 0
+

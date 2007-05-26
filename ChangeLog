@@ -1,3 +1,12 @@
+2007-05-26  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* FAQ/FAQ.freebsd: New file.
+	* libraries/javalib/external/classpath/native/jni/java-nio/gnu_java_nio_VMChannel.c,
+	libraries/javalib/external/classpath/native/jni/native-lib/cpio.c,
+	libraries/javalib/external/classpath/native/jni/native-lib/cpio.h:
+	Copied from GNU Classpath so that a FreeBSD problem can have a
+	workaround.
+
 2007-05-10  Kiyo Inaba <inaba@src.ricoh.co.jp>
 
 	* config/arm/jit3-arm.def: Updated to new LOUT etc scheme.
