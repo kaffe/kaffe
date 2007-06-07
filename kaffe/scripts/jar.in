@@ -1,6 +1,6 @@
 #! /bin/sh
 prefix=@prefix@
 exec_prefix=@exec_prefix@
-exec @FASTJAR_BINARY@ ${1+"$@"}
+exec @FASTJAR@ ${1+"$@"}
 exit $?
 

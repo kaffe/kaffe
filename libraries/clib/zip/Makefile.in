@@ -78,11 +78,8 @@ am__installdirs = "$(DESTDIR)$(nativedir)"
 nativeLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(native_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-@COND_SYSTEM_ZLIB_FALSE@am__DEPENDENCIES_2 =  \
-@COND_SYSTEM_ZLIB_FALSE@	../../../external/gcc/zlib/libz.la
-@COND_SYSTEM_ZLIB_TRUE@am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1)
 libzip_la_DEPENDENCIES = $(top_builddir)/kaffe/kaffevm/libkaffevm.la \
-	$(am__DEPENDENCIES_2)
+	$(am__DEPENDENCIES_1)
 am_libzip_la_OBJECTS = libzip_la-Adler32.lo libzip_la-CRC32.lo \
 	libzip_la-Deflater.lo libzip_la-Inflater.lo \
 	libzip_la-ZipFile.lo
@@ -154,7 +151,6 @@ ESD_LIBS = @ESD_LIBS@
 EXEEXT = @EXEEXT@
 F77 = @F77@
 FASTJAR = @FASTJAR@
-FASTJAR_BINARY = @FASTJAR_BINARY@
 FFLAGS = @FFLAGS@
 GC_NAME = @GC_NAME@
 GETOPT_H = @GETOPT_H@
@@ -317,12 +313,8 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 with_engine = @with_engine@
 AM_CFLAGS = $(KAFFE_CFLAGS)
-@COND_SYSTEM_ZLIB_FALSE@LINKED_ZIP_LIBS = ../../../external/gcc/zlib/libz.la
-@COND_SYSTEM_ZLIB_TRUE@LINKED_ZIP_LIBS = $(ZIP_LIBS)
-@COND_SYSTEM_ZLIB_FALSE@MAYBE_INTERNAL_ZIP_INCLUDES = -I$(srcdir)/../../../external/gcc/zlib/
 AM_CPPFLAGS = \
 	-I$(top_builddir)/include \
-	$(MAYBE_INTERNAL_ZIP_INCLUDES) \
         -I$(top_srcdir)/config/$(Khost_cpu) \
         -I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os)
 
@@ -340,7 +332,7 @@ libzip_la_LDFLAGS = \
 
 libzip_la_LIBADD = \
 	$(top_builddir)/kaffe/kaffevm/libkaffevm.la \
-	$(LINKED_ZIP_LIBS)
+	$(ZIP_LIBS)
 
 libzip_la_SOURCES = \
 	Adler32.c \

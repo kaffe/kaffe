@@ -10,13 +10,6 @@ AM_CFLAGS= \
 	$(KAFFE_CFLAGS) \
 	$(CFLAGS_PG)
 
-if COND_SYSTEM_ZLIB
-LINKED_ZIP_LIBS=$(ZIP_LIBS)
-else
-LINKED_ZIP_LIBS=../../external/gcc/zlib/libz.la
-MAYBE_INTERNAL_ZIP_INCLUDES=-I$(srcdir)/../../external/gcc/zlib/
-endif
-
 AM_CPPFLAGS = \
 	-I../kaffevm \
 	-I$(srcdir)/../kaffevm \
@@ -25,14 +18,13 @@ AM_CPPFLAGS = \
 	-I$(top_builddir)/config \
 	-I$(top_srcdir)/kaffe/kaffevm/jni \
 	-I$(top_srcdir)/config/$(Khost_cpu) \
-	-I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os) \
-	$(MAYBE_INTERNAL_ZIP_INCLUDES)
+	-I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os) 
 
 bin_PROGRAMS = kaffeh
 
 kaffeh_LDADD = \
 	$(LTLIBINTL) \
-	$(LINKED_ZIP_LIBS)
+	$(ZIP_LIBS)
 
 kaffeh_SOURCES = \
 	main.c \

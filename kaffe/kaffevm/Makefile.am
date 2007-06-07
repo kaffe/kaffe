@@ -9,13 +9,6 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-if COND_SYSTEM_ZLIB
-LINKED_ZIP_LIBS=$(ZIP_LIBS)
-else
-LINKED_ZIP_LIBS=../../external/gcc/zlib/libz.la
-MAYBE_INTERNAL_ZIP_INCLUDES=-I$(srcdir)/../../external/gcc/zlib/
-endif
-
 SUBDIRS = $(ENGINE_NAME) systems $(GC_NAME) gcj verifier jni
 DIST_SUBDIRS = boehm-gc kaffe-gc intrp jit jit3 systems gcj verifier jni
 
@@ -39,8 +32,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/kaffe/kaffevm/verifier \
 	-I$(top_srcdir)/kaffe/kaffevm/jni \
         -I$(top_srcdir)/config/$(Khost_cpu) \
-	-I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os) \
-	$(MAYBE_INTERNAL_ZIP_INCLUDES) 
+	-I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os) 
 
 native_LTLIBRARIES = libkaffevm.la
 
@@ -84,7 +76,7 @@ libkaffevm_la_LIBADD = \
 	$(NET_LIBS) \
 	$(VM_LIBS) \
 	$(M_LIBS) \
-	$(LINKED_ZIP_LIBS)
+	$(ZIP_LIBS)
 
 nodist_libkaffevm_la_SOURCES = \
 	md.c

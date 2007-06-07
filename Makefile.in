@@ -156,7 +156,6 @@ ESD_LIBS = @ESD_LIBS@
 EXEEXT = @EXEEXT@
 F77 = @F77@
 FASTJAR = @FASTJAR@
-FASTJAR_BINARY = @FASTJAR_BINARY@
 FFLAGS = @FFLAGS@
 GC_NAME = @GC_NAME@
 GETOPT_H = @GETOPT_H@
@@ -323,7 +322,6 @@ AUTOMAKE_OPTIONS = foreign 1.3e
 SUBDIRS = \
 	replace \
 	. \
-	external \
 	libraries/javalib \
 	config \
 	libltdl \
@@ -337,7 +335,6 @@ SUBDIRS = \
 
 DIST_SUBDIRS = \
 	config \
-	external \
 	include \
 	replace \
 	libltdl \

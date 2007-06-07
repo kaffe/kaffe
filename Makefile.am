@@ -17,7 +17,6 @@ AUTOMAKE_OPTIONS = foreign 1.3e
 SUBDIRS = \
 	replace \
 	. \
-	external \
 	libraries/javalib \
 	config \
 	libltdl \
@@ -31,7 +30,6 @@ SUBDIRS = \
 
 DIST_SUBDIRS = \
 	config \
-	external \
 	include \
 	replace \
 	libltdl \

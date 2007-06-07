@@ -2131,7 +2131,7 @@ AM_CONDITIONAL([COND_NATIVE_SOUND], [test x"$enable_sound" != x"no"])
 
 AC_ARG_ENABLE([zlib_zip],
               AS_HELP_STRING([--disable-zlib-zip],
-                             [Enable java.util.zip implementation using zlib @<:@default=enabled@:>@]),
+                             [Disable java.util.zip implementation using zlib @<:@default=enabled@:>@]),
                              [], [enable_zlib_zip="yes"])
 
 AM_CONDITIONAL([COND_ZLIB_ZIP], [test x"$enable_zlib_zip" != x"no"])
@@ -2270,33 +2270,12 @@ AC_ARG_ENABLE([direct-threading],
 AM_CONDITIONAL([COND_DIRECT_THREADING], [test x"$enable_direct_threading" = x"yes"])
 
 
-AC_ARG_WITH([system-zlib],
-	AS_HELP_STRING([--with-system-zlib],
-		       [Use installed zlib on the system instead of Kaffe's copy]),
-	[],
-	[with_system_zlib=no]
-)
-
-if test x"$with_system_zlib" != x"no" ; then
-   if test x"$ac_cv_header_zlib_h" != x"yes" ; then
-      AC_MSG_ERROR([Can't find or can't use system zlib.h])
-   fi
-   if test x"$ac_cv_lib_z_deflate" != x"yes" ; then
-      AC_MSG_ERROR([Can't find system zlib or can't find function deflate in it])
-   fi
+if test x"$ac_cv_header_zlib_h" != x"yes" ; then
+  AC_MSG_ERROR([Can't find or can't use system zlib.h])
 fi
-
-
-AM_CONDITIONAL(COND_SYSTEM_ZLIB, test x"$with_system_zlib" != x"no")
-
-AC_ARG_ENABLE([fastjar],
-	AS_HELP_STRING([--disable-fastjar],
-		       [Don't build fastjar tool]),
-	[],
-	[enable_fastjar=yes]
-)
-
-AM_CONDITIONAL(COND_FASTJAR, test x"$enable_fastjar" != x"no")
+if test x"$ac_cv_lib_z_deflate" != x"yes" ; then
+  AC_MSG_ERROR([Can't find system zlib or can't find function deflate in it])
+fi
 
 dnl =========================================================================
 dnl Configure Binreloc support
@@ -2344,31 +2323,14 @@ kaffe_builddir=`pwd`
 AC_SUBST([kaffe_builddir])
 
 # detect fastjar and set FASTJAR to its path
-# if we are not cross-compiling, and no jar/fastjar tool can be found,
-# use the freshly compiled one.
 
 AC_PATH_PROGS([FASTJAR], [fastjar jar])
 
-if test x"$cross_compiling" = x"yes"; then
-  if test -z "${FASTJAR}"; then
-    AC_MSG_ERROR([please set FASTJAR to the full pathname of a locally executable fastjar])
-  fi
-else
-  # if we are not cross-compiling, and fastjar is being built
-  # then use it instead of the one on the path. 
-  if test x"$enable_fastjar" = x"yes"; then
-    FASTJAR="${kaffe_builddir}/external/gcc/fastjar/fastjar"
-  fi
-fi
-
-if test x"$enable_fastjar" = x"yes"; then
-  FASTJAR_BINARY="${bindir}/fastjar"
-else
-  FASTJAR_BINARY="${FASTJAR}"
+if test -z "${FASTJAR}"; then
+  AC_MSG_ERROR([No JAR tool found. Please install fastjar or jar.])
 fi
 
 AC_SUBST([FASTJAR])
-AC_SUBST([FASTJAR_BINARY])
 
 dnl =========================================================================
 dnl Define directory to put native library support
@@ -2507,7 +2469,6 @@ ac_configure_args="$ac_configure_args --with-vm=${prefix}/bin/kaffe"
 ac_configure_args="$ac_configure_args --disable-examples"
 ac_configure_args="$ac_configure_args --with-glibj-dir=${jrelibdir}"
 ac_configure_args="$ac_configure_args --with-native-libdir=${nativedir}"
-ac_configure_args="$ac_configure_args --with-fastjar=${FASTJAR}"
 
 if  test x$use_glibj_zip = xtrue ; then
 	ac_configure_args="$ac_configure_args --with-glibj=none";
@@ -2517,17 +2478,11 @@ ac_configure_args="$ac_configure_args CFLAGS=\"${KAFFE_CFLAGS} ${CFLAGS}\"";
 
 AC_CONFIG_SUBDIRS([libraries/javalib/external/classpath])
 
-AC_CONFIG_SUBDIRS([external/gcc/fastjar])
-
 AC_CONFIG_SUBDIRS([libltdl])
 AC_CONFIG_HEADERS([config/config.h])
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([project.xml project.properties])
 AC_CONFIG_FILES([config/Makefile])
-AC_CONFIG_FILES([external/Makefile])
-AC_CONFIG_FILES([external/gcc/Makefile])
-AC_CONFIG_FILES([external/gcc/zlib/Makefile])
-AC_CONFIG_FILES([external/gcc/fastjar/Makefile])
 AC_CONFIG_FILES([include/Makefile])
 AC_CONFIG_FILES([replace/Makefile])
 AC_CONFIG_FILES([kaffe/Makefile])

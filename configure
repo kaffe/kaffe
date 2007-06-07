@@ -1049,17 +1049,12 @@ KVMBINFLAGS
 KVMLIBFLAGS
 COND_DIRECT_THREADING_TRUE
 COND_DIRECT_THREADING_FALSE
-COND_SYSTEM_ZLIB_TRUE
-COND_SYSTEM_ZLIB_FALSE
-COND_FASTJAR_TRUE
-COND_FASTJAR_FALSE
 BINRELOC_CFLAGS
 BINRELOC_LIBS
 KAFFEH
 MAKE_KAFFEH
 kaffe_builddir
 FASTJAR
-FASTJAR_BINARY
 toolslibdir
 jredir
 jrebindir
@@ -1100,7 +1095,6 @@ FFLAGS
 XMKMF'
 ac_subdirs_all='kaffe/kaffevm/boehm-gc/boehm
 libraries/javalib/external/classpath
-external/gcc/fastjar
 libltdl'
 
 # Initialize some variables set by options.
@@ -1728,7 +1722,7 @@ Optional Features:
   --disable-alsatest      Do not try to compile and run a test Alsa program
   --disable-esdtest       Do not try to compile and run a test ESD program
   --disable-sound         Disable javax.sound support
-  --disable-zlib-zip      Enable java.util.zip implementation using zlib
+  --disable-zlib-zip      Disable java.util.zip implementation using zlib
                           [default=enabled]
   --enable-pure-java-math Enable pure java java.math.* package
                           [default=native]
@@ -1738,7 +1732,6 @@ Optional Features:
                           rmic
   --disable-direct-threading
                           Use switched interpreter instead of direct-threading
-  --disable-fastjar       Don't build fastjar tool
   --enable-binreloc       compile with binary relocation support
                           (default=enable when available)
   --enable-binreloc-threads      compile binary relocation with threads support
@@ -1808,8 +1801,6 @@ Optional Packages:
                           default, is, to, use, it, if, present
   --with-dmalloc          use dmalloc, as in
 			  http://www.dmalloc.com/dmalloc.tar.gz
-  --with-system-zlib      Use installed zlib on the system instead of Kaffe's
-                          copy
   --with-jni-library-path=dir
                           additional directories to search for native jni
                           libraries
@@ -7166,7 +7157,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 7169 "configure"' > conftest.$ac_ext
+  echo '#line 7160 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -9719,11 +9710,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9722: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9713: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9726: \$? = $ac_status" >&5
+   echo "$as_me:9717: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9987,11 +9978,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9990: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9981: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9994: \$? = $ac_status" >&5
+   echo "$as_me:9985: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -10091,11 +10082,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:10094: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:10085: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:10098: \$? = $ac_status" >&5
+   echo "$as_me:10089: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -12399,7 +12390,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12402 "configure"
+#line 12393 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12499,7 +12490,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12502 "configure"
+#line 12493 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -14839,11 +14830,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14842: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14833: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:14846: \$? = $ac_status" >&5
+   echo "$as_me:14837: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -14943,11 +14934,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14946: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14937: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:14950: \$? = $ac_status" >&5
+   echo "$as_me:14941: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -16513,11 +16504,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16516: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16507: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:16520: \$? = $ac_status" >&5
+   echo "$as_me:16511: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -16617,11 +16608,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16620: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16611: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:16624: \$? = $ac_status" >&5
+   echo "$as_me:16615: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -18819,11 +18810,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18822: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18813: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:18826: \$? = $ac_status" >&5
+   echo "$as_me:18817: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -19087,11 +19078,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:19090: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:19081: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:19094: \$? = $ac_status" >&5
+   echo "$as_me:19085: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -19191,11 +19182,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:19194: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:19185: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:19198: \$? = $ac_status" >&5
+   echo "$as_me:19189: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -47335,56 +47326,16 @@ fi
 
 
 
-
-# Check whether --with-system-zlib was given.
-if test "${with_system_zlib+set}" = set; then
-  withval=$with_system_zlib;
-else
-  with_system_zlib=no
-
-fi
-
-
-if test x"$with_system_zlib" != x"no" ; then
-   if test x"$ac_cv_header_zlib_h" != x"yes" ; then
-      { { echo "$as_me:$LINENO: error: Can't find or can't use system zlib.h" >&5
+if test x"$ac_cv_header_zlib_h" != x"yes" ; then
+  { { echo "$as_me:$LINENO: error: Can't find or can't use system zlib.h" >&5
 echo "$as_me: error: Can't find or can't use system zlib.h" >&2;}
    { (exit 1); exit 1; }; }
-   fi
-   if test x"$ac_cv_lib_z_deflate" != x"yes" ; then
-      { { echo "$as_me:$LINENO: error: Can't find system zlib or can't find function deflate in it" >&5
+fi
+if test x"$ac_cv_lib_z_deflate" != x"yes" ; then
+  { { echo "$as_me:$LINENO: error: Can't find system zlib or can't find function deflate in it" >&5
 echo "$as_me: error: Can't find system zlib or can't find function deflate in it" >&2;}
    { (exit 1); exit 1; }; }
-   fi
 fi
-
-
- if test x"$with_system_zlib" != x"no"; then
-  COND_SYSTEM_ZLIB_TRUE=
-  COND_SYSTEM_ZLIB_FALSE='#'
-else
-  COND_SYSTEM_ZLIB_TRUE='#'
-  COND_SYSTEM_ZLIB_FALSE=
-fi
-
-
-# Check whether --enable-fastjar was given.
-if test "${enable_fastjar+set}" = set; then
-  enableval=$enable_fastjar;
-else
-  enable_fastjar=yes
-
-fi
-
-
- if test x"$enable_fastjar" != x"no"; then
-  COND_FASTJAR_TRUE=
-  COND_FASTJAR_FALSE='#'
-else
-  COND_FASTJAR_TRUE='#'
-  COND_FASTJAR_FALSE=
-fi
-
 
 
 
@@ -47668,8 +47619,6 @@ kaffe_builddir=`pwd`
 
 
 # detect fastjar and set FASTJAR to its path
-# if we are not cross-compiling, and no jar/fastjar tool can be found,
-# use the freshly compiled one.
 
 for ac_prog in fastjar jar
 do
@@ -47717,26 +47666,11 @@ fi
 done
 
 
-if test x"$cross_compiling" = x"yes"; then
-  if test -z "${FASTJAR}"; then
-    { { echo "$as_me:$LINENO: error: please set FASTJAR to the full pathname of a locally executable fastjar" >&5
-echo "$as_me: error: please set FASTJAR to the full pathname of a locally executable fastjar" >&2;}
+if test -z "${FASTJAR}"; then
+  { { echo "$as_me:$LINENO: error: No JAR tool found. Please install fastjar or jar." >&5
+echo "$as_me: error: No JAR tool found. Please install fastjar or jar." >&2;}
    { (exit 1); exit 1; }; }
-  fi
-else
-  # if we are not cross-compiling, and fastjar is being built
-  # then use it instead of the one on the path.
-  if test x"$enable_fastjar" = x"yes"; then
-    FASTJAR="${kaffe_builddir}/external/gcc/fastjar/fastjar"
-  fi
 fi
-
-if test x"$enable_fastjar" = x"yes"; then
-  FASTJAR_BINARY="${bindir}/fastjar"
-else
-  FASTJAR_BINARY="${FASTJAR}"
-fi
-
 
 
 
@@ -48103,7 +48037,6 @@ ac_configure_args="$ac_configure_args --with-vm=${prefix}/bin/kaffe"
 ac_configure_args="$ac_configure_args --disable-examples"
 ac_configure_args="$ac_configure_args --with-glibj-dir=${jrelibdir}"
 ac_configure_args="$ac_configure_args --with-native-libdir=${nativedir}"
-ac_configure_args="$ac_configure_args --with-fastjar=${FASTJAR}"
 
 if  test x$use_glibj_zip = xtrue ; then
 	ac_configure_args="$ac_configure_args --with-glibj=none";
@@ -48112,9 +48045,6 @@ fi
 ac_configure_args="$ac_configure_args CFLAGS=\"${KAFFE_CFLAGS} ${CFLAGS}\"";
 
 subdirs="$subdirs libraries/javalib/external/classpath"
-
-
-subdirs="$subdirs external/gcc/fastjar"
 
 
 subdirs="$subdirs libltdl"
@@ -48126,14 +48056,6 @@ ac_config_files="$ac_config_files Makefile"
 ac_config_files="$ac_config_files project.xml project.properties"
 
 ac_config_files="$ac_config_files config/Makefile"
-
-ac_config_files="$ac_config_files external/Makefile"
-
-ac_config_files="$ac_config_files external/gcc/Makefile"
-
-ac_config_files="$ac_config_files external/gcc/zlib/Makefile"
-
-ac_config_files="$ac_config_files external/gcc/fastjar/Makefile"
 
 ac_config_files="$ac_config_files include/Makefile"
 
@@ -48700,20 +48622,6 @@ echo "$as_me: error: conditional \"COND_DIRECT_THREADING\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
-if test -z "${COND_SYSTEM_ZLIB_TRUE}" && test -z "${COND_SYSTEM_ZLIB_FALSE}"; then
-  { { echo "$as_me:$LINENO: error: conditional \"COND_SYSTEM_ZLIB\" was never defined.
-Usually this means the macro was only invoked conditionally." >&5
-echo "$as_me: error: conditional \"COND_SYSTEM_ZLIB\" was never defined.
-Usually this means the macro was only invoked conditionally." >&2;}
-   { (exit 1); exit 1; }; }
-fi
-if test -z "${COND_FASTJAR_TRUE}" && test -z "${COND_FASTJAR_FALSE}"; then
-  { { echo "$as_me:$LINENO: error: conditional \"COND_FASTJAR\" was never defined.
-Usually this means the macro was only invoked conditionally." >&5
-echo "$as_me: error: conditional \"COND_FASTJAR\" was never defined.
-Usually this means the macro was only invoked conditionally." >&2;}
-   { (exit 1); exit 1; }; }
-fi
 
 : ${CONFIG_STATUS=./config.status}
 ac_clean_files_save=$ac_clean_files
@@ -49218,10 +49126,6 @@ do
     "project.xml") CONFIG_FILES="$CONFIG_FILES project.xml" ;;
     "project.properties") CONFIG_FILES="$CONFIG_FILES project.properties" ;;
     "config/Makefile") CONFIG_FILES="$CONFIG_FILES config/Makefile" ;;
-    "external/Makefile") CONFIG_FILES="$CONFIG_FILES external/Makefile" ;;
-    "external/gcc/Makefile") CONFIG_FILES="$CONFIG_FILES external/gcc/Makefile" ;;
-    "external/gcc/zlib/Makefile") CONFIG_FILES="$CONFIG_FILES external/gcc/zlib/Makefile" ;;
-    "external/gcc/fastjar/Makefile") CONFIG_FILES="$CONFIG_FILES external/gcc/fastjar/Makefile" ;;
     "include/Makefile") CONFIG_FILES="$CONFIG_FILES include/Makefile" ;;
     "replace/Makefile") CONFIG_FILES="$CONFIG_FILES replace/Makefile" ;;
     "kaffe/Makefile") CONFIG_FILES="$CONFIG_FILES kaffe/Makefile" ;;
@@ -49743,17 +49647,12 @@ KVMBINFLAGS!$KVMBINFLAGS$ac_delim
 KVMLIBFLAGS!$KVMLIBFLAGS$ac_delim
 COND_DIRECT_THREADING_TRUE!$COND_DIRECT_THREADING_TRUE$ac_delim
 COND_DIRECT_THREADING_FALSE!$COND_DIRECT_THREADING_FALSE$ac_delim
-COND_SYSTEM_ZLIB_TRUE!$COND_SYSTEM_ZLIB_TRUE$ac_delim
-COND_SYSTEM_ZLIB_FALSE!$COND_SYSTEM_ZLIB_FALSE$ac_delim
-COND_FASTJAR_TRUE!$COND_FASTJAR_TRUE$ac_delim
-COND_FASTJAR_FALSE!$COND_FASTJAR_FALSE$ac_delim
 BINRELOC_CFLAGS!$BINRELOC_CFLAGS$ac_delim
 BINRELOC_LIBS!$BINRELOC_LIBS$ac_delim
 KAFFEH!$KAFFEH$ac_delim
 MAKE_KAFFEH!$MAKE_KAFFEH$ac_delim
 kaffe_builddir!$kaffe_builddir$ac_delim
 FASTJAR!$FASTJAR$ac_delim
-FASTJAR_BINARY!$FASTJAR_BINARY$ac_delim
 toolslibdir!$toolslibdir$ac_delim
 jredir!$jredir$ac_delim
 jrebindir!$jrebindir$ac_delim
@@ -49765,9 +49664,13 @@ DIRSEP!$DIRSEP$ac_delim
 kaffe_TRANSF!$kaffe_TRANSF$ac_delim
 kaffeh_TRANSF!$kaffeh_TRANSF$ac_delim
 kaffebin_TRANSF!$kaffebin_TRANSF$ac_delim
+CFLAGS_WITHOUT_PG!$CFLAGS_WITHOUT_PG$ac_delim
+KAFFE_CFLAGS!$KAFFE_CFLAGS$ac_delim
+KAFFE_CCASFLAGS!$KAFFE_CCASFLAGS$ac_delim
+LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 96; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5
@@ -49799,53 +49702,6 @@ N; s/^.*\n//; s/[,\\&]/\\&/g; s/@/@|#_!!_#|/g; b n
 ' >>$CONFIG_STATUS <conf$$subs.sed
 rm -f conf$$subs.sed
 cat >>$CONFIG_STATUS <<_ACEOF
-CEOF$ac_eof
-_ACEOF
-
-
-ac_delim='%!_!# '
-for ac_last_try in false false false false false :; do
-  cat >conf$$subs.sed <<_ACEOF
-CFLAGS_WITHOUT_PG!$CFLAGS_WITHOUT_PG$ac_delim
-KAFFE_CFLAGS!$KAFFE_CFLAGS$ac_delim
-KAFFE_CCASFLAGS!$KAFFE_CCASFLAGS$ac_delim
-LTLIBOBJS!$LTLIBOBJS$ac_delim
-_ACEOF
-
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 4; then
-    break
-  elif $ac_last_try; then
-    { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5
-echo "$as_me: error: could not make $CONFIG_STATUS" >&2;}
-   { (exit 1); exit 1; }; }
-  else
-    ac_delim="$ac_delim!$ac_delim _$ac_delim!! "
-  fi
-done
-
-ac_eof=`sed -n '/^CEOF[0-9]*$/s/CEOF/0/p' conf$$subs.sed`
-if test -n "$ac_eof"; then
-  ac_eof=`echo "$ac_eof" | sort -nru | sed 1q`
-  ac_eof=`expr $ac_eof + 1`
-fi
-
-cat >>$CONFIG_STATUS <<_ACEOF
-cat >"\$tmp/subs-4.sed" <<\CEOF$ac_eof
-/@[a-zA-Z_][a-zA-Z_0-9]*@/!b end
-_ACEOF
-sed '
-s/[,\\&]/\\&/g; s/@/@|#_!!_#|/g
-s/^/s,@/; s/!/@,|#_!!_#|/
-:n
-t n
-s/'"$ac_delim"'$/,g/; t
-s/$/\\/; p
-N; s/^.*\n//; s/[,\\&]/\\&/g; s/@/@|#_!!_#|/g; b n
-' >>$CONFIG_STATUS <conf$$subs.sed
-rm -f conf$$subs.sed
-cat >>$CONFIG_STATUS <<_ACEOF
-:end
-s/|#_!!_#|//g
 CEOF$ac_eof
 _ACEOF
 
@@ -50099,7 +49955,7 @@ s&@abs_top_builddir@&$ac_abs_top_builddir&;t t
 s&@INSTALL@&$ac_INSTALL&;t t
 s&@MKDIR_P@&$ac_MKDIR_P&;t t
 $ac_datarootdir_hack
-" $ac_file_inputs | sed -f "$tmp/subs-1.sed" | sed -f "$tmp/subs-2.sed" | sed -f "$tmp/subs-3.sed" | sed -f "$tmp/subs-4.sed" >$tmp/out
+" $ac_file_inputs | sed -f "$tmp/subs-1.sed" | sed -f "$tmp/subs-2.sed" | sed -f "$tmp/subs-3.sed" | sed 's/|#_!!_#|//g' >$tmp/out
 
 test -z "$ac_datarootdir_hack$ac_datarootdir_seen" &&
   { ac_out=`sed -n '/\${datarootdir}/p' "$tmp/out"`; test -n "$ac_out"; } &&

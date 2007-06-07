@@ -82,10 +82,7 @@ nodist_kaffeh_OBJECTS = constants.$(OBJEXT) debug.$(OBJEXT) \
 	utf8const.$(OBJEXT) binreloc.$(OBJEXT)
 kaffeh_OBJECTS = $(am_kaffeh_OBJECTS) $(nodist_kaffeh_OBJECTS)
 am__DEPENDENCIES_1 =
-@COND_SYSTEM_ZLIB_FALSE@am__DEPENDENCIES_2 =  \
-@COND_SYSTEM_ZLIB_FALSE@	../../external/gcc/zlib/libz.la
-@COND_SYSTEM_ZLIB_TRUE@am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1)
-kaffeh_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_2)
+kaffeh_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 DEFAULT_INCLUDES = -I. -I$(top_builddir)/config@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
 am__depfiles_maybe = depfiles
@@ -151,7 +148,6 @@ ESD_LIBS = @ESD_LIBS@
 EXEEXT = @EXEEXT@
 F77 = @F77@
 FASTJAR = @FASTJAR@
-FASTJAR_BINARY = @FASTJAR_BINARY@
 FFLAGS = @FFLAGS@
 GC_NAME = @GC_NAME@
 GETOPT_H = @GETOPT_H@
@@ -317,9 +313,6 @@ AM_CFLAGS = \
 	$(KAFFE_CFLAGS) \
 	$(CFLAGS_PG)
 
-@COND_SYSTEM_ZLIB_FALSE@LINKED_ZIP_LIBS = ../../external/gcc/zlib/libz.la
-@COND_SYSTEM_ZLIB_TRUE@LINKED_ZIP_LIBS = $(ZIP_LIBS)
-@COND_SYSTEM_ZLIB_FALSE@MAYBE_INTERNAL_ZIP_INCLUDES = -I$(srcdir)/../../external/gcc/zlib/
 AM_CPPFLAGS = \
 	-I../kaffevm \
 	-I$(srcdir)/../kaffevm \
@@ -328,12 +321,11 @@ AM_CPPFLAGS = \
 	-I$(top_builddir)/config \
 	-I$(top_srcdir)/kaffe/kaffevm/jni \
 	-I$(top_srcdir)/config/$(Khost_cpu) \
-	-I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os) \
-	$(MAYBE_INTERNAL_ZIP_INCLUDES)
+	-I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os) 
 
 kaffeh_LDADD = \
 	$(LTLIBINTL) \
-	$(LINKED_ZIP_LIBS)
+	$(ZIP_LIBS)
 
 kaffeh_SOURCES = \
 	main.c \

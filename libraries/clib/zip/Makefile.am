@@ -8,16 +8,8 @@
 
 AM_CFLAGS= $(KAFFE_CFLAGS)
 
-if COND_SYSTEM_ZLIB
-LINKED_ZIP_LIBS=$(ZIP_LIBS)
-else
-LINKED_ZIP_LIBS=../../../external/gcc/zlib/libz.la
-MAYBE_INTERNAL_ZIP_INCLUDES=-I$(srcdir)/../../../external/gcc/zlib/
-endif
-
 AM_CPPFLAGS = \
 	-I$(top_builddir)/include \
-	$(MAYBE_INTERNAL_ZIP_INCLUDES) \
         -I$(top_srcdir)/config/$(Khost_cpu) \
         -I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os)
 
@@ -36,7 +28,7 @@ libzip_la_LDFLAGS = \
 
 libzip_la_LIBADD = \
 	$(top_builddir)/kaffe/kaffevm/libkaffevm.la \
-	$(LINKED_ZIP_LIBS)
+	$(ZIP_LIBS)
 
 libzip_la_SOURCES = \
 	Adler32.c \
