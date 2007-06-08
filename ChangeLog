@@ -1,3 +1,9 @@
+2007-06-08  Dalibor Topic  <robilad@kaffe.org>
+
+	* FAQ/FAQ.requiredlibraries: Documented zlib & jar tool requirements.
+
+	Reported by:  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
 2007-06-07  Dalibor Topic  <robilad@kaffe.org>
 
 	* FAQ/FAQ.automake: Documented use of gettext 0.16.1.
