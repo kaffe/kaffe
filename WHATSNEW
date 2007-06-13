@@ -1,10 +1,12 @@
 What's New Since Kaffe 1.1.7
 ----------------------------
 
+* Support for using an existing GNU Classpath installation.
 * Fixes for gcc 4.1.x.
 * Added --disable-zlib-zip optin to use GNU Classpath's
   java.util.zip implementation.
 * Removed comm, servlet, microsoft and pjava extensions.
+* Removed fastjar and zlib copies.
 * Xynth Windowing System based AWT backend.
 * Updated to boehm-gc 6.8
 * Ported to i386-GNU/kFreeBSD
