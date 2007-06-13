@@ -40,18 +40,18 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/ax_cflags_gcc_option.m4 \
 	$(top_srcdir)/m4/ax_cflags_warn_all.m4 \
 	$(top_srcdir)/m4/ax_create_stdint_h.m4 \
-	$(top_srcdir)/m4/binreloc.m4 $(top_srcdir)/m4/compile_value.m4 \
-	$(top_srcdir)/m4/esd.m4 $(top_srcdir)/m4/gcc_attribute.m4 \
-	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/m4/gettext.m4 \
-	$(top_srcdir)/m4/glibcver.m4 $(top_srcdir)/m4/gmp.m4 \
-	$(top_srcdir)/m4/gwqt.m4 $(top_srcdir)/m4/herrno.m4 \
-	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/in6addr.m4 \
-	$(top_srcdir)/m4/lcmessage.m4 $(top_srcdir)/m4/lib-ld.m4 \
-	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
-	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/nls.m4 \
-	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/progtest.m4 \
-	$(top_srcdir)/m4/semaphore.m4 $(top_srcdir)/m4/size_max.m4 \
-	$(top_srcdir)/m4/sockaddrin6.m4 \
+	$(top_srcdir)/m4/binreloc.m4 $(top_srcdir)/m4/classpath.m4 \
+	$(top_srcdir)/m4/compile_value.m4 $(top_srcdir)/m4/esd.m4 \
+	$(top_srcdir)/m4/gcc_attribute.m4 $(top_srcdir)/m4/getopt.m4 \
+	$(top_srcdir)/m4/gettext.m4 $(top_srcdir)/m4/glibcver.m4 \
+	$(top_srcdir)/m4/gmp.m4 $(top_srcdir)/m4/gwqt.m4 \
+	$(top_srcdir)/m4/herrno.m4 $(top_srcdir)/m4/iconv.m4 \
+	$(top_srcdir)/m4/in6addr.m4 $(top_srcdir)/m4/lcmessage.m4 \
+	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
+	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
+	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/po.m4 \
+	$(top_srcdir)/m4/progtest.m4 $(top_srcdir)/m4/semaphore.m4 \
+	$(top_srcdir)/m4/size_max.m4 $(top_srcdir)/m4/sockaddrin6.m4 \
 	$(top_srcdir)/m4/sockinttypes.m4 \
 	$(top_srcdir)/m4/solarispthread.m4 $(top_srcdir)/m4/valist.m4 \
 	$(top_srcdir)/configure.ac
@@ -109,6 +109,9 @@ CCLD = @CCLD@
 CFLAGS = @CFLAGS@
 CFLAGS_PG = @CFLAGS_PG@
 CFLAGS_WITHOUT_PG = @CFLAGS_WITHOUT_PG@
+CLASSPATH_CLASSES = @CLASSPATH_CLASSES@
+CLASSPATH_LIBDIR = @CLASSPATH_LIBDIR@
+CLASSPATH_PREFIX = @CLASSPATH_PREFIX@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CXX = @CXX@
@@ -307,10 +310,14 @@ with_engine = @with_engine@
 @COND_PURE_JAVA_MATH_FALSE@MAYBE_GMP_JAVA_MATH = gmp-math
 @COND_NATIVE_SOUND_TRUE@MAYBE_TRITONUS_SOUND = tritonus-sound
 @COND_ZLIB_ZIP_TRUE@MAYBE_ZLIB_ZIP = zlib-zip
-@USE_PRECOMPILED_RT_JAR_TRUE@MAYBE_GLIBJ_ZIP = glibj.zip
+@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@MAYBE_GLIBJ_ZIP = glibj.zip
+@USE_SYSTEM_CLASSPATH_TRUE@MAYBE_GLIBJ_ZIP = glibj.zip
+
+# if we're not using the system classpath, build our own.
+@USE_SYSTEM_CLASSPATH_FALSE@MAYBE_CLASSPATH = external/classpath
 SUBDIRS = \
 	. \
-	external/classpath \
+	$(MAYBE_CLASSPATH) \
 	vmspecific \
 	gnu-inet \
 	dnsjava \
@@ -661,15 +668,21 @@ uninstall-am: uninstall-jrelibDATA uninstall-local
 	uninstall-jrelibDATA uninstall-local
 
 
-@USE_PRECOMPILED_RT_JAR_TRUE@stamp-glibj:
-@USE_PRECOMPILED_RT_JAR_TRUE@	@echo Importing glibj.zip from $(GLIBJ_ZIP)
-@USE_PRECOMPILED_RT_JAR_TRUE@	@cp $(GLIBJ_ZIP) external/classpath/lib/glibj.zip
-@USE_PRECOMPILED_RT_JAR_TRUE@	@$(LN_S) external/classpath/lib/glibj.zip glibj.zip
-@USE_PRECOMPILED_RT_JAR_TRUE@	@touch stamp-glibj
+@USE_SYSTEM_CLASSPATH_TRUE@stamp-glibj:
+@USE_SYSTEM_CLASSPATH_TRUE@	@echo Importing glibj.zip from $(CLASSPATH_CLASSES)
+@USE_SYSTEM_CLASSPATH_TRUE@	@$(LN_S) $(CLASSPATH_CLASSES) glibj.zip
+@USE_SYSTEM_CLASSPATH_TRUE@	@touch stamp-glibj
 
-@USE_PRECOMPILED_RT_JAR_TRUE@glibj.zip: stamp-glibj
-@USE_PRECOMPILED_RT_JAR_FALSE@stamp-glibj:
-@USE_PRECOMPILED_RT_JAR_FALSE@	@touch stamp-glibj
+@USE_SYSTEM_CLASSPATH_TRUE@glibj.zip: stamp-glibj
+@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@stamp-glibj:
+@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@	@echo Importing glibj.zip from $(GLIBJ_ZIP)
+@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@	@cp $(GLIBJ_ZIP) external/classpath/lib/glibj.zip
+@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@	@$(LN_S) external/classpath/lib/glibj.zip glibj.zip
+@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@	@touch stamp-glibj
+
+@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@glibj.zip: stamp-glibj
+@USE_PRECOMPILED_RT_JAR_FALSE@@USE_SYSTEM_CLASSPATH_FALSE@stamp-glibj:
+@USE_PRECOMPILED_RT_JAR_FALSE@@USE_SYSTEM_CLASSPATH_FALSE@	@touch stamp-glibj
 
 clean-local:
 	rm -rf stamp-glibj glibj.zip

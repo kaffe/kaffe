@@ -964,6 +964,11 @@ CREATE_GTK_PEER_LIBRARIES_TRUE
 CREATE_GTK_PEER_LIBRARIES_FALSE
 CREATE_PLUGIN_TRUE
 CREATE_PLUGIN_FALSE
+USE_SYSTEM_CLASSPATH_TRUE
+USE_SYSTEM_CLASSPATH_FALSE
+CLASSPATH_PREFIX
+CLASSPATH_CLASSES
+CLASSPATH_LIBDIR
 USE_PRECOMPILED_RT_JAR_TRUE
 USE_PRECOMPILED_RT_JAR_FALSE
 GLIBJ_ZIP
@@ -1765,6 +1770,21 @@ Optional Packages:
                           [default=unix-pthreads]
   --with-gc=GC            Force use given execution engine (kaffe-gc or
                           boehm-gc)
+  --with-system-classpath use the system install of GNU Classpath (per default
+                          in /usr/local/classpath)
+  --with-classpath-prefix=<dir>
+                          installation directory of Java core library
+                          [default=/usr/local/classpath]
+  --with-classpath-classes=<path>
+                          path to Java core library classes (includes the name
+                          of the file and may be flat)
+                          [default=/usr/local/classpath/share/classpath/glibj.zip]
+  --with-classpath-libdir=<dir>
+                          installation directory of Java core library native
+                          libraries [default=/usr/local/classpath/lib]
+  --with-classpath-includedir=<dir>
+                          installation directory of Java core library headers
+                          [default=/usr/local/classpath/include]
   --with-glibj-zip=ABS.PATH
                           use precompiled kaffe class library
   --with-ecj=ECJ          Define to use ECJ as the java compiler instead of
@@ -6984,7 +7004,7 @@ darwin* | rhapsody*)
   lt_cv_deplibs_check_method=pass_all
   ;;
 
-freebsd* | kfreebsd*-gnu | dragonfly*)
+freebsd* | dragonfly*)
   if echo __ELF__ | $CC -E - | grep __ELF__ > /dev/null; then
     case $host_cpu in
     i*86 )
@@ -7038,11 +7058,11 @@ irix5* | irix6* | nonstopux*)
   ;;
 
 # This must be Linux ELF.
-linux*)
+linux* | k*bsd*-gnu)
   lt_cv_deplibs_check_method=pass_all
   ;;
 
-netbsd*)
+netbsd* | netbsdelf*-gnu)
   if echo __ELF__ | $CC -E - | grep __ELF__ > /dev/null; then
     lt_cv_deplibs_check_method='match_pattern /lib[^/]+(\.so\.[0-9]+\.[0-9]+|_pic\.a)$'
   else
@@ -7157,7 +7177,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 7160 "configure"' > conftest.$ac_ext
+  echo '#line 7180 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -8900,7 +8920,7 @@ hpux*) # Its linker distinguishes data from code symbols
   lt_cv_sys_global_symbol_to_cdecl="sed -n -e 's/^T .* \(.*\)$/extern int \1();/p' -e 's/^$symcode* .* \(.*\)$/extern char \1;/p'"
   lt_cv_sys_global_symbol_to_c_name_address="sed -n -e 's/^: \([^ ]*\) $/  {\\\"\1\\\", (lt_ptr) 0},/p' -e 's/^$symcode* \([^ ]*\) \([^ ]*\)$/  {\"\2\", (lt_ptr) \&\2},/p'"
   ;;
-linux*)
+linux* | k*bsd*-gnu)
   if test "$host_cpu" = ia64; then
     symcode='[ABCDGIRSTW]'
     lt_cv_sys_global_symbol_to_cdecl="sed -n -e 's/^T .* \(.*\)$/extern int \1();/p' -e 's/^$symcode* .* \(.*\)$/extern char \1;/p'"
@@ -9710,11 +9730,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9713: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9733: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9717: \$? = $ac_status" >&5
+   echo "$as_me:9737: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9872,7 +9892,7 @@ echo $ECHO_N "checking for $compiler option to produce PIC... $ECHO_C" >&6; }
       lt_prog_compiler_static='-Bstatic'
       ;;
 
-    linux*)
+    linux* | k*bsd*-gnu)
       case $cc_basename in
       icc* | ecc*)
 	lt_prog_compiler_wl='-Wl,'
@@ -9978,11 +9998,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9981: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:10001: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9985: \$? = $ac_status" >&5
+   echo "$as_me:10005: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -10082,11 +10102,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:10085: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:10105: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:10089: \$? = $ac_status" >&5
+   echo "$as_me:10109: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -10311,7 +10331,7 @@ EOF
       archive_expsym_cmds='sed "s,^,_," $export_symbols >$output_objdir/$soname.expsym~$CC -shared $pic_flag $libobjs $deplibs $compiler_flags ${wl}-h,$soname ${wl}--retain-symbols-file,$output_objdir/$soname.expsym ${wl}--image-base,`expr ${RANDOM-$$} % 4096 / 2 \* 262144 + 1342177280` -o $lib'
       ;;
 
-    linux*)
+    linux* | k*bsd*-gnu)
       if $LD --help 2>&1 | grep ': supported targets:.* elf' > /dev/null; then
 	tmp_addflag=
 	case $cc_basename,$host_cpu in
@@ -10337,12 +10357,13 @@ EOF
   $echo "local: *; };" >> $output_objdir/$libname.ver~
 	  $CC -shared'"$tmp_addflag"' $libobjs $deplibs $compiler_flags ${wl}-soname $wl$soname ${wl}-version-script ${wl}$output_objdir/$libname.ver -o $lib'
 	fi
+	link_all_deplibs=no
       else
 	ld_shlibs=no
       fi
       ;;
 
-    netbsd*)
+    netbsd* | netbsdelf*-gnu)
       if echo __ELF__ | $CC -E - | grep __ELF__ >/dev/null; then
 	archive_cmds='$LD -Bshareable $libobjs $deplibs $linker_flags -o $lib'
 	wlarc=
@@ -10770,7 +10791,7 @@ if test -z "$aix_libpath"; then aix_libpath="/usr/lib:/lib"; fi
       ;;
 
     # FreeBSD 3 and greater uses gcc -shared to do shared libraries.
-    freebsd* | kfreebsd*-gnu | dragonfly*)
+    freebsd* | dragonfly*)
       archive_cmds='$CC -shared -o $lib $libobjs $deplibs $compiler_flags'
       hardcode_libdir_flag_spec='-R$libdir'
       hardcode_direct=yes
@@ -10872,7 +10893,7 @@ if test -z "$aix_libpath"; then aix_libpath="/usr/lib:/lib"; fi
       link_all_deplibs=yes
       ;;
 
-    netbsd*)
+    netbsd* | netbsdelf*-gnu)
       if echo __ELF__ | $CC -E - | grep __ELF__ >/dev/null; then
 	archive_cmds='$LD -Bshareable -o $lib $libobjs $deplibs $linker_flags'  # a.out
       else
@@ -11362,18 +11383,6 @@ freebsd1*)
   dynamic_linker=no
   ;;
 
-kfreebsd*-gnu)
-  version_type=linux
-  need_lib_prefix=no
-  need_version=no
-  library_names_spec='${libname}${release}${shared_ext}$versuffix ${libname}${release}${shared_ext}$major ${libname}${shared_ext}'
-  soname_spec='${libname}${release}${shared_ext}$major'
-  shlibpath_var=LD_LIBRARY_PATH
-  shlibpath_overrides_runpath=no
-  hardcode_into_libs=yes
-  dynamic_linker='GNU ld.so'
-  ;;
-
 freebsd* | dragonfly*)
   # DragonFly does not have aout.  When/if they implement a new
   # versioning mechanism, adjust this.
@@ -11529,7 +11538,7 @@ linux*oldld* | linux*aout* | linux*coff*)
   ;;
 
 # This must be Linux ELF.
-linux*)
+linux* | k*bsd*-gnu)
   version_type=linux
   need_lib_prefix=no
   need_version=no
@@ -11558,7 +11567,7 @@ linux*)
   dynamic_linker='GNU/Linux ld.so'
   ;;
 
-knetbsd*-gnu)
+netbsdelf*-gnu)
   version_type=linux
   need_lib_prefix=no
   need_version=no
@@ -11567,7 +11576,7 @@ knetbsd*-gnu)
   shlibpath_var=LD_LIBRARY_PATH
   shlibpath_overrides_runpath=no
   hardcode_into_libs=yes
-  dynamic_linker='GNU ld.so'
+  dynamic_linker='NetBSD ld.elf_so'
   ;;
 
 netbsd*)
@@ -12390,7 +12399,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12393 "configure"
+#line 12402 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12490,7 +12499,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12493 "configure"
+#line 12502 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -13803,7 +13812,7 @@ if test -z "$aix_libpath"; then aix_libpath="/usr/lib:/lib"; fi
   freebsd-elf*)
     archive_cmds_need_lc_CXX=no
     ;;
-  freebsd* | kfreebsd*-gnu | dragonfly*)
+  freebsd* | dragonfly*)
     # FreeBSD 3 and later use GNU C++ and GNU ld with standard ELF
     # conventions
     ld_shlibs_CXX=yes
@@ -13962,7 +13971,7 @@ if test -z "$aix_libpath"; then aix_libpath="/usr/lib:/lib"; fi
     hardcode_libdir_flag_spec_CXX='${wl}-rpath ${wl}$libdir'
     hardcode_libdir_separator_CXX=:
     ;;
-  linux*)
+  linux* | k*bsd*-gnu)
     case $cc_basename in
       KCC*)
 	# Kuck and Associates, Inc. (KAI) C++ Compiler
@@ -14064,7 +14073,7 @@ if test -z "$aix_libpath"; then aix_libpath="/usr/lib:/lib"; fi
 	;;
     esac
     ;;
-  netbsd*)
+  netbsd* | netbsdelf*-gnu)
     if echo __ELF__ | $CC -E - | grep __ELF__ >/dev/null; then
       archive_cmds_CXX='$LD -Bshareable  -o $lib $predep_objects $libobjs $deplibs $postdep_objects $linker_flags'
       wlarc=
@@ -14635,7 +14644,7 @@ echo $ECHO_N "checking for $compiler option to produce PIC... $ECHO_C" >&6; }
 	    ;;
 	esac
 	;;
-      freebsd* | kfreebsd*-gnu | dragonfly*)
+      freebsd* | dragonfly*)
 	# FreeBSD uses GNU C++
 	;;
       hpux9* | hpux10* | hpux11*)
@@ -14678,7 +14687,7 @@ echo $ECHO_N "checking for $compiler option to produce PIC... $ECHO_C" >&6; }
 	    ;;
 	esac
 	;;
-      linux*)
+      linux* | k*bsd*-gnu)
 	case $cc_basename in
 	  KCC*)
 	    # KAI C++ Compiler
@@ -14721,7 +14730,7 @@ echo $ECHO_N "checking for $compiler option to produce PIC... $ECHO_C" >&6; }
 	    ;;
 	esac
 	;;
-      netbsd*)
+      netbsd* | netbsdelf*-gnu)
 	;;
       osf3* | osf4* | osf5*)
 	case $cc_basename in
@@ -14830,11 +14839,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14833: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14842: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:14837: \$? = $ac_status" >&5
+   echo "$as_me:14846: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -14934,11 +14943,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14937: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14946: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:14941: \$? = $ac_status" >&5
+   echo "$as_me:14950: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -15005,6 +15014,9 @@ echo $ECHO_N "checking whether the $compiler linker ($LD) supports shared librar
   ;;
   cygwin* | mingw*)
     export_symbols_cmds_CXX='$NM $libobjs $convenience | $global_symbol_pipe | $SED -e '\''/^[BCDGRS] /s/.* \([^ ]*\)/\1 DATA/;/^.* __nm__/s/^.* __nm__\([^ ]*\) [^ ]*/\1 DATA/;/^I /d;/^[AITW] /s/.* //'\'' | sort | uniq > $export_symbols'
+  ;;
+  linux* | k*bsd*-gnu)
+    link_all_deplibs_CXX=no
   ;;
   *)
     export_symbols_cmds_CXX='$NM $libobjs $convenience | $global_symbol_pipe | $SED '\''s/.* //'\'' | sort | uniq > $export_symbols'
@@ -15285,18 +15297,6 @@ freebsd1*)
   dynamic_linker=no
   ;;
 
-kfreebsd*-gnu)
-  version_type=linux
-  need_lib_prefix=no
-  need_version=no
-  library_names_spec='${libname}${release}${shared_ext}$versuffix ${libname}${release}${shared_ext}$major ${libname}${shared_ext}'
-  soname_spec='${libname}${release}${shared_ext}$major'
-  shlibpath_var=LD_LIBRARY_PATH
-  shlibpath_overrides_runpath=no
-  hardcode_into_libs=yes
-  dynamic_linker='GNU ld.so'
-  ;;
-
 freebsd* | dragonfly*)
   # DragonFly does not have aout.  When/if they implement a new
   # versioning mechanism, adjust this.
@@ -15452,7 +15452,7 @@ linux*oldld* | linux*aout* | linux*coff*)
   ;;
 
 # This must be Linux ELF.
-linux*)
+linux* | k*bsd*-gnu)
   version_type=linux
   need_lib_prefix=no
   need_version=no
@@ -15481,7 +15481,7 @@ linux*)
   dynamic_linker='GNU/Linux ld.so'
   ;;
 
-knetbsd*-gnu)
+netbsdelf*-gnu)
   version_type=linux
   need_lib_prefix=no
   need_version=no
@@ -15490,7 +15490,7 @@ knetbsd*-gnu)
   shlibpath_var=LD_LIBRARY_PATH
   shlibpath_overrides_runpath=no
   hardcode_into_libs=yes
-  dynamic_linker='GNU ld.so'
+  dynamic_linker='NetBSD ld.elf_so'
   ;;
 
 netbsd*)
@@ -16398,7 +16398,7 @@ echo $ECHO_N "checking for $compiler option to produce PIC... $ECHO_C" >&6; }
       lt_prog_compiler_static_F77='-Bstatic'
       ;;
 
-    linux*)
+    linux* | k*bsd*-gnu)
       case $cc_basename in
       icc* | ecc*)
 	lt_prog_compiler_wl_F77='-Wl,'
@@ -16837,7 +16837,7 @@ EOF
       archive_expsym_cmds_F77='sed "s,^,_," $export_symbols >$output_objdir/$soname.expsym~$CC -shared $pic_flag $libobjs $deplibs $compiler_flags ${wl}-h,$soname ${wl}--retain-symbols-file,$output_objdir/$soname.expsym ${wl}--image-base,`expr ${RANDOM-$$} % 4096 / 2 \* 262144 + 1342177280` -o $lib'
       ;;
 
-    linux*)
+    linux* | k*bsd*-gnu)
       if $LD --help 2>&1 | grep ': supported targets:.* elf' > /dev/null; then
 	tmp_addflag=
 	case $cc_basename,$host_cpu in
@@ -16863,12 +16863,13 @@ EOF
   $echo "local: *; };" >> $output_objdir/$libname.ver~
 	  $CC -shared'"$tmp_addflag"' $libobjs $deplibs $compiler_flags ${wl}-soname $wl$soname ${wl}-version-script ${wl}$output_objdir/$libname.ver -o $lib'
 	fi
+	link_all_deplibs_F77=no
       else
 	ld_shlibs_F77=no
       fi
       ;;
 
-    netbsd*)
+    netbsd* | netbsdelf*-gnu)
       if echo __ELF__ | $CC -E - | grep __ELF__ >/dev/null; then
 	archive_cmds_F77='$LD -Bshareable $libobjs $deplibs $linker_flags -o $lib'
 	wlarc=
@@ -17276,7 +17277,7 @@ if test -z "$aix_libpath"; then aix_libpath="/usr/lib:/lib"; fi
       ;;
 
     # FreeBSD 3 and greater uses gcc -shared to do shared libraries.
-    freebsd* | kfreebsd*-gnu | dragonfly*)
+    freebsd* | dragonfly*)
       archive_cmds_F77='$CC -shared -o $lib $libobjs $deplibs $compiler_flags'
       hardcode_libdir_flag_spec_F77='-R$libdir'
       hardcode_direct_F77=yes
@@ -17378,7 +17379,7 @@ if test -z "$aix_libpath"; then aix_libpath="/usr/lib:/lib"; fi
       link_all_deplibs_F77=yes
       ;;
 
-    netbsd*)
+    netbsd* | netbsdelf*-gnu)
       if echo __ELF__ | $CC -E - | grep __ELF__ >/dev/null; then
 	archive_cmds_F77='$LD -Bshareable -o $lib $libobjs $deplibs $linker_flags'  # a.out
       else
@@ -17868,18 +17869,6 @@ freebsd1*)
   dynamic_linker=no
   ;;
 
-kfreebsd*-gnu)
-  version_type=linux
-  need_lib_prefix=no
-  need_version=no
-  library_names_spec='${libname}${release}${shared_ext}$versuffix ${libname}${release}${shared_ext}$major ${libname}${shared_ext}'
-  soname_spec='${libname}${release}${shared_ext}$major'
-  shlibpath_var=LD_LIBRARY_PATH
-  shlibpath_overrides_runpath=no
-  hardcode_into_libs=yes
-  dynamic_linker='GNU ld.so'
-  ;;
-
 freebsd* | dragonfly*)
   # DragonFly does not have aout.  When/if they implement a new
   # versioning mechanism, adjust this.
@@ -18035,7 +18024,7 @@ linux*oldld* | linux*aout* | linux*coff*)
   ;;
 
 # This must be Linux ELF.
-linux*)
+linux* | k*bsd*-gnu)
   version_type=linux
   need_lib_prefix=no
   need_version=no
@@ -18064,7 +18053,7 @@ linux*)
   dynamic_linker='GNU/Linux ld.so'
   ;;
 
-knetbsd*-gnu)
+netbsdelf*-gnu)
   version_type=linux
   need_lib_prefix=no
   need_version=no
@@ -18073,7 +18062,7 @@ knetbsd*-gnu)
   shlibpath_var=LD_LIBRARY_PATH
   shlibpath_overrides_runpath=no
   hardcode_into_libs=yes
-  dynamic_linker='GNU ld.so'
+  dynamic_linker='NetBSD ld.elf_so'
   ;;
 
 netbsd*)
@@ -18810,11 +18799,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18813: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18802: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:18817: \$? = $ac_status" >&5
+   echo "$as_me:18806: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -18972,7 +18961,7 @@ echo $ECHO_N "checking for $compiler option to produce PIC... $ECHO_C" >&6; }
       lt_prog_compiler_static_GCJ='-Bstatic'
       ;;
 
-    linux*)
+    linux* | k*bsd*-gnu)
       case $cc_basename in
       icc* | ecc*)
 	lt_prog_compiler_wl_GCJ='-Wl,'
@@ -19078,11 +19067,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:19081: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:19070: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:19085: \$? = $ac_status" >&5
+   echo "$as_me:19074: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -19182,11 +19171,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:19185: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:19174: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:19189: \$? = $ac_status" >&5
+   echo "$as_me:19178: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -19411,7 +19400,7 @@ EOF
       archive_expsym_cmds_GCJ='sed "s,^,_," $export_symbols >$output_objdir/$soname.expsym~$CC -shared $pic_flag $libobjs $deplibs $compiler_flags ${wl}-h,$soname ${wl}--retain-symbols-file,$output_objdir/$soname.expsym ${wl}--image-base,`expr ${RANDOM-$$} % 4096 / 2 \* 262144 + 1342177280` -o $lib'
       ;;
 
-    linux*)
+    linux* | k*bsd*-gnu)
       if $LD --help 2>&1 | grep ': supported targets:.* elf' > /dev/null; then
 	tmp_addflag=
 	case $cc_basename,$host_cpu in
@@ -19437,12 +19426,13 @@ EOF
   $echo "local: *; };" >> $output_objdir/$libname.ver~
 	  $CC -shared'"$tmp_addflag"' $libobjs $deplibs $compiler_flags ${wl}-soname $wl$soname ${wl}-version-script ${wl}$output_objdir/$libname.ver -o $lib'
 	fi
+	link_all_deplibs_GCJ=no
       else
 	ld_shlibs_GCJ=no
       fi
       ;;
 
-    netbsd*)
+    netbsd* | netbsdelf*-gnu)
       if echo __ELF__ | $CC -E - | grep __ELF__ >/dev/null; then
 	archive_cmds_GCJ='$LD -Bshareable $libobjs $deplibs $linker_flags -o $lib'
 	wlarc=
@@ -19870,7 +19860,7 @@ if test -z "$aix_libpath"; then aix_libpath="/usr/lib:/lib"; fi
       ;;
 
     # FreeBSD 3 and greater uses gcc -shared to do shared libraries.
-    freebsd* | kfreebsd*-gnu | dragonfly*)
+    freebsd* | dragonfly*)
       archive_cmds_GCJ='$CC -shared -o $lib $libobjs $deplibs $compiler_flags'
       hardcode_libdir_flag_spec_GCJ='-R$libdir'
       hardcode_direct_GCJ=yes
@@ -19972,7 +19962,7 @@ if test -z "$aix_libpath"; then aix_libpath="/usr/lib:/lib"; fi
       link_all_deplibs_GCJ=yes
       ;;
 
-    netbsd*)
+    netbsd* | netbsdelf*-gnu)
       if echo __ELF__ | $CC -E - | grep __ELF__ >/dev/null; then
 	archive_cmds_GCJ='$LD -Bshareable -o $lib $libobjs $deplibs $linker_flags'  # a.out
       else
@@ -20462,18 +20452,6 @@ freebsd1*)
   dynamic_linker=no
   ;;
 
-kfreebsd*-gnu)
-  version_type=linux
-  need_lib_prefix=no
-  need_version=no
-  library_names_spec='${libname}${release}${shared_ext}$versuffix ${libname}${release}${shared_ext}$major ${libname}${shared_ext}'
-  soname_spec='${libname}${release}${shared_ext}$major'
-  shlibpath_var=LD_LIBRARY_PATH
-  shlibpath_overrides_runpath=no
-  hardcode_into_libs=yes
-  dynamic_linker='GNU ld.so'
-  ;;
-
 freebsd* | dragonfly*)
   # DragonFly does not have aout.  When/if they implement a new
   # versioning mechanism, adjust this.
@@ -20629,7 +20607,7 @@ linux*oldld* | linux*aout* | linux*coff*)
   ;;
 
 # This must be Linux ELF.
-linux*)
+linux* | k*bsd*-gnu)
   version_type=linux
   need_lib_prefix=no
   need_version=no
@@ -20658,7 +20636,7 @@ linux*)
   dynamic_linker='GNU/Linux ld.so'
   ;;
 
-knetbsd*-gnu)
+netbsdelf*-gnu)
   version_type=linux
   need_lib_prefix=no
   need_version=no
@@ -20667,7 +20645,7 @@ knetbsd*-gnu)
   shlibpath_var=LD_LIBRARY_PATH
   shlibpath_overrides_runpath=no
   hardcode_into_libs=yes
-  dynamic_linker='GNU ld.so'
+  dynamic_linker='NetBSD ld.elf_so'
   ;;
 
 netbsd*)
@@ -24191,7 +24169,7 @@ hpux*) # Its linker distinguishes data from code symbols
   lt_cv_sys_global_symbol_to_cdecl="sed -n -e 's/^T .* \(.*\)$/extern int \1();/p' -e 's/^$symcode* .* \(.*\)$/extern char \1;/p'"
   lt_cv_sys_global_symbol_to_c_name_address="sed -n -e 's/^: \([^ ]*\) $/  {\\\"\1\\\", (lt_ptr) 0},/p' -e 's/^$symcode* \([^ ]*\) \([^ ]*\)$/  {\"\2\", (lt_ptr) \&\2},/p'"
   ;;
-linux*)
+linux* | k*bsd*-gnu)
   if test "$host_cpu" = ia64; then
     symcode='[ABCDGIRSTW]'
     lt_cv_sys_global_symbol_to_cdecl="sed -n -e 's/^T .* \(.*\)$/extern int \1();/p' -e 's/^$symcode* .* \(.*\)$/extern char \1;/p'"
@@ -26281,14 +26259,248 @@ fi
 
 
 
+
+# Check whether --with-system-classpath was given.
+if test "${with_system_classpath+set}" = set; then
+  withval=$with_system_classpath;
+fi
+
+
+ if test x$with_system_classpath = xyes; then
+  USE_SYSTEM_CLASSPATH_TRUE=
+  USE_SYSTEM_CLASSPATH_FALSE='#'
+else
+  USE_SYSTEM_CLASSPATH_TRUE='#'
+  USE_SYSTEM_CLASSPATH_FALSE=
+fi
+
+
+
+{ echo "$as_me:$LINENO: checking where Java core library is installed" >&5
+echo $ECHO_N "checking where Java core library is installed... $ECHO_C" >&6; }
+
+# Check whether --with-classpath-prefix was given.
+if test "${with_classpath_prefix+set}" = set; then
+  withval=$with_classpath_prefix; CLASSPATH_PREFIX=${withval}
+else
+  CLASSPATH_PREFIX=/usr/local/classpath
+fi
+
+{ echo "$as_me:$LINENO: result: ${CLASSPATH_PREFIX}" >&5
+echo "${ECHO_T}${CLASSPATH_PREFIX}" >&6; }
+#AC_DEFINE_UNQUOTED([CLASSPATH_PREFIX], "${CLASSPATH_PREFIX}", [Java core library installation directory])
+
+
+
+{ echo "$as_me:$LINENO: checking where Java core library classes are installed" >&5
+echo $ECHO_N "checking where Java core library classes are installed... $ECHO_C" >&6; }
+
+# Check whether --with-classpath-classes was given.
+if test "${with_classpath_classes+set}" = set; then
+  withval=$with_classpath_classes; CLASSPATH_CLASSES=${withval}
+else
+  CLASSPATH_CLASSES=${CLASSPATH_PREFIX}/share/classpath/glibj.zip
+fi
+
+{ echo "$as_me:$LINENO: result: ${CLASSPATH_CLASSES}" >&5
+echo "${ECHO_T}${CLASSPATH_CLASSES}" >&6; }
+#AC_DEFINE_UNQUOTED([CLASSPATH_CLASSES], "${CLASSPATH_CLASSES}", [Java core library classes])
+
+
+
+{ echo "$as_me:$LINENO: checking where Java core library native libraries are installed" >&5
+echo $ECHO_N "checking where Java core library native libraries are installed... $ECHO_C" >&6; }
+
+# Check whether --with-classpath-libdir was given.
+if test "${with_classpath_libdir+set}" = set; then
+  withval=$with_classpath_libdir; CLASSPATH_LIBDIR=${withval}
+else
+  CLASSPATH_LIBDIR=${CLASSPATH_PREFIX}/lib
+fi
+
+{ echo "$as_me:$LINENO: result: ${CLASSPATH_LIBDIR}" >&5
+echo "${ECHO_T}${CLASSPATH_LIBDIR}" >&6; }
+
+#AS_AC_EXPAND([CLASSPATH_LIBDIR], ${CLASSPATH_LIBDIR})
+#AC_DEFINE_UNQUOTED([CLASSPATH_LIBDIR], "${CLASSPATH_LIBDIR}", [Java core library native libraries installation directory])
+
+
+
+{ echo "$as_me:$LINENO: checking where Java core library headers are installed" >&5
+echo $ECHO_N "checking where Java core library headers are installed... $ECHO_C" >&6; }
+
+# Check whether --with-classpath-includedir was given.
+if test "${with_classpath_includedir+set}" = set; then
+  withval=$with_classpath_includedir; CLASSPATH_INCLUDEDIR=${withval}
+else
+  CLASSPATH_INCLUDEDIR=${CLASSPATH_PREFIX}/include
+fi
+
+{ echo "$as_me:$LINENO: result: ${CLASSPATH_INCLUDEDIR}" >&5
+echo "${ECHO_T}${CLASSPATH_INCLUDEDIR}" >&6; }
+
+as_ac_Header=`echo "ac_cv_header_${CLASSPATH_INCLUDEDIR}/jni.h" | $as_tr_sh`
+if { as_var=$as_ac_Header; eval "test \"\${$as_var+set}\" = set"; }; then
+  { echo "$as_me:$LINENO: checking for ${CLASSPATH_INCLUDEDIR}/jni.h" >&5
+echo $ECHO_N "checking for ${CLASSPATH_INCLUDEDIR}/jni.h... $ECHO_C" >&6; }
+if { as_var=$as_ac_Header; eval "test \"\${$as_var+set}\" = set"; }; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+fi
+ac_res=`eval echo '${'$as_ac_Header'}'`
+	       { echo "$as_me:$LINENO: result: $ac_res" >&5
+echo "${ECHO_T}$ac_res" >&6; }
+else
+  # Is the header compilable?
+{ echo "$as_me:$LINENO: checking ${CLASSPATH_INCLUDEDIR}/jni.h usability" >&5
+echo $ECHO_N "checking ${CLASSPATH_INCLUDEDIR}/jni.h usability... $ECHO_C" >&6; }
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+$ac_includes_default
+#include <${CLASSPATH_INCLUDEDIR}/jni.h>
+_ACEOF
+rm -f conftest.$ac_objext
+if { (ac_try="$ac_compile"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_compile") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_c_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest.$ac_objext; then
+  ac_header_compiler=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_header_compiler=no
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+{ echo "$as_me:$LINENO: result: $ac_header_compiler" >&5
+echo "${ECHO_T}$ac_header_compiler" >&6; }
+
+# Is the header present?
+{ echo "$as_me:$LINENO: checking ${CLASSPATH_INCLUDEDIR}/jni.h presence" >&5
+echo $ECHO_N "checking ${CLASSPATH_INCLUDEDIR}/jni.h presence... $ECHO_C" >&6; }
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <${CLASSPATH_INCLUDEDIR}/jni.h>
+_ACEOF
+if { (ac_try="$ac_cpp conftest.$ac_ext"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_cpp conftest.$ac_ext") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } >/dev/null && {
+	 test -z "$ac_c_preproc_warn_flag$ac_c_werror_flag" ||
+	 test ! -s conftest.err
+       }; then
+  ac_header_preproc=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+  ac_header_preproc=no
+fi
+
+rm -f conftest.err conftest.$ac_ext
+{ echo "$as_me:$LINENO: result: $ac_header_preproc" >&5
+echo "${ECHO_T}$ac_header_preproc" >&6; }
+
+# So?  What about this header?
+case $ac_header_compiler:$ac_header_preproc:$ac_c_preproc_warn_flag in
+  yes:no: )
+    { echo "$as_me:$LINENO: WARNING: ${CLASSPATH_INCLUDEDIR}/jni.h: accepted by the compiler, rejected by the preprocessor!" >&5
+echo "$as_me: WARNING: ${CLASSPATH_INCLUDEDIR}/jni.h: accepted by the compiler, rejected by the preprocessor!" >&2;}
+    { echo "$as_me:$LINENO: WARNING: ${CLASSPATH_INCLUDEDIR}/jni.h: proceeding with the compiler's result" >&5
+echo "$as_me: WARNING: ${CLASSPATH_INCLUDEDIR}/jni.h: proceeding with the compiler's result" >&2;}
+    ac_header_preproc=yes
+    ;;
+  no:yes:* )
+    { echo "$as_me:$LINENO: WARNING: ${CLASSPATH_INCLUDEDIR}/jni.h: present but cannot be compiled" >&5
+echo "$as_me: WARNING: ${CLASSPATH_INCLUDEDIR}/jni.h: present but cannot be compiled" >&2;}
+    { echo "$as_me:$LINENO: WARNING: ${CLASSPATH_INCLUDEDIR}/jni.h:     check for missing prerequisite headers?" >&5
+echo "$as_me: WARNING: ${CLASSPATH_INCLUDEDIR}/jni.h:     check for missing prerequisite headers?" >&2;}
+    { echo "$as_me:$LINENO: WARNING: ${CLASSPATH_INCLUDEDIR}/jni.h: see the Autoconf documentation" >&5
+echo "$as_me: WARNING: ${CLASSPATH_INCLUDEDIR}/jni.h: see the Autoconf documentation" >&2;}
+    { echo "$as_me:$LINENO: WARNING: ${CLASSPATH_INCLUDEDIR}/jni.h:     section \"Present But Cannot Be Compiled\"" >&5
+echo "$as_me: WARNING: ${CLASSPATH_INCLUDEDIR}/jni.h:     section \"Present But Cannot Be Compiled\"" >&2;}
+    { echo "$as_me:$LINENO: WARNING: ${CLASSPATH_INCLUDEDIR}/jni.h: proceeding with the preprocessor's result" >&5
+echo "$as_me: WARNING: ${CLASSPATH_INCLUDEDIR}/jni.h: proceeding with the preprocessor's result" >&2;}
+    { echo "$as_me:$LINENO: WARNING: ${CLASSPATH_INCLUDEDIR}/jni.h: in the future, the compiler will take precedence" >&5
+echo "$as_me: WARNING: ${CLASSPATH_INCLUDEDIR}/jni.h: in the future, the compiler will take precedence" >&2;}
+    ( cat <<\_ASBOX
+## ------------------------------ ##
+## Report this to kaffe@kaffe.org ##
+## ------------------------------ ##
+_ASBOX
+     ) | sed "s/^/$as_me: WARNING:     /" >&2
+    ;;
+esac
+{ echo "$as_me:$LINENO: checking for ${CLASSPATH_INCLUDEDIR}/jni.h" >&5
+echo $ECHO_N "checking for ${CLASSPATH_INCLUDEDIR}/jni.h... $ECHO_C" >&6; }
+if { as_var=$as_ac_Header; eval "test \"\${$as_var+set}\" = set"; }; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  eval "$as_ac_Header=\$ac_header_preproc"
+fi
+ac_res=`eval echo '${'$as_ac_Header'}'`
+	       { echo "$as_me:$LINENO: result: $ac_res" >&5
+echo "${ECHO_T}$ac_res" >&6; }
+
+fi
+if test `eval echo '${'$as_ac_Header'}'` = yes; then
+
+cat >>confdefs.h <<_ACEOF
+#define CLASSPATH_JNI_H "${CLASSPATH_INCLUDEDIR}/jni.h"
+_ACEOF
+
+else
+  { { echo "$as_me:$LINENO: error: cannot find jni.h" >&5
+echo "$as_me: error: cannot find jni.h" >&2;}
+   { (exit 1); exit 1; }; }
+fi
+
+
+
+
+
+if test x$with_system_classpath = xyes; then
+  GLIBJ_ZIP=${CLASSPATH_CLASSES};
+else
+  GLIBJ_ZIP="`pwd`/libraries/javalib/external/classpath/lib/glibj.zip";
+fi
+
+
 # Check whether --with-glibj_zip was given.
 if test "${with_glibj_zip+set}" = set; then
   withval=$with_glibj_zip;
 fi
 
 
-
-GLIBJ_ZIP="`pwd`/libraries/javalib/external/classpath/lib/glibj.zip"
 
 case "$with_glibj_zip" in
 "")
@@ -48482,6 +48694,13 @@ echo "$as_me: error: conditional \"CREATE_PLUGIN\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
+if test -z "${USE_SYSTEM_CLASSPATH_TRUE}" && test -z "${USE_SYSTEM_CLASSPATH_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"USE_SYSTEM_CLASSPATH\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"USE_SYSTEM_CLASSPATH\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
 if test -z "${USE_PRECOMPILED_RT_JAR_TRUE}" && test -z "${USE_PRECOMPILED_RT_JAR_FALSE}"; then
   { { echo "$as_me:$LINENO: error: conditional \"USE_PRECOMPILED_RT_JAR\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
@@ -49521,16 +49740,16 @@ CREATE_GTK_PEER_LIBRARIES_TRUE!$CREATE_GTK_PEER_LIBRARIES_TRUE$ac_delim
 CREATE_GTK_PEER_LIBRARIES_FALSE!$CREATE_GTK_PEER_LIBRARIES_FALSE$ac_delim
 CREATE_PLUGIN_TRUE!$CREATE_PLUGIN_TRUE$ac_delim
 CREATE_PLUGIN_FALSE!$CREATE_PLUGIN_FALSE$ac_delim
+USE_SYSTEM_CLASSPATH_TRUE!$USE_SYSTEM_CLASSPATH_TRUE$ac_delim
+USE_SYSTEM_CLASSPATH_FALSE!$USE_SYSTEM_CLASSPATH_FALSE$ac_delim
+CLASSPATH_PREFIX!$CLASSPATH_PREFIX$ac_delim
+CLASSPATH_CLASSES!$CLASSPATH_CLASSES$ac_delim
+CLASSPATH_LIBDIR!$CLASSPATH_LIBDIR$ac_delim
 USE_PRECOMPILED_RT_JAR_TRUE!$USE_PRECOMPILED_RT_JAR_TRUE$ac_delim
 USE_PRECOMPILED_RT_JAR_FALSE!$USE_PRECOMPILED_RT_JAR_FALSE$ac_delim
 GLIBJ_ZIP!$GLIBJ_ZIP$ac_delim
 JIKESPROG!$JIKESPROG$ac_delim
 JAVA_COMPILER!$JAVA_COMPILER$ac_delim
-JAVA_LIBS!$JAVA_LIBS$ac_delim
-with_engine!$with_engine$ac_delim
-THREAD_SYSTEM!$THREAD_SYSTEM$ac_delim
-KPREFIX!$KPREFIX$ac_delim
-KAFFE_ARCHOS!$KAFFE_ARCHOS$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -49572,6 +49791,11 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+JAVA_LIBS!$JAVA_LIBS$ac_delim
+with_engine!$with_engine$ac_delim
+THREAD_SYSTEM!$THREAD_SYSTEM$ac_delim
+KPREFIX!$KPREFIX$ac_delim
+KAFFE_ARCHOS!$KAFFE_ARCHOS$ac_delim
 SED!$SED$ac_delim
 MKTEMP!$MKTEMP$ac_delim
 JASMIN!$JASMIN$ac_delim
@@ -49664,13 +49888,9 @@ DIRSEP!$DIRSEP$ac_delim
 kaffe_TRANSF!$kaffe_TRANSF$ac_delim
 kaffeh_TRANSF!$kaffeh_TRANSF$ac_delim
 kaffebin_TRANSF!$kaffebin_TRANSF$ac_delim
-CFLAGS_WITHOUT_PG!$CFLAGS_WITHOUT_PG$ac_delim
-KAFFE_CFLAGS!$KAFFE_CFLAGS$ac_delim
-KAFFE_CCASFLAGS!$KAFFE_CCASFLAGS$ac_delim
-LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 96; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5
@@ -49702,6 +49922,53 @@ N; s/^.*\n//; s/[,\\&]/\\&/g; s/@/@|#_!!_#|/g; b n
 ' >>$CONFIG_STATUS <conf$$subs.sed
 rm -f conf$$subs.sed
 cat >>$CONFIG_STATUS <<_ACEOF
+CEOF$ac_eof
+_ACEOF
+
+
+ac_delim='%!_!# '
+for ac_last_try in false false false false false :; do
+  cat >conf$$subs.sed <<_ACEOF
+CFLAGS_WITHOUT_PG!$CFLAGS_WITHOUT_PG$ac_delim
+KAFFE_CFLAGS!$KAFFE_CFLAGS$ac_delim
+KAFFE_CCASFLAGS!$KAFFE_CCASFLAGS$ac_delim
+LTLIBOBJS!$LTLIBOBJS$ac_delim
+_ACEOF
+
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 4; then
+    break
+  elif $ac_last_try; then
+    { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5
+echo "$as_me: error: could not make $CONFIG_STATUS" >&2;}
+   { (exit 1); exit 1; }; }
+  else
+    ac_delim="$ac_delim!$ac_delim _$ac_delim!! "
+  fi
+done
+
+ac_eof=`sed -n '/^CEOF[0-9]*$/s/CEOF/0/p' conf$$subs.sed`
+if test -n "$ac_eof"; then
+  ac_eof=`echo "$ac_eof" | sort -nru | sed 1q`
+  ac_eof=`expr $ac_eof + 1`
+fi
+
+cat >>$CONFIG_STATUS <<_ACEOF
+cat >"\$tmp/subs-4.sed" <<\CEOF$ac_eof
+/@[a-zA-Z_][a-zA-Z_0-9]*@/!b end
+_ACEOF
+sed '
+s/[,\\&]/\\&/g; s/@/@|#_!!_#|/g
+s/^/s,@/; s/!/@,|#_!!_#|/
+:n
+t n
+s/'"$ac_delim"'$/,g/; t
+s/$/\\/; p
+N; s/^.*\n//; s/[,\\&]/\\&/g; s/@/@|#_!!_#|/g; b n
+' >>$CONFIG_STATUS <conf$$subs.sed
+rm -f conf$$subs.sed
+cat >>$CONFIG_STATUS <<_ACEOF
+:end
+s/|#_!!_#|//g
 CEOF$ac_eof
 _ACEOF
 
@@ -49955,7 +50222,7 @@ s&@abs_top_builddir@&$ac_abs_top_builddir&;t t
 s&@INSTALL@&$ac_INSTALL&;t t
 s&@MKDIR_P@&$ac_MKDIR_P&;t t
 $ac_datarootdir_hack
-" $ac_file_inputs | sed -f "$tmp/subs-1.sed" | sed -f "$tmp/subs-2.sed" | sed -f "$tmp/subs-3.sed" | sed 's/|#_!!_#|//g' >$tmp/out
+" $ac_file_inputs | sed -f "$tmp/subs-1.sed" | sed -f "$tmp/subs-2.sed" | sed -f "$tmp/subs-3.sed" | sed -f "$tmp/subs-4.sed" >$tmp/out
 
 test -z "$ac_datarootdir_hack$ac_datarootdir_seen" &&
   { ac_out=`sed -n '/\${datarootdir}/p' "$tmp/out"`; test -n "$ac_out"; } &&

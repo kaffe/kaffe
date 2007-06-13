@@ -1,3 +1,26 @@
+2007-06-11  Dalibor Topic  <robilad@kaffe.org>
+
+	Added support for using an existing GNU Classpath installation.
+
+	* Makefile.am (BUILD_ENVIRONMENT-make): Add the installed GNU Classpath 
+	libraries to the KAFFELIBRARPATH.
+
+	* configure.ac: Added support for using an existing GNU Classpath installation.
+	Set GLIBJ_ZIP according to the class library used.
+
+	* developers/autogen.sh: Removed fastjar-related parts.
+
+	* kaffe/scripts/kaffe.in (KAFFELIBRARYPATH): Add the installed GNU Classpath 
+        libraries.
+
+	* libraries/javalib/Makefile.am (USE_SYSTEM_CLASSPATH): Added section to 
+	handle an existing GNU Classpath installation.
+
+	* test/internal/Makefile.am (LIBNATIVE): Set according to the source of native
+	class library code.
+
+	* test/regression/TestScript.in (JAVA_COMPILER): Use GLIBJ_ZIP.
+
 2007-06-08  Dalibor Topic  <robilad@kaffe.org>
 
 	* FAQ/FAQ.requiredlibraries: Documented zlib & jar tool requirements.

@@ -818,6 +818,28 @@ AC_ARG_ENABLE([plugin],
               [COMPILE_PLUGIN=no])
 AM_CONDITIONAL(CREATE_PLUGIN, test "x${COMPILE_PLUGIN}" = xyes)
 
+
+dnl -----------------------------------------------------------------------
+dnl                    Support for using a precompiled class library
+dnl -----------------------------------------------------------------------
+AC_ARG_WITH([system-classpath],
+	    AS_HELP_STRING([--with-system-classpath],
+			   [use the system install of GNU Classpath (per default in /usr/local/classpath)]))
+
+AM_CONDITIONAL(USE_SYSTEM_CLASSPATH, test x$with_system_classpath = xyes)
+
+AC_CHECK_WITH_CLASSPATH_PREFIX
+AC_CHECK_WITH_CLASSPATH_CLASSES
+AC_CHECK_WITH_CLASSPATH_LIBDIR
+AC_CHECK_WITH_CLASSPATH_INCLUDEDIR
+
+
+if test x$with_system_classpath = xyes; then
+  GLIBJ_ZIP=${CLASSPATH_CLASSES};
+else
+  GLIBJ_ZIP="`pwd`/libraries/javalib/external/classpath/lib/glibj.zip";
+fi
+
 dnl -----------------------------------------------------------------------
 dnl                    Support for using a precompiled class library
 dnl -----------------------------------------------------------------------
@@ -825,8 +847,6 @@ AC_ARG_WITH([glibj_zip],
 	    AS_HELP_STRING([--with-glibj-zip=ABS.PATH],
 			   [use precompiled kaffe class library]))
 
-
-GLIBJ_ZIP="`pwd`/libraries/javalib/external/classpath/lib/glibj.zip"
 
 case "$with_glibj_zip" in
 "")

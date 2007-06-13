@@ -31,6 +31,16 @@ if COND_ZLIB_ZIP
   MAYBE_ZLIB_ZIP=zlib-zip
 endif
 
+if USE_SYSTEM_CLASSPATH
+stamp-glibj:
+	@echo Importing glibj.zip from $(CLASSPATH_CLASSES)
+	@$(LN_S) $(CLASSPATH_CLASSES) glibj.zip
+	@touch stamp-glibj
+
+MAYBE_GLIBJ_ZIP= glibj.zip
+
+glibj.zip: stamp-glibj
+else
 if USE_PRECOMPILED_RT_JAR
 stamp-glibj:
 	@echo Importing glibj.zip from $(GLIBJ_ZIP)
@@ -46,12 +56,16 @@ stamp-glibj:
 	@touch stamp-glibj
 endif
 
+# if we're not using the system classpath, build our own.
+MAYBE_CLASSPATH=external/classpath
+endif
+
 clean-local:
 	rm -rf stamp-glibj glibj.zip
 
 SUBDIRS= \
 	. \
-	external/classpath \
+	$(MAYBE_CLASSPATH) \
 	vmspecific \
 	gnu-inet \
 	dnsjava \

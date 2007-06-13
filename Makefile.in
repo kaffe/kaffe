@@ -61,18 +61,18 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/ax_cflags_gcc_option.m4 \
 	$(top_srcdir)/m4/ax_cflags_warn_all.m4 \
 	$(top_srcdir)/m4/ax_create_stdint_h.m4 \
-	$(top_srcdir)/m4/binreloc.m4 $(top_srcdir)/m4/compile_value.m4 \
-	$(top_srcdir)/m4/esd.m4 $(top_srcdir)/m4/gcc_attribute.m4 \
-	$(top_srcdir)/m4/getopt.m4 $(top_srcdir)/m4/gettext.m4 \
-	$(top_srcdir)/m4/glibcver.m4 $(top_srcdir)/m4/gmp.m4 \
-	$(top_srcdir)/m4/gwqt.m4 $(top_srcdir)/m4/herrno.m4 \
-	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/in6addr.m4 \
-	$(top_srcdir)/m4/lcmessage.m4 $(top_srcdir)/m4/lib-ld.m4 \
-	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
-	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/nls.m4 \
-	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/progtest.m4 \
-	$(top_srcdir)/m4/semaphore.m4 $(top_srcdir)/m4/size_max.m4 \
-	$(top_srcdir)/m4/sockaddrin6.m4 \
+	$(top_srcdir)/m4/binreloc.m4 $(top_srcdir)/m4/classpath.m4 \
+	$(top_srcdir)/m4/compile_value.m4 $(top_srcdir)/m4/esd.m4 \
+	$(top_srcdir)/m4/gcc_attribute.m4 $(top_srcdir)/m4/getopt.m4 \
+	$(top_srcdir)/m4/gettext.m4 $(top_srcdir)/m4/glibcver.m4 \
+	$(top_srcdir)/m4/gmp.m4 $(top_srcdir)/m4/gwqt.m4 \
+	$(top_srcdir)/m4/herrno.m4 $(top_srcdir)/m4/iconv.m4 \
+	$(top_srcdir)/m4/in6addr.m4 $(top_srcdir)/m4/lcmessage.m4 \
+	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
+	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
+	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/po.m4 \
+	$(top_srcdir)/m4/progtest.m4 $(top_srcdir)/m4/semaphore.m4 \
+	$(top_srcdir)/m4/size_max.m4 $(top_srcdir)/m4/sockaddrin6.m4 \
 	$(top_srcdir)/m4/sockinttypes.m4 \
 	$(top_srcdir)/m4/solarispthread.m4 $(top_srcdir)/m4/valist.m4 \
 	$(top_srcdir)/configure.ac
@@ -132,6 +132,9 @@ CCLD = @CCLD@
 CFLAGS = @CFLAGS@
 CFLAGS_PG = @CFLAGS_PG@
 CFLAGS_WITHOUT_PG = @CFLAGS_WITHOUT_PG@
+CLASSPATH_CLASSES = @CLASSPATH_CLASSES@
+CLASSPATH_LIBDIR = @CLASSPATH_LIBDIR@
+CLASSPATH_PREFIX = @CLASSPATH_PREFIX@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CXX = @CXX@
@@ -932,7 +935,7 @@ BUILD_ENVIRONMENT: Makefile
 BUILD_ENVIRONMENT-make: Makefile
 	echo BOOTCLASSPATH=$(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar\''$(PATHSEP)'\'$(top_builddir)/libraries/javalib/zlib-zip/kaffe-zlib.jar\''$(PATHSEP)'\'$(GLIBJ_ZIP)\''$(PATHSEP)'\'\$${BOOTCLASSPATH}\''$(PATHSEP)'\'$(DNSJAVA_JAR)\''$(PATHSEP)'\'\; export BOOTCLASSPATH | $(SED) 's,/,$(DIRSEP),g;s,\\,\\\\,g' > BUILD_ENVIRONMENT.new; \
 	echo CLASSPATH=.\''$(PATHSEP)'\'\$${GNU_CRYPTO_JAR}\''$(PATHSEP)'\'\$${JAVAX_SECURITY_JAR}\''$(PATHSEP)'\'$(BCEL_JAR)\''$(PATHSEP)'\'$(GNU_CRYPTO_JAR)\''$(PATHSEP)'\'$(JAVAX_SECURITY_JAR)\; export CLASSPATH | $(SED) 's,/,$(DIRSEP),g;s,\\,\\\\,g' >> BUILD_ENVIRONMENT.new; \
-	echo KAFFELIBRARYPATH=\$${KAFFELIBRARYPATH+\"\$$KAFFELIBRARYPATH\"\''$(PATHSEP)'\'}$(top_builddir)/kaffe/kaffevm/.libs\''$(PATHSEP)'\'$(top_builddir)/libraries/clib/net/.libs\''$(PATHSEP)'\'$(top_builddir)/libraries/clib/io/.libs\''$(PATHSEP)'\'$(top_builddir)/libraries/javalib/external/classpath/native/jni/java-lang/.libs\''$(PATHSEP)'\'$(top_builddir)/libraries/javalib/external/classpath/native/jni/java-nio/.libs\''$(PATHSEP)'\'$(top_builddir)/libraries/javalib/external/classpath/native/jni/java-net/.libs\''$(PATHSEP)'\'$(top_builddir)/libraries/javalib/external/classpath/native/jni/java-io/.libs\''$(PATHSEP)'\'$(top_builddir)/libraries/javalib/external/classpath/native/jni/java-util/.libs\''$(PATHSEP)'\'$(top_builddir)/libraries/clib/zip/.libs\''$(PATHSEP)'\'$(top_builddir)/libraries/clib/management/.libs\''$(PATHSEP)'\'$(top_builddir)/libraries/clib/security/.libs\; export KAFFELIBRARYPATH >> BUILD_ENVIRONMENT.new; \
+	echo KAFFELIBRARYPATH=\$${KAFFELIBRARYPATH+\"\$$KAFFELIBRARYPATH\"\''$(PATHSEP)'\'}$(top_builddir)/kaffe/kaffevm/.libs\''$(PATHSEP)'\'$(top_builddir)/libraries/clib/net/.libs\''$(PATHSEP)'\'$(top_builddir)/libraries/clib/io/.libs\''$(PATHSEP)'\'$(top_builddir)/libraries/javalib/external/classpath/native/jni/java-lang/.libs\''$(PATHSEP)'\'$(top_builddir)/libraries/javalib/external/classpath/native/jni/java-nio/.libs\''$(PATHSEP)'\'$(top_builddir)/libraries/javalib/external/classpath/native/jni/java-net/.libs\''$(PATHSEP)'\'$(top_builddir)/libraries/javalib/external/classpath/native/jni/java-io/.libs\''$(PATHSEP)'\'$(top_builddir)/libraries/javalib/external/classpath/native/jni/java-util/.libs\''$(PATHSEP)'\'$(top_builddir)/libraries/clib/zip/.libs\''$(PATHSEP)'\'$(top_builddir)/libraries/clib/management/.libs\''$(PATHSEP)'\'$(top_builddir)/libraries/clib/security/.libs\''$(PATHSEP)'\'@CLASSPATH_LIBDIR@${DIRSEP}classpath\; export KAFFELIBRARYPATH >> BUILD_ENVIRONMENT.new; \
 	echo JAVA=$(top_builddir)/kaffe/kaffe/kaffe-bin$(EXEEXT)\; export JAVA >> BUILD_ENVIRONMENT.new; \
 	rm -f BUILD_ENVIRONMENT
 	mv BUILD_ENVIRONMENT.new BUILD_ENVIRONMENT

@@ -143,12 +143,6 @@ autoconf # -Wall
   autoreconf -i -f # -Wall
 )
 
-(
-  cd external/gcc/fastjar
-
-  autoreconf -i -f
-)
-
 # drops specific patches
 (
   cd scripts
@@ -163,8 +157,4 @@ autoconf # -Wall
 (
   cd libraries/javalib/external/classpath
   patch -p0 <../../../../developers/config3.patch
-)
-
-(
-  cd external/gcc/fastjar/scripts
 )
