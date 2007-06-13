@@ -10,7 +10,7 @@ public class Reflect {
       name = argv[0];
     }
     catch (ArrayIndexOutOfBoundsException _) {
-      name = "java.lang.System";
+      name = "java.lang.Runnable";
     }
     try {
       Class cls = Class.forName(name);
@@ -54,39 +54,5 @@ public class Reflect {
 
 // Sort output
 /* Expected Output:
-Field: public static final java.io.InputStream java.lang.System.in
-Field: public static final java.io.PrintStream java.lang.System.err
-Field: public static final java.io.PrintStream java.lang.System.out
-Method: public boolean java.lang.Object.equals(java.lang.Object)
-Method: public int java.lang.Object.hashCode()
-Method: public java.lang.Class java.lang.Object.getClass()
-Method: public java.lang.String java.lang.Object.toString()
-Method: public static int java.lang.System.identityHashCode(java.lang.Object)
-Method: public static java.lang.SecurityManager java.lang.System.getSecurityManager()
-Method: public static java.lang.String java.lang.System.clearProperty(java.lang.String)
-Method: public static java.lang.String java.lang.System.getProperty(java.lang.String)
-Method: public static java.lang.String java.lang.System.getProperty(java.lang.String,java.lang.String)
-Method: public static java.lang.String java.lang.System.getenv(java.lang.String)
-Method: public static java.lang.String java.lang.System.mapLibraryName(java.lang.String)
-Method: public static java.lang.String java.lang.System.setProperty(java.lang.String,java.lang.String)
-Method: public static java.util.Properties java.lang.System.getProperties()
-Method: public static long java.lang.System.currentTimeMillis()
-Method: public static long java.lang.System.nanoTime()
-Method: public static synchronized void java.lang.System.setSecurityManager(java.lang.SecurityManager)
-Method: public static void java.lang.System.arraycopy(java.lang.Object,int,java.lang.Object,int,int)
-Method: public static void java.lang.System.exit(int)
-Method: public static void java.lang.System.gc()
-Method: public static void java.lang.System.load(java.lang.String)
-Method: public static void java.lang.System.loadLibrary(java.lang.String)
-Method: public static void java.lang.System.runFinalization()
-Method: public static void java.lang.System.runFinalizersOnExit(boolean)
-Method: public static void java.lang.System.setErr(java.io.PrintStream)
-Method: public static void java.lang.System.setIn(java.io.InputStream)
-Method: public static void java.lang.System.setOut(java.io.PrintStream)
-Method: public static void java.lang.System.setProperties(java.util.Properties)
-Method: public void java.lang.Object.notify() throws java.lang.IllegalMonitorStateException
-Method: public void java.lang.Object.notifyAll() throws java.lang.IllegalMonitorStateException
-Method: public void java.lang.Object.wait() throws java.lang.IllegalMonitorStateException,java.lang.InterruptedException
-Method: public void java.lang.Object.wait(long) throws java.lang.IllegalMonitorStateException,java.lang.InterruptedException
-Method: public void java.lang.Object.wait(long,int) throws java.lang.IllegalMonitorStateException,java.lang.InterruptedException
+Method: public abstract void java.lang.Runnable.run()
 */
