@@ -71,33 +71,11 @@ public class ProcessClassStop
 	t0.join();
 
 	Class cc = v.elementAt(0).getClass();
-	final Object ni = cc.newInstance();
-
-/***
-	Thread other = new Thread() {
-	    public void run() {
-		System.out.println(ni);
-	    }
-	};
-	other.start();
-	other.join();
-***/
-
-	System.out.println("m2 " + ni);
-
-	Thread t2 = new Thread() {
-	    public void run() {
-		try {
-		    System.out.println("t2 " + 
-			v.elementAt(0).getClass().newInstance());
-		} catch (Throwable ty) {
-		    System.out.println(ty);
-		}
-	    }
-	};
-	t2.start();
-	t2.join();
-	System.exit(0);
+	try {
+		final Object ni = cc.newInstance();
+	} catch (NoClassDefFoundError e) {
+		System.out.println(e);
+	}
     }
 }
 
@@ -105,9 +83,4 @@ public class ProcessClassStop
 /* Expected Output:
 tan java.lang.NoClassDefFoundError: Base
 java.lang.NoClassDefFoundError: Base
-   at java.lang.reflect.Method.invoke0 (Method.java:native)
-   at java.lang.reflect.Method.invoke (Method.java:525)
-   at java.lang.reflect.Constructor.newInstance (Constructor.java:331)
-   at java.lang.Class.newInstance (Class.java:1163)
-   at ProcessClassStop.main (ProcessClassStop.java:74)
 */
