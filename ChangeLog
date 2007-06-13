@@ -1,6 +1,12 @@
 2007-06-11  Dalibor Topic  <robilad@kaffe.org>
 
+	* THIRDPARTY: Added m4/classpath.m4.
+
+2007-06-11  Dalibor Topic  <robilad@kaffe.org>
+
 	Added support for using an existing GNU Classpath installation.
+
+	* m4/classpath.m4: Taken from Cacao, slightly adapted.
 
 	* Makefile.am (BUILD_ENVIRONMENT-make): Add the installed GNU Classpath 
 	libraries to the KAFFELIBRARPATH.

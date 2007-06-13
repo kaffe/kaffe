@@ -617,7 +617,7 @@ ANTLR is in the public domain:
 
 More information on ANTLR is available from http://www.antlr.org
 
-* libraries/clib/native/VMRuntime.c
+* libraries/clib/native/VMRuntime.c, m4/classpath.m4.
 
   This file comes from CACAO. More information on CACAO is available from
   http://www.cacaojvm.org. Kaffe tracks this file's CVS HEAD.
