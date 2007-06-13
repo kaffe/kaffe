@@ -255,7 +255,7 @@ void initPersons() {
 public void itemStateChanged( ItemEvent e) {
 	Component c = (Component) e.getSource();
 	if ( c == CNames) {
-		if ( e.getStateChange() == e.SELECTED ) {
+		if ( e.getStateChange() == ItemEvent.SELECTED ) {
 			String sel = CNames.getSelectedItem();
 			for ( int i=0; i<persons.size(); i++) {
 				Person p = (Person)persons.elementAt( i);
