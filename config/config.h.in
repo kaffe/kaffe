@@ -9,9 +9,6 @@
 /* 1234 = LIL_ENDIAN, 4321 = BIGENDIAN */
 #undef BYTEORDER
 
-/* Java core library jni.h header */
-#undef CLASSPATH_JNI_H
-
 /* __GLIBC__ */
 #undef COMPILE_VALUE_GLIBC
 

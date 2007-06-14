@@ -79,8 +79,4 @@ AC_ARG_WITH([classpath-includedir],
             [CLASSPATH_INCLUDEDIR=${withval}],
             [CLASSPATH_INCLUDEDIR=${CLASSPATH_PREFIX}/include])
 AC_MSG_RESULT(${CLASSPATH_INCLUDEDIR})
-
-AC_CHECK_HEADER([${CLASSPATH_INCLUDEDIR}/jni.h],
-                [AC_DEFINE_UNQUOTED([CLASSPATH_JNI_H], "${CLASSPATH_INCLUDEDIR}/jni.h", [Java core library jni.h header])],
-                [AC_MSG_ERROR(cannot find jni.h)])
 ])
