@@ -2,9 +2,7 @@ CLASSFILE = kaffe-vminterface.jar
 SRCDIRS = org
 jrelib_DATA = $(CLASSFILE)
 LIBDIR = lib
-JAR_CMD1 = ($(FASTJAR) cf $(CLASSFILE) -C $(LIBDIR) $(SRCDIRS))
-JAR_CMD2 = ($(FASTJAR) uf $(CLASSFILE) -C $(LIBDIR) gnu)
-JAR_CMD3 = ($(FASTJAR) uf $(CLASSFILE) -C $(LIBDIR) java)
+JAR_CMD1 = ($(FASTJAR) cf $(CLASSFILE) -C $(LIBDIR) $(SRCDIRS) -C $(LIBDIR) gnu -C $(LIBDIR) java)
 
 CPATH =  .:$(srcdir):$(LIBDIR):$(GLIBJ_ZIP)
 AM_JAVACFLAGS = -bootclasspath $(CPATH)
@@ -14,8 +12,6 @@ JAVAROOT = $(LIBDIR)
 $(CLASSFILE): classdist_vminterface.stamp
 	rm -f $(CLASSFILE)
 	$(JAR_CMD1)
-	$(JAR_CMD2)
-	$(JAR_CMD3)
 
 clean-local:
 	rm -rf $(LIBDIR) $(CLASSFILE)

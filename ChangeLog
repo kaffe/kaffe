@@ -1,3 +1,22 @@
+2007-06-25  Dalibor Topic  <robilad@kaffe.org>
+
+	* libraries/javalib/awt-implementations/kaffe/Makefile.am,
+	libraries/javalib/dnsjava/Makefile.am,
+	libraries/javalib/tritonus-sound/Makefile.am,
+	libraries/javalib/vmspecific/Makefile.am,
+	libraries/javalib/zlib-zip/Makefile.am,
+	tools/gjdoc/javalib/Makefile.am:
+	Simplified jar commands to use a single one as much as possible,
+	since jar on cygwin does not implement -u.
+
+	* libraries/javalib/awt-implementations/kaffe/Makefile.in,
+	libraries/javalib/dnsjava/Makefile.in,
+	libraries/javalib/tritonus-sound/Makefile.in,
+	libraries/javalib/vmspecific/Makefile.in,
+	libraries/javalib/zlib-zip/Makefile.in,
+	tools/gjdoc/javalib/Makefile.in:
+	Regenerated.
+
 2007-06-14  Dalibor Topic  <robilad@kaffe.org>
 
 	* m4/classpath.m4: Removed unused check for jni.h.

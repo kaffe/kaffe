@@ -2,8 +2,7 @@ CLASSFILE = kaffeawt.jar
 SRCDIRS = org
 jrelib_DATA = $(CLASSFILE)
 LIBDIR = lib
-JAR_CMD1 = ($(FASTJAR) cf $(CLASSFILE) -C $(LIBDIR) $(SRCDIRS))
-JAR_CMD2 = ($(FASTJAR) uf $(CLASSFILE) -C $(LIBDIR) java)
+JAR_CMD1 = ($(FASTJAR) cf $(CLASSFILE) -C $(LIBDIR) $(SRCDIRS) -C $(LIBDIR) java)
 
 CPATH =  .:$(srcdir):$(LIBDIR):$(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar:$(GLIBJ_ZIP)
 AM_JAVACFLAGS = -bootclasspath $(CPATH)
@@ -13,7 +12,6 @@ JAVAROOT = $(LIBDIR)
 $(CLASSFILE): classdist_kaffeawt.stamp
 	rm -f $(CLASSFILE)
 	$(JAR_CMD1)
-	$(JAR_CMD2)
 
 clean-local:
 	rm -rf $(LIBDIR) $(CLASSFILE)

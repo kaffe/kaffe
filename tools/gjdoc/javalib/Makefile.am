@@ -2,11 +2,9 @@ CLASSFILE = gjdoc.jar
 SRCDIRS = antlr
 toolslib_DATA = $(CLASSFILE)
 LIBDIR = lib
-JAR_CMD1 = ($(FASTJAR) cf $(CLASSFILE) -C $(LIBDIR) $(SRCDIRS))
-JAR_CMD2 = ($(FASTJAR) uf $(CLASSFILE) -C $(LIBDIR) gnu)
-JAR_CMD3 = ($(FASTJAR) uf $(CLASSFILE) -C $(LIBDIR) com)
-JAR_CMD4 = (PWD=`pwd` && cd  $(srcdir) && $(FASTJAR) uf $(PWD)/$(CLASSFILE) $(gjdoc_ressources))
-JAR_CMD5 = ($(FASTJAR) uf $(CLASSFILE) version.properties)
+JAR_CMD1 = ($(FASTJAR) cf $(CLASSFILE) -C $(LIBDIR) $(SRCDIRS) -C $(LIBDIR) gnu -C $(LIBDIR) com)
+JAR_CMD2 = (PWD=`pwd` && cd  $(srcdir) && $(FASTJAR) uf $(PWD)/$(CLASSFILE) $(gjdoc_ressources))
+JAR_CMD3 = ($(FASTJAR) uf $(CLASSFILE) version.properties)
 
 CPATH =  .:$(srcdir):$(LIBDIR):$(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar:$(GLIBJ_ZIP)
 AM_JAVACFLAGS = -classpath $(CPATH)
@@ -18,8 +16,6 @@ $(CLASSFILE): classdist_gjdoc.stamp
 	$(JAR_CMD1)
 	$(JAR_CMD2)
 	$(JAR_CMD3)
-	$(JAR_CMD4)
-	$(JAR_CMD5)
 
 clean-local:
 	rm -rf $(LIBDIR) $(CLASSFILE)
