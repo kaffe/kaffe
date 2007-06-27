@@ -31,7 +31,9 @@
 #define	MINOR_VERSION_V1_4	0
 #define MAJOR_VERSION_V1_5	49
 #define MINOR_VERSION_V1_5	0
-
+#define MAJOR_VERSION_V1_6      50
+#define MINOR_VERSION_V1_6      0
+ 
 typedef enum ReadAttrType {
 	READATTR_METHOD = 11,
 	READATTR_CLASS  = 12,

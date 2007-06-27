@@ -1,3 +1,11 @@
+2007-06-27  Christian Thalinger  <twisti@complang.tuwien.ac.at>
+
+	* kaffe/kaffevm/readClass.c (readClass): Accept classes generated 
+	by javac 1.6.
+
+	* kaffe/kaffevm/readClass.h (MAJOR_VERSION_V1_6, MINOR_VERSION_V1_6):
+	New constants.
+
 2007-06-25  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/awt-implementations/kaffe/Makefile.am,

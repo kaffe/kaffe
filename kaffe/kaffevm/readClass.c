@@ -63,7 +63,8 @@ readClass(Hjava_lang_Class* classThis, classFile* fp, struct Hjava_lang_ClassLoa
 	       (major_version == MAJOR_VERSION_V1_2 && minor_version == MINOR_VERSION_V1_2) ||
 	       (major_version == MAJOR_VERSION_V1_3 && minor_version == MINOR_VERSION_V1_3) ||
 	       (major_version == MAJOR_VERSION_V1_4 && minor_version == MINOR_VERSION_V1_4) ||
-	       (major_version == MAJOR_VERSION_V1_5 && minor_version == MINOR_VERSION_V1_5))) {
+	       (major_version == MAJOR_VERSION_V1_5 && minor_version == MINOR_VERSION_V1_5) ||
+	       (major_version == MAJOR_VERSION_V1_6 && minor_version == MINOR_VERSION_V1_6))) {
 		postExceptionMessage(einfo,
 				     JAVA_LANG(UnsupportedClassVersionError),
 				     "%d.%d",
