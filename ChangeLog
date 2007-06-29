@@ -1,3 +1,7 @@
+2007-06-29  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* FAQ/FAQ.freebsd: Recommends the use of --with-system-classpath.
+
 2007-06-27  Christian Thalinger  <twisti@complang.tuwien.ac.at>
 
 	* kaffe/kaffevm/readClass.c (readClass): Accept classes generated 
