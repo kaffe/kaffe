@@ -71,7 +71,7 @@ libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) \
-	$(top_builddir)/kaffe/kaffevm/libkaffevm.la
+	$(top_builddir)/kaffe/kaffevm/libkaffe.la
 am_libkaffejvmpi_la_OBJECTS = libkaffejvmpi_la-jvmpi_kaffe.lo
 libkaffejvmpi_la_OBJECTS = $(am_libkaffejvmpi_la_OBJECTS)
 libkaffejvmpi_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -327,7 +327,7 @@ libkaffejvmpi_la_LDFLAGS = \
 
 libkaffejvmpi_la_DEPENDENCIES = \
 	$(LIBLTDL) \
-	$(top_builddir)/kaffe/kaffevm/libkaffevm.la
+	$(top_builddir)/kaffe/kaffevm/libkaffe.la
 
 libkaffejvmpi_la_LIBADD = \
 	$(libkaffejvmpi_la_DEPENDENCIES) \

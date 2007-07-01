@@ -265,19 +265,8 @@ DBG(NATIVELIB,
 	/* Open the library */
 	open:
 
-#if 0
-	/* If this file doesn't exist, ignore it */
-	if (access(path, R_OK) != 0) {
-		if (errbuf != 0) {
-			assert(errsiz > 0);
-			strncpy(errbuf, SYS_ERROR(errno), errsiz);
-			errbuf[errsiz - 1] = '\0';
-		}
-		return -1;
-	}
-#endif
-/* if we tested for existence here, libltdl wouldn't be able to look
-   for system-dependent library names */
+       /* if we tested for existence here, libltdl wouldn't be able to look
+          for system-dependent library names */
 
 	{
                 lib->desc = KaffeLib_Load(path);

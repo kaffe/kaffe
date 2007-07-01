@@ -78,7 +78,7 @@ am__installdirs = "$(DESTDIR)$(nativedir)"
 nativeLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(native_LTLIBRARIES)
 libmanagement_la_DEPENDENCIES =  \
-	$(top_builddir)/kaffe/kaffevm/libkaffevm.la
+	$(top_builddir)/kaffe/kaffevm/libkaffe.la
 am_libmanagement_la_OBJECTS = libmanagement_la-Classpath.lo \
 	libmanagement_la-JIT.lo libmanagement_la-Debug.lo \
 	libmanagement_la-XProfiler.lo
@@ -333,7 +333,7 @@ libmanagement_la_LDFLAGS = \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
-libmanagement_la_LIBADD = $(top_builddir)/kaffe/kaffevm/libkaffevm.la
+libmanagement_la_LIBADD = $(top_builddir)/kaffe/kaffevm/libkaffe.la
 libmanagement_la_SOURCES = \
 	Classpath.c \
 	JIT.c \

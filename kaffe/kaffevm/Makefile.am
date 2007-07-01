@@ -34,7 +34,7 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/config/$(Khost_cpu) \
 	-I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os) 
 
-native_LTLIBRARIES = libkaffevm.la
+native_LTLIBRARIES = libkaffevm.la libkaffe.la
 
 @cpu_frag@
 @cpu_os_frag@
@@ -47,12 +47,12 @@ else
 libgcj = #
 endif
 
-libkaffevm_la_CFLAGS = \
+libkaffe_la_CFLAGS = \
 	$(AM_CFLAGS) \
 	$(CFLAGS_PG) \
 	$(PTHREAD_CFLAGS)
 
-libkaffevm_la_LDFLAGS = \
+libkaffe_la_LDFLAGS = \
 	$(PTHREAD_CFLAGS) \
         $(PTHREAD_LIBS) \
         $(SEMAPHORE_LIB) \
@@ -61,7 +61,7 @@ libkaffevm_la_LDFLAGS = \
 	-export-dynamic \
 	-release $(PACKAGE_VERSION)
 
-libkaffevm_la_DEPENDENCIES = \
+libkaffe_la_DEPENDENCIES = \
 	$(LIBLTDL) \
 	$(ENGINE_NAME)/libengine.la \
 	$(libgcj) \
@@ -71,17 +71,35 @@ libkaffevm_la_DEPENDENCIES = \
 	jni/libkaffejni.la \
         $(top_builddir)/replace/libreplace.la 
 
-libkaffevm_la_LIBADD = \
-	$(libkaffevm_la_DEPENDENCIES) \
+libkaffe_la_LIBADD = \
+	$(libkaffe_la_DEPENDENCIES) \
 	$(NET_LIBS) \
 	$(VM_LIBS) \
 	$(M_LIBS) \
 	$(ZIP_LIBS)
 
-nodist_libkaffevm_la_SOURCES = \
+libkaffevm_la_CFLAGS = \
+	$(AM_CFLAGS) \
+	$(CFLAGS_PG) \
+	$(PTHREAD_CFLAGS)
+
+libkaffevm_la_LDFLAGS = \
+	$(PTHREAD_CFLAGS) \
+        $(PTHREAD_LIBS) \
+        $(SEMAPHORE_LIB) \
+	$(KLIBFLAGS) \
+	-module \
+	-no-undefined \
+	-export-dynamic \
+	-release $(PACKAGE_VERSION)
+
+libkaffevm_la_DEPENDENCIES = \
+	libkaffe.la
+
+nodist_libkaffe_la_SOURCES = \
 	md.c
 
-libkaffevm_la_SOURCES = \
+libkaffe_la_SOURCES = \
 	access.c \
 	baseClasses.c \
 	classMethod.c \
@@ -115,7 +133,9 @@ libkaffevm_la_SOURCES = \
 	gcFuncs.c \
 	reflect.c \
 	reference.c \
-	binreloc.c \
+	binreloc.c 
+
+libkaffevm_la_SOURCES = \
 	$(top_srcdir)/libraries/clib/net/InetAddressImpl.c \
 	$(top_srcdir)/libraries/clib/native/AccessController.c \
 	$(top_srcdir)/libraries/clib/native/java_lang_ref_Reference.c \

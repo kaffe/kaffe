@@ -16,6 +16,13 @@
 
 Collector* main_collector;
 
+Collector* KGC_getMainCollector(void)
+{
+	assert (main_collector != NULL);
+
+	return main_collector;
+}
+
 void*
 jmalloc(size_t sz)
 {

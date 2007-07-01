@@ -36,10 +36,11 @@ char*
 stringJava2C(const Hjava_lang_String* js)
 {
 	char* str;
+	const size_t size = (size_t)(STRING_SIZE(js) + 1);
 
-	str = gc_malloc((size_t)(STRING_SIZE(js) + 1), KGC_ALLOC_FIXED);
+	str = gc_malloc(size, KGC_ALLOC_FIXED);
 	if (str != 0) {
-		stringJava2CBuf(js, str, STRING_SIZE(js) + 1);
+		stringJava2CBuf(js, str, size);
 	}
 	return(str);
 }

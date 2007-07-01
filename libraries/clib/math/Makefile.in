@@ -78,7 +78,7 @@ am__installdirs = "$(DESTDIR)$(nativedir)"
 nativeLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(native_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-libmath_la_DEPENDENCIES = $(top_builddir)/kaffe/kaffevm/libkaffevm.la \
+libmath_la_DEPENDENCIES = $(top_builddir)/kaffe/kaffevm/libkaffe.la \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 am_libmath_la_OBJECTS = BigInteger.lo
 libmath_la_OBJECTS = $(am_libmath_la_OBJECTS)
@@ -323,7 +323,7 @@ libmath_la_LDFLAGS = \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
-libmath_la_LIBADD = $(top_builddir)/kaffe/kaffevm/libkaffevm.la $(LIBADD_GMP) $(M_LIBS)
+libmath_la_LIBADD = $(top_builddir)/kaffe/kaffevm/libkaffe.la $(LIBADD_GMP) $(M_LIBS)
 libmath_la_SOURCES = BigInteger.c
 CLEANFILES = so_locations
 all: all-am

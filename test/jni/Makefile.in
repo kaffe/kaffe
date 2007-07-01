@@ -82,14 +82,26 @@ am__DEPENDENCIES_1 =
 @ENABLE_JVMPI_TRUE@	../../kaffe/jvmpi/libkaffejvmpi.la
 @NEED_LIBXPROF_TRUE@am__DEPENDENCIES_3 =  \
 @NEED_LIBXPROF_TRUE@	../../kaffe/xprof/libkaffexprof.la
-am__DEPENDENCIES_4 = $(top_builddir)/kaffe/kaffevm/libkaffevm.la \
+am__DEPENDENCIES_4 = $(top_builddir)/kaffe/kaffevm/libkaffe.la \
 	$(am__DEPENDENCIES_2) $(am__DEPENDENCIES_3)
+jniBase_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(jniBase_LDFLAGS) \
+	$(LDFLAGS) -o $@
 am_jniExecClass_OBJECTS = jniExecClass.$(OBJEXT)
 jniExecClass_OBJECTS = $(am_jniExecClass_OBJECTS)
+jniExecClass_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(jniExecClass_LDFLAGS) $(LDFLAGS) -o $@
 am_jniReflect_OBJECTS = jniReflect.$(OBJEXT)
 jniReflect_OBJECTS = $(am_jniReflect_OBJECTS)
+jniReflect_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(jniReflect_LDFLAGS) $(LDFLAGS) -o $@
 am_jniWeakTest_OBJECTS = jniWeakTest.$(OBJEXT)
 jniWeakTest_OBJECTS = $(am_jniWeakTest_OBJECTS)
+jniWeakTest_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(jniWeakTest_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I. -I$(top_builddir)/config@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/scripts/depcomp
 am__depfiles_maybe = depfiles
@@ -337,8 +349,9 @@ AM_CPPFLAGS = \
 @ENABLE_JVMPI_TRUE@libjvmpi = ../../kaffe/jvmpi/libkaffejvmpi.la
 LIBNATIVE = $(top_builddir)/libraries/clib/native/libnative.la
 LIBREPLACE = $(top_builddir)/replace/libreplace.la
-LIBKAFFEVM = $(top_builddir)/kaffe/kaffevm/libkaffevm.la $(libjvmpi) $(libxprof)
+LIBKAFFEVM = $(top_builddir)/kaffe/kaffevm/libkaffe.la $(libjvmpi) $(libxprof)
 jniBase_SOURCES = jniBase.c
+jniBase_LDFLAGS = -export-dynamic
 jniBase_LDADD = \
 	$(DLOPEN_JAVA_LIBS) \
 	$(LIBKAFFEVM) \
@@ -348,6 +361,7 @@ jniBase_LDADD = \
 
 jniBase_DEPENDENCIES = $(LIBKAFFEVM)
 jniExecClass_SOURCES = jniExecClass.c
+jniExecClass_LDFLAGS = -export-dynamic
 jniExecClass_LDADD = \
 	$(DLOPEN_JAVA_LIBS) \
 	$(LIBKAFFEVM) \
@@ -360,6 +374,7 @@ jniExecClass_DEPENDENCIES = \
 	HelloWorldApp.class
 
 jniReflect_SOURCES = jniReflect.c
+jniReflect_LDFLAGS = -export-dynamic
 jniReflect_LDADD = \
 	$(DLOPEN_JAVA_LIBS) \
 	$(LIBKAFFEVM) \
@@ -405,6 +420,7 @@ JAVA_CLASSES = \
 
 CPATH = .:$(GLIBJ_ZIP)
 jniWeakTest_SOURCES = jniWeakTest.c
+jniWeakTest_LDFLAGS = -export-dynamic
 jniWeakTest_LDADD = \
 	-dlopen $(top_builddir)/test/jni/libjniweaklib.la \
 	$(DLOPEN_JAVA_LIBS) \
@@ -473,16 +489,16 @@ clean-checkPROGRAMS:
 	done
 jniBase$(EXEEXT): $(jniBase_OBJECTS) $(jniBase_DEPENDENCIES) 
 	@rm -f jniBase$(EXEEXT)
-	$(LINK) $(jniBase_OBJECTS) $(jniBase_LDADD) $(LIBS)
+	$(jniBase_LINK) $(jniBase_OBJECTS) $(jniBase_LDADD) $(LIBS)
 jniExecClass$(EXEEXT): $(jniExecClass_OBJECTS) $(jniExecClass_DEPENDENCIES) 
 	@rm -f jniExecClass$(EXEEXT)
-	$(LINK) $(jniExecClass_OBJECTS) $(jniExecClass_LDADD) $(LIBS)
+	$(jniExecClass_LINK) $(jniExecClass_OBJECTS) $(jniExecClass_LDADD) $(LIBS)
 jniReflect$(EXEEXT): $(jniReflect_OBJECTS) $(jniReflect_DEPENDENCIES) 
 	@rm -f jniReflect$(EXEEXT)
-	$(LINK) $(jniReflect_OBJECTS) $(jniReflect_LDADD) $(LIBS)
+	$(jniReflect_LINK) $(jniReflect_OBJECTS) $(jniReflect_LDADD) $(LIBS)
 jniWeakTest$(EXEEXT): $(jniWeakTest_OBJECTS) $(jniWeakTest_DEPENDENCIES) 
 	@rm -f jniWeakTest$(EXEEXT)
-	$(LINK) $(jniWeakTest_OBJECTS) $(jniWeakTest_LDADD) $(LIBS)
+	$(jniWeakTest_LINK) $(jniWeakTest_OBJECTS) $(jniWeakTest_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

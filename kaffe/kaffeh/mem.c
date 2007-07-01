@@ -68,6 +68,10 @@ struct GarbageCollectorInterface_Ops GC_Ops = {
 
 struct _Collector c = { & GC_Ops }, *main_collector = &c;
 
+Collector* KGC_getMainCollector(void)
+{
+        return main_collector;
+}
 
 /*
  * The real GC malloc zeroes memory, so our malloc does also.

@@ -39,7 +39,7 @@ libsecurity_la_LDFLAGS = \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
-libsecurity_la_LIBADD = $(top_builddir)/kaffe/kaffevm/libkaffevm.la $(SECURITY_LIBS)
+libsecurity_la_LIBADD = $(top_builddir)/kaffe/kaffevm/libkaffe.la $(SECURITY_LIBS)
 
 libsecurity_la_SOURCES = $(SECURITY_SRCS)
 

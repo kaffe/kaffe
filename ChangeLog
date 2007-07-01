@@ -1,3 +1,58 @@
+2007-07-01  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/Makefile.am (native_LTLIBRARIES) Added libkaffe.la
+	for the core VM.
+	(libkaffe_la_CFLAGS, libkaffe_la_LDFLAGS, libkaffe_la_DEPENDENCIES,
+	libkaffe_la_LIBADD, nodist_libkaffe_la_SOURCES) Adapted from their
+	libkaffevm precursors.
+	(libkaffe_la_SOURCES, libkaffevm_la_SOURCES) Split out the native
+	vm class library interface into libkaffevm and the core vm code into
+	libkaffe.
+
+	* kaffe/jvmpi/Makefile.am (libkaffejvmpi_la_DEPENDENCIES),
+	kaffe/kaffe/Makefile.am (LIBKAFFEVM),
+	libraries/clib/management/Makefile.am (libmanagement_la_LIBADD),
+	libraries/clib/math/Makefile.am	(libmath_la_LIBADD),
+	libraries/clib/security/Makefile.am (libsecurity_la_LIBADD),
+	libraries/clib/zip/Makefile.am (libzip_la_LIBADD),
+	test/internal/Makefile.am (LIBKAFFEVM),
+	test/jni/Makefile.am (LIBKAFFEVM),
+	use libkaffe rather then libkaffevm.
+
+	* kaffe/jvmpi/Makefile.in,
+	kaffe/kaffe/Makefile.in,
+	kaffe/kaffevm/Makefile.in,
+	libraries/clib/management/Makefile.in,
+	libraries/clib/math/Makefile.in,
+	libraries/clib/security/Makefile.in,
+	libraries/clib/zip/Makefile.in,
+	test/internal/Makefile.in,
+	test/jni/Makefile.am,
+	Regenerated.
+
+	* test/jni/Makefile.am (jniBase_LDFLAGS, jniExecClass_LDFLAGS, 
+	jniReflect_LDFLAGS,jniWeakTest_LDFLAGS) New, added -export-dynamic
+	for the staticvm build.
+
+	* kaffe/kaffeh/mem.c (KGC_getMainCollector): New function.
+
+	* kaffe/kaffevm/code.c (addLineNumbers): Added debugging messages.
+	Made start_pc check more lenient to allow for ecj-generated code
+	to work.
+
+	* kaffe/kaffevm/external.c (loadNativeLibrary): Removed unused code.
+
+	* kaffe/kaffevm/gc.c (KGC_getMainCollector): Added new function.
+
+	* kaffe/kaffevm/gc.h (KGC_getMainCollector): Added new prototype.
+	(gc_malloc, gc_calloc, gc_realloc, gc_free, gc_add_ref, gc_rm_ref,
+	invokeGC, adviseGC, invokeFinalizer, gc_throwOOM, gc_enableGC,
+	gc_disableGC): Use KGC_getMainCollector.
+
+	* kaffe/kaffevm/readClass.c (readAttributes): Added debugging messages.
+
+	* kaffe/kaffevm/string.c (stringJava2C): Simplified.
+
 2007-06-29  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	* FAQ/FAQ.freebsd: Recommends the use of --with-system-classpath.

@@ -48,7 +48,7 @@ LIBNATIVE = $(top_builddir)/libraries/javalib/external/classpath/native/jni/java
 endif
 
 LIBREPLACE = $(top_builddir)/replace/libreplace.la
-LIBKAFFEVM = ../../kaffe/kaffevm/libkaffevm.la $(libjvmpi)
+LIBKAFFEVM = ../../kaffe/kaffevm/libkaffe.la $(libjvmpi)
 
 jitBasic_LDFLAGS = -export-dynamic
 jitBasic_LDADD = \

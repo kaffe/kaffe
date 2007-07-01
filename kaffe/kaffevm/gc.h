@@ -234,22 +234,23 @@ static inline void KGC_markObject(void *g, void *gc_info, const void *addr)
  * Compatibility macros to access GC functions
  */
 extern Collector* main_collector;
+extern Collector* KGC_getMainCollector(void);
 
-#define	gc_malloc(A,B)	    KGC_malloc(main_collector,A,B)
-#define	gc_calloc(A,B,C)    KGC_malloc(main_collector,(A)*(B),C)
-#define	gc_realloc(A,B,C)   KGC_realloc(main_collector,(A),(B),C)
-#define	gc_free(A)	    KGC_free(main_collector,(A))
-#define gc_add_ref(A)       KGC_addRef(main_collector, (A))
-#define gc_rm_ref(A)        KGC_rmRef(main_collector, (A))
+#define	gc_malloc(A,B)	    KGC_malloc(KGC_getMainCollector(),A,B)
+#define	gc_calloc(A,B,C)    KGC_malloc(KGC_getMainCollector(),(A)*(B),C)
+#define	gc_realloc(A,B,C)   KGC_realloc(KGC_getMainCollector(),(A),(B),C)
+#define	gc_free(A)	    KGC_free(KGC_getMainCollector(),(A))
+#define gc_add_ref(A)       KGC_addRef(KGC_getMainCollector(), (A))
+#define gc_rm_ref(A)        KGC_rmRef(KGC_getMainCollector(), (A))
 
-#define	invokeGC()	    KGC_invoke(main_collector,1)
-#define	adviseGC()	    KGC_invoke(main_collector,0)
-#define	invokeFinalizer()   KGC_invokeFinalizer(main_collector)
+#define	invokeGC()	    KGC_invoke(KGC_getMainCollector(),1)
+#define	adviseGC()	    KGC_invoke(KGC_getMainCollector(),0)
+#define	invokeFinalizer()   KGC_invokeFinalizer(KGC_getMainCollector())
 
-#define gc_throwOOM()	    KGC_throwOOM(main_collector)
+#define gc_throwOOM()	    KGC_throwOOM(KGC_getMainCollector())
 
-#define gc_enableGC()	    KGC_enableGC(main_collector)
-#define gc_disableGC()	    KGC_disableGC(main_collector)
+#define gc_enableGC()	    KGC_enableGC(KGC_getMainCollector())
+#define gc_disableGC()	    KGC_disableGC(KGC_getMainCollector())
 
 extern const char* describeObject(const void* mem);
 

@@ -296,6 +296,11 @@ readAttributes(classFile* fp, Hjava_lang_Class* this,
 			if (utf8ConstEqual(name, Code_name)
 			    && (thingType == READATTR_METHOD)) {
 				if (! addCode((Method*)thing, (size_t) len, fp, einfo)) {
+				DBG(READCLASS,
+				    dprintf("%s: error parsing code\n",
+					    CLASS_CNAME(this));
+				    );
+
 					return false;
 				}
 			}
@@ -303,6 +308,10 @@ readAttributes(classFile* fp, Hjava_lang_Class* this,
 				 && (thingType == READATTR_METHOD)) {
 				if (!addLineNumbers((Method*)thing,
 						    (size_t) len, fp, einfo)) {
+				DBG(READCLASS,
+				    dprintf("%s: error parsing line number table\n",
+					    CLASS_CNAME(this));
+				    );
 					return false;
 				}
 			}
@@ -310,6 +319,11 @@ readAttributes(classFile* fp, Hjava_lang_Class* this,
 				 && (thingType == READATTR_METHOD)) {
 				if (!addLocalVariables((Method*)thing,
 						      (size_t) len, fp, einfo)) {
+				DBG(READCLASS,
+				    dprintf("%s: error parsing local variable table\n",
+					    CLASS_CNAME(this));
+				    );
+
 					return false;
 				}
 			}

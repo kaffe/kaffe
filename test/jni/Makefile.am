@@ -31,12 +31,13 @@ endif
 
 LIBNATIVE = $(top_builddir)/libraries/clib/native/libnative.la
 LIBREPLACE = $(top_builddir)/replace/libreplace.la
-LIBKAFFEVM = $(top_builddir)/kaffe/kaffevm/libkaffevm.la $(libjvmpi) $(libxprof)
+LIBKAFFEVM = $(top_builddir)/kaffe/kaffevm/libkaffe.la $(libjvmpi) $(libxprof)
 
 HelloWorldApp.class: $(srcdir)/../regression/HelloWorldApp.java
 	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/../regression/HelloWorldApp.java
 
 jniBase_SOURCES= jniBase.c
+jniBase_LDFLAGS= -export-dynamic
 jniBase_LDADD= \
 	$(DLOPEN_JAVA_LIBS) \
 	$(LIBKAFFEVM) \
@@ -46,6 +47,7 @@ jniBase_LDADD= \
 jniBase_DEPENDENCIES= $(LIBKAFFEVM)
 
 jniExecClass_SOURCES= jniExecClass.c
+jniExecClass_LDFLAGS= -export-dynamic
 jniExecClass_LDADD= \
 	$(DLOPEN_JAVA_LIBS) \
 	$(LIBKAFFEVM) \
@@ -57,6 +59,7 @@ jniExecClass_DEPENDENCIES= \
 	HelloWorldApp.class
 
 jniReflect_SOURCES= jniReflect.c
+jniReflect_LDFLAGS= -export-dynamic
 jniReflect_LDADD= \
 	$(DLOPEN_JAVA_LIBS) \
 	$(LIBKAFFEVM) \
@@ -107,7 +110,7 @@ JNIWeakTest.class:  $(srcdir)/JNIWeakTest.java
 	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/JNIWeakTest.java
 
 jniWeakTest_SOURCES = jniWeakTest.c
-
+jniWeakTest_LDFLAGS= -export-dynamic
 jniWeakTest_LDADD= \
 	-dlopen $(top_builddir)/test/jni/libjniweaklib.la \
 	$(DLOPEN_JAVA_LIBS) \

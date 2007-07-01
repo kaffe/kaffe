@@ -27,7 +27,7 @@ libmanagement_la_LDFLAGS = \
 	-release $(PACKAGE_VERSION) \
 	-export-symbols-regex "^([Jj]ava|kaffe)_"
 
-libmanagement_la_LIBADD = $(top_builddir)/kaffe/kaffevm/libkaffevm.la
+libmanagement_la_LIBADD = $(top_builddir)/kaffe/kaffevm/libkaffe.la
 
 libmanagement_la_SOURCES = \
 	Classpath.c \

@@ -22,7 +22,7 @@ libkaffejvmpi_la_LDFLAGS = \
 
 libkaffejvmpi_la_DEPENDENCIES = \
 	$(LIBLTDL) \
-	$(top_builddir)/kaffe/kaffevm/libkaffevm.la
+	$(top_builddir)/kaffe/kaffevm/libkaffe.la
 
 libkaffejvmpi_la_LIBADD = \
 	$(libkaffejvmpi_la_DEPENDENCIES) \
