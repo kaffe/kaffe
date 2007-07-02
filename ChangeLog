@@ -1,5 +1,12 @@
 2007-07-03  Kiyo Inaba <inaba@src.ricoh.co.jp>
 
+	ARM FP registers numbering fix.
+
+	* config/arm/jit3-arm.def,
+	config/arm/jit.h
+
+2007-07-03  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
 	First step to merge coldfire/dragonball port...
 
 	* config/m68k/trampolines.S : Replace inst not supported by coldfire.

@@ -334,7 +334,9 @@ int jit_debug;
   LOUT(0x00400090|(CC)|(MEM)|(SGN)|(SIZE)|((IDX)<<16)|((REG)<<12)|((OFF)&0xF)|(((OFF)&0xF0)<<4))
 
 #define	op_f_rrr(CC,FALU,PREC,RND,DST,SRC1,SRC2) \
-  LOUT(0x0E000100|(CC)|(FALU)|(PREC)|(RND)|((DST)<<12)|((SRC1)<<16)|(SRC2))
+  LOUT(0x0E000100|(CC)|(FALU)|(PREC)|(RND)|(((DST)&0x7)<<12)|(((SRC1)&0x7)<<16)|((SRC2)&0x7))
+#define	op_f_rrc(CC,FALU,PREC,RND,DST,SRC1,SRC2) \
+  LOUT(0x0E000100|(CC)|(FALU)|(PREC)|(RND)|(((DST)&0x7)<<12)|(((SRC1)&0x7)<<16)|(SRC2))
 
 
 /*
@@ -352,7 +354,7 @@ int jit_debug;
  * Floating point memory operation
  */
 #define	op_fmem_rrc(CC,MEM,MPREC,REG,IDX,OFF) \
-  LOUT(0x0C000100|(CC)|(MEM)|(MPREC)|((REG)<<12)|((IDX)<<16)|((OFF)&0xFF))
+  LOUT(0x0C000100|(CC)|(MEM)|(MPREC)|(((REG)&0x7)<<12)|((IDX)<<16)|((OFF)&0xFF))
 
 #define	op_push_m(T,BITS) \
   LOUT(0x08000000|CC_AL|MULTI_STORE|MULTI_DB|((T)<<16)|(BITS))
@@ -444,7 +446,9 @@ int jit_debug;
 #define	op_cmp_const(F1,I8)	op_rrr(CC_AL,ALU_CMP | ALU_SETCC | ALU_OP_IMMED,SFT_LSLC,0,0,F1,I8 & 0xff)
 
 #define	op_fmov(T,F)		op_f_rrr(CC_AL,FLT_MVF,FLT_PREC_SINGLE,FLT_RND_ZERO,T,0,F)
+#define	op_fmov_const(T,F)	op_f_rrc(CC_AL,FLT_MVF,FLT_PREC_SINGLE,FLT_RND_ZERO,T,0,F)
 #define	op_fmovl(T,F)		op_f_rrr(CC_AL,FLT_MVF,FLT_PREC_DOUBLE,FLT_RND_ZERO,T,0,F)
+#define	op_fmovl_const(T,F)	op_f_rrc(CC_AL,FLT_MVF,FLT_PREC_DOUBLE,FLT_RND_ZERO,T,0,F)
 
 #define	op_fadd(T,F1,F2)	op_f_rrr(CC_AL,FLT_ADF,FLT_PREC_SINGLE,FLT_RND_ZERO,T,F1,F2)
 #define	op_fsub(T,F1,F2)	op_f_rrr(CC_AL,FLT_SUF,FLT_PREC_SINGLE,FLT_RND_ZERO,T,F1,F2)
@@ -587,7 +591,7 @@ int jit_debug;
 
 define_insn(unimplemented, unimplemented)
 {
-	abort();
+	KAFFEVM_ABORT();
 }
 
 define_insn(nop, nop)
@@ -699,14 +703,14 @@ define_insn(epilogue, epilogue_xxx)
 #if defined(STACK_LIMIT)
 define_insn(check_stack_limit, check_stack_limit_xRC)
 {
-        int r = rreg_int(1);
-        label* l = const_label(2);
+	int r = rreg_int(1);
+	label* l = const_label(2);
 
 	op_cmp(SP, r);
 	op_branch(CC_HI, 8);
 
 	l->type = Lconstant | Labsolute | Loffset12;
-        l->at = CODEPC;
+	l->at = CODEPC;
 
 	op_load_offset(r, CONSTPOOL_BASE, -128);
 	debug(("load_label_const r%d, ?\n", r));
@@ -851,11 +855,13 @@ define_insn(move_label_const, move_RxL)
 
 	l->type |= Llong8x8x8x8|Labsolute;
 	l->at = CODEPC;
+
 	/* Assemble constants with a move and four shifted adds */
 	op_mov_c(w, 0, 0);
 	op_add_c(w, w, 0, 24);
 	op_add_c(w, w, 0, 16);
 	op_add_c(w, w, 0, 8);
+
 	debug(("move_label_const %d, ?\n", w));
 }
 
@@ -948,7 +954,7 @@ define_insn(move_float_const, fmove_RxC)
 	    KAFFEVM_ABORT();
 	}
 
-	op_fmov(w, r);
+	op_fmov_const(w, r);
 
 	debug(("move_float_const %d, %f(0x%x)\n", w, o,r ));
 }
@@ -990,7 +996,7 @@ define_insn(move_double_const, fmovel_RxC)
 	    KAFFEVM_ABORT();
 	}
 
-	op_fmovl(w, r);
+	op_fmovl_const(w, r);
 
 	debug(("move_double_const %d, %f(0x%x)\n", w, o,r ));
 }
@@ -1269,22 +1275,6 @@ define_insn(lshl_int_const, lshl_RRC)
 	debug(("shll %d, %d, LSL %d\n", w, r, v));
 }
 
-
-/* --------------------------------------------------------------------- */
-//
-// Load/store offset
-
-define_insn(store_offset_int, store_RRC)
-{
-	int v = const_int(2);
-	int r0 = rreg_int(0);
-	int r1 = rreg_int(1);
-
-	op_store_offset(r0, r1, v);
-	debug(("st %d, [%d+%d]\n", r1, r0, v));
-}
-
-
 /* --------------------------------------------------------------------- */
 
 define_insn(load_byte, loadb_RxR)
@@ -1334,6 +1324,7 @@ define_insn(load_offset_int, load_RRC)
 	int w = wreg_int(0);
 
 	op_load_offset(w, r, o);
+
 	debug(("ld %d, [%d+%d]\n", w, r, o));
 }
 
@@ -1384,6 +1375,17 @@ define_insn(store_int, store_xRR)
 	op_store(r, w);
 
 	debug(("store_int %d, [%d]\n", r, w));
+}
+
+define_insn(store_offset_int, store_RRC)
+{
+	int v = const_int(2);
+	int r0 = rreg_int(0);
+	int r1 = rreg_int(1);
+
+	op_store_offset(r0, r1, v);
+
+	debug(("st %d, [%d+%d]\n", r1, r0, v));
 }
 
 define_insn(store_float, fstore_RxR)
@@ -1589,7 +1591,7 @@ define_insn(branch, branch_xCC)
 		op_branch(CC_CS, 0);
 		break;
 	default:
-		abort();
+		KAFFEVM_ABORT();
 	}
 
 	debug(("branch type %d at 0x%x from 0x%x\n", bt, l -> at, l -> from));
@@ -1686,6 +1688,7 @@ define_insn(push_float, fpush_xRC)
 	case 3:
 		w = R0 + a;
 		clobberRegister(w);
+		register_reserve(w);
 		/*
 		 * Push it on to the stack
 		 */
@@ -1695,7 +1698,6 @@ define_insn(push_float, fpush_xRC)
 		 * Now pop it into the register pair
 		 */
 		op_pop_m(SP, (1 << w));
-		register_reserve(w);
 		debug(("push_float via elaborate mov r(%d) := f%d\n", w, r));
 		break;
 
@@ -1724,7 +1726,9 @@ define_insn(push_double, fpushl_xRC)
 	case 2:
 		w = R0 + a;
 		clobberRegister(w);
+		register_reserve(w);
 		clobberRegister(w+1);
+		register_reserve(w+1);
 		/*
 		 * Push it on to the stack
 		 */
@@ -1734,8 +1738,6 @@ define_insn(push_double, fpushl_xRC)
 		 * Now pop it into the register pair
 		 */
 		op_pop_m(SP, (1 << w) | (1 << (w+1)));
-		register_reserve(w);
-		register_reserve(w+1);
 		debug(("push_double via elaborate mov r(%d,%d) := f%d\n", w, w+1, r));
 		break;
 
@@ -1745,12 +1747,12 @@ define_insn(push_double, fpushl_xRC)
 		 */
 		w = R3;
 		clobberRegister(w);
+		register_reserve(w);
 		r = rreg_double(1);
 		op_fpushl(SP, r);
 
 		/* Pop the first word */
 		op_pop_m(SP, (1 << w));
-		register_reserve(w);
 		debug(("push_double via partial register, partial stack SP, f%d\n", r));
 		break;
 
@@ -1889,17 +1891,17 @@ define_insn(return_double, freturnl_Rxx)
  */
 define_insn(fake_call_constpool, fakecall_xCC)
 {
-        label* tol = const_label(2);
-        label* froml = const_label(1);
+	label* tol = const_label(2);
+	label* froml = const_label(1);
 
 	froml->type = Lconstant | Labsolute | Loffset12;
-        froml->at = CODEPC;
+	froml->at = CODEPC;
 
 	op_load_offset(LR, CONSTPOOL_BASE, -128);
 	debug(("load_label_const lr, ?\n"));
 
-        tol->type = Lconstant | Labsolute | Loffset12;
-        tol->at = CODEPC;
+	tol->type = Lconstant | Labsolute | Loffset12;
+	tol->at = CODEPC;
 
 	op_load_offset(R0, CONSTPOOL_BASE, -128);
 	debug(("load_label_const r0, ?\n"));
@@ -1911,11 +1913,11 @@ define_insn(fake_call_constpool, fakecall_xCC)
 
 define_insn(fake_call, fakecall_xCC)
 {
-        label* tol = const_label(2);
-        label* froml = const_label(1);
+	label* tol = const_label(2);
+	label* froml = const_label(1);
 
 	froml->type |= Labsolute | Llong8x8x8x8;
-        froml->at = CODEPC;
+	froml->at = CODEPC;
 
 	op_mov_c(LR, 0, 0);
 	op_add_c(LR, LR, 0, 24);
@@ -1923,8 +1925,8 @@ define_insn(fake_call, fakecall_xCC)
 	op_add_c(LR, LR, 0, 8);
 	debug(("move_label_const lr, ?\n"));
 
-        tol->type |= Labsolute | Llong8x8x8x8;
-        tol->at = CODEPC;
+	tol->type |= Labsolute | Llong8x8x8x8;
+	tol->at = CODEPC;
 
 	op_mov_c(R0, 0, 0);
 	op_add_c(R0, R0, 0, 24);

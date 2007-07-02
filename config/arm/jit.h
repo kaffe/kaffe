@@ -157,14 +157,14 @@ extern void arm_do_fixup_trampoline(void);
 	{ /* sp */	0, 0, Reserved,		0, 0, 13   },		\
 	{ /* lr */	0, 0, Reserved,		0, 0, 14   },		\
 	{ /* pc */	0, 0, Reserved,		0, 0, 15   },		\
-	{ /* f0  */	0, 0, Rfloat|Rdouble,	0, 0, 0    },		\
-	{ /* f1  */	0, 0, Rfloat|Rdouble,	0, 0, 1    },		\
-	{ /* f2  */	0, 0, Rfloat|Rdouble,	0, 0, 2    },		\
-	{ /* f3  */	0, 0, Rfloat|Rdouble,	0, 0, 3    },		\
-	{ /* f4  */	0, 0, Reserved,		0, 0, 4    },		\
-	{ /* f5  */	0, 0, Reserved,		0, 0, 5    },		\
-	{ /* f6  */	0, 0, Reserved,		0, 0, 6    },		\
-	{ /* f7  */	0, 0, Reserved,		0, 0, 7    },
+	{ /* f0  */	0, 0, Rfloat|Rdouble,	0, 0, 16   },		\
+	{ /* f1  */	0, 0, Rfloat|Rdouble,	0, 0, 17   },		\
+	{ /* f2  */	0, 0, Rfloat|Rdouble,	0, 0, 18   },		\
+	{ /* f3  */	0, 0, Rfloat|Rdouble,	0, 0, 19   },		\
+	{ /* f4  */	0, 0, Reserved,		0, 0, 20   },		\
+	{ /* f5  */	0, 0, Reserved,		0, 0, 21   },		\
+	{ /* f6  */	0, 0, Reserved,		0, 0, 22   },		\
+	{ /* f7  */	0, 0, Reserved,		0, 0, 23   },
 
 /* Number of registers in the register set */
 #define	NR_REGISTERS	24
