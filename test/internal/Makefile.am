@@ -41,25 +41,20 @@ AM_CPPFLAGS = -I$(top_srcdir)/kaffe \
 	-I$(top_srcdir)/kaffe/kaffevm/jni \
         -I$(top_srcdir)/config/$(Khost_cpu) \
         -I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os)
-if USE_SYSTEM_CLASSPATH
-LIBNATIVE = $(CLASSPATH_LIBDIR)/classpath/libjavalang.la
-else
-LIBNATIVE = $(top_builddir)/libraries/javalib/external/classpath/native/jni/java-lang/libjavalang.la
-endif
 
 LIBREPLACE = $(top_builddir)/replace/libreplace.la
 LIBKAFFEVM = ../../kaffe/kaffevm/libkaffe.la $(libjvmpi)
 
 jitBasic_LDFLAGS = -export-dynamic
 jitBasic_LDADD = \
-	"-dlopen" $(LIBNATIVE) \
-	$(LIBKAFFEVM) \
-	$(LIBREPLACE) \
-	$(libxprof) \
+	@LIBLTDL@ \
         $(LTLIBINTL) \
-	@LIBLTDL@
+	$(LIBREPLACE) \
+	$(LIBKAFFEVM) \
+	$(libxprof) \
+	-dlopen ../../kaffe/kaffevm/libkaffevm.la
 
-jitBasic_DEPENDENCIES = $(LIBNATIVE) $(LIBKAFFEVM) $(libxprof)
+jitBasic_DEPENDENCIES = $(LIBKAFFEVM) $(libxprof)
 
 STUB = main_stub.c
 JIT_STUB = jit_stub.c
