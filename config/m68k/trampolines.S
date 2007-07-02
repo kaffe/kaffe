@@ -35,7 +35,7 @@ TRAMPOLINE_FUNCTION()
 
 C_FUNC_NAME(m68k_do_fixup_trampoline) :
      jbsr   C_FUNC_NAME(soft_fixup_trampoline)
-     addqw	#4,%sp
+     addql	#4,%sp
      movel	%d0,%a0
      jmp     %a0@
 
@@ -48,7 +48,7 @@ C_FUNC_NAME(m68k_do_fixup_trampoline) :
 C_FUNC_NAME(m68k_do_fixup_trampoline) :
 
      jbsr    C_FUNC_NAME(soft_fixup_trampoline)
-     addqw   #4,sp
+     addql   #4,sp
      movel   d0,a0
      jmp     a0@
 
