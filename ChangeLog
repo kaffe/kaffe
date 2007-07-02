@@ -1,5 +1,13 @@
 2007-07-02  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac : Check if zlib is recent enough (1.2.3, or later).
+
+	Reported by:  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
+2007-07-02  Dalibor Topic  <robilad@kaffe.org>
+
+	Fixed --with-staticlib --disable-zlib-zip build.
+
 	* kaffe/kaffe/Makefile.am (kaffe_bin_LDADD),
 	test/internal/Makefile.am (jitBasic_LDADD),
 	test/jni/Makefile.am (jniBase_LDADD, jniExecClass_LDADD,
@@ -7,7 +15,11 @@
 
 	* test/internal/Makefile.am (LIBNATIVE) Removed.
 
+	Reported by:  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
 2007-07-01  Dalibor Topic  <robilad@kaffe.org>
+
+	Fixed --with-staticvm --disable-zlib-zip build.
 
 	* kaffe/kaffevm/Makefile.am (native_LTLIBRARIES) Added libkaffe.la
 	for the core VM.
@@ -61,6 +73,8 @@
 	* kaffe/kaffevm/readClass.c (readAttributes): Added debugging messages.
 
 	* kaffe/kaffevm/string.c (stringJava2C): Simplified.
+
+	Reported by:  Kiyo Inaba <inaba@src.ricoh.co.jp>
 
 2007-06-29  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 

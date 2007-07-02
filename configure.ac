@@ -2296,6 +2296,16 @@ fi
 if test x"$ac_cv_lib_z_deflate" != x"yes" ; then
   AC_MSG_ERROR([Can't find system zlib or can't find function deflate in it])
 fi
+AC_EGREP_CPP(yes,
+[#include <zlib.h>
+
+#if ZLIB_VERNUM >= 0x1230
+  yes
+#endif
+], is_recent_zlib=yes, is_recent_zlib=no)
+if test x"$is_recent_zlib" != x"yes" ; then
+  AC_MSG_ERROR([Can't find zlib 1.2.3 or later])
+fi
 
 dnl =========================================================================
 dnl Configure Binreloc support
