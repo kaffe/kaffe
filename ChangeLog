@@ -1,3 +1,7 @@
+2007-07-11  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* FAQ/FAQ.classlibrary-compile: Updated the ecj status.
+
 2007-07-03  Kiyo Inaba <inaba@src.ricoh.co.jp>
 
 	ARM FP registers numbering fix.
