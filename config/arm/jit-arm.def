@@ -334,7 +334,9 @@ int jit_debug;
   LOUT(0x00400090|(CC)|(MEM)|(SGN)|(SIZE)|((IDX)<<16)|((REG)<<12)|((OFF)&0xF)|(((OFF)&0xF0)<<4))
 
 #define	op_f_rrr(CC,FALU,PREC,RND,DST,SRC1,SRC2) \
-  LOUT(0x0E000100|(CC)|(FALU)|(PREC)|(RND)|((DST)<<12)|((SRC1)<<16)|(SRC2))
+  LOUT(0x0E000100|(CC)|(FALU)|(PREC)|(RND)|(((DST)&0x07)<<12)|(((SRC1)&0x07)<<16)|((SRC2)&0x07))
+#define	op_f_rrc(CC,FALU,PREC,RND,DST,SRC1,SRC2) \
+  LOUT(0x0E000100|(CC)|(FALU)|(PREC)|(RND)|(((DST)&0x07)<<12)|(((SRC1)&0x07)<<16)|(SRC2))
 
 
 /*
@@ -352,7 +354,7 @@ int jit_debug;
  * Floating point memory operation
  */
 #define	op_fmem_rrc(CC,MEM,MPREC,REG,IDX,OFF) \
-  LOUT(0x0C000100|(CC)|(MEM)|(MPREC)|((REG)<<12)|((IDX)<<16)|((OFF)&0xFF))
+  LOUT(0x0C000100|(CC)|(MEM)|(MPREC)|(((REG)&0x07)<<12)|((IDX)<<16)|((OFF)&0xFF))
 
 #define	op_push_m(T,BITS) \
   LOUT(0x08000000|CC_AL|MULTI_STORE|MULTI_DB|((T)<<16)|(BITS))
@@ -441,7 +443,9 @@ int jit_debug;
 #define	op_cmp_const(F1,I8)	op_rrr(CC_AL,ALU_CMP | ALU_SETCC | ALU_OP_IMMED,SFT_LSLC,0,0,F1,I8 & 0xff)
 
 #define	op_fmov(T,F)		op_f_rrr(CC_AL,FLT_MVF,FLT_PREC_SINGLE,FLT_RND_ZERO,T,0,F)
+#define	op_fmov_const(T,F)	op_f_rrc(CC_AL,FLT_MVF,FLT_PREC_SINGLE,FLT_RND_ZERO,T,0,F)
 #define	op_fmovl(T,F)		op_f_rrr(CC_AL,FLT_MVF,FLT_PREC_DOUBLE,FLT_RND_ZERO,T,0,F)
+#define	op_fmovl_const(T,F)	op_f_rrc(CC_AL,FLT_MVF,FLT_PREC_DOUBLE,FLT_RND_ZERO,T,0,F)
 
 #define	op_fadd(T,F1,F2)	op_f_rrr(CC_AL,FLT_ADF,FLT_PREC_SINGLE,FLT_RND_ZERO,T,F1,F2)
 #define	op_fsub(T,F1,F2)	op_f_rrr(CC_AL,FLT_SUF,FLT_PREC_SINGLE,FLT_RND_ZERO,T,F1,F2)
@@ -846,7 +850,7 @@ define_insn(move_float_const, fmove_RxC)
 	    abort();
 	}
 
-	op_fmov(w, r);
+	op_fmov_const(w, r);
 
 	debug(("move_float_const %d, %f(0x%x)\n", w, o,r ));
 }
@@ -890,7 +894,7 @@ define_insn(move_double_const, fmovel_RxC)
 	    abort();
 	}
 
-	op_fmovl(w, r);
+	op_fmovl_const(w, r);
 
 	debug(("move_double_const %d, %f(0x%x)\n", w, o,r ));
 }
