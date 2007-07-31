@@ -160,8 +160,6 @@ KAFFE_GR_FUNC_DECL(void, Java_java_awt_Toolkit_graDrawImageScaled, jobject nimg,
 	int x1;
 	int y1;
 	int iw;
-	char *vbufs;
-	char *vbufi;
 	s_rect_t coor;
 	s_rect_t inter;
 	graphics_t *gr;
@@ -182,12 +180,12 @@ KAFFE_GR_FUNC_DECL(void, Java_java_awt_Toolkit_graDrawImageScaled, jobject nimg,
 	if (sx1 < 0) sx1 = 0;
 	if (sx0 >= iw) sx0 = iw - 1;
 	if (sx1 >= iw) sx1 = iw - 1;
-	srfs = (s_surface_t *) AWT_MALLOC(sizeof(s_surface_t));
-	vbufs = (char *) AWT_MALLOC((x1 - x0 + 1) * (y1 - y0 + 1) * gr->surface->bytesperpixel);
-	s_getsurfacevirtual(srfs, x1 - x0 + 1, y1 - y0 + 1, gr->surface->bitsperpixel, vbufs);
-	srfi = (s_surface_t *) AWT_MALLOC(sizeof(s_surface_t));
-	vbufi = (char *) AWT_MALLOC(img->w * img->h * gr->surface->bytesperpixel);
-	s_getsurfacevirtual(srfi, img->w, img->h, gr->surface->bitsperpixel, vbufi);
+	if (s_surface_create(&srfs, x1 - x0 + 1, y1 - y0 + 1, gr->surface->bitsperpixel)) {
+		goto out0;
+	}
+	if (s_surface_create(&srfi, img->w, img->h, gr->surface->bitsperpixel)) {
+		goto out1;
+	}
 	s_fillbox(srfi, 0, 0, img->w, img->h, gr->bg);
 	s_putboxrgba(srfi, 0, 0, img->w, img->h, img->rgba);
 	s_scalebox(gr->surface, srfi->width, srfi->height, srfi->vbuf, srfs->width, srfs->height, srfs->vbuf);
@@ -198,11 +196,10 @@ KAFFE_GR_FUNC_DECL(void, Java_java_awt_Toolkit_graDrawImageScaled, jobject nimg,
 	if (s_rect_intersect(&(gr->clip), &coor, &inter) == 0) {
 		s_putboxpart(gr->surface, inter.x, inter.y, inter.w, inter.h, srfs->width, srfs->height, srfs->vbuf, inter.x - coor.x, inter.y - coor.y);
 	}
-	AWT_FREE(vbufs);
-	AWT_FREE(vbufi);
-	AWT_FREE(srfs);
-	AWT_FREE(srfi);
-	DEBUGF("Leave");
+	s_surface_destroy(srfi);
+out1:	s_surface_destroy(srfs);
+out0:	DEBUGF("Leave");
+	return;
 }
 
 KAFFE_GR_FUNC_DECL(void, Java_java_awt_Toolkit_graDraw3DRect, jint x, jint y, jint width, jint height, jboolean raised, jint rgb)

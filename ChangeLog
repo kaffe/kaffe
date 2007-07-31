@@ -1,3 +1,7 @@
+2007-07-31 Alper Akcan <alper@kaffe.org>
+
+	* libraries/clib/awt/xynth/graphic.c: Code update for new GRLib API.
+
 2007-07-22  Kiyo Inaba <inaba@src.ricoh.co.jp>
 
 	* config/arm/jit-arm.def: FP reg numbering fix for jit.
