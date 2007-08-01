@@ -1,3 +1,8 @@
+2007-08-02  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
+	* config/arm/jit.h,
+	config/arm/linux/jit3-md.h: Make arm/jit3 work. Not so fast...
+
 2007-07-31 Alper Akcan <alper@kaffe.org>
 
 	* libraries/clib/awt/xynth/graphic.c: Code update for new GRLib API.

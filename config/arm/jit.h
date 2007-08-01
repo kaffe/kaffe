@@ -136,7 +136,11 @@ extern void arm_do_fixup_trampoline(void);
 /* Register management information. */
 /**/
 
+#if defined(JIT3)
+#define	_GR_	0
+#else
 #define	_GR_	(Rglobal|Rnosaveoncall)
+#endif
 
 /* Define the register set */
 	// slot, ctype, type, flags, used, regno
