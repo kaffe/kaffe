@@ -16,7 +16,7 @@
 # This file is part of Kaffe Virtual Machine, a free software runtime
 # for java applications. See http://www.kaffe.org for details.
 #
-# Parts of this configure script come from the `configure.in' file, and
+# Parts of this configure script come from the `configure.ac' file, and
 # are not based on freely-redistributable m4 macros; you can redistribute
 # them and/or modify them under the terms of the GNU General Public
 # as published by the Free Software Foundation; either version 2, or (at
@@ -1922,7 +1922,7 @@ Portions Copyright by various third parties, see file THIRDPARTY for details.
 This file is part of Kaffe Virtual Machine, a free software runtime
 for java applications. See http://www.kaffe.org for details.
 
-Parts of this configure script come from the `configure.in' file, and
+Parts of this configure script come from the `configure.ac' file, and
 are not based on freely-redistributable m4 macros; you can redistribute
 them and/or modify them under the terms of the GNU General Public
 as published by the Free Software Foundation; either version 2, or (at

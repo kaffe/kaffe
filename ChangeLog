@@ -1,5 +1,10 @@
 2007-08-06  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac: Mention configure.ac in copryght information.
+	(AM_INIT_AUTOMAKE): Require automake 1.10.
+
+2007-08-06  Dalibor Topic  <robilad@kaffe.org>
+
 	* TODO: Removed finished merge tasks, added gcj integration.
 
 2007-08-06  Dalibor Topic  <robilad@kaffe.org>

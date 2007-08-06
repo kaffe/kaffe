@@ -17,7 +17,7 @@ Portions Copyright by various third parties, see file THIRDPARTY for details.
 This file is part of Kaffe Virtual Machine, a free software runtime
 for java applications. See http://www.kaffe.org for details.
 
-Parts of this configure script come from the `configure.in' file, and
+Parts of this configure script come from the `configure.ac' file, and
 are not based on freely-redistributable m4 macros; you can redistribute
 them and/or modify them under the terms of the GNU General Public
 as published by the Free Software Foundation; either version 2, or (at
@@ -33,7 +33,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 ])
 
-AM_INIT_AUTOMAKE([1.9.6 dist-bzip2 dist-zip tar-ustar])
+AM_INIT_AUTOMAKE([1.10 dist-bzip2 dist-zip tar-ustar])
 
 AC_PREFIX_DEFAULT(/usr/local/kaffe)
 
