@@ -47,7 +47,7 @@ while 'I' means 'interpreter'):
             |      |    DG/UX		OpenBSD 2.x	OpenStep 4.x
             |      |    QNX 4.x		NCR MP-RAS 3.x  OSKit 0.96 +
             |      |    GNU Hurd	BeOS		Cygwin
-	    |      |    Darwin          DragonFly BSD
+	    |      |    Darwin          DragonFly BSD   Interix
   ------------------------------------------------------------------------
   MIPS      | J+I  |    Linux           IRIX 5 & 6	NetBSD 1.x
 	    |	   |	Ultrix 4.2      PS2Linux
