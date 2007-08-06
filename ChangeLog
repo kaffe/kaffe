@@ -1,26 +1,39 @@
 2007-08-06  Dalibor Topic  <robilad@kaffe.org>
 
+	Merged in plugin fix for automake 1.10 LDFLAGS issue from GNU Classpath,
+	and regenerated generated files.
+
+	* libraries/javalib/external/classpath/native/plugin/Makefile.am,
+	libraries/javalib/external/classpath/native/plugin/Makefile.in:
+
+	2007-04-16  Dalibor Topic  <robilad at kaffe.org>
+
+	         * native/plugin/Makefile.am (libgcjwebplugin_la_LDFLAGS):
+	         Added AM_LDFLAGS for automake 1.10.
+
+2007-08-06  Dalibor Topic  <robilad@kaffe.org>
+
 	Merged in Mark's fix for automake 1.10 LDFLAGS issue from GNU Classpath,
 	and regenerated generated files. This fixes the GNU Classpath gtk peers.
 
-	* libraries/javalib/external/classpath/aclocal.m4
-	libraries/javalib/external/classpath/autogen.sh
-	libraries/javalib/external/classpath/config.guess
-	libraries/javalib/external/classpath/config.sub
-	libraries/javalib/external/classpath/configure
-	libraries/javalib/external/classpath/configure.ac
-	libraries/javalib/external/classpath/ltmain.sh
-	libraries/javalib/external/classpath/native/jawt/Makefile.am
-	libraries/javalib/external/classpath/native/jawt/Makefile.in
-	libraries/javalib/external/classpath/native/jni/gconf-peer/Makefile.am
-	libraries/javalib/external/classpath/native/jni/gconf-peer/Makefile.in
-	libraries/javalib/external/classpath/native/jni/gtk-peer/Makefile.am
-	libraries/javalib/external/classpath/native/jni/gtk-peer/Makefile.in
-	libraries/javalib/external/classpath/native/jni/midi-alsa/Makefile.am
-	libraries/javalib/external/classpath/native/jni/midi-alsa/Makefile.in
-	libraries/javalib/external/classpath/native/jni/midi-dssi/Makefile.am
-	libraries/javalib/external/classpath/native/jni/midi-dssi/Makefile.in
-	libraries/javalib/external/classpath/native/jni/qt-peer/Makefile.am
+	* libraries/javalib/external/classpath/aclocal.m4,
+	libraries/javalib/external/classpath/autogen.sh,
+	libraries/javalib/external/classpath/config.guess,
+	libraries/javalib/external/classpath/config.sub,
+	libraries/javalib/external/classpath/configure,
+	libraries/javalib/external/classpath/configure.ac,
+	libraries/javalib/external/classpath/ltmain.sh,
+	libraries/javalib/external/classpath/native/jawt/Makefile.am,
+	libraries/javalib/external/classpath/native/jawt/Makefile.in,
+	libraries/javalib/external/classpath/native/jni/gconf-peer/Makefile.am,
+	libraries/javalib/external/classpath/native/jni/gconf-peer/Makefile.in,
+	libraries/javalib/external/classpath/native/jni/gtk-peer/Makefile.am,
+	libraries/javalib/external/classpath/native/jni/gtk-peer/Makefile.in,
+	libraries/javalib/external/classpath/native/jni/midi-alsa/Makefile.am,
+	libraries/javalib/external/classpath/native/jni/midi-alsa/Makefile.in,
+	libraries/javalib/external/classpath/native/jni/midi-dssi/Makefile.am,
+	libraries/javalib/external/classpath/native/jni/midi-dssi/Makefile.in,
+	libraries/javalib/external/classpath/native/jni/qt-peer/Makefile.am,
 	libraries/javalib/external/classpath/native/jni/qt-peer/Makefile.in:
 
 	 2007-04-05  Mark Wielaard  <mark at klomp.org>

@@ -271,7 +271,7 @@ libgcjwebplugin_la_CXXFLAGS = \
 
 libgcjwebplugin_la_LDFLAGS = -avoid-version \
 	$(GLIB_LIBS) $(GTK_LIBS) \
-	-lstdc++
+	-lstdc++ $(AM_LDFLAGS)
 
 all: all-am
 
