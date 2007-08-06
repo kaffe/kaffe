@@ -65,14 +65,14 @@ elif automake --version < /dev/null > /dev/null 2>&1 ; then
 	ACLOCAL=aclocal
 	automake_version=`automake --version | sed 's/^[^0-9]*\([0-9.][0-9.]*\).*/\1/'`
 	case $automake_version in
-	    1.9*)
+	    1.9* | 1.10*)
 		have_automake=true
 		;;
 	esac
 fi
 if $have_automake ; then : ; else
 	echo
-	echo "You must have automake 1.9 installed to compile $PROJECT."
+	echo "You must have automake 1.9 or 1.10 installed to compile $PROJECT."
 	echo "Install the appropriate package for your distribution,"
 	echo "or get the source tarball at http://ftp.gnu.org/gnu/automake/"
 	DIE=1
