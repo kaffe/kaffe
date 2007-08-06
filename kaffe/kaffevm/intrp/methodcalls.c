@@ -28,6 +28,10 @@
 #include "jni_i.h"
 #include "exception.h"
 
+#if defined(HAVE_ALLOCA_H)
+#include <alloca.h>
+#endif
+
 void *
 engine_buildTrampoline (Method *meth, void **where, errorInfo *einfo UNUSED)
 {

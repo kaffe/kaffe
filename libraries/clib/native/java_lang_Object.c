@@ -105,7 +105,16 @@ java_lang_VMObject_wait(struct Hjava_lang_Object* o, jlong timeout, UNUSED jint 
   if(KTHREAD(interrupted)(cur))
     {
       throwException(InterruptedException);
+
     }
+
+#ifndef PRIi64
+#if SIZEOF_LONG == 8
+#define PRIi64	"li"
+#elif SIZEOF_LONG_LONG == 8
+#define PRIi64  "lli"
+#endif
+#endif
 
 DBG(VMTHREAD, dprintf ("%p (%p) waiting for %p, %" PRIi64 "\n",
 			cur, KTHREAD(get_data)(cur)->jlThread,

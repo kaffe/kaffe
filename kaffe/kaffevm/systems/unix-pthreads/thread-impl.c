@@ -1177,12 +1177,20 @@ jthread_destroy (jthread_t cur)
 void 
 jthread_sleep (jlong timeout) 
 {
+#ifdef __INTERIX
+	unsigned int seconds = timeout / 1000;
+	useconds_t   microseconds = (timeout % 1000) * 1000;
+
+	if (0 == sleep(seconds))
+		usleep(microseconds);
+#else
 	struct timespec ts;
 
 	ts.tv_sec  = timeout / 1000;
 	ts.tv_nsec = (timeout % 1000) * 1000000;
 
 	nanosleep (&ts, NULL);
+#endif
 }
 
 /***********************************************************************

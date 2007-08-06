@@ -1,5 +1,26 @@
 2007-08-06  Dalibor Topic  <robilad@kaffe.org>
 
+	Added port to i386-interix6.
+
+	* config/i386/interix6/config.frag,
+	config/i386/interix6/jit-md.h,
+	config/i386/interix6/md.c,
+	config/i386/interix6/md.h:
+	New files.
+
+	* config/config.alias: Added interix.
+	* include/system.h: Define file separators for interix.
+	* kaffe/kaffevm/intrp/methodcalls.c: Only include alloca.h,
+	if it is detected by configure.
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c (jthread_sleep):
+	Interix uses usleep instead of nanosleep.
+	* libraries/clib/native/java_lang_Object.c (PRIi64): Define if not
+	defined before.
+	* libraries/javalib/external/classpath/native/jni/java-nio/javanio.h:
+	Include sys/time.h.
+
+2007-08-06  Dalibor Topic  <robilad@kaffe.org>
+
 	Merged in plugin fix for automake 1.10 LDFLAGS issue from GNU Classpath,
 	and regenerated generated files.
 

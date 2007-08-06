@@ -15,7 +15,7 @@
 #ifndef __system_h
 #define __system_h
 
-#if defined(unix) || defined(__unix__) || defined(__BEOS__) || defined(_AIX) || defined(__NetBSD__) || defined(__APPLE__) || defined(__uclinux__)
+#if defined(unix) || defined(__unix__) || defined(__BEOS__) || defined(_AIX) || defined(__NetBSD__) || defined(__APPLE__) || defined(__uclinux__) || defined(__INTERIX)
 #define	file_separator		"/"
 #define	path_separator		":"
 #define	line_separator		"\n"
