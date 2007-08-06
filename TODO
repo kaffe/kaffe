@@ -3,6 +3,7 @@
  * Merge in vmgenned interpreter from Cacao
  * JIT must support thread concurrency. 
    Variable must be in thread local storage and not globally visible.
+ * Add support for gcj-ed code with BC ABI.
 
 * Architectural changes:
  * Make threading model runtime selectable.
@@ -18,11 +19,8 @@
  * Add support for using an external gjdoc.
 
 * Merging work:
-  * From GNU Classpath:
-    java.util.zip, java.lang.String
   * Update to latest VMProcess interface (needs K* cleanup instead of using 
   POSIX functions directly)
-  * gcjwebplugin
   * verifier from gcj (rob gonzalez)
 
 * Build system: (dalibor)
