@@ -1,3 +1,7 @@
+2007-08-08  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
+	* RELEASE-NOTES, TODO: Include status for arm, m68k.
+
 2007-08-07  Dalibor Topic  <robilad@kaffe.org>
 
 	* configure.ac: Abort if headers or libary required for 
