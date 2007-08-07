@@ -25,8 +25,9 @@
 #include "md.h"
 #include "gc-refs.h"
 #include "java_lang_Thread.h"
-#include "boehm/include/gc.h"
 #include "gc2.h"
+
+#include <gc/gc.h>
 
 #define	REFOBJHASHSZ	128
 typedef struct _strongRefObject {
@@ -80,7 +81,7 @@ KaffeGC_addRef(Collector *collector UNUSED, const void* mem)
   }
 
   /* Not found - create a new one */
-  obj = (strongRefObject*)GC_malloc_uncollectable(sizeof(strongRefObject));
+  obj = (strongRefObject*)GC_MALLOC_UNCOLLECTABLE(sizeof(strongRefObject));
   if (!obj)
     return false;
 	
@@ -120,7 +121,7 @@ resizeWeakReferenceObject(Collector *collector, weakRefObject *obj, unsigned int
     {
       previousSize = obj->allRefSize;
       unlockStaticMutex(&weakRefLock);
-      refs = GC_malloc_uncollectable(size * sizeof(void **));
+      refs = GC_MALLOC_UNCOLLECTABLE(size * sizeof(void **));
       lockStaticMutex(&weakRefLock);
       if (refs == NULL)
 	{
@@ -132,7 +133,7 @@ resizeWeakReferenceObject(Collector *collector, weakRefObject *obj, unsigned int
       if (previousSize != obj->allRefSize)
 	{
 	  unlockStaticMutex(&weakRefLock);
-	  GC_free(refs);
+	  GC_FREE(refs);
 	  lockStaticMutex(&weakRefLock);
 	  continue;
 	}
@@ -146,7 +147,7 @@ resizeWeakReferenceObject(Collector *collector, weakRefObject *obj, unsigned int
 	  memcpy(refs, oldRefs, sizeof(void **) * obj->ref);
       
 	  unlockStaticMutex(&weakRefLock);
-	  GC_free(oldRefs);
+	  GC_FREE(oldRefs);
 	  lockStaticMutex(&weakRefLock);
 	}
 
@@ -178,7 +179,7 @@ KaffeGC_rmRef(Collector *collector UNUSED, void* mem)
       obj->ref--;
       if (obj->ref == 0) {
 	*objp = obj->next;
-	GC_free(obj);
+	GC_FREE(obj);
       }
       unlockStaticMutex(&strongRefLock);
       return true;
@@ -219,7 +220,7 @@ KaffeGC_addWeakRef(Collector *collector, void* mem, void** refobj)
   }
 
   /* Not found - create a new one */
-  obj = (weakRefObject*)GC_malloc_atomic_uncollectable(sizeof(weakRefObject));
+  obj = (weakRefObject*)GC_MALLOC_UNCOLLECTABLE(sizeof(weakRefObject));
   if (obj == NULL)
     {
       unlockStaticMutex(&weakRefLock);
@@ -229,7 +230,7 @@ KaffeGC_addWeakRef(Collector *collector, void* mem, void** refobj)
   obj->mem = mem;
   obj->ref = 1;
   unlockStaticMutex(&weakRefLock);
-  obj->allRefs = (void ***)GC_malloc_uncollectable(sizeof(void ***));
+  obj->allRefs = (void ***)GC_MALLOC_UNCOLLECTABLE(sizeof(void ***));
   lockStaticMutex(&weakRefLock);
   obj->allRefs[0] = refobj;
   obj->next = weakRefObjects.hash[idx];
@@ -278,8 +279,8 @@ KaffeGC_rmWeakRef(Collector *collector UNUSED, void* mem, void** refobj)
 	  
 	  unlockStaticMutex(&weakRefLock);
 	  if (obj->allRefs != NULL)
-	    GC_free(obj->allRefs);
-	  GC_free(obj);
+	    GC_FREE(obj->allRefs);
+	  GC_FREE(obj);
 	  lockStaticMutex(&weakRefLock);
 	}
 	unlockStaticMutex(&weakRefLock);
@@ -323,7 +324,7 @@ KaffeGC_clearWeakRef(Collector *collector UNUSED, void* mem)
 
 	  if (obj->allRefs != NULL)
 	    {
-	      GC_free(obj->allRefs);
+	      GC_FREE(obj->allRefs);
 	      obj->allRefs = NULL;
 	    }
 
@@ -334,7 +335,7 @@ KaffeGC_clearWeakRef(Collector *collector UNUSED, void* mem)
 	  obj->next = NULL;
 	  obj->destroyed = true;
 	  if (obj->keep_object == 0)
-	    GC_free(obj);
+	    GC_FREE(obj);
 	  
 	  unlockStaticMutex(&weakRefLock);
 	  return;

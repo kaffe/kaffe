@@ -25,7 +25,7 @@
 #include "kaffe/jmalloc.h"
 #include "lerrno.h"
 #ifdef KAFFE_BOEHM_GC
-#include "boehm-gc/boehm/include/gc.h"
+#include <gc/gc.h>
 #endif
 
 #if defined(INTERPRETER)

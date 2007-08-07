@@ -17,7 +17,7 @@
 /* For NOTIMEOUT */
 #include "jsyscall.h"
 #ifdef KAFFE_BOEHM_GC
-#include "boehm-gc/boehm/include/gc.h"
+#include <gc/gc.h>
 #endif
 #include <signal.h>
 

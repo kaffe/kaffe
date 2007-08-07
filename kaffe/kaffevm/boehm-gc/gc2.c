@@ -22,8 +22,6 @@
 #include "classMethod.h"
 #include "locks.h"
 #include "errors.h"
-#include "boehm/include/gc.h"
-#include "boehm/include/gc_mark.h"
 #include "gtypes.h"
 #include "java_lang_Thread.h"
 #include "debug.h"
@@ -32,6 +30,9 @@
 #include "gc-kaffe.h"
 #include "gc2.h"
 #include "jvmpi_kaffe.h"
+
+#include <gc/gc.h>
+#include <gc/gc_mark.h>
 
 /*
  * This record describes an allocation type.
@@ -299,7 +300,7 @@ KaffeGC_realloc(Collector *gcif, void* mem, size_t sz, gc_alloc_type_t type)
 
   assert(sz > 0);
   
-  new_ptr = GC_realloc ( ALIGN_BACKWARD(mem), (size_t)SYSTEM_SIZE(sz));
+  new_ptr = GC_REALLOC ( ALIGN_BACKWARD(mem), (size_t)SYSTEM_SIZE(sz));
   if (new_ptr) {
     MemDescriptor *desc = (MemDescriptor *)new_ptr;
     
@@ -326,7 +327,7 @@ KaffeGC_free(Collector *gcif UNUSED, void* mem)
     return;
 
   assert(desc->magic == MAGIC_GC);
-  GC_free(desc);
+  GC_FREE(desc);
 }
 
 static void*
@@ -345,12 +346,7 @@ KaffeGC_malloc(Collector *gcif UNUSED, size_t sz, gc_alloc_type_t type)
   desc.needFinal = true;
   // Allocate memory
   if (gcFunctions[type].final == KGC_OBJECT_FIXED)
-    {
-      if (type == KGC_ALLOC_THREADCTX)
-	mem = GC_malloc_uncollectable(SYSTEM_SIZE(sz));
-      else
-	mem = GC_malloc_atomic_uncollectable(SYSTEM_SIZE(sz));
-    }
+    mem = GC_MALLOC_UNCOLLECTABLE(SYSTEM_SIZE(sz));
   else
     mem = GC_kaffe_malloc(SYSTEM_SIZE(sz));
 
@@ -395,6 +391,7 @@ static void*
 KaffeGC_GetObjectBase(Collector *gcif UNUSED, void* mem)
 {
   void *ptr;
+  MemDescriptor *desc;
 
   if (mem == NULL)
     return NULL;
@@ -403,10 +400,13 @@ KaffeGC_GetObjectBase(Collector *gcif UNUSED, void* mem)
   if (ptr == NULL)
     return NULL;
 
+  desc = (MemDescriptor *) ptr;
+  assert(desc->magic == MAGIC_GC);
+
   return ALIGN_FORWARD(ptr);
 }
 
-static int 
+static gc_alloc_type_t
 KaffeGC_GetObjectIndex(Collector *gcif UNUSED, const void *mem)
 {
   MemDescriptor *desc = (MemDescriptor *)GC_base((void *)(uintp)mem);
@@ -414,6 +414,7 @@ KaffeGC_GetObjectIndex(Collector *gcif UNUSED, const void *mem)
   if (desc != NULL)
   {
     assert(desc->magic == MAGIC_GC);
+    assert(desc->memtype < KGC_ALLOC_MAX_INDEX);
     return desc->memtype;
   }
   else
@@ -423,12 +424,9 @@ KaffeGC_GetObjectIndex(Collector *gcif UNUSED, const void *mem)
 static const char*
 KaffeGC_GetObjectDescription(Collector* gcif, const void* mem)
 {
-  int idx = KaffeGC_GetObjectIndex(gcif, mem);
+  gc_alloc_type_t idx = KaffeGC_GetObjectIndex(gcif, mem);
 
-  if (idx >= 0)
-    return gcFunctions[idx].description;
-  else
-    return NULL;
+  return gcFunctions[idx].description;
 }
 
 static Hjava_lang_Throwable *
@@ -525,21 +523,28 @@ DBG(GCDIAG,
 static void
 KaffeGC_Init(Collector *collector UNUSED)
 {
+  /* Current heap size of the garbage collector. */
+  size_t heap_size;
+
+  /* Initialize the Boehm garbage collector. */
   GC_all_interior_pointers = 0;
   GC_finalizer_notifier = KaffeGC_SignalFinalizer;
   GC_java_finalization = 1;
   GC_finalize_on_demand = 1;
+  GC_INIT();
   GC_set_warn_proc(KaffeGC_warnproc);
-  GC_init();
-  if (Kaffe_JavaVMArgs.maxHeapSize == UNLIMITED_HEAP)
-    GC_set_max_heap_size(0);
-  else
-    GC_set_max_heap_size((size_t)Kaffe_JavaVMArgs.maxHeapSize);
+
+  /* Set the maximal heap size according to jvm arguments.
+   * Boehm garbage collector uses an unlimited heap by default. */
+  if (Kaffe_JavaVMArgs.maxHeapSize != UNLIMITED_HEAP)
+    GC_set_max_heap_size((GC_word)Kaffe_JavaVMArgs.maxHeapSize);
 
   KGC_max_heap_size = Kaffe_JavaVMArgs.maxHeapSize;
 
-  if (GC_get_heap_size() < (size_t)Kaffe_JavaVMArgs.minHeapSize)
-    GC_expand_hp( Kaffe_JavaVMArgs.minHeapSize - GC_get_heap_size());
+  /* Set the minimal heap size according to jvm arguments. */
+  heap_size = GC_get_heap_size();
+  if (heap_size < (size_t)Kaffe_JavaVMArgs.minHeapSize)
+    GC_expand_hp( Kaffe_JavaVMArgs.minHeapSize - heap_size);
 
   GC_kaffe_init(onObjectMarking);
 }

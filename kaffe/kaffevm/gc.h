@@ -135,7 +135,7 @@ struct GarbageCollectorInterface_Ops {
 	void	(*markObject)(Collector *, void *gc_info, const void* obj);
 	uint32	(*getObjectSize)(Collector *, const void* obj);
 	const char* (*getObjectDescription)(Collector *, const void* obj);
-	int	(*getObjectIndex)(Collector *, const void* obj);
+	gc_alloc_type_t	(*getObjectIndex)(Collector *, const void* obj);
 	void*	(*getObjectBase)(Collector *, void* obj);
 
 	void	(*registerFixedTypeByIndex)(Collector *, 

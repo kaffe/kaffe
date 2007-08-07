@@ -996,8 +996,6 @@ LIBADD_GMP
 USE_GMP
 SECURITY_LIBS
 GC_NAME
-subdirs
-BOEHMGC_SPECIFIC_FLAGS
 HAVE_GCJ_SUPPORT_TRUE
 HAVE_GCJ_SUPPORT_FALSE
 USE_COMPAT_IFADDRS_TRUE
@@ -1074,6 +1072,7 @@ kaffebin_TRANSF
 CFLAGS_WITHOUT_PG
 KAFFE_CFLAGS
 KAFFE_CCASFLAGS
+subdirs
 LTLIBOBJS'
 ac_subst_files='cpu_os_frag
 cpu_frag
@@ -1098,8 +1097,7 @@ CXXCPP
 F77
 FFLAGS
 XMKMF'
-ac_subdirs_all='kaffe/kaffevm/boehm-gc/boehm
-libraries/javalib/external/classpath
+ac_subdirs_all='libraries/javalib/external/classpath
 libltdl'
 
 # Initialize some variables set by options.
@@ -1714,9 +1712,6 @@ Optional Features:
                           default=yes
   --enable-plugin         compile gcjwebplugin (disabled by --disable-plugin)
                           default=yes
-  --disable-boehm-gc-configuration
-                          Don't run boehm-gc configure script. Boehm gc does
-                          not work on all platforms. Default is to run it.
   --enable-gcj            Enable GCJ support
   --disable-mips2         Disable MIPS II instructions
   --enable-xscale         Enable XScale support
@@ -2231,6 +2226,7 @@ ac_header_list="$ac_header_list dlfcn.h"
 ac_header_list="$ac_header_list fcntl.h"
 ac_header_list="$ac_header_list features.h"
 ac_header_list="$ac_header_list gmp.h"
+ac_header_list="$ac_header_list gc/gc.h"
 ac_header_list="$ac_header_list iconv.h"
 ac_header_list="$ac_header_list jpeglib.h"
 ac_header_list="$ac_header_list kernel/OS.h"
@@ -7177,7 +7173,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 7180 "configure"' > conftest.$ac_ext
+  echo '#line 7176 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -9730,11 +9726,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9733: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9729: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9737: \$? = $ac_status" >&5
+   echo "$as_me:9733: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9998,11 +9994,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:10001: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9997: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:10005: \$? = $ac_status" >&5
+   echo "$as_me:10001: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -10102,11 +10098,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:10105: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:10101: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:10109: \$? = $ac_status" >&5
+   echo "$as_me:10105: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -12410,7 +12406,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12413 "configure"
+#line 12409 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12510,7 +12506,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12513 "configure"
+#line 12509 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -14850,11 +14846,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14853: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14849: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:14857: \$? = $ac_status" >&5
+   echo "$as_me:14853: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -14954,11 +14950,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14957: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14953: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:14961: \$? = $ac_status" >&5
+   echo "$as_me:14957: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -16524,11 +16520,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16527: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16523: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:16531: \$? = $ac_status" >&5
+   echo "$as_me:16527: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -16628,11 +16624,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16631: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16627: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:16635: \$? = $ac_status" >&5
+   echo "$as_me:16631: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -18830,11 +18826,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18833: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18829: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:18837: \$? = $ac_status" >&5
+   echo "$as_me:18833: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -19098,11 +19094,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:19101: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:19097: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:19105: \$? = $ac_status" >&5
+   echo "$as_me:19101: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -19202,11 +19198,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:19205: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:19201: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:19209: \$? = $ac_status" >&5
+   echo "$as_me:19205: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -25822,6 +25818,22 @@ if test "${with_gc+set}" = set; then
 fi
 
 
+
+if test x$GC_NAME = xboehm-gc ; then
+   if test x"$with_threads" != x"unix-pthreads"; then
+      { { echo "$as_me:$LINENO: error: BoehmGC only supports unix-pthreads threads. Please switch to unix-pthreads using --with-threads=unix-pthreads or use the standard kaffe's gc." >&5
+echo "$as_me: error: BoehmGC only supports unix-pthreads threads. Please switch to unix-pthreads using --with-threads=unix-pthreads or use the standard kaffe's gc." >&2;}
+   { (exit 1); exit 1; }; }
+   fi
+
+
+cat >>confdefs.h <<\_ACEOF
+#define KAFFE_BOEHM_GC 1
+_ACEOF
+
+fi
+
+
 # Check whether --enable-portable-native-sync was given.
 if test "${enable_portable_native_sync+set}" = set; then
   enableval=$enable_portable_native_sync; case "${enableval}" in
@@ -30171,6 +30183,82 @@ LIBS="$KSAVE_LIBS"
 ;;
 esac
 
+KSAVE_LIBS="$LIBS"
+LIBS="$VM_LIBS $KSAVE_LIBS"
+
+{ echo "$as_me:$LINENO: checking for GC_free in -lgc" >&5
+echo $ECHO_N "checking for GC_free in -lgc... $ECHO_C" >&6; }
+if test "${ac_cv_lib_gc_GC_free+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lgc  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char GC_free ();
+int
+main ()
+{
+return GC_free ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_c_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext &&
+       $as_test_x conftest$ac_exeext; then
+  ac_cv_lib_gc_GC_free=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_cv_lib_gc_GC_free=no
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ echo "$as_me:$LINENO: result: $ac_cv_lib_gc_GC_free" >&5
+echo "${ECHO_T}$ac_cv_lib_gc_GC_free" >&6; }
+if test $ac_cv_lib_gc_GC_free = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBGC 1
+_ACEOF
+
+  LIBS="-lgc $LIBS"
+
+fi
+
+VM_LIBS=`echo "$LIBS" | sed "s% $KSAVE_LIBS$%%"`
+LIBS="$KSAVE_LIBS"
+
 
 
 
@@ -31193,6 +31281,10 @@ _ACEOF
 fi
 
 done
+
+
+
+
 
 
 
@@ -33713,66 +33805,6 @@ if test x"${GC_NAME+set}" != x"set" ; then
 fi
 
 gc_frag=$srcdir/kaffe/kaffevm/$GC_NAME/Makefile.frag
-
-
-
-if test x"${GC_NAME}" = x"boehm-gc"; then
-	if test x"$with_threads" != x"unix-pthreads"; then
-		{ { echo "$as_me:$LINENO: error: BoehmGC only supports unix-pthreads threads. Please switch to unix-pthreads using --with-threads=unix-pthreads or use the standard kaffe's gc." >&5
-echo "$as_me: error: BoehmGC only supports unix-pthreads threads. Please switch to unix-pthreads using --with-threads=unix-pthreads or use the standard kaffe's gc." >&2;}
-   { (exit 1); exit 1; }; }
-	fi
-
-	BOEHMGC_SPECIFIC_FLAGS="-DSILENT -DATOMIC_UNCOLLECTABLE -DGC_GCJ_SUPPORT -DALL_INTERIOR_POINTERS"
-
-	if test x"${Khost_cpu+set}" = "xi686"; then
-		BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DUSE_I686_PREFETCH"
-	fi
-
-	case "$Khost_os" in
-		solaris*)
-			BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_SOLARIS_THREADS -DGC_SOLARIS_PTHREADS"
-			;;
-		irix*)
-			BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_IRIX_THREADS"
-			;;
-		hpux*)
-			BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_HPUX_THREADS"
-			;;
-		linux*)
-			if test "$ac_cv_c_compile_value_glibc" -le "2"; then
-			   BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_LINUX_THREADS"
-			   if test "$Khost_cpu" = "i386"; then
-			     BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DTHREAD_LOCAL_ALLOC"
-			   fi
-			fi
-			;;
-		darwin*)
-			BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DGC_DARWIN_THREADS"
-			BOEHMGC_SPECIFIC_FLAGS="$BOEHMGC_SPECIFIC_FLAGS -DTHREAD_LOCAL_ALLOC"
-			;;
-		*)
-			{ { echo "$as_me:$LINENO: error: Threads support for $Khost_os unavailable in the boehm-gc. Please use the standard kaffe's gc." >&5
-echo "$as_me: error: Threads support for $Khost_os unavailable in the boehm-gc. Please use the standard kaffe's gc." >&2;}
-   { (exit 1); exit 1; }; }
-	esac
-
-	ac_configure_args="$ac_configure_args --enable-libgc-convenience"
-fi
-
-# Check whether --enable-boehm-gc-configuration was given.
-if test "${enable_boehm_gc_configuration+set}" = set; then
-  enableval=$enable_boehm_gc_configuration;
-else
-  enable_boehm_gc_configuration=yes
-fi
-
-
-if test x"$enable_boehm_gc_configuration" = x"yes" ; then
-  subdirs="$subdirs kaffe/kaffevm/boehm-gc/boehm"
-
-fi
-
 
 
 { echo "$as_me:$LINENO: result: $GC_NAME" >&5
@@ -49734,8 +49766,6 @@ LIBADD_GMP!$LIBADD_GMP$ac_delim
 USE_GMP!$USE_GMP$ac_delim
 SECURITY_LIBS!$SECURITY_LIBS$ac_delim
 GC_NAME!$GC_NAME$ac_delim
-subdirs!$subdirs$ac_delim
-BOEHMGC_SPECIFIC_FLAGS!$BOEHMGC_SPECIFIC_FLAGS$ac_delim
 HAVE_GCJ_SUPPORT_TRUE!$HAVE_GCJ_SUPPORT_TRUE$ac_delim
 HAVE_GCJ_SUPPORT_FALSE!$HAVE_GCJ_SUPPORT_FALSE$ac_delim
 USE_COMPAT_IFADDRS_TRUE!$USE_COMPAT_IFADDRS_TRUE$ac_delim
@@ -49809,6 +49839,8 @@ DIRSEP!$DIRSEP$ac_delim
 kaffe_TRANSF!$kaffe_TRANSF$ac_delim
 kaffeh_TRANSF!$kaffeh_TRANSF$ac_delim
 kaffebin_TRANSF!$kaffebin_TRANSF$ac_delim
+CFLAGS_WITHOUT_PG!$CFLAGS_WITHOUT_PG$ac_delim
+KAFFE_CFLAGS!$KAFFE_CFLAGS$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -49850,13 +49882,12 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
-CFLAGS_WITHOUT_PG!$CFLAGS_WITHOUT_PG$ac_delim
-KAFFE_CFLAGS!$KAFFE_CFLAGS$ac_delim
 KAFFE_CCASFLAGS!$KAFFE_CCASFLAGS$ac_delim
+subdirs!$subdirs$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 4; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 3; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5

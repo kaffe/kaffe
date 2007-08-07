@@ -44,8 +44,7 @@
 #include "gc.h"
 #include "thread.h"
 #ifdef KAFFE_BOEHM_GC
-#include "boehm-gc/boehm/include/gc.h"
-#include "boehm-gc/boehm/include/private/gc_priv.h"
+#include <gc/gc.h>
 #endif
 
 /* define __USE_GNU for pthread_yield on linux */
@@ -1463,7 +1462,7 @@ jthread_suspendall (void)
 	 * Here, we must use the special Boehm's stop world routine.
 	 * However we continue to update our own thread state flag.
 	 */
-	GC_stop_world();
+	GC_disable();
 
 	for ( t=activeThreads; t; t = t->next ) {
 	  if ( (t != cur) && (t->suspendState == 0) && (t->active) ) {
@@ -1544,7 +1543,7 @@ jthread_unsuspendall (void)
 	  }
 	}
 
-	GC_start_world();
+	GC_enable();
 
 #endif
 	repsem_getvalue(&critSem, &val);

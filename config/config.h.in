@@ -166,6 +166,9 @@
 /* Enable GCJ support. */
 #undef HAVE_GCJ_SUPPORT
 
+/* Define to 1 if you have the <gc/gc.h> header file. */
+#undef HAVE_GC_GC_H
+
 /* Define to 1 if you have the `getaddrinfo' function. */
 #undef HAVE_GETADDRINFO
 
@@ -299,6 +302,9 @@
 
 /* Define to 1 if you have the `ffi' library (-lffi). */
 #undef HAVE_LIBFFI
+
+/* Define to 1 if you have the `gc' library (-lgc). */
+#undef HAVE_LIBGC
 
 /* Define to 1 if you have the `gcc' library (-lgcc). */
 #undef HAVE_LIBGCC
@@ -786,6 +792,9 @@
 
 /* additional directories to search for native jni libraries */
 #undef JNI_LIBRARY_PATH
+
+/* Defined if we are using the Boehm-Weiser garbage collector */
+#undef KAFFE_BOEHM_GC
 
 /* Defined on NetBSD because sigwait needs the handle not to be registered */
 #undef KAFFE_BUGGY_NETBSD_SIGWAIT

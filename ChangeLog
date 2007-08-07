@@ -1,3 +1,64 @@
+2007-08-07  Dalibor Topic  <robilad@kaffe.org>
+
+	Fixed boehm gc to no longer fail most tests. Adapted code
+	to use a system wide install of the library.
+
+	* configure.ac (KAFFE_BOEHM_GC): Define when using boehm-gc.
+	Check for gc library. Check for gc/gc.h header. Removed
+	boehm gc configuration option. Removed boehm gc settings block.
+	Removed BOEHMGC_SPECIFIC_FLAGS.
+
+	* kaffe/kaffevm/gc.h (GarbageCollectorInterface_Ops): Set
+	return value of getObjectIndex to gc_alloc_type_t.
+
+	* kaffe/kaffevm/boehm-gc/Makefile.am (SUBDIRS): Don't 
+	recurse into boehm subdirectory. 
+	(AM_CPPFLAGS) Removed BOEHMGC_SPECIFIC_FLAGS.
+	(libkaffegc_la_LIBADD) Removed, use system install instead.
+
+	* kaffe/kaffevm/boehm-gc/gc-kaffe.c: Cleaned up include files to
+	use system installation. Added missing standard headers.
+	(maybe_finalize, GC_kaffe_malloc) Rewritten to use exported boehm APIs.
+	(GENERAL_MALLOC) Removed.
+	(GC_kaffe_init) Use numerical constants per boehm API spec, 
+	rather than TRUE or FALSE.
+
+	* kaffe/kaffevm/boehm-gc/gc-kaffe.h: Include system header for gc_mark.h.
+
+	* kaffe/kaffevm/boehm-gc/gc-refs.c: Include system header for gc.h.
+	(KaffeGC_addRef, resizeWeakReferenceObject, KaffeGC_rmRef, KaffeGC_addWeakRef, 
+	KaffeGC_rmWeakRef, KaffeGC_clearWeakRef) Use GC_MALLOC_UNCOLLECTABLE and 
+	GC_FREE rather than lower case variants for debuggability.
+
+	* kaffe/kaffevm/boehm-gc/gc2.c: Include system header for gc.h and gc_mark.h.
+	(KaffeGC_realloc, KaffeGC_free, KaffeGC_malloc)
+	Use GC_REALLOC, GC_FREE and GC_MALLOC_UNCOLLECTABLE rather than lower case 
+	variants for debuggability.
+	(KaffeGC_malloc) Don't use GC_malloc_atomic_uncollectable, as it's only available 
+	conditionally.
+	(KaffeGC_GetObjectBase) Added assert.
+	(KaffeGC_GetObjectIndex) Changed prototype to return gc_alloc_type_t.
+	Added assert.
+	(KaffeGC_GetObjectDescription) Changed type if idx to gc_alloc_type_t, and 
+	simplified.
+	(KaffeGC_Init) Added comments. Use GC_INIT rather than explicitly calling 
+	GC_init. Fixed boehm gc initialization order. Removed unnecessary setting of 
+	heap size to its default unlimited value. Simplified code for setting the
+	minimal heap size.
+
+	* kaffe/kaffevm/boehm-gc/gc2.h: Include system header for gc.h and gc_mark.h.
+	(MemDescriptor) Changed type of memtype to gc_alloc_type_t.
+
+	* kaffe/kaffevm/systems/unix-pthreads/lock-impl.c,
+	kaffe/kaffevm/systems/unix-pthreads/signal.c,
+	kaffe/kaffevm/systems/unix-pthreads/thread-impl.c:
+	Include system header for gc.h.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c (jthread_suspendall):
+	Use GC_disable instead of GC_stop_world and hope for the best.
+	(jthread_unsuspendall) Use GC_enable instead of GC_start_world and hope
+	for the best.
+
 2007-08-06  Dalibor Topic  <robilad@kaffe.org>
 
 	* configure.ac: Mention configure.ac in copryght information.

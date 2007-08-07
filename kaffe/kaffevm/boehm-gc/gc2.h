@@ -14,8 +14,9 @@
 #define _KAFFE_BOEHM_GC_H
 
 #include "defs.h"
-#include "boehm/include/gc.h"
-#include "boehm/include/gc_mark.h"
+
+#include <gc/gc.h>
+#include <gc/gc_mark.h>
 
 typedef struct _gcMark {
   struct GC_ms_entry *mark_current;
@@ -25,7 +26,7 @@ typedef struct _gcMark {
 
 typedef struct {
   uint32 magic;
-  uint8 memtype;
+  gc_alloc_type_t memtype;
   uint8 needFinal;
   size_t memsize;
 } MemDescriptor;

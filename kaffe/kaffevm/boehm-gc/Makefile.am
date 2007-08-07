@@ -8,8 +8,6 @@
 
 AM_CFLAGS= $(KAFFE_CFLAGS)
 
-SUBDIRS= boehm
-
 AM_CPPFLAGS = \
         -I$(top_srcdir)/include \
         -I$(top_builddir)/config \
@@ -18,10 +16,9 @@ AM_CPPFLAGS = \
 	-I$(top_builddir)/include \
 	-I$(top_srcdir)/kaffe/kaffevm \
 	-I$(top_srcdir)/kaffe/jvmpi \
-	-I$(top_srcdir)/kaffe/kaffevm/boehm-gc/boehm/include \
         -I$(top_srcdir)/config/$(Khost_cpu) \
-        -I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os) \
-	$(BOEHMGC_SPECIFIC_FLAGS)
+        -I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os)
+
 
 native_LTLIBRARIES = libkaffegc.la
 
@@ -29,9 +26,6 @@ libkaffegc_la_LDFLAGS = \
 	$(KVMLIBFLAGS) \
 	-export-dynamic \
 	-release $(PACKAGE_VERSION)
-
-libkaffegc_la_LIBADD= \
-	boehm/libgc.la
 
 libkaffegc_la_SOURCES= \
 	gc2.c \
