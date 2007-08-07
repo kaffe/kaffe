@@ -1,5 +1,10 @@
 2007-08-07  Dalibor Topic  <robilad@kaffe.org>
 
+	* THIRDPARTY: Removed fastjar, zip, boehm gc. Updated information on
+	GNU Classpath.
+
+2007-08-07  Dalibor Topic  <robilad@kaffe.org>
+
 	* FAQ/FAQ.automake, developers/autogen.sh: Updated to libtool 1.5.24.
 
 	* configure,
