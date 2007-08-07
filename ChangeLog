@@ -1,5 +1,10 @@
 2007-08-07  Dalibor Topic  <robilad@kaffe.org>
 
+	* WHATSNEW: Mention that kaffe's copy of boehm gc
+	was removed.
+
+2007-08-07  Dalibor Topic  <robilad@kaffe.org>
+
 	Removed kaffe's copy of Boehm-Weiser garbage collector.
 
 	* kaffe/kaffevm/boehm-gc/boehm/.cvsignore,
