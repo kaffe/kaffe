@@ -39,7 +39,7 @@ TRAMPOLINE_FUNCTION()
         popl	%eax
 	push	%ebp
 	mov	%esp,%ebp
-#if defined(PIC)
+#if defined(PIC) && !defined(__CYGWIN__)
 	pushl	%ebx
 	call	.L2
      .L2:
