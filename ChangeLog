@@ -1,5 +1,55 @@
 2007-08-07  Dalibor Topic  <robilad@kaffe.org>
 
+	* FAQ/FAQ.automake, developers/autogen.sh: Updated to libtool 1.5.24.
+
+	* configure,
+	libltdl/Makefile.am,
+	libltdl/Makefile.in,
+	libltdl/acinclude.m4,
+	libltdl/configure,
+	libltdl/ltdl.c,
+	libltdl/ltdl.h,
+	libltdl/ltmain.sh,
+	libraries/javalib/external/classpath/Makefile.in,
+	libraries/javalib/external/classpath/aclocal.m4,
+	libraries/javalib/external/classpath/configure,
+	libraries/javalib/external/classpath/ltmain.sh,
+	libraries/javalib/external/classpath/doc/Makefile.in,
+	libraries/javalib/external/classpath/doc/api/Makefile.in,
+	libraries/javalib/external/classpath/examples/Makefile.in,
+	libraries/javalib/external/classpath/external/Makefile.in,
+	libraries/javalib/external/classpath/external/relaxngDatatype/Makefile.in,
+	libraries/javalib/external/classpath/external/sax/Makefile.in,
+	libraries/javalib/external/classpath/external/w3c_dom/Makefile.in,
+	libraries/javalib/external/classpath/include/Makefile.in,
+	libraries/javalib/external/classpath/lib/Makefile.in,
+	libraries/javalib/external/classpath/native/Makefile.in,
+	libraries/javalib/external/classpath/native/fdlibm/Makefile.in,
+	libraries/javalib/external/classpath/native/jawt/Makefile.in,
+	libraries/javalib/external/classpath/native/jni/Makefile.in,
+	libraries/javalib/external/classpath/native/jni/classpath/Makefile.in,
+	libraries/javalib/external/classpath/native/jni/gconf-peer/Makefile.in,
+	libraries/javalib/external/classpath/native/jni/gtk-peer/Makefile.in,
+	libraries/javalib/external/classpath/native/jni/java-io/Makefile.in,
+	libraries/javalib/external/classpath/native/jni/java-lang/Makefile.in,
+	libraries/javalib/external/classpath/native/jni/java-net/Makefile.in,
+	libraries/javalib/external/classpath/native/jni/java-nio/Makefile.in,
+	libraries/javalib/external/classpath/native/jni/java-util/Makefile.in,
+	libraries/javalib/external/classpath/native/jni/midi-alsa/Makefile.in,
+	libraries/javalib/external/classpath/native/jni/midi-dssi/Makefile.in,
+	libraries/javalib/external/classpath/native/jni/native-lib/Makefile.in,
+	libraries/javalib/external/classpath/native/jni/qt-peer/Makefile.in,
+	libraries/javalib/external/classpath/native/jni/xmlj/Makefile.in,
+	libraries/javalib/external/classpath/native/plugin/Makefile.in,
+	libraries/javalib/external/classpath/resource/Makefile.in,
+	libraries/javalib/external/classpath/scripts/Makefile.in,
+	libraries/javalib/external/classpath/tools/Makefile.in,
+	m4/libtool.m4,
+	scripts/ltmain.sh:
+	Regenerated.
+
+2007-08-07  Dalibor Topic  <robilad@kaffe.org>
+
 	* WHATSNEW: Mention that kaffe's copy of boehm gc
 	was removed.
 

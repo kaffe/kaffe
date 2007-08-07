@@ -18,7 +18,7 @@ if [ "$1" != "--override" ]; then
 
 WANTED_AUTOMAKE_VERS="1.10"
 WANTED_AUTOCONF_VERS="2.61"
-WANTED_LIBTOOL_VERS="1.5.22"
+WANTED_LIBTOOL_VERS="1.5.24"
 WANTED_AUTOPOINT_VERS="0.16.1"
 
 ACLOCAL_VERS=`aclocal --version | 
@@ -111,7 +111,6 @@ find . -type f -name 'Makefile.in' | xargs rm -f
 libtoolize --automake --ltdl --copy --force
 # add some libtool patches if necessary here
 cp libltdl/acinclude.m4 m4/libtool.m4
-cp libltdl/acinclude.m4 kaffe/kaffevm/boehm-gc/boehm/libtool.m4
 
 # gettextize kaffe
 # commented out due to bugs in gettextize
