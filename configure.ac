@@ -720,27 +720,6 @@ fi
 
 AC_SUBST(VM_LIBS)
 
-dnl =========================================================================
-dnl Select the right garbage collector.
-dnl -------------------------------------------------------------------------
-
-
-AC_ARG_WITH([gc],
-	    AS_HELP_STRING([--with-gc=GC],
-			   [Force use given execution engine (kaffe-gc or boehm-gc)]),
-	    [ GC_NAME="$withval" ]
-)
-
-
-if test x$GC_NAME = xboehm-gc ; then
-   if test x"$with_threads" != x"unix-pthreads"; then
-      AC_MSG_ERROR(BoehmGC only supports unix-pthreads threads. Please switch to unix-pthreads using --with-threads=unix-pthreads or use the standard kaffe's gc.)
-   fi
-
-   AC_DEFINE([KAFFE_BOEHM_GC], 1, [Defined if we are using the Boehm-Weiser garbage collector])
-fi
-
-
 dnl -----------------------------------------------------------
 dnl This sets the build-time default, which can now be overridden
 dnl by setting the system property gnu.classpath.awt.gtk.portable.native.sync
@@ -1312,6 +1291,29 @@ gl_SIZE_MAX
 dnl =========================================================================
 dnl Select GC to use
 dnl -------------------------------------------------------------------------
+
+AC_ARG_WITH([gc],
+	    AS_HELP_STRING([--with-gc=GC],
+			   [Force use given execution engine (kaffe-gc or boehm-gc)]),
+	    [ GC_NAME="$withval" ]
+)
+
+
+if test x$GC_NAME = xboehm-gc ; then
+   if test x"$with_threads" != x"unix-pthreads"; then
+      AC_MSG_ERROR([boehm-gc only supports unix-pthreads threads. Please switch to unix-pthreads using --with-threads=unix-pthreads or use kaffe-gc.])
+   fi
+
+   if test x$ac_cv_header_gc_gc_h = xno ; then
+      AC_MSG_ERROR([boehm-gc headers not found.])
+   fi
+
+   if test x$ac_cv_lib_gc_GC_free = xno; then
+      AC_MSG_ERROR([boehm-gc library not found.])
+   fi
+
+   AC_DEFINE([KAFFE_BOEHM_GC], 1, [Defined if we are using the Boehm-Weiser garbage collector])
+fi
 
 KAFFE_CHECK_GLIBC_VER
 

@@ -1763,8 +1763,6 @@ Optional Packages:
   --without-suncompat     Don't include Sun compatibility scripts
   --with-threads=SYSTEM   Define which threading system to use
                           [default=unix-pthreads]
-  --with-gc=GC            Force use given execution engine (kaffe-gc or
-                          boehm-gc)
   --with-system-classpath use the system install of GNU Classpath (per default
                           in /usr/local/classpath)
   --with-classpath-prefix=<dir>
@@ -1788,6 +1786,8 @@ Optional Packages:
                           use jikes +Pno-switchcheck +Pno-shadow +E
   --with-libffi           Use libffi for sysdepCallMethod
   --without-gmp           don't use GNU multiple precision arithmetic library
+  --with-gc=GC            Force use given execution engine (kaffe-gc or
+                          boehm-gc)
   --with-stats            Gather statistics on vm execution
   --with-kaffe-x-awt      enable build of Kaffe's Xlib-based AWT engine (not
                           built by default)
@@ -25972,32 +25972,6 @@ fi
 
 
 
-
-
-
-# Check whether --with-gc was given.
-if test "${with_gc+set}" = set; then
-  withval=$with_gc;  GC_NAME="$withval"
-
-fi
-
-
-
-if test x$GC_NAME = xboehm-gc ; then
-   if test x"$with_threads" != x"unix-pthreads"; then
-      { { echo "$as_me:$LINENO: error: BoehmGC only supports unix-pthreads threads. Please switch to unix-pthreads using --with-threads=unix-pthreads or use the standard kaffe's gc." >&5
-echo "$as_me: error: BoehmGC only supports unix-pthreads threads. Please switch to unix-pthreads using --with-threads=unix-pthreads or use the standard kaffe's gc." >&2;}
-   { (exit 1); exit 1; }; }
-   fi
-
-
-cat >>confdefs.h <<\_ACEOF
-#define KAFFE_BOEHM_GC 1
-_ACEOF
-
-fi
-
-
 # Check whether --enable-portable-native-sync was given.
 if test "${enable_portable_native_sync+set}" = set; then
   enableval=$enable_portable_native_sync; case "${enableval}" in
@@ -33792,6 +33766,41 @@ _ACEOF
   fi
 
 
+
+
+# Check whether --with-gc was given.
+if test "${with_gc+set}" = set; then
+  withval=$with_gc;  GC_NAME="$withval"
+
+fi
+
+
+
+if test x$GC_NAME = xboehm-gc ; then
+   if test x"$with_threads" != x"unix-pthreads"; then
+      { { echo "$as_me:$LINENO: error: boehm-gc only supports unix-pthreads threads. Please switch to unix-pthreads using --with-threads=unix-pthreads or use kaffe-gc." >&5
+echo "$as_me: error: boehm-gc only supports unix-pthreads threads. Please switch to unix-pthreads using --with-threads=unix-pthreads or use kaffe-gc." >&2;}
+   { (exit 1); exit 1; }; }
+   fi
+
+   if test x$ac_cv_header_gc_gc_h = xno ; then
+      { { echo "$as_me:$LINENO: error: boehm-gc headers not found." >&5
+echo "$as_me: error: boehm-gc headers not found." >&2;}
+   { (exit 1); exit 1; }; }
+   fi
+
+   if test x$ac_cv_lib_gc_GC_free = xno; then
+      { { echo "$as_me:$LINENO: error: boehm-gc library not found." >&5
+echo "$as_me: error: boehm-gc library not found." >&2;}
+   { (exit 1); exit 1; }; }
+   fi
+
+
+cat >>confdefs.h <<\_ACEOF
+#define KAFFE_BOEHM_GC 1
+_ACEOF
+
+fi
 
 
 
