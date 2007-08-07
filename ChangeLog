@@ -1,3 +1,7 @@
+2007-08-07  Dalibor Topic  <robilad@kaffe.org>
+
+	* FAQ/FAQ.win32: Updated for Kazayuki Shudo's PIC patch.
+
 2007-08-07  Kazuyuki Shudo  <2006@shudo.net>
 
 	* config/i386/trampolines.S: Don't generate PIC code

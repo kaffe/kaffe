@@ -42,7 +42,7 @@ I tried various configuration options, and eventually settled for
 
 	../kaffe/configure --with-gc=kaffe-gc --disable-native-awt \
 	--with-staticvm --with-staticbin --with-threads=unix-jthreads \
-	--enable-pure-java-math --disable-shared --with-pic=no
+	--enable-pure-java-math --disable-shared
 
 --with-gc=kaffe-gc sets the gc to kaffe's gc. it's the default, anyway, 
 but I've had configure scripts do odd things on cygwin, so I set it 
@@ -72,14 +72,11 @@ gmp installed.
 --disable-shared Is necessary to make sure that libtool does not try to 
 build shared libraries.
 
---with-pic=no Is necessary to avoid problems compiling the trampoline 
-code.
-
 Status
 ======
 
-With this setup, and after a round or two of make && make check, I get 146 
-passes out of 150 regression tests with the interpreter engine. 
+With this setup, and after a round or two of make && make check, I get 
+142 passes out of 150 regression tests with the interpreter engine. 
 
 There probably are various issues that the compiler warnings should be 
 able to help interested developers fix. As usual, I'd appreciate patches. 
