@@ -1,5 +1,10 @@
 2007-08-07  Dalibor Topic  <robilad@kaffe.org>
 
+	* config/x86_64/common.h (ALIGNMENTOF_VOIDP_IN_STACK):
+	Undefine previous definition from defs.h, before redefining it.
+	
+2007-08-07  Dalibor Topic  <robilad@kaffe.org>
+
 	* RELEASE-NOTES, TODO: Updated.
 	* FAQ.platform-status: Reformatted.
 

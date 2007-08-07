@@ -18,7 +18,10 @@
 #define NEED_STACK_ALIGN
 #define STACK_ALIGN(p)  ((((unsigned long)(p)) & 15) ^ (unsigned long)(p))
 /* However pointers are specially aligned on 4 bytes. */
-#define ALIGNMENTOF_VOIDP_IN_STACK 4
+#ifdef ALIGNMENTOF_VOIDP_IN_STACK
+#  undef ALIGNMENTOF_VOIDP_IN_STACK
+#  define ALIGNMENTOF_VOIDP_IN_STACK 4
+#endif
 
 /* This define will cause callMethodV and callMethodA to avoid
    introducing unused slots after jlongs and jdoubles.  */
