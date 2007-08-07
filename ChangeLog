@@ -1,5 +1,9 @@
 2007-08-07  Dalibor Topic  <robilad@kaffe.org>
 
+	* RELEASE-NOTES, TODO: Updated.
+
+2007-08-07  Dalibor Topic  <robilad@kaffe.org>
+
 	* THIRDPARTY: Removed fastjar, zip, boehm gc. Updated information on
 	GNU Classpath.
 

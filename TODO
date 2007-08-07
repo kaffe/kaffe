@@ -13,6 +13,9 @@
 * Missing features
  * Implement support for extension override mechanism, and allow overriding
    with older versions of APIs as well, which is needed for DOM.
+ * Implement hooks for annotations from GNU Classpath.
+ * Implement hooks for JMX from GNU Classpath.
+ * Implement hooks for JVMTI from GNU Classpath. 
 
 * Integration issues
  * Merge in libffi
@@ -28,3 +31,4 @@
 
 * Pending patches 
   amd64 jit from Eric Anholt (guilhem)
+

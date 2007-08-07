@@ -1,11 +1,11 @@
-Release Notes for 1.1.7
+Release Notes for 1.1.8
 =======================
 
-Release 1.1.7 of Kaffe is a "development" release.
+Release 1.1.8 of Kaffe is a "development" release.
 
 It has been tested, but not as thoroughly as a
 production release would be. It contains major 
-improvements over 1.1.6, which was released six 
+improvements over 1.1.7, which was released eighteen 
 months ago. I anticipate that most people will have 
 less trouble with this release, and more fun.
 
@@ -38,8 +38,8 @@ irc.freenode.org. It's a friendly channel where
 someone may help you debug or port Kaffe, if you need
 hands on help.
 
-If you have studied Sun's J2SE source code, 
-or signed NDAs that would prevent you from 
+If you have studied proprietary JVM or class library 
+source code, or signed NDAs that would prevent you from 
 contributing to Kaffe, we can not take source code 
 contributions from you. Otherwise, you're most welcome 
 to send in patches to the Kaffe mailing list at 
@@ -54,16 +54,6 @@ If Kaffe doesn't pass all regression tests executed by
 'make check' on your platform of choice under your desired
 configuration, patches to fix the regression failures would
 also be very appreciated.
-
-If there is some CPU architecture or a configuration you 
-care about dearly, and don't want to see it degrade
-between releases without someone noticing, please consider 
-running a Tinderbox client every now and then. The Kaffe
-tinderbox is hosted by Eric Anholt, and located at
-http://tinderbox.freedesktop.org .
-
-That way we can notice when patches go bad, and a simple 
-warning fix breaks your build, for example. 
 
 We won't ask you for copyright assignment. If you contribute 
 patches to code coming from other projects, then you should
@@ -84,32 +74,14 @@ If you are not interested in hacking Kaffe, but want to
 hack on GNU Classpath instead, Kaffe provides a quick, 
 efficient way to get yourself up and running with the 
 latest GNU Classpath code and have a working development 
-environment 'out of the box'. While not 100% merged with
-GNU Classpath yet, Kaffe follows for the 99% of the merged
-classes the developments in the GNU Classpath CVS regularly
-in its CVS head, and a script exists in the developers
-directory to make keeping in sync with GNU Classpath as
-simple as possible.
+environment 'out of the box', by letting you use a
+locally installed version of GNU Classpath.
 
 Future Plans
 ============
 
 Check out the TODO file for a list of things that are
 planned.
-
-Among other things, it is planed to fully switch Kaffe
-over to use GNU Classpath out of the box. Help to complete
-that task faster would be very welcome. What remains to be
-done is the String class, java.util.zip and 
-java.lang.reflect packages.
-
-Also planned is support for features introduced in 
-J2SE 1.5.
-
-After making Kaffe the integration melting pot for class 
-library components, it would be quite interesting to make 
-Kaffe an integration test bed for runtime components as 
-well.
 
 If you are looking for an interesting contribution to 
 make to the core VM, you may want to help with merging 
@@ -131,29 +103,29 @@ The following platforms have been tested for this release:
 
   arch	|   os	   | engine | threads |  gc   | passed
 ======================================================
-  alpha | linux    | intrp  | pthread | kaffe | 147/150
-  alpha | freebsd  | intrp  | pthread | kaffe | 134/150
-  amd64 | linux    | intrp  | jthread | kaffe | 150/150
-  amd64 | linux    | intrp  | pthread | kaffe | 149/150  
-  i386  | linux    | intrp  | pthread | kaffe | 150/150
-  i386  | linux    | intrp  | jthread | kaffe | 150/150
-  i386  | linux    | jit    | pthread | kaffe | 149/150
-  i386  | linux    | jit    | jthread | kaffe | 149/150
-  i386  | linux    | jit3   | pthread | kaffe | 150/150
-  i386  | linux    | jit3   | jthread | kaffe | 150/150
-  i386  | cygwin   | intrp  | jthread | kaffe | 146/150
-  i386  | openbsd  | intrp  | jthread | kaffe | 150/150
-  i386  | openbsd  | intrp  | pthread | kaffe | 150/150
-  i386  | openbsd  | jit    | pthread | kaffe |~138/150
-powerpc | linux    | intrp  | pthread | kaffe | 150/150
-powerpc | linux    | intrp  | jthread | kaffe | 150/150
+  alpha | linux    | intrp  | pthread | kaffe | 
+  alpha | freebsd  | intrp  | pthread | kaffe | 
+  amd64 | linux    | intrp  | jthread | kaffe | 
+  amd64 | linux    | intrp  | pthread | kaffe |   
+  i386  | linux    | intrp  | pthread | kaffe | 
+  i386  | linux    | intrp  | jthread | kaffe | 
+  i386  | linux    | jit    | pthread | kaffe | 
+  i386  | linux    | jit    | jthread | kaffe | 
+  i386  | linux    | jit3   | pthread | kaffe | 
+  i386  | linux    | jit3   | jthread | kaffe | 
+  i386  | cygwin   | intrp  | jthread | kaffe | 
+  i386  | openbsd  | intrp  | jthread | kaffe | 
+  i386  | openbsd  | intrp  | pthread | kaffe | 
+  i386  | openbsd  | jit    | pthread | kaffe | 
+powerpc | linux    | intrp  | pthread | kaffe | 
+powerpc | linux    | intrp  | jthread | kaffe | 
 
 Platform Specific Notes
 =======================
 
 * PowerPC
 
-An PowerPC jitter has been contributed by Tim Stack. 
+An PowerPC jitter has been contributed by Tim Stack.
 It still needs some effort to make sure it passes 
 the regression tests. Volunteers would be very welcome.
 
@@ -164,13 +136,8 @@ configure script.
 
 * ARM
 
-Jiri has reported some success using the libffi, rather
-than using Kaffe's own FFI interfaces, so you should 
-pass --with-libffi to Kaffe's configure script on ARM.
-
-Check the mailing list information for more details. The
-Kaffe Team would enjoy having a dedicated ARM hacker to
-make the ARM jitter shine again.
+Kiyo Inaba has made jit3 work on ARM. Current status:
+http://article.gmane.org/gmane.comp.java.vm.kaffe.general/11664/match=kaffe+arm
 
 * MIPS(EL)
 
