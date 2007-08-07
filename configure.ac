@@ -10,7 +10,7 @@ AC_CONFIG_SRCDIR([kaffe])
 # GPLed portions has been taken from the GPL-d configure.ac
 # file of gimp-print project
 
-AC_COPYRIGHT([Copyright 1996 - 2006 Kaffe.org project contributors. All rights reserved.
+AC_COPYRIGHT([Copyright 1996 - 2007 Kaffe.org project contributors. All rights reserved.
 Portions Copyright 1996 - 2002 Transvirtual Technologies, Inc.
 Portions Copyright by various third parties, see file THIRDPARTY for details.
 
@@ -881,6 +881,8 @@ dnl Use jikes
 dnl =========================================================================
 
 AC_CHECK_PROG(JIKESPROG, jikes, jikes)
+
+AC_MSG_CHECKING([whether to use jikes])
 AC_ARG_WITH([jikes],
             AS_HELP_STRING([--with-jikes<=JIKES>],
                            [Define to use jikes compiler @<:@default=yes@:>@.  If yes, use jikes +Pno-switchcheck +Pno-shadow +E]),
@@ -892,34 +894,22 @@ AC_ARG_WITH([jikes],
           fi
 	 use_jikes="yes"],
 	[use_jikes="no"])
+AC_MSG_RESULT($use_jikes)
 
 if test x"$use_ecj" = x"no" ; then 
   if test x"$use_jikes" = x"no"; then
 	use_jikes="yes";
-	JIKESPROG="jikes";
+	AC_MSG_NOTICE([No java compiler selected, picking jikes.])
   fi
 fi
-
-AC_MSG_CHECKING([whether to use jikes])
 
 case $use_jikes in
 yes)
 	if test x"$JIKESPROG" = x"" ; then
-	  if  test x$use_glibj_zip = xtrue ; then
-	    AC_MSG_WARN([No jikes compiler found. It is required to build the regression tests. Recommended is jikes version 1.21 or higher.])
-          else
-	    AC_MSG_ERROR([No jikes compiler found. It is required to build Kaffe's class library. Recommended is jikes version 1.21 or higher.])
-          fi
+	  AC_MSG_ERROR([No jikes compiler found. Please install jikes version 1.21 or higher.])
 	fi
 	JAVA_COMPILER="$JIKESPROG +Pno-switchcheck +Pno-shadow +E"
-	msg_use_jikes="yes ($JAVA_COMPILER)"
-	;;
-no)
-	msg_use_jikes="no"
-	;;
 esac
-
-AC_MSG_RESULT($msg_use_jikes)
 
 dnl =========================================================================
 dnl Set the java compiler variable.
@@ -929,13 +919,6 @@ if test x"$use_ecj" = x"yes" -a x"$use_jikes" = x"yes"; then
 	AC_MSG_ERROR([You can not chose jikes and ecj at the same time.])
 fi
 
-if test x"$JAVA_COMPILER" = x; then
-	if  test x$use_glibj_zip = xtrue ; then
-		AC_MSG_WARN([You need a java compiler to build kaffe's regression tests, or to pass a different external java compiler to configure script.])
-	else
-		AC_MSG_ERROR([You need a java compiler to build kaffe's class library, or to pass a different external java compiler to configure script.])
-	fi
-fi
 AC_MSG_CHECKING([which java compiler])
 AC_MSG_RESULT($JAVA_COMPILER)
 
@@ -2248,6 +2231,9 @@ AC_ARG_ENABLE([direct-threading],
 AM_CONDITIONAL([COND_DIRECT_THREADING], [test x"$enable_direct_threading" = x"yes"])
 
 
+dnl ------------------------------------------------------------
+dnl Ensure system installation of zlib can be used for the build
+dnl ------------------------------------------------------------
 if test x"$ac_cv_header_zlib_h" != x"yes" ; then
   AC_MSG_ERROR([Can't find or can't use system zlib.h])
 fi
@@ -2424,7 +2410,7 @@ dnl -------------------------
 dnl Update args for classpath
 dnl -------------------------
 
-dnl First we remove eventually CFLAGS from the configure call.
+dnl First we remove eventual CFLAGS from the configure call.
 dnl ac_configure_args=`echo "$ac_configure_args" | sed "s%'CFLAGS=.*'%%g"`
 dnl Then we add it again for config.status
 dnl ac_configure_args="$ac_configure_args 'CFLAGS=${CFLAGS}'"
@@ -2434,7 +2420,6 @@ dnl ac_cv_env_CFLAGS_set=set
 # Preset the compiler to jikes, since GNU Classpath's default is gcj.
 # Unfortunately, many gcj versions are incapable of compiling GNU 
 # Classpath, while many versions of jikes seem to make it through. :/
-# This should be preset to gcjx, once gcjx is merged in.
 
 if test x"$use_jikes" = x"yes"; then
   ac_configure_args="$ac_configure_args --with-jikes=${JIKESPROG}"
@@ -2453,7 +2438,6 @@ if test x"$COMPILE_PLUGIN" = x"no"; then
 fi
 
 ac_configure_args="$ac_configure_args --with-vm=${prefix}/bin/kaffe"
-#ac_configure_args="$ac_configure_args --disable-core-jni"
 ac_configure_args="$ac_configure_args --disable-examples"
 ac_configure_args="$ac_configure_args --with-glibj-dir=${jrelibdir}"
 ac_configure_args="$ac_configure_args --with-native-libdir=${nativedir}"

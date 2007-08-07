@@ -1,5 +1,14 @@
 2007-08-07  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac, kaffe/kaffe/version.c (printShortVersion): Updated
+	copyright year.
+
+	* configure.ac: Simplified java compiler checking. Error out if no compiler
+	is selected. Fixes bug #87. Added comment for zlib detection. Cleaned up
+	comments for classpath configure invocation.
+
+2007-08-07  Dalibor Topic  <robilad@kaffe.org>
+
 	* FAQ/FAQ.win32: Updated for Kazayuki Shudo's PIC patch.
 
 2007-08-07  Kazuyuki Shudo  <2006@shudo.net>

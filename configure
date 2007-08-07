@@ -9,7 +9,7 @@
 # This configure script is free software; the Free Software Foundation
 # gives unlimited permission to copy, distribute and modify it.
 #
-# Copyright 1996 - 2006 Kaffe.org project contributors. All rights reserved.
+# Copyright 1996 - 2007 Kaffe.org project contributors. All rights reserved.
 # Portions Copyright 1996 - 2002 Transvirtual Technologies, Inc.
 # Portions Copyright by various third parties, see file THIRDPARTY for details.
 #
@@ -1910,7 +1910,7 @@ Copyright (C) 1992, 1993, 1994, 1995, 1996, 1998, 1999, 2000, 2001,
 This configure script is free software; the Free Software Foundation
 gives unlimited permission to copy, distribute and modify it.
 
-Copyright 1996 - 2006 Kaffe.org project contributors. All rights reserved.
+Copyright 1996 - 2007 Kaffe.org project contributors. All rights reserved.
 Portions Copyright 1996 - 2002 Transvirtual Technologies, Inc.
 Portions Copyright by various third parties, see file THIRDPARTY for details.
 
@@ -26636,6 +26636,9 @@ fi
 
 
 
+{ echo "$as_me:$LINENO: checking whether to use jikes" >&5
+echo $ECHO_N "checking whether to use jikes... $ECHO_C" >&6; }
+
 # Check whether --with-jikes was given.
 if test "${with_jikes+set}" = set; then
   withval=$with_jikes;
@@ -26649,39 +26652,26 @@ else
   use_jikes="no"
 fi
 
+{ echo "$as_me:$LINENO: result: $use_jikes" >&5
+echo "${ECHO_T}$use_jikes" >&6; }
 
 if test x"$use_ecj" = x"no" ; then
   if test x"$use_jikes" = x"no"; then
 	use_jikes="yes";
-	JIKESPROG="jikes";
+	{ echo "$as_me:$LINENO: No java compiler selected, picking jikes." >&5
+echo "$as_me: No java compiler selected, picking jikes." >&6;}
   fi
 fi
-
-{ echo "$as_me:$LINENO: checking whether to use jikes" >&5
-echo $ECHO_N "checking whether to use jikes... $ECHO_C" >&6; }
 
 case $use_jikes in
 yes)
 	if test x"$JIKESPROG" = x"" ; then
-	  if  test x$use_glibj_zip = xtrue ; then
-	    { echo "$as_me:$LINENO: WARNING: No jikes compiler found. It is required to build the regression tests. Recommended is jikes version 1.21 or higher." >&5
-echo "$as_me: WARNING: No jikes compiler found. It is required to build the regression tests. Recommended is jikes version 1.21 or higher." >&2;}
-          else
-	    { { echo "$as_me:$LINENO: error: No jikes compiler found. It is required to build Kaffe's class library. Recommended is jikes version 1.21 or higher." >&5
-echo "$as_me: error: No jikes compiler found. It is required to build Kaffe's class library. Recommended is jikes version 1.21 or higher." >&2;}
+	  { { echo "$as_me:$LINENO: error: No jikes compiler found. Please install jikes version 1.21 or higher." >&5
+echo "$as_me: error: No jikes compiler found. Please install jikes version 1.21 or higher." >&2;}
    { (exit 1); exit 1; }; }
-          fi
 	fi
 	JAVA_COMPILER="$JIKESPROG +Pno-switchcheck +Pno-shadow +E"
-	msg_use_jikes="yes ($JAVA_COMPILER)"
-	;;
-no)
-	msg_use_jikes="no"
-	;;
 esac
-
-{ echo "$as_me:$LINENO: result: $msg_use_jikes" >&5
-echo "${ECHO_T}$msg_use_jikes" >&6; }
 
 
 if test x"$use_ecj" = x"yes" -a x"$use_jikes" = x"yes"; then
@@ -26690,16 +26680,6 @@ echo "$as_me: error: You can not chose jikes and ecj at the same time." >&2;}
    { (exit 1); exit 1; }; }
 fi
 
-if test x"$JAVA_COMPILER" = x; then
-	if  test x$use_glibj_zip = xtrue ; then
-		{ echo "$as_me:$LINENO: WARNING: You need a java compiler to build kaffe's regression tests, or to pass a different external java compiler to configure script." >&5
-echo "$as_me: WARNING: You need a java compiler to build kaffe's regression tests, or to pass a different external java compiler to configure script." >&2;}
-	else
-		{ { echo "$as_me:$LINENO: error: You need a java compiler to build kaffe's class library, or to pass a different external java compiler to configure script." >&5
-echo "$as_me: error: You need a java compiler to build kaffe's class library, or to pass a different external java compiler to configure script." >&2;}
-   { (exit 1); exit 1; }; }
-	fi
-fi
 { echo "$as_me:$LINENO: checking which java compiler" >&5
 echo $ECHO_N "checking which java compiler... $ECHO_C" >&6; }
 { echo "$as_me:$LINENO: result: $JAVA_COMPILER" >&5
@@ -48352,7 +48332,6 @@ done
 # Preset the compiler to jikes, since GNU Classpath's default is gcj.
 # Unfortunately, many gcj versions are incapable of compiling GNU
 # Classpath, while many versions of jikes seem to make it through. :/
-# This should be preset to gcjx, once gcjx is merged in.
 
 if test x"$use_jikes" = x"yes"; then
   ac_configure_args="$ac_configure_args --with-jikes=${JIKESPROG}"
@@ -48371,7 +48350,6 @@ if test x"$COMPILE_PLUGIN" = x"no"; then
 fi
 
 ac_configure_args="$ac_configure_args --with-vm=${prefix}/bin/kaffe"
-#ac_configure_args="$ac_configure_args --disable-core-jni"
 ac_configure_args="$ac_configure_args --disable-examples"
 ac_configure_args="$ac_configure_args --with-glibj-dir=${jrelibdir}"
 ac_configure_args="$ac_configure_args --with-native-libdir=${nativedir}"
