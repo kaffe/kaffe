@@ -1,3 +1,14 @@
+2007-08-08  Guilhem Lavaux  <guilhem@kaffe.org>
+
+	* kaffe/kaffevm/boehm-gc/gc-kaffe.c
+	(GC_notify_or_invoke_finalizers): Added declaration of a private
+	boehm-gc function.
+	(maybe_finalize): Use GC_notify_or_invoke_finalizers instead of
+	GC_invoke_finalizers.
+
+	* kaffe/kaffevm/boehm-gc/Makefile.frag: Define GC_THREADS to
+	enable the pthread function wrappers.
+	
 2007-08-08  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/reference.c (KaffeVM_registerObjectReference,

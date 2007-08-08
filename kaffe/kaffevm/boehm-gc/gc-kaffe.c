@@ -30,6 +30,11 @@ static int GC_kaffe_proc;
 static int GC_kaffe_kind;
 static void ** GC_kaffe_freelist;
 
+/* This function is not exported by Boehm GC. However it is necessary
+ * to defer the finalization of objects and push it to the finalizerMan
+ * thread. */
+extern void GC_notify_or_invoke_finalizers(void);
+
 /* We need a mechanism to release the lock and invoke finalizers.	*/
 /* We don't really have an opportunity to do this on a rarely executed	*/
 /* path on which the lock is not held.  Thus we check at a 		*/
@@ -42,7 +47,7 @@ static void maybe_finalize()
    static GC_word last_finalized_no = 0;
 
    if (GC_gc_no == last_finalized_no) return;
-   GC_invoke_finalizers();
+   GC_notify_or_invoke_finalizers();
    last_finalized_no = GC_gc_no;
 }
 
