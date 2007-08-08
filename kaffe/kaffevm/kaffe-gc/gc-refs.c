@@ -153,7 +153,7 @@ resizeWeakReferenceObject(Collector *collector, weakRefObject *obj, unsigned int
     {
       previousSize = obj->allRefSize;
       unlockStaticMutex(&weakRefLock);
-      refs = KGC_malloc(collector, size * sizeof(void **), KGC_ALLOC_REF);
+      refs = KGC_malloc(collector, size * sizeof(void **), KGC_ALLOC_VMWEAKREF);
       lockStaticMutex(&weakRefLock);
       if (refs == NULL)
 	{
@@ -238,13 +238,13 @@ KaffeGC_addWeakRef(Collector *collector, void* mem, void** refobj)
 
   /* Not found - create a new one */
   unlockStaticMutex(&weakRefLock);
-  obj = (weakRefObject*)KGC_malloc(collector, sizeof(weakRefObject), KGC_ALLOC_REF);
+  obj = (weakRefObject*)KGC_malloc(collector, sizeof(weakRefObject), KGC_ALLOC_VMWEAKREF);
   if (obj == NULL)
     return false;
 
   obj->mem = mem;
   obj->ref = 1;
-  obj->allRefs = (void ***)KGC_malloc(collector, sizeof(void ***), KGC_ALLOC_REF);
+  obj->allRefs = (void ***)KGC_malloc(collector, sizeof(void ***), KGC_ALLOC_VMWEAKREF);
   lockStaticMutex(&weakRefLock);
   obj->allRefs[0] = refobj;
 

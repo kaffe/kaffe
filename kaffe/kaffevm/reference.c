@@ -117,6 +117,10 @@ void KaffeVM_registerObjectReference(jobject reference, jobject obj, kgc_referen
       referentOffset = FIELD_BOFFSET(referent_field);
     }
 
+  DBG(REFERENCE, dprintf("Reference %p (%s) added for object %p (%s)\n",
+                 reference, CLASS_CNAME(OBJECT_CLASS((Hjava_lang_Object *)reference)),
+                 obj, CLASS_CNAME(OBJECT_CLASS((Hjava_lang_Object *)obj))); );
+
   KGC_addWeakRef(main_collector, obj,
 		 (void **)((char *)reference + referentOffset));
 }
@@ -142,6 +146,9 @@ defaultObjectFinalizer(jobject ob)
   Method* final;
   
   objclass = OBJECT_CLASS(obj);
+
+  DBG(REFERENCE, dprintf("Calling default finalizer for object %p (%s)\n",
+                 obj, CLASS_CNAME(objclass)); );
 
   final = objclass->finalizer;
   
