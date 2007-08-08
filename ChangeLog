@@ -1,3 +1,7 @@
+2007-08-09  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
+	* config/arm/netbsd1/md.h: Added signal handler macro.
+
 2007-08-08  Guilhem Lavaux  <guilhem@kaffe.org>
 
 	* kaffe/kaffevm/boehm-gc/gc-kaffe.c
