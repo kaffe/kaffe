@@ -1,3 +1,17 @@
+2007-08-07  Kazuyuki Shudo  <2006@shudo.net>
+
+	Down to 19 failures from 25 in jit mode with jthreads 
+	and kaffe gc.
+
+	* config/i386/cygwin32/jit-md.h (EXCEPTIONPROTO, 
+	EXCEPTIONFRAME): Updated.
+
+	* config/i386/cygwin32/md.h (SIGNAL_ARGS, 
+	SIGNAL_CONTEXT_POINTER): Updated.
+
+	* kaffe/kaffevm/jit/stackTrace-impl.h (STACKTRACEINIT):
+	Adapted for Cygwin.
+
 2007-08-07  Dalibor Topic  <robilad@kaffe.org>
 
 	* configure.ac, kaffe/kaffe/version.c (printShortVersion): Updated

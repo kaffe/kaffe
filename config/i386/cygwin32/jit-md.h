@@ -25,10 +25,10 @@
  * No signal handler support yet!!
  */
 #define	EXCEPTIONPROTO							\
-	int sig
+	int sig, siginfo_t *ctx, void *uc0
 
 #define	EXCEPTIONFRAME(f, c)						\
 	(f).retbp = 0;							\
-	(f).retpc = 0
+	(f).retpc = c->si_addr + 1
 
 #endif

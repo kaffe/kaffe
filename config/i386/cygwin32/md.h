@@ -31,8 +31,8 @@
 #undef SP_OFFSET
 #define	SP_OFFSET	7
 
-#define SIGNAL_ARGS(sig, sc) int sig
-#define SIGNAL_CONTEXT_POINTER(scp) int scp
+#define SIGNAL_ARGS(sig, sc) int sig, siginfo_t *sc, void *uc0
+#define SIGNAL_CONTEXT_POINTER(scp) siginfo_t **scp
 #define GET_SIGNAL_CONTEXT_POINTER(sc) (NULL)
 #define SIGNAL_PC(scp) (0)
 

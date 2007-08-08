@@ -8,6 +8,14 @@ typedef struct _stackTrace {
         struct _exceptionFrame* frame;
 } stackTrace;
 
+#ifdef __CYGWIN__
+#define STACKTRACEINIT(S, I, O, R)         \
+        {                                  \
+                FIRSTFRAME((S).nframe, O); \
+                (S).frame = &((S).nframe); \
+                (R) = *(S).frame;          \
+        }
+#else
 #define STACKTRACEINIT(S, I, O, R)                      \
         {                                               \
                 if ((I) == NULL) {                      \
@@ -18,6 +26,7 @@ typedef struct _stackTrace {
                 }                                       \
                 (R) = *(S).frame;                       \
         }
+#endif
 
 #ifdef STACK_NEXT_FRAME
 #define STACKTRACESTEP(S)       (STACK_NEXT_FRAME((S).frame))
