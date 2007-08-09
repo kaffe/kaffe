@@ -41,8 +41,8 @@ Configuration
 I tried various configuration options, and eventually settled for
 
 	../kaffe/configure --with-gc=kaffe-gc --disable-native-awt \
-	--with-staticvm --with-staticbin --with-threads=unix-jthreads \
-	--enable-pure-java-math --disable-shared
+	--with-staticvm --with-staticbin --enable-pure-java-math \
+	--disable-shared
 
 --with-gc=kaffe-gc sets the gc to kaffe's gc. it's the default, anyway, 
 but I've had configure scripts do odd things on cygwin, so I set it 
@@ -61,11 +61,6 @@ DLLs, though patches that make it all work without the need for
 static binaries would be appreciated. Send them to the mailing list,
 as well.
 
---with-threads=unix-jthreads sets the threading model to jthreads, 
-since the default pthreads seem to spend a few seconds getting stuck 
-somewhere deep in windows/cygwin libraries, and eventually produce a 
-warning message from Cygwin that only confuses the test scripts.
-
 --enable-pure-java-math If you are not using crypto and don't have 
 gmp installed.
 
@@ -76,7 +71,10 @@ Status
 ======
 
 With this setup, and after a round or two of make && make check, I get 
-142 passes out of 150 regression tests with the interpreter engine. 
+142 passes out of 150 regression tests with the interpreter engine, and
+131 passes for the jit engine using --with-threads=unix-jthreads, and
+for --with-threads=unix-pthreads I get 139 passes for interpreter and 
+126 for the jit engine.
 
 There probably are various issues that the compiler warnings should be 
 able to help interested developers fix. As usual, I'd appreciate patches. 
