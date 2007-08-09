@@ -117,7 +117,10 @@ The following platforms have been tested for this release:
   i386  | linux    | jit    | jthread | kaffe | 
   i386  | linux    | jit3   | pthread | kaffe | 
   i386  | linux    | jit3   | jthread | kaffe | 
-  i386  | cygwin   | intrp  | jthread | kaffe | 
+  i386  | cygwin   | intrp  | jthread | kaffe | 142/150
+  i386  | cygwin   | jit    | jthread | kaffe | 131/150
+  i386  | cygwin   | intrp  | pthread | kaffe | 139/150
+  i386  | cygwin   | jit    | pthread | kaffe | 126/150
   i386  | openbsd  | intrp  | jthread | kaffe | 
   i386  | openbsd  | intrp  | pthread | kaffe | 
   i386  | openbsd  | jit    | pthread | kaffe | 
