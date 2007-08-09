@@ -129,6 +129,7 @@ The following platforms have been tested for this release:
   m68k  | linux    | jit3   | pthread | kaffe | ~128/150
 powerpc | linux    | intrp  | pthread | kaffe | 
 powerpc | linux    | intrp  | jthread | kaffe | 
+ sparc  | linux    | jit    | pthread | kaffe | 150/150
 
 Platform Specific Notes
 =======================
