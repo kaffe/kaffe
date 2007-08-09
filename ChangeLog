@@ -1,3 +1,8 @@
+2007-08-09  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
+	* RELEASE-NOTES: Added results for i386/netbsd.
+	* FAQ.platform-status: Added results and statuses for arm,i386,m68k.
+
 2007-08-09  Kazuyuki Shudo  <2006@shudo.net>
 
 	* kaffe/scripts/kaffe.in: Add KAFFE_NATIVE_LIBRARY_DIR to PATH.

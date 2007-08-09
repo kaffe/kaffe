@@ -121,12 +121,18 @@ The following platforms have been tested for this release:
   i386  | cygwin   | jit    | jthread | kaffe | 131/150
   i386  | cygwin   | intrp  | pthread | kaffe | 139/150
   i386  | cygwin   | jit    | pthread | kaffe | 126/150
+  i386  | netbsd   | intrp  | pthread | kaffe | 144/150
+  i386  | netbsd   | jit    | pthread | kaffe | 144/150
+  i386  | netbsd   | jit3   | pthread | kaffe | 146/150
   i386  | openbsd  | intrp  | jthread | kaffe | 
   i386  | openbsd  | intrp  | pthread | kaffe | 
   i386  | openbsd  | jit    | pthread | kaffe | 
   m68k  | linux    | intrp  | pthread | kaffe | ~138/150
   m68k  | linux    | jit    | pthread | kaffe | ~122/150
   m68k  | linux    | jit3   | pthread | kaffe | ~128/150
+  m68k  | netbsd   | intrp  | pthread | kaffe |
+  m68k  | netbsd   | jit    | pthread | kaffe |
+  m68k  | netbsd   | jit3   | pthread | kaffe |
 powerpc | linux    | intrp  | pthread | kaffe | 
 powerpc | linux    | intrp  | jthread | kaffe | 
  sparc  | linux    | jit    | pthread | kaffe | 150/150
