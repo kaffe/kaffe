@@ -1,3 +1,17 @@
+2007-08-09  Kazuyuki Shudo  <2006@shudo.net>
+
+	This brings pthreads failures on Cygwin down to 11 for intrp,
+	and 24 for jit.
+
+	* kaffe/kaffevm/unix-pthreads/signal.c 
+	(KaffePThread_detectStackBoundaries) Work around Cygwin 
+	getpagesize issue. [STACK_GROWS_UP] Add pagesize to 
+	guessPointer.
+
+	* kaffe/kaffevm/unix-pthreads/thread-impl.c 
+	(tInitSignals) Treat Cygwin like OLD_LINUXTHREADS.
+	[__CYGWIN__] Set sigInterrupt to SIGCONT.
+
 2007-08-09  Kiyo Inaba <inaba@src.ricoh.co.jp>
 
 	* config/arm/netbsd1/md.h: Added signal handler macro.

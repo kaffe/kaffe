@@ -461,7 +461,12 @@ KaffePThread_detectStackBoundaries(jthread_t jtid, size_t mainThreadStackSize)
 	
 	if (JTHREAD_SETJMP(outOfLoop) == 0)
 	{
+#ifdef __CYGWIN__
+	  /* getpagesize() of Cygwin 1.5.19-4 returns 0x10000, not 0x1000 */
+	  uintp pageSize = 0x1000;
+#else
 	  uintp pageSize = getpagesize();
+#endif
 
 	  guessPointer = (char *)((uintp)(&jtid) & ~(pageSize-1));
 	  
@@ -474,6 +479,11 @@ KaffePThread_detectStackBoundaries(jthread_t jtid, size_t mainThreadStackSize)
 #endif
 	    kaffeNoopFunc(*guessPointer);
 	  }
+	}
+	else {
+#if defined(STACK_GROWS_UP)
+	  guessPointer += pageSize;
+#endif
 	}
 
 	/* Here we have detected one the boundary of the stack.

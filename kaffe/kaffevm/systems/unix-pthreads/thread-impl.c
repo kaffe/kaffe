@@ -451,7 +451,7 @@ tInitSignals(void)
 
   if (SIGRTMAX - SIGRTMIN < 7)
     {
-#if defined(OLD_LINUXTHREADS)
+#if defined(OLD_LINUXTHREADS) && !defined(__CYGWIN__)
       sigSuspend = SIGURG;
       sigResume  = SIGTSTP;
       sigDump    = SIGXCPU;
@@ -474,8 +474,7 @@ tInitSignals(void)
 
 #endif
 
-      if (SIGRTMIN < 0)
-	sigInterrupt = SIGCONT;
+      sigInterrupt = SIGCONT;
     }
   else
     {
