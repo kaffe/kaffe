@@ -130,9 +130,7 @@ The following platforms have been tested for this release:
   m68k  | linux    | intrp  | pthread | kaffe | ~138/150
   m68k  | linux    | jit    | pthread | kaffe | ~122/150
   m68k  | linux    | jit3   | pthread | kaffe | ~128/150
-  m68k  | netbsd   | intrp  | pthread | kaffe |
-  m68k  | netbsd   | jit    | pthread | kaffe |
-  m68k  | netbsd   | jit3   | pthread | kaffe |
+  m68k  | netbsd   | jit3   | pthread | kaffe | ~123/150
 powerpc | linux    | intrp  | pthread | kaffe | 
 powerpc | linux    | intrp  | jthread | kaffe | 
  sparc  | linux    | jit    | pthread | kaffe | 150/150

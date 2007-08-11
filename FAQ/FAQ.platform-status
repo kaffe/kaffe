@@ -18,21 +18,21 @@ Version = CVS-HEAD 2007-07-31
 OS: NetBSD 1.6
 Arch: i386
 Compiler: gcc 2.95.3 20010315 (release) (NetBSD nb3)
-Kaffe engine: jit3, pthreads, kaffe-gc
+Kaffe engine: jit3, jthreads, kaffe-gc
 Regressions: 146/150
 
 Version = CVS-HEAD 2007-07-31
 OS: NetBSD 1.6
 Arch: i386
 Compiler: gcc 2.95.3 20010315 (release) (NetBSD nb3)
-Kaffe engine: jit, pthreads, kaffe-gc
+Kaffe engine: jit, jthreads, kaffe-gc
 Regressions: 144/150
 
 Version = CVS-HEAD 2007-07-31
 OS: NetBSD 1.6
 Arch: i386
 Compiler: gcc 2.95.3 20010315 (release) (NetBSD nb3)
-Kaffe engine: intrp, pthreads, kaffe-gc
+Kaffe engine: intrp, jthreads, kaffe-gc
 Regressions: 144/150
 
 Version = CVS-HEAD 2007-07-31
@@ -60,48 +60,34 @@ Version = CVS-HEAD 2007-07-31
 OS: NetBSD 1.6.2
 Arch: m68k (mc68030)
 Compiler: gcc 2.95.3 20010315 (release) (NetBSD nb3)
-Kaffe engine: jit3, pthreads, kaffe-gc
-Regressions: /150
-
-Version = CVS-HEAD 2007-07-31
-OS: NetBSD 1.6.2
-Arch: m68k (mc68030)
-Compiler: gcc 2.95.3 20010315 (release) (NetBSD nb3)
-Kaffe engine: jit, pthreads, kaffe-gc
-Regressions: /150
-
-Version = CVS-HEAD 2007-07-31
-OS: NetBSD 1.6.2
-Arch: m68k (mc68030)
-Compiler: gcc 2.95.3 20010315 (release) (NetBSD nb3)
-Kaffe engine: intrp, pthreads, kaffe-gc
-Regressions: /150
+Kaffe engine: jit3, jthreads, kaffe-gc
+Regressions: 123/150
 
 Version = CVS-HEAD 2007-08-02
 OS: Linux debian 2.6.18-4-versatile
 Arch: arm (armv5tejl)
 Compiler: gcc version 3.4.6 (Debian 3.4.6-5)
 Kaffe engine: jit3, pthreads, kaffe-gc
-Regressions: /150
+Regressions: 124/150
 
 Version = CVS-HEAD 2007-08-02
 OS: Linux debian 2.6.18-4-versatile
 Arch: arm (armv5tejl)
 Compiler: gcc version 3.4.6 (Debian 3.4.6-5)
 Kaffe engine: jit, pthreads, kaffe-gc
-Regressions: /150
+Regressions: 136/150
 
 Version = CVS-HEAD 2007-08-02
 OS: Linux debian 2.6.18-4-versatile
 Arch: arm (armv5tejl)
 Compiler: gcc version 3.4.6 (Debian 3.4.6-5)
 Kaffe engine: intrp, pthreads, kaffe-gc
-Regressions: /150
+Regressions: 137/150
 
 Version = CVS-HEAD 2007-08-02
 OS: NetBSD 3.1 (GENERIC)
 Arch: arm (SA-110 step S)
 Compiler: gcc version 3.3.3 (NetBSD nb3 20040520)
 Kaffe engine: intrp, pthreads, kaffe-gc
-Regressions: /150
+Regressions: 146/150
 
