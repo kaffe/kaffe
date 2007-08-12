@@ -1,0 +1,128 @@
+FAQ for ARM processor
+  (or 'Why your "Kaffe does not work for ARM" question is not answered?')
+=========================================================================
+
+Introduction
+------------
+
+There are so many questions for the last several years saying "Kaffe does
+not work for ARM!" which usually are not answered on the mailing list.
+This is not because other developers ignore your question, but it is
+really hard to answer these questions without having enough information
+for your environment.
+After some struggle, I made Kaffe work for both linux and netbsd by
+using excellent simulators (QEMU and GXemul) and I tried to summarize
+how each arm processor is different in this memo.
+
+Architecture version
+--------------------
+
+For the ARM family, supported instruction set is indicated by the
+'architecture version'. Most common architecture version right now
+should be armv4 or armv5. Recently armv6 becomes common, but since
+more powerful instruction set needs extra power consumption, and
+simpler instruction set may still remain for their purpose. This is
+very different from what happens for PC's CPU architecture.
+
+Each architecture version may have suffix characters like 't', 'e'
+etc., but from the Kaffe's point of view, they usually does not make
+any differences.
+
+CPU
+---
+
+CPU core is another properties each ARM processor have. Even though
+two processor belong to same architecture version (say, armv4), one
+is called 'ARM7' but the other is called 'ARM9'. The difference between
+ARM7 and ARM9 are not instruction set level (some of ARM9 belongs to
+different architecture version, by the way) but the difference is
+their internal structure. ARM7 uses 3 stage pipeline (simple, but
+slow) and ARM9 uses 5 stage pipeline. This structural difference
+makes ARM9 can be faster (with same clock). As I mentioned in the
+architecture version, even though ARM9 can be faster than ARM7, ARM7
+may still have their own applications because of its low power consumption.
+
+From Kaffe's point of view, the difference of internal structure does
+not make any difference. (In detail, there are differences, e.g. cache
+control, but they are usually hidden by the operating system)
+
+MMU
+---
+
+The other concern for each ARM processor is whether they have MMU
+(Memory Management Unit) or not. Until recently, if you want to use
+higher level operating systems (like BSD or linux) the MMU is mandatory.
+But the introduction of uClinux changes this situation. The uClinux is
+a great rescue for MMU-less CPU to use higher level operating systems
+and there are so many porting work has been done to use uClinux as the
+OS for MMU-less ARM. MMU-less ARM is usually ARM7 based, but the CPU
+difference and whether they have MMU or not are independent.
+
+From Kaffe's point of view, there are no support for uClinux right now
+and if you have MMU-less ARM, there are no hope to use Kaffe on it.
+I hope this situation should be changed soon, and if you make some
+improvement, please let other developers know about that.
+
+FPU
+---
+
+FPU (Floating Point Unit)  is another big energy eater in the CPU. That
+is the main reason why not all ARM processors (or other CPU's designed
+for embedded application) have FPU. Even though the CPU itself does not
+have FPU, sometimes FPU instruction can be executed on the CPU. This is
+done with the help of the operating system, and in this case we can
+treat this system as though it has FPU.
+
+In ARM architecture, the story becomes more complex. They first introduce
+one FPU called 'FPA', and later they introduce absolutely different
+version called 'VFP' These two are incompatible from instruction set
+level, and you can not mix instructions for these two FPU's.
+
+From Kaffe's point of view, only 'FPA' is supported right now. Some
+effort has been started to use 'VFP', and I hope we can rewrite this
+section soon. For jit/jit3 engine, the support of 'FPA' is mandatory
+(the internal code generation emits FPA instruction) and if you don't
+have FPA (or FPA emulation by the operating system) only possibility
+is to use interpreter engine.
+
+One more note, current configure option '--enable-xscale' changes the
+behavior not only for instruction set but also for exception handler.
+The later is done because of xscale does not have FPU and number of
+registers saved on the stack is different from with FPU version.
+
+Endian
+------
+
+As like as usual embedded processors, ARM can be configured to be
+used for the big-endian or little-endian. I don't have exact statistics,
+but little-endian should be common for ARM processor. The only exception
+I know is Linksys NSLU2, but debian people makes their little-endian
+version of linux running on this system, and from application's point
+of view, we can not determine the difference.
+
+From Kaffe's point of view, both endians are supported (m68k or sparc
+are big-endian), but some MD part of jit makes it harder to support
+big-endian ARM. When we have big-endian version of OS available for ARM,
+we need to tackle this issue.
+
+OS
+--
+
+Currently Kaffe is supported on NetBSD and linux (not uClinux) only.
+
+ABI
+---
+
+The last (but, as usual, not least) thing you must be careful is ARM
+are used with not only one ABI. They are now changing their standard
+ABI to so called 'EABI'.
+
+Currently Kaffe only works with so called 'legacy ABI (or apcs-gnu)'.
+
+Conclusion
+----------
+
+Do you still want to post a message to the ML simply saying 'Kaffe
+does not work for my ARM board!'?
+
+Kiyo Inaba
