@@ -1,5 +1,10 @@
 2007-08-12  Kiyo Inaba <inaba@src.ricoh.co.jp>
 
+	* RELEASE-NOTES,
+	FAQ.platform-status: Added results for m68k/netbsd/intrp.
+
+2007-08-12  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
 	* FAQ/FAQ.arm: New file.
 
 2007-08-11  Kiyo Inaba <inaba@src.ricoh.co.jp>

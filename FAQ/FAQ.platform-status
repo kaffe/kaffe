@@ -63,6 +63,13 @@ Compiler: gcc 2.95.3 20010315 (release) (NetBSD nb3)
 Kaffe engine: jit3, jthreads, kaffe-gc
 Regressions: 123/150
 
+Version = CVS-HEAD 2007-07-31
+OS: NetBSD 1.6.2
+Arch: m68k (mc68030)
+Compiler: gcc 2.95.3 20010315 (release) (NetBSD nb3)
+Kaffe engine: jit3, jthreads, kaffe-gc
+Regressions: 105/150
+
 Version = CVS-HEAD 2007-08-02
 OS: Linux debian 2.6.18-4-versatile
 Arch: arm (armv5tejl)

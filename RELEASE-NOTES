@@ -110,7 +110,7 @@ The following platforms have been tested for this release:
  arm9hf | linux    | intrp  | pthread | kaffe | 137/150 * hf: Hard Float
  arm9hf | linux    | jit    | pthread | kaffe | 136/150
  arm9hf | linux    | jit3   | pthread | kaffe | 124/150
- arm9sf | netbsd   | intrp  | pthread | kaffe | 150/150 * sf: Soft Float
+ arm9sf | netbsd   | intrp  | pthread | kaffe | 146/150 * sf: Soft Float
   i386  | linux    | intrp  | pthread | kaffe | 
   i386  | linux    | intrp  | jthread | kaffe | 
   i386  | linux    | jit    | pthread | kaffe | 
@@ -121,16 +121,17 @@ The following platforms have been tested for this release:
   i386  | cygwin   | jit    | jthread | kaffe | 131/150
   i386  | cygwin   | intrp  | pthread | kaffe | 139/150
   i386  | cygwin   | jit    | pthread | kaffe | 126/150
-  i386  | netbsd   | intrp  | pthread | kaffe | 144/150
-  i386  | netbsd   | jit    | pthread | kaffe | 144/150
-  i386  | netbsd   | jit3   | pthread | kaffe | 146/150
+  i386  | netbsd   | intrp  | jthread | kaffe | 144/150
+  i386  | netbsd   | jit    | jthread | kaffe | 144/150
+  i386  | netbsd   | jit3   | jthread | kaffe | 146/150
   i386  | openbsd  | intrp  | jthread | kaffe | 
   i386  | openbsd  | intrp  | pthread | kaffe | 
   i386  | openbsd  | jit    | pthread | kaffe | 
   m68k  | linux    | intrp  | pthread | kaffe | ~138/150
   m68k  | linux    | jit    | pthread | kaffe | ~122/150
   m68k  | linux    | jit3   | pthread | kaffe | ~128/150
-  m68k  | netbsd   | jit3   | pthread | kaffe | ~123/150
+  m68k  | netbsd   | jit3   | jthread | kaffe | ~123/150
+  m68k  | netbsd   | intrp  | jthread | kaffe | ~105/150
 powerpc | linux    | intrp  | pthread | kaffe | 
 powerpc | linux    | intrp  | jthread | kaffe | 
  sparc  | linux    | jit    | pthread | kaffe | 150/150
