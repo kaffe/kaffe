@@ -69,7 +69,11 @@ Hjava_lang_Class* StringClass;
 Hjava_lang_Class* ObjectClass;
 Hjava_lang_Class* SystemClass;
 Hjava_lang_Class* RuntimeClass;
+/* Note: All interfaces implemented by java.lang.Class must be here. */
 Hjava_lang_Class* SerialClass;
+Hjava_lang_Class* TypeClass;
+Hjava_lang_Class* AnnotatedElementClass;
+Hjava_lang_Class* GenericDeclarationClass;
 Hjava_lang_Class* CloneClass;
 Hjava_lang_Class* PtrClass;
 Hjava_lang_Class* ClassLoaderClass;
@@ -128,6 +132,9 @@ static Hjava_lang_Class** stateCompleteClass[] = {
 #define RUNTIMECLASS "java/lang/Runtime"
 #define SYSTEMCLASS  "java/lang/System"
 #define	SERIALCLASS  "java/io/Serializable"
+#define	TYPECLASS    "java/lang/reflect/Type"
+#define	ANNOTATEDELEMENTCLASS "java/lang/reflect/AnnotatedElement"
+#define	GENERICDECLARATIONCLASS "java/lang/reflect/GenericDeclaration"
 #define	CLONECLASS   "java/lang/Cloneable"
 #define	LOADERCLASS  "java/lang/ClassLoader"
 #define PTRCLASS     "org/kaffe/util/Ptr"
@@ -340,12 +347,18 @@ initBaseClasses(void)
 
 	loadStaticClass(&ObjectClass, OBJECTCLASS);
 	loadStaticClass(&SerialClass, SERIALCLASS);
+	loadStaticClass(&TypeClass,   TYPECLASS);
+	loadStaticClass(&AnnotatedElementClass, ANNOTATEDELEMENTCLASS);
+	loadStaticClass(&GenericDeclarationClass, GENERICDECLARATIONCLASS);
 	loadStaticClass(&CloneClass,  CLONECLASS);
 	loadStaticClass(&ClassClass,  CLASSCLASS);
 
 	ClassClass_vtable = ClassClass->vtable;
 	ObjectClass->head.vtable = ClassClass_vtable;
 	SerialClass->head.vtable = ClassClass_vtable;
+	TypeClass->head.vtable   = ClassClass_vtable;
+	AnnotatedElementClass->head.vtable = ClassClass_vtable;
+	GenericDeclarationClass->head.vtable = ClassClass_vtable;
 	CloneClass->head.vtable  = ClassClass_vtable;
 	ClassClass->head.vtable  = ClassClass_vtable;
 

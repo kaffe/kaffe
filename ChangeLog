@@ -1,3 +1,9 @@
+2007-08-27  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	Fixes bug #100
+	* kaffe/kaffevm/baseClasses.c: Added interfaces implemented by
+	java.lang.Class.
+
 2007-08-12  Kiyo Inaba <inaba@src.ricoh.co.jp>
 
 	* RELEASE-NOTES,
