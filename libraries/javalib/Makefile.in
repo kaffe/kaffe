@@ -82,7 +82,7 @@ RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
   distclean-recursive maintainer-clean-recursive
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = . external/classpath vmspecific gnu-inet dnsjava \
+DIST_SUBDIRS = external/classpath vmspecific gnu-inet dnsjava \
 	awt-implementations gmp-math tritonus-sound zlib-zip
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
@@ -309,13 +309,10 @@ with_engine = @with_engine@
 @COND_PURE_JAVA_MATH_FALSE@MAYBE_GMP_JAVA_MATH = gmp-math
 @COND_NATIVE_SOUND_TRUE@MAYBE_TRITONUS_SOUND = tritonus-sound
 @COND_ZLIB_ZIP_TRUE@MAYBE_ZLIB_ZIP = zlib-zip
-@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@MAYBE_GLIBJ_ZIP = glibj.zip
-@USE_SYSTEM_CLASSPATH_TRUE@MAYBE_GLIBJ_ZIP = glibj.zip
 
 # if we're not using the system classpath, build our own.
 @USE_SYSTEM_CLASSPATH_FALSE@MAYBE_CLASSPATH = external/classpath
 SUBDIRS = \
-	. \
 	$(MAYBE_CLASSPATH) \
 	vmspecific \
 	gnu-inet \
@@ -326,8 +323,7 @@ SUBDIRS = \
 	$(MAYBE_ZLIB_ZIP)
 
 jrelib_DATA = \
-	     logging.properties \
-	     $(MAYBE_GLIBJ_ZIP)
+	     logging.properties
 
 EXTRA_DIST = \
 	    logging.properties 
@@ -594,6 +590,7 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+@USE_PRECOMPILED_RT_JAR_FALSE@@USE_SYSTEM_CLASSPATH_FALSE@install-exec-local:
 clean: clean-recursive
 
 clean-am: clean-generic clean-libtool clean-local mostlyclean-am
@@ -616,7 +613,7 @@ install-data-am: install-data-local install-jrelibDATA
 
 install-dvi: install-dvi-recursive
 
-install-exec-am:
+install-exec-am: install-exec-local
 
 install-html: install-html-recursive
 
@@ -657,14 +654,14 @@ uninstall-am: uninstall-jrelibDATA uninstall-local
 	distclean-libtool distclean-tags distdir dvi dvi-am html \
 	html-am info info-am install install-am install-data \
 	install-data-am install-data-local install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-jrelibDATA install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	installdirs-am maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-generic mostlyclean-libtool pdf pdf-am \
-	ps ps-am tags tags-recursive uninstall uninstall-am \
-	uninstall-jrelibDATA uninstall-local
+	install-exec install-exec-am install-exec-local install-html \
+	install-html-am install-info install-info-am \
+	install-jrelibDATA install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs installdirs-am maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-generic \
+	mostlyclean-libtool pdf pdf-am ps ps-am tags tags-recursive \
+	uninstall uninstall-am uninstall-jrelibDATA uninstall-local
 
 
 @USE_SYSTEM_CLASSPATH_TRUE@stamp-glibj:
@@ -673,18 +670,50 @@ uninstall-am: uninstall-jrelibDATA uninstall-local
 @USE_SYSTEM_CLASSPATH_TRUE@	@touch stamp-glibj
 
 @USE_SYSTEM_CLASSPATH_TRUE@glibj.zip: stamp-glibj
+
+# used to link the system/precompiled glibj.zip on install
+@USE_SYSTEM_CLASSPATH_TRUE@link-glibj-zip:
+@USE_SYSTEM_CLASSPATH_TRUE@	if ! test -f $(DESTDIR)${jrelibdir}/glibj.zip ; then \
+@USE_SYSTEM_CLASSPATH_TRUE@		$(LN_S) $(CLASSPATH_CLASSES) $(DESTDIR)${jrelibdir}/glibj.zip ; \
+@USE_SYSTEM_CLASSPATH_TRUE@	fi
+
+@USE_SYSTEM_CLASSPATH_TRUE@unlink-glibj-zip: 
+@USE_SYSTEM_CLASSPATH_TRUE@	if test -f $(DESTDIR)${jrelibdir}/glibj.zip ; then \
+@USE_SYSTEM_CLASSPATH_TRUE@		$(RM) $(DESTDIR)${jrelibdir}/glibj.zip ; \
+@USE_SYSTEM_CLASSPATH_TRUE@	fi
+
+@USE_SYSTEM_CLASSPATH_TRUE@install-exec-local: link-glibj-zip
+
 @USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@stamp-glibj:
 @USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@	@echo Importing glibj.zip from $(GLIBJ_ZIP)
-@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@	@cp $(GLIBJ_ZIP) external/classpath/lib/glibj.zip
-@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@	@$(LN_S) external/classpath/lib/glibj.zip glibj.zip
+@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@	@$(LN_S) $(GLIBJ_ZIP) external/classpath/lib/glibj.zip
+@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@	@$(LN_S) $(GLIBJ_ZIP) glibj.zip
 @USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@	@touch stamp-glibj
 
 @USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@glibj.zip: stamp-glibj
+
+# used to link the system/precompiled glibj.zip on install
+@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@link-glibj-zip:
+@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@	if ! test -f $(DESTDIR)${jrelibdir}/glibj.zip ; then \
+@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@		$(LN_S) $(GLIBJ_ZIP) $(DESTDIR)${jrelibdir}/glibj.zip ; \
+@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@	fi
+
+@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@unlink-glibj-zip: 
+@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@	if test -f $(DESTDIR)${jrelibdir}/glibj.zip ; then \
+@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@		$(RM) $(DESTDIR)${jrelibdir}/glibj.zip ; \
+@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@	fi
+
+# link glibj.zip in as part of installation
+@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@install-exec-local: link-glibj-zip
+
 @USE_PRECOMPILED_RT_JAR_FALSE@@USE_SYSTEM_CLASSPATH_FALSE@stamp-glibj:
 @USE_PRECOMPILED_RT_JAR_FALSE@@USE_SYSTEM_CLASSPATH_FALSE@	@touch stamp-glibj
 
+# do nothing, the classpath build takes care of uninstalling it
+@USE_PRECOMPILED_RT_JAR_FALSE@@USE_SYSTEM_CLASSPATH_FALSE@unlink-glibj-zip:
+
 clean-local:
-	rm -rf stamp-glibj glibj.zip
+	$(RM) stamp-glibj glibj.zip
 
 export JAVA_COMPILER
 
@@ -695,7 +724,7 @@ install-data-local: installdirs
 		fi ; \
 	fi
 
-uninstall-local: 
+uninstall-local: unlink-glibj-zip
 	$(RM) $(DESTDIR)${jrelibdir}/rt.jar
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

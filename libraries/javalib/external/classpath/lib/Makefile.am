@@ -94,6 +94,8 @@ if USE_PREBUILT_GLIBJ_ZIP
 glibj.zip:
 	cp $(PATH_TO_GLIBJ_ZIP) .
 
+all-local: glibj.zip
+
 else
 
 glibj.zip: classes compile-classes resources

@@ -136,12 +136,6 @@ autoconf # -Wall
  autoreconf -i -f
 )
 
-(
-  cd kaffe/kaffevm/boehm-gc/boehm
-
-  autoreconf -i -f # -Wall
-)
-
 # drops specific patches
 (
   cd scripts

@@ -37,23 +37,52 @@ stamp-glibj:
 	@$(LN_S) $(CLASSPATH_CLASSES) glibj.zip
 	@touch stamp-glibj
 
-MAYBE_GLIBJ_ZIP= glibj.zip
-
 glibj.zip: stamp-glibj
+
+# used to link the system/precompiled glibj.zip on install
+link-glibj-zip:
+	if ! test -f $(DESTDIR)${jrelibdir}/glibj.zip ; then \
+		$(LN_S) $(CLASSPATH_CLASSES) $(DESTDIR)${jrelibdir}/glibj.zip ; \
+	fi
+
+unlink-glibj-zip: 
+	if test -f $(DESTDIR)${jrelibdir}/glibj.zip ; then \
+		$(RM) $(DESTDIR)${jrelibdir}/glibj.zip ; \
+	fi
+
+install-exec-local: link-glibj-zip
+
 else
 if USE_PRECOMPILED_RT_JAR
 stamp-glibj:
 	@echo Importing glibj.zip from $(GLIBJ_ZIP)
-	@cp $(GLIBJ_ZIP) external/classpath/lib/glibj.zip
-	@$(LN_S) external/classpath/lib/glibj.zip glibj.zip
+	@$(LN_S) $(GLIBJ_ZIP) external/classpath/lib/glibj.zip
+	@$(LN_S) $(GLIBJ_ZIP) glibj.zip
 	@touch stamp-glibj
 
-MAYBE_GLIBJ_ZIP= glibj.zip
-
 glibj.zip: stamp-glibj
+
+# used to link the system/precompiled glibj.zip on install
+link-glibj-zip:
+	if ! test -f $(DESTDIR)${jrelibdir}/glibj.zip ; then \
+		$(LN_S) $(GLIBJ_ZIP) $(DESTDIR)${jrelibdir}/glibj.zip ; \
+	fi
+
+unlink-glibj-zip: 
+	if test -f $(DESTDIR)${jrelibdir}/glibj.zip ; then \
+		$(RM) $(DESTDIR)${jrelibdir}/glibj.zip ; \
+	fi
+
+# link glibj.zip in as part of installation
+install-exec-local: link-glibj-zip
+
 else
 stamp-glibj:
 	@touch stamp-glibj
+
+# do nothing, the classpath build takes care of uninstalling it
+unlink-glibj-zip:
+
 endif
 
 # if we're not using the system classpath, build our own.
@@ -61,10 +90,9 @@ MAYBE_CLASSPATH=external/classpath
 endif
 
 clean-local:
-	rm -rf stamp-glibj glibj.zip
+	$(RM) stamp-glibj glibj.zip
 
 SUBDIRS= \
-	. \
 	$(MAYBE_CLASSPATH) \
 	vmspecific \
 	gnu-inet \
@@ -75,8 +103,7 @@ SUBDIRS= \
 	$(MAYBE_ZLIB_ZIP)
 
 jrelib_DATA= \
-	     logging.properties \
-	     $(MAYBE_GLIBJ_ZIP)
+	     logging.properties
 
 export JAVA_COMPILER
 
@@ -87,7 +114,7 @@ install-data-local: installdirs
 		fi ; \
 	fi
 
-uninstall-local: 
+uninstall-local: unlink-glibj-zip
 	$(RM) $(DESTDIR)${jrelibdir}/rt.jar
 
 EXTRA_DIST= \

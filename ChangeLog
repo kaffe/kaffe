@@ -1,3 +1,26 @@
+2007-09-11  Dalibor Topic  <robilad@kaffe.org>
+
+	Fix for bug #98.
+	* developers/autogen.sh:
+	Drop boehm-gc reconfiguration.
+
+	* libraries/javalib/Makefile.am:
+	(MAYBE_GLIBJ_ZIP) Removed.
+	(link-glibj-zip, unlink-glibj-zip, install-exec-local) Added 
+	when using system classpath, or prebuilt glibj.zip.
+	(clean-local) Use RM instead of hardcoding 'rm'.
+	(SUBDIRS) Don't evaluate '.' first.
+	(jrelib_DATA) Removed MAYBE_GLIBJ_ZIP.
+	(uninstall-local) Add unlink-glibj-zip as a dependency, to
+	make sure that glibj.zip link is removed in the cases 
+	when it is set (i.e. when configure to use system classpath 
+	or prebuilt glibj.zip).
+
+	* libraries/javalib/external/classpath/lib/Makefile.am:
+	(all-local) Add glibj.zip as a dependency to make sure 
+	the built continues to function for tools when prebuilt glibj.zip
+	is used.
+
 2007-08-27  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
 	Fixes bug #100
