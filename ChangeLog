@@ -1,5 +1,13 @@
 2007-09-12  Dalibor Topic  <robilad@kaffe.org>
 
+	Fix for #102.
+	* configure.ac: Reverted erroring out when gif headers are not found,
+	that was introduced in 2006-11-19  Dalibor Topic  <robilad@kaffe.org>.
+
+	Reported by:  Riccardo Mottola <riccardo@kaffe.org>
+
+2007-09-12  Dalibor Topic  <robilad@kaffe.org>
+
 	* config/Makefile.in: Regenerated.
 
 2007-09-12  Dalibor Topic  <robilad@kaffe.org>

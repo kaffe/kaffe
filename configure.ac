@@ -1824,8 +1824,6 @@ if test x"$enable_native_awt" = x"yes"; then
 	   if test x"$ac_cv_lib_ungif_DGifOpen" != x"yes"; then
 	     AC_CHECK_LIBRARY(gif,DGifOpen,GIF_LIBS)
            fi
-	else
-	   AC_ERROR([No gif_lib.h found. Please install libungif or libgif.])
         fi
 
 	LIBS=$OLIBS
