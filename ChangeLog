@@ -1,5 +1,24 @@
 2007-09-12  Dalibor Topic  <robilad@kaffe.org>
 
+	Merged in Kurt Miller's port to x86_64-openbsd from
+	OpenBSD ports repository.
+
+	* README: Added x86_64-openbsd.
+	* WHATSNEW: Added x86_64-openbsd port.
+
+2007-09-12  Kurt Miller <kurt@intricatesoftware.com>
+
+	* config/x86_64/openbsd2/config.frag,
+	config/x86_64/openbsd2/md.c,
+	config/x86_64/openbsd2/md.h: New files.
+
+	* config/Makefile.am (EXTRA_DIST): Added x86_64/openbsd2/config.frag,
+	x86_64/openbsd2/md.c and x86_64/openbsd2/md.h.
+
+	* config/x86_64/threads.h (THREASTACKSIZE): Increase to 512K.
+
+2007-09-12  Dalibor Topic  <robilad@kaffe.org>
+
 	Fix for bug #91.
 	* libraries/clib/awt/X/Makefile.am (libxawt_la_LDFLAGS),
 	libraries/clib/awt/xynth/Makefile.am (libxynthawt_la_LDFLAGS),

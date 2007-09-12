@@ -16,7 +16,7 @@
  * Set a default size for the stack.
  */
 #if defined(INTERPRETER)
-#define THREADSTACKSIZE         (128 * 1024)
+#define THREADSTACKSIZE         (512 * 1024)
 #else
 #define THREADSTACKSIZE         (64 * 1024)
 #endif
