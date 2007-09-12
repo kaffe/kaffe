@@ -341,7 +341,7 @@ libnanoxawt_la_LDFLAGS = \
 	-no-undefined \
 	-module \
 	-release $(PACKAGE_VERSION) \
-	-export-symbols-regex "^([Jj]ava|kaffe)_"
+	-export-symbols-regex "^(JNI|[Jj]ava|kaffe)_"
 
 libnanoxawt_la_LIBADD = $(top_builddir)/kaffe/kaffevm/libkaffevm.la $(top_builddir)/libraries/javalib/external/classpath/native/jni/classpath/libclasspath.la $(AWT_LIBS)
 libnanoxawt_la_SOURCES = \

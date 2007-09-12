@@ -26,7 +26,7 @@ libxawt_la_LDFLAGS = \
 	-no-undefined \
 	-module \
 	-release $(PACKAGE_VERSION) \
-	-export-symbols-regex "^([Jj]ava|kaffe)_"
+	-export-symbols-regex "^(JNI|[Jj]ava|kaffe)_"
 
 libxawt_la_LIBADD = \
 	$(top_builddir)/kaffe/kaffevm/libkaffevm.la \

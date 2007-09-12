@@ -1,5 +1,13 @@
 2007-09-12  Dalibor Topic  <robilad@kaffe.org>
 
+	Fix for bug #91.
+	* libraries/clib/awt/X/Makefile.am (libxawt_la_LDFLAGS),
+	libraries/clib/awt/xynth/Makefile.am (libxynthawt_la_LDFLAGS),
+	libraries/clib/awt/nano-X/Makefile.am (libnanoxawt_la_LDFLAGS): 
+	export symbols starting with JNI_, like JNI_OnLoad.
+
+2007-09-12  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/clib/awt/X/cbd.c: Removed unnecessary jcl.h include.
 
 2007-09-12  Dalibor Topic  <robilad@kaffe.org>
