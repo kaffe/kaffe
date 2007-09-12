@@ -1,5 +1,14 @@
 2007-09-12  Dalibor Topic  <robilad@kaffe.org>
 
+	Fix for build with gcc-4.2, merged in from GNU Classpath.
+
+	2007-09-08  Michael Koch  <konqueror@gmx.de>
+
+        * native/jni/midi-alsa/Makefile.am (AM_CFLAGS):
+        Removed @ERROR_CFLAGS@ to not fail build with GCC 4.2.
+
+2007-09-12  Dalibor Topic  <robilad@kaffe.org>
+
 	Fix for #72.
 	* config/alpha/callKaffeException.h (callKaffeException):
 	Don't clobber frame pointer ($15). That fixes the build with gcc 4.1.

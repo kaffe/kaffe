@@ -8,5 +8,5 @@ libgjsmalsa_la_LIBADD = -lasound
 libgjsmalsa_la_LDFLAGS = $(AM_LDFLAGS) -avoid-version
 
 AM_LDFLAGS = @CLASSPATH_MODULE@
-AM_CPPFLAGS = @CLASSPATH_INCLUDES@ `pkg-config  --cflags-only-I alsa`
-AM_CFLAGS = @WARNING_CFLAGS@ @STRICT_WARNING_CFLAGS@ @ERROR_CFLAGS@ `pkg-config --cflags-only-other alsa`
+AM_CPPFLAGS = @CLASSPATH_INCLUDES@ `pkg-config --cflags-only-I alsa`
+AM_CFLAGS = @WARNING_CFLAGS@ @STRICT_WARNING_CFLAGS@ `pkg-config --cflags-only-other alsa`
