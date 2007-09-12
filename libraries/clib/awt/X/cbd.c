@@ -13,7 +13,6 @@
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include "toolkit.h"
-#include "jcl.h"
 
 
 jclass     NativeClipboard;
