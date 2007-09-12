@@ -15,8 +15,6 @@
 #include <X11/keysym.h>
 #include "toolkit.h"
 #include "keysyms.h"
-#include "jcl.h"
-
 
 #if !defined (USE_POLLING_AWT)
 #include "jsyscall.h"
