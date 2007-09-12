@@ -1,5 +1,13 @@
 2007-09-12  Dalibor Topic  <robilad@kaffe.org>
 
+	Fix for #72.
+	* config/alpha/callKaffeException.h (callKaffeException):
+	Don't clobber frame pointer ($15). That fixes the build with gcc 4.1.
+
+	Reported by:  Daniel Plaza  <daniel@dilmun.ls.fi.upm.es>
+
+2007-09-12  Dalibor Topic  <robilad@kaffe.org>
+
 	Fix for #102.
 	* configure.ac: Reverted erroring out when gif headers are not found,
 	that was introduced in 2006-11-19  Dalibor Topic  <robilad@kaffe.org>.

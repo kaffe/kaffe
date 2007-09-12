@@ -30,7 +30,7 @@ static inline void callKaffeException(uintp fp,
 		"mov %2,$27\n\t"
 		"jmp (%2)"
 		: : "r" (fp), "r" (eobj), "r" (handler)
-		: "$15", "$0", "$27");
+		: "$0", "$27");
 }
 
 #endif /* __alpha_callKaffeException_h */
