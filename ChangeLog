@@ -1,5 +1,9 @@
 2007-09-12  Dalibor Topic  <robilad@kaffe.org>
 
+	* config/Makefile.in: Regenerated.
+
+2007-09-12  Dalibor Topic  <robilad@kaffe.org>
+
 	Merged in Kurt Miller's port to x86_64-openbsd from
 	OpenBSD ports repository.
 

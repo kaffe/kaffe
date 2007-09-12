@@ -394,6 +394,9 @@ EXTRA_DIST = \
 	x86_64/linux/md.c \
 	x86_64/linux/md.h \
 	x86_64/linux/sigcontextinfo.h \
+	x86_64/openbsd2/config.frag \
+	x86_64/openbsd2/md.c \
+	x86_64/openbsd2/md.h \
 	x86_64/threads.h \
 	x86_64/sysdepCallMethod.h \
 	i386/atomic.h \
