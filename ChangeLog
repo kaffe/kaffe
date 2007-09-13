@@ -1,3 +1,8 @@
+2007-09-13  Robert Schuster  <robertschuster@fsfe.org>
+
+	* native/jni/java-net/gnu_java_net_local_LocalSocketImpl.c:
+	Add #ifndef guard around definition of _GNU_SOURCE.
+
 2007-09-13  Dalibor Topic  <robilad@kaffe.org>
 
 	* config/i386/trampolines.S: Mark stack as executable.
