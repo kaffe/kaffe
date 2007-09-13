@@ -1,3 +1,9 @@
+2007-09-13  Dalibor Topic  <robilad@kaffe.org>
+
+	* configure.ac, README: Set version to 1.1.8.
+
+	* RELEASE-NOTES: Cleaned up tested platforms.
+
 2007-09-13  Robert Schuster  <robertschuster@fsfe.org>
 
 	* native/jni/java-net/gnu_java_net_local_LocalSocketImpl.c:

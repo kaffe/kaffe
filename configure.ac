@@ -1,4 +1,4 @@
-AC_INIT([Kaffe Virtual Machine],[1.1.8-pre],[kaffe@kaffe.org],[kaffe])
+AC_INIT([Kaffe Virtual Machine],[1.1.8],[kaffe@kaffe.org],[kaffe])
 
 AC_PREREQ(2.59)
 
