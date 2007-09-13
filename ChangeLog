@@ -1,3 +1,9 @@
+2007-09-13  Dalibor Topic  <robilad@kaffe.org>
+
+	* config/i386/trampolines.S: Mark stack as executable.
+
+	Reported by:  Joshua Nichols  <joshua.nichols@gmail.com>
+
 2007-09-12  Dalibor Topic  <robilad@kaffe.org>
 
 	Fix for build with gcc-4.2, merged in from GNU Classpath.
