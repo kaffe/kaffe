@@ -1,5 +1,11 @@
 2007-09-13  Dalibor Topic  <robilad@kaffe.org>
 
+	* WHATSNEW: Add an entry for news after 1.1.8.
+
+	Reported by:  Guillaume Legris  <glegris@thenesis.org> 
+
+2007-09-13  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac, README: Set version to 1.1.8.
 
 	* RELEASE-NOTES: Cleaned up tested platforms.
