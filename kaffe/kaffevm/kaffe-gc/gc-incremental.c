@@ -370,7 +370,7 @@ gcGetObjectSize(Collector* gcif UNUSED, const void* mem)
 }
 
 static
-int
+gc_alloc_type_t
 gcGetObjectIndex(Collector* gcif UNUSED, const void* mem)
 {
 	gc_unit* unit = UTOUNIT(mem);
