@@ -715,8 +715,6 @@ uninstall-am: uninstall-jrelibDATA uninstall-local
 clean-local:
 	$(RM) stamp-glibj glibj.zip
 
-export JAVA_COMPILER
-
 install-data-local: installdirs
 	if test -f $(DESTDIR)${jrelibdir}/glibj.zip ; then \
 		if ! test -f $(DESTDIR)${jrelibdir}/rt.jar ; then \

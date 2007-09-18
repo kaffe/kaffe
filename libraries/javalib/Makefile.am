@@ -105,8 +105,6 @@ SUBDIRS= \
 jrelib_DATA= \
 	     logging.properties
 
-export JAVA_COMPILER
-
 install-data-local: installdirs
 	if test -f $(DESTDIR)${jrelibdir}/glibj.zip ; then \
 		if ! test -f $(DESTDIR)${jrelibdir}/rt.jar ; then \
