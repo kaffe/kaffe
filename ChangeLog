@@ -1,5 +1,10 @@
 2007-09-19  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/external/classpath/native/jni/native-lib/Makefile.am
+	(AM_LDFLAGS) Use CLASSPATH_CONVENIENCE flags, as it is a convenience library.
+
+2007-09-19  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/external/classpath/native/fdlibm/dtoa.c: Include
 	stdlib.h to have a declaration for free.
 
