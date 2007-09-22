@@ -281,16 +281,19 @@ dumpErrorInfo(errorInfo *einfo UNUSED)
 	/* XXX */
 }
 
-/*
- * discard the errorinfo, freeing a message if necessary
+/**
+ * Discard the errorinfo, freeing a message if necessary
+ *
+ * @param einfo error info
  */
 void
 discardErrorInfo(errorInfo *einfo)
 {
-	if (einfo->type & KERR_FREE_MESSAGE) {
-		KFREE((void *)einfo->mess);
-		einfo->type &= ~KERR_FREE_MESSAGE;
-	}
+  if (einfo->type & KERR_FREE_MESSAGE) {
+    void * message = (void *) einfo->mess;
+    KFREE(message);
+    einfo->type &= ~KERR_FREE_MESSAGE;
+  }
 }
 
 /*

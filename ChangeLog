@@ -1,5 +1,10 @@
 2007-09-22  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/exception.c (discardErrorInfo): 
+	Introduced local variable to fix compiler warning on x86_64-linux.
+	
+2007-09-22  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/jni/jni-string.c (KaffeJNI_ReleaseStringUTFChars): 
 	Introduced local variable to fix compiler warning on x86_64-linux.
 
