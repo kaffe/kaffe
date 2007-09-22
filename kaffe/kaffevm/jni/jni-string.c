@@ -196,9 +196,11 @@ KaffeJNI_GetStringUTFChars(JNIEnv* env, jstring data, jboolean* copy)
 void
 KaffeJNI_ReleaseStringUTFChars(JNIEnv* env UNUSED, jstring data UNUSED, const char* chars)
 {
+  void * utf_chars = (void *) chars;
+
   BEGIN_EXCEPTION_HANDLING_VOID();
 
-  KFREE((void *) chars);
+  KFREE(utf_chars);
 	
   END_EXCEPTION_HANDLING();
 }
