@@ -144,9 +144,9 @@ addLineNumbers(Method* m, size_t len UNUSED, classFile* fp, errorInfo *info)
 	lines = gc_malloc(sizeof(lineNumbers)+sizeof(lineNumberEntry) * nr, KGC_ALLOC_LINENRTABLE);
 	if (!lines) {
 	  DBG(READCLASS,
-	      dprintf("%s (%s): failed to allocate %d bytes for %d line number table entries.\n",
+	      dprintf("%s (%s): failed to allocate %lu bytes for %d line number table entries.\n",
 		      CLASS_CNAME(m->class), m->name->data,
-		      sizeof(lineNumbers)+sizeof(lineNumberEntry) * nr,
+		      (unsigned long) sizeof(lineNumbers)+sizeof(lineNumberEntry) * nr,
 		      nr);
 	      );
 
@@ -162,9 +162,9 @@ addLineNumbers(Method* m, size_t len UNUSED, classFile* fp, errorInfo *info)
 		lines->entry[i].line_nr = data;
 		if (lines->entry[i].start_pc > m->c.bcode.codelen) {
 		  DBG(READCLASS,
-		      dprintf("%s (%s): start pc %d of line number entry %d > method length %d.\n",
+		      dprintf("%s (%s): start pc %lu of line number entry %d > method length %d.\n",
 			      CLASS_CNAME(m->class), m->name->data,
-			      lines->entry[i].start_pc, i, m->c.bcode.codelen);
+			      (unsigned long) lines->entry[i].start_pc, i, m->c.bcode.codelen);
 		      );
 			postExceptionMessage(info,
 					     JAVA_LANG(ClassFormatError),
