@@ -156,7 +156,7 @@ static int feedbackWalker(void *arg,
 					if( (meth = findMethodLocal(cls,
 								    u8mname,
 								    u8sig)) &&
-					    !(meth->accflags & ACC_NATIVE) )
+					    !METHOD_IS_NATIVE(meth) )
 					{
 						if( translate(meth, &info) )
 						{

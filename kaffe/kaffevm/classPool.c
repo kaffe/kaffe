@@ -619,7 +619,7 @@ statClass(Hjava_lang_Class *clazz, int *total)
 			miscfixed += SIZE_IFNONZERO(m->declared_exceptions);
 			misc += SIZE_IFNONZERO(m->exception_table);
 			/* bytecode or jitted code */
-			if ((m->accflags & ACC_NATIVE) == 0) {
+			if (!METHOD_IS_NATIVE(m)) {
 				if (METHOD_TRANSLATED(m)) {
 					jitmem += SIZE_IFNONZERO(getMethodCodeStart(m));
 				} else {

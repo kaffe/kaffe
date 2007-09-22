@@ -184,7 +184,7 @@ CDBG(	dprintf("Call: %s.%s%s.\n", meth->class->name->data, meth->name->data, MET
 	  soft_enter_method(((jvalue*)arg)[0].l, meth);
 #endif
 
-	if (methaccflags & ACC_NATIVE) {
+	if (METHOD_IS_NATIVE(meth)) {
 NDBG(		dprintf("Call to native %s.%s%s.\n", meth->class->name->data, meth->name->data, METHOD_SIGD(meth)); );
 		if (methaccflags & ACC_STATIC) {
 			KaffeVM_callMethodA(meth, meth, 0, (jvalue*)arg, (jvalue*)retval, 1);

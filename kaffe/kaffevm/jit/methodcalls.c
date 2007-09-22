@@ -117,7 +117,7 @@ methodNeedsTrampoline(Method *meth)
 	 *
 	 * NB: If we'll ever support CNI, revisit this.
 	 */
-	if (CLASS_GCJ((meth)->class) && (meth->accflags & ACC_NATIVE) &&
+	if (CLASS_GCJ((meth)->class) && METHOD_IS_NATIVE(meth) &&
 		meth->idx != -1)
 		return (true);
 
@@ -173,7 +173,7 @@ engine_buildTrampoline (Method *meth, void **where, errorInfo *einfo)
 		 * anchors so we can patch them up before they're invoked.
 		 */
 		if (!(CLASS_GCJ((meth)->class)
-			&& (meth->accflags & ACC_NATIVE)))
+			&& METHOD_IS_NATIVE(meth)))
 		{
 			assert(*where == NULL ||
 				!!!"Cannot override trampoline anchor");
