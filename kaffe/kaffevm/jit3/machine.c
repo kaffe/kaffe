@@ -237,7 +237,7 @@ translate(Method* xmeth, errorInfo* einfo)
 	}
 
 	/* If this code block is native, then just set it up and return */
-	if (METHOD_IS_NATIVE(xmeth)) {
+	if (methodIsNative(xmeth)) {
 		void *func = native(xmeth, einfo);
 		if (func != NULL) {
 			engine_create_wrapper(xmeth, func);

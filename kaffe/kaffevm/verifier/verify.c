@@ -292,7 +292,7 @@ verify3(Hjava_lang_Class* class, errorInfo *einfo)
 				     METHOD_NAMED(method), METHOD_SIGD(method)); );
 		
 		/* if it's abstract or native, no verification necessary */
-		if (!(METHOD_IS_ABSTRACT(method) || METHOD_IS_NATIVE(method))) {
+		if (!(METHOD_IS_ABSTRACT(method) || methodIsNative(method))) {
 			DBG(VERIFY3, dprintf("  verifying method %s\n", METHOD_NAMED(method)); );
 			
 			if (!parseMethodTypeDescriptor(METHOD_SIGD(method))) {

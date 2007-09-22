@@ -199,7 +199,7 @@ getStackTraceElements(struct Hjava_lang_VMThrowable* state,
 				unhand(element)->methodName
 					= utf8Const2Java(meth->name);
 				unhand(element)->isNative
-				  = METHOD_IS_NATIVE(meth);
+				  = methodIsNative(meth);
 				unhand_array(result)->body[frame - first_frame]
 					= (Hjava_lang_Object*)element;
 			}
@@ -260,7 +260,7 @@ printStackTrace(struct Hjava_lang_Throwable* o,
 				       + 64));
 
 		if (linenr == -1) {
-		  if (METHOD_IS_NATIVE(meth)) {
+		  if (methodIsNative(meth)) {
 		    sprintf(buf, "   at %s.%s (%s:native)",
 			    class_dot_name,
 			    meth->name->data, 

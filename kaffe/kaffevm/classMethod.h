@@ -580,7 +580,6 @@ Kaffe_set_primitive_array_cache(struct Hjava_lang_Class * primitive_clazz,
 #define METHOD_IS_ABSTRACT(METH)     ((METH)->accflags & ACC_ABSTRACT)
 #define METHOD_IS_FINAL(METH)        ((METH)->accflags & ACC_FINAL)
 
-#define METHOD_IS_NATIVE(METH)       ((METH)->accflags & ACC_NATIVE)
 #define METHOD_IS_STRICT(METH)       ((METH)->accflags & ACC_STRICT)
 #define METHOD_IS_SYNCHRONISED(METH) ((METH)->accflags & ACC_SYNCHRONISED)
 
@@ -778,6 +777,14 @@ void walkClassPool(int (*walker)(Hjava_lang_Class *clazz, void *), void *param);
  * Initialize internal global variables of the class pool.
  */
 void KaffeVM_initClassPool(void);
+
+/**
+ * Test if a method is a native method.
+ *
+ * @param meth method to test.
+ * @return true if the method is a native method.
+ */
+bool methodIsNative(Method * method);
 
 extern Utf8Const* init_name;		/* "<clinit>" */
 extern Utf8Const* constructor_name;	/* "<init>" */

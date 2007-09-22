@@ -140,7 +140,7 @@ checkAbstractMethod(Method* method, errorInfo* einfo)
 	/* enforce access flag rules of the JVML spec. for abstract methods */
 	if (METHOD_IS_PRIVATE(method))           { return abstractMethodError(method, einfo, "private");      }
 	else if (METHOD_IS_FINAL(method))        { return abstractMethodError(method, einfo, "final");        }
-	else if (METHOD_IS_NATIVE(method))       { return abstractMethodError(method, einfo, "native");       }
+	else if (methodIsNative(method))       { return abstractMethodError(method, einfo, "native");       }
 	else if (METHOD_IS_STATIC(method))       { return abstractMethodError(method, einfo, "static");       }
 	else if (METHOD_IS_STRICT(method))       { return abstractMethodError(method, einfo, "strictfp");     }
 	
@@ -190,7 +190,7 @@ checkMethodStaticConstraints(Method* method, errorInfo* einfo)
 		if (checkAbstractMethod(method, einfo) == false) {
 			return(false);
 		}
-	} else if (!METHOD_IS_NATIVE(method)) {
+	} else if (!methodIsNative(method)) {
 	        /* code length static constraints */
 		
 		if (METHOD_BYTECODE_LEN(method) == 0) {

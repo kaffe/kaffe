@@ -88,7 +88,7 @@ engine_callMethod (callMethodInfo *call)
 {
 	Method *meth = (Method *)call->function;
 
-	if (!METHOD_IS_NATIVE(meth)) {
+	if (!methodIsNative(meth)) {
 	  jint i;
 	  jint numArgs;
 	  errorInfo einfo;

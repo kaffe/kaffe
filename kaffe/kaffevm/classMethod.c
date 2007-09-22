@@ -3027,3 +3027,7 @@ int findPackageLength(const char *name)
 	     retval-- );
 	return( retval );
 }
+
+bool methodIsNative(Method * method) {
+  return method->accflags & ACC_NATIVE;
+}

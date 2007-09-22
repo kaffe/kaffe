@@ -1,5 +1,26 @@
 2007-09-22  Dalibor Topic  <robilad@kaffe.org>
 
+	Fixed compiler warning on x86_64-linux.
+
+	* kaffe/kaffevm/classMethod.c (methodIsNative): New function.
+
+	* kaffe/kaffevm/classMethod.h (METHOD_IS_NATIVE): Removed macro.
+	(methodIsNative) Added prototype.
+
+	* kaffe/kaffevm/classPool.c,
+	kaffe/kaffevm/stackTrace.c,
+	kaffe/kaffevm/intrp/machine.c,
+	kaffe/kaffevm/intrp/methodcalls.c,
+	kaffe/kaffevm/jit/machine.c,
+	kaffe/kaffevm/jit/methodcalls.c,
+	kaffe/kaffevm/jit3/machine.c,
+	kaffe/kaffevm/jni/jni.c,
+	kaffe/kaffevm/verifier/verify.c,
+	kaffe/kaffevm/verifier/verify2.c,
+	kaffe/xprof/feedback.c: Use methodIsNative instead of METHOD_IS_NATIVE.
+
+2007-09-22  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffevm/classPool.c,
         kaffevm/intrp/machine.c,
         kaffevm/intrp/methodcalls.c,
