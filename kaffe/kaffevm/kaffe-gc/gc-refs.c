@@ -70,6 +70,9 @@ KaffeGC_addRef(Collector *collector, const void* mem)
   uint32 idx;
   strongRefObject* obj;
 
+  DBG(REFERENCE, dprintf("Adding persistent reference for object %p\n",
+                 mem); );
+
   idx = REFOBJHASH(mem);
   for (obj = strongRefObjects.hash[idx]; obj != 0; obj = obj->next) {
     /* Found it - just increase reference */
@@ -104,6 +107,9 @@ KaffeGC_rmRef(Collector *collector, void* mem)
   uint32 idx;
   strongRefObject** objp;
   strongRefObject* obj;
+
+  DBG(REFERENCE, dprintf("Removing persistent reference for object %p\n",
+                 mem); );
 
   idx = REFOBJHASH(mem);
   lockStaticMutex(&strongRefLock);
@@ -226,6 +232,9 @@ KaffeGC_addWeakRef(Collector *collector, void* mem, void** refobj)
   weakRefObject* obj, *obj2;
   int idx;
 
+  DBG(REFERENCE, dprintf("Adding weak reference for object %p\n",
+                 mem); );
+
   lockStaticMutex(&weakRefLock);
   obj = findWeakRefObject(mem);
   if (obj != NULL)
@@ -283,6 +292,10 @@ KaffeGC_rmWeakRef(Collector *collector, void* mem, void** refobj)
   weakRefObject** objp;
   weakRefObject* obj;
   unsigned int i;
+
+
+  DBG(REFERENCE, dprintf("Removing weak reference for object %p \n",
+                 mem); );
 
   idx = REFOBJHASH(mem);
 
@@ -464,6 +477,9 @@ KaffeGC_clearWeakRef(Collector *collector, void* mem)
   weakRefObject** objp;
   weakRefObject* obj;
   unsigned int i;
+
+  DBG(REFERENCE, dprintf("Clearing all weak references for object %p\n",
+                 mem); );
 
   idx = REFOBJHASH(mem);
 
