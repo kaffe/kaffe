@@ -275,12 +275,20 @@ void KaffeVM_setFinalizer(jobject obj, kgc_finalizer_type fintype)
     {
     case KGC_OBJECT_REFERENCE_FINALIZER:
       kobj->finalizer_call = referenceFinalizer;
+  DBG(REFERENCE, 
+      dprintf("Set object reference finalizer for %p (%s).\n", kobj, 
+	      CLASS_CNAME(OBJECT_CLASS(kobj))); 
+      );
       break;
     case KGC_DEFAULT_FINALIZER:
       kobj->finalizer_call = defaultObjectFinalizer;
       break;
     case KGC_REFERENCE_FINALIZER:
       kobj->finalizer_call = referenceObjectFinalizer;
+  DBG(REFERENCE, 
+      dprintf("Set reference finalizer for %p (%s).\n", kobj, 
+	      CLASS_CNAME(OBJECT_CLASS(kobj))); 
+      );
       break;
     default:
       DBG(REFERENCE,
