@@ -475,7 +475,7 @@ KaffeGC_WalkMemory(Collector* gcif, void* mem)
 	size = GCBLOCKSIZE(info);
 	record_marked(1, size);
 	walkf = gcFunctions[KGC_GET_FUNCS(info, idx)].walk;
-	if (walkf != 0) {
+	if (walkf != NULL) {
 DBG(GCWALK,	
 		dprintf("walking %d bytes @%p: %s\n", size, mem, 
 			describeObject(mem));
@@ -824,7 +824,7 @@ finishGC(Collector *gcif)
 		info = gc_mem2block(unit);
 		idx = GCMEM2IDX(info, unit);
 		destroy = gcFunctions[KGC_GET_FUNCS(info,idx)].destroy;
-		if (destroy != 0) {
+		if (destroy != NULL) {
 			destroy(gcif, UTOMEM(unit));
 		}
 

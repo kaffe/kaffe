@@ -70,13 +70,13 @@ typedef struct SystemCallInterface {
 	int	(*_remove)(const char *);
 
 	int	(*_socket)(int, int, int, int *);
-	int	(*_connect)(int, struct sockaddr *, socklen_t, int timeout);
+	int	(*_connect)(int, struct sockaddr *, socklen_t, int);
 	int	(*_bind)(int, struct sockaddr *, socklen_t);
 	int	(*_listen)(int, int);
 	int	(*_accept)(int, struct sockaddr *, socklen_t*, int, int *);
 	int	(*_sockread)(int, void*, size_t, int, ssize_t *);
 	int	(*_recvfrom)(int, void *, size_t, int, struct sockaddr *, socklen_t *,
-		int timeout, ssize_t *);
+		int, ssize_t *);
 	int	(*_sockwrite)(int, const void *, size_t, ssize_t *);
 	int	(*_sendto)(int, const void *, size_t, int, const struct sockaddr *,
 		socklen_t, ssize_t *);
