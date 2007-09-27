@@ -30,10 +30,61 @@ for jikes CVS head.
 There is a jikes package in Cygwin now, but it can not be used yet
 to compile GNU Classpath, which Kaffe uses as its class library.
 
+You'll need the latest GNU Classpath CVS head. Instructions how to 
+get it can be found on http://www.classpath.org
+
+You'll Sun's javac in order to build GNU Classpath. Sun's JDK can be 
+found at http://java.sun.com.
+
 There is a Kaffe port to mingw32, and it would be great if someone 
 volunteered to merge it into the main tree. For more information, see
 http://www.kaffe.org/pipermail/kaffe/2003-January/092896.html
 http://kaffe.org/pipermail/kaffe/2004-April/097829.html
+
+GNU Classpath
+=============
+
+You need to build GNU Classpath first. After checking out Classpath,
+make sure that you have Sun's JDK installed locally. Then, make sure
+that Cygwin can find javac in its path, for example by setting
+
+export PATH=$PATH:/cygdrive/c/Programme/Java/jdk1.6.0_01/bin
+
+The actual path will depend on where Sun's JDK is installed.
+
+I use the following cofiguration options
+
+	../classpath/configure --disable-gtk-peer --disable-plugin \
+	--disable-gconf-peer --with-javac="javac -target 1.5 -J-Xmx512M"
+
+--disable-gtk-peer disables the building of the GTK peers, since the
+version in Cygwin is not current enough.
+
+--disable-plugin disables the building of the Mozilla plugin, since it 
+does not serve much purpose without GTK peers.
+
+--disable-gconf-peer disables the building of GConf peers, since the
+version in Cygwin is not current enough.
+
+--with-javac="javac -target 1.5 -J-Xmx512M" uses Sun's javac to build
+GNU Classpath's java classes, targetting Java 1.5 for the bytecode,
+and using up to 512M of memory for the compilation. We need to target 
+1.5, since the default for javac in JDK 1.6 are 1.6 JVMs. We need to 
+ask for more memory, since the default Sun JVM memory limit is too small
+to compile GNU Classpath.
+
+Running 
+
+	make 
+
+builds GNU Classpath. It also currently results in various warnings. If 
+you fix them, please submit your patches to the GNU Classpath bug tracker. 
+
+Running 
+
+	make install
+
+results in GNU Classpath being installed to /usr/local/classpath.
 
 Configuration
 =============
