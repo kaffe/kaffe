@@ -91,14 +91,9 @@ Configuration
 
 I tried various configuration options, and eventually settled for
 
-	../kaffe/configure --with-gc=kaffe-gc --disable-native-awt \
-	--with-staticvm --with-staticbin --enable-pure-java-math \
-	--disable-shared
-
---with-gc=kaffe-gc sets the gc to kaffe's gc. it's the default, anyway, 
-but I've had configure scripts do odd things on cygwin, so I set it 
-manually to work around whatever made me set it manually. You may not 
-need to set it explicitely.
+	../kaffe/configure --disable-native-awt --disable-gconf-peer \
+	--with-system-classpath --enable-pure-java-math \
+	--disable-shared --with-engine=intrp
 
 --disable-native-awt disables the AWT build. I was not interested in 
 building graphical applications for Cygwin/XFree86 and enabling it means 
@@ -106,11 +101,8 @@ dealing with X11 headers, Gtk+, ... which I didn't have a need for.
 If someone makes the Qt4 peers work with Qt4-win32, please send you patches,
 screenshots and success stories to the Kaffe mailing list kaffe@kafe.org.
 
---with-staticvm --with-staticbin was the combination that works for me, 
-without linking problems. I preferred to avoid the linkage constraints on 
-DLLs, though patches that make it all work without the need for 
-static binaries would be appreciated. Send them to the mailing list,
-as well.
+--disable-gconf-peer disables the building of GConf peers, since the
+version in Cygwin is not current enough.
 
 --enable-pure-java-math If you are not using crypto and don't have 
 gmp installed.
@@ -118,14 +110,20 @@ gmp installed.
 --disable-shared Is necessary to make sure that libtool does not try to 
 build shared libraries.
 
+--with-engine=intrp Selects the interpreter engine, which passes more 
+regression tests on Cygwin than the default jit engine.
+
+--with-system-classpath Uses the freshly installed GNU Classpath, rather
+than the one inside Kaffe's sources.
+
 Status
 ======
 
 With this setup, and after a round or two of make && make check, I get 
-142 passes out of 150 regression tests with the interpreter engine, and
-131 passes for the jit engine using --with-threads=unix-jthreads, and
-for --with-threads=unix-pthreads I get 139 passes for interpreter and 
-126 for the jit engine.
+139 passes out of 150 regression tests with the interpreter engine, and
+126 passes for the jit engine using the default unix-pthreads, and
+for --with-threads=unix-jthreads I get 142 passes for interpreter and 
+131 for the jit engine.
 
 There probably are various issues that the compiler warnings should be 
 able to help interested developers fix. As usual, I'd appreciate patches. 
