@@ -1,3 +1,14 @@
+2007-09-29  Dalibor Topic  <robilad@kaffe.org>
+
+	* config/Makefile.am (EXTRA_DIST): 
+	Added arm/linux/jit3-md.h, bfin/uclinux/sigcontextinfo.h,
+	i386/drops/config.frag, i386/drops/jit3-md.h, 
+	i386/drops/jit-md.h, i386/drops/md.c,
+	i386/drops/md.h, i386/interix6/config.frag,
+	i386/interix6/jit-md.h, i386/interix6/md.c,
+	i386/interix6/md.h, powerpc/callKaffeException.h: 
+	Added missing files.
+
 2007-09-27  Dalibor Topic  <robilad@kaffe.org>
 
 	* FAQ/FAQ.win32: Updated information how to build Kaffe

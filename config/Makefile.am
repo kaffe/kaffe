@@ -63,6 +63,7 @@ EXTRA_DIST = \
 	arm/jit3-icode.h \
 	arm/linux/config.frag \
 	arm/linux/jit-md.h \
+	arm/linux/jit3-md.h \
 	arm/linux/md.c \
 	arm/linux/md.h \
 	arm/linux/sigcontextinfo.h \
@@ -90,6 +91,7 @@ EXTRA_DIST = \
         bfin/uclinux/jit-md.h \
         bfin/uclinux/md.c \
         bfin/uclinux/md.h \
+        bfin/uclinux/sigcontextinfo.h \
         bfin/threads.h \
         bfin/sysdepCallMethod.h \
         bfin/trampolines.S \
@@ -143,6 +145,11 @@ EXTRA_DIST = \
 	i386/dgux/jit-md.h \
 	i386/dgux/md.c \
 	i386/dgux/md.h \
+	i386/drops/config.frag \
+	i386/drops/jit3-md.h \
+	i386/drops/jit-md.h \
+	i386/drops/md.c \
+	i386/drops/md.h \
 	i386/freebsd2/config.frag \
 	i386/freebsd2/jit-md.h \
 	i386/freebsd2/jit3-md.h \
@@ -154,6 +161,10 @@ EXTRA_DIST = \
 	i386/gnu/jit3-md.h \
 	i386/gnu/md.c \
 	i386/gnu/md.h \
+	i386/interix6/config.frag \
+	i386/interix6/jit-md.h \
+	i386/interix6/md.c \
+	i386/interix6/md.h \
 	i386/jit-i386.def \
 	i386/jit-icode.h \
 	i386/jit.h \
@@ -300,6 +311,7 @@ EXTRA_DIST = \
 	powerpc/aix/md.c \
 	powerpc/aix/md.h \
 	powerpc/bits/atomic.h \
+	powerpc/callKaffeException.h \
 	powerpc/common.h \
 	powerpc/darwin/config.frag \
 	powerpc/darwin/md.c \
