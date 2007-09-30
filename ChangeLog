@@ -1,5 +1,10 @@
 2007-09-30  Dalibor Topic  <robilad@kaffe.org>
 
+	* TODO: Updated.
+	* configure.ac, README, RELEASE-NOTES: Updated to 1.1.9-pre.
+
+2007-09-30  Dalibor Topic  <robilad@kaffe.org>
+
 	* Makefile.am (EXTRA_DIST): Added FAQ/FAQ.arm,
 	FAQ/FAQ.drops, FAQ.freebsd, FAQ.platform-status.
 
