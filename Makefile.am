@@ -65,6 +65,7 @@ EXTRA_DIST = \
 	license.terms \
 	license-lesser.terms \
 	license-w3c.terms \
+	FAQ/FAQ.arm \
 	FAQ/FAQ.BeOS \
 	FAQ/FAQ.Known-Bugs \
 	FAQ/FAQ.amigaos \
@@ -83,8 +84,10 @@ EXTRA_DIST = \
 	FAQ/FAQ.depend \
 	FAQ/FAQ.dmalloc \
 	FAQ/FAQ.dns \
+	FAQ/FAQ.drops \
 	FAQ/FAQ.embedded \
 	FAQ/FAQ.feedback \
+	FAQ/FAQ.freebsd \
 	FAQ/FAQ.gcblock \
 	FAQ/FAQ.gcj \
 	FAQ/FAQ.gcstrategy \
@@ -103,6 +106,7 @@ EXTRA_DIST = \
 	FAQ/FAQ.mauve \
 	FAQ/FAQ.nativemethods \
 	FAQ/FAQ.ncr \
+	FAQ/FAQ.platform-status \
 	FAQ/FAQ.profiler \
 	FAQ/FAQ.ps2linux \
 	FAQ/FAQ.pthreads \
