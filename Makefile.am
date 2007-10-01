@@ -124,26 +124,24 @@ EXTRA_DIST = \
 	compat-include/eh-common.h \
 	compat-include/frame.h \
 	compat-include/gansidecl.h \
+	developers/alignment_of_size.c \
 	developers/auto-build.conf \
+	developers/autogen.sh \
 	developers/boehm-with-kaffe.patch \
 	developers/build_mathnamespace \
-	developers/check-classpath-unmerged \
-	developers/math_symbols \
 	developers/check-classpath-merge-status \
-	developers/FullTest.sh \
-	developers/GCJ.note.1 \
-	developers/JavaClass.pm \
-	developers/README \
-	developers/README.EUC_JP \
-	developers/alignment_of_size.c \
-	developers/autogen.sh \
+	developers/check-classpath-unmerged \
+	developers/config1.patch \
+	developers/config2.patch \
+	developers/config3.patch \
 	developers/createLdScript.pl \
 	developers/dumpClass.pl \
 	developers/gdbinit \
-	developers/fixup.c \
 	developers/geteh_from_libgcc2 \
 	developers/glibc-2.1.1-signal.patch \
+	developers/fixup.c \
 	developers/mangleNative.pl \
+	developers/math_symbols \
 	developers/mauve-html-gen.pl \
 	developers/mauve-kaffe \
 	developers/mauve-results.sh \
@@ -153,6 +151,11 @@ EXTRA_DIST = \
 	developers/sp_offset.c \
 	developers/test-kaffe-sh \
 	developers/utf8munge.pl \
+	developers/FullTest.sh \
+	developers/GCJ.note.1 \
+	developers/JavaClass.pm \
+	developers/README \
+	developers/README.EUC_JP \
 	scripts/GCCWarning.pm \
 	scripts/JikesWarning.pm \
 	scripts/LogWarning.pm \

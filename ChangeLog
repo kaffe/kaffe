@@ -1,5 +1,9 @@
 2007-10-01  Dalibor Topic  <robilad@kaffe.org>
 
+	* Makefile.am (EXTRA_DIST): Added drops patches for config.guess.
+
+2007-10-01  Dalibor Topic  <robilad@kaffe.org>
+
 	* Makefile.am (EXTRA_DIST): Added missing '\'.
 
 2007-09-30  Dalibor Topic  <robilad@kaffe.org>
