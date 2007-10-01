@@ -300,8 +300,17 @@ with_engine = @with_engine@
 AM_CFLAGS = $(KAFFE_CFLAGS)
 noinst_LTLIBRARIES = libkthread.la
 libkthread_la_LDFLAGS = $(KVMLIBFLAGS)
-libkthread_la_SOURCES = l4thread.c signal.c syscalls.c
-EXTRA_DIST = Makefile.frag jsignal.h jthread.h lock-impl.h thread-impl.h
+libkthread_la_SOURCES = \
+	l4thread.c \
+	l4thread.h \
+	signal.c \
+	syscalls.c \
+	jsignal.h \
+	jthread.h \
+	lock-impl.h \
+	thread-impl.h
+
+EXTRA_DIST = Makefile.frag 
 AM_CPPFLAGS = \
 	-I$(srcdir) \
 	-I../.. \

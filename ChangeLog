@@ -1,5 +1,10 @@
 2007-10-01  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/systems/drops-l4threads/Makefile.am (libkthread_la_SOURCES):
+	Added l4thread.h.
+
+2007-10-01  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/boehm-gc/Makefile.am (EXTRA_DIST),
 	kaffe/kaffevm/kaffe-gc/Makefile.am (EXTRA_DIST): Added Makfile.frag.
 	This ensures that the necessary defines for boehm-gc are preserved
