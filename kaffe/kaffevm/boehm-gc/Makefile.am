@@ -35,3 +35,6 @@ libkaffegc_la_SOURCES= \
 	gc-kaffe.c \
 	gc-kaffe.h
 
+
+EXTRA_DIST= \
+	Makefile.frag

@@ -1,5 +1,16 @@
 2007-10-01  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/boehm-gc/Makefile.am (EXTRA_DIST),
+	kaffe/kaffevm/kaffe-gc/Makefile.am (EXTRA_DIST): Added Makfile.frag.
+	This ensures that the necessary defines for boehm-gc are preserved
+	in builds from the tarball.
+ 
+	* kaffe/kaffevm/boehm-gc/Makefile.frag,
+	kaffe/kaffevm/kaffe-gc/Makefile.frag: Added comment where the 
+	fragment is used.
+
+2007-10-01  Dalibor Topic  <robilad@kaffe.org>
+
 	* include/jawt.h, include/jawt_md.h:
 	Removed unused files.
 

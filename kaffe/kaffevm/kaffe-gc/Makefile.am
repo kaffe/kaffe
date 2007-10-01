@@ -37,3 +37,7 @@ libkaffegc_la_SOURCES= \
 
 libkaffegc_la_DEPENDENCIES = \
         $(top_builddir)/kaffe/kaffevm/systems/$(THREAD_SYSTEM)/libkthread.la
+
+EXTRA_DIST= \
+	Makefile.frag
+
