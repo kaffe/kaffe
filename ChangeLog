@@ -1,5 +1,9 @@
 2007-10-01  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/external/classpath/lib/org/.cvsignore: Removed.
+
+2007-10-01  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/clib/io/.cvsignore: Removed.
 
 2007-10-01  Dalibor Topic  <robilad@kaffe.org>
