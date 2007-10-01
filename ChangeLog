@@ -1,5 +1,9 @@
 2007-10-01  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/clib/io/.cvsignore: Removed.
+
+2007-10-01  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/systems/drops-l4threads/Makefile.am (libkthread_la_SOURCES):
 	Added l4thread.h.
 
