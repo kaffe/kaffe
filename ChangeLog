@@ -1,5 +1,12 @@
 2007-10-01  Dalibor Topic  <robilad@kaffe.org>
 
+	* include/jawt.h, include/jawt_md.h:
+	Removed unused files.
+
+	* include/Makefile.am (include_HEADERS): Removed JAWT_HDRS.
+
+2007-10-01  Dalibor Topic  <robilad@kaffe.org>
+
 	* Makefile.am (EXTRA_DIST): Added drops patches for config.guess.
 
 2007-10-01  Dalibor Topic  <robilad@kaffe.org>
