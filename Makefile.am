@@ -124,7 +124,7 @@ EXTRA_DIST = \
 	compat-include/eh-common.h \
 	compat-include/frame.h \
 	compat-include/gansidecl.h \
-	developers/auto-build.conf
+	developers/auto-build.conf \
 	developers/boehm-with-kaffe.patch \
 	developers/build_mathnamespace \
 	developers/check-classpath-unmerged \
