@@ -1,3 +1,10 @@
+2007-10-06  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/systems/unix-pthreads/signal.c (KaffePThread_detectStackBoundaries): 
+	Removed unused else branch that caused the build to fail on hppa-linux.
+
+	Reported by:  Michael Koch  <mkoch@kaffe.org>
+	
 2007-10-01  Dalibor Topic  <robilad@kaffe.org>
 
 	* m4/libxml.m4, m4/libxslt.m4, m4/pkg.m4: Removed unused files.

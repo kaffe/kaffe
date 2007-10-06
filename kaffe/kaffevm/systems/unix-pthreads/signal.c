@@ -480,11 +480,6 @@ KaffePThread_detectStackBoundaries(jthread_t jtid, size_t mainThreadStackSize)
 	    kaffeNoopFunc(*guessPointer);
 	  }
 	}
-	else {
-#if defined(STACK_GROWS_UP)
-	  guessPointer += pageSize;
-#endif
-	}
 
 	/* Here we have detected one the boundary of the stack.
 	 * If stack grows up then it is the upper boundary. In the other
