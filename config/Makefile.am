@@ -304,6 +304,7 @@ EXTRA_DIST = \
 	parisc/hpux/config.frag \
 	parisc/hpux/md.h \
 	parisc/linux/config.frag \
+	parisc/linux/md.c \
 	parisc/linux/md.h \
 	parisc/sysdepCallMethod.h \
 	parisc/threads.h \
