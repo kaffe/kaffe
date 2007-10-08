@@ -1,7 +1,16 @@
 2007-10-08  Dalibor Topic  <robilad@kaffe.org>
 
-	* config/parisc/md.c: Added empty file to fix build on 
+	* config/hpux/linux/md.c: Added empty file to fix build on 
+	hppa-hpux.
+
+	* config/Makefile.am (EXTRA_DIST): Added parisc/hpux/md.c.
+
+2007-10-08  Dalibor Topic  <robilad@kaffe.org>
+
+	* config/parisc/linux/md.c: Added empty file to fix build on 
 	hppa-linux.
+
+	* config/Makefile.am (EXTRA_DIST): Added parisc/linux/md.c.
 
 	Reported by:  Michael Koch  <mkoch@kaffe.org>
 
