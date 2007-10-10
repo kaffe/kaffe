@@ -28,7 +28,7 @@ static linking when building Kaffe.  There are issue with some
 dynamic loaders and GDB may not be able to find your source files
 when you step into a function that is defined in another directory
 or library.  When configuring Kaffe you can pass the static flags
-     ./configure --with-staticlib --with-staticbin --with-staticvm
+     ./configure --with-staticlib --with-staticvm
 
        
 -vmdebug

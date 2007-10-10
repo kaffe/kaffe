@@ -110,7 +110,7 @@ for s in $STATICBUILD; do
 	    case "$s" in 
 		yes)
 		    STATDIR="-static"
-		    CONFIG_STATIC="--with-staticvm --with-staticlib --with-staticbin"
+		    CONFIG_STATIC="--with-staticvm --with-staticlib"
 		    ;;
 		no)
 		    STATDIR=

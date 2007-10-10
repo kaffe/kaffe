@@ -246,17 +246,6 @@ if test x"$with_staticlib" = x"yes" ; then
 	fi
 fi
 
-AC_ARG_WITH([staticbin],
-            AS_HELP_STRING([--with-staticbin],
-                           [Force the creation of a static virtual machine binary]))
-
-if test x"$with_staticbin" = x"yes" ; then
-	vm_dynamic_binary=no
-	if test x"${with_staticvm+set}" != x"set"; then
-		with_staticvm=yes
-	fi
-fi
-
 AC_ARG_WITH([staticvm],
             AS_HELP_STRING([--with-staticvm],
                            [Force the creation of a static virtual machine]))
