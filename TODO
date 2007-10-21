@@ -28,8 +28,6 @@
   * Replace native library code using KNI with code using JNI
 
 * Merging work:
-  * Update to latest VMProcess interface (needs K* cleanup instead of using 
-  POSIX functions directly)
   * verifier from gcj (rob gonzalez)
   * SkyOS port
 
