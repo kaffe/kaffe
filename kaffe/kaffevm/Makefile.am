@@ -143,7 +143,6 @@ libkaffevm_la_SOURCES = \
         $(top_srcdir)/libraries/clib/native/Constructor.c \
         $(top_srcdir)/libraries/clib/native/Field.c \
         $(top_srcdir)/libraries/clib/native/Method.c \
-        $(top_srcdir)/libraries/clib/native/TimeZone.c \
         $(top_srcdir)/libraries/clib/native/Class.c \
         $(top_srcdir)/libraries/clib/native/ClassLoader.c \
         $(top_srcdir)/libraries/clib/native/java_lang_Object.c \
