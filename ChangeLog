@@ -1,5 +1,15 @@
 2007-10-22  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/vmspecific/java/lang/VMClassLoader.java: Removed.
+
+	* libraries/javalib/vmspecific/Makefile.am (dist_vminterface_JAVA): Removed /java/lang/VMClassLoader.java.
+
+	* libraries/clib/native/ClassLoader.c (java_lang_VMClassLoader_getPrimitiveClass): 
+	Renamed from java_lang_VMClassLoader_getPrimitiveClass0. 
+	Throw NoClassDefError if primitive class is not found.
+
+2007-10-22  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/clib/native/ClassLoader.c 
 	(java_lang_VMClassLoader_getPrimitiveClass0):
 	Rewritten to use getPrimitiveClassFromSignature.

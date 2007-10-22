@@ -32,9 +32,21 @@
 #include "defs.h"
 
 struct Hjava_lang_Class*
-java_lang_VMClassLoader_getPrimitiveClass0(jchar typeCode)
+java_lang_VMClassLoader_getPrimitiveClass(jchar typeCode)
 {
-	return getPrimitiveClassFromSignature(typeCode);
+  struct Hjava_lang_Class* primitiveClass;
+
+  primitiveClass = getPrimitiveClassFromSignature(typeCode);
+
+  if (primitiveClass == NULL) {
+    errorInfo info;
+
+    postNoClassDefFoundError(&info, "Invalid type specifier");
+    throwError(&info);
+  }
+  else {
+    return primitiveClass;
+  }
 }
 
 /*

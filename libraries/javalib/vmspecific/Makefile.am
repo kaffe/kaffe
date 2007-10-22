@@ -30,7 +30,6 @@ dist_vminterface_JAVA = \
 	gnu/java/net/InetAddressImpl.java \
 	gnu/java/net/SysInetAddressImpl.java \
 	java/lang/Runtime.java \
-	java/lang/VMClassLoader.java \
 	java/lang/VMProcess.java \
 	java/lang/VMRuntime.java \
 	java/lang/VMString.java \
