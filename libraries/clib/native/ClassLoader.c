@@ -4,6 +4,9 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
+ * Copyright (c) 2007
+ *      Kaffe.org contributors. See ChangeLog for details.
+ *
  * See the file "license.terms" for information on usage and redistribution 
  * of this file. 
  */
@@ -31,28 +34,7 @@
 struct Hjava_lang_Class*
 java_lang_VMClassLoader_getPrimitiveClass0(jchar typeCode)
 {
-	switch(typeCode) {
-	case 'Z':
-		return (booleanClass);
-	case 'B':
-		return (byteClass);
-	case 'C':
-		return (charClass);
-	case 'D':
-		return (doubleClass);
-	case 'F':
-		return (floatClass);
-	case 'I':
-		return (intClass);
-	case 'J':
-		return (longClass);
-	case 'S':
-		return (shortClass);
-	case 'V':
-		return (voidClass);
-	default:
-	  return(NULL);
-	}
+	return getPrimitiveClassFromSignature(typeCode);
 }
 
 /*
