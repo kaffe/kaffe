@@ -5,7 +5,7 @@
  * Copyright (c) 1996, 1997
  *	Transvirtual Technologies, Inc.  All rights reserved.
  *
- * Copyright (c) 2004
+ * Copyright (c) 2004, 2007
  *	Kaffe.org contributors. See ChangeLog for details. All rights reserved.
  *   
  * See the file "license.terms" for information on usage and redistribution 
@@ -180,7 +180,6 @@ classFromSig(const char** strp, Hjava_lang_ClassLoader* loader, errorInfo *einfo
 		for (end = start; *end != 0 && *end != ';'; end++)
 			;
 		if (*end != ';') {
-			postException(einfo, JAVA_LANG(VerifyError));
 			return (NULL);
 		}
 		*strp = end + 1;
@@ -195,7 +194,6 @@ classFromSig(const char** strp, Hjava_lang_ClassLoader* loader, errorInfo *einfo
 
 	default:
 		/* malformed signature */
-		postException(einfo, JAVA_LANG(VerifyError));
 		return (NULL);
 	}
 }
@@ -234,5 +232,14 @@ getClassFromSignature(const char* sig, Hjava_lang_ClassLoader* loader, errorInfo
 Hjava_lang_Class*
 getClassFromSignaturePart(const char* sig, Hjava_lang_ClassLoader* loader, errorInfo *einfo)
 {
-	return (classFromSig(&sig, loader, einfo));
+	Hjava_lang_Class *cls = classFromSig(&sig, loader, einfo);
+
+	/* If class has been found, return it. */
+	if (cls != NULL) {
+		return cls;
+	}
+
+	/* Otherwise, post an exception message. */
+	postException(einfo, JAVA_LANG(VerifyError));
+	return (NULL);
 }
