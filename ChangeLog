@@ -1,5 +1,15 @@
 2007-10-22  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/classMethod.h (getPrimitiveClassFromSignature):
+	Added prototype.
+
+	* kaffe/kaffevm/itypes.c (getPrimitiveClassFromSignature):
+	New function.
+	(classFromSig) Delegate to getPrimitiveClassFromSignature
+	for primitive types.
+
+2007-10-22  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/itypes.c (classFromSig): Don't post
 	VerifyError here, throw it in the calling function.
 	(getClassFromSignaturePart) Post VerifyError if call 

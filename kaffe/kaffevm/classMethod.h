@@ -701,6 +701,7 @@ int			sizeofSig(const char**, bool);
 int			sizeofSigMethod(Method *, bool);
 int			sizeofSigClass(Hjava_lang_Class*, bool);
 void			establishMethod(Method*);
+Hjava_lang_Class*	getPrimitiveClassFromSignature(const char);
 Hjava_lang_Class*	getClassFromSignature(const char*, Hjava_lang_ClassLoader*, errorInfo*);
 Hjava_lang_Class*	getClassFromSignaturePart(const char*, Hjava_lang_ClassLoader*, errorInfo*);
 int			countArgsInSignature(const char *);

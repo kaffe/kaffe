@@ -164,15 +164,6 @@ classFromSig(const char** strp, Hjava_lang_ClassLoader* loader, errorInfo *einfo
 	const char* end;
 
 	switch (*(*strp)++) {
-	case 'V': return (voidClass);
-	case 'I': return (intClass);
-	case 'Z': return (booleanClass);
-	case 'S': return (shortClass);
-	case 'B': return (byteClass);
-	case 'C': return (charClass);
-	case 'F': return (floatClass);
-	case 'D': return (doubleClass);
-	case 'J': return (longClass);
 	case '[': return (lookupArray(classFromSig(strp, loader, einfo),
 				      einfo));
 	case 'L':
@@ -193,8 +184,7 @@ classFromSig(const char** strp, Hjava_lang_ClassLoader* loader, errorInfo *einfo
 		return(cl);
 
 	default:
-		/* malformed signature */
-		return (NULL);
+		return getPrimitiveClassFromSignature(*(*(strp)-1));
 	}
 }
 
@@ -242,4 +232,29 @@ getClassFromSignaturePart(const char* sig, Hjava_lang_ClassLoader* loader, error
 	/* Otherwise, post an exception message. */
 	postException(einfo, JAVA_LANG(VerifyError));
 	return (NULL);
+}
+
+/**
+ * Return a primitive class for a given signature.
+ *
+ * @param sig signature (V,I,Z,S,B,C,F,D,J)
+ *
+ * @return primitive class corresponding to signature, otherwise NULL.
+ */
+Hjava_lang_Class*
+getPrimitiveClassFromSignature(const char sig)
+{
+	switch(sig) {
+	case 'V': return (voidClass);
+	case 'I': return (intClass);
+	case 'Z': return (booleanClass);
+	case 'S': return (shortClass);
+	case 'B': return (byteClass);
+	case 'C': return (charClass);
+	case 'F': return (floatClass);
+	case 'D': return (doubleClass);
+	case 'J': return (longClass);
+	default:
+		return NULL;
+	}
 }
