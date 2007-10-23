@@ -52,9 +52,6 @@
 /* Do we have amask instruction on alpha */
 #undef HAVE_ALPHA_ASM_AMASK
 
-/* Define to 1 if you have the <alsa/asoundlib.h> header file. */
-#undef HAVE_ALSA_ASOUNDLIB_H
-
 /* Define to 1 if you have the <arpa/nameser.h> header file. */
 #undef HAVE_ARPA_NAMESER_H
 
@@ -117,9 +114,6 @@
 
 /* Define to 1 if you have the `drem' function. */
 #undef HAVE_DREM
-
-/* Define to 1 if you have the <dssi.h> header file. */
-#undef HAVE_DSSI_H
 
 /* Define to 1 if you have the `execve' function. */
 #undef HAVE_EXECVE
@@ -843,10 +837,6 @@
 
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
-
-/* Define if you want to synchronize VM threads portably by default; undef
-   otherwise */
-#undef PORTABLE_NATIVE_SYNC
 
 /* Define to the necessary symbol if this constant uses a non-standard name on
    your system. */

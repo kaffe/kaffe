@@ -130,12 +130,6 @@ autoconf # -Wall
  touch config-h.in
 ) 	 
 
-(
- cd libraries/javalib/external/classpath
-
- autoreconf -i -f
-)
-
 # drops specific patches
 (
   cd scripts
@@ -145,9 +139,4 @@ autoconf # -Wall
 (
   cd libltdl
   patch -p0 <../developers/config2.patch
-)
-
-(
-  cd libraries/javalib/external/classpath
-  patch -p0 <../../../../developers/config3.patch
 )

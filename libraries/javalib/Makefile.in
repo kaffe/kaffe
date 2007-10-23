@@ -82,8 +82,8 @@ RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
   distclean-recursive maintainer-clean-recursive
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = external/classpath vmspecific gnu-inet dnsjava \
-	awt-implementations gmp-math tritonus-sound zlib-zip
+DIST_SUBDIRS = vmspecific gnu-inet dnsjava awt-implementations \
+	gmp-math tritonus-sound zlib-zip
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 ALSA_CFLAGS = @ALSA_CFLAGS@
@@ -309,11 +309,7 @@ with_engine = @with_engine@
 @COND_PURE_JAVA_MATH_FALSE@MAYBE_GMP_JAVA_MATH = gmp-math
 @COND_NATIVE_SOUND_TRUE@MAYBE_TRITONUS_SOUND = tritonus-sound
 @COND_ZLIB_ZIP_TRUE@MAYBE_ZLIB_ZIP = zlib-zip
-
-# if we're not using the system classpath, build our own.
-@USE_SYSTEM_CLASSPATH_FALSE@MAYBE_CLASSPATH = external/classpath
 SUBDIRS = \
-	$(MAYBE_CLASSPATH) \
 	vmspecific \
 	gnu-inet \
 	dnsjava \
@@ -590,7 +586,6 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-@USE_PRECOMPILED_RT_JAR_FALSE@@USE_SYSTEM_CLASSPATH_FALSE@install-exec-local:
 clean: clean-recursive
 
 clean-am: clean-generic clean-libtool clean-local mostlyclean-am
@@ -664,53 +659,25 @@ uninstall-am: uninstall-jrelibDATA uninstall-local
 	uninstall uninstall-am uninstall-jrelibDATA uninstall-local
 
 
-@USE_SYSTEM_CLASSPATH_TRUE@stamp-glibj:
-@USE_SYSTEM_CLASSPATH_TRUE@	@echo Importing glibj.zip from $(CLASSPATH_CLASSES)
-@USE_SYSTEM_CLASSPATH_TRUE@	@$(LN_S) $(CLASSPATH_CLASSES) glibj.zip
-@USE_SYSTEM_CLASSPATH_TRUE@	@touch stamp-glibj
+stamp-glibj:
+	@echo Importing glibj.zip from $(CLASSPATH_CLASSES)
+	@$(LN_S) $(CLASSPATH_CLASSES) glibj.zip
+	@touch stamp-glibj
 
-@USE_SYSTEM_CLASSPATH_TRUE@glibj.zip: stamp-glibj
-
-# used to link the system/precompiled glibj.zip on install
-@USE_SYSTEM_CLASSPATH_TRUE@link-glibj-zip:
-@USE_SYSTEM_CLASSPATH_TRUE@	if ! test -f $(DESTDIR)${jrelibdir}/glibj.zip ; then \
-@USE_SYSTEM_CLASSPATH_TRUE@		$(LN_S) $(CLASSPATH_CLASSES) $(DESTDIR)${jrelibdir}/glibj.zip ; \
-@USE_SYSTEM_CLASSPATH_TRUE@	fi
-
-@USE_SYSTEM_CLASSPATH_TRUE@unlink-glibj-zip: 
-@USE_SYSTEM_CLASSPATH_TRUE@	if test -f $(DESTDIR)${jrelibdir}/glibj.zip ; then \
-@USE_SYSTEM_CLASSPATH_TRUE@		$(RM) $(DESTDIR)${jrelibdir}/glibj.zip ; \
-@USE_SYSTEM_CLASSPATH_TRUE@	fi
-
-@USE_SYSTEM_CLASSPATH_TRUE@install-exec-local: link-glibj-zip
-
-@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@stamp-glibj:
-@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@	@echo Importing glibj.zip from $(GLIBJ_ZIP)
-@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@	@$(LN_S) $(GLIBJ_ZIP) external/classpath/lib/glibj.zip
-@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@	@$(LN_S) $(GLIBJ_ZIP) glibj.zip
-@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@	@touch stamp-glibj
-
-@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@glibj.zip: stamp-glibj
+glibj.zip: stamp-glibj
 
 # used to link the system/precompiled glibj.zip on install
-@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@link-glibj-zip:
-@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@	if ! test -f $(DESTDIR)${jrelibdir}/glibj.zip ; then \
-@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@		$(LN_S) $(GLIBJ_ZIP) $(DESTDIR)${jrelibdir}/glibj.zip ; \
-@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@	fi
+link-glibj-zip:
+	if ! test -f $(DESTDIR)${jrelibdir}/glibj.zip ; then \
+		$(LN_S) $(CLASSPATH_CLASSES) $(DESTDIR)${jrelibdir}/glibj.zip ; \
+	fi
 
-@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@unlink-glibj-zip: 
-@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@	if test -f $(DESTDIR)${jrelibdir}/glibj.zip ; then \
-@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@		$(RM) $(DESTDIR)${jrelibdir}/glibj.zip ; \
-@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@	fi
+unlink-glibj-zip: 
+	if test -f $(DESTDIR)${jrelibdir}/glibj.zip ; then \
+		$(RM) $(DESTDIR)${jrelibdir}/glibj.zip ; \
+	fi
 
-# link glibj.zip in as part of installation
-@USE_PRECOMPILED_RT_JAR_TRUE@@USE_SYSTEM_CLASSPATH_FALSE@install-exec-local: link-glibj-zip
-
-@USE_PRECOMPILED_RT_JAR_FALSE@@USE_SYSTEM_CLASSPATH_FALSE@stamp-glibj:
-@USE_PRECOMPILED_RT_JAR_FALSE@@USE_SYSTEM_CLASSPATH_FALSE@	@touch stamp-glibj
-
-# do nothing, the classpath build takes care of uninstalling it
-@USE_PRECOMPILED_RT_JAR_FALSE@@USE_SYSTEM_CLASSPATH_FALSE@unlink-glibj-zip:
+install-exec-local: link-glibj-zip
 
 clean-local:
 	$(RM) stamp-glibj glibj.zip

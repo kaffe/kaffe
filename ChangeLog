@@ -1,3 +1,23 @@
+2007-10-23  Dalibor Topic  <robilad@kaffe.org>
+
+	Removed internal copy of GNU Classpath. Make distcheck passes with system install of GNU Classpath 0.95.
+
+	* libraries/javalib/external/classpath: Removed.
+
+	* Makefile.am (EXTRA_DIST): Removed developers/config3.patch.
+
+	* developers/config3.patch: Removed.
+
+	* configure.ac: Removed GNU Classpath specific options. Removed --with-system-classpath option.
+	Removed --with-precompiled-rt-jar option. Use system install of GNU Classpath now as the sole
+	configuration, with the specific options to support different locations for components of 
+	GNU Classpath, like glibj.zip.
+
+	* developers/autogen.sh: Don't reconfigure GNU Classpath.
+
+	* libraries/javalib/Makefile.am (SUBDIRS): Removed MAYBE_CLASSPATH. Use USE_SYSTEM_CLASSPATH
+	case, removed other configurations.
+
 2007-10-22  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/clib/native/java_lang_reflect_VMArray.c,
