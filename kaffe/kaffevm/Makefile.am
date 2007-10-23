@@ -139,7 +139,6 @@ libkaffevm_la_SOURCES = \
 	$(top_srcdir)/libraries/clib/net/InetAddressImpl.c \
 	$(top_srcdir)/libraries/clib/native/AccessController.c \
 	$(top_srcdir)/libraries/clib/native/java_lang_ref_Reference.c \
-        $(top_srcdir)/libraries/clib/native/java_lang_reflect_VMArray.c \
         $(top_srcdir)/libraries/clib/native/Constructor.c \
         $(top_srcdir)/libraries/clib/native/Field.c \
         $(top_srcdir)/libraries/clib/native/Method.c \

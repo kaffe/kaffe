@@ -314,7 +314,6 @@ dist_vminterface_JAVA = \
 	java/lang/reflect/Constructor.java \
 	java/lang/reflect/Field.java \
 	java/lang/reflect/Method.java \
-	java/lang/reflect/VMArray.java \
 	java/net/VMInetAddress.java \
 	java/security/VMAccessController.java \
 	java/security/VMSecureRandom.java \

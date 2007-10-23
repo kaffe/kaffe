@@ -1,5 +1,14 @@
 2007-10-22  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/clib/native/java_lang_reflect_VMArray.c,
+	libraries/javalib/vmspecific/java/lang/reflect/VMArray.java: Removed.
+
+	* kaffe/kaffevm/Makefile.am (libkaffevm_la_SOURCES): Removed java_lang_reflect_VMArray.c.
+
+	* libraries/javalib/vmspecific/Makefile.am (dist_vminterface_JAVA): Removed java/lang/reflect/VMArray.java.
+
+2007-10-22  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/vmspecific/java/lang/VMProcess.java: Removed.
 
 	* libraries/javalib/vmspecific/Makefile.am (dist_vminterface_JAVA): Removed java/lang/VMProcess.java.
