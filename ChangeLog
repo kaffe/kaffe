@@ -1,3 +1,17 @@
+2007-10-24  Dalibor Topic  <robilad@kaffe.org>
+
+	* include/Makefile.am (NOINSTALL_DERIVED_HDRS): Removed
+	java_lang_VMString.h, java_lang_ThreadGroup.h, java_io_InterruptedIOException.h,
+	java_io_VMFile.h, java_lang_Integer.h, java_lang_Math.h, java_net_DatagramPacket.h, 
+	java_net_InetAddress.h, java_net_InetSocketAddress.h, java_net_NetworkInterface.h,
+	java_net_VMNetworkInterface.h, gnu_java_net_PlainDatagramSocketImpl.h, 
+	gnu_java_net_PlainSocketImpl.h, java_net_SocketAddress.h, java_net_SocketImpl.h,
+	java_net_SocketOptions.h, java_util_Comparator.h, java_util_VMTimeZone.h.
+
+	* kaffe/kaffevm/thread.h: Don't include java_lang_ThreadGroup.h.
+
+	* libraries/clib/native/Throwable.c: Don't include java_lang_StackTraceElement.h.
+
 2007-10-23  Dalibor Topic  <robilad@kaffe.org>
 
 	Removed internal copy of GNU Classpath. Make distcheck passes with system install of GNU Classpath 0.95.

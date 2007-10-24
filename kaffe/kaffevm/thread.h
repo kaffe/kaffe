@@ -20,7 +20,6 @@
 #include "java_lang_Throwable.h"
 #include "java_lang_Thread.h"
 #include "java_lang_VMThread.h"
-#include "java_lang_ThreadGroup.h"
 
 #define	THREADCLASS			"java/lang/Thread"
 #define VMTHREADCLASS			"java/lang/VMThread"

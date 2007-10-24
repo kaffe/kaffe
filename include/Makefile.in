@@ -333,40 +333,22 @@ NOINSTALL_DERIVED_HDRS = \
 	java_lang_Object.h \
 	java_lang_VMObject.h \
 	java_lang_VMClass.h \
-	java_lang_VMClassLoader.h \
 	java_lang_VMRuntime.h \
+	java_lang_VMClassLoader.h \
 	java_lang_String.h \
-	java_lang_VMString.h \
 	java_lang_StackTraceElement.h \
 	java_lang_Thread.h \
 	java_lang_VMThread.h \
-	java_lang_ThreadGroup.h \
 	java_lang_Throwable.h \
 	java_lang_VMThrowable.h \
-	java_io_InterruptedIOException.h \
-	java_io_VMFile.h \
 	java_lang_ClassLoader.h \
 	java_lang_Cloneable.h \
-	java_lang_Integer.h \
-	java_lang_Math.h \
 	java_lang_reflect_Constructor.h \
 	java_lang_reflect_Field.h \
 	java_lang_reflect_Method.h \
-	java_net_DatagramPacket.h \
-	java_net_InetAddress.h \
 	java_net_VMInetAddress.h \
-	java_net_InetSocketAddress.h \
-	java_net_NetworkInterface.h \
-	java_net_VMNetworkInterface.h \
-	gnu_java_net_PlainDatagramSocketImpl.h \
-	gnu_java_net_PlainSocketImpl.h \
 	gnu_java_net_SysInetAddressImpl.h \
-	java_net_SocketAddress.h \
-	java_net_SocketImpl.h \
-	java_net_SocketOptions.h \
 	java_security_VMAccessController.h \
-	java_util_Comparator.h \
-	java_util_VMTimeZone.h \
 	java_util_Vector.h \
 	org_kaffe_management_Classpath.h \
 	gnu_classpath_VMStackWalker.h \
@@ -466,9 +448,7 @@ nodist_pkginclude_HEADERS = \
 pkginclude_HEADERS = \
 	java_lang_Object.h \
 	java_lang_String.h \
-	java_lang_StackTraceElement.h \
 	java_lang_Thread.h \
-	java_lang_ThreadGroup.h \
 	java_lang_Throwable.h \
 	java_lang_VMThrowable.h \
 	kaffe/jmalloc.h \

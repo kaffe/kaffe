@@ -14,7 +14,6 @@
 #include "config-io.h"
 #include <assert.h>
 #include <native.h>
-#include "java_lang_StackTraceElement.h"
 #include "java_lang_Throwable.h"
 #include "java_lang_VMThrowable.h"
 
