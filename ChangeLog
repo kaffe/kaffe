@@ -1,5 +1,9 @@
 2007-10-24  Dalibor Topic  <robilad@kaffe.org>
 
+	* THIRDPARTY: Removed jgss block.
+
+2007-10-24  Dalibor Topic  <robilad@kaffe.org>
+
 	* THIRDPARTY: Removed GNU Classpath block.
 
 2007-10-24  Dalibor Topic  <robilad@kaffe.org>
