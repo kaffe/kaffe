@@ -452,9 +452,6 @@
     <para>Kaffe is distributed under the GNU GPL. For full details, see the file
     <emphasis remap='I'>license.terms</emphasis>
     in the source distribution for full details.</para>
-		<para>The included DOM bindings are published under the W3C Software Copyright Notice and License. For full details, see the file
-    <emphasis remap='I'>license-w3c.terms</emphasis>
-    in the source distribution for full details.</para>
   </refsect1>
 
   <refsect1 id='see_also'><title>SEE ALSO</title>
