@@ -1,7 +1,9 @@
 What's New Since Kaffe 1.1.8
 ----------------------------
 
-* Nothing yet. ;)
+* Removed GNU Classpath. Kaffe uses an existing GNU Classpath 
+  installation exclusively now. It needs GNU Classpath 0.95 or
+  later.
 
 What's New In Kaffe 1.1.8
 ----------------------------

@@ -1,5 +1,9 @@
 2007-10-24  Dalibor Topic  <robilad@kaffe.org>
 
+	* WHATSNEW: Added GNU Classpath unmerge.
+
+2007-10-24  Dalibor Topic  <robilad@kaffe.org>
+
 	* include/Makefile.am (NOINSTALL_DERIVED_HDRS): Removed
 	java_lang_VMString.h, java_lang_ThreadGroup.h, java_io_InterruptedIOException.h,
 	java_io_VMFile.h, java_lang_Integer.h, java_lang_Math.h, java_net_DatagramPacket.h, 
