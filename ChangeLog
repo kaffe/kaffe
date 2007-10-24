@@ -1,5 +1,9 @@
 2007-10-24  Dalibor Topic  <robilad@kaffe.org>
 
+	* license-w3c.terms: Removed, as no W3C licensed materials remain in Kaffe.
+
+2007-10-24  Dalibor Topic  <robilad@kaffe.org>
+
 	* THIRDPARTY: Removed jgss block.
 
 2007-10-24  Dalibor Topic  <robilad@kaffe.org>
