@@ -1,5 +1,9 @@
 2007-10-24  Dalibor Topic  <robilad@kaffe.org>
 
+	* README: Updated for GNU Classpath unmerge.
+
+2007-10-24  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/man/kaffe.1.xml: Removed the W3C section.
 
 2007-10-24  Dalibor Topic  <robilad@kaffe.org>

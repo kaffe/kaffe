@@ -5,18 +5,15 @@
 
 			 ===================
 
-This is "Kaffe", a complete virtual machine and class library
-set which allows the execution of Java code.  It comes with a virtual
-machine and a set of class libraries including beans, and an AWT
-graphics system.
+This is "Kaffe", a virtual machine which allows the execution of 
+Java code.
 
 Why use Kaffe?
 --------------
 
 Because Kaffe is distributed under the terms of the GNU Public License
 which means the source code is free for you to download, modify and
-use.  It's also demonstratably faster on many applications compared
-with the latest VM's from Sun, IBM or Microsoft.
+use.
 
 What systems does Kaffe support?
 -------------------------------
@@ -112,6 +109,16 @@ How do I report bugs and problems?
 
 Go the website http://www.kaffe.org/ and you'll find information on how to
 report bugs.
+
+What software do I need to install Kaffe?
+-----------------------------------------
+
+Kaffe uses GNU Classpath as its class library. You need to install it first.
+GNU Classpath can be found at:
+
+	http://www.classpath.org
+
+Kaffe requires GNU Classpath 0.95 or later.
 
 How do I compile and install kaffe?
 -----------------------------------
