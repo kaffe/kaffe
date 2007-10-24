@@ -1,5 +1,10 @@
 2007-10-24  Dalibor Topic  <robilad@kaffe.org>
 
+	* Makefile.am (EXTRA_DIST): Removed FAQ/FAQ.classlibrary-compile,
+	license-w3c.terms.
+
+2007-10-24  Dalibor Topic  <robilad@kaffe.org>
+
 	* FAQ/FAQ.classlibrary-compile: Removed.
 
 2007-10-24  Dalibor Topic  <robilad@kaffe.org>

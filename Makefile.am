@@ -65,7 +65,6 @@ EXTRA_DIST = \
 	autobuild.sh \
 	license.terms \
 	license-lesser.terms \
-	license-w3c.terms \
 	FAQ/FAQ.arm \
 	FAQ/FAQ.BeOS \
 	FAQ/FAQ.Known-Bugs \
@@ -77,7 +76,6 @@ EXTRA_DIST = \
 	FAQ/FAQ.blackfin \
 	FAQ/FAQ.charsets \
 	FAQ/FAQ.class-states \
-	FAQ/FAQ.classlibrary-compile \
 	FAQ/FAQ.code-layout \
 	FAQ/FAQ.coding-style \
 	FAQ/FAQ.cross-compiling \
