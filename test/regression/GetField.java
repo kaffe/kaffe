@@ -9,7 +9,6 @@ class SomeFields {
 class GetField {
 	public int TEST = 10;
 	public static int STEST = 20;
-	private static int PSTEST = 30;
 	public static void main(String args[]) {
 		Field fld;
 		Class cls = GetField.class;

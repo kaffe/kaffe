@@ -2,9 +2,7 @@
  * tests that listener types are properly set and printed.
  * Submitted by Moses DeJong <dejong@cs.umn.edu>
  */
-import java.lang.reflect.*;
 import java.beans.*;
-import java.util.*;
  
 public class BeanBug {
     public static void main(String[] argv) throws Exception {

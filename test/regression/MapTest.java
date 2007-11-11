@@ -178,7 +178,7 @@ class MapTest {
     checkSorted(map);
 
     // Check values() method
-    Collection vals = map.values();
+    map.values();
     Arrays.fill(ary2, -1);
     for (Iterator i = es.iterator(); i.hasNext(); ) {
       Map.Entry e = (Map.Entry)i.next();

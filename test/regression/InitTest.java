@@ -9,10 +9,8 @@ public class InitTest
 
 	public static void main(String argv[] )
 	{
-		int x;
 		if ( argv.length > 10 )
 		{
-			x = Class1.field;
 			Class1.field = 5;
 			Class3.runMe();
 		}
@@ -21,8 +19,6 @@ public class InitTest
 			Class2.field = 5;
 			Class2.runMe();
 		}
-
-		x = Class4.finalfield;
 
 		if ( passed )
 			System.out.println("Success 2.");

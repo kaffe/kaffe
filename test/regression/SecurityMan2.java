@@ -1,5 +1,4 @@
 import java.net.*;
-import java.security.*;
 
 public class SecurityMan2 
 {

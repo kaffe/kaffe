@@ -305,9 +305,6 @@ public class ZipVerifyUtils {
 	int uncompressed_file_data_length = (uncompressed_file_data == null ? 0 :
 					     uncompressed_file_data.length);
 
-	int compressed_file_data_length = (compressed_file_data == null ? 0 :
-					     compressed_file_data.length);
-
 	int expected_extra_field_length = (expected_extra_field == null ? 0
 					   : expected_extra_field.length);
 

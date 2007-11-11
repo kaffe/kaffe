@@ -4,9 +4,6 @@
  * @author Edouard G. Parmelan <egp@free.fr>
  */
 import java.io.*;
-import java.util.*;
-import java.lang.reflect.*;
-
 
 public class TestSerializable2
 {
@@ -84,10 +81,6 @@ public class TestSerializable2
 
 	public NotSerializable2(int dummy) {
 	    setMagic(321);
-	}
-
-	private NotSerializable2() {
-	    setMagic(999);
 	}
 
 	private void setMagic(int magic) {

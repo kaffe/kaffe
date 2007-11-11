@@ -27,8 +27,10 @@ public class MarkResetTest {
 	}
 
 	// Test BufferedInputStream
+	byte [] chars = { 'A', 'B', 'C', 'D', 'E', 'F' };
+
         BufferedInputStream b =
-	  new BufferedInputStream(new StringBufferInputStream("ABCDEF"));
+	  new BufferedInputStream(new ByteArrayInputStream(chars));
         b.mark(3);
         b.read();
         b.read();

@@ -1,4 +1,3 @@
-import java.util.*;
 import java.io.*;
 
 public class ThreadState extends Thread {

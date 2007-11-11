@@ -16,16 +16,14 @@ public class TruncatedClass
 	static class Loader
 		extends ClassLoader
 	{
-		private Class c;
 		private Throwable error;
 
 		Loader(String name, byte[] bytes, int offset, int length)
 		{
-			this.c = null;
 			this.error = null;
 			try
 			{
-				this.c = defineClass(name, bytes, offset, length);
+				defineClass(name, bytes, offset, length);
 			}
 			catch (ClassFormatError cfe)
 			{

@@ -2,7 +2,6 @@
 import java.util.Enumeration;
 
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.net.NetworkInterface;
 
 public class NetworkInterfaceTest
@@ -17,16 +16,16 @@ public class NetworkInterfaceTest
 	}
 	try
 	{
-	    Enumeration enum;
+	    Enumeration enumeration;
 	    int lpc;
 	    
-	    enum = NetworkInterface.getNetworkInterfaces();
-	    for( lpc = 0; enum.hasMoreElements(); lpc++ )
+	    enumeration = NetworkInterface.getNetworkInterfaces();
+	    for( lpc = 0; enumeration.hasMoreElements(); lpc++ )
 	    {
 		NetworkInterface ni, ni2;
 		Enumeration ips;
 		
-		ni = (NetworkInterface)enum.nextElement();
+		ni = (NetworkInterface)enumeration.nextElement();
 		if( verbose )
 		{
 		    System.out.println("Detected interface #" + lpc);
@@ -65,12 +64,7 @@ public class NetworkInterfaceTest
 	    }
 	    System.out.println("Done");
 	}
-	catch(SocketException e)
-	{
-	    e.printStackTrace();
-	    System.exit(77);
-	}
-	catch(org.kaffe.util.NotImplemented e)
+	catch(Exception e)
 	{
 	    e.printStackTrace();
 	    System.exit(77);

@@ -12,7 +12,6 @@ public class tthrd1
   public static void main(String args[])
     {
       btst1 b=null;
-      int c = 0;
         
       System.err.println("main start");
       b = new btst1();

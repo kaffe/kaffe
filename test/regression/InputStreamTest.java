@@ -3,15 +3,15 @@ import java.io.*;
 public class InputStreamTest {
         static public void main (String args[]) {
                 try {
-                        StringBufferInputStream sbis =
-                                new
-StringBufferInputStream("foobar\r\nxbarfoo\rx");
+			byte [] chars = "foobar\r\nxbarfoo\rx".getBytes("US-ASCII");
+                        ByteArrayInputStream bais =
+                                new ByteArrayInputStream(chars);
                         DataInputStream dis = new DataInputStream(sbis);
 
                         System.out.println(dis.readLine());
-                        System.out.println(sbis.read());
+                        System.out.println(bais.read());
                         System.out.println(dis.readLine());
-                        System.out.println(sbis.read());
+                        System.out.println(bais.read());
 			System.out.println(dis.read());
 
                 } catch (IOException ioe) {

@@ -3,8 +3,6 @@
  *
  * @author Godmar Back <gback@cs.utah.edu>
  */
-import java.io.*;
-import java.lang.reflect.*;
 
 public class ClassGCTest
 {

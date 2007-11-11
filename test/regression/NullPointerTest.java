@@ -2,8 +2,6 @@
  * test that caught null pointers exceptions in finalizers work correctly
  * and that local variables are accessible in null pointer exception handlers.
  */
-import java.io.*;
-
 public class NullPointerTest {
 
     static String s;
@@ -22,7 +20,7 @@ public class NullPointerTest {
 	    try {
 		local_s = "Perfect";
 		/* trigger null pointer exception */
-		String x = yuck.toLowerCase();
+		yuck.toLowerCase();
 	    } catch (Exception _) {
 		/* 
 		 * when the null pointer exception is caught, we must still

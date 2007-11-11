@@ -1,7 +1,6 @@
 /**
  * simple test for UDP send/receive.
  */
-import java.io.*;
 import java.net.*;
 
 public class UDPTest {

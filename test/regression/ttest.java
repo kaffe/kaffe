@@ -1,5 +1,3 @@
-import java.util.*;
-
 public class ttest {
   public static void main(String args[]) {
     TestThread t1 = new TestThread();

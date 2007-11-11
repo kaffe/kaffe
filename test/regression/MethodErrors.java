@@ -111,9 +111,7 @@ class MethodErrors
 
     public static void test9()
     {
-	ClassToInterface cti;
-
-	cti = new ClassToInterface();
+	new ClassToInterface();
     }
     
     public static void main(String args[])

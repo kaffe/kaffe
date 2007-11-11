@@ -1,5 +1,53 @@
 2007-11-11  Dalibor Topic  <robilad@kaffe.org>
 
+	* test/regression/Bean.java,
+	test/regression/BeanBug.java,
+	test/regression/ClassGC.java,
+	test/regression/ClassGCTest.java,
+	test/regression/ClassGCTestLater.java,
+	test/regression/ConstructorTest.java,
+	test/regression/DoubleBug.java,
+	test/regression/DoubleIEEE.java,
+	test/regression/ExceptionTestClassLoader.java,
+	test/regression/ExceptionTestClassLoader2.java,
+	test/regression/FPUStack.java,
+	test/regression/FileChecks.java,
+	test/regression/GetField.java,
+	test/regression/InitTest.java,
+	test/regression/InputStreamTest.java,
+	test/regression/LineNumberReaderTest.java,
+	test/regression/LostTrampolineFrame.java,
+	test/regression/MapTest.java,
+	test/regression/MarkResetTest.java,
+	test/regression/MethodBug.java,
+	test/regression/MethodErrors.java,
+	test/regression/NetworkInterfaceTest.java,
+	test/regression/NullPointerTest.java,
+	test/regression/PrimordialLoaderTest.java,
+	test/regression/ProcessClassInst.java,
+	test/regression/ReaderReadVoidTest.java,
+	test/regression/Reflect.java,
+	test/regression/ReflectInvoke.java,
+	test/regression/ReflectMultiArray.java,
+	test/regression/SecurityMan2.java,
+	test/regression/SoTimeout.java,
+	test/regression/TestFloatDouble.java,
+	test/regression/TestGnuCrypto.java,
+	test/regression/TestIntLong.java,
+	test/regression/TestSerializable.java,
+	test/regression/TestSerializable2.java,
+	test/regression/ThreadInterrupt.java,
+	test/regression/ThreadState.java,
+	test/regression/TruncatedClass.java,
+	test/regression/UDPTest.java,
+	test/regression/URLTest.java,
+	test/regression/ZipVerify.java,
+	test/regression/ZipVerifyUtils.java,
+	test/regression/ttest.java,
+	test/regression/tthrd1.java: Fixed ecj warnings.
+
+2007-11-11  Dalibor Topic  <robilad@kaffe.org>
+
 	* test/regression/Makefile.am (XFAIL_TESTS): Added DateFormatTest.java.
 
 2007-10-24  Dalibor Topic  <robilad@kaffe.org>

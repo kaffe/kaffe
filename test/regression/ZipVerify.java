@@ -1,9 +1,7 @@
 // This class will write a zip file into memory and verify that the
 // contents being written matches the expected output.
 
-import java.io.*;
 import java.util.*;
-import java.util.zip.*;
 
 public class ZipVerify extends ZipVerifyUtils {
 

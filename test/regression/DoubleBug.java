@@ -5,7 +5,7 @@ public class DoubleBug {
 
     static boolean checkValid(String num) {
 	try {
-	    double d = Double.valueOf(num).doubleValue();
+	    Double.valueOf(num).doubleValue();
 	    return true;
 	}
 	catch (NumberFormatException e) {

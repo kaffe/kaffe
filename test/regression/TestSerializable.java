@@ -8,6 +8,7 @@ public class TestSerializable
 {
     class help implements java.io.Serializable
     {
+	static final long serialVersionUID = -7043095406159607622L;
     }
 
     public static void main(String av[])

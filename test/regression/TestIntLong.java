@@ -1,5 +1,3 @@
-import java.lang.*;
-
 class TestIntLong {
 	static boolean failed = false;
 

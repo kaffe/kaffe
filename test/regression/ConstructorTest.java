@@ -9,7 +9,7 @@ public class ConstructorTest {
   throws IllegalAccessException, InstantiationException
   {
     try {
-	Object o = ConstructorTest.class.newInstance();
+	ConstructorTest.class.newInstance();
     } catch (InstantiationException e) {
 	System.out.println("Success.");
 	return;

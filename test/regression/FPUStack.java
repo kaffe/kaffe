@@ -76,8 +76,8 @@ public class FPUStack {
 	System.out.println("test_good()");
 	while (true) {
 	    // FPU return values are store and store call is not elimitated
-	    double integrate = Q.integrate(1);
-	    double stop = Q.stop();
+	    Q.integrate(1);
+	    Q.stop();
 	    System.out.println ("[1] Q.read() " + Q.read());
 	    System.out.println ("[2] Q.read() " + Q.read());
 	    if (Q.can_stop()) break;
@@ -90,8 +90,8 @@ public class FPUStack {
 	System.out.println("ftest_good()");
 	while (true) {
 	    // FPU return values are store and store call is not elimitated
-	    float fintegrate = Q.fintegrate(1);
-	    float fstop = Q.fstop();
+	    Q.fintegrate(1);
+	    Q.fstop();
 	    System.out.println ("[1] Q.fread() " + Q.fread());
 	    System.out.println ("[2] Q.fread() " + Q.fread());
 	    if (Q.can_stop()) break;
@@ -126,8 +126,8 @@ public class FPUStack {
 	System.out.println("test_good_inline()");
 	// FPU return values are store but store call is elimitated,
 	// JIT _must_ remove the result from the FPU Stack.
-	double integrate = Q.integrate(1);
-	double stop = Q.stop();
+	Q.integrate(1);
+	Q.stop();
 	System.out.println ("[1] Q.read() " + Q.read());
 	System.out.println ("[2] Q.read() " + Q.read());
     }
@@ -138,8 +138,8 @@ public class FPUStack {
 	System.out.println("ftest_good_inline()");
 	// FPU return values are store but store call is elimitated,
 	// JIT _must_ remove the result from the FPU Stack.
-	float fintegrate = Q.fintegrate(1);
-	float fstop = Q.fstop();
+	Q.fintegrate(1);
+	Q.fstop();
 	System.out.println ("[1] Q.fread() " + Q.fread());
 	System.out.println ("[2] Q.fread() " + Q.fread());
     }
@@ -148,12 +148,9 @@ public class FPUStack {
     public static double dstore(double a) {
 	// Test case for PR#737
 	// Author: Stas Sergeev <stas.orel@mailcity.com>
-	double x0;
 	double deltaX = 1.0;
-	double deltaY = 1.0;
 	double eps = 0.01;
 
-        x0 = a - eps;
         deltaX = 2 * eps;
         return deltaX;
     }
@@ -169,12 +166,9 @@ public class FPUStack {
     public static float fstore(float a) {
 	// Test case for PR#737
 	// Author: Stas Sergeev <stas.orel@mailcity.com>
-	float x0;
 	float deltaX = 1.0f;
-	float deltaY = 1.0f;
 	float eps = 0.01f;
 
-        x0 = a - eps;
         deltaX = 2 * eps;
         return deltaX;
     }

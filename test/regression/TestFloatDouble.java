@@ -1,5 +1,3 @@
-import java.lang.*;
-
 class TestFloatDouble {
 	static boolean failed = false;
 

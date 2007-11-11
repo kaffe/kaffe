@@ -1,7 +1,6 @@
 /* This testcase is taken from
  * http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=255502
  */
-import java.lang.*;
 
 public class DoubleIEEE {
     volatile double x, y, z;

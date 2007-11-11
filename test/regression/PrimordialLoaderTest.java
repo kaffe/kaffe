@@ -16,11 +16,11 @@ public class PrimordialLoaderTest
  
 		System.out.println (url.getProtocol()+" "+((JarURLConnection)url.openConnection()).getEntryName());
 
-		java.util.Enumeration enum = ClassLoader.getSystemResources("java/lang/Object.class");
+		java.util.Enumeration enumeration = ClassLoader.getSystemResources("java/lang/Object.class");
 
-		while (enum.hasMoreElements())
+		while (enumeration.hasMoreElements())
 		{
-			url = (URL)enum.nextElement();
+			url = (URL)enumeration.nextElement();
 
 			System.out.println (url.getProtocol()+" "+((JarURLConnection)url.openConnection()).getEntryName());
 		}

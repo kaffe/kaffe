@@ -37,8 +37,6 @@ class PseudoThread extends Thread {
 
 	public static void main(String[] args) {
 		PseudoReader pr = new PseudoReader();
-		int chr1 = 0;
-		int chr2 = 0;
 
 		PseudoThread thread1 = new PseudoThread(pr, "T1");
 		PseudoThread thread2 = new PseudoThread(pr, "T2");
@@ -112,8 +110,7 @@ class PseudoReader extends Reader {
 					+ "waiting!");
 				*/
 
-				Thread.currentThread().sleep(
-					((PseudoThread)Thread.currentThread()).timer);
+				Thread.sleep(((PseudoThread)Thread.currentThread()).timer);
 				/*
 				System.out.println(Thread.currentThread().toString() 
 					+ "free!");

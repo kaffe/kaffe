@@ -29,7 +29,7 @@ class LineNumberReader_Test1 extends LineNumberReader_Test {
     super();
 
     try {
-      LineNumberReader lnr = new LineNumberReader(null);
+      new LineNumberReader(null);
       success(this.getClass());
     }
     catch (Exception e) {
@@ -46,7 +46,7 @@ class LineNumberReader_Test2 extends LineNumberReader_Test {
 
     try {
       StringReader sr = new StringReader(" ");
-      LineNumberReader lnr = new LineNumberReader(sr, 0);
+      new LineNumberReader(sr, 0);
       success(this.getClass());
     }
     catch (Exception e) {
@@ -63,7 +63,7 @@ class LineNumberReader_Test3 extends LineNumberReader_Test {
 
     try {
       StringReader sr = new StringReader("X");
-      LineNumberReader lnr = new LineNumberReader(sr, -5);
+      new LineNumberReader(sr, -5);
       success(this.getClass());
     }
     catch (Exception e) {

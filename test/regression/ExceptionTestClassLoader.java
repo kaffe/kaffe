@@ -6,7 +6,6 @@
  * @author Benjamin Reed <breed@almaden.ibm.com>
  */
 import java.io.*;
-import java.util.*;
 import java.lang.reflect.*;
 
 public class ExceptionTestClassLoader extends ClassLoader {
@@ -50,7 +49,6 @@ public class ExceptionTestClassLoader extends ClassLoader {
   }
 
   public static void main( String args[] ) {
-    Vector v = new Vector();
     ClassLoader cl = new ExceptionTestClassLoader();
     try {
       Class classArgs[] = new Class[1];

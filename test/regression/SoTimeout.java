@@ -8,8 +8,6 @@ import java.io.*;
 
 public class SoTimeout {
     public static void main(String av[]) throws Exception {
-	final String foo = "foo";
-
 	int tryport = 45054;
 	ServerSocket server;
 	for(;;++tryport) {

@@ -3,8 +3,7 @@
  *
  * @author Godmar Back <gback@cs.utah.edu>
  */
-import java.io.*;
-import java.lang.reflect.*;
+import java.lang.reflect.Constructor;
 
 public class ClassGCTestLater
 {

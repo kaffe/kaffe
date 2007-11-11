@@ -4,7 +4,6 @@
  * @author Godmar Back <gback@cs.utah.edu>
  */
 import java.util.Vector;
-import java.lang.reflect.*;
 
 class Base {
     static boolean useme;
@@ -70,7 +69,7 @@ public class ProcessClassInst
 
 	Class cc = v.elementAt(0).getClass();
 	try {
-		final Object ni = cc.newInstance();
+		cc.newInstance();
 	}
 	catch (NoClassDefFoundError e) {
 		System.out.println(e);

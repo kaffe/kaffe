@@ -4,8 +4,6 @@
  *
  * @author Godmar Back <gback@cs.utah.edu>
  */
-import java.io.*;
-import java.net.ServerSocket;
 
 public class ThreadInterrupt {
    

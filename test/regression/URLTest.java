@@ -1,5 +1,4 @@
 
-import java.util.*;
 import java.net.*;
 
 class URLTest {

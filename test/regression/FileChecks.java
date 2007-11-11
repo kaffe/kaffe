@@ -9,7 +9,7 @@ public class FileChecks
 	{
 		try
 		{
-			FileInputStream     fis  = new FileInputStream(".");
+			new FileInputStream(".");
 			System.out.println("1 FAIL! Should throw java.io.FileNotFoundException!");
 			System.exit(1);
 		}
@@ -21,7 +21,7 @@ public class FileChecks
 		try
 		{
 			File                file = new File(".");
-			FileInputStream     fis  = new FileInputStream(file);
+			new FileInputStream(file);
 			System.out.println("2 FAIL! Should throw java.io.FileNotFoundException!");
 			System.exit(1);
 		}
@@ -32,7 +32,7 @@ public class FileChecks
 
 		try
 		{
-			FileOutputStream     fis  = new FileOutputStream(".");
+			new FileOutputStream(".");
 			System.out.println("3 FAIL! Should throw java.io.FileNotFoundException!");
 			System.exit(1);
 		}
@@ -44,7 +44,7 @@ public class FileChecks
 		try
 		{
 			File                file = new File(".");
-			FileOutputStream     fis  = new FileOutputStream(file);
+			new FileOutputStream(file);
 			System.out.println("4 FAIL! Should throw java.io.FileNotFoundException!");
 			System.exit(1);
 		}
@@ -56,7 +56,7 @@ public class FileChecks
 		try
 		{
 			File                file = new File("FileChecks.class"); // should exist
-			FileInputStream     fis  = new FileInputStream(file);
+			new FileInputStream(file);
 			System.out.println("5 Success.");
 		}
 		catch (FileNotFoundException e)

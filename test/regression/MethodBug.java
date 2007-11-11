@@ -3,7 +3,6 @@
  * Submitted by Moses DeJong <dejong@cs.umn.edu>
  */
 import java.lang.reflect.*;
-import java.util.*;
  
  
 public class MethodBug {

@@ -1,5 +1,4 @@
 import java.beans.*;
-import java.lang.*;
 import java.lang.reflect.*;
 
 public class Bean {
