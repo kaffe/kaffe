@@ -1,3 +1,7 @@
+2007-11-11  Dalibor Topic  <robilad@kaffe.org>
+
+	* test/regression/Makefile.am (XFAIL_TESTS): Added DateFormatTest.java.
+
 2007-10-24  Dalibor Topic  <robilad@kaffe.org>
 
 	* Makefile.am (EXTRA_DIST): Removed FAQ/FAQ.classlibrary-compile,

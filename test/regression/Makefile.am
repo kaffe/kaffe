@@ -303,7 +303,8 @@ endif
 
 XFAIL_TESTS = \
 	TestSerialVersions.java \
-	TestSerialPersistent.java 
+	TestSerialPersistent.java \
+	DateFormatTest.java 
 
 EXTRA_DIST = $(ALWAYS_TESTS) \
 	$(TEST_Overflow) \
