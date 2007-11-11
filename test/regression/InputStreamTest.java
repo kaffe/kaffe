@@ -6,7 +6,7 @@ public class InputStreamTest {
 			byte [] chars = "foobar\r\nxbarfoo\rx".getBytes("US-ASCII");
                         ByteArrayInputStream bais =
                                 new ByteArrayInputStream(chars);
-                        DataInputStream dis = new DataInputStream(sbis);
+                        DataInputStream dis = new DataInputStream(bais);
 
                         System.out.println(dis.readLine());
                         System.out.println(bais.read());

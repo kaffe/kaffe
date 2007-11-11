@@ -185,8 +185,8 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 INTLLIBS = @INTLLIBS@
 JASMIN = @JASMIN@
+JAVAC = @JAVAC@
 JAVAC_FLAGS = @JAVAC_FLAGS@
-JAVA_COMPILER = @JAVA_COMPILER@
 JAVA_LIBS = @JAVA_LIBS@
 JIKESPROG = @JIKESPROG@
 KAFFEH = @KAFFEH@
@@ -797,10 +797,10 @@ uninstall-am:
 
 
 HelloWorldApp.class: $(srcdir)/../regression/HelloWorldApp.java
-	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/../regression/HelloWorldApp.java
+	$(JAVAC) -g -classpath $(CPATH) -d . $(srcdir)/../regression/HelloWorldApp.java
 
 JNIWeakTest.class:  $(srcdir)/JNIWeakTest.java
-	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/JNIWeakTest.java
+	$(JAVAC) -g -classpath $(CPATH) -d . $(srcdir)/JNIWeakTest.java
 
 jniWeakTest.o: JNIWeakTest.class
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

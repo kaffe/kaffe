@@ -11,6 +11,5 @@
 # University of Utah, http://www.cs.utah.edu/flux/
 
 : ${JAVA=kaffe}
-test -z "@JAVA_COMPILER@" || : ${JAVA_COMPILER="@JAVA_COMPILER@"}
 
-exec $JAVA_COMPILER -bootclasspath $BOOTCLASSPATH -classpath $CLASSPATH -d . $*
+exec @JAVAC@ -bootclasspath $BOOTCLASSPATH -classpath $CLASSPATH -d . $*

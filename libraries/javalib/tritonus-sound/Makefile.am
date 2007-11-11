@@ -6,7 +6,6 @@ JAR_CMD1 = ($(FASTJAR) cf $(CLASSFILE) -C $(LIBDIR) $(SRCDIRS) -C $(srcdir) META
 
 CPATH =  .:$(GLIBJ_ZIP)
 AM_JAVACFLAGS = -bootclasspath $(CPATH)
-JAVAC = $(JAVA_COMPILER)
 JAVAROOT = $(LIBDIR)
 
 $(CLASSFILE): classdist_tritonus.stamp

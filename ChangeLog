@@ -1,5 +1,27 @@
 2007-11-11  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac,
+	test/regression/TestScript.in,
+	test/regression/compile_time/CompileScript.in,
+	test/regression/compiler/CompileScript.in,
+	test/regression/run_time/CompileScript.in: Replace JAVA_COMPILER with JAVAC.
+
+	* libraries/javalib/awt-implementations/kaffe/Makefile.am,
+	libraries/javalib/dnsjava/Makefile.am,
+	libraries/javalib/gmp-math/Makefile.am,
+	libraries/javalib/gnu-inet/Makefile.am,
+	libraries/javalib/tritonus-sound/Makefile.am,
+	libraries/javalib/vmspecific/Makefile.am,
+	libraries/javalib/zlib-zip/Makefile.am,
+	test/internal/Makefile.am,
+	test/jni/Makefile.am,
+	tools/gjdoc/javalib/Makefile.am,
+	tools/javatools/Makefile.am: Removed unnecessary JAVAC assignment.
+
+	* test/regression/InputStreamTest.java: Fix compilation again.
+
+2007-11-11  Dalibor Topic  <robilad@kaffe.org>
+
 	* test/regression/Bean.java,
 	test/regression/BeanBug.java,
 	test/regression/ClassGC.java,

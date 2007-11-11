@@ -8,7 +8,6 @@ JAR_CMD3 = ($(FASTJAR) uf $(CLASSFILE) version.properties)
 
 CPATH =  .:$(srcdir):$(LIBDIR):$(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar:$(GLIBJ_ZIP)
 AM_JAVACFLAGS = -classpath $(CPATH)
-JAVAC = $(JAVA_COMPILER)
 JAVAROOT = $(LIBDIR)
 
 $(CLASSFILE): classdist_gjdoc.stamp

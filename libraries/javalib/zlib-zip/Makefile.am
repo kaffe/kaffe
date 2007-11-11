@@ -6,7 +6,6 @@ JAR_CMD1 = ($(FASTJAR) cf $(CLASSFILE) -C $(LIBDIR) org -C $(LIBDIR) java)
 
 CPATH =  .:$(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar:$(GLIBJ_ZIP)
 AM_JAVACFLAGS = -bootclasspath $(CPATH)
-JAVAC = $(JAVA_COMPILER)
 JAVAROOT = $(LIBDIR)
 
 $(CLASSFILE): classdist_zlib.stamp

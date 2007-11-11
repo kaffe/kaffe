@@ -728,9 +728,9 @@ AC_ARG_WITH([ecj],
 			   [Define to use ECJ as the java compiler instead of jikes]),
 	   [
             if test x"$withval" = x"yes" ; then
-              JAVA_COMPILER="ecj" 
+              JAVAC="ecj" 
             else 
-              JAVA_COMPILER="$withval" 
+              JAVAC="$withval" 
             fi
 	    use_ecj=yes],
 	   [use_ecj=no])
@@ -770,7 +770,7 @@ yes)
 	if test x"$JIKESPROG" = x"" ; then
 	  AC_MSG_ERROR([No jikes compiler found. Please install jikes version 1.21 or higher.])
 	fi
-	JAVA_COMPILER="$JIKESPROG +Pno-switchcheck +Pno-shadow +E"
+	JAVAC="$JIKESPROG +Pno-switchcheck +Pno-shadow +E"
 esac
 
 dnl =========================================================================
@@ -782,9 +782,9 @@ if test x"$use_ecj" = x"yes" -a x"$use_jikes" = x"yes"; then
 fi
 
 AC_MSG_CHECKING([which java compiler])
-AC_MSG_RESULT($JAVA_COMPILER)
+AC_MSG_RESULT($JAVAC)
 
-AC_SUBST(JAVA_COMPILER)
+AC_SUBST(JAVAC)
 
 dnl =========================================================================
 dnl Look for trampoline code if in JIT mode
@@ -842,7 +842,7 @@ if test  x"$MKTEMP" = x"" ; then
 fi
 AC_CHECK_PROG(JASMIN, jasmin, jasmin)
 
-AM_CONDITIONAL(HAVE_JAVAC, test x"$JAVA_COMPILER" != x"")
+AM_CONDITIONAL(HAVE_JAVAC, test x"$JAVAC" != x"")
 AM_CONDITIONAL(HAVE_MKTEMP, test x"$MKTEMP" != x"")
 AM_CONDITIONAL(HAVE_JASMIN, test x"$JASMIN" != x"")
 
@@ -2286,7 +2286,7 @@ if test x"$use_jikes" = x"yes"; then
 fi
 
 if test x"$use_ecj" = x"yes"; then
-  ac_configure_args="$ac_configure_args --with-ecj=${JAVA_COMPILER}"
+  ac_configure_args="$ac_configure_args --with-ecj=${JAVAC}"
 fi
 
 if test x"$enable_native_awt" = x"no"; then

@@ -960,7 +960,7 @@ CLASSPATH_CLASSES
 CLASSPATH_LIBDIR
 GLIBJ_ZIP
 JIKESPROG
-JAVA_COMPILER
+JAVAC
 JAVA_LIBS
 with_engine
 THREAD_SYSTEM
@@ -26003,9 +26003,9 @@ GLIBJ_ZIP=${CLASSPATH_CLASSES};
 if test "${with_ecj+set}" = set; then
   withval=$with_ecj;
             if test x"$withval" = x"yes" ; then
-              JAVA_COMPILER="ecj"
+              JAVAC="ecj"
             else
-              JAVA_COMPILER="$withval"
+              JAVAC="$withval"
             fi
 	    use_ecj=yes
 else
@@ -26091,7 +26091,7 @@ yes)
 echo "$as_me: error: No jikes compiler found. Please install jikes version 1.21 or higher." >&2;}
    { (exit 1); exit 1; }; }
 	fi
-	JAVA_COMPILER="$JIKESPROG +Pno-switchcheck +Pno-shadow +E"
+	JAVAC="$JIKESPROG +Pno-switchcheck +Pno-shadow +E"
 esac
 
 
@@ -26103,8 +26103,8 @@ fi
 
 { echo "$as_me:$LINENO: checking which java compiler" >&5
 echo $ECHO_N "checking which java compiler... $ECHO_C" >&6; }
-{ echo "$as_me:$LINENO: result: $JAVA_COMPILER" >&5
-echo "${ECHO_T}$JAVA_COMPILER" >&6; }
+{ echo "$as_me:$LINENO: result: $JAVAC" >&5
+echo "${ECHO_T}$JAVAC" >&6; }
 
 
 
@@ -26424,7 +26424,7 @@ fi
 
 
 
- if test x"$JAVA_COMPILER" != x""; then
+ if test x"$JAVAC" != x""; then
   HAVE_JAVAC_TRUE=
   HAVE_JAVAC_FALSE='#'
 else
@@ -47755,7 +47755,7 @@ if test x"$use_jikes" = x"yes"; then
 fi
 
 if test x"$use_ecj" = x"yes"; then
-  ac_configure_args="$ac_configure_args --with-ecj=${JAVA_COMPILER}"
+  ac_configure_args="$ac_configure_args --with-ecj=${JAVAC}"
 fi
 
 if test x"$enable_native_awt" = x"no"; then
@@ -49208,7 +49208,7 @@ CLASSPATH_CLASSES!$CLASSPATH_CLASSES$ac_delim
 CLASSPATH_LIBDIR!$CLASSPATH_LIBDIR$ac_delim
 GLIBJ_ZIP!$GLIBJ_ZIP$ac_delim
 JIKESPROG!$JIKESPROG$ac_delim
-JAVA_COMPILER!$JAVA_COMPILER$ac_delim
+JAVAC!$JAVAC$ac_delim
 JAVA_LIBS!$JAVA_LIBS$ac_delim
 with_engine!$with_engine$ac_delim
 THREAD_SYSTEM!$THREAD_SYSTEM$ac_delim

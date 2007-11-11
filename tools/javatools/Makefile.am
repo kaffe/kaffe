@@ -6,7 +6,6 @@ JAR_CMD1 = ($(FASTJAR) cf $(CLASSFILE) -C $(LIBDIR) $(SRCDIRS))
 
 CPATH =  .:$(LIBDIR):$(GLIBJ_ZIP)
 AM_JAVACFLAGS = -classpath $(CPATH)
-JAVAC = $(JAVA_COMPILER)
 JAVAROOT = $(LIBDIR)
 
 $(CLASSFILE): classdist_tools.stamp

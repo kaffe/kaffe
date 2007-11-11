@@ -34,7 +34,7 @@ LIBREPLACE = $(top_builddir)/replace/libreplace.la
 LIBKAFFEVM = $(top_builddir)/kaffe/kaffevm/libkaffe.la $(libjvmpi) $(libxprof)
 
 HelloWorldApp.class: $(srcdir)/../regression/HelloWorldApp.java
-	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/../regression/HelloWorldApp.java
+	$(JAVAC) -g -classpath $(CPATH) -d . $(srcdir)/../regression/HelloWorldApp.java
 
 jniBase_SOURCES= jniBase.c
 jniBase_LDFLAGS= -export-dynamic
@@ -110,7 +110,7 @@ JAVA_CLASSES = \
 CPATH = .:$(GLIBJ_ZIP)
 
 JNIWeakTest.class:  $(srcdir)/JNIWeakTest.java
-	$(JAVA_COMPILER) -g -classpath $(CPATH) -d . $(srcdir)/JNIWeakTest.java
+	$(JAVAC) -g -classpath $(CPATH) -d . $(srcdir)/JNIWeakTest.java
 
 jniWeakTest_SOURCES = jniWeakTest.c
 jniWeakTest_LDFLAGS= -export-dynamic
