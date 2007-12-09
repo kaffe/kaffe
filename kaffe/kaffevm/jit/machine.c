@@ -241,7 +241,7 @@ DBG(MOREJIT,
     );
 
 	/* If this code block is native, then just set it up and return */
-	if (methodIsNative(meth) {
+	if (methodIsNative(meth)) {
 		void *func = native(meth, einfo);
 
 		if (func == NULL) {
