@@ -1,19 +1,17 @@
 CLASSFILE = kaffe-tritonus.jar
-SRCDIRS = org
 jrelib_DATA = $(CLASSFILE)
-LIBDIR = lib
-JAR_CMD1 = ($(FASTJAR) cf $(CLASSFILE) -C $(LIBDIR) $(SRCDIRS) -C $(srcdir) META-INF)
+JAR_CMD1 = $(FASTJAR) cf $(CLASSFILE) `find . -name "*.class"` -C $(srcdir) META-INF
 
 CPATH =  .:$(GLIBJ_ZIP)
 AM_JAVACFLAGS = -bootclasspath $(CPATH)
-JAVAROOT = $(LIBDIR)
+JAVAROOT = .
 
 $(CLASSFILE): classdist_tritonus.stamp
 	rm -f $(CLASSFILE)
 	$(JAR_CMD1)
 
 clean-local:
-	rm -rf $(LIBDIR) $(CLASSFILE)
+	rm -rf $(CLASSFILE) `find . -name "*.class"`
 
 EXTRA_DIST = \
 	META-INF

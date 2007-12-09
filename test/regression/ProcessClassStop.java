@@ -7,7 +7,7 @@
 import java.util.Vector;
 import java.lang.reflect.*;
 
-class Base {
+class StopBase {
     static boolean useme;
 
     private static void killme()
@@ -16,7 +16,7 @@ class Base {
     }
 
     static {
-	Base b = new Base();
+	StopBase b = new StopBase();
 	ProcessClassStop.v.addElement(b);
 	useme = true;
 	killme();
@@ -44,11 +44,11 @@ public class ProcessClassStop
 	wd.setDaemon(true);
 	wd.start();
 
-	// a thread that will load Base
+	// a thread that will load StopBase
 	Thread t = new Thread() {
 	    public void run() {
 		try {
-		    Class.forName("Base");
+		    Class.forName("StopBase");
 		} catch (Throwable tx) {
 		    // System.out.println(tx);
 		}
@@ -61,7 +61,7 @@ public class ProcessClassStop
 	Thread t0 = new Thread() {
 	    public void run() {
 		try {
-		    System.out.println("tan " + new Base());
+		    System.out.println("tan " + new StopBase());
 		} catch (Throwable tt) {
 		    System.out.println("tan " + tt);
 		}
@@ -79,8 +79,7 @@ public class ProcessClassStop
     }
 }
 
-// javac flags: -nowarn
 /* Expected Output:
-tan java.lang.NoClassDefFoundError: Base
-java.lang.NoClassDefFoundError: Base
+tan java.lang.NoClassDefFoundError: StopBase
+java.lang.NoClassDefFoundError: StopBase
 */

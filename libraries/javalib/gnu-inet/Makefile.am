@@ -1,19 +1,17 @@
 CLASSFILE = kaffe-gnuinet.jar
-SRCDIRS = gnu
 jrelib_DATA = $(CLASSFILE)
-LIBDIR = lib
-JAR_CMD1 = ($(FASTJAR) cf $(CLASSFILE) -C $(LIBDIR) $(SRCDIRS))
+JAR_CMD1 = $(FASTJAR) cf $(CLASSFILE) `find . -name "*.class"`
 
-CPATH =  .:$(srcdir):$(LIBDIR):$(GLIBJ_ZIP)
+CPATH =  .:$(srcdir):$(GLIBJ_ZIP)
 AM_JAVACFLAGS = -classpath $(CPATH)
-JAVAROOT = $(LIBDIR)
+JAVAROOT = .
 
 $(CLASSFILE): classdist_gnuinet.stamp
 	rm -f $(CLASSFILE)
 	$(JAR_CMD1)
 
 clean-local:
-	rm -rf $(LIBDIR) $(CLASSFILE)
+	rm -rf $(CLASSFILE) `find . -name "*.class"`
 
 # Use a fake install class and dir to keep automake's JAVA (un)install tasks happy.
 FAKE=fakeinstall

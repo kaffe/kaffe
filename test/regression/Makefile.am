@@ -14,8 +14,34 @@ SETUP_ENVIRONMENT = env `. $(top_builddir)/BUILD_ENVIRONMENT; $(SED) 's/.*export
 # messages from shell when killing tests due to timeouts
 TESTS_ENVIRONMENT = $(SETUP_ENVIRONMENT) $(SHELL) TestScript 2> /dev/null
 
-ALWAYS_TESTS = \
-	$(SIMPLE_HEALTH_CHECK) \
+
+CPATH =  .:$(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar:$(GLIBJ_ZIP):compile_time
+AM_JAVACFLAGS = -bootclasspath $(CPATH) -nowarn
+JAVAROOT = .
+
+# Use a fake install class and dir to keep automake's JAVA (un)install tasks happy.
+FAKE=fakeinstall
+install-data-local: 
+	touch $(FAKE).class
+uninstall-local: 
+	rm $(FAKE).class
+testsdir = $(FAKE)
+
+dist_tests_JAVA = \
+	$(JAVATESTS) \
+	CLTestConc_run.java \
+	ZipVerifyUtils.java \
+	ClassGCTest.java \
+	ClassGCTestLater.java \
+	LoaderTest_Class0.java \
+	LoaderTest_Class1.java \
+	LoaderTest_Class1BeanInfo.java \
+	LoaderTest_Class2.java \
+	LoaderTest_Class3.java \
+	LoaderTest_Loader1.java \
+	LoaderTest_Loader2.java 
+
+JAVATESTS = \
 	$(TEST_COMPILER) \
 	$(TEST_ARRAYS) \
 	$(TEST_REFERENCE) \
@@ -30,13 +56,13 @@ ALWAYS_TESTS = \
 	$(TEST_STOPPING_THREADS) \
 	$(TEST_ZIP) \
 	$(TEST_NATIVE) \
-	$(JASMIN_TESTS) \
-	$(BCEL_TESTS) \
-	$(TEST_GNU_CRYPTO)
+	$(TEST_GNU_CRYPTO) \
+	$(BCEL_TESTS)
 
-## Simple health check
-SIMPLE_HEALTH_CHECK = \
-	HelloWorldApp.class.save 
+ALWAYS_TESTS = \
+	$(JAVATESTS) \
+	CatchLimits.class.save \
+	$(JASMIN_TESTS) 
 
 ## Now test the compiler
 TEST_COMPILER = \
@@ -76,8 +102,7 @@ TEST_STRINGS = \
 ## note that CatchLimits can be compiled from CatchLimits.j by Jasmin
 TEST_EXCEPTIONS = \
 	IndexTest.java \
-	StackDump.java \
-	CatchLimits.class.save 
+	StackDump.java 
 
 ## Test threads
 ## Preempt tests that preemption works---may not be supported by all threading systems
@@ -308,17 +333,6 @@ XFAIL_TESTS = \
 
 EXTRA_DIST = $(ALWAYS_TESTS) \
 	$(TEST_Overflow) \
-	CLTestConc_run.java \
-	ZipVerifyUtils.java \
-	ClassGCTest.java \
-	ClassGCTestLater.java \
-	LoaderTest_Class0.java \
-	LoaderTest_Class1.java \
-	LoaderTest_Class1BeanInfo.java \
-	LoaderTest_Class2.java \
-	LoaderTest_Class3.java \
-	LoaderTest_Loader1.java \
-	LoaderTest_Loader2.java \
 	$(JASMIN_TESTS_DIST) \
 	CatchLimits.j \
 	$(BCEL_TESTS_DIST) \

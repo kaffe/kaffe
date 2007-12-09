@@ -959,7 +959,6 @@ CLASSPATH_PREFIX
 CLASSPATH_CLASSES
 CLASSPATH_LIBDIR
 GLIBJ_ZIP
-JIKESPROG
 JAVAC
 JAVA_LIBS
 with_engine
@@ -1749,10 +1748,6 @@ Optional Packages:
   --with-classpath-includedir=<dir>
                           installation directory of Java core library headers
                           [default=/usr/local/classpath/include]
-  --with-ecj=ECJ          Define to use ECJ as the java compiler instead of
-                          jikes
-  --with-jikes<=JIKES>    Define to use jikes compiler [default=yes]. If yes,
-                          use jikes +Pno-switchcheck +Pno-shadow +E
   --with-libffi           Use libffi for sysdepCallMethod
   --without-gmp           don't use GNU multiple precision arithmetic library
   --with-gc=GC            Force use given execution engine (kaffe-gc or
@@ -7140,7 +7135,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 7143 "configure"' > conftest.$ac_ext
+  echo '#line 7138 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -9704,11 +9699,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9707: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9702: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9711: \$? = $ac_status" >&5
+   echo "$as_me:9706: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9994,11 +9989,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9997: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9992: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:10001: \$? = $ac_status" >&5
+   echo "$as_me:9996: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -10098,11 +10093,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:10101: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:10096: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:10105: \$? = $ac_status" >&5
+   echo "$as_me:10100: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -12447,7 +12442,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12450 "configure"
+#line 12445 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12547,7 +12542,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12550 "configure"
+#line 12545 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -14971,11 +14966,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14974: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14969: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:14978: \$? = $ac_status" >&5
+   echo "$as_me:14973: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -15075,11 +15070,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15078: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15073: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:15082: \$? = $ac_status" >&5
+   echo "$as_me:15077: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -16637,11 +16632,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16640: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16635: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:16644: \$? = $ac_status" >&5
+   echo "$as_me:16639: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -16741,11 +16736,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16744: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16739: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:16748: \$? = $ac_status" >&5
+   echo "$as_me:16743: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -18932,11 +18927,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18935: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18930: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:18939: \$? = $ac_status" >&5
+   echo "$as_me:18934: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -19222,11 +19217,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:19225: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:19220: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:19229: \$? = $ac_status" >&5
+   echo "$as_me:19224: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -19326,11 +19321,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:19329: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:19324: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:19333: \$? = $ac_status" >&5
+   echo "$as_me:19328: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -25992,42 +25987,36 @@ fi
 echo "${ECHO_T}${CLASSPATH_INCLUDEDIR}" >&6; }
 
 
-GLIBJ_ZIP=${CLASSPATH_CLASSES};
-
-
-
-
-
-
-# Check whether --with-ecj was given.
-if test "${with_ecj+set}" = set; then
-  withval=$with_ecj;
-            if test x"$withval" = x"yes" ; then
-              JAVAC="ecj"
-            else
-              JAVAC="$withval"
-            fi
-	    use_ecj=yes
+{ echo "$as_me:$LINENO: checking if class library exists and is readable at ${CLASSPATH_CLASSES}" >&5
+echo $ECHO_N "checking if class library exists and is readable at ${CLASSPATH_CLASSES}... $ECHO_C" >&6; }
+if test -r ${CLASSPATH_CLASSES} ; then
+   { echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6; }
 else
-  use_ecj=no
+   { echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }
+   { { echo "$as_me:$LINENO: error: Couldn't find readable class library at ${CLASSPATH_CLASSES}" >&5
+echo "$as_me: error: Couldn't find readable class library at ${CLASSPATH_CLASSES}" >&2;}
+   { (exit 1); exit 1; }; }
 fi
 
-
-{ echo "$as_me:$LINENO: checking whether to use ecj" >&5
-echo $ECHO_N "checking whether to use ecj... $ECHO_C" >&6; }
-{ echo "$as_me:$LINENO: result: $use_ecj" >&5
-echo "${ECHO_T}$use_ecj" >&6; }
+GLIBJ_ZIP=${CLASSPATH_CLASSES}
 
 
-# Extract the first word of "jikes", so it can be a program name with args.
-set dummy jikes; ac_word=$2
+JAVACFLAGS="-classpath ${CLASSPATH_CLASSES}"
+
+if test "x$JAVAPREFIX" = x; then
+        test "x$JAVAC" = x && for ac_prog in jikes$EXEEXT ecj$EXEEXT javac$EXEEXT "gcj$EXEEXT -C"
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
 { echo "$as_me:$LINENO: checking for $ac_word" >&5
 echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
-if test "${ac_cv_prog_JIKESPROG+set}" = set; then
+if test "${ac_cv_prog_JAVAC+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test -n "$JIKESPROG"; then
-  ac_cv_prog_JIKESPROG="$JIKESPROG" # Let the user override the test.
+  if test -n "$JAVAC"; then
+  ac_cv_prog_JAVAC="$JAVAC" # Let the user override the test.
 else
 as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
 for as_dir in $PATH
@@ -26036,7 +26025,7 @@ do
   test -z "$as_dir" && as_dir=.
   for ac_exec_ext in '' $ac_executable_extensions; do
   if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_prog_JIKESPROG="jikes"
+    ac_cv_prog_JAVAC="$ac_prog"
     echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -26046,65 +26035,100 @@ IFS=$as_save_IFS
 
 fi
 fi
-JIKESPROG=$ac_cv_prog_JIKESPROG
-if test -n "$JIKESPROG"; then
-  { echo "$as_me:$LINENO: result: $JIKESPROG" >&5
-echo "${ECHO_T}$JIKESPROG" >&6; }
+JAVAC=$ac_cv_prog_JAVAC
+if test -n "$JAVAC"; then
+  { echo "$as_me:$LINENO: result: $JAVAC" >&5
+echo "${ECHO_T}$JAVAC" >&6; }
 else
   { echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6; }
 fi
 
 
+  test -n "$JAVAC" && break
+done
 
-{ echo "$as_me:$LINENO: checking whether to use jikes" >&5
-echo $ECHO_N "checking whether to use jikes... $ECHO_C" >&6; }
-
-# Check whether --with-jikes was given.
-if test "${with_jikes+set}" = set; then
-  withval=$with_jikes;
-          if test x"$withval" = x"yes" ; then
-            JIKESPROG="jikes"
-          else
-            JIKESPROG="$withval"
-          fi
-	 use_jikes="yes"
 else
-  use_jikes="no"
-fi
-
-{ echo "$as_me:$LINENO: result: $use_jikes" >&5
-echo "${ECHO_T}$use_jikes" >&6; }
-
-if test x"$use_ecj" = x"no" ; then
-  if test x"$use_jikes" = x"no"; then
-	use_jikes="yes";
-	{ echo "$as_me:$LINENO: No java compiler selected, picking jikes." >&5
-echo "$as_me: No java compiler selected, picking jikes." >&6;}
+        test "x$JAVAC" = x && for ac_prog in jikes$EXEEXT ecj$EXEEXT javac$EXEEXT "gcj$EXEEXT -C"
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
+if test "${ac_cv_prog_JAVAC+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$JAVAC"; then
+  ac_cv_prog_JAVAC="$JAVAC" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_prog_JAVAC="$ac_prog"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
   fi
+done
+done
+IFS=$as_save_IFS
+
 fi
-
-case $use_jikes in
-yes)
-	if test x"$JIKESPROG" = x"" ; then
-	  { { echo "$as_me:$LINENO: error: No jikes compiler found. Please install jikes version 1.21 or higher." >&5
-echo "$as_me: error: No jikes compiler found. Please install jikes version 1.21 or higher." >&2;}
-   { (exit 1); exit 1; }; }
-	fi
-	JAVAC="$JIKESPROG +Pno-switchcheck +Pno-shadow +E"
-esac
-
-
-if test x"$use_ecj" = x"yes" -a x"$use_jikes" = x"yes"; then
-	{ { echo "$as_me:$LINENO: error: You can not chose jikes and ecj at the same time." >&5
-echo "$as_me: error: You can not chose jikes and ecj at the same time." >&2;}
-   { (exit 1); exit 1; }; }
 fi
-
-{ echo "$as_me:$LINENO: checking which java compiler" >&5
-echo $ECHO_N "checking which java compiler... $ECHO_C" >&6; }
-{ echo "$as_me:$LINENO: result: $JAVAC" >&5
+JAVAC=$ac_cv_prog_JAVAC
+if test -n "$JAVAC"; then
+  { echo "$as_me:$LINENO: result: $JAVAC" >&5
 echo "${ECHO_T}$JAVAC" >&6; }
+else
+  { echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }
+fi
+
+
+  test -n "$JAVAC" && break
+done
+test -n "$JAVAC" || JAVAC="$JAVAPREFIX"
+
+fi
+test "x$JAVAC" = x && { { echo "$as_me:$LINENO: error: no acceptable Java compiler found in \$PATH" >&5
+echo "$as_me: error: no acceptable Java compiler found in \$PATH" >&2;}
+   { (exit 1); exit 1; }; }
+
+{ echo "$as_me:$LINENO: checking if $JAVAC works" >&5
+echo $ECHO_N "checking if $JAVAC works... $ECHO_C" >&6; }
+if test "${ac_cv_prog_javac_works+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+
+JAVA_TEST=Test.java
+CLASS_TEST=Test.class
+cat << \EOF > $JAVA_TEST
+/* #line 26109 "configure" */
+public class Test {
+}
+EOF
+if { ac_try='$JAVAC $JAVACFLAGS $JAVA_TEST'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } >/dev/null 2>&1; then
+  ac_cv_prog_javac_works=yes
+else
+  { { echo "$as_me:$LINENO: error: The Java compiler $JAVAC failed (see config.log, check the CLASSPATH?)" >&5
+echo "$as_me: error: The Java compiler $JAVAC failed (see config.log, check the CLASSPATH?)" >&2;}
+   { (exit 1); exit 1; }; }
+  echo "configure: failed program was:" >&5
+  cat $JAVA_TEST >&5
+fi
+rm -f $JAVA_TEST $CLASS_TEST
+
+fi
+{ echo "$as_me:$LINENO: result: $ac_cv_prog_javac_works" >&5
+echo "${ECHO_T}$ac_cv_prog_javac_works" >&6; }
 
 
 
@@ -47942,15 +47966,9 @@ ac_config_files="$ac_config_files test/regression/TestScript"
 
 ac_config_files="$ac_config_files test/regression/compile_time/Makefile"
 
-ac_config_files="$ac_config_files test/regression/compile_time/CompileScript"
-
 ac_config_files="$ac_config_files test/regression/compiler/Makefile"
 
-ac_config_files="$ac_config_files test/regression/compiler/CompileScript"
-
 ac_config_files="$ac_config_files test/regression/run_time/Makefile"
-
-ac_config_files="$ac_config_files test/regression/run_time/CompileScript"
 
 ac_config_files="$ac_config_files test/jni/Makefile"
 
@@ -48893,11 +48911,8 @@ do
     "test/regression/Makefile") CONFIG_FILES="$CONFIG_FILES test/regression/Makefile" ;;
     "test/regression/TestScript") CONFIG_FILES="$CONFIG_FILES test/regression/TestScript" ;;
     "test/regression/compile_time/Makefile") CONFIG_FILES="$CONFIG_FILES test/regression/compile_time/Makefile" ;;
-    "test/regression/compile_time/CompileScript") CONFIG_FILES="$CONFIG_FILES test/regression/compile_time/CompileScript" ;;
     "test/regression/compiler/Makefile") CONFIG_FILES="$CONFIG_FILES test/regression/compiler/Makefile" ;;
-    "test/regression/compiler/CompileScript") CONFIG_FILES="$CONFIG_FILES test/regression/compiler/CompileScript" ;;
     "test/regression/run_time/Makefile") CONFIG_FILES="$CONFIG_FILES test/regression/run_time/Makefile" ;;
-    "test/regression/run_time/CompileScript") CONFIG_FILES="$CONFIG_FILES test/regression/run_time/CompileScript" ;;
     "test/jni/Makefile") CONFIG_FILES="$CONFIG_FILES test/jni/Makefile" ;;
     "kaffe/kaffeh/constants.c") CONFIG_LINKS="$CONFIG_LINKS kaffe/kaffeh/constants.c:kaffe/kaffevm/constants.c" ;;
     "kaffe/kaffeh/debug.c") CONFIG_LINKS="$CONFIG_LINKS kaffe/kaffeh/debug.c:kaffe/kaffevm/debug.c" ;;
@@ -49207,7 +49222,6 @@ CLASSPATH_PREFIX!$CLASSPATH_PREFIX$ac_delim
 CLASSPATH_CLASSES!$CLASSPATH_CLASSES$ac_delim
 CLASSPATH_LIBDIR!$CLASSPATH_LIBDIR$ac_delim
 GLIBJ_ZIP!$GLIBJ_ZIP$ac_delim
-JIKESPROG!$JIKESPROG$ac_delim
 JAVAC!$JAVAC$ac_delim
 JAVA_LIBS!$JAVA_LIBS$ac_delim
 with_engine!$with_engine$ac_delim
@@ -49222,6 +49236,7 @@ HAVE_MKTEMP_TRUE!$HAVE_MKTEMP_TRUE$ac_delim
 HAVE_MKTEMP_FALSE!$HAVE_MKTEMP_FALSE$ac_delim
 HAVE_JASMIN_TRUE!$HAVE_JASMIN_TRUE$ac_delim
 HAVE_JASMIN_FALSE!$HAVE_JASMIN_FALSE$ac_delim
+KAFFE_LIBS!$KAFFE_LIBS$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -49263,7 +49278,6 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
-KAFFE_LIBS!$KAFFE_LIBS$ac_delim
 M_LIBS!$M_LIBS$ac_delim
 NET_LIBS!$NET_LIBS$ac_delim
 ZIP_LIBS!$ZIP_LIBS$ac_delim
@@ -49351,7 +49365,7 @@ subdirs!$subdirs$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 86; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 85; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5

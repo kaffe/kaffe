@@ -10,64 +10,21 @@
 # Contributed by the Flux Research Group, Department of Computer Science,
 # University of Utah, http://www.cs.utah.edu/flux/
 
-CLASS_FILES = \
-	ClassToInterface.class \
-	DefinedToAbstract.class \
-	DefinedToUndefined.class \
-	InterfaceToClass.class \
-	IntToFloat.class \
-	InstToStatic.class \
-	a/ProtectedToPrivate.class \
-	a/PublicToPackage.class \
-	a/PublicToProtected.class \
-	PublicToPrivate.class \
-	StaticToInst.class
+CLEANFILES=`find . -name "*.class"`
 
-SETUP_ENVIRONMENT = env `. $(top_builddir)/BUILD_ENVIRONMENT; $(SED) 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
+CPATH =  .:$(GLIBJ_ZIP)
+AM_JAVACFLAGS = -classpath $(CPATH)
+JAVAROOT = .
 
-## We have to list the dependencies explicitely for those make programs
-## that don't support GNU make's %.suffix target extension.
+# Use a fake install class and dir to keep automake's JAVA (un)install tasks happy.
+FAKE=fakeinstall
+install-data-local: 
+	touch $(FAKE).class
+uninstall-local: 
+	rm $(FAKE).class
+compiletimedir = $(FAKE)
 
-ClassToInterface.class: ClassToInterface.java
-	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/ClassToInterface.java
-
-DefinedToAbstract.class: DefinedToAbstract.java
-	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/DefinedToAbstract.java
-
-DefinedToUndefined.class: DefinedToUndefined.java
-	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/DefinedToUndefined.java
-
-InterfaceToClass.class: InterfaceToClass.java
-	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/InterfaceToClass.java
-
-IntToFloat.class: IntToFloat.java
-	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/IntToFloat.java
-
-InstToStatic.class: InstToStatic.java
-	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/InstToStatic.java
-
-a/ProtectedToPrivate.class: a/ProtectedToPrivate.java
-	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/a/ProtectedToPrivate.java
-
-a/PublicToPackage.class: a/PublicToPackage.java
-	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/a/PublicToPackage.java
-
-a/PublicToProtected.class: a/PublicToProtected.java
-	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/a/PublicToProtected.java
-
-PublicToPrivate.class: PublicToPrivate.java
-	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/PublicToPrivate.java
-
-StaticToInst.class: StaticToInst.java
-	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/StaticToInst.java
-
-all-am: 
-
-check-am: CompileScript $(CLASS_FILES)
-
-CLEANFILES=$(CLASS_FILES)
-
-EXTRA_DIST = \
+dist_compiletime_JAVA = \
 	ClassToInterface.java \
 	DefinedToAbstract.java \
 	DefinedToUndefined.java \

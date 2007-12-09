@@ -120,8 +120,6 @@ CLEANFILES = \
 	*.out \
 	core \
 	*.core \
-	java/lang/*.class
-
-
+	`find . -name "*.class"`
 
 

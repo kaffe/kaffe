@@ -1,23 +1,19 @@
 CLASSFILE = gjdoc.jar
-SRCDIRS = antlr
 toolslib_DATA = $(CLASSFILE)
-LIBDIR = lib
-JAR_CMD1 = ($(FASTJAR) cf $(CLASSFILE) -C $(LIBDIR) $(SRCDIRS) -C $(LIBDIR) gnu -C $(LIBDIR) com)
-JAR_CMD2 = (PWD=`pwd` && cd  $(srcdir) && $(FASTJAR) uf $(PWD)/$(CLASSFILE) $(gjdoc_ressources))
-JAR_CMD3 = ($(FASTJAR) uf $(CLASSFILE) version.properties)
+JAR_CMD1 = $(FASTJAR) cf $(CLASSFILE) version.properties `find . -name "*.class"` 
+JAR_CMD2 = (cd $(srcdir) && $(FASTJAR) uf $(abs_builddir)/$(CLASSFILE) $(gjdoc_ressources))
 
-CPATH =  .:$(srcdir):$(LIBDIR):$(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar:$(GLIBJ_ZIP)
+CPATH =  .:$(srcdir):$(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar:$(GLIBJ_ZIP)
 AM_JAVACFLAGS = -classpath $(CPATH)
-JAVAROOT = $(LIBDIR)
+JAVAROOT = .
 
 $(CLASSFILE): classdist_gjdoc.stamp
 	rm -f $(CLASSFILE)
 	$(JAR_CMD1)
 	$(JAR_CMD2)
-	$(JAR_CMD3)
 
 clean-local:
-	rm -rf $(LIBDIR) $(CLASSFILE)
+	rm -rf $(CLASSFILE) `find . -name "*.class"`
 
 # Use a fake install class and dir to keep automake's JAVA (un)install tasks happy.
 FAKE=fakeinstall

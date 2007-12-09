@@ -1,4 +1,45 @@
-2007-12-09  Kiyo Inaba <inaba@src.ricoh.co.jp>
+2007-12-09  Dalibor Topic  <robilad@kaffe.org>
+
+	* m4/ac_prog_javac.m4, m4/ac_prog_javac_works.m4, m4/ac_try_compile_java.m4: New files.
+	Added new Java programming language compiler checking code from ac-archive.sf.net. 
+
+	* test/regression/compile_time/CompileScript.in,
+	test/regression/compiler/CompileScript.in,
+	test/regression/run_time/CompileScript.in: Removed.
+
+	* tools/javatools/Makefile.am, 
+	tools/gjdoc/javalib/Makefile.am,
+	test/regression/run_time/Makefile.am,
+	test/regression/compiler/Makefile.am,
+	test/regression/compile_time/Makefile.am,
+	test/regression/Makefile.am,
+	test/internal/Makefile.am,
+	libraries/javalib/zlib-zip/Makefile.am,
+	libraries/javalib/vmspecific/Makefile.am,
+	libraries/javalib/tritonus-sound/Makefile.am,
+	libraries/javalib/gnu-inet/Makefile.am,
+	libraries/javalib/gmp-math/Makefile.am,
+	libraries/javalib/dnsjava/Makefile.am,
+	libraries/javalib/awt-implementations/kaffe/Makefile.am:
+	Simplified javac invocation.
+
+	* configure.ac: Simplified Javac detection. Removed GLIBJ_ZIP. 
+	Removed CompileScript.in files.
+
+	* include/Makefile.am: Use JAR files in KAFFEH_CLASSPATH.
+
+	* test/regression/CLTest.java, test/regression/CLTestConc.java,
+	test/regression/CatchDeath.java, test/regression/TestCasts.java: 
+	Removed javac flags for TestScript.
+
+	* test/regression/TestScript.in (compile): Removed. Compile all 
+	tests at once in Makefile.am.
+
+	* test/regression/ProcessClassStop.java, 
+	test/regression/ProcessClassLockTest.java: Adapted to ensure all
+	tests can be compiled at once.
+
+2007-12-09 Kiyo Inaba <inaba@src.ricoh.co.jp>
 
 	* kaffe/kaffevm/jit/machine.c: Fix syntax error.
 

@@ -110,7 +110,6 @@ public class CLTest extends ClassLoader
     }
 }
 
-// javac flags: -nowarn
 /* Expected Output:
 Load returned class -CLTest$Hello-
 Trying to create new instance

@@ -93,7 +93,6 @@ class CatchSyncDeath extends CatchDeath_iface
     }
 }
 
-// javac flags: -nowarn
 /* Expected Output:
 CD Caught java.lang.ThreadDeath
 CSD Caught java.lang.ThreadDeath

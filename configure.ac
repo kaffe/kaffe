@@ -714,77 +714,19 @@ AC_CHECK_WITH_CLASSPATH_CLASSES
 AC_CHECK_WITH_CLASSPATH_LIBDIR
 AC_CHECK_WITH_CLASSPATH_INCLUDEDIR
 
-GLIBJ_ZIP=${CLASSPATH_CLASSES};
-
+AC_MSG_CHECKING([if class library exists and is readable at ${CLASSPATH_CLASSES}])
+if test -r ${CLASSPATH_CLASSES} ; then
+   AC_MSG_RESULT([yes])
+else 
+   AC_MSG_RESULT([no])
+   AC_MSG_ERROR([Couldn't find readable class library at ${CLASSPATH_CLASSES}])
+fi
+   
+GLIBJ_ZIP=${CLASSPATH_CLASSES}
 AC_SUBST(GLIBJ_ZIP)
 
-dnl =========================================================================
-dnl Use ecj
-dnl =========================================================================
-
-
-AC_ARG_WITH([ecj],
-	    AS_HELP_STRING([--with-ecj=ECJ],
-			   [Define to use ECJ as the java compiler instead of jikes]),
-	   [
-            if test x"$withval" = x"yes" ; then
-              JAVAC="ecj" 
-            else 
-              JAVAC="$withval" 
-            fi
-	    use_ecj=yes],
-	   [use_ecj=no])
-
-AC_MSG_CHECKING([whether to use ecj])
-AC_MSG_RESULT($use_ecj)
-
-dnl =========================================================================
-dnl Use jikes
-dnl =========================================================================
-
-AC_CHECK_PROG(JIKESPROG, jikes, jikes)
-
-AC_MSG_CHECKING([whether to use jikes])
-AC_ARG_WITH([jikes],
-            AS_HELP_STRING([--with-jikes<=JIKES>],
-                           [Define to use jikes compiler @<:@default=yes@:>@.  If yes, use jikes +Pno-switchcheck +Pno-shadow +E]),
-	[
-          if test x"$withval" = x"yes" ; then
-            JIKESPROG="jikes" 
-          else 
-            JIKESPROG="$withval" 
-          fi
-	 use_jikes="yes"],
-	[use_jikes="no"])
-AC_MSG_RESULT($use_jikes)
-
-if test x"$use_ecj" = x"no" ; then 
-  if test x"$use_jikes" = x"no"; then
-	use_jikes="yes";
-	AC_MSG_NOTICE([No java compiler selected, picking jikes.])
-  fi
-fi
-
-case $use_jikes in
-yes)
-	if test x"$JIKESPROG" = x"" ; then
-	  AC_MSG_ERROR([No jikes compiler found. Please install jikes version 1.21 or higher.])
-	fi
-	JAVAC="$JIKESPROG +Pno-switchcheck +Pno-shadow +E"
-esac
-
-dnl =========================================================================
-dnl Set the java compiler variable.
-dnl =========================================================================
-
-if test x"$use_ecj" = x"yes" -a x"$use_jikes" = x"yes"; then
-	AC_MSG_ERROR([You can not chose jikes and ecj at the same time.])
-fi
-
-AC_MSG_CHECKING([which java compiler])
-AC_MSG_RESULT($JAVAC)
-
-AC_SUBST(JAVAC)
+JAVACFLAGS="-classpath ${CLASSPATH_CLASSES}"
+AC_PROG_JAVAC
 
 dnl =========================================================================
 dnl Look for trampoline code if in JIT mode
@@ -2391,11 +2333,8 @@ AC_CONFIG_FILES([test/internal/Makefile])
 AC_CONFIG_FILES([test/regression/Makefile])
 AC_CONFIG_FILES([test/regression/TestScript])
 AC_CONFIG_FILES([test/regression/compile_time/Makefile])
-AC_CONFIG_FILES([test/regression/compile_time/CompileScript])
 AC_CONFIG_FILES([test/regression/compiler/Makefile])
-AC_CONFIG_FILES([test/regression/compiler/CompileScript])
 AC_CONFIG_FILES([test/regression/run_time/Makefile])
-AC_CONFIG_FILES([test/regression/run_time/CompileScript])
 AC_CONFIG_FILES([test/jni/Makefile])
 
 AC_CONFIG_LINKS([kaffe/kaffeh/constants.c:kaffe/kaffevm/constants.c])

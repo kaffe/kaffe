@@ -1,19 +1,17 @@
 CLASSFILE = kaffe-vminterface.jar
-SRCDIRS = org
 jrelib_DATA = $(CLASSFILE)
-LIBDIR = lib
-JAR_CMD1 = ($(FASTJAR) cf $(CLASSFILE) -C $(LIBDIR) $(SRCDIRS) -C $(LIBDIR) gnu -C $(LIBDIR) java)
+JAR_CMD1 = $(FASTJAR) cf $(CLASSFILE) `find . -name "*.class"`
 
-CPATH =  .:$(srcdir):$(LIBDIR):$(GLIBJ_ZIP)
+CPATH =  $(GLIBJ_ZIP):.:$(srcdir)
+JAVAROOT = .
 AM_JAVACFLAGS = -bootclasspath $(CPATH)
-JAVAROOT = $(LIBDIR)
 
 $(CLASSFILE): classdist_vminterface.stamp
 	rm -f $(CLASSFILE)
 	$(JAR_CMD1)
 
 clean-local:
-	rm -rf $(LIBDIR) $(CLASSFILE)
+	rm -rf $(CLASSFILE) `find . -name "*.class"`
 
 # Use a fake install class and dir to keep automake's JAVA (un)install tasks happy.
 FAKE=fakeinstall

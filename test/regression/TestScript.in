@@ -41,25 +41,6 @@ mybasename () {
     echo "$1" | sed 's%.*/%%'
 }
 
-compile()
-{
-	echo ERROR > ${RESULT}
-	JAVAC_FLAGS=`cat ${1+"$@"} | sed 's/\/\/ javac flags://p;d'`
-	$VERBOSE ${JAVAC} -d . ${JAVAC_FLAGS} ${1+"$@"}
-	eval ${JAVAC} -d . ${JAVAC_FLAGS} ${1+"$@"} > ${RESULT} 2>&1
-	if echo " $JAVAC_FLAGS" | grep " -nowarn" >/dev/null; then
-		OUTPUT=`cat ${RESULT} | sed '/warning/d; /caution/d; /deprecated/d'`
-	else
-		OUTPUT=`cat ${RESULT} | sed '/deprecated/d;'`
-	fi
-	if test "${OUTPUT}" != "" ; then
-		echo "error compiling:"
-		cat ${RESULT}
-		error=1
-	fi
-	rm -f ${RESULT}
-}
-
 #
 # Run a test, optionally sorted
 #

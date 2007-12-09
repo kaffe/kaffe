@@ -957,6 +957,8 @@ AC_SUBST([am__untar])
 ]) # _AM_PROG_TAR
 
 m4_include([m4/ac_c_bigendian_cross.m4])
+m4_include([m4/ac_prog_javac.m4])
+m4_include([m4/ac_prog_javac_works.m4])
 m4_include([m4/acx_pthread.m4])
 m4_include([m4/alsa.m4])
 m4_include([m4/ax_cflags_gcc_option.m4])

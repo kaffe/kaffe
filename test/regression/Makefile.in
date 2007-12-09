@@ -39,13 +39,15 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-@HAVE_GCJ_SUPPORT_FALSE@TESTS = $(am__EXEEXT_3)
-@HAVE_GCJ_SUPPORT_TRUE@TESTS = $(am__EXEEXT_3) $(TEST_Overflow)
+@HAVE_GCJ_SUPPORT_FALSE@TESTS = $(am__EXEEXT_4)
+@HAVE_GCJ_SUPPORT_TRUE@TESTS = $(am__EXEEXT_4) $(TEST_Overflow)
 subdir = test/regression
-DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(srcdir)/TestScript.in
+DIST_COMMON = $(am__dist_tests_JAVA_DIST) $(srcdir)/Makefile.am \
+	$(srcdir)/Makefile.in $(srcdir)/TestScript.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
+	$(top_srcdir)/m4/ac_prog_javac.m4 \
+	$(top_srcdir)/m4/ac_prog_javac_works.m4 \
 	$(top_srcdir)/m4/acx_pthread.m4 $(top_srcdir)/m4/alsa.m4 \
 	$(top_srcdir)/m4/ax_cflags_gcc_option.m4 \
 	$(top_srcdir)/m4/ax_cflags_warn_all.m4 \
@@ -79,19 +81,78 @@ RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	install-pdf-recursive install-ps-recursive install-recursive \
 	installcheck-recursive installdirs-recursive pdf-recursive \
 	ps-recursive uninstall-recursive
+am__dist_tests_JAVA_DIST = HelloWorldApp.java MultiArray.java \
+	RefTest.java TestIntLong.java TestFloatDouble.java \
+	DoubleCvt.java DoubleNeg.java DoubleConst.java \
+	DoublePrint.java DoubleComp.java ModuloTest.java LongNeg.java \
+	FPUStack.java NegativeDivideConst.java divtest.java \
+	DoubleIEEE.java Str.java Str2.java InternHog.java \
+	IndexTest.java StackDump.java tname.java ttest.java \
+	ThreadInterrupt.java ThreadState.java UncaughtException.java \
+	IllegalWait.java WaitTest.java Preempt.java \
+	TestSerializable.java TestSerializable2.java \
+	SerializationCompatibility.java SerialPersistentFields.java \
+	TestSerialVersions.java TestSerialPersistent.java \
+	TestSerialFields.java TestObjectStreamField.java \
+	ReflectInterfaces.java InnerTest.java SerialUID.java \
+	TestCasts.java Alias.java NullPointerTest.java NullInvoke.java \
+	TableSwitch.java LostFrame.java ConstructorTest.java \
+	burford.java IllegalInterface.java GetInterfaces.java \
+	IntfTest.java SignedShort.java CharCvt.java BadFloatTest.java \
+	ProcessTest.java UDPTest.java SoTimeout.java wc.java \
+	FileTest.java FileChecks.java finalexc.java finaltest.java \
+	finaltest2.java forNameTest.java LoaderTest.java \
+	ArrayForName.java KaffeVerifyBug.java Schtum.java Reflect.java \
+	MethodBug.java Bean.java SortTest.java ArraysTest.java \
+	SubListTest.java HashTest.java SecureRandomTest.java \
+	MapTest.java URLTest.java PropertiesTest.java ReaderTest.java \
+	CharArrayReaderTest.java LineNumberReaderTest.java \
+	BufferedReaderTest.java ReaderReadVoidTest.java \
+	InputStreamTest.java BufferedInputStreamAvailableTest.java \
+	PipeTest.java DateFormatTest.java GetField.java \
+	LostTrampolineFrame.java NetworkInterfaceTest.java \
+	InetAddressTest.java InetSocketAddressTest.java \
+	ShutdownHookTest.java TestMessageFormat.java \
+	ReflectInvoke.java InvTarExcTest.java DeleteFile.java \
+	PrimordialLoaderTest.java SystemLoaderTest.java \
+	NoClassDefTest.java CLTest.java CLTestConc.java \
+	CLTestJLock.java CLTestLie.java CLTestFindLoaded.java \
+	ClassDeadLock.java ExceptionTest.java \
+	ExceptionTestClassLoader.java ExceptionTestClassLoader2.java \
+	TestClassRef.java ClassGC.java GCTest.java \
+	ThreadLocalTest.java BeanBug.java BitSetTest.java \
+	ExceptionInInitializerTest.java InitTest.java CLInitThrow.java \
+	ProcessClassTest.java ProcessClassInst.java \
+	ProcessClassStop.java FindSystemClass.java \
+	ProcessClassLockTest.java DoubleBug.java TestUnlock.java \
+	MarkResetTest.java HashtableTest1.java ReflectMultiArray.java \
+	ExecTest.java BadClassVersion.java InterfaceSuperClass.java \
+	ImplementClass.java FieldErrors.java MethodErrors.java \
+	ProhibitedClass.java KaffeInternal.java SecurityMan.java \
+	SecurityMan2.java CatchDeath.java DeadThread.java tthrd1.java \
+	DosTimeVerify.java ZipVerify.java ZipTest.java \
+	TruncatedClass.java TestNative.java TestGnuCrypto.java \
+	BadClassFileCode.java BadClassFileConstants.java \
+	CLTestConc_run.java ZipVerifyUtils.java ClassGCTest.java \
+	ClassGCTestLater.java LoaderTest_Class0.java \
+	LoaderTest_Class1.java LoaderTest_Class1BeanInfo.java \
+	LoaderTest_Class2.java LoaderTest_Class3.java \
+	LoaderTest_Loader1.java LoaderTest_Loader2.java
+CLASSPATH_ENV = CLASSPATH=$(JAVAROOT):$(srcdir)/$(JAVAROOT):$$CLASSPATH
+am__installdirs = "$(DESTDIR)$(testsdir)"
 RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
   distclean-recursive maintainer-clean-recursive
 ETAGS = etags
 CTAGS = ctags
-@HAVE_JASMIN_TRUE@am__EXEEXT_1 = $(JASMIN_TESTS_DIST)
-@HAVE_BCEL_TRUE@am__EXEEXT_2 = $(BCEL_TESTS_DIST)
-am__EXEEXT_3 = $(SIMPLE_HEALTH_CHECK) $(TEST_COMPILER) $(TEST_ARRAYS) \
-	$(TEST_REFERENCE) $(TEST_INTS_LONGS_FLOATS_DOUBLES) \
-	$(TEST_STRINGS) $(TEST_EXCEPTIONS) $(TEST_THREADS) \
-	$(TEST_SERIALIZATION) $(TEST_MISC) $(TEST_REFLECTION) \
-	$(TEST_CLASS_LOADING) $(TEST_STOPPING_THREADS) $(TEST_ZIP) \
-	$(TEST_NATIVE) $(am__EXEEXT_1) $(am__EXEEXT_2) \
-	$(TEST_GNU_CRYPTO)
+@HAVE_BCEL_TRUE@am__EXEEXT_1 = $(BCEL_TESTS_DIST)
+am__EXEEXT_2 = $(TEST_COMPILER) $(TEST_ARRAYS) $(TEST_REFERENCE) \
+	$(TEST_INTS_LONGS_FLOATS_DOUBLES) $(TEST_STRINGS) \
+	$(TEST_EXCEPTIONS) $(TEST_THREADS) $(TEST_SERIALIZATION) \
+	$(TEST_MISC) $(TEST_REFLECTION) $(TEST_CLASS_LOADING) \
+	$(TEST_STOPPING_THREADS) $(TEST_ZIP) $(TEST_NATIVE) \
+	$(TEST_GNU_CRYPTO) $(am__EXEEXT_1)
+@HAVE_JASMIN_TRUE@am__EXEEXT_3 = $(JASMIN_TESTS_DIST)
+am__EXEEXT_4 = $(am__EXEEXT_2) CatchLimits.class.save $(am__EXEEXT_3)
 DIST_SUBDIRS = $(SUBDIRS)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
@@ -160,7 +221,6 @@ JASMIN = @JASMIN@
 JAVAC = @JAVAC@
 JAVAC_FLAGS = @JAVAC_FLAGS@
 JAVA_LIBS = @JAVA_LIBS@
-JIKESPROG = @JIKESPROG@
 KAFFEH = @KAFFEH@
 KAFFE_ARCHOS = @KAFFE_ARCHOS@
 KAFFE_CCASFLAGS = @KAFFE_CCASFLAGS@
@@ -311,8 +371,28 @@ SETUP_ENVIRONMENT = env `. $(top_builddir)/BUILD_ENVIRONMENT; $(SED) 's/.*export
 # Redirect errors to /dev/null to avoid annoying job control
 # messages from shell when killing tests due to timeouts
 TESTS_ENVIRONMENT = $(SETUP_ENVIRONMENT) $(SHELL) TestScript 2> /dev/null
-ALWAYS_TESTS = \
-	$(SIMPLE_HEALTH_CHECK) \
+CPATH = .:$(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar:$(GLIBJ_ZIP):compile_time
+AM_JAVACFLAGS = -bootclasspath $(CPATH) -nowarn
+JAVAROOT = .
+
+# Use a fake install class and dir to keep automake's JAVA (un)install tasks happy.
+FAKE = fakeinstall
+testsdir = $(FAKE)
+dist_tests_JAVA = \
+	$(JAVATESTS) \
+	CLTestConc_run.java \
+	ZipVerifyUtils.java \
+	ClassGCTest.java \
+	ClassGCTestLater.java \
+	LoaderTest_Class0.java \
+	LoaderTest_Class1.java \
+	LoaderTest_Class1BeanInfo.java \
+	LoaderTest_Class2.java \
+	LoaderTest_Class3.java \
+	LoaderTest_Loader1.java \
+	LoaderTest_Loader2.java 
+
+JAVATESTS = \
 	$(TEST_COMPILER) \
 	$(TEST_ARRAYS) \
 	$(TEST_REFERENCE) \
@@ -327,12 +407,13 @@ ALWAYS_TESTS = \
 	$(TEST_STOPPING_THREADS) \
 	$(TEST_ZIP) \
 	$(TEST_NATIVE) \
-	$(JASMIN_TESTS) \
-	$(BCEL_TESTS) \
-	$(TEST_GNU_CRYPTO)
+	$(TEST_GNU_CRYPTO) \
+	$(BCEL_TESTS)
 
-SIMPLE_HEALTH_CHECK = \
-	HelloWorldApp.class.save 
+ALWAYS_TESTS = \
+	$(JAVATESTS) \
+	CatchLimits.class.save \
+	$(JASMIN_TESTS) 
 
 TEST_COMPILER = \
 	HelloWorldApp.java 
@@ -365,8 +446,7 @@ TEST_STRINGS = \
 
 TEST_EXCEPTIONS = \
 	IndexTest.java \
-	StackDump.java \
-	CatchLimits.class.save 
+	StackDump.java 
 
 TEST_THREADS = \
 	tname.java \
@@ -569,17 +649,6 @@ XFAIL_TESTS = \
 
 EXTRA_DIST = $(ALWAYS_TESTS) \
 	$(TEST_Overflow) \
-	CLTestConc_run.java \
-	ZipVerifyUtils.java \
-	ClassGCTest.java \
-	ClassGCTestLater.java \
-	LoaderTest_Class0.java \
-	LoaderTest_Class1.java \
-	LoaderTest_Class1BeanInfo.java \
-	LoaderTest_Class2.java \
-	LoaderTest_Class3.java \
-	LoaderTest_Loader1.java \
-	LoaderTest_Loader2.java \
 	$(JASMIN_TESTS_DIST) \
 	CatchLimits.j \
 	$(BCEL_TESTS_DIST) \
@@ -638,6 +707,34 @@ mostlyclean-libtool:
 
 clean-libtool:
 	-rm -rf .libs _libs
+
+classdist_tests.stamp: $(dist_tests_JAVA)
+	@list1='$?'; list2=; if test -n "$$list1"; then \
+	  for p in $$list1; do \
+	    if test -f $$p; then d=; else d="$(srcdir)/"; fi; \
+	    list2="$$list2 $$d$$p"; \
+	  done; \
+	  echo '$(CLASSPATH_ENV) $(JAVAC) -d $(JAVAROOT) $(AM_JAVACFLAGS) $(JAVACFLAGS) '"$$list2"; \
+	  $(CLASSPATH_ENV) $(JAVAC) -d $(JAVAROOT) $(AM_JAVACFLAGS) $(JAVACFLAGS) $$list2; \
+	else :; fi
+	echo timestamp > classdist_tests.stamp
+install-dist_testsJAVA: classdist_tests.stamp
+	@$(NORMAL_INSTALL)
+	test -z "$(testsdir)" || $(MKDIR_P) "$(DESTDIR)$(testsdir)"
+	@test -z "$(dist_tests_JAVA)" || for p in *.class; do \
+	  echo " $(INSTALL_DATA) '$$p' '$(DESTDIR)$(testsdir)/$$p'"; \
+	  $(INSTALL_DATA) "$$p" "$(DESTDIR)$(testsdir)/$$p"; \
+	done
+
+uninstall-dist_testsJAVA:
+	@$(NORMAL_UNINSTALL)
+	@test -z "$(dist_tests_JAVA)" || for p in *.class; do \
+	  echo " rm -f '$(DESTDIR)$(testsdir)/$$p'"; \
+	  rm -f "$(DESTDIR)$(testsdir)/$$p"; \
+	done
+
+clean-dist_testsJAVA:
+	-rm -f *.class classdist_tests.stamp
 
 # This directory's subdirectories are mostly independent; you can cd
 # into them and run `make' without going through this Makefile.
@@ -889,9 +986,12 @@ distdir: $(DISTFILES)
 check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-recursive
-all-am: Makefile
+all-am: Makefile classdist_tests.stamp
 installdirs: installdirs-recursive
 installdirs-am:
+	for dir in "$(DESTDIR)$(testsdir)"; do \
+	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
+	done
 install: install-recursive
 install-exec: install-exec-recursive
 install-data: install-data-recursive
@@ -919,7 +1019,8 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-recursive
 
-clean-am: clean-generic clean-libtool mostlyclean-am
+clean-am: clean-dist_testsJAVA clean-generic clean-libtool \
+	mostlyclean-am
 
 distclean: distclean-recursive
 	-rm -f Makefile
@@ -935,7 +1036,7 @@ info: info-recursive
 
 info-am:
 
-install-data-am:
+install-data-am: install-data-local install-dist_testsJAVA
 
 install-dvi: install-dvi-recursive
 
@@ -969,25 +1070,31 @@ ps: ps-recursive
 
 ps-am:
 
-uninstall-am:
+uninstall-am: uninstall-dist_testsJAVA uninstall-local
 
 .MAKE: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) install-am \
 	install-strip
 
 .PHONY: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) CTAGS GTAGS \
-	all all-am check check-TESTS check-am clean clean-generic \
-	clean-libtool ctags ctags-recursive distclean \
-	distclean-generic distclean-libtool distclean-tags distdir dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs installdirs-am \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags tags-recursive uninstall uninstall-am
+	all all-am check check-TESTS check-am clean \
+	clean-dist_testsJAVA clean-generic clean-libtool ctags \
+	ctags-recursive distclean distclean-generic distclean-libtool \
+	distclean-tags distdir dvi dvi-am html html-am info info-am \
+	install install-am install-data install-data-am \
+	install-data-local install-dist_testsJAVA install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am install-man \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	installdirs-am maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-generic mostlyclean-libtool pdf pdf-am \
+	ps ps-am tags tags-recursive uninstall uninstall-am \
+	uninstall-dist_testsJAVA uninstall-local
 
+install-data-local: 
+	touch $(FAKE).class
+uninstall-local: 
+	rm $(FAKE).class
 
 all-am: TestScript
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

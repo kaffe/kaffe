@@ -3,7 +3,7 @@
  *
  * @author Godmar Back <gback@cs.utah.edu>
  */
-class Base {
+class LockBase {
     static {
 	try {
 	    Thread.sleep(5000);
@@ -13,7 +13,7 @@ class Base {
     }
 }
 
-class Sub extends Base {
+class Sub extends LockBase {
 }
 
 public class ProcessClassLockTest
@@ -32,7 +32,7 @@ public class ProcessClassLockTest
 	    }
 	}.start();
 
-	// a thread that will load Sub and Base
+	// a thread that will load Sub and LockBase
 	new Thread() {
 	    public void run() {
 		try {
@@ -47,7 +47,7 @@ public class ProcessClassLockTest
 	Thread.sleep(1000);
 
 	/* this thread should be unaffected by the fact that thread 2
-	 * sleeps in the static initializer of Base
+	 * sleeps in the static initializer of LockBase
 	 */
 	Thread th;
 	th = new Thread() {

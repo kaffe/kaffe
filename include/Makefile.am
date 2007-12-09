@@ -10,7 +10,7 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-KAFFEH_CLASSPATH = $(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar:$(top_builddir)/libraries/javalib/zlib-zip/lib:$(top_builddir)/libraries/javalib/tritonus-sound/lib:$(top_builddir)/libraries/javalib/gmp-math/lib:$(GLIBJ_ZIP)
+KAFFEH_CLASSPATH = $(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar:$(top_builddir)/libraries/javalib/zlib-zip/kaffe-zlib.jar:$(top_builddir)/libraries/javalib/tritonus-sound/kaffe-tritonus.jar:$(top_builddir)/libraries/javalib/gmp-math/gmpjavamath.jar:$(GLIBJ_ZIP)
 
 EXTRA_DIST = distclean-hack \
 		stamp-h2.in

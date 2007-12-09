@@ -41,10 +41,12 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 subdir = test/regression/compiler
-DIST_COMMON = $(srcdir)/CompileScript.in $(srcdir)/Makefile.am \
+DIST_COMMON = $(dist_compiler_JAVA) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
+	$(top_srcdir)/m4/ac_prog_javac.m4 \
+	$(top_srcdir)/m4/ac_prog_javac_works.m4 \
 	$(top_srcdir)/m4/acx_pthread.m4 $(top_srcdir)/m4/alsa.m4 \
 	$(top_srcdir)/m4/ax_cflags_gcc_option.m4 \
 	$(top_srcdir)/m4/ax_cflags_warn_all.m4 \
@@ -68,9 +70,11 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(SHELL) $(top_srcdir)/scripts/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h
-CONFIG_CLEAN_FILES = CompileScript
+CONFIG_CLEAN_FILES =
 SOURCES =
 DIST_SOURCES =
+CLASSPATH_ENV = CLASSPATH=$(JAVAROOT):$(srcdir)/$(JAVAROOT):$$CLASSPATH
+am__installdirs = "$(DESTDIR)$(compilerdir)"
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 ALSA_CFLAGS = @ALSA_CFLAGS@
@@ -138,7 +142,6 @@ JASMIN = @JASMIN@
 JAVAC = @JAVAC@
 JAVAC_FLAGS = @JAVAC_FLAGS@
 JAVA_LIBS = @JAVA_LIBS@
-JIKESPROG = @JIKESPROG@
 KAFFEH = @KAFFEH@
 KAFFE_ARCHOS = @KAFFE_ARCHOS@
 KAFFE_CCASFLAGS = @KAFFE_CCASFLAGS@
@@ -283,17 +286,15 @@ toolslibdir = @toolslibdir@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 with_engine = @with_engine@
-CLASS_FILES = \
-	VarInit.class \
-	VarInit2.class \
-	InnerTest1_A.class \
-	InnerTest1_B.class \
-	InnerTest1_A$$X.class \
-	InnerTest1_B$$X.class
+CLEANFILES = *.class
+CPATH = .:$(GLIBJ_ZIP)
+AM_JAVACFLAGS = -classpath $(CPATH)
+JAVAROOT = .
 
-SETUP_ENVIRONMENT = env `. $(top_builddir)/BUILD_ENVIRONMENT; $(SED) 's/.*export \(.*\)/echo \1=$$\1/' < $(top_builddir)/BUILD_ENVIRONMENT | sh`
-CLEANFILES = $(CLASS_FILES) InnerTest1_*.class
-EXTRA_DIST = \
+# Use a fake install class and dir to keep automake's JAVA (un)install tasks happy.
+FAKE = fakeinstall
+compilerdir = $(FAKE)
+dist_compiler_JAVA = \
 	VarInit.java \
 	VarInit2.java \
 	InnerTest1_A.java \
@@ -331,14 +332,40 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-CompileScript: $(top_builddir)/config.status $(srcdir)/CompileScript.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 
 mostlyclean-libtool:
 	-rm -f *.lo
 
 clean-libtool:
 	-rm -rf .libs _libs
+
+classdist_compiler.stamp: $(dist_compiler_JAVA)
+	@list1='$?'; list2=; if test -n "$$list1"; then \
+	  for p in $$list1; do \
+	    if test -f $$p; then d=; else d="$(srcdir)/"; fi; \
+	    list2="$$list2 $$d$$p"; \
+	  done; \
+	  echo '$(CLASSPATH_ENV) $(JAVAC) -d $(JAVAROOT) $(AM_JAVACFLAGS) $(JAVACFLAGS) '"$$list2"; \
+	  $(CLASSPATH_ENV) $(JAVAC) -d $(JAVAROOT) $(AM_JAVACFLAGS) $(JAVACFLAGS) $$list2; \
+	else :; fi
+	echo timestamp > classdist_compiler.stamp
+install-dist_compilerJAVA: classdist_compiler.stamp
+	@$(NORMAL_INSTALL)
+	test -z "$(compilerdir)" || $(MKDIR_P) "$(DESTDIR)$(compilerdir)"
+	@test -z "$(dist_compiler_JAVA)" || for p in *.class; do \
+	  echo " $(INSTALL_DATA) '$$p' '$(DESTDIR)$(compilerdir)/$$p'"; \
+	  $(INSTALL_DATA) "$$p" "$(DESTDIR)$(compilerdir)/$$p"; \
+	done
+
+uninstall-dist_compilerJAVA:
+	@$(NORMAL_UNINSTALL)
+	@test -z "$(dist_compiler_JAVA)" || for p in *.class; do \
+	  echo " rm -f '$(DESTDIR)$(compilerdir)/$$p'"; \
+	  rm -f "$(DESTDIR)$(compilerdir)/$$p"; \
+	done
+
+clean-dist_compilerJAVA:
+	-rm -f *.class classdist_compiler.stamp
 tags: TAGS
 TAGS:
 
@@ -374,8 +401,11 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile
+all-am: Makefile classdist_compiler.stamp
 installdirs:
+	for dir in "$(DESTDIR)$(compilerdir)"; do \
+	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
+	done
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -403,7 +433,8 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libtool mostlyclean-am
+clean-am: clean-dist_compilerJAVA clean-generic clean-libtool \
+	mostlyclean-am
 
 distclean: distclean-am
 	-rm -f Makefile
@@ -419,7 +450,7 @@ info: info-am
 
 info-am:
 
-install-data-am:
+install-data-am: install-data-local install-dist_compilerJAVA
 
 install-dvi: install-dvi-am
 
@@ -453,30 +484,28 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am:
+uninstall-am: uninstall-dist_compilerJAVA uninstall-local
 
 .MAKE: install-am install-strip
 
-.PHONY: all all-am check check-am clean clean-generic clean-libtool \
-	distclean distclean-generic distclean-libtool distdir dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am uninstall uninstall-am
+.PHONY: all all-am check check-am clean clean-dist_compilerJAVA \
+	clean-generic clean-libtool distclean distclean-generic \
+	distclean-libtool distdir dvi dvi-am html html-am info info-am \
+	install install-am install-data install-data-am \
+	install-data-local install-dist_compilerJAVA install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am install-man \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	uninstall uninstall-am uninstall-dist_compilerJAVA \
+	uninstall-local
 
-
-VarInit.class VarInit2.class: VarInit.java VarInit2.java
-	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/VarInit.java $(srcdir)/VarInit2.java
-
-InnerTest1_A.class InnerTest1_B.class InnerTest1_A$$X.class InnerTest1_B$$X.class: InnerTest1_A.java InnerTest1_B.java
-	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/InnerTest1_A.java $(srcdir)/InnerTest1_B.java
-	@$(SETUP_ENVIRONMENT) $(SHELL) CompileScript $(srcdir)/InnerTest1_B.java
-
-check-am: CompileScript $(CLASS_FILES)
+install-data-local: 
+	touch $(FAKE).class
+uninstall-local: 
+	rm $(FAKE).class
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

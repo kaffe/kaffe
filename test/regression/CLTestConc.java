@@ -179,7 +179,6 @@ public class CLTestConc extends ClassLoader
     }
 }
 
-// javac flags: -nowarn
 // sources: CLTestConc_run.java
 /* Expected Output:
 Success.

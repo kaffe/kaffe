@@ -37,6 +37,8 @@ DIST_COMMON = $(dist_gjdoc_JAVA) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/version.properties.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
+	$(top_srcdir)/m4/ac_prog_javac.m4 \
+	$(top_srcdir)/m4/ac_prog_javac_works.m4 \
 	$(top_srcdir)/m4/acx_pthread.m4 $(top_srcdir)/m4/alsa.m4 \
 	$(top_srcdir)/m4/ax_cflags_gcc_option.m4 \
 	$(top_srcdir)/m4/ax_cflags_warn_all.m4 \
@@ -140,7 +142,6 @@ JASMIN = @JASMIN@
 JAVAC = @JAVAC@
 JAVAC_FLAGS = @JAVAC_FLAGS@
 JAVA_LIBS = @JAVA_LIBS@
-JIKESPROG = @JIKESPROG@
 KAFFEH = @KAFFEH@
 KAFFE_ARCHOS = @KAFFE_ARCHOS@
 KAFFE_CCASFLAGS = @KAFFE_CCASFLAGS@
@@ -286,15 +287,12 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 with_engine = @with_engine@
 CLASSFILE = gjdoc.jar
-SRCDIRS = antlr
 toolslib_DATA = $(CLASSFILE)
-LIBDIR = lib
-JAR_CMD1 = ($(FASTJAR) cf $(CLASSFILE) -C $(LIBDIR) $(SRCDIRS) -C $(LIBDIR) gnu -C $(LIBDIR) com)
-JAR_CMD2 = (PWD=`pwd` && cd  $(srcdir) && $(FASTJAR) uf $(PWD)/$(CLASSFILE) $(gjdoc_ressources))
-JAR_CMD3 = ($(FASTJAR) uf $(CLASSFILE) version.properties)
-CPATH = .:$(srcdir):$(LIBDIR):$(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar:$(GLIBJ_ZIP)
+JAR_CMD1 = $(FASTJAR) cf $(CLASSFILE) version.properties `find . -name "*.class"` 
+JAR_CMD2 = (cd $(srcdir) && $(FASTJAR) uf $(abs_builddir)/$(CLASSFILE) $(gjdoc_ressources))
+CPATH = .:$(srcdir):$(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar:$(GLIBJ_ZIP)
 AM_JAVACFLAGS = -classpath $(CPATH)
-JAVAROOT = $(LIBDIR)
+JAVAROOT = .
 
 # Use a fake install class and dir to keep automake's JAVA (un)install tasks happy.
 FAKE = fakeinstall
@@ -832,10 +830,9 @@ $(CLASSFILE): classdist_gjdoc.stamp
 	rm -f $(CLASSFILE)
 	$(JAR_CMD1)
 	$(JAR_CMD2)
-	$(JAR_CMD3)
 
 clean-local:
-	rm -rf $(LIBDIR) $(CLASSFILE)
+	rm -rf $(CLASSFILE) `find . -name "*.class"`
 install-data-local: 
 	touch $(FAKE).class
 uninstall-local: 

@@ -1,19 +1,17 @@
 CLASSFILE = kaffe-dnsjava.jar
-SRCDIRS = org
 jrelib_DATA = $(CLASSFILE)
-LIBDIR = lib
-JAR_CMD1 = ($(FASTJAR) cf $(CLASSFILE) -C $(LIBDIR) $(SRCDIRS) -C $(LIBDIR) gnu)
+JAR_CMD1 = $(FASTJAR) cf $(CLASSFILE) `find . -name "*.class"`
 
-CPATH =  .:$(srcdir):$(LIBDIR):$(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar:$(GLIBJ_ZIP)
+CPATH =  .:$(srcdir):$(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar:$(GLIBJ_ZIP)
+JAVAROOT = .
 AM_JAVACFLAGS = -classpath $(CPATH)
-JAVAROOT = $(LIBDIR)
 
 $(CLASSFILE): classdist_dnsjava.stamp
 	rm -f $(CLASSFILE)
 	$(JAR_CMD1)
 
 clean-local:
-	rm -rf $(LIBDIR) $(CLASSFILE)
+	rm -rf $(CLASSFILE) `find . -name "*.class"`
 
 # Use a fake install class and dir to keep automake's JAVA (un)install tasks happy.
 FAKE=fakeinstall
