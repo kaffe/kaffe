@@ -33,8 +33,6 @@
 
 * Build system: (dalibor)
   * Non-recursive build, single Makefile.am for kaffe.
-  * Switch to using a system classpath install
-  * Remove redundant static build options
   * Switch to autotest for the test suites
 
 * Pending patches 
