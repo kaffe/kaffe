@@ -20,10 +20,10 @@ class TestFloatDouble {
 		System.out.println("Some mathmatical tests");
 		float f1 = 500.005f;
 		float f2 = 400.004f;
-		test(f1 * f2, "200004");
+		test(f1 * f2, "200004.0");
 		double d1 = 500.005;
 		double d2 = 400.004;
-		test(d1 * d2, "200004");
+		test(d1 * d2, "200004.00002");
 		String s = "Good";
 		if (failed)
 			s = "Bad";
@@ -31,7 +31,6 @@ class TestFloatDouble {
 	}
 }
 
-// Skip run
 /* Expected Output:
 Some mathmatical tests
 Results Good

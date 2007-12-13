@@ -61,7 +61,6 @@ public class LoaderTest {
 	}
 }
 
-// Sources: LoaderTest_Class0.java LoaderTest_Class1.java LoaderTest_Class1BeanInfo.java LoaderTest_Class2.java LoaderTest_Class3.java LoaderTest_Loader1.java LoaderTest_Loader2.java
 /* Expected Output:
 Loading Class0 with default ClassLoader
 -> class LoaderTest_Class0 loader null

@@ -2190,7 +2190,7 @@ AC_SUBST(kaffeh_TRANSF)
 AC_SUBST(kaffebin_TRANSF)
 
 dnl These are not to be used during configuration, only during build.
-CPPFLAGS="-I$abssrcdir/kaffe/kaffevm -I$abssrcdir/kaffe/kaffevm/$with_engine -I$abssrcdir/kaffe/kaffevm/systems/$with_threads -I\$(top_srcdir)/replace -I\$(top_srcdir)/config -I\$(top_srcdir)/include -I\$(top_srcdir)/libraries/javalib/external/classpath/include $CPPFLAGS"
+CPPFLAGS="-I$abssrcdir/kaffe/kaffevm -I$abssrcdir/kaffe/kaffevm/$with_engine -I$abssrcdir/kaffe/kaffevm/systems/$with_threads -I\$(top_srcdir)/replace -I\$(top_srcdir)/config -I\$(top_srcdir)/include $CPPFLAGS"
 LIBS="$LIBS $LTLIBS"
 
 dnl Avoid GNU Make $(filter-out -pg,@CFLAGS@) in kaffe/xprof/Makefile.am
@@ -2207,50 +2207,6 @@ dnl Replace KAFFE_CFLAGS by the generated one
 AC_SUBST(KAFFE_CFLAGS)
 dnl Replace KAFFE_CCASFLAGS by the generated one
 AC_SUBST(KAFFE_CCASFLAGS)
-
-dnl -------------------------
-dnl Update args for classpath
-dnl -------------------------
-
-dnl First we remove eventual CFLAGS from the configure call.
-dnl ac_configure_args=`echo "$ac_configure_args" | sed "s%'CFLAGS=.*'%%g"`
-dnl Then we add it again for config.status
-dnl ac_configure_args="$ac_configure_args 'CFLAGS=${CFLAGS}'"
-dnl ac_cv_env_CFLAGS_value="${CFLAGS}"
-dnl ac_cv_env_CFLAGS_set=set
-
-# Preset the compiler to jikes, since GNU Classpath's default is gcj.
-# Unfortunately, many gcj versions are incapable of compiling GNU 
-# Classpath, while many versions of jikes seem to make it through. :/
-
-if test x"$use_jikes" = x"yes"; then
-  ac_configure_args="$ac_configure_args --with-jikes=${JIKESPROG}"
-fi
-
-if test x"$use_ecj" = x"yes"; then
-  ac_configure_args="$ac_configure_args --with-ecj=${JAVAC}"
-fi
-
-if test x"$enable_native_awt" = x"no"; then
-  ac_configure_args="$ac_configure_args --disable-gtk-peer"
-fi
-
-if test x"$COMPILE_PLUGIN" = x"no"; then
-  ac_configure_args="$ac_configure_args --disable-plugin"
-fi
-
-ac_configure_args="$ac_configure_args --with-vm=${prefix}/bin/kaffe"
-ac_configure_args="$ac_configure_args --disable-examples"
-ac_configure_args="$ac_configure_args --with-glibj-dir=${jrelibdir}"
-ac_configure_args="$ac_configure_args --with-native-libdir=${nativedir}"
-
-if  test x$use_glibj_zip = xtrue ; then
-	ac_configure_args="$ac_configure_args --with-glibj=none";
-fi
-
-ac_configure_args="$ac_configure_args CFLAGS=\"${KAFFE_CFLAGS} ${CFLAGS}\"";
-
-AC_CONFIG_SUBDIRS([libraries/javalib/external/classpath])
 
 AC_CONFIG_SUBDIRS([libltdl])
 AC_CONFIG_HEADERS([config/config.h])

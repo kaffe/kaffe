@@ -538,4 +538,3 @@ public class ZipVerify extends ZipVerifyUtils {
 
 }
 
-// Sources: ZipVerifyUtils.java

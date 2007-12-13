@@ -1082,8 +1082,7 @@ CXXCPP
 F77
 FFLAGS
 XMKMF'
-ac_subdirs_all='libraries/javalib/external/classpath
-libltdl'
+ac_subdirs_all='libltdl'
 
 # Initialize some variables set by options.
 ac_init_help=
@@ -7135,7 +7134,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 7138 "configure"' > conftest.$ac_ext
+  echo '#line 7137 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -9699,11 +9698,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9702: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9701: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9706: \$? = $ac_status" >&5
+   echo "$as_me:9705: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9989,11 +9988,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9992: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9991: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9996: \$? = $ac_status" >&5
+   echo "$as_me:9995: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -10093,11 +10092,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:10096: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:10095: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:10100: \$? = $ac_status" >&5
+   echo "$as_me:10099: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -12442,7 +12441,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12445 "configure"
+#line 12444 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12542,7 +12541,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12545 "configure"
+#line 12544 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -14966,11 +14965,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14969: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14968: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:14973: \$? = $ac_status" >&5
+   echo "$as_me:14972: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -15070,11 +15069,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15073: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15072: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:15077: \$? = $ac_status" >&5
+   echo "$as_me:15076: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -16632,11 +16631,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16635: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16634: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:16639: \$? = $ac_status" >&5
+   echo "$as_me:16638: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -16736,11 +16735,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16739: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16738: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:16743: \$? = $ac_status" >&5
+   echo "$as_me:16742: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -18927,11 +18926,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18930: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18929: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:18934: \$? = $ac_status" >&5
+   echo "$as_me:18933: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -19217,11 +19216,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:19220: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:19219: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:19224: \$? = $ac_status" >&5
+   echo "$as_me:19223: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -19321,11 +19320,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:19324: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:19323: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:19328: \$? = $ac_status" >&5
+   echo "$as_me:19327: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -26106,7 +26105,7 @@ else
 JAVA_TEST=Test.java
 CLASS_TEST=Test.class
 cat << \EOF > $JAVA_TEST
-/* #line 26109 "configure" */
+/* #line 26108 "configure" */
 public class Test {
 }
 EOF
@@ -47753,7 +47752,7 @@ kaffebin_TRANSF=`echo kaffe-bin | sed "s/${EXEEXT}$//" | sed ${program_transform
 
 
 
-CPPFLAGS="-I$abssrcdir/kaffe/kaffevm -I$abssrcdir/kaffe/kaffevm/$with_engine -I$abssrcdir/kaffe/kaffevm/systems/$with_threads -I\$(top_srcdir)/replace -I\$(top_srcdir)/config -I\$(top_srcdir)/include -I\$(top_srcdir)/libraries/javalib/external/classpath/include $CPPFLAGS"
+CPPFLAGS="-I$abssrcdir/kaffe/kaffevm -I$abssrcdir/kaffe/kaffevm/$with_engine -I$abssrcdir/kaffe/kaffevm/systems/$with_threads -I\$(top_srcdir)/replace -I\$(top_srcdir)/config -I\$(top_srcdir)/include $CPPFLAGS"
 LIBS="$LIBS $LTLIBS"
 
 CFLAGS_WITHOUT_PG=""
@@ -47766,42 +47765,6 @@ done
 
 
 
-
-
-
-
-# Preset the compiler to jikes, since GNU Classpath's default is gcj.
-# Unfortunately, many gcj versions are incapable of compiling GNU
-# Classpath, while many versions of jikes seem to make it through. :/
-
-if test x"$use_jikes" = x"yes"; then
-  ac_configure_args="$ac_configure_args --with-jikes=${JIKESPROG}"
-fi
-
-if test x"$use_ecj" = x"yes"; then
-  ac_configure_args="$ac_configure_args --with-ecj=${JAVAC}"
-fi
-
-if test x"$enable_native_awt" = x"no"; then
-  ac_configure_args="$ac_configure_args --disable-gtk-peer"
-fi
-
-if test x"$COMPILE_PLUGIN" = x"no"; then
-  ac_configure_args="$ac_configure_args --disable-plugin"
-fi
-
-ac_configure_args="$ac_configure_args --with-vm=${prefix}/bin/kaffe"
-ac_configure_args="$ac_configure_args --disable-examples"
-ac_configure_args="$ac_configure_args --with-glibj-dir=${jrelibdir}"
-ac_configure_args="$ac_configure_args --with-native-libdir=${nativedir}"
-
-if  test x$use_glibj_zip = xtrue ; then
-	ac_configure_args="$ac_configure_args --with-glibj=none";
-fi
-
-ac_configure_args="$ac_configure_args CFLAGS=\"${KAFFE_CFLAGS} ${CFLAGS}\"";
-
-subdirs="$subdirs libraries/javalib/external/classpath"
 
 
 subdirs="$subdirs libltdl"

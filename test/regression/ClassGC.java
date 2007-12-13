@@ -112,7 +112,6 @@ public class ClassGC extends ClassLoader {
     public static boolean gotOneForG;
 }
 
-// Sources: ClassGCTest.java ClassGCTestLater.java
 /* Expected Output:
 F Success.
 G Success.

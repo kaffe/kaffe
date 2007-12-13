@@ -25,7 +25,6 @@ class SecurityMan
     System.out.println("Ok");
   }
 }
-// Skip Run
 /* Expected Output:
 Ok
 */

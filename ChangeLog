@@ -1,3 +1,33 @@
+2007-12-13  Dalibor Topic  <robilad@kaffe.org>
+
+	* test/regression/TestScript.in: Removed undocumented No Line Numbers,
+	and No Stack Trace features.
+
+	* FAQ/FAQ.debugging: Removed Skip Run documentation.
+
+	* test/regression/TestScript.in: Removed documentation for SkipRun
+	(runtest): Removed Skip Run support.
+
+	* test/regression/SecurityMan.java, 
+	test/regression/TestFloatDouble.java: Removed SkipRun.
+
+	* FAQ/FAQ.debugging: Removed documentation for Sources feature.
+
+	* test/regression/TestScript.in: Removed documentation for Sources line,
+	as we compile all tests at once.
+
+	* test/regression/LoaderTest.java, test/regression/ClassGC.java,
+	test/regression/ZipVerify.java: Removed unnecessary Sources line.
+
+	* FAQ/FAQ.debugging: Removed javac flags documentation, as they are
+	no longer evaluated by the regression test script.
+
+2007-12-13  Dalibor Topic  <robilad@kaffe.org>
+
+	* configure.ac: Removed configuration boilerplate for included GNU Classpath.
+
+	Reported by:  Kiyo Inaba <inaba@src.ricoh.co.jp>
+	
 2007-12-09  Dalibor Topic  <robilad@kaffe.org>
 
 	* m4/ac_prog_javac.m4, m4/ac_prog_javac_works.m4, m4/ac_try_compile_java.m4: New files.

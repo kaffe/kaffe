@@ -68,14 +68,6 @@ run()
 	    # grep will take care of stripping \r from DOS-like output
 	    grep '.*' $TMPRESULT > "$RESULT"
 	fi
-	if test "x$NO_LINE_NUMBERS" = "xyes"; then
-	    mv "$RESULT" "$TMPRESULT"
-	    sed 's/\.java\:[0123456789]*/\.java\:XXXX/g' $TMPRESULT > $RESULT
-	fi
-	if test "x$NO_STACK_TRACE" = "xyes"; then
-	    mv "$RESULT" "$TMPRESULT"
-	    sed '/at .*\.java/d' $TMPRESULT > $RESULT
-	fi
 	rm -f $TMPRESULT
 	if test ! -f "$1.out"; then
 		if test "$error" = 0 || test "$error" = 77; then
@@ -101,15 +93,9 @@ run()
 
 # Execution options
 #
-# Sources: <source1> [<source2> ...]
-# Specify another source file to compiled with this test.
-#
 # Unsafe
 # Add the CLASSPATH value to the BOOTCLASSPATH so the test can access kaffe
 # internal classes.
-#
-# Skip Run
-# Skip this test.
 #
 # Sort Output
 # Sort the output of the test.
@@ -136,23 +122,11 @@ runtest()
 	    BOOTCLASSPATH="${BOOTCLASSPATH}${PATHSEP}${CLASSPATH}"
 	    CLASSPATH=""
 	fi
-	if grep '// [Ss]kip [Rr]un' < "$1" > /dev/null; then
-	    error=0
-	elif test $error = 0 ; then
+	if test $error = 0 ; then
 	    if grep '// [Ss]ort [Oo]utput' < "$1" >/dev/null; then
 		SORT="yes"
 	    else
 		SORT="no"
-	    fi
-	    if grep '// [Nn]o [Ll]ine [Nn]umbers' < "$1" > /dev/null; then
-		NO_LINE_NUMBERS="yes"
-	    else
-		NO_LINE_NUMBERS="no"
-	    fi
-	    if grep '// [Nn]o [Ss]tack [Tt]race' < "$1" > /dev/null; then
-		NO_STACK_TRACE="yes"
-	    else
-		NO_STACK_TRACE="no"
 	    fi
 	    sed '/^\/\* [Ee]xpected [Oo]utput:/,/\*\//p; d' < "$1" |
 	      sed '1d;$d' > $basename.out
@@ -187,16 +161,6 @@ runjasmintest()
 		SORT="yes"
 	    else
 		SORT="no"
-	    fi
-	    if grep '; [Nn]o [Ll]ine [Nn]umbers' < "$1" > /dev/null; then
-		NO_LINE_NUMBERS="yes"
-	    else
-		NO_LINE_NUMBERS="no"
-	    fi
-	    if grep '; [Nn]o [Ss]tack [Tt]race' < "$1" > /dev/null; then
-		NO_STACK_TRACE="yes"
-	    else
-		NO_STACK_TRACE="no"
 	    fi
 	    sed '/^; [Ee]xpected [Oo]utput:/,//p; d' < "$1" |
 		sed '1d' | sed '/^$/q' | sed '/^$/d' |

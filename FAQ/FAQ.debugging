@@ -145,16 +145,6 @@ Regression tests have special comments that tell the test driver
 script what to do with them. The special comments and their
 effects are:
 
-// Sources: SOURCES
-compile also these sources with current test case.
-
-// javac flags: FLAGS
-add some javac flags.  For exemple -nowarn remove warning lines
-and therefore don't let's think that javac fail.
-
-// Skip Run
-Compile only
-
 // java args: CLASSNAME [OPTIONS]
 Replace current classname by this classname and options.
 
