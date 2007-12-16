@@ -44,9 +44,8 @@ java_lang_VMClassLoader_getPrimitiveClass(jchar typeCode)
     postNoClassDefFoundError(&info, "Invalid type specifier");
     throwError(&info);
   }
-  else {
-    return primitiveClass;
-  }
+
+  return primitiveClass;
 }
 
 /*
