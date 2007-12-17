@@ -1,5 +1,13 @@
 2007-12-17  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/Makefile.am: Symlink GNU Classpath's glibj.zip as rt.jar.
+	Don't symlink it as glibj.zip, too.
+	
+	* kaffe/scripts/compat/javac.in,
+	kaffe/scripts/kaffe.in: Use rt.jar instead of glibj.zip.
+
+2007-12-17  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/scripts/javap.in: Use tools.jar instead of kaffe-classpath-tools-jar.
 
 	* tools/javatools/Makefile.am (CLASSFILE): Renamed to tools.jar.

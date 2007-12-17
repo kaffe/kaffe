@@ -1,4 +1,4 @@
 #! /bin/sh
 # We use the jikes compiler detected by configure
-@JIKESPROG@ -bootclasspath  @prefix@/jre/lib/glibj.zip ${1+"$@"}
+@JIKESPROG@ -bootclasspath  @prefix@/jre/lib/rt.jar ${1+"$@"}
 exit $?
