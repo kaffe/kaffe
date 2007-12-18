@@ -1,5 +1,9 @@
 2007-12-18  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/scripts/compat/javac.in: Use the JAVAC detected by configure.
+
+2007-12-18  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/scripts/jar.in, kaffe/scripts/native2ascii.in,
 	kaffe/scripts/rmiregistry.in, kaffe/scripts/serialver.in,
 	kaffe/scripts/compat/rmic.in: Removed.
