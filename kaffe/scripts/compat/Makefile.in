@@ -19,6 +19,9 @@
 # Copyright (c) 1996, 1997, 1998, 1999
 #	Transvirtual Technologies, Inc.  All rights reserved.
 #
+# Copyright (c) 2007
+#       Kaffe.org contributors. See ChangeLog for details.
+#
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
@@ -42,7 +45,7 @@ build_triplet = @build@
 host_triplet = @host@
 subdir = kaffe/scripts/compat
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(srcdir)/java.in $(srcdir)/javac.in $(srcdir)/rmic.in
+	$(srcdir)/java.in $(srcdir)/javac.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/ac_prog_javac.m4 \
@@ -70,7 +73,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(SHELL) $(top_srcdir)/scripts/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h
-CONFIG_CLEAN_FILES = java javac rmic
+CONFIG_CLEAN_FILES = java javac
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(jrebindir)"
 binSCRIPT_INSTALL = $(INSTALL_SCRIPT)
 jrebinSCRIPT_INSTALL = $(INSTALL_SCRIPT)
@@ -289,10 +292,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 with_engine = @with_engine@
 @SUN_COMPAT_TRUE@jrebin_SCRIPTS = java
-@SUN_COMPAT_TRUE@bin_SCRIPTS = \
-@SUN_COMPAT_TRUE@	javac \
-@SUN_COMPAT_TRUE@	rmic
-
+@SUN_COMPAT_TRUE@bin_SCRIPTS = javac $(jrebin_SCRIPTS)
 all: all-am
 
 .SUFFIXES:
@@ -328,8 +328,6 @@ $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 java: $(top_builddir)/config.status $(srcdir)/java.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 javac: $(top_builddir)/config.status $(srcdir)/javac.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-rmic: $(top_builddir)/config.status $(srcdir)/rmic.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 install-binSCRIPTS: $(bin_SCRIPTS)
 	@$(NORMAL_INSTALL)
@@ -461,7 +459,7 @@ install-data-am: install-jrebinSCRIPTS
 
 install-dvi: install-dvi-am
 
-install-exec-am: install-binSCRIPTS install-exec-local
+install-exec-am: install-binSCRIPTS
 
 install-html: install-html-am
 
@@ -491,8 +489,7 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binSCRIPTS uninstall-jrebinSCRIPTS \
-	uninstall-local
+uninstall-am: uninstall-binSCRIPTS uninstall-jrebinSCRIPTS
 
 .MAKE: install-am install-strip
 
@@ -500,34 +497,15 @@ uninstall-am: uninstall-binSCRIPTS uninstall-jrebinSCRIPTS \
 	distclean distclean-generic distclean-libtool distdir dvi \
 	dvi-am html html-am info info-am install install-am \
 	install-binSCRIPTS install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-exec-local \
-	install-html install-html-am install-info install-info-am \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am \
 	install-jrebinSCRIPTS install-man install-pdf install-pdf-am \
 	install-ps install-ps-am install-strip installcheck \
 	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-generic \
 	mostlyclean-libtool pdf pdf-am ps ps-am uninstall uninstall-am \
-	uninstall-binSCRIPTS uninstall-jrebinSCRIPTS uninstall-local
+	uninstall-binSCRIPTS uninstall-jrebinSCRIPTS
 
-
-install-exec-local:
-	@$(NORMAL_INSTALL)
-	$(mkinstalldirs) $(DESTDIR)$(bindir)
-	@list='$(jrebin_SCRIPTS)'; for p in $$list; do \
-	  if test -f $$p; then \
-	    echo " $(INSTALL_SCRIPT) $$p $(DESTDIR)$(bindir)/`echo $$p|$(SED) '$(transform)'`"; \
-	    $(INSTALL_SCRIPT) $$p $(DESTDIR)$(bindir)/`echo $$p|$(SED) '$(transform)'`; \
-	  else if test -f $(srcdir)/$$p; then \
-	    echo " $(INSTALL_SCRIPT) $(srcdir)/$$p $(DESTDIR)$(bindir)/`echo $$p|$(SED) '$(transform)'`"; \
-	    $(INSTALL_SCRIPT) $(srcdir)/$$p $(DESTDIR)$(bindir)/`echo $$p|$(SED) '$(transform)'`; \
-	  else :; fi; fi; \
-	done
-
-uninstall-local:
-	@$(NORMAL_UNINSTALL)
-	list='$(jrebin_SCRIPTS)'; for p in $$list; do \
-	  rm -f $(DESTDIR)$(bindir)/`echo $$p|$(SED) '$(transform)'`; \
-	done
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

@@ -3,7 +3,7 @@
 # Copyright (c) 1996, 1997, 1998, 1999
 #	Transvirtual Technologies, Inc.  All rights reserved.
 #
-# Copyright (c) 2006
+# Copyright (c) 2006, 2007
 #       Kaffe.org contributors. See ChangeLog for details.
 #
 # See the file "license.terms" for information on usage and redistribution 
@@ -13,9 +13,7 @@ DIST_SUBDIRS = bat compat
 
 EXTRA_DIST = nm2as.awk
 
-SCRIPTFILES_SUN=\
-		jar javah javap \
-		native2ascii serialver
+SCRIPTFILES_SUN= javah javap
 
 if SUN_COMPAT
 SUBDIRS = compat
@@ -36,37 +34,29 @@ endif
 
 PSCRIPTFILES=	install-jar
 
-jrebin_SCRIPTS = kaffe rmiregistry
+jrebin_SCRIPTS = kaffe
 
 SCRIPTFILES_JDB = jdb
 
 bin_SCRIPTS = \
-	$(SCRIPTFILES_KJC) \
+	$(jrebin_SCRIPTS) \
 	$(SCRIPTFILES_SUN) \
 	$(SCRIPTFILES_COMPAT) \
 	$(PSCRIPTFILES) \
 	$(SCRIPTFILES_XPROF) \
 	$(SCRIPTFILES_JDB)
 
-#include $(top_srcdir)/include/distclean-hack
+CLASSPATH_APPS = appletviewer jar jarsigner keytool orbd native2ascii rmiregistry rmic rmid serialver tnameserv
 
 install-exec-local:
-	@$(NORMAL_INSTALL)
-	$(mkinstalldirs) $(DESTDIR)$(bindir)
-	@list='$(jrebin_SCRIPTS)'; for p in $$list; do \
-	  if test -f $$p; then \
-	    echo " $(INSTALL_SCRIPT) $$p $(DESTDIR)$(bindir)/`echo $$p|$(SED) '$(transform)'`"; \
-	    $(INSTALL_SCRIPT) $$p $(DESTDIR)$(bindir)/`echo $$p|$(SED) '$(transform)'`; \
-	  else if test -f $(srcdir)/$$p; then \
-	    echo " $(INSTALL_SCRIPT) $(srcdir)/$$p $(DESTDIR)$(bindir)/`echo $$p|$(SED) '$(transform)'`"; \
-	    $(INSTALL_SCRIPT) $(srcdir)/$$p $(DESTDIR)$(bindir)/`echo $$p|$(SED) '$(transform)'`; \
-	  else :; fi; fi; \
+	for app in $(CLASSPATH_APPS); do \
+		if ! test -f $(DESTDIR)$(bindir)/$$app ; then \
+			$(LN_S) $(CLASSPATH_PREFIX)/bin/g$$app $(DESTDIR)$(bindir)/$$app ; \
+		fi ; \
 	done
 
 uninstall-local:
-	@$(NORMAL_UNINSTALL)
-	list='$(jrebin_SCRIPTS)'; for p in $$list; do \
-	  rm -f $(DESTDIR)$(bindir)/`echo $$p|$(SED) '$(transform)'`; \
+	for app in $(CLASSPATH_APPS); do \
+		$(RM) $(DESTDIR)$(bindir)/$$app ; \
 	done
-
 

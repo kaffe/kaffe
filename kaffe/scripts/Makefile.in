@@ -19,7 +19,7 @@
 # Copyright (c) 1996, 1997, 1998, 1999
 #	Transvirtual Technologies, Inc.  All rights reserved.
 #
-# Copyright (c) 2006
+# Copyright (c) 2006, 2007
 #       Kaffe.org contributors. See ChangeLog for details.
 #
 # See the file "license.terms" for information on usage and redistribution 
@@ -45,11 +45,9 @@ build_triplet = @build@
 host_triplet = @host@
 subdir = kaffe/scripts
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(srcdir)/install-jar.in $(srcdir)/jar.in $(srcdir)/javadoc.in \
+	$(srcdir)/install-jar.in $(srcdir)/javadoc.in \
 	$(srcdir)/javah.in $(srcdir)/javap.in $(srcdir)/jdb.in \
-	$(srcdir)/kaffe.in $(srcdir)/kaffexprof.in \
-	$(srcdir)/native2ascii.in $(srcdir)/rmiregistry.in \
-	$(srcdir)/serialver.in
+	$(srcdir)/kaffe.in $(srcdir)/kaffexprof.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/ac_prog_javac.m4 \
@@ -77,8 +75,8 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(SHELL) $(top_srcdir)/scripts/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h
-CONFIG_CLEAN_FILES = install-jar kaffe kaffexprof jar javah javap jdb \
-	javadoc rmiregistry serialver native2ascii
+CONFIG_CLEAN_FILES = install-jar kaffe kaffexprof javah javap jdb \
+	javadoc
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(jrebindir)"
 binSCRIPT_INSTALL = $(INSTALL_SCRIPT)
 jrebinSCRIPT_INSTALL = $(INSTALL_SCRIPT)
@@ -309,10 +307,7 @@ top_srcdir = @top_srcdir@
 with_engine = @with_engine@
 DIST_SUBDIRS = bat compat
 EXTRA_DIST = nm2as.awk
-SCRIPTFILES_SUN = \
-		jar javah javap \
-		native2ascii serialver
-
+SCRIPTFILES_SUN = javah javap
 @SUN_COMPAT_TRUE@SUBDIRS = compat
 @COND_GJDOC_TRUE@KAFFE_JAVADOC = javadoc
 SCRIPTFILES_COMPAT = \
@@ -321,16 +316,17 @@ SCRIPTFILES_COMPAT = \
 @ENABLE_XPROF_FALSE@SCRIPTFILES_XPROF = 
 @ENABLE_XPROF_TRUE@SCRIPTFILES_XPROF = kaffexprof nm2as.awk
 PSCRIPTFILES = install-jar
-jrebin_SCRIPTS = kaffe rmiregistry
+jrebin_SCRIPTS = kaffe
 SCRIPTFILES_JDB = jdb
 bin_SCRIPTS = \
-	$(SCRIPTFILES_KJC) \
+	$(jrebin_SCRIPTS) \
 	$(SCRIPTFILES_SUN) \
 	$(SCRIPTFILES_COMPAT) \
 	$(PSCRIPTFILES) \
 	$(SCRIPTFILES_XPROF) \
 	$(SCRIPTFILES_JDB)
 
+CLASSPATH_APPS = appletviewer jar jarsigner keytool orbd native2ascii rmiregistry rmic rmid serialver tnameserv
 all: all-recursive
 
 .SUFFIXES:
@@ -369,8 +365,6 @@ kaffe: $(top_builddir)/config.status $(srcdir)/kaffe.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 kaffexprof: $(top_builddir)/config.status $(srcdir)/kaffexprof.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-jar: $(top_builddir)/config.status $(srcdir)/jar.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 javah: $(top_builddir)/config.status $(srcdir)/javah.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 javap: $(top_builddir)/config.status $(srcdir)/javap.in
@@ -378,12 +372,6 @@ javap: $(top_builddir)/config.status $(srcdir)/javap.in
 jdb: $(top_builddir)/config.status $(srcdir)/jdb.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 javadoc: $(top_builddir)/config.status $(srcdir)/javadoc.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-rmiregistry: $(top_builddir)/config.status $(srcdir)/rmiregistry.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-serialver: $(top_builddir)/config.status $(srcdir)/serialver.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-native2ascii: $(top_builddir)/config.status $(srcdir)/native2ascii.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 install-binSCRIPTS: $(bin_SCRIPTS)
 	@$(NORMAL_INSTALL)
@@ -711,25 +699,16 @@ uninstall-am: uninstall-binSCRIPTS uninstall-jrebinSCRIPTS \
 	uninstall-jrebinSCRIPTS uninstall-local
 
 
-#include $(top_srcdir)/include/distclean-hack
-
 install-exec-local:
-	@$(NORMAL_INSTALL)
-	$(mkinstalldirs) $(DESTDIR)$(bindir)
-	@list='$(jrebin_SCRIPTS)'; for p in $$list; do \
-	  if test -f $$p; then \
-	    echo " $(INSTALL_SCRIPT) $$p $(DESTDIR)$(bindir)/`echo $$p|$(SED) '$(transform)'`"; \
-	    $(INSTALL_SCRIPT) $$p $(DESTDIR)$(bindir)/`echo $$p|$(SED) '$(transform)'`; \
-	  else if test -f $(srcdir)/$$p; then \
-	    echo " $(INSTALL_SCRIPT) $(srcdir)/$$p $(DESTDIR)$(bindir)/`echo $$p|$(SED) '$(transform)'`"; \
-	    $(INSTALL_SCRIPT) $(srcdir)/$$p $(DESTDIR)$(bindir)/`echo $$p|$(SED) '$(transform)'`; \
-	  else :; fi; fi; \
+	for app in $(CLASSPATH_APPS); do \
+		if ! test -f $(DESTDIR)$(bindir)/$$app ; then \
+			$(LN_S) $(CLASSPATH_PREFIX)/bin/g$$app $(DESTDIR)$(bindir)/$$app ; \
+		fi ; \
 	done
 
 uninstall-local:
-	@$(NORMAL_UNINSTALL)
-	list='$(jrebin_SCRIPTS)'; for p in $$list; do \
-	  rm -f $(DESTDIR)$(bindir)/`echo $$p|$(SED) '$(transform)'`; \
+	for app in $(CLASSPATH_APPS); do \
+		$(RM) $(DESTDIR)$(bindir)/$$app ; \
 	done
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

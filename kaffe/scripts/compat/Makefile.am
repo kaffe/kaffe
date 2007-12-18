@@ -3,31 +3,13 @@
 # Copyright (c) 1996, 1997, 1998, 1999
 #	Transvirtual Technologies, Inc.  All rights reserved.
 #
+# Copyright (c) 2007
+#       Kaffe.org contributors. See ChangeLog for details.
+#
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
 if SUN_COMPAT
 jrebin_SCRIPTS = java
-bin_SCRIPTS = \
-	javac \
-	rmic
+bin_SCRIPTS = javac $(jrebin_SCRIPTS)
 endif
-
-install-exec-local:
-	@$(NORMAL_INSTALL)
-	$(mkinstalldirs) $(DESTDIR)$(bindir)
-	@list='$(jrebin_SCRIPTS)'; for p in $$list; do \
-	  if test -f $$p; then \
-	    echo " $(INSTALL_SCRIPT) $$p $(DESTDIR)$(bindir)/`echo $$p|$(SED) '$(transform)'`"; \
-	    $(INSTALL_SCRIPT) $$p $(DESTDIR)$(bindir)/`echo $$p|$(SED) '$(transform)'`; \
-	  else if test -f $(srcdir)/$$p; then \
-	    echo " $(INSTALL_SCRIPT) $(srcdir)/$$p $(DESTDIR)$(bindir)/`echo $$p|$(SED) '$(transform)'`"; \
-	    $(INSTALL_SCRIPT) $(srcdir)/$$p $(DESTDIR)$(bindir)/`echo $$p|$(SED) '$(transform)'`; \
-	  else :; fi; fi; \
-	done
-
-uninstall-local:
-	@$(NORMAL_UNINSTALL)
-	list='$(jrebin_SCRIPTS)'; for p in $$list; do \
-	  rm -f $(DESTDIR)$(bindir)/`echo $$p|$(SED) '$(transform)'`; \
-	done

@@ -1,3 +1,23 @@
+2007-12-18  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/scripts/jar.in, kaffe/scripts/native2ascii.in,
+	kaffe/scripts/rmiregistry.in, kaffe/scripts/serialver.in,
+	kaffe/scripts/compat/rmic.in: Removed.
+
+	* configure.ac (AC_CONFIG_FILES): Removed kaffe/scripts/jar,
+	kaffe/scripts/rmiregistry, kaffe/scripts/serialver, 
+	kaffe/scripts/native2ascii and kaffe/scripts/compat/rmic.
+
+	* kaffe/scripts/Makefile.am (SCRIPTFILES_SUN): Removed jar, native2ascii and
+	serialver. (jrebin_SCRIPTS) Removed rmiregistry. (bin_SCRIPTS) Added 
+	jrebin_SCRIPTS. Removed SCRIPTFILES_KJC. (CLASSPATH_APPS) Added list of 
+	application to symlink from the GNU Classpath installation.
+	(install-exec-local) Symlink applications from GNU Classpath.
+	(uninstall-local) Remove symlinks to applications from GNU Classpath.
+
+	* kaffe/scripts/compat/Makefile.am (bin_SCRIPTS): Removed rmic. Added jrebin_SCRIPTS.
+	(install-exec-local, uninstall-local) Removed.
+
 2007-12-17  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/javalib/Makefile.am: Symlink GNU Classpath's glibj.zip as rt.jar.

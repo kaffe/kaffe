@@ -1,6 +1,0 @@
-#! /bin/sh
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-exec @bindir@/@kaffe_TRANSF@ -cp @datadir@/classpath/tools.zip $JAVA_OPTS gnu.classpath.tools.native2ascii.Native2ASCII ${1+"$@"}
-exit $?
-
