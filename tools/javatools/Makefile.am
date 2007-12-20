@@ -1,4 +1,4 @@
-CLASSFILE = tools.jar
+CLASSFILE = kaffe-classpath-tools.jar
 toolslib_DATA = $(CLASSFILE)
 JAR_CMD1 = $(FASTJAR) cf $(CLASSFILE) `find . -name "*.class"`
 

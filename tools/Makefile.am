@@ -15,3 +15,11 @@ MAYBE_CLASSPATH_TOOLS=javatools
 endif
 
 SUBDIRS = $(MAYBE_GJDOC) $(MAYBE_CLASSPATH_TOOLS)
+
+install-exec-local:
+	if ! test -f $(DESTDIR)${toolslibdir}/tools.jar ; then \
+                $(LN_S) $(CLASSPATH_PREFIX)/share/classpath/tools.zip $(DESTDIR)${toolslibdir}/tools.jar ; \
+        fi
+
+uninstall-local:
+	$(RM) $(DESTDIR)${toolslibdir}/tools.jar 
