@@ -44,47 +44,11 @@
 
 #include <locale.h>
 
-extern void printStackTrace(struct Hjava_lang_Throwable*,
-	struct Hjava_lang_Object*, int);
-
 jint
 java_lang_VMSystem_identityHashCode(struct Hjava_lang_Object* o)
 {
   /* Hash code is object's address */
   return ((jint)(jword)o);
-}
-
-/*
- * See java/lang/System.java for info on these two routines.
- */
-void
-java_lang_System_debug(struct Hjava_lang_String *str)
-{
-	char *s;
-
-	s = checkPtr(stringJava2C(str));
-	dprintf("%s\n", s);
-	gc_free(s);
-}
-
-void
-java_lang_System_debugE(struct Hjava_lang_Throwable *t)
-{
-	Hjava_lang_String *msg;
-	const char *cname;
-	char *s;
-
-	cname = CLASS_CNAME(OBJECT_CLASS(&t->base));
-	msg = unhand(t)->detailMessage;
-
-	if (msg) {
-		s = checkPtr(stringJava2C(msg));
-		dprintf("%s: %s\n", cname, s);
-		gc_free(s);
-	} else {
-		dprintf("%s\n", cname);
-	}
-	printStackTrace(t, NULL, 1);
 }
 
 void
