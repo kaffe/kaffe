@@ -1,3 +1,7 @@
+2007-12-20  Dalibor Topic  <robilad@kaffe.org>
+
+	* FAQ/FAQ.requiredlibraries: Added GNU Classpath and boehm-gc descriptions.
+
 2007-12-19  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/scripts/javap.in, tools/javatools/Makefile.am: Reverted commit from 2007-12-17.

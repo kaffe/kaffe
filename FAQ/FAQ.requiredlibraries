@@ -18,6 +18,13 @@ versions of these libraries for your Linux distribution, and your
 distributor uses the RPM packaging format, you should check out
 http://www.rpmfind.net.
 
+GNU Classpath
+-------------
+
+You'll need GNU Classpath 0.96.1 or later. It is available from 
+http://www.classpath.org . GNU Classpath is used as the core class
+library for Kaffe.
+
 ZIP library
 -----------
 
@@ -144,6 +151,13 @@ libiconv:
     text between native character set encodings and Unicode. It is
     available at:
     http://www.gnu.org/software/libiconv/
+
+Optional Boehm-Weiser garbage collector support
+-----------------------------------------------
+
+In order to use the Boehm-Weiser garbage collector, you'll need to
+install the corresponding library. It is available from 
+http://www.hpl.hp.com/personal/Hans_Boehm/gc/
 
 Other tools
 -----------
