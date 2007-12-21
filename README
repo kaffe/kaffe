@@ -113,12 +113,10 @@ report bugs.
 What software do I need to install Kaffe?
 -----------------------------------------
 
-Kaffe uses GNU Classpath as its class library. You need to install it first.
-GNU Classpath can be found at:
+See FAQ/FAQ.requiredlibraries.
 
-	http://www.classpath.org
-
-Kaffe requires GNU Classpath 0.95 or later.
+You'll also need a compiler for the Java programming language, like ecj, 
+javac or jikes. 
 
 How do I compile and install kaffe?
 -----------------------------------
@@ -128,6 +126,12 @@ For UNIX it couldn't be simpler:
   $ ./configure
   $ make
   $ make install
+
+You can specify which compiler for the Java programming langiage to 
+use for the build by passing it in the JAVAC variable to the configure 
+script, as in
+
+$ ./configure JAVAC=/usr/bin/ecj
 
 Before compiling for your platform, you might want to check the
 RELEASE-NOTES file to see if it has been tested with this release, and

@@ -1,5 +1,13 @@
 2007-12-20  Dalibor Topic  <robilad@kaffe.org>
 
+	* README: Refer to FAQ/FAQ.requiredlibraries for required libs.
+	Describe passing a compiler for the Java programming language to the
+	configure script.
+
+	Reported by:  Kiyo Inaba <inaba@src.ricoh.co.jp>
+
+2007-12-20  Dalibor Topic  <robilad@kaffe.org>
+
 	* FAQ/FAQ.requiredlibraries: Added GNU Classpath and boehm-gc descriptions.
 
 2007-12-19  Dalibor Topic  <robilad@kaffe.org>
