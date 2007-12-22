@@ -54,9 +54,14 @@ install-exec-local:
 			$(LN_S) $(CLASSPATH_PREFIX)/bin/g$$app $(DESTDIR)$(bindir)/$$app ; \
 		fi ; \
 	done
+	if test x"@JAVADOC@" != x"" ; then \
+		$(LN_S) @JAVADOC@  $(DESTDIR)$(bindir)/javadoc$(EXEEXT) ; \
+	fi
 
 uninstall-local:
 	for app in $(CLASSPATH_APPS); do \
 		$(RM) $(DESTDIR)$(bindir)/$$app ; \
 	done
-
+	if  test x"@JAVADOC@" != x"" ; then \
+		$(RM) $(DESTDIR)$(bindir)/javadoc$(EXEEXT) ; \
+	fi

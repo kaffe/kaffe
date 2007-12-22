@@ -53,6 +53,7 @@ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/ac_prog_javac.m4 \
 	$(top_srcdir)/m4/ac_prog_javac_works.m4 \
+	$(top_srcdir)/m4/ac_prog_javadoc.m4 \
 	$(top_srcdir)/m4/acx_pthread.m4 $(top_srcdir)/m4/alsa.m4 \
 	$(top_srcdir)/m4/ax_cflags_gcc_option.m4 \
 	$(top_srcdir)/m4/ax_cflags_warn_all.m4 \
@@ -182,6 +183,7 @@ INTLLIBS = @INTLLIBS@
 JASMIN = @JASMIN@
 JAVAC = @JAVAC@
 JAVAC_FLAGS = @JAVAC_FLAGS@
+JAVADOC = @JAVADOC@
 JAVA_LIBS = @JAVA_LIBS@
 KAFFEH = @KAFFEH@
 KAFFE_ARCHOS = @KAFFE_ARCHOS@

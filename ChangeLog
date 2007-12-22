@@ -1,4 +1,17 @@
-2007-12-22  Dalibor Topic  <inaba@src.ricoh.co.jp>
+2007-12-22  Dalibor Topic  <robilad@kaffe.org>
+
+	* m4/ac_prog_javadoc.m4: New file from ac-archive.sf.net. Adapted to check
+	for gjdoc, too, and to print a warning if no javadoc tool can be found. Use
+	AC_PATH_PROGS instead of AC_CHECK_PROGS so that kaffe's javadoc can be symlinked
+	to it.
+
+	* configure.ac: If --enable-gjdoc is not passed to configure, use AC_PROG_JAVADOC
+	to find a suitable tool.
+
+	* kaffe/scripts/Makefile.am (install-exec-local, uninstall-local): Symlink javadoc 
+	if gjdoc build is not enabled.
+
+2007-12-22  Kiyo Inaba  <inaba@src.ricoh.co.jp>
 
 	* README: Fix typo.
 

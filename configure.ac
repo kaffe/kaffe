@@ -1958,6 +1958,10 @@ AC_ARG_ENABLE([gjdoc],
 
 AM_CONDITIONAL([COND_GJDOC], [test x"$enable_gjdoc" = x"yes"])
 
+if test x"$enable_gjdoc" != x"yes" ; then
+   AC_PROG_JAVADOC 
+fi
+
 dnl =========================================================================
 dnl Building of classpath tools
 dnl -------------------------------------------------------------------------
