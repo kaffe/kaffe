@@ -23,7 +23,7 @@
 
 * Integration issues
  * Merge in libffi
- * Add support for using an external gjdoc.
+ * Unmerge gjdoc.
  * Switch over to GNU Classpath's javah and remove kaffeh
   * Replace native library code using KNI with code using JNI
 
