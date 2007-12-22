@@ -127,7 +127,7 @@ For UNIX it couldn't be simpler:
   $ make
   $ make install
 
-You can specify which compiler for the Java programming langiage to 
+You can specify which compiler for the Java programming language to 
 use for the build by passing it in the JAVAC variable to the configure 
 script, as in
 
