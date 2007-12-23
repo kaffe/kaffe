@@ -3385,7 +3385,7 @@ build_call_frame(Utf8Const* sig, SlotInfo* obj, int sp_idx)
 /*									   */
 
 void
-softcall_lookupinterfacemethod(SlotInfo* dst, Method* meth, SlotInfo* obj)
+softcall_lookupinterfacemethod(SlotInfo* dst, const Method* meth, SlotInfo* obj)
 {
 	/* 'obj' must be written back since it will be reused */
 	prepare_function_call();

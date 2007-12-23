@@ -1,3 +1,17 @@
+2007-12-23  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/jit/machine.c (finishInsnSequence): 
+	Removed superflous cast of jch->code_start to char *,
+	cast jch->pool to nativecode * instead of char * to fix
+	compiler warning.
+	(installMethodCode): Changed cast of code->code to 
+	nativecode * to match meth->c.ncode.ncode_end and fix a
+	compiler warning.
+
+	* kaffe/kaffevm/jit/codeproto.h,
+	kaffe/kaffevm/jit/icode.c (softcall_lookupinterfacemethod): 
+	Added const to method parameter for fix compiler warning.
+
 2007-12-22  Dalibor Topic  <robilad@kaffe.org>
 
 	* TODO: Changed gjdoc integration task to reflect status.

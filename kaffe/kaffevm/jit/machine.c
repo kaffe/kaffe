@@ -506,7 +506,7 @@ finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code, errorInfo *einfo)
 	jch = (jitCodeHeader *)methblock;
 	jch->pool = (void *)((char *)(jch + 1)) + exc_len;
 	jch->pool = (void *)(((uintp)jch->pool + const_align) & ~const_align );
-	jch->code_start = ((char *)jch->pool) + constlen;
+	jch->code_start = ((nativecode *)jch->pool) + constlen;
 	jch->code_len = CODEPC;
 	/* align entry point if so desired */
 	if (align != 0 && (unsigned long)jch->code_start % align != 0) {
@@ -514,7 +514,7 @@ finishInsnSequence(codeinfo* codeInfo, nativeCodeInfo* code, errorInfo *einfo)
 		
 		assert(pad <= align - ALIGNMENT_OF_SIZE(sizeof(jdouble)));
 		
-		jch->code_start = (char*)jch->code_start + pad;
+		jch->code_start = jch->code_start + pad;
 	}
 	memcpy(jch->code_start, codeblock, CODEPC);
 	addToCounter(&jitcodeblock, "jitmem-codeblock", 1,
@@ -576,7 +576,7 @@ installMethodCode(codeinfo* codeInfo, Method* meth, nativeCodeInfo* code)
 	SET_METHOD_JITCODE(meth, code->code);
 
 	setMethodCodeStart(meth, code->mem);
-	meth->c.ncode.ncode_end = (char*)code->code + code->codelen;
+	meth->c.ncode.ncode_end = (nativecode *)code->code + code->codelen;
 
 	jch = (jitCodeHeader *)code->mem;
 	jch->method = meth;
