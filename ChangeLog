@@ -1,3 +1,8 @@
+2007-12-24  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/systems/unix-jthreads/jthread.c (start_this_sucker_on_a_new_frame): 
+	Removed NONRETURNING to fix compiler warning.
+
 2007-12-23  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/jit/machine.c (finishInsnSequence): 
