@@ -1,6 +1,10 @@
 2007-12-24  Ito Kazumitsu  <kaz@maczuka.gcd.org>
 
-	*  test/regression/DateFormatTest.java: Corrected a comment.
+	* kaffe/man/kaffe.1.in: Uppdated according to kaffe.1.xml.
+
+2007-12-24  Ito Kazumitsu  <kaz@maczuka.gcd.org>
+
+	* test/regression/DateFormatTest.java: Corrected a comment.
 
 2007-12-24  Dalibor Topic  <robilad@kaffe.org>
 

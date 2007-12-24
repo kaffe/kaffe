@@ -318,9 +318,6 @@ Kaffe was originally written by Tim Wilkinson, 1996\&. Many others contributed t
 .PP
 Kaffe is distributed under the GNU GPL\&. For full details, see the file \fIlicense\&.terms\fR in the source distribution for full details\&.
 
-.PP
-The included DOM bindings are published under the W3C Software Copyright Notice and License\&. For full details, see the file \fIlicense\-w3c\&.terms\fR in the source distribution for full details\&.
-
 .SH "SEE ALSO"
 
 .PP
