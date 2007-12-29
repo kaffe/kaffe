@@ -475,7 +475,7 @@ KaffeGC_MarkAddress(UNUSED Collector* gcif, void *gc_info, const void* mem)
 
   info_mark->mark_current =
     GC_mark_and_push(ALIGN_BACKWARD(mem), info_mark->mark_current, info_mark->mark_limit,
-		     (GC_PTR *) info_mark->original_object);
+		     (void **) info_mark->original_object);
 }
 
 static struct GC_ms_entry *

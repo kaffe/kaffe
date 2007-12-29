@@ -1,3 +1,9 @@
+2007-12-29  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/boehm-gc/gc2.c (KaffeGC_MarkAddress),
+	kaffe/kaffevm/boehm-gc/gc2.h (gcMark): Replace GC_PTR by void * to fix
+	building with Boehm GC 7.0.
+
 2007-12-25  Dalibor Topic  <robilad@kaffe.org>
 
 	Fix for #120.

@@ -21,7 +21,7 @@
 typedef struct _gcMark {
   struct GC_ms_entry *mark_current;
   struct GC_ms_entry *mark_limit;
-  GC_PTR original_object;
+  void * original_object;
 } gcMark;
 
 typedef struct {
