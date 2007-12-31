@@ -190,49 +190,5 @@ docs-docbook-html:
 docs-regen: docs-docbook-html
 	cp -f target/docs/docbook/*.html $(srcdir)/docs/html
 
-
-#
-# things we need to compile before we can compile rt.jar 
-#
-DIRECTORIES_BEFORE_RTJAR = \
-	config \
-	include \
-	replace \
-	libltdl \
-	kaffe/kaffevm \
-	libraries/clib \
-	kaffe
-
-#
-# things we need to compile after we have compiled rt.jar 
-#
-DIRECTORIES_AFTER_RTJAR = \
-	tools \
-	test \
-	$(RUN_PO)
-
-if MAY_RUN_PO
-RUN_PO=po
-else
-RUN_PO=
-endif
-
-if COND_SOUND_ALSA
-DIRECTORIES_AFTER_RTJAR += libraries/clib/sound
-else 
-if COND_SOUND_ESD
-DIRECTORIES_AFTER_RTJAR += libraries/clib/sound
-endif
-endif
-
-if COND_NATIVE_AWT
-if COND_KAFFE_X_AWT
-DIRECTORIES_AFTER_RTJAR += libraries/clib/awt/X
-endif
-if COND_KAFFE_XYNTH_AWT
-DIRECTORIES_AFTER_RTJAR += libraries/clib/awt/xynth
-endif
-endif
-
 check-local:
 	cd test && $(MAKE) check
