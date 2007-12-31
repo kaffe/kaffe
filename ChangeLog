@@ -1,5 +1,13 @@
 2007-12-31  Dalibor Topic  <robilad@kaffe.org>
 
+	*  developers/mauve-html-gen.pl, developers/mauve-kaffe,
+	developers/mauve-results.sh: Removed.
+	* developers/README: Removed references to deleted files.
+	* Makefile.am (EXTRA_DIST): Removed  developers/mauve-html-gen.pl,
+	developers/mauve-kaffe, developers/mauve-results.sh.
+
+2007-12-31  Dalibor Topic  <robilad@kaffe.org>
+
 	* developers/README.EUC_JP: Removed encoding docs for older releases.
 	* developers/README: Removed references to deleted files.
 	* Makefile.am (EXTRA_DIST): Removed developers/README.EUC_JP.

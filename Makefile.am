@@ -132,9 +132,6 @@ EXTRA_DIST = \
 	developers/glibc-2.1.1-signal.patch \
 	developers/fixup.c \
 	developers/mangleNative.pl \
-	developers/mauve-html-gen.pl \
-	developers/mauve-kaffe \
-	developers/mauve-results.sh \
 	developers/mnemonicizer.awk \
 	developers/rpm-kaffe.spec \
 	developers/sp_offset.c \
