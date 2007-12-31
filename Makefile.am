@@ -96,7 +96,6 @@ EXTRA_DIST = \
 	FAQ/FAQ.jit3 \
 	FAQ/FAQ.jsignal \
 	FAQ/FAQ.kaffemd \
-	FAQ/FAQ.kjc \
 	FAQ/FAQ.libffi \
 	FAQ/FAQ.libtool \
 	FAQ/FAQ.linux \
