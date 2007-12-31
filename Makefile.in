@@ -435,7 +435,6 @@ EXTRA_DIST = \
 	developers/alignment_of_size.c \
 	developers/auto-build.conf \
 	developers/autogen.sh \
-	developers/build_mathnamespace \
 	developers/check-classpath-merge-status \
 	developers/check-classpath-unmerged \
 	developers/config1.patch \
@@ -447,7 +446,6 @@ EXTRA_DIST = \
 	developers/glibc-2.1.1-signal.patch \
 	developers/fixup.c \
 	developers/mangleNative.pl \
-	developers/math_symbols \
 	developers/mauve-html-gen.pl \
 	developers/mauve-kaffe \
 	developers/mauve-results.sh \

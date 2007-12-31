@@ -1,5 +1,11 @@
 2007-12-30  Dalibor Topic  <robilad@kaffe.org>
 
+	* developers/build_mathnamespace, developers/math_symbols: Removed.
+	* Makefile.am (EXTRA_DIST): Removed developers/build_mathnamespace,
+	developers/math_symbols.
+
+2007-12-30  Dalibor Topic  <robilad@kaffe.org>
+
 	* developers/boehm-with-kaffe.patch: Removed.
 	* Makefile.am (EXTRA_DIST): Removed developers/boehm-with-kaffe.patch.
 
