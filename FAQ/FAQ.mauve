@@ -1,6 +1,6 @@
 Running Mauve with Kaffe
 ========================
-Author: Dalibor Topic <robilad@yahoo.com>
+Author: Dalibor Topic <robilad@kaffe.org>
 
 Introduction
 ============
@@ -18,15 +18,7 @@ that you follow the latest Mauve developements in their CVS.
 
 Q: How well does Mauve run on Kaffe?
 
-A: The tests for Java 1.0 and Java 1.1 APIs build and run on
-kaffe. The tests for other API versions don't build due to missing
-methods and classes in kaffe's class library. Nevertheless, you can
-test specific classes and packages by using KEYS="\!java. x.y.z"
-to test a specific package or class x.y.z.
-
-In your runs, you should exclude the Unicode tests, since they result
-in a ton of errors, most of which are bogus. You should run mauve with
-"\!java.lang.Character.unicode" in your KEYS string.
+A: As of 2008, around 200 of more than 3000 tests fail.
 
 Installation
 ============
@@ -39,30 +31,16 @@ Installation
 
 4. autoreconf (you need latest auto* tools for this step)
 
-5. ./configure JAVA=/path/to/kaffe JAVAC=/path/to/kjc
+5. ./configure
 
 Running
 ========
 
-In order to test kaffe's compatibiity with some Java API release:
+A quick way to run the whole test suite is to call
 
-make check KEYS="JDK 1.release \!java.lang.Character.unicode" > kaffe.log
+$ kaffe Harness gnu.testlet -vm /path/to/kaffe
 
-Mauve has an option to group the KEYS you are using. When you create a
-file "mauve-kaffe" with your normal KEYS settings then you can then do
-"make check KEYS=kaffe". Kaffe comes with a "mauve-kaffe" file in the
-developers directory. Don't forget to do a "rm .save-keys choices"
-after editing the "mauve-kaffe" file before rerunning "make check
-KEYS=kaffe" to make sure the changes get picked up.
-
-If you want extra verbose output, use make check KEYS=something
-TESTFLAGS="-verbose". You can pick single tests to run, by using make
-check KEYS="JDK1.release \!java. \!javax. package.class.test"
-
-Finally, you can pipe the output of the verbose runs into a perl
-script that generates nice web pages. The script mauve-html-gen.pl can
-be found in the developers directory.
-
+Take a look at the mauve documentation for more details. 
 
 Helping Out
 ===========
@@ -72,10 +50,9 @@ There are several ways how you can help out on kaffe using mauve.
 Running Mauve Regularly
 -----------------------
 
-Despite everyone's efforts to improve kaffe, sometimes fixes break
-other things on other platforms. In order to be able to find out early
-when things break, we need contributors that run mauve regularly on
-their platforms, publish the results, and report regressions.
+There is a regular run of Mauve nightly on the 
+developer.classpath.org virtual instance. Adding Kaffe to the set
+of VMs already using the setup would be very useful.
 
 Fixing Issues You Find
 ----------------------
@@ -93,12 +70,3 @@ API that are not exposed by mauve tests already, please submit a test
 to the mauve mailing list. That way, other free Java virtual machine
 and class library implementations can use the test case to check their
 own work.
-
-Known Issues
-============
-
-The Unicode tests result in a ton of failures. According to
-developers/README.unicode, it's the Unicode tests that need fixing.
-
-Some tests can not be built since kaffe doesn't implement the APIs
-yet. They have been commented out in the "mauve-kaffe" file.
