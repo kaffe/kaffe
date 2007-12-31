@@ -169,19 +169,6 @@ BUILD_ENVIRONMENT-make: Makefile
 	rm -f BUILD_ENVIRONMENT
 	mv BUILD_ENVIRONMENT.new BUILD_ENVIRONMENT
 
-CLASSDIRS = libraries/javalib
-
-.PHONY: Klasses new-classes compile-classes jar-classes build-classes
-Klasses new-classes compile-classes jar-classes build-classes:
-	@if test "$(CLASSDIRS)" = all; then \
-	   $(MAKE) CLASSDIRS="`echo libraries/javalib \
-				    libraries/extensions/*/javalib`" $@; \
-	else \
-	  for f in $(CLASSDIRS); do \
-	    (cd $$f && $(MAKE) $@); \
-	  done; \
-	fi
-
 # Build HTML docs (requires maven and maven-sddocbook-plugin)
 docs-docbook-html:
 	maven sdocbook:generate-html

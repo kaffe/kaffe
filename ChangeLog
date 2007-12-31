@@ -1,5 +1,10 @@
 2007-12-31  Dalibor Topic  <robilad@kaffe.org>
 
+	* Makefile.am (CLASSDIRS, .PHONY, Klasses, new-classes, compile-classes, jar-classes, 
+	build-classes): Removed.
+
+2007-12-31  Dalibor Topic  <robilad@kaffe.org>
+
 	* Makefile.am (DIRECTORIES_BEFORE_RTJAR, DIRECTORIES_AFTER_RTJAR, RUN_PO): Removed.
 
 2007-12-31  Dalibor Topic  <robilad@kaffe.org>
