@@ -1,5 +1,10 @@
 2007-12-30  Dalibor Topic  <robilad@kaffe.org>
 
+	* developers/boehm-with-kaffe.patch: Removed.
+	* Makefile.am (EXTRA_DIST): Removed developers/boehm-with-kaffe.patch.
+
+2007-12-30  Dalibor Topic  <robilad@kaffe.org>
+
 	* .cvsignore: Added CScope database files.
 
 2007-12-30  Dalibor Topic  <robilad@kaffe.org>

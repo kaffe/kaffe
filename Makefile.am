@@ -125,7 +125,6 @@ EXTRA_DIST = \
 	developers/alignment_of_size.c \
 	developers/auto-build.conf \
 	developers/autogen.sh \
-	developers/boehm-with-kaffe.patch \
 	developers/build_mathnamespace \
 	developers/check-classpath-merge-status \
 	developers/check-classpath-unmerged \
