@@ -127,7 +127,6 @@ EXTRA_DIST = \
 	developers/autogen.sh \
 	developers/config1.patch \
 	developers/config2.patch \
-	developers/dumpClass.pl \
 	developers/gdbinit \
 	developers/geteh_from_libgcc2 \
 	developers/glibc-2.1.1-signal.patch \
@@ -140,10 +139,8 @@ EXTRA_DIST = \
 	developers/rpm-kaffe.spec \
 	developers/sp_offset.c \
 	developers/test-kaffe-sh \
-	developers/utf8munge.pl \
 	developers/FullTest.sh \
 	developers/GCJ.note.1 \
-	developers/JavaClass.pm \
 	developers/README \
 	developers/README.EUC_JP \
 	scripts/GCCWarning.pm \

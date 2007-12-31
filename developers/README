@@ -10,15 +10,6 @@ sp_offset.c:	a program that guesses the correct offset of the sp in a
 
 gdbinit:	a gdb macro file to help in debugging kaffe
 
-JavaClass.pm:	Perl 5 module for .class file manipulation.
-		Used by dumpClass.pl and utf8munge.pl
-
-dumpClass.pl:	dump the content of a .class file
-
-utf8munge.pl:	change the values of utf8 constants of a .class file
-		Note that both .pl scripts require /usr/local/bin/perl 
-		(or change the first line in the script)
-
 autogen.sh:	script to run all of the various auto* programs
 		in the correct order
 

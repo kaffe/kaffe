@@ -1,5 +1,12 @@
 2007-12-31  Dalibor Topic  <robilad@kaffe.org>
 
+	* developers/dumpClass.pl, developers/JavaClass.pm, developers/utf8munge.pl: Removed.
+	* developers/README: Removed dumpClass.pl,utf8munge.pl and JavaClass.pm.
+	* Makefile.am (EXTRA_DIST): Removed  developers/dumpClass.pl, utf8munge.pl and 
+	developers/JavaClass.pm.
+
+2007-12-31  Dalibor Topic  <robilad@kaffe.org>
+
 	* developers/createLdScript.pl: Removed.
 	* developers/README: Removed createLdScript.pl.
 	* Makefile.am (EXTRA_DIST): Removed createLdScript.pl.
