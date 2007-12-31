@@ -1,5 +1,10 @@
 2007-12-31  Dalibor Topic  <robilad@kaffe.org>
 
+	* FAQ/FAQ.gnu-classpath: Removed.
+	* Makefile.am (EXTRA_DIST): Removed FAQ/FAQ.gnu-classpath.
+
+2007-12-31  Dalibor Topic  <robilad@kaffe.org>
+
 	* FAQ/FAQ.mauve: Updated.
 
 2007-12-31  Dalibor Topic  <robilad@kaffe.org>

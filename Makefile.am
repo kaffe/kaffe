@@ -90,7 +90,6 @@ EXTRA_DIST = \
 	FAQ/FAQ.gcblock \
 	FAQ/FAQ.gcj \
 	FAQ/FAQ.gcstrategy \
-	FAQ/FAQ.gnu-classpath \
 	FAQ/FAQ.hpux \
 	FAQ/FAQ.hotjava \
 	FAQ/FAQ.install-root \
