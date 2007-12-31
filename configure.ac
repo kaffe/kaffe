@@ -207,7 +207,7 @@ GCC_ATTRIBUTE_PACKED
 GCC_ATTRIBUTE_UNUSED
 	 
 if test "$GCC" != "yes"; then
-	AC_MSG_ERROR([Kaffe can only build with GCC])
+	AC_MSG_WARN([Kaffe can only build with GCC])
 fi
 
 dnl Find the c++ compiler early on
