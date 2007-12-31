@@ -22,10 +22,6 @@ mangleNative.pl:	create linker scripts for native methods for GCJ.
 
 fixup.c		create GCJ fixup modules
 
-Encode.java:	Encode a i18n Character Map into a resource we can load.
-
-EncodeEUC_JP:	Encode EUC_JP Character Map.
-
 FullTest.sh:	A shell script that builds/checks/installs many configurations
 		of Kaffe "automatically".  Usefull for checking many configurations
 		to make sure you didn't break anything.

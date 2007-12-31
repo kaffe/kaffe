@@ -1,5 +1,11 @@
 2007-12-31  Dalibor Topic  <robilad@kaffe.org>
 
+	* developers/README.EUC_JP: Removed encoding docs for older releases.
+	* developers/README: Removed references to deleted files.
+	* Makefile.am (EXTRA_DIST): Removed developers/README.EUC_JP.
+
+2007-12-31  Dalibor Topic  <robilad@kaffe.org>
+
 	* developers/dumpClass.pl, developers/JavaClass.pm, developers/utf8munge.pl: Removed.
 	* developers/README: Removed dumpClass.pl,utf8munge.pl and JavaClass.pm.
 	* Makefile.am (EXTRA_DIST): Removed  developers/dumpClass.pl, utf8munge.pl and 

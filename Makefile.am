@@ -142,7 +142,6 @@ EXTRA_DIST = \
 	developers/FullTest.sh \
 	developers/GCJ.note.1 \
 	developers/README \
-	developers/README.EUC_JP \
 	scripts/GCCWarning.pm \
 	scripts/JikesWarning.pm \
 	scripts/LogWarning.pm \
