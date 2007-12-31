@@ -435,11 +435,8 @@ EXTRA_DIST = \
 	developers/alignment_of_size.c \
 	developers/auto-build.conf \
 	developers/autogen.sh \
-	developers/check-classpath-merge-status \
-	developers/check-classpath-unmerged \
 	developers/config1.patch \
 	developers/config2.patch \
-	developers/createLdScript.pl \
 	developers/dumpClass.pl \
 	developers/gdbinit \
 	developers/geteh_from_libgcc2 \
@@ -450,7 +447,6 @@ EXTRA_DIST = \
 	developers/mauve-kaffe \
 	developers/mauve-results.sh \
 	developers/mnemonicizer.awk \
-	developers/resync-classpath.sh \
 	developers/rpm-kaffe.spec \
 	developers/sp_offset.c \
 	developers/test-kaffe-sh \

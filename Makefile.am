@@ -127,7 +127,6 @@ EXTRA_DIST = \
 	developers/autogen.sh \
 	developers/config1.patch \
 	developers/config2.patch \
-	developers/createLdScript.pl \
 	developers/dumpClass.pl \
 	developers/gdbinit \
 	developers/geteh_from_libgcc2 \

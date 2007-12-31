@@ -31,9 +31,6 @@ mangleNative.pl:	create linker scripts for native methods for GCJ.
 
 fixup.c		create GCJ fixup modules
 
-createLdScript.pl:	creare linker scripts for one particular library.
-		Depends on libtool's .exp file.
-
 Encode.java:	Encode a i18n Character Map into a resource we can load.
 
 EncodeEUC_JP:	Encode EUC_JP Character Map.
