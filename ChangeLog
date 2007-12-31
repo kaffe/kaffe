@@ -1,5 +1,10 @@
 2007-12-30  Dalibor Topic  <robilad@kaffe.org>
 
+	* config/i386/linux/md.h (SP_OFFSET): Set to 3 to fix crashes with jthreads 
+	caused by bad SP_OFFSET. Still crashes for me later, though.
+
+2007-12-30  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac: Downgrade error when not building with gcc to warning.
 
 2007-12-29  Dalibor Topic  <robilad@kaffe.org>

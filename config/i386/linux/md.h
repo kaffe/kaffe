@@ -18,6 +18,12 @@
 #include "i386/common.h"
 #include "i386/threads.h"
 
+/*
+ * Redefine stack pointer offset.
+ */
+#undef SP_OFFSET
+#define SP_OFFSET 3
+
 /**/
 /* Extra exception handling information. */
 /**/
