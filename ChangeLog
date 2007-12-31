@@ -1,5 +1,9 @@
 2007-12-30  Dalibor Topic  <robilad@kaffe.org>
 
+	* .cvsignore: Added CScope database files.
+
+2007-12-30  Dalibor Topic  <robilad@kaffe.org>
+
 	* config/i386/linux/md.h (SP_OFFSET): Set to 3 to fix crashes with jthreads 
 	caused by bad SP_OFFSET. Still crashes for me later, though.
 

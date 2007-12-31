@@ -8,4 +8,6 @@ BUILD_ENVIRONMENT
 autom4te.cache
 project.xml
 project.properties
+cscope.files
+cscope.out
 
