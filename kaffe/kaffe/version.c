@@ -43,7 +43,7 @@ printShortVersion(void)
 	fprintf(versionfd, "java full version \"kaffe-1.4.2\"\n\n");
 	fprintf(versionfd, "%s VM \"%s\"\n\n", PACKAGE, PACKAGE_VERSION);
 	fprintf(versionfd, "%s", 
-		       _("Copyright (c) 1996-2007 Kaffe.org project contributors (please see\n"
+		       _("Copyright (c) 1996-2008 Kaffe.org project contributors (please see\n"
 			"  the source code for a full list of contributors).  All rights reserved.\n"
 			"Portions Copyright (c) 1996-2002 Transvirtual Technologies, Inc.\n\n"
 			"The Kaffe virtual machine is free software, licensed under the terms of\n"
