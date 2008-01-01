@@ -33,7 +33,6 @@ endif
 
 SUBDIRS= \
 	vmspecific \
-	gnu-inet \
 	dnsjava \
 	$(MAYBE_PEERLESS_KAFFE_AWT) \
 	$(MAYBE_GMP_JAVA_MATH) \
