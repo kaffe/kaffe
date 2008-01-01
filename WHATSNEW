@@ -1,6 +1,7 @@
 What's New Since Kaffe 1.1.8
 ----------------------------
 
+* Removed gnu-inet.
 * Removed gjdoc and ANTLR. Kaffe uses an installed gjdoc as 
   javadoc when it's available.
 * Removed GNU Classpath. Kaffe uses an existing GNU Classpath 

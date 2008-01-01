@@ -144,21 +144,6 @@ org/xbill/DNS/Tokenizer.java:
  * WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-* gnu.inet
-
-FTP URL Connection handler and utility classes are taken from GNU 
-Inetlib's CVS. 
-
-They are licensed under the terms of the GNU General Public License \
-with the following clarification and special exception:
-
-    "As a special exception, if you link this library with other files 
-    to produce an executable, this library does not by itself cause 
-    the resulting executable to be covered by the GNU General Public 
-    License. This exception does not however invalidate any other 
-    reasons why the executable file might be covered by the GNU General
-    Public License."
-
 * Replacement functions for getaddrinfo
 
 This code comes from Motoyuki Kasahara's <m-kasahr@sra.co.jp>
