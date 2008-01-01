@@ -17,56 +17,6 @@ See license-lesser.terms for details.
 
 More information on tritonus is available from http://tritonus.org.
 
-* javap
-
-This code has been merged in from the GNU Classpath tools project.
-Kaffe is tracking this project's CVS HEAD.
-
-The GNU Classpath tools project is distributed under the GNU General 
-Public License Version 2.
-
-See license.terms for the text of the GNU General Public License 
-Version 2.
-
-More information on gjdoc and cp-tools can be found at
-http://www.gnu.org/software/cp-tools/.
-
-* gnu.bytecode
-
-This code has been merged in from Kawa. Kaffe is tracking this 
-project's CVS HEAD.
-
-The gnu.bytecode classes are licensed under the GNU General Public 
-License Version 2 or any later version. The exact copyright notice 
-is:
-
- "The Java classes (with related files and documentation) in these packages
-  are copyright (C) 1996-2001, 2002  Per Bothner.
-
-  These classes are distributed in the hope that they will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License [included below] for more details.
-
-  These classes are free software.  You can use and re-distribute a class
-  without restriction (in source or binary form) as long as you use a
-  version has not been modified in any way from a version released
-  by Per Bothner, Cygnus Solutions, or the Free Software Foundation.
-  (See the Kawa manual for more information.)
-  You may make and distribute a modified version, provided you follow
-  the terms of the GNU General Public License; either version 2,
-  or (at your option) any later version.  (Version 2 is included below.)
-
-  If you have questions, contact Per Bothner,
-  18651 Cynthia Avenue, Cupertino CA 95014, USA.
-  By email per@bothner.com."
-
-See license.terms for the text of the GNU General Public License
-Version 2.
-
-More information on Kawa can be found at
-http://www.gnu.org/software/kawa/.
-
 * org.xbill.DNS
 
 This code has been taken from DNSJava 2.0.0. 
@@ -297,11 +247,12 @@ Autoconf/automake macros taken from ALSA CVS.  Licensed under the GPL/LGPL.
 Autoconf macros taken from GNOME ESounD CVS. Licensed under the GPL/LGPL.
 
 * m4/ax_cflags_gcc_option.m4, m4/ax_cflags_warn_all.m4, m4/acx_pthread.m4,
-  m4/compile_value.m4
+  m4/compile_value.m4, m4/ac_prog_javac.m4, m4/ac_prog_javac_works.m4, 
+  m4/ac_prog_javadoc.m4, m4/ac_try_compile_java.m4
 
-Autoconf macros to check for accepted warning and compiler options, pthreads 
-and compile time values. Taken from the Autoconf Macro Archive at 
-http://ac-archive.sourceforge.net/.
+Autoconf macros to check for accepted warning and compiler options, pthreads, 
+compile time values and Java development tools. Taken from the Autoconf Macro 
+Archive at http://ac-archive.sourceforge.net/.
 
 Licensed under the GNU General Public License with a special exception:
 

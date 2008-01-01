@@ -728,6 +728,7 @@ AC_SUBST(GLIBJ_ZIP)
 JAVACFLAGS="-classpath ${CLASSPATH_CLASSES}"
 AC_PROG_JAVAC
 AC_PROG_JAVADOC 
+AC_PATH_PROGS([JAVAP],[javap-cp javap])
 
 dnl =========================================================================
 dnl Look for trampoline code if in JIT mode
@@ -1947,18 +1948,6 @@ dnl -----------------------------------------------------------------------
 
 AM_WITH_DMALLOC
 
-dnl =========================================================================
-dnl Building of classpath tools
-dnl -------------------------------------------------------------------------
-
-AC_ARG_ENABLE([classpath-tools],
-		AS_HELP_STRING([--disable-classpath-tools],
-				[Disable building of classpath tools like javap and rmic]),
-		[],
-		[enable_classpath_tools=yes])
-
-AM_CONDITIONAL([COND_CLASSPATH_TOOLS], [test x"$enable_classpath_tools" = x"yes"])
-
 JAVA_LIBS=" \
 \$(top_builddir)/libraries/clib/management/libmanagement.la \
 \$(top_builddir)/libraries/clib/security/libsecurity.la \
@@ -2256,13 +2245,10 @@ AC_CONFIG_FILES([kaffe/scripts/install-jar])
 AC_CONFIG_FILES([kaffe/scripts/kaffe])
 AC_CONFIG_FILES([kaffe/scripts/kaffexprof])
 AC_CONFIG_FILES([kaffe/scripts/javah])
-AC_CONFIG_FILES([kaffe/scripts/javap])
 AC_CONFIG_FILES([kaffe/scripts/jdb])
 AC_CONFIG_FILES([kaffe/scripts/compat/java])
 AC_CONFIG_FILES([kaffe/scripts/compat/javac])
 AC_CONFIG_FILES([po/Makefile.in])
-AC_CONFIG_FILES([tools/Makefile])
-AC_CONFIG_FILES([tools/javatools/Makefile])
 AC_CONFIG_FILES([test/Makefile])
 AC_CONFIG_FILES([test/internal/Makefile])
 AC_CONFIG_FILES([test/regression/Makefile])

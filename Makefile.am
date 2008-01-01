@@ -16,7 +16,6 @@ AUTOMAKE_OPTIONS = foreign 1.3e
 
 SUBDIRS = \
 	replace \
-	. \
 	libraries/javalib \
 	config \
 	libltdl \
@@ -25,8 +24,7 @@ SUBDIRS = \
 	kaffe/kaffevm \
 	libraries/clib \
 	kaffe \
-	po \
-	tools
+	po 
 
 DIST_SUBDIRS = \
 	config \
@@ -35,7 +33,6 @@ DIST_SUBDIRS = \
 	libltdl \
 	kaffe \
 	libraries \
-	tools \
 	test \
 	po
 
@@ -178,3 +175,11 @@ docs-regen: docs-docbook-html
 
 check-local:
 	cd test && $(MAKE) check
+
+install-exec-local:
+	if ! test -f $(DESTDIR)${toolslibdir}/tools.jar ; then \
+                $(LN_S) $(CLASSPATH_PREFIX)/share/classpath/tools.zip $(DESTDIR)${toolslibdir}/tools.jar ; \
+        fi
+
+uninstall-local:
+	$(RM) $(DESTDIR)${toolslibdir}/tools.jar 

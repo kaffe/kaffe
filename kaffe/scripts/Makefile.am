@@ -13,7 +13,7 @@ DIST_SUBDIRS = bat compat
 
 EXTRA_DIST = nm2as.awk
 
-SCRIPTFILES_SUN= javah javap
+SCRIPTFILES_SUN= javah
 
 if SUN_COMPAT
 SUBDIRS = compat
@@ -50,6 +50,9 @@ install-exec-local:
 	if test x"@JAVADOC@" != x"" ; then \
 		$(LN_S) @JAVADOC@  $(DESTDIR)$(bindir)/javadoc$(EXEEXT) ; \
 	fi
+	if test x"@JAVAP@" != x"" ; then \
+		$(LN_S) @JAVAP@  $(DESTDIR)$(bindir)/javap$(EXEEXT) ; \
+	fi
 
 uninstall-local:
 	for app in $(CLASSPATH_APPS); do \
@@ -57,4 +60,7 @@ uninstall-local:
 	done
 	if  test x"@JAVADOC@" != x"" ; then \
 		$(RM) $(DESTDIR)$(bindir)/javadoc$(EXEEXT) ; \
+	fi
+	if  test x"@JAVAP@" != x"" ; then \
+		$(RM) $(DESTDIR)$(bindir)/javap$(EXEEXT) ; \
 	fi

@@ -1,5 +1,81 @@
 2008-01-01  Dalibor Topic  <robilad@kaffe.org>
 
+	* THIRDPARTY: Removed licensing information for javap from GNU Classpath 
+	tools and for gnu bytecode. Updated ac-archive licensing information to
+	include new Java development tool detection macros.
+
+	* TODO: Purged cp-tools from unmerge tasks.
+
+	* WHATSNEW: Added cp-tools purge information.
+
+	* kaffe/scripts/Makefile.am (install-exec-local, uninstall-local):
+	Added support for symlinking JAVAP as javap.
+
+	* configure.ac: Removed classpath tools compilation option.
+	(JAVAP) Check for javap and javap-cp. (AC_CONFIG_FILES) Removed
+	kaffe/scripts/javap, tools/Makefile and tools/javalib/Makefile.
+
+	* Makefile.am (install-exec-local, uninstall-local): Moved over
+	from tools/Makefile.am. (SUBDIRS) Removed .
+
+	* tools/javatools/.cvsignore,
+	tools/javatools/gnu/classpath/tools/Util.java,
+	tools/javatools/gnu/classpath/tools/javap/JavapMain.java,
+	tools/javatools/gnu/classpath/tools/javap/Javap.java,
+	tools/javatools/gnu/classpath/tools/javap/GnuByteCodeJavap.java,
+	tools/javatools/gnu/bytecodecvssnap/SourceDebugExtAttr.java,
+	tools/javatools/gnu/bytecodecvssnap/SourceFileAttr.java,
+	tools/javatools/gnu/bytecodecvssnap/CpoolValue1.java,
+	tools/javatools/gnu/bytecodecvssnap/ZipLoader.java,
+	tools/javatools/gnu/bytecodecvssnap/SwitchState.java,
+	tools/javatools/gnu/bytecodecvssnap/PrimType.java,
+	tools/javatools/gnu/bytecodecvssnap/Method.java,
+	tools/javatools/gnu/bytecodecvssnap/CpoolClass.java,
+	tools/javatools/gnu/bytecodecvssnap/Access.java,
+	tools/javatools/gnu/bytecodecvssnap/IfState.java,
+	tools/javatools/gnu/bytecodecvssnap/Variable.java,
+	tools/javatools/gnu/bytecodecvssnap/package.html,
+	tools/javatools/gnu/bytecodecvssnap/ObjectType.java,
+	tools/javatools/gnu/bytecodecvssnap/Location.java,
+	tools/javatools/gnu/bytecodecvssnap/CpoolFloat.java,
+	tools/javatools/gnu/bytecodecvssnap/VarEnumerator.java,
+	tools/javatools/gnu/bytecodecvssnap/Label.java,
+	tools/javatools/gnu/bytecodecvssnap/Field.java,
+	tools/javatools/gnu/bytecodecvssnap/CpoolValue2.java,
+	tools/javatools/gnu/bytecodecvssnap/CodeAttr.java,
+	tools/javatools/gnu/bytecodecvssnap/Type.java,
+	tools/javatools/gnu/bytecodecvssnap/Scope.java,
+	tools/javatools/gnu/bytecodecvssnap/MiscAttr.java,
+	tools/javatools/gnu/bytecodecvssnap/LineNumbersAttr.java,
+	tools/javatools/gnu/bytecodecvssnap/CpoolEntry.java,
+	tools/javatools/gnu/bytecodecvssnap/AttrContainer.java,
+	tools/javatools/gnu/bytecodecvssnap/dump.java,
+	tools/javatools/gnu/bytecodecvssnap/ClassType.java,
+	tools/javatools/gnu/bytecodecvssnap/TryState.java,
+	tools/javatools/gnu/bytecodecvssnap/ConstantValueAttr.java,
+	tools/javatools/gnu/bytecodecvssnap/Attribute.java,
+	tools/javatools/gnu/bytecodecvssnap/ZipArchive.java,
+	tools/javatools/gnu/bytecodecvssnap/LocalVarsAttr.java,
+	tools/javatools/gnu/bytecodecvssnap/ClassFileInput.java,
+	tools/javatools/gnu/bytecodecvssnap/CpoolNameAndType.java,
+	tools/javatools/gnu/bytecodecvssnap/CpoolRef.java,
+	tools/javatools/gnu/bytecodecvssnap/Filter.java,
+	tools/javatools/gnu/bytecodecvssnap/InnerClassesAttr.java,
+	tools/javatools/gnu/bytecodecvssnap/ArrayClassLoader.java,
+	tools/javatools/gnu/bytecodecvssnap/ArrayType.java,
+	tools/javatools/gnu/bytecodecvssnap/CpoolUtf8.java,
+	tools/javatools/gnu/bytecodecvssnap/CpoolString.java,
+	tools/javatools/gnu/bytecodecvssnap/ClassTypeWriter.java,
+	tools/javatools/gnu/bytecodecvssnap/ExceptionsAttr.java,
+	tools/javatools/gnu/bytecodecvssnap/ConstantPool.java,
+	tools/javatools/Makefile.in,
+	tools/javatools/Makefile.am,
+	tools/.cvsignore,
+	tools/Makefile.in,
+	tools/Makefile.am: Removed.
+	
+2008-01-01  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac (FASTJAR): Added gjar, gjar-4.1 and gjar-4.2 to detected jar tools.
 
 2008-01-01  Dalibor Topic  <robilad@kaffe.org>

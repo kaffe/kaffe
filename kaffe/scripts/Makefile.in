@@ -45,8 +45,8 @@ build_triplet = @build@
 host_triplet = @host@
 subdir = kaffe/scripts
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(srcdir)/install-jar.in $(srcdir)/javah.in $(srcdir)/javap.in \
-	$(srcdir)/jdb.in $(srcdir)/kaffe.in $(srcdir)/kaffexprof.in
+	$(srcdir)/install-jar.in $(srcdir)/javah.in $(srcdir)/jdb.in \
+	$(srcdir)/kaffe.in $(srcdir)/kaffexprof.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/ac_prog_javac.m4 \
@@ -75,7 +75,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(SHELL) $(top_srcdir)/scripts/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h
-CONFIG_CLEAN_FILES = install-jar kaffe kaffexprof javah javap jdb
+CONFIG_CLEAN_FILES = install-jar kaffe kaffexprof javah jdb
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(jrebindir)"
 binSCRIPT_INSTALL = $(INSTALL_SCRIPT)
 jrebinSCRIPT_INSTALL = $(INSTALL_SCRIPT)
@@ -160,6 +160,7 @@ JASMIN = @JASMIN@
 JAVAC = @JAVAC@
 JAVAC_FLAGS = @JAVAC_FLAGS@
 JAVADOC = @JAVADOC@
+JAVAP = @JAVAP@
 JAVA_LIBS = @JAVA_LIBS@
 KAFFEH = @KAFFEH@
 KAFFE_ARCHOS = @KAFFE_ARCHOS@
@@ -307,7 +308,7 @@ top_srcdir = @top_srcdir@
 with_engine = @with_engine@
 DIST_SUBDIRS = bat compat
 EXTRA_DIST = nm2as.awk
-SCRIPTFILES_SUN = javah javap
+SCRIPTFILES_SUN = javah
 @SUN_COMPAT_TRUE@SUBDIRS = compat
 @ENABLE_XPROF_FALSE@SCRIPTFILES_XPROF = 
 @ENABLE_XPROF_TRUE@SCRIPTFILES_XPROF = kaffexprof nm2as.awk
@@ -362,8 +363,6 @@ kaffe: $(top_builddir)/config.status $(srcdir)/kaffe.in
 kaffexprof: $(top_builddir)/config.status $(srcdir)/kaffexprof.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 javah: $(top_builddir)/config.status $(srcdir)/javah.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-javap: $(top_builddir)/config.status $(srcdir)/javap.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 jdb: $(top_builddir)/config.status $(srcdir)/jdb.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
@@ -702,6 +701,9 @@ install-exec-local:
 	if test x"@JAVADOC@" != x"" ; then \
 		$(LN_S) @JAVADOC@  $(DESTDIR)$(bindir)/javadoc$(EXEEXT) ; \
 	fi
+	if test x"@JAVAP@" != x"" ; then \
+		$(LN_S) @JAVAP@  $(DESTDIR)$(bindir)/javap$(EXEEXT) ; \
+	fi
 
 uninstall-local:
 	for app in $(CLASSPATH_APPS); do \
@@ -709,6 +711,9 @@ uninstall-local:
 	done
 	if  test x"@JAVADOC@" != x"" ; then \
 		$(RM) $(DESTDIR)$(bindir)/javadoc$(EXEEXT) ; \
+	fi
+	if  test x"@JAVAP@" != x"" ; then \
+		$(RM) $(DESTDIR)$(bindir)/javap$(EXEEXT) ; \
 	fi
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
