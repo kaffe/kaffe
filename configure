@@ -9,7 +9,7 @@
 # This configure script is free software; the Free Software Foundation
 # gives unlimited permission to copy, distribute and modify it.
 #
-# Copyright 1996 - 2007 Kaffe.org project contributors. All rights reserved.
+# Copyright 1996 - 2008 Kaffe.org project contributors. All rights reserved.
 # Portions Copyright 1996 - 2002 Transvirtual Technologies, Inc.
 # Portions Copyright by various third parties, see file THIRDPARTY for details.
 #
@@ -1867,7 +1867,7 @@ Copyright (C) 1992, 1993, 1994, 1995, 1996, 1998, 1999, 2000, 2001,
 This configure script is free software; the Free Software Foundation
 gives unlimited permission to copy, distribute and modify it.
 
-Copyright 1996 - 2007 Kaffe.org project contributors. All rights reserved.
+Copyright 1996 - 2008 Kaffe.org project contributors. All rights reserved.
 Portions Copyright 1996 - 2002 Transvirtual Technologies, Inc.
 Portions Copyright by various third parties, see file THIRDPARTY for details.
 

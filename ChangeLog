@@ -1,5 +1,9 @@
 2008-01-01  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac (AC_COPYRIGHT): Updated for 2008.
+
+2008-01-01  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffe/version.c: Changed copyright statement to 2008.
 
 2008-01-01  Dalibor Topic  <robilad@kaffe.org>

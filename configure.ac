@@ -10,7 +10,7 @@ AC_CONFIG_SRCDIR([kaffe])
 # GPLed portions has been taken from the GPL-d configure.ac
 # file of gimp-print project
 
-AC_COPYRIGHT([Copyright 1996 - 2007 Kaffe.org project contributors. All rights reserved.
+AC_COPYRIGHT([Copyright 1996 - 2008 Kaffe.org project contributors. All rights reserved.
 Portions Copyright 1996 - 2002 Transvirtual Technologies, Inc.
 Portions Copyright by various third parties, see file THIRDPARTY for details.
 
