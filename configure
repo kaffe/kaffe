@@ -47455,7 +47455,7 @@ kaffe_builddir=`pwd`
 
 # detect fastjar and set FASTJAR to its path
 
-for ac_prog in fastjar jar
+for ac_prog in fastjar gjar-4.2 gjar-4.1 gjar jar
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
 set dummy $ac_prog; ac_word=$2

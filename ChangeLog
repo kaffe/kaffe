@@ -1,5 +1,9 @@
 2008-01-01  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac (FASTJAR): Added gjar, gjar-4.1 and gjar-4.2 to detected jar tools.
+
+2008-01-01  Dalibor Topic  <robilad@kaffe.org>
+
 	* THIRDPARTY: Removed gnu-inet licensing information.
 	* WHATSNEW: Annoucned purge of gnu-inet.
 

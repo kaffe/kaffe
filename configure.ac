@@ -2089,7 +2089,7 @@ AC_SUBST([kaffe_builddir])
 
 # detect fastjar and set FASTJAR to its path
 
-AC_PATH_PROGS([FASTJAR], [fastjar jar])
+AC_PATH_PROGS([FASTJAR], [fastjar gjar-4.2 gjar-4.1 gjar jar])
 
 if test -z "${FASTJAR}"; then
   AC_MSG_ERROR([No JAR tool found. Please install fastjar or jar.])
