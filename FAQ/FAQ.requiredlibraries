@@ -159,7 +159,7 @@ In order to use the Boehm-Weiser garbage collector, you'll need to
 install the corresponding library. It is available from 
 http://www.hpl.hp.com/personal/Hans_Boehm/gc/
 
-Optional javadoc tool support
+Optional java developement tool support
 -----------------------------
 
 In order to provide a complete environment for development of 
@@ -171,6 +171,11 @@ If the configure script detects a gjdoc or javadoc tool, the 'javadoc'
 binary will be symlinked to it on installation.
 
 Gjdoc is available from http://www.gnu.org/software/classpath/cp-tools/
+
+If the configure script detects a javap tool, the 'javap' binary will be
+symlinked to it on installation.
+
+javap is available from http://www.gnu.org/software/classpath/cp-tools/
 
 Other tools
 -----------

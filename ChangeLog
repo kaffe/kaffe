@@ -1,5 +1,9 @@
 2008-01-01  Dalibor Topic  <robilad@kaffe.org>
 
+	* FAQ/FAQ.requiredlibraries: Documented javap requirement.
+
+2008-01-01  Dalibor Topic  <robilad@kaffe.org>
+
 	* THIRDPARTY: Removed licensing information for javap from GNU Classpath 
 	tools and for gnu bytecode. Updated ac-archive licensing information to
 	include new Java development tool detection macros.
