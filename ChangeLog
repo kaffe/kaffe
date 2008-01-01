@@ -1,5 +1,9 @@
 2008-01-01  Dalibor Topic  <robilad@kaffe.org>
 
+	* TODO: Removed finished task to remove references to Klasses.jar.
+
+2008-01-01  Dalibor Topic  <robilad@kaffe.org>
+
 	* FAQ/FAQ.embedded: Removed sections on recompiling the class library without debug
 	symbols, as now we're using GNU Classpath from the system install.
 

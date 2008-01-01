@@ -26,7 +26,6 @@
  * Unmerge tritonus and cp-tools.
  * Unmerge pure java DNS.
  * Make pure java zip the default.
- * Remove references to Klasses.jar.
  * Remove unused replacement code like getopt.c.
  * Remove tests for unused functions and headers.
  * Switch over to GNU Classpath's javah and remove kaffeh
