@@ -159,6 +159,19 @@ In order to use the Boehm-Weiser garbage collector, you'll need to
 install the corresponding library. It is available from 
 http://www.hpl.hp.com/personal/Hans_Boehm/gc/
 
+Optional javadoc tool support
+-----------------------------
+
+In order to provide a complete environment for development of 
+applications written in the Java programming language, Kaffe symlinks
+various tools under their typical names in the bin directory of an
+installation.
+
+If the configure script detects a gjdoc or javadoc tool, the 'javadoc'
+binary will be symlinked to it on installation.
+
+Gjdoc is available from http://www.gnu.org/software/classpath/cp-tools/
+
 Other tools
 -----------
 

@@ -45,9 +45,8 @@ build_triplet = @build@
 host_triplet = @host@
 subdir = kaffe/scripts
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(srcdir)/install-jar.in $(srcdir)/javadoc.in \
-	$(srcdir)/javah.in $(srcdir)/javap.in $(srcdir)/jdb.in \
-	$(srcdir)/kaffe.in $(srcdir)/kaffexprof.in
+	$(srcdir)/install-jar.in $(srcdir)/javah.in $(srcdir)/javap.in \
+	$(srcdir)/jdb.in $(srcdir)/kaffe.in $(srcdir)/kaffexprof.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/ac_prog_javac.m4 \
@@ -76,8 +75,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(SHELL) $(top_srcdir)/scripts/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h
-CONFIG_CLEAN_FILES = install-jar kaffe kaffexprof javah javap jdb \
-	javadoc
+CONFIG_CLEAN_FILES = install-jar kaffe kaffexprof javah javap jdb
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(jrebindir)"
 binSCRIPT_INSTALL = $(INSTALL_SCRIPT)
 jrebinSCRIPT_INSTALL = $(INSTALL_SCRIPT)
@@ -311,10 +309,6 @@ DIST_SUBDIRS = bat compat
 EXTRA_DIST = nm2as.awk
 SCRIPTFILES_SUN = javah javap
 @SUN_COMPAT_TRUE@SUBDIRS = compat
-@COND_GJDOC_TRUE@KAFFE_JAVADOC = javadoc
-SCRIPTFILES_COMPAT = \
-	$(KAFFE_JAVADOC) 
-
 @ENABLE_XPROF_FALSE@SCRIPTFILES_XPROF = 
 @ENABLE_XPROF_TRUE@SCRIPTFILES_XPROF = kaffexprof nm2as.awk
 PSCRIPTFILES = install-jar
@@ -372,8 +366,6 @@ javah: $(top_builddir)/config.status $(srcdir)/javah.in
 javap: $(top_builddir)/config.status $(srcdir)/javap.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 jdb: $(top_builddir)/config.status $(srcdir)/jdb.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-javadoc: $(top_builddir)/config.status $(srcdir)/javadoc.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 install-binSCRIPTS: $(bin_SCRIPTS)
 	@$(NORMAL_INSTALL)

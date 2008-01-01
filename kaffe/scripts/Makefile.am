@@ -19,13 +19,6 @@ if SUN_COMPAT
 SUBDIRS = compat
 endif
 
-if COND_GJDOC
-KAFFE_JAVADOC = javadoc
-endif
-
-SCRIPTFILES_COMPAT= \
-	$(KAFFE_JAVADOC) 
-
 if ENABLE_XPROF
 SCRIPTFILES_XPROF=kaffexprof nm2as.awk
 else

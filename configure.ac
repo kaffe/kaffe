@@ -727,6 +727,7 @@ AC_SUBST(GLIBJ_ZIP)
 
 JAVACFLAGS="-classpath ${CLASSPATH_CLASSES}"
 AC_PROG_JAVAC
+AC_PROG_JAVADOC 
 
 dnl =========================================================================
 dnl Look for trampoline code if in JIT mode
@@ -1947,22 +1948,6 @@ dnl -----------------------------------------------------------------------
 AM_WITH_DMALLOC
 
 dnl =========================================================================
-dnl Building of gjdoc
-dnl -------------------------------------------------------------------------
-
-AC_ARG_ENABLE([gjdoc],
-		AS_HELP_STRING([--enable-gjdoc],
-				[Enable building of gjdoc]),
-		[],
-		[enable_gjdoc=no])
-
-AM_CONDITIONAL([COND_GJDOC], [test x"$enable_gjdoc" = x"yes"])
-
-if test x"$enable_gjdoc" != x"yes" ; then
-   AC_PROG_JAVADOC 
-fi
-
-dnl =========================================================================
 dnl Building of classpath tools
 dnl -------------------------------------------------------------------------
 
@@ -2274,14 +2259,10 @@ AC_CONFIG_FILES([kaffe/scripts/kaffexprof])
 AC_CONFIG_FILES([kaffe/scripts/javah])
 AC_CONFIG_FILES([kaffe/scripts/javap])
 AC_CONFIG_FILES([kaffe/scripts/jdb])
-AC_CONFIG_FILES([kaffe/scripts/javadoc])
 AC_CONFIG_FILES([kaffe/scripts/compat/java])
 AC_CONFIG_FILES([kaffe/scripts/compat/javac])
 AC_CONFIG_FILES([po/Makefile.in])
 AC_CONFIG_FILES([tools/Makefile])
-AC_CONFIG_FILES([tools/gjdoc/javalib/version.properties])
-AC_CONFIG_FILES([tools/gjdoc/Makefile])
-AC_CONFIG_FILES([tools/gjdoc/javalib/Makefile])
 AC_CONFIG_FILES([tools/javatools/Makefile])
 AC_CONFIG_FILES([test/Makefile])
 AC_CONFIG_FILES([test/internal/Makefile])

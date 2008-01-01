@@ -6,15 +6,11 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-if COND_GJDOC
-MAYBE_GJDOC=gjdoc
-endif
-
 if COND_CLASSPATH_TOOLS
 MAYBE_CLASSPATH_TOOLS=javatools
 endif
 
-SUBDIRS = $(MAYBE_GJDOC) $(MAYBE_CLASSPATH_TOOLS)
+SUBDIRS = $(MAYBE_CLASSPATH_TOOLS)
 
 install-exec-local:
 	if ! test -f $(DESTDIR)${toolslibdir}/tools.jar ; then \
