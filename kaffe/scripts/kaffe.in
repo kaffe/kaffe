@@ -14,9 +14,8 @@
 # are composed in the following order:
 #
 #	1. a user-specified CLASSPATH or .
-#	2. Klasses.jar in $datadir/kaffe
-#       3. Kaffe extensions jar files in $datadir/kaffe
-#	4. classes.zip in $datadir/kaffe iff it exists.
+#	2. rt.jar in $jrelibdir
+#       3. Kaffe extensions jar files in $jrelibdir
 #
 # Note that as the last thing we slurp in the files $datadir/kafferc
 # and $HOME/.kafferc (in that order) if they exist. This allows site

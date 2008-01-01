@@ -111,7 +111,7 @@ Hjava_lang_Class* javaLangArithmeticException;
 Hjava_lang_Class* javaLangClassNotFoundException;
 Hjava_lang_Class* javaLangNoClassDefFoundError;
 Hjava_lang_Class* javaLangStackOverflowError;
-/* Let's not load this if we can't open Klasses.jar */
+/* Let's not load this if we can't open rt.jar */
 Hjava_lang_Class* javaIoIOException;
 
 static Hjava_lang_Class** stateCompleteClass[] = {

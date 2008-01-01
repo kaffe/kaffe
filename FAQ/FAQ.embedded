@@ -5,16 +5,12 @@ Written by Alexander Popov (s_popov@prosyst.bg)
 This FAQ explains how to optimize the storage space needed by the Kaffe Virtual Machine on systems with
 limited resources.
 
-It describes the process for the tree structure of Kaffe's CVS from 01.06.2002...
-The same thing can be applied for older versions of Kaffe (1.0.6, 1.0.5), only the location of the files
-in the tree is different there.
 
 In General
 ----------
 
 Generally the storage space reduction is done by:
 
-    - Compiling the classes with no debugging info.
     - Removing the classes not needed by your application.
     - Removing the native libraries not needed by the VM 
       after removing these classes.
@@ -24,6 +20,7 @@ Generally the storage space reduction is done by:
       the debugging info.
     - Removing other parts of Kaffe (header files, jars, docs,
       development tools )
+
 
 Compiling Kaffe
 ---------------
@@ -56,7 +53,7 @@ Compiling Kaffe
            --without-profiling
            --without-stats
 
-        To be sure that these are applied (for example) check the gcc otptions used during the compilation
+        To be sure that these are applied (for example) check the gcc options used during the compilation
         for "-g".
 
      4. If you don't enable the use of pthreads you will save some storage space from the 
@@ -65,27 +62,6 @@ Compiling Kaffe
         
      5. Disable the gcj support:
            --disable-gcj
-
-
-
-Compiling the classes
----------------------
-
-You can compile the classes that will be included in the rt.jar archive without debugging.
-Currently (13.08.2003) the rt.jar archive is about 2425K with debugging and 2117K without 
-debugging info in the classes.
-You can compile the classes without debugging using the compiler from SUN's or IBM's JDK 
-with the -g:none option.
-Go to <KAFFE_SRC>/ibraries/javalib and do:
-export -n JAVA
-export -n JAVAC
-export -n CLASSPATH
-export JAVAC="<PATH_TO_JDK>/bin/javac"
-export JAVAC_FLAGS="-g:none -bootclasspath lib/"
-make Klasses
-
-For more details on recompiling Klasses.jar check FAQ/FAQ.classlibrary-compile.
-
 
 
 Stripping rt.jar
@@ -98,12 +74,7 @@ My board doesn't have a display and I don't use awt. So I removed the java/apple
 kaffe/applet and kaffe/awt brunches from rt.jar.
 The same way you can remove beans, security etc.
 
-I usually remove comm.jar, microsoft.jar, pjava.jar, rmi.jar and servlet.jar too, because I either 
-don't use them or have my own implementations of these classes/interfaces that are part of
-my application's jars.
-
 The whole thing saves me about 1MB from the jars only, but that depends on the application and the device.
-
 
 
 Removing the native libs
@@ -111,20 +82,18 @@ Removing the native libs
 
 By removing certain classes from the jars you have no more need from certain native libraries.
 Depending on your target arch these libraries are in <KAFFE>/jre/lib/<ARCH>/
-Following the example above I usually remove libawt* and libmicrosoft*.
-
+Following the example above I usually remove libawt*.
 
 
 Removing the binaries
 ---------------------
 
 Many of the tools that Kaffe offers are of no need on the target device.
-I usually remove everithing from <KAFFE>/bin except the "kaffe" script.
+I usually remove everything from <KAFFE>/bin except the "kaffe" script.
 The same thing should be done in <KAFFE>/jre/bin - just leave kaffe-bin and kaffe.
 The two kaffe shell scripts too can be removed but then you must take care of the
 environment setup for the VM. And if you use a compressed filesystem the text files are 
 not to be really considered as a storage problem.
-
 
 
 Stripping the native binaries

@@ -1,3 +1,13 @@
+2008-01-01  Dalibor Topic  <robilad@kaffe.org>
+
+	* FAQ/FAQ.embedded: Removed sections on recompiling the class library without debug
+	symbols, as now we're using GNU Classpath from the system install.
+
+	* kaffe/kaffevm/baseClasses.c: Fixed comment to refer to rt.jar instead of 
+	Klasses.jar.
+
+	* kaffe/scripts/kaffe.in: Fixed description of building of classpath.
+
 2007-12-31  Dalibor Topic  <robilad@kaffe.org>
 
 	* TODO: Updated.
