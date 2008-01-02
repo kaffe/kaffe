@@ -1,5 +1,9 @@
 2008-01-02  Dalibor Topic  <robilad@kaffe.org>
 
+	* TODO: Removed finished replace cleanup task.
+
+2008-01-02  Dalibor Topic  <robilad@kaffe.org>
+
 	* replace/Makefile.am (libreplace_la_SOURCES): Removed inet_pton.c
 	and inet_ntop.c.
 

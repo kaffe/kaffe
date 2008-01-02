@@ -23,7 +23,6 @@
 
 * Integration issues
  * Make pure java zip the default.
- * Remove unused replacement code like inet_pton/ntop.
  * Remove unused parts of SysCallInterface like connect, bind, etc.
    in particular those that use h_errno, and socklen_t, and clean up 
    include/nets.h, and config/config-net.h.
