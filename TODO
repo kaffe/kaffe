@@ -22,7 +22,6 @@
  * Implement hooks for JVMTI from GNU Classpath. 
 
 * Integration issues
- * Unmerge pure java DNS.
  * Make pure java zip the default.
  * Remove unused replacement code like getopt.c.
  * Remove tests for unused functions and headers.
