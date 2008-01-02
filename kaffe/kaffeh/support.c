@@ -71,13 +71,6 @@ kread(int fd, void *buf, size_t len, ssize_t *out)
 	return (*out == -1) ? errno : 0;
 }
 
-static int 
-kwrite(int fd, const void *buf, size_t len, ssize_t *out)
-{
-	*out = write(fd, buf, len);
-	return (*out == -1) ? errno : 0;
-}
-
 static int
 klseek(int fd, off_t off, int whence, off_t *out)
 {
@@ -115,45 +108,10 @@ SystemCallInterface Kaffe_SystemCallInterface =
 {
 	binary_open,
         kread,
-        kwrite, 
         klseek,
         close,
         kfstat,
         kstat,
-
-	NULL,		/* truncate */
-	NULL,		/* fsync */
-        NULL,		/* mkdir */
-        NULL,		/* rmdir */
-        NULL,		/* rename */
-        NULL,		/* remove */
-        NULL,		/* socket */
-        NULL,		/* connect */
-        NULL,		/* bind */
-        NULL,		/* listen */
-        NULL,		/* accept */
-        NULL,		/* sockread */
-        NULL,		/* recvfrom */
-        NULL,		/* sockwrite */
-        NULL,		/* sendto */
-        NULL,		/* setsockopt */
-        NULL,		/* getsockopt */
-        NULL,		/* getsockname */
-        NULL,		/* getpeername */
-        NULL,		/* sockclose */
-	NULL,		/* sockshutdown */
- 	NULL,		/* gethostbyname */
-        NULL,		/* gethostbyaddr */
-        NULL,		/* select */
-        NULL,		/* forkexec */
-        NULL,		/* waitpid */
-        NULL,		/* kill */
-	NULL,           /* mmap */
-        NULL,           /* munmap */
-        NULL,           /* msync */
-        NULL,           /* pipecreate */
-        NULL,           /* piperead */
-        NULL            /* pipewrite */
 };
 
 

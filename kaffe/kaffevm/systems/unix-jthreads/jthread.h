@@ -321,24 +321,7 @@ threadData* jthread_get_data(jthread_t tid);
  * API related to I/O
  */
 int jthreadedOpen(const char* path, int flags, int mode, int*);
-int jthreadedSocket(int af, int type, int proto, int*);
-int jthreadedConnect(int fd, struct sockaddr* addr, socklen_t len, int timeout);
-int jthreadedAccept(int fd, struct sockaddr* addr, socklen_t* len, 
-	int timeout, int *);
 int jthreadedRead(int fd, void* buf, size_t len, ssize_t *);
-int jthreadedTimedRead(int fd, void* buf, size_t len, int timeout, ssize_t *);
-int jthreadedTimedWrite(int fd, const void* buf, size_t len, int timeout, ssize_t *);
-int jthreadedWrite(int fd, const void* buf, size_t len, ssize_t *);
-int jthreadedRecvfrom(int fd, void* buf, size_t len, int flags,
-        struct sockaddr* from, socklen_t* fromlen, int timeout, ssize_t *);
-int jthreadedWaitpid(int wpid, int* status, int options, int *);
-int jthreadedForkExec(char **argv, char **arge,
-		      int ioes[/* 4 */], int *, const char *);
-int
-jthreadedSelect(int a, fd_set* b, fd_set* c, fd_set* d, 
-		struct timeval* e, int* out);
-int jthreadedPipeCreate(int *read_fd, int *write_fd);
-
 void jthread_set_blocking(int fd, int blocking);
 
 int jthread_is_blocking(int fd);

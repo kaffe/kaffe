@@ -1,5 +1,22 @@
 2008-01-02  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffeh/support.c (Kaffe_SystemCallInterface): Removed unused members.
+	(kwrite) Removed.
+
+	* kaffe/kaffevm/systems/unix-pthreads/syscalls.c,
+	kaffe/kaffevm/systems/unix-jthreads/jthread.h,
+	kaffe/kaffevm/systems/unix-jthreads/jthread.c,
+	kaffe/kaffevm/systems/beos-native/syscalls.c,
+	kaffe/kaffevm/systems/drops-l4threads/syscalls.c,
+	kaffe/kaffevm/systems/oskit-pthreads/syscalls.c:
+	Removed unused functions, macros and global variables.
+	(Kaffe_SystemCallInterface): Updated to new syscall interface.
+
+	* include/jsyscall.h (SystemCallInterface): Removed unused members,
+	and their wrapper macros.
+
+2008-01-02  Dalibor Topic  <robilad@kaffe.org>
+
 	* TODO: Updated jsyscall interface cleanup task with information
 	on which syscalls are still used.
 
