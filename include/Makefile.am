@@ -96,7 +96,6 @@ noinst_HEADERS = \
 	files.h \
 	gccbuiltin.h \
 	gettext.h \
-	nets.h \
 	system.h \
 	Arrays.h \
 	errors.h \

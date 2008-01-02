@@ -1,5 +1,19 @@
 2008-01-02  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/systems/unix-pthreads/syscalls.c: Include errno.h.
+
+	* config/Makefile.am (noinst_HEADERS): Removed config-net.h.
+
+	* config/config-net.h, include/nets.h: Removed.
+	
+	* kaffe/kaffevm/systems/unix-jthreads/syscalls.c,
+	kaffe/kaffevm/systems/unix-pthreads/syscalls.c: Don't include nets.h
+	and config-net.h.
+
+	* include/Makefile.am (noinst_HEADERS): Removed nets.h.
+
+2008-01-02  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffeh/support.c (Kaffe_SystemCallInterface): Removed unused members.
 	(kwrite) Removed.
 

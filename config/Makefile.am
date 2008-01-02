@@ -14,7 +14,6 @@ noinst_HEADERS = \
 	config-io.h \
 	config-math.h \
 	config-mem.h \
-	config-net.h \
 	config-setjmp.h \
 	config-signal.h \
 	config-std.h \

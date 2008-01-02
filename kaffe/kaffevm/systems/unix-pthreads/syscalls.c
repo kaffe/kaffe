@@ -14,12 +14,12 @@
 #include "config-mem.h"
 #include "config-io.h"
 #include "config-signal.h"
-#include "config-net.h"
 #include "gtypes.h"
 #include "jsyscall.h"
 #include "jsignal.h"
-#include "nets.h"
 #include "lock-impl.h"
+
+#include <errno.h>
 
 #if defined(HAVE_SYS_TYPES_H)
 #include <sys/types.h>

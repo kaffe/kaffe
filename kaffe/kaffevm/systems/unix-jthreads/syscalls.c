@@ -13,10 +13,8 @@
 #include "config-mem.h"
 #include "config-io.h"
 #include "config-signal.h"
-#include "config-net.h"
 #include "jthread.h"
 #include "jsyscall.h"
-#include "nets.h"
 
 #if defined(HAVE_SYS_TYPES_H)
 #include <sys/types.h>
