@@ -1787,7 +1787,6 @@ dnl -----------------------------------------------------------------------
 AM_WITH_DMALLOC
 
 JAVA_LIBS=" \
-\$(top_builddir)/libraries/clib/management/libmanagement.la \
 \$(top_builddir)/libraries/clib/security/libsecurity.la \
 $JAVA_LIBS \
 "
@@ -2065,7 +2064,6 @@ AC_CONFIG_FILES([libraries/javalib/vmspecific/Makefile])
 AC_CONFIG_FILES([libraries/clib/Makefile])
 AC_CONFIG_FILES([libraries/clib/zip/Makefile])
 AC_CONFIG_FILES([libraries/clib/math/Makefile])
-AC_CONFIG_FILES([libraries/clib/management/Makefile])
 AC_CONFIG_FILES([libraries/clib/security/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/X/Makefile])

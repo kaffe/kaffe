@@ -342,7 +342,6 @@ NOINSTALL_DERIVED_HDRS = \
 	java_lang_reflect_Method.h \
 	java_security_VMAccessController.h \
 	java_util_Vector.h \
-	org_kaffe_management_Classpath.h \
 	gnu_classpath_VMStackWalker.h \
 	$(MAYBE_ZLIB_ZIP_HDRS)
 
@@ -357,9 +356,6 @@ NOINSTALL_JNI_DERIVED_HDRS = \
 	java_lang_VMSystem.h \
 	java_nio_VMDirectByteBuffer.h \
 	java_nio_MappedByteBufferImpl.h \
-	org_kaffe_management_JIT.h \
-	org_kaffe_management_Debug.h \
-	org_kaffe_management_XProfiler.h \
 	org_kaffe_security_provider_MD2.h \
 	org_kaffe_security_provider_MD4.h \
 	org_kaffe_security_provider_MD5.h \

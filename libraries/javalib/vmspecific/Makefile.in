@@ -307,10 +307,6 @@ dist_vminterface_JAVA = \
 	java/security/VMSecureRandom.java \
 	org/kaffe/jar/ExecJar.java \
 	org/kaffe/jar/ExecJarName.java \
-	org/kaffe/management/Classpath.java \
-	org/kaffe/management/Debug.java \
-	org/kaffe/management/JIT.java \
-	org/kaffe/management/XProfiler.java \
 	org/kaffe/security/provider/Kaffe.java \
 	org/kaffe/security/provider/MD2.java \
 	org/kaffe/security/provider/MD4.java \

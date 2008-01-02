@@ -24,7 +24,6 @@ endif
 
 SUBDIRS = \
 	security \
-	management \
 	$(MAYBE_NATIVE_AWT_DIR) \
 	$(MAYBE_NATIVE_MATH_DIR) \
 	$(MAYBE_ZLIB_ZIP)

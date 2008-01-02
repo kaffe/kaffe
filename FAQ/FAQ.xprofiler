@@ -102,26 +102,6 @@ NOTE: GNU gprof is required.  BSD gprofs will give an error like:
 	gprof: no room for 2147483642 sample pc's 
 
 
-Java Interface:
-
-  A simple java interface to the profiler is provided by the
-  kaffe.management.XProfiler class.  This class provides three
-  functions for turning profiling accounting on and off, and starting
-  a new profiling stage:
-
-  on() - Turn on profile accounting, basically, just record any data
-	 from the monitors.  (This is the default)
-  off() - Turn off profile accounting.  Any functions that are JIT'ed
-	 after this call will have monitors attached, its just that
-	 nothing is recorded during this time.
-  stage(String name) - Start a new stage, the given name is used to
-	 name the previous stage.  This causes the current profiling
-	 data to be output to a gmon file with `.name' appened to the
-	 base gmon file name.  Once the data has been written out
-	 the internal counters are reset to zero and profiling for
-	 the new stage continues.
-
-
 Implementation
 --------------
 

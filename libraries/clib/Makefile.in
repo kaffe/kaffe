@@ -83,7 +83,7 @@ RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
   distclean-recursive maintainer-clean-recursive
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = security management awt math zip
+DIST_SUBDIRS = security awt math zip
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -295,7 +295,6 @@ with_engine = @with_engine@
 @COND_ZLIB_ZIP_TRUE@MAYBE_ZLIB_ZIP = zip
 SUBDIRS = \
 	security \
-	management \
 	$(MAYBE_NATIVE_AWT_DIR) \
 	$(MAYBE_NATIVE_MATH_DIR) \
 	$(MAYBE_ZLIB_ZIP)

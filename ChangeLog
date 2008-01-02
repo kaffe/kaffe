@@ -1,5 +1,29 @@
 2008-01-02  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/vmspecific/org/kaffe/management/XProfiler.java,
+	libraries/javalib/vmspecific/org/kaffe/management/JIT.java,
+	libraries/javalib/vmspecific/org/kaffe/management/Debug.java,
+	libraries/javalib/vmspecific/org/kaffe/management/Classpath.java,
+	libraries/clib/management/XProfiler.c,
+	libraries/clib/management/JIT.c,
+	libraries/clib/management/Debug.c,
+	libraries/clib/management/.cvsignore,
+	libraries/clib/management/Classpath.c,
+	libraries/clib/management/Makefile.in,
+	libraries/clib/management/Makefile.am: Removed.
+
+	* include/Makefile.am, libraries/javalib/vmspecific/Makefile.am:
+	Removed all the purged kaffe management interface files.
+
+	* Makefile.am (KAFFELIBRARYPATH): Removed libraries/clib/management.
+
+	* configure.ac (JAVA_LIBS): Removed libmanagement. (AC_CONFIG_FILES)
+	Removed libraries/clib/management/Makefile.
+
+	* FAQ/FAQ.xprofiler: Removed docs for Java management interface.
+
+2008-01-02  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/clib/native/java_lang_String.c: Don't include string.h.
 
 2008-01-02  Dalibor Topic  <robilad@kaffe.org>
