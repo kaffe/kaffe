@@ -1,8 +1,0 @@
-Makefile
-org_tritonus_*.h
-*.o
-*.so*
-.deps
-.libs
-*.lo
-*.la

@@ -288,9 +288,6 @@
 /* Define if your <locale.h> file defines LC_MESSAGES. */
 #undef HAVE_LC_MESSAGES
 
-/* Define to 1 if you have the `asound' library (-lasound). */
-#undef HAVE_LIBASOUND
-
 /* Define to 1 if you have the `Csup' library (-lCsup). */
 #undef HAVE_LIBCSUP
 

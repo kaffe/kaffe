@@ -4,13 +4,13 @@
 #	Transvirtual Technologies, Inc.  All rights reserved.
 # Copyright (c) 2003
 #	Mark Wielaard <mark@klomp.org>
-# Copyright (c) 2004, 2006
+# Copyright (c) 2004, 2006, 2008
 #	Kaffe.org contributors. All rights reserved.
 #
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-KAFFEH_CLASSPATH = $(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar:$(top_builddir)/libraries/javalib/zlib-zip/kaffe-zlib.jar:$(top_builddir)/libraries/javalib/tritonus-sound/kaffe-tritonus.jar:$(top_builddir)/libraries/javalib/gmp-math/gmpjavamath.jar:$(GLIBJ_ZIP)
+KAFFEH_CLASSPATH = $(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar:$(top_builddir)/libraries/javalib/zlib-zip/kaffe-zlib.jar:$(top_builddir)/libraries/javalib/gmp-math/gmpjavamath.jar:$(GLIBJ_ZIP)
 
 EXTRA_DIST = distclean-hack \
 		stamp-h2.in
@@ -68,47 +68,6 @@ DERIVED_HDRS = $(INSTALL_DERIVED_HDRS) $(NOINSTALL_DERIVED_HDRS)
 
 INSTALL_JNI_DERIVED_HDRS =
 
-LIBTRITONUSALSA_JNI_HDRS = \
-	org_tritonus_lowlevel_alsa_AlsaCtlCardInfo.h \
-	org_tritonus_lowlevel_alsa_AlsaCtl.h \
-	org_tritonus_lowlevel_alsa_Alsa.h \
-	org_tritonus_lowlevel_alsa_AlsaMixerElement.h \
-	org_tritonus_lowlevel_alsa_AlsaMixer.h \
-	org_tritonus_lowlevel_alsa_AlsaPcmHWParamsFormatMask.h \
-	org_tritonus_lowlevel_alsa_AlsaPcmHWParams.h \
-	org_tritonus_lowlevel_alsa_AlsaPcm.h \
-	org_tritonus_lowlevel_alsa_AlsaPcmSWParams.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqClientInfo.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqEvent.h \
-	org_tritonus_lowlevel_alsa_AlsaSeq.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqPortInfo.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqPortSubscribe.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqQueueInfo.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqQueueStatus.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqQueueTempo.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqQueueTimer.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqRemoveEvents.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqSystemInfo.h
-
-
-LIBTRITONUSESD_JNI_HDRS = \
-	org_tritonus_lowlevel_esd_Esd.h \
-	org_tritonus_lowlevel_esd_EsdRecordingStream.h \
-	org_tritonus_lowlevel_esd_EsdSample.h \
-	org_tritonus_lowlevel_esd_EsdStream.h
-
-
-# Only create headers for sound if they are going to be built.
-
-if COND_NATIVE_SOUND
-if COND_SOUND_ALSA
-  MAYBE_LIBTRITONUSALSA_JNI_HDRS = $(LIBTRITONUSALSA_JNI_HDRS)
-endif
-if COND_SOUND_ESD
-  MAYBE_LIBTRITONUSESD_JNI_HDRS = $(LIBTRITONUSESD_JNI_HDRS)
-endif
-endif
-
 NOINSTALL_JNI_DERIVED_HDRS = \
 	java_math_BigInteger.h \
 	java_lang_VMProcess.h \
@@ -124,9 +83,7 @@ NOINSTALL_JNI_DERIVED_HDRS = \
 	org_kaffe_security_provider_MD2.h \
 	org_kaffe_security_provider_MD4.h \
 	org_kaffe_security_provider_MD5.h \
-	org_kaffe_security_provider_SHA.h \
-	$(MAYBE_LIBTRITONUSALSA_JNI_HDRS) \
-	$(MAYBE_LIBTRITONUSESD_JNI_HDRS) 
+	org_kaffe_security_provider_SHA.h
 
 JNI_DERIVED_HDRS = \
 	$(INSTALL_JNI_DERIVED_HDRS) \

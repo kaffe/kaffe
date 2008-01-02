@@ -52,12 +52,12 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/ac_prog_javac.m4 \
 	$(top_srcdir)/m4/ac_prog_javac_works.m4 \
 	$(top_srcdir)/m4/ac_prog_javadoc.m4 \
-	$(top_srcdir)/m4/acx_pthread.m4 $(top_srcdir)/m4/alsa.m4 \
+	$(top_srcdir)/m4/acx_pthread.m4 \
 	$(top_srcdir)/m4/ax_cflags_gcc_option.m4 \
 	$(top_srcdir)/m4/ax_cflags_warn_all.m4 \
 	$(top_srcdir)/m4/ax_create_stdint_h.m4 \
 	$(top_srcdir)/m4/binreloc.m4 $(top_srcdir)/m4/classpath.m4 \
-	$(top_srcdir)/m4/compile_value.m4 $(top_srcdir)/m4/esd.m4 \
+	$(top_srcdir)/m4/compile_value.m4 \
 	$(top_srcdir)/m4/gcc_attribute.m4 $(top_srcdir)/m4/getopt.m4 \
 	$(top_srcdir)/m4/gettext.m4 $(top_srcdir)/m4/glibcver.m4 \
 	$(top_srcdir)/m4/gmp.m4 $(top_srcdir)/m4/gwqt.m4 \
@@ -109,8 +109,6 @@ ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
-ALSA_CFLAGS = @ALSA_CFLAGS@
-ALSA_LIBS = @ALSA_LIBS@
 AMTAR = @AMTAR@
 AR = @AR@
 AS = @AS@
@@ -152,9 +150,6 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 ENGINE_NAME = @ENGINE_NAME@
-ESD_CFLAGS = @ESD_CFLAGS@
-ESD_CONFIG = @ESD_CONFIG@
-ESD_LIBS = @ESD_LIBS@
 EXEEXT = @EXEEXT@
 F77 = @F77@
 FASTJAR = @FASTJAR@

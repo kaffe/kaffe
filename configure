@@ -1012,17 +1012,6 @@ COND_KAFFE_NANOX_AWT_FALSE
 NANOX_CFLAGS
 COND_KAFFE_XYNTH_AWT_TRUE
 COND_KAFFE_XYNTH_AWT_FALSE
-ALSA_CFLAGS
-ALSA_LIBS
-ESD_CONFIG
-ESD_CFLAGS
-ESD_LIBS
-COND_SOUND_ALSA_TRUE
-COND_SOUND_ALSA_FALSE
-COND_SOUND_ESD_TRUE
-COND_SOUND_ESD_FALSE
-COND_NATIVE_SOUND_TRUE
-COND_NATIVE_SOUND_FALSE
 COND_ZLIB_ZIP_TRUE
 COND_ZLIB_ZIP_FALSE
 COND_PURE_JAVA_MATH_TRUE
@@ -1690,9 +1679,6 @@ Optional Features:
                           default)
   --disable-xawt-xi18n    disable build of Xi18n support of Xlib AWT backend
                           (enabled by default)
-  --disable-alsatest      Do not try to compile and run a test Alsa program
-  --disable-esdtest       Do not try to compile and run a test ESD program
-  --disable-sound         Disable javax.sound support
   --disable-zlib-zip      Disable java.util.zip implementation using zlib
                           [default=enabled]
   --enable-pure-java-math Enable pure java java.math.* package
@@ -1763,14 +1749,6 @@ Optional Packages:
                           Specify NanoX library directory
   --with-kaffe-xynth-awt  enable build of Kaffe's Xynth AWT engine (not built
                           by default)
-  --with-alsa-prefix=PFX  Prefix where Alsa library is installed(optional)
-  --with-alsa-inc-prefix=PFX  Prefix where include libraries are (optional)
-  --with-esd-prefix=PFX   Prefix where ESD is installed (optional)
-  --with-esd-exec-prefix=PFX Exec prefix where ESD is installed (optional)
-  --without-alsa          Don't use ALSA for sound
-                          default, is, to, use, it, if, present
-  --without-esd           Don't use esd for sound
-                          default, is, to, use, it, if, present
   --with-dmalloc          use dmalloc, as in
 			  http://www.dmalloc.com/dmalloc.tar.gz
   --with-jni-library-path=dir
@@ -7127,7 +7105,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 7130 "configure"' > conftest.$ac_ext
+  echo '#line 7108 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -9691,11 +9669,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9694: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9672: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9698: \$? = $ac_status" >&5
+   echo "$as_me:9676: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9981,11 +9959,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9984: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9962: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9988: \$? = $ac_status" >&5
+   echo "$as_me:9966: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -10085,11 +10063,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:10088: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:10066: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:10092: \$? = $ac_status" >&5
+   echo "$as_me:10070: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -12434,7 +12412,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12437 "configure"
+#line 12415 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12534,7 +12512,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12537 "configure"
+#line 12515 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -14958,11 +14936,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14961: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14939: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:14965: \$? = $ac_status" >&5
+   echo "$as_me:14943: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -15062,11 +15040,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15065: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15043: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:15069: \$? = $ac_status" >&5
+   echo "$as_me:15047: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -16624,11 +16602,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16627: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16605: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:16631: \$? = $ac_status" >&5
+   echo "$as_me:16609: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -16728,11 +16706,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16731: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16709: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:16735: \$? = $ac_status" >&5
+   echo "$as_me:16713: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -18919,11 +18897,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18922: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18900: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:18926: \$? = $ac_status" >&5
+   echo "$as_me:18904: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -19209,11 +19187,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:19212: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:19190: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:19216: \$? = $ac_status" >&5
+   echo "$as_me:19194: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -19313,11 +19291,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:19316: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:19294: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:19320: \$? = $ac_status" >&5
+   echo "$as_me:19298: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -26098,7 +26076,7 @@ else
 JAVA_TEST=Test.java
 CLASS_TEST=Test.class
 cat << \EOF > $JAVA_TEST
-/* #line 26101 "configure" */
+/* #line 26079 "configure" */
 public class Test {
 }
 EOF
@@ -46323,677 +46301,6 @@ if test x"$enable_native_awt" = x"yes"; then
    fi
 fi
 
-
-
-if test x$with_threads = xunix-pthreads ; then
-
-alsa_save_CFLAGS="$CFLAGS"
-alsa_save_LDFLAGS="$LDFLAGS"
-alsa_save_LIBS="$LIBS"
-alsa_found=yes
-
-
-# Check whether --with-alsa-prefix was given.
-if test "${with_alsa_prefix+set}" = set; then
-  withval=$with_alsa_prefix; alsa_prefix="$withval"
-else
-  alsa_prefix=""
-fi
-
-
-
-# Check whether --with-alsa-inc-prefix was given.
-if test "${with_alsa_inc_prefix+set}" = set; then
-  withval=$with_alsa_inc_prefix; alsa_inc_prefix="$withval"
-else
-  alsa_inc_prefix=""
-fi
-
-
-# Check whether --enable-alsatest was given.
-if test "${enable_alsatest+set}" = set; then
-  enableval=$enable_alsatest; enable_alsatest=no
-else
-  enable_alsatest=yes
-fi
-
-
-{ echo "$as_me:$LINENO: checking for ALSA CFLAGS" >&5
-echo $ECHO_N "checking for ALSA CFLAGS... $ECHO_C" >&6; }
-if test "$alsa_inc_prefix" != "" ; then
-	ALSA_CFLAGS="$ALSA_CFLAGS -I$alsa_inc_prefix"
-	CFLAGS="$CFLAGS -I$alsa_inc_prefix"
-fi
-{ echo "$as_me:$LINENO: result: $ALSA_CFLAGS" >&5
-echo "${ECHO_T}$ALSA_CFLAGS" >&6; }
-
-{ echo "$as_me:$LINENO: checking for ALSA LDFLAGS" >&5
-echo $ECHO_N "checking for ALSA LDFLAGS... $ECHO_C" >&6; }
-if test "$alsa_prefix" != "" ; then
-	ALSA_LIBS="$ALSA_LIBS -L$alsa_prefix"
-	LDFLAGS="$LDFLAGS $ALSA_LIBS"
-fi
-
-ALSA_LIBS="$ALSA_LIBS -lasound -lm -ldl -lpthread"
-LIBS=`echo $LIBS | sed 's/-lm//'`
-LIBS=`echo $LIBS | sed 's/-ldl//'`
-LIBS=`echo $LIBS | sed 's/-lpthread//'`
-LIBS=`echo $LIBS | sed 's/  //'`
-LIBS="$ALSA_LIBS $LIBS"
-{ echo "$as_me:$LINENO: result: $ALSA_LIBS" >&5
-echo "${ECHO_T}$ALSA_LIBS" >&6; }
-
-min_alsa_version=1.0.1
-{ echo "$as_me:$LINENO: checking for libasound headers version >= $min_alsa_version" >&5
-echo $ECHO_N "checking for libasound headers version >= $min_alsa_version... $ECHO_C" >&6; }
-no_alsa=""
-    alsa_min_major_version=`echo $min_alsa_version | \
-           sed 's/\([0-9]*\).\([0-9]*\).\([0-9]*\)/\1/'`
-    alsa_min_minor_version=`echo $min_alsa_version | \
-           sed 's/\([0-9]*\).\([0-9]*\).\([0-9]*\)/\2/'`
-    alsa_min_micro_version=`echo $min_alsa_version | \
-           sed 's/\([0-9]*\).\([0-9]*\).\([0-9]*\)/\3/'`
-
-ac_ext=c
-ac_cpp='$CPP $CPPFLAGS'
-ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_c_compiler_gnu
-
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-#include <alsa/asoundlib.h>
-
-int
-main ()
-{
-
-/* ensure backward compatibility */
-#if !defined(SND_LIB_MAJOR) && defined(SOUNDLIB_VERSION_MAJOR)
-#define SND_LIB_MAJOR SOUNDLIB_VERSION_MAJOR
-#endif
-#if !defined(SND_LIB_MINOR) && defined(SOUNDLIB_VERSION_MINOR)
-#define SND_LIB_MINOR SOUNDLIB_VERSION_MINOR
-#endif
-#if !defined(SND_LIB_SUBMINOR) && defined(SOUNDLIB_VERSION_SUBMINOR)
-#define SND_LIB_SUBMINOR SOUNDLIB_VERSION_SUBMINOR
-#endif
-
-#  if(SND_LIB_MAJOR > $alsa_min_major_version)
-  exit(0);
-#  else
-#    if(SND_LIB_MAJOR < $alsa_min_major_version)
-#       error not present
-#    endif
-
-#   if(SND_LIB_MINOR > $alsa_min_minor_version)
-  exit(0);
-#   else
-#     if(SND_LIB_MINOR < $alsa_min_minor_version)
-#          error not present
-#      endif
-
-#      if(SND_LIB_SUBMINOR < $alsa_min_micro_version)
-#        error not present
-#      endif
-#    endif
-#  endif
-exit(0);
-
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext
-if { (ac_try="$ac_compile"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
-  (eval "$ac_compile") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_c_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest.$ac_objext; then
-  { echo "$as_me:$LINENO: result: found." >&5
-echo "${ECHO_T}found." >&6; }
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	{ echo "$as_me:$LINENO: result: not present." >&5
-echo "${ECHO_T}not present." >&6; }
-
-   alsa_found=no
-
-fi
-
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-ac_ext=c
-ac_cpp='$CPP $CPPFLAGS'
-ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_c_compiler_gnu
-
-
-
-{ echo "$as_me:$LINENO: checking for snd_ctl_open in -lasound" >&5
-echo $ECHO_N "checking for snd_ctl_open in -lasound... $ECHO_C" >&6; }
-if test "${ac_cv_lib_asound_snd_ctl_open+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lasound  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char snd_ctl_open ();
-int
-main ()
-{
-return snd_ctl_open ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (ac_try="$ac_link"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
-  (eval "$ac_link") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_c_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest$ac_exeext &&
-       $as_test_x conftest$ac_exeext; then
-  ac_cv_lib_asound_snd_ctl_open=yes
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	ac_cv_lib_asound_snd_ctl_open=no
-fi
-
-rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
-      conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ echo "$as_me:$LINENO: result: $ac_cv_lib_asound_snd_ctl_open" >&5
-echo "${ECHO_T}$ac_cv_lib_asound_snd_ctl_open" >&6; }
-if test $ac_cv_lib_asound_snd_ctl_open = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBASOUND 1
-_ACEOF
-
-  LIBS="-lasound $LIBS"
-
-else
-
-	 alsa_found=no
-
-fi
-
-
-if test "x$alsa_found" = "xyes" ; then
-   :
-   LIBS=`echo $LIBS | sed 's/-lasound//g'`
-   LIBS=`echo $LIBS | sed 's/  //'`
-   LIBS="-lasound $LIBS"
-fi
-if test "x$alsa_found" = "xno" ; then
-   { echo "$as_me:$LINENO: result: Useable version of ALSA not found." >&5
-echo "${ECHO_T}Useable version of ALSA not found." >&6; }
-
-   CFLAGS="$alsa_save_CFLAGS"
-   LDFLAGS="$alsa_save_LDFLAGS"
-   LIBS="$alsa_save_LIBS"
-   ALSA_CFLAGS=""
-   ALSA_LIBS=""
-fi
-
-
-
-
-
-CFLAGS=$alsa_save_CFLAGS
-LDFLAGS=$alsa_save_LDFLAGS
-LIBS=$alsa_save_LIBS
-
-else
-
-   { echo "$as_me:$LINENO: WARNING: Not searching for ALSA - only available with pthreads." >&5
-echo "$as_me: WARNING: Not searching for ALSA - only available with pthreads." >&2;}
-
-fi
-
-
-# Check whether --with-esd-prefix was given.
-if test "${with_esd_prefix+set}" = set; then
-  withval=$with_esd_prefix; esd_prefix="$withval"
-else
-  esd_prefix=""
-fi
-
-
-# Check whether --with-esd-exec-prefix was given.
-if test "${with_esd_exec_prefix+set}" = set; then
-  withval=$with_esd_exec_prefix; esd_exec_prefix="$withval"
-else
-  esd_exec_prefix=""
-fi
-
-# Check whether --enable-esdtest was given.
-if test "${enable_esdtest+set}" = set; then
-  enableval=$enable_esdtest;
-else
-  enable_esdtest=yes
-fi
-
-
-  if test x$esd_exec_prefix != x ; then
-     esd_args="$esd_args --exec-prefix=$esd_exec_prefix"
-     if test x${ESD_CONFIG+set} != xset ; then
-        ESD_CONFIG=$esd_exec_prefix/bin/esd-config
-     fi
-  fi
-  if test x$esd_prefix != x ; then
-     esd_args="$esd_args --prefix=$esd_prefix"
-     if test x${ESD_CONFIG+set} != xset ; then
-        ESD_CONFIG=$esd_prefix/bin/esd-config
-     fi
-  fi
-
-  # Extract the first word of "esd-config", so it can be a program name with args.
-set dummy esd-config; ac_word=$2
-{ echo "$as_me:$LINENO: checking for $ac_word" >&5
-echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6; }
-if test "${ac_cv_path_ESD_CONFIG+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  case $ESD_CONFIG in
-  [\\/]* | ?:[\\/]*)
-  ac_cv_path_ESD_CONFIG="$ESD_CONFIG" # Let the user override the test with a path.
-  ;;
-  *)
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_path_ESD_CONFIG="$as_dir/$ac_word$ac_exec_ext"
-    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-IFS=$as_save_IFS
-
-  test -z "$ac_cv_path_ESD_CONFIG" && ac_cv_path_ESD_CONFIG="no"
-  ;;
-esac
-fi
-ESD_CONFIG=$ac_cv_path_ESD_CONFIG
-if test -n "$ESD_CONFIG"; then
-  { echo "$as_me:$LINENO: result: $ESD_CONFIG" >&5
-echo "${ECHO_T}$ESD_CONFIG" >&6; }
-else
-  { echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6; }
-fi
-
-
-  min_esd_version=0.2.1
-  { echo "$as_me:$LINENO: checking for ESD - version >= $min_esd_version" >&5
-echo $ECHO_N "checking for ESD - version >= $min_esd_version... $ECHO_C" >&6; }
-  no_esd=""
-  if test "$ESD_CONFIG" = "no" ; then
-    no_esd=yes
-  else
-    ac_ext=c
-ac_cpp='$CPP $CPPFLAGS'
-ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_c_compiler_gnu
-
-    ESD_CFLAGS=`$ESD_CONFIG $esdconf_args --cflags`
-    ESD_LIBS=`$ESD_CONFIG $esdconf_args --libs`
-
-    esd_major_version=`$ESD_CONFIG $esd_args --version | \
-           sed 's/\([0-9]*\).\([0-9]*\).\([0-9]*\)/\1/'`
-    esd_minor_version=`$ESD_CONFIG $esd_args --version | \
-           sed 's/\([0-9]*\).\([0-9]*\).\([0-9]*\)/\2/'`
-    esd_micro_version=`$ESD_CONFIG $esd_config_args --version | \
-           sed 's/\([0-9]*\).\([0-9]*\).\([0-9]*\)/\3/'`
-    if test "x$enable_esdtest" = "xyes" ; then
-      ac_save_CFLAGS="$CFLAGS"
-      ac_save_LIBS="$LIBS"
-      CFLAGS="$CFLAGS $ESD_CFLAGS"
-      LIBS="$LIBS $ESD_LIBS"
-      rm -f conf.esdtest
-      if test "$cross_compiling" = yes; then
-  echo $ac_n "cross compiling; assumed OK... $ac_c"
-else
-  cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <esd.h>
-
-char*
-my_strdup (char *str)
-{
-  char *new_str;
-
-  if (str)
-    {
-      new_str = malloc ((strlen (str) + 1) * sizeof(char));
-      strcpy (new_str, str);
-    }
-  else
-    new_str = NULL;
-
-  return new_str;
-}
-
-int main ()
-{
-  int major, minor, micro;
-  char *tmp_version;
-
-  system ("touch conf.esdtest");
-
-  /* HP/UX 9 (%@#!) writes to sscanf strings */
-  tmp_version = my_strdup("$min_esd_version");
-  if (sscanf(tmp_version, "%d.%d.%d", &major, &minor, &micro) != 3) {
-     printf("%s, bad version string\n", "$min_esd_version");
-     exit(1);
-   }
-
-   if (($esd_major_version > major) ||
-      (($esd_major_version == major) && ($esd_minor_version > minor)) ||
-      (($esd_major_version == major) && ($esd_minor_version == minor) && ($esd_micro_version >= micro)))
-    {
-      return 0;
-    }
-  else
-    {
-      printf("\n*** 'esd-config --version' returned %d.%d.%d, but the minimum version\n", $esd_major_version, $esd_minor_version, $esd_micro_version);
-      printf("*** of ESD required is %d.%d.%d. If esd-config is correct, then it is\n", major, minor, micro);
-      printf("*** best to upgrade to the required version.\n");
-      printf("*** If esd-config was wrong, set the environment variable ESD_CONFIG\n");
-      printf("*** to point to the correct copy of esd-config, and remove the file\n");
-      printf("*** config.cache before re-running configure\n");
-      return 1;
-    }
-}
-
-
-_ACEOF
-rm -f conftest$ac_exeext
-if { (ac_try="$ac_link"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
-  (eval "$ac_link") 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && { ac_try='./conftest$ac_exeext'
-  { (case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
-  (eval "$ac_try") 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  :
-else
-  echo "$as_me: program exited with status $ac_status" >&5
-echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-( exit $ac_status )
-no_esd=yes
-fi
-rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
-fi
-
-
-       CFLAGS="$ac_save_CFLAGS"
-       LIBS="$ac_save_LIBS"
-       ac_ext=c
-ac_cpp='$CPP $CPPFLAGS'
-ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_c_compiler_gnu
-
-     fi
-  fi
-  if test "x$no_esd" = x ; then
-     { echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6; }
-     esd_found=yes
-  else
-     { echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6; }
-     if test "$ESD_CONFIG" = "no" ; then
-       echo "*** The esd-config script installed by ESD could not be found"
-       echo "*** If ESD was installed in PREFIX, make sure PREFIX/bin is in"
-       echo "*** your path, or set the ESD_CONFIG environment variable to the"
-       echo "*** full path to esd-config."
-     else
-       if test -f conf.esdtest ; then
-        :
-       else
-          echo "*** Could not run ESD test program, checking why..."
-          CFLAGS="$CFLAGS $ESD_CFLAGS"
-          LIBS="$LIBS $ESD_LIBS"
-          ac_ext=c
-ac_cpp='$CPP $CPPFLAGS'
-ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_c_compiler_gnu
-
-          cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-#include <stdio.h>
-#include <esd.h>
-
-int
-main ()
-{
- return 0;
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (ac_try="$ac_link"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
-  (eval "$ac_link") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_c_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest$ac_exeext &&
-       $as_test_x conftest$ac_exeext; then
-   echo "*** The test program compiled, but did not run. This usually means"
-          echo "*** that the run-time linker is not finding ESD or finding the wrong"
-          echo "*** version of ESD. If it is not finding ESD, you'll need to set your"
-          echo "*** LD_LIBRARY_PATH environment variable, or edit /etc/ld.so.conf to point"
-          echo "*** to the installed location  Also, make sure you have run ldconfig if that"
-          echo "*** is required on your system"
-	  echo "***"
-          echo "*** If you have an old version installed, it is best to remove it, although"
-          echo "*** you may also be able to get things to work by modifying LD_LIBRARY_PATH"
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	 echo "*** The test program failed to compile or link. See the file config.log for the"
-          echo "*** exact error that occured. This usually means ESD was incorrectly installed"
-          echo "*** or that you have moved ESD since it was installed. In the latter case, you"
-          echo "*** may want to edit the esd-config script: $ESD_CONFIG"
-fi
-
-rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
-      conftest$ac_exeext conftest.$ac_ext
-          CFLAGS="$ac_save_CFLAGS"
-          LIBS="$ac_save_LIBS"
-          ac_ext=c
-ac_cpp='$CPP $CPPFLAGS'
-ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_c_compiler_gnu
-
-       fi
-     fi
-     ESD_CFLAGS=""
-     ESD_LIBS=""
-     { echo "$as_me:$LINENO: result: Useable version of ESD not found." >&5
-echo "${ECHO_T}Useable version of ESD not found." >&6; }
-	     esd_found=no
-
-  fi
-
-
-  rm -f conf.esdtest
-
-
-
-
-# Check whether --with-alsa was given.
-if test "${with_alsa+set}" = set; then
-  withval=$with_alsa;
-fi
-
-
-case $with_alsa in
-no)
-	;;
-*)
-	if test x"$alsa_found" = x"yes"; then
-		ALSA_DIR=alsa
-		ALSA_LIB="\$(top_builddir)/libraries/clib/sound/alsa/libtritonusalsa.la"
-	fi
-	;;
-esac
-
-
-
-# Check whether --with-esd was given.
-if test "${with_esd+set}" = set; then
-  withval=$with_esd;
-fi
-
-
-case $with_esd in
-no)
-	;;
-*)
-	if test x"$esd_found" = x"yes"; then
-		ESD_DIR=esd
-		ESD_LIB="\$(top_builddir)/libraries/clib/sound/esd/libtritonusesd.la"
-	fi
-	;;
-esac
-
-
-# Check whether --enable-sound was given.
-if test "${enable_sound+set}" = set; then
-  enableval=$enable_sound;
-fi
-
-
-case "$enable_sound" in
-no)
-	ALSA_DIR=""
-	ALSA_LIB=""
-	ESD_DIR=""
-	ESD_LIB=""
-	;;
-*)
-	;;
-esac
-
- if test "$ALSA_DIR" = alsa; then
-  COND_SOUND_ALSA_TRUE=
-  COND_SOUND_ALSA_FALSE='#'
-else
-  COND_SOUND_ALSA_TRUE='#'
-  COND_SOUND_ALSA_FALSE=
-fi
-
- if test "$ESD_DIR" = esd; then
-  COND_SOUND_ESD_TRUE=
-  COND_SOUND_ESD_FALSE='#'
-else
-  COND_SOUND_ESD_TRUE='#'
-  COND_SOUND_ESD_FALSE=
-fi
-
- if test x"$enable_sound" != x"no"; then
-  COND_NATIVE_SOUND_TRUE=
-  COND_NATIVE_SOUND_FALSE='#'
-else
-  COND_NATIVE_SOUND_TRUE='#'
-  COND_NATIVE_SOUND_FALSE=
-fi
-
-
 # Check whether --enable-zlib_zip was given.
 if test "${enable_zlib_zip+set}" = set; then
   enableval=$enable_zlib_zip;
@@ -47939,8 +47246,6 @@ ac_config_files="$ac_config_files libraries/javalib/awt-implementations/kaffe/Ma
 
 ac_config_files="$ac_config_files libraries/javalib/gmp-math/Makefile"
 
-ac_config_files="$ac_config_files libraries/javalib/tritonus-sound/Makefile"
-
 ac_config_files="$ac_config_files libraries/javalib/zlib-zip/Makefile"
 
 ac_config_files="$ac_config_files libraries/javalib/dnsjava/Makefile"
@@ -47966,14 +47271,6 @@ ac_config_files="$ac_config_files libraries/clib/awt/qt/Makefile"
 ac_config_files="$ac_config_files libraries/clib/awt/nano-X/Makefile"
 
 ac_config_files="$ac_config_files libraries/clib/awt/xynth/Makefile"
-
-ac_config_files="$ac_config_files libraries/clib/sound/Makefile"
-
-ac_config_files="$ac_config_files libraries/clib/sound/alsa/Makefile"
-
-ac_config_files="$ac_config_files libraries/clib/sound/common/Makefile"
-
-ac_config_files="$ac_config_files libraries/clib/sound/esd/Makefile"
 
 ac_config_files="$ac_config_files kaffe/man/kaffe.1"
 
@@ -48309,27 +47606,6 @@ if test -z "${COND_KAFFE_XYNTH_AWT_TRUE}" && test -z "${COND_KAFFE_XYNTH_AWT_FAL
   { { echo "$as_me:$LINENO: error: conditional \"COND_KAFFE_XYNTH_AWT\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
 echo "$as_me: error: conditional \"COND_KAFFE_XYNTH_AWT\" was never defined.
-Usually this means the macro was only invoked conditionally." >&2;}
-   { (exit 1); exit 1; }; }
-fi
-if test -z "${COND_SOUND_ALSA_TRUE}" && test -z "${COND_SOUND_ALSA_FALSE}"; then
-  { { echo "$as_me:$LINENO: error: conditional \"COND_SOUND_ALSA\" was never defined.
-Usually this means the macro was only invoked conditionally." >&5
-echo "$as_me: error: conditional \"COND_SOUND_ALSA\" was never defined.
-Usually this means the macro was only invoked conditionally." >&2;}
-   { (exit 1); exit 1; }; }
-fi
-if test -z "${COND_SOUND_ESD_TRUE}" && test -z "${COND_SOUND_ESD_FALSE}"; then
-  { { echo "$as_me:$LINENO: error: conditional \"COND_SOUND_ESD\" was never defined.
-Usually this means the macro was only invoked conditionally." >&5
-echo "$as_me: error: conditional \"COND_SOUND_ESD\" was never defined.
-Usually this means the macro was only invoked conditionally." >&2;}
-   { (exit 1); exit 1; }; }
-fi
-if test -z "${COND_NATIVE_SOUND_TRUE}" && test -z "${COND_NATIVE_SOUND_FALSE}"; then
-  { { echo "$as_me:$LINENO: error: conditional \"COND_NATIVE_SOUND\" was never defined.
-Usually this means the macro was only invoked conditionally." >&5
-echo "$as_me: error: conditional \"COND_NATIVE_SOUND\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
@@ -48889,7 +48165,6 @@ do
     "libraries/javalib/awt-implementations/Makefile") CONFIG_FILES="$CONFIG_FILES libraries/javalib/awt-implementations/Makefile" ;;
     "libraries/javalib/awt-implementations/kaffe/Makefile") CONFIG_FILES="$CONFIG_FILES libraries/javalib/awt-implementations/kaffe/Makefile" ;;
     "libraries/javalib/gmp-math/Makefile") CONFIG_FILES="$CONFIG_FILES libraries/javalib/gmp-math/Makefile" ;;
-    "libraries/javalib/tritonus-sound/Makefile") CONFIG_FILES="$CONFIG_FILES libraries/javalib/tritonus-sound/Makefile" ;;
     "libraries/javalib/zlib-zip/Makefile") CONFIG_FILES="$CONFIG_FILES libraries/javalib/zlib-zip/Makefile" ;;
     "libraries/javalib/dnsjava/Makefile") CONFIG_FILES="$CONFIG_FILES libraries/javalib/dnsjava/Makefile" ;;
     "libraries/javalib/vmspecific/Makefile") CONFIG_FILES="$CONFIG_FILES libraries/javalib/vmspecific/Makefile" ;;
@@ -48903,10 +48178,6 @@ do
     "libraries/clib/awt/qt/Makefile") CONFIG_FILES="$CONFIG_FILES libraries/clib/awt/qt/Makefile" ;;
     "libraries/clib/awt/nano-X/Makefile") CONFIG_FILES="$CONFIG_FILES libraries/clib/awt/nano-X/Makefile" ;;
     "libraries/clib/awt/xynth/Makefile") CONFIG_FILES="$CONFIG_FILES libraries/clib/awt/xynth/Makefile" ;;
-    "libraries/clib/sound/Makefile") CONFIG_FILES="$CONFIG_FILES libraries/clib/sound/Makefile" ;;
-    "libraries/clib/sound/alsa/Makefile") CONFIG_FILES="$CONFIG_FILES libraries/clib/sound/alsa/Makefile" ;;
-    "libraries/clib/sound/common/Makefile") CONFIG_FILES="$CONFIG_FILES libraries/clib/sound/common/Makefile" ;;
-    "libraries/clib/sound/esd/Makefile") CONFIG_FILES="$CONFIG_FILES libraries/clib/sound/esd/Makefile" ;;
     "kaffe/man/kaffe.1") CONFIG_FILES="$CONFIG_FILES kaffe/man/kaffe.1" ;;
     "kaffe/scripts/install-jar") CONFIG_FILES="$CONFIG_FILES kaffe/scripts/install-jar" ;;
     "kaffe/scripts/kaffe") CONFIG_FILES="$CONFIG_FILES kaffe/scripts/kaffe" ;;
@@ -49326,17 +48597,6 @@ COND_KAFFE_NANOX_AWT_FALSE!$COND_KAFFE_NANOX_AWT_FALSE$ac_delim
 NANOX_CFLAGS!$NANOX_CFLAGS$ac_delim
 COND_KAFFE_XYNTH_AWT_TRUE!$COND_KAFFE_XYNTH_AWT_TRUE$ac_delim
 COND_KAFFE_XYNTH_AWT_FALSE!$COND_KAFFE_XYNTH_AWT_FALSE$ac_delim
-ALSA_CFLAGS!$ALSA_CFLAGS$ac_delim
-ALSA_LIBS!$ALSA_LIBS$ac_delim
-ESD_CONFIG!$ESD_CONFIG$ac_delim
-ESD_CFLAGS!$ESD_CFLAGS$ac_delim
-ESD_LIBS!$ESD_LIBS$ac_delim
-COND_SOUND_ALSA_TRUE!$COND_SOUND_ALSA_TRUE$ac_delim
-COND_SOUND_ALSA_FALSE!$COND_SOUND_ALSA_FALSE$ac_delim
-COND_SOUND_ESD_TRUE!$COND_SOUND_ESD_TRUE$ac_delim
-COND_SOUND_ESD_FALSE!$COND_SOUND_ESD_FALSE$ac_delim
-COND_NATIVE_SOUND_TRUE!$COND_NATIVE_SOUND_TRUE$ac_delim
-COND_NATIVE_SOUND_FALSE!$COND_NATIVE_SOUND_FALSE$ac_delim
 COND_ZLIB_ZIP_TRUE!$COND_ZLIB_ZIP_TRUE$ac_delim
 COND_ZLIB_ZIP_FALSE!$COND_ZLIB_ZIP_FALSE$ac_delim
 COND_PURE_JAVA_MATH_TRUE!$COND_PURE_JAVA_MATH_TRUE$ac_delim
@@ -49373,7 +48633,7 @@ subdirs!$subdirs$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 83; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 72; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5

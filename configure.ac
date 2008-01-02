@@ -1806,94 +1806,6 @@ if test x"$enable_native_awt" = x"yes"; then
    fi
 fi
 
-dnl -------------------------------------------------------------------------
-dnl Configure sound backend
-dnl -------------------------------------------------------------------------
-
-dnl Check for alsa
-
-if test x$with_threads = xunix-pthreads ; then
-
-AM_PATH_ALSA(1.0.1,
- 	     ,
- 	     [AC_MSG_RESULT([Useable version of ALSA not found.])]
-)
-
-dnl alsa.m4 adds stuff to these variables we don't want, so revert
-CFLAGS=$alsa_save_CFLAGS
-LDFLAGS=$alsa_save_LDFLAGS
-LIBS=$alsa_save_LIBS
-
-else
-
-   AC_MSG_WARN([Not searching for ALSA - only available with pthreads.])
-
-fi
-
-AM_PATH_ESD([0.2.1],
-	    [esd_found=yes],
-	    [AC_MSG_RESULT([Useable version of ESD not found.])
-	     esd_found=no]
-)
-
-dnl Use alsa
-dnl default is yes, if present.
-
-AC_ARG_WITH([alsa],
-	    AS_HELP_STRING([--without-alsa],
-			   [Don't use ALSA for sound [default is to use it if present]]))
-
-case $with_alsa in
-no)
-	;;
-*)
-	if test x"$alsa_found" = x"yes"; then
-		ALSA_DIR=alsa
-		ALSA_LIB="\$(top_builddir)/libraries/clib/sound/alsa/libtritonusalsa.la"
-	fi
-	;;
-esac
-
-dnl Use esd
-dnl default is yes, if present.
-
-AC_ARG_WITH([esd],
-            AS_HELP_STRING([--without-esd],
-                           [Don't use esd for sound [default is to use it if present]]))
-
-case $with_esd in
-no)
-	;;
-*)
-	if test x"$esd_found" = x"yes"; then
-		ESD_DIR=esd
-		ESD_LIB="\$(top_builddir)/libraries/clib/sound/esd/libtritonusesd.la"
-	fi
-	;;
-esac
-
-dnl Global sound setting
-dnl No overrides --with-* settings
-
-AC_ARG_ENABLE([sound],
-	      AS_HELP_STRING([--disable-sound],
-			     [Disable javax.sound support]))
-
-case "$enable_sound" in
-no)
-	ALSA_DIR=""
-	ALSA_LIB=""
-	ESD_DIR=""
-	ESD_LIB=""
-	;;
-*)
-	;;
-esac
-
-AM_CONDITIONAL([COND_SOUND_ALSA], [test "$ALSA_DIR" = alsa])
-AM_CONDITIONAL([COND_SOUND_ESD], [test "$ESD_DIR" = esd])
-AM_CONDITIONAL([COND_NATIVE_SOUND], [test x"$enable_sound" != x"no"])
-
 AC_ARG_ENABLE([zlib_zip],
               AS_HELP_STRING([--disable-zlib-zip],
                              [Disable java.util.zip implementation using zlib @<:@default=enabled@:>@]),
@@ -2222,7 +2134,6 @@ AC_CONFIG_FILES([libraries/javalib/Makefile])
 AC_CONFIG_FILES([libraries/javalib/awt-implementations/Makefile])
 AC_CONFIG_FILES([libraries/javalib/awt-implementations/kaffe/Makefile])
 AC_CONFIG_FILES([libraries/javalib/gmp-math/Makefile])
-AC_CONFIG_FILES([libraries/javalib/tritonus-sound/Makefile])
 AC_CONFIG_FILES([libraries/javalib/zlib-zip/Makefile])
 AC_CONFIG_FILES([libraries/javalib/dnsjava/Makefile])
 AC_CONFIG_FILES([libraries/javalib/vmspecific/Makefile])
@@ -2236,10 +2147,6 @@ AC_CONFIG_FILES([libraries/clib/awt/X/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/qt/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/nano-X/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/xynth/Makefile])
-AC_CONFIG_FILES([libraries/clib/sound/Makefile])
-AC_CONFIG_FILES([libraries/clib/sound/alsa/Makefile])
-AC_CONFIG_FILES([libraries/clib/sound/common/Makefile])
-AC_CONFIG_FILES([libraries/clib/sound/esd/Makefile])
 AC_CONFIG_FILES([kaffe/man/kaffe.1])
 AC_CONFIG_FILES([kaffe/scripts/install-jar])
 AC_CONFIG_FILES([kaffe/scripts/kaffe])

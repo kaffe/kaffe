@@ -20,7 +20,7 @@
 #	Transvirtual Technologies, Inc.  All rights reserved.
 # Copyright (c) 2003
 #	Mark Wielaard <mark@klomp.org>
-# Copyright (c) 2004, 2006
+# Copyright (c) 2004, 2006, 2008
 #	Kaffe.org contributors. All rights reserved.
 #
 # See the file "license.terms" for information on usage and redistribution 
@@ -53,12 +53,12 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/ac_prog_javac.m4 \
 	$(top_srcdir)/m4/ac_prog_javac_works.m4 \
 	$(top_srcdir)/m4/ac_prog_javadoc.m4 \
-	$(top_srcdir)/m4/acx_pthread.m4 $(top_srcdir)/m4/alsa.m4 \
+	$(top_srcdir)/m4/acx_pthread.m4 \
 	$(top_srcdir)/m4/ax_cflags_gcc_option.m4 \
 	$(top_srcdir)/m4/ax_cflags_warn_all.m4 \
 	$(top_srcdir)/m4/ax_create_stdint_h.m4 \
 	$(top_srcdir)/m4/binreloc.m4 $(top_srcdir)/m4/classpath.m4 \
-	$(top_srcdir)/m4/compile_value.m4 $(top_srcdir)/m4/esd.m4 \
+	$(top_srcdir)/m4/compile_value.m4 \
 	$(top_srcdir)/m4/gcc_attribute.m4 $(top_srcdir)/m4/getopt.m4 \
 	$(top_srcdir)/m4/gettext.m4 $(top_srcdir)/m4/glibcver.m4 \
 	$(top_srcdir)/m4/gmp.m4 $(top_srcdir)/m4/gwqt.m4 \
@@ -97,8 +97,6 @@ ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
-ALSA_CFLAGS = @ALSA_CFLAGS@
-ALSA_LIBS = @ALSA_LIBS@
 AMTAR = @AMTAR@
 AR = @AR@
 AS = @AS@
@@ -140,9 +138,6 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 ENGINE_NAME = @ENGINE_NAME@
-ESD_CFLAGS = @ESD_CFLAGS@
-ESD_CONFIG = @ESD_CONFIG@
-ESD_LIBS = @ESD_LIBS@
 EXEEXT = @EXEEXT@
 F77 = @F77@
 FASTJAR = @FASTJAR@
@@ -308,7 +303,7 @@ toolslibdir = @toolslibdir@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 with_engine = @with_engine@
-KAFFEH_CLASSPATH = $(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar:$(top_builddir)/libraries/javalib/zlib-zip/kaffe-zlib.jar:$(top_builddir)/libraries/javalib/tritonus-sound/kaffe-tritonus.jar:$(top_builddir)/libraries/javalib/gmp-math/gmpjavamath.jar:$(GLIBJ_ZIP)
+KAFFEH_CLASSPATH = $(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar:$(top_builddir)/libraries/javalib/zlib-zip/kaffe-zlib.jar:$(top_builddir)/libraries/javalib/gmp-math/gmpjavamath.jar:$(GLIBJ_ZIP)
 EXTRA_DIST = distclean-hack \
 		stamp-h2.in
 
@@ -360,38 +355,6 @@ NOINSTALL_DERIVED_HDRS = \
 
 DERIVED_HDRS = $(INSTALL_DERIVED_HDRS) $(NOINSTALL_DERIVED_HDRS)
 INSTALL_JNI_DERIVED_HDRS = 
-LIBTRITONUSALSA_JNI_HDRS = \
-	org_tritonus_lowlevel_alsa_AlsaCtlCardInfo.h \
-	org_tritonus_lowlevel_alsa_AlsaCtl.h \
-	org_tritonus_lowlevel_alsa_Alsa.h \
-	org_tritonus_lowlevel_alsa_AlsaMixerElement.h \
-	org_tritonus_lowlevel_alsa_AlsaMixer.h \
-	org_tritonus_lowlevel_alsa_AlsaPcmHWParamsFormatMask.h \
-	org_tritonus_lowlevel_alsa_AlsaPcmHWParams.h \
-	org_tritonus_lowlevel_alsa_AlsaPcm.h \
-	org_tritonus_lowlevel_alsa_AlsaPcmSWParams.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqClientInfo.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqEvent.h \
-	org_tritonus_lowlevel_alsa_AlsaSeq.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqPortInfo.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqPortSubscribe.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqQueueInfo.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqQueueStatus.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqQueueTempo.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqQueueTimer.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqRemoveEvents.h \
-	org_tritonus_lowlevel_alsa_AlsaSeqSystemInfo.h
-
-LIBTRITONUSESD_JNI_HDRS = \
-	org_tritonus_lowlevel_esd_Esd.h \
-	org_tritonus_lowlevel_esd_EsdRecordingStream.h \
-	org_tritonus_lowlevel_esd_EsdSample.h \
-	org_tritonus_lowlevel_esd_EsdStream.h
-
-
-# Only create headers for sound if they are going to be built.
-@COND_NATIVE_SOUND_TRUE@@COND_SOUND_ALSA_TRUE@MAYBE_LIBTRITONUSALSA_JNI_HDRS = $(LIBTRITONUSALSA_JNI_HDRS)
-@COND_NATIVE_SOUND_TRUE@@COND_SOUND_ESD_TRUE@MAYBE_LIBTRITONUSESD_JNI_HDRS = $(LIBTRITONUSESD_JNI_HDRS)
 NOINSTALL_JNI_DERIVED_HDRS = \
 	java_math_BigInteger.h \
 	java_lang_VMProcess.h \
@@ -407,9 +370,7 @@ NOINSTALL_JNI_DERIVED_HDRS = \
 	org_kaffe_security_provider_MD2.h \
 	org_kaffe_security_provider_MD4.h \
 	org_kaffe_security_provider_MD5.h \
-	org_kaffe_security_provider_SHA.h \
-	$(MAYBE_LIBTRITONUSALSA_JNI_HDRS) \
-	$(MAYBE_LIBTRITONUSESD_JNI_HDRS) 
+	org_kaffe_security_provider_SHA.h
 
 JNI_DERIVED_HDRS = \
 	$(INSTALL_JNI_DERIVED_HDRS) \

@@ -1,8 +1,0 @@
-Makefile
-*.h
-*.o
-*.so*
-.deps
-.libs
-*.la
-*.lo

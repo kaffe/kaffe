@@ -23,10 +23,6 @@ else
 MAYBE_GMP_JAVA_MATH=gmp-math
 endif
 
-if COND_NATIVE_SOUND
-  MAYBE_TRITONUS_SOUND=tritonus-sound
-endif
-
 if COND_ZLIB_ZIP
   MAYBE_ZLIB_ZIP=zlib-zip
 endif
@@ -36,7 +32,6 @@ SUBDIRS= \
 	dnsjava \
 	$(MAYBE_PEERLESS_KAFFE_AWT) \
 	$(MAYBE_GMP_JAVA_MATH) \
-	$(MAYBE_TRITONUS_SOUND) \
 	$(MAYBE_ZLIB_ZIP)
 
 jrelib_DATA= \

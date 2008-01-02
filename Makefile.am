@@ -105,7 +105,6 @@ EXTRA_DIST = \
 	FAQ/FAQ.ps2linux \
 	FAQ/FAQ.pthreads \
 	FAQ/FAQ.requiredlibraries \
-	FAQ/FAQ.sound \
 	FAQ/FAQ.staticnative \
 	FAQ/FAQ.timing \
 	FAQ/FAQ.unicode \
