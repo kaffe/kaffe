@@ -1,7 +1,7 @@
 What's New Since Kaffe 1.1.8
 ----------------------------
 
-* Removed gnu-inet.
+* Removed gnu-inet and Tritonus.
 * Removed GNU Classpath tools. Kaffe uses an installed javap
   as javap when it's available.
 * Removed gjdoc and ANTLR. Kaffe uses an installed gjdoc as 
