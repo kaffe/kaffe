@@ -37,9 +37,6 @@
 /* Do we have amask instruction on alpha */
 #undef HAVE_ALPHA_ASM_AMASK
 
-/* Define to 1 if you have the <arpa/nameser.h> header file. */
-#undef HAVE_ARPA_NAMESER_H
-
 /* Define to 1 if you have the <asm/cachectl.h> header file. */
 #undef HAVE_ASM_CACHECTL_H
 
@@ -225,12 +222,6 @@
 /* Define to 1 if you have the <iconv.h> header file. */
 #undef HAVE_ICONV_H
 
-/* Define to 1 if you have the `inet_ntop' function. */
-#undef HAVE_INET_NTOP
-
-/* Define to 1 if you have the `inet_pton' function. */
-#undef HAVE_INET_PTON
-
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
@@ -353,9 +344,6 @@
 
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
-
-/* Define to 1 if you have the `memset' function. */
-#undef HAVE_MEMSET
 
 /* Define to 1 if you have the `mergesort' function. */
 #undef HAVE_MERGESORT

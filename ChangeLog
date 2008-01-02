@@ -1,5 +1,20 @@
 2008-01-02  Dalibor Topic  <robilad@kaffe.org>
 
+	* replace/Makefile.am (libreplace_la_SOURCES): Removed inet_pton.c
+	and inet_ntop.c.
+
+	* include/nets.h: Removed inet_ntop, inet_pton and h_errno
+	prototypes.
+
+	* configure.ac: Removed inet_ntop, inet_pton and memset
+	replacement logic. Removed check for arpa/nameser.h.
+
+	* replace/inet_pton.c, replace/inet_ntop.c,
+	m4/herrno.m4, m4/in6addr.m4, m4/sockaddrin6.m4, m4/sockinttypes.m4:
+	Removed.
+
+2008-01-02  Dalibor Topic  <robilad@kaffe.org>
+
 	* TODO: Updated with new tasks.
 	
 	* config/config-net.h (KaffeSocketAddr): Removed.

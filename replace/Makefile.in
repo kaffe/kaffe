@@ -75,7 +75,7 @@ CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 libreplace_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
-am_libreplace_la_OBJECTS = inet_pton.lo inet_ntop.lo semaphores.lo
+am_libreplace_la_OBJECTS = semaphores.lo
 libreplace_la_OBJECTS = $(am_libreplace_la_OBJECTS)
 libreplace_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -310,8 +310,6 @@ libreplace_la_LDFLAGS = \
         -no-undefined
 
 libreplace_la_SOURCES = \
-	inet_pton.c \
-	inet_ntop.c \
 	repsemaphore.h \
 	semaphores.c
 
@@ -369,8 +367,6 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/inet_ntop.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/inet_pton.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/semaphores.Plo@am__quote@
 
 .c.o:

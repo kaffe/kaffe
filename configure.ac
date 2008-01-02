@@ -1299,14 +1299,6 @@ dnl pthread_yield is not implemented on any systems.
 AC_CHECK_FUNCS_ONCE([pthread_attr_setschedpolicy pthread_yield sched_yield])
 AC_CHECK_HEADERS_ONCE(sched.h)
 
-dnl inet_ntop and inet_pton replacement for cygwin
-AC_REPLACE_FUNCS([inet_ntop])
-AC_REPLACE_FUNCS([inet_pton])
-AC_CHECK_HEADERS_ONCE([arpa/nameser.h])
-
-dnl getaddrinfo replacement for Linux 2.0.x
-AC_REPLACE_FUNCS([memset])
-
 KSAVE_LIBS="$LIBS"
 LIBS="$M_LIBS $LIBS"
 AC_CHECK_FUNCS([remainder remainderf fmod fmodf drem \

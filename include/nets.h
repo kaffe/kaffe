@@ -19,11 +19,6 @@
 #include <errno.h>
 #include <netdb.h>
 
-/* some systems define this already as a macro, in which we leave it as is */
-#ifndef H_ERRNO_DECLARED
-extern int h_errno;
-#endif /* h_errno */
-
 #define	MAXHOSTNAME	128
 
 #if defined(HAVE_STRERROR)
@@ -38,14 +33,6 @@ extern char* sys_errlist[];
 #else
 #define	SYS_HERROR(x)	"Network error"
 #endif
-
-#if !defined(HAVE_INET_NTOP)
-extern const char * inet_ntop(int af, const void * src, char * dst, size_t size);
-#endif /* HAVE_INET_NTOP */
-
-#if !defined(HAVE_INET_PTON)
-extern int inet_pton(int af, const char * src, void * dst);
-#endif /* HAVE_INET_PTON */
 
 #endif /* __nets_h */
 

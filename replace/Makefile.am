@@ -21,8 +21,6 @@ libreplace_la_LDFLAGS = \
         -no-undefined
 
 libreplace_la_SOURCES = \
-	inet_pton.c \
-	inet_ntop.c \
 	repsemaphore.h \
 	semaphores.c
 
