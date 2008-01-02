@@ -1,5 +1,10 @@
 2008-01-02  Dalibor Topic  <robilad@kaffe.org>
 
+	* TODO: Updated jsyscall interface cleanup task with information
+	on which syscalls are still used.
+
+2008-01-02  Dalibor Topic  <robilad@kaffe.org>
+
 	* TODO: Removed finished replace cleanup task.
 
 2008-01-02  Dalibor Topic  <robilad@kaffe.org>
