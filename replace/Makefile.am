@@ -29,26 +29,12 @@ libreplace_la_SOURCES = \
 	memset.c \
 	repsemaphore.h \
 	semaphores.c \
-	ifaddrs.h \
-	$(GETOPT_SOURCES)
-
-if REPLACE_GETOPT
-GETOPT_SOURCES= getopt1.c getopt.c
-endif
+	ifaddrs.h
 
 libreplace_la_LIBADD = \
         $(LTLIBINTL)
 
-BUILT_SOURCES = $(GETOPT_H)
 EXTRA_DIST = \
 	ifaddrs_linux.c \
-	ifaddrs_bsd.c \
-	getopt_.h getopt_int.h
-
-# We need the following in order to create <getopt.h> when the system
-# doesn't have one that works with the given compiler.
-getopt.h: getopt_.h
-	cp $(srcdir)/getopt_.h $@-t
-	mv $@-t $@
-MOSTLYCLEANFILES = getopt.h getopt.h-t
+	ifaddrs_bsd.c 
 

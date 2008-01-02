@@ -57,16 +57,16 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/ax_create_stdint_h.m4 \
 	$(top_srcdir)/m4/binreloc.m4 $(top_srcdir)/m4/classpath.m4 \
 	$(top_srcdir)/m4/compile_value.m4 \
-	$(top_srcdir)/m4/gcc_attribute.m4 $(top_srcdir)/m4/getopt.m4 \
-	$(top_srcdir)/m4/gettext.m4 $(top_srcdir)/m4/glibcver.m4 \
-	$(top_srcdir)/m4/gmp.m4 $(top_srcdir)/m4/gwqt.m4 \
-	$(top_srcdir)/m4/herrno.m4 $(top_srcdir)/m4/iconv.m4 \
-	$(top_srcdir)/m4/in6addr.m4 $(top_srcdir)/m4/lcmessage.m4 \
-	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
-	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/libtool.m4 \
-	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/po.m4 \
-	$(top_srcdir)/m4/progtest.m4 $(top_srcdir)/m4/semaphore.m4 \
-	$(top_srcdir)/m4/size_max.m4 $(top_srcdir)/m4/sockaddrin6.m4 \
+	$(top_srcdir)/m4/gcc_attribute.m4 $(top_srcdir)/m4/gettext.m4 \
+	$(top_srcdir)/m4/glibcver.m4 $(top_srcdir)/m4/gmp.m4 \
+	$(top_srcdir)/m4/gwqt.m4 $(top_srcdir)/m4/herrno.m4 \
+	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/in6addr.m4 \
+	$(top_srcdir)/m4/lcmessage.m4 $(top_srcdir)/m4/lib-ld.m4 \
+	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
+	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/nls.m4 \
+	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/progtest.m4 \
+	$(top_srcdir)/m4/semaphore.m4 $(top_srcdir)/m4/size_max.m4 \
+	$(top_srcdir)/m4/sockaddrin6.m4 \
 	$(top_srcdir)/m4/sockinttypes.m4 \
 	$(top_srcdir)/m4/solarispthread.m4 $(top_srcdir)/m4/valist.m4 \
 	$(top_srcdir)/configure.ac
@@ -78,13 +78,8 @@ CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 libreplace_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
-am__libreplace_la_SOURCES_DIST = dummyin6.c getaddrinfo.c getifaddrs.c \
-	inet_pton.c inet_ntop.c memset.c repsemaphore.h semaphores.c \
-	ifaddrs.h getopt1.c getopt.c
-@REPLACE_GETOPT_TRUE@am__objects_1 = getopt1.lo getopt.lo
 am_libreplace_la_OBJECTS = dummyin6.lo getaddrinfo.lo getifaddrs.lo \
-	inet_pton.lo inet_ntop.lo memset.lo semaphores.lo \
-	$(am__objects_1)
+	inet_pton.lo inet_ntop.lo memset.lo semaphores.lo
 libreplace_la_OBJECTS = $(am_libreplace_la_OBJECTS)
 libreplace_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -101,7 +96,7 @@ LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
 SOURCES = $(libreplace_la_SOURCES)
-DIST_SOURCES = $(am__libreplace_la_SOURCES_DIST)
+DIST_SOURCES = $(libreplace_la_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -152,7 +147,6 @@ F77 = @F77@
 FASTJAR = @FASTJAR@
 FFLAGS = @FFLAGS@
 GC_NAME = @GC_NAME@
-GETOPT_H = @GETOPT_H@
 GLIBJ_ZIP = @GLIBJ_ZIP@
 GMSGFMT = @GMSGFMT@
 GREP = @GREP@
@@ -328,22 +322,16 @@ libreplace_la_SOURCES = \
 	memset.c \
 	repsemaphore.h \
 	semaphores.c \
-	ifaddrs.h \
-	$(GETOPT_SOURCES)
+	ifaddrs.h
 
-@REPLACE_GETOPT_TRUE@GETOPT_SOURCES = getopt1.c getopt.c
 libreplace_la_LIBADD = \
         $(LTLIBINTL)
 
-BUILT_SOURCES = $(GETOPT_H)
 EXTRA_DIST = \
 	ifaddrs_linux.c \
-	ifaddrs_bsd.c \
-	getopt_.h getopt_int.h
+	ifaddrs_bsd.c 
 
-MOSTLYCLEANFILES = getopt.h getopt.h-t
-all: $(BUILT_SOURCES)
-	$(MAKE) $(AM_MAKEFLAGS) all-am
+all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .lo .o .obj
@@ -397,8 +385,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dummyin6.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/getaddrinfo.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/getifaddrs.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/getopt.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/getopt1.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/inet_ntop.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/inet_pton.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/memset.Plo@am__quote@
@@ -506,12 +492,10 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 check-am: all-am
-check: $(BUILT_SOURCES)
-	$(MAKE) $(AM_MAKEFLAGS) check-am
+check: check-am
 all-am: Makefile $(LTLIBRARIES)
 installdirs:
-install: $(BUILT_SOURCES)
-	$(MAKE) $(AM_MAKEFLAGS) install-am
+install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
 uninstall: uninstall-am
@@ -526,7 +510,6 @@ install-strip:
 	  `test -z '$(STRIP)' || \
 	    echo "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'"` install
 mostlyclean-generic:
-	-test -z "$(MOSTLYCLEANFILES)" || rm -f $(MOSTLYCLEANFILES)
 
 clean-generic:
 
@@ -536,7 +519,6 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 clean: clean-am
 
 clean-am: clean-generic clean-libtool clean-noinstLTLIBRARIES \
@@ -611,12 +593,6 @@ uninstall-am:
 	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
 	pdf pdf-am ps ps-am tags uninstall uninstall-am
 
-
-# We need the following in order to create <getopt.h> when the system
-# doesn't have one that works with the given compiler.
-getopt.h: getopt_.h
-	cp $(srcdir)/getopt_.h $@-t
-	mv $@-t $@
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

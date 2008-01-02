@@ -928,10 +928,6 @@ LTLIBINTL
 POSUB
 MAY_RUN_PO_TRUE
 MAY_RUN_PO_FALSE
-LIBOBJS
-GETOPT_H
-REPLACE_GETOPT_TRUE
-REPLACE_GETOPT_FALSE
 USE_JIT_TRUE
 USE_JIT_FALSE
 ENGINE_NAME
@@ -985,6 +981,7 @@ SECURITY_LIBS
 GC_NAME
 HAVE_GCJ_SUPPORT_TRUE
 HAVE_GCJ_SUPPORT_FALSE
+LIBOBJS
 USE_COMPAT_IFADDRS_TRUE
 USE_COMPAT_IFADDRS_FALSE
 COND_NATIVE_AWT_TRUE
@@ -7105,7 +7102,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 7108 "configure"' > conftest.$ac_ext
+  echo '#line 7105 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -9669,11 +9666,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9672: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9669: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9676: \$? = $ac_status" >&5
+   echo "$as_me:9673: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9959,11 +9956,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9962: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9959: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9966: \$? = $ac_status" >&5
+   echo "$as_me:9963: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -10063,11 +10060,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:10066: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:10063: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:10070: \$? = $ac_status" >&5
+   echo "$as_me:10067: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -12412,7 +12409,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12415 "configure"
+#line 12412 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12512,7 +12509,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12515 "configure"
+#line 12512 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -14936,11 +14933,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14939: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14936: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:14943: \$? = $ac_status" >&5
+   echo "$as_me:14940: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -15040,11 +15037,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15043: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15040: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:15047: \$? = $ac_status" >&5
+   echo "$as_me:15044: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -16602,11 +16599,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16605: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16602: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:16609: \$? = $ac_status" >&5
+   echo "$as_me:16606: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -16706,11 +16703,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16709: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16706: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:16713: \$? = $ac_status" >&5
+   echo "$as_me:16710: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -18897,11 +18894,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18900: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18897: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:18904: \$? = $ac_status" >&5
+   echo "$as_me:18901: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -19187,11 +19184,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:19190: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:19187: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:19194: \$? = $ac_status" >&5
+   echo "$as_me:19191: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -19291,11 +19288,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:19294: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:19291: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:19298: \$? = $ac_status" >&5
+   echo "$as_me:19295: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -23772,485 +23769,6 @@ fi
 
 
 
-  if test -z "$GETOPT_H"; then
-
-for ac_header in getopt.h
-do
-as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
-if { as_var=$as_ac_Header; eval "test \"\${$as_var+set}\" = set"; }; then
-  { echo "$as_me:$LINENO: checking for $ac_header" >&5
-echo $ECHO_N "checking for $ac_header... $ECHO_C" >&6; }
-if { as_var=$as_ac_Header; eval "test \"\${$as_var+set}\" = set"; }; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-fi
-ac_res=`eval echo '${'$as_ac_Header'}'`
-	       { echo "$as_me:$LINENO: result: $ac_res" >&5
-echo "${ECHO_T}$ac_res" >&6; }
-else
-  # Is the header compilable?
-{ echo "$as_me:$LINENO: checking $ac_header usability" >&5
-echo $ECHO_N "checking $ac_header usability... $ECHO_C" >&6; }
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-$ac_includes_default
-#include <$ac_header>
-_ACEOF
-rm -f conftest.$ac_objext
-if { (ac_try="$ac_compile"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
-  (eval "$ac_compile") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_c_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest.$ac_objext; then
-  ac_header_compiler=yes
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	ac_header_compiler=no
-fi
-
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-{ echo "$as_me:$LINENO: result: $ac_header_compiler" >&5
-echo "${ECHO_T}$ac_header_compiler" >&6; }
-
-# Is the header present?
-{ echo "$as_me:$LINENO: checking $ac_header presence" >&5
-echo $ECHO_N "checking $ac_header presence... $ECHO_C" >&6; }
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-#include <$ac_header>
-_ACEOF
-if { (ac_try="$ac_cpp conftest.$ac_ext"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
-  (eval "$ac_cpp conftest.$ac_ext") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } >/dev/null && {
-	 test -z "$ac_c_preproc_warn_flag$ac_c_werror_flag" ||
-	 test ! -s conftest.err
-       }; then
-  ac_header_preproc=yes
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-  ac_header_preproc=no
-fi
-
-rm -f conftest.err conftest.$ac_ext
-{ echo "$as_me:$LINENO: result: $ac_header_preproc" >&5
-echo "${ECHO_T}$ac_header_preproc" >&6; }
-
-# So?  What about this header?
-case $ac_header_compiler:$ac_header_preproc:$ac_c_preproc_warn_flag in
-  yes:no: )
-    { echo "$as_me:$LINENO: WARNING: $ac_header: accepted by the compiler, rejected by the preprocessor!" >&5
-echo "$as_me: WARNING: $ac_header: accepted by the compiler, rejected by the preprocessor!" >&2;}
-    { echo "$as_me:$LINENO: WARNING: $ac_header: proceeding with the compiler's result" >&5
-echo "$as_me: WARNING: $ac_header: proceeding with the compiler's result" >&2;}
-    ac_header_preproc=yes
-    ;;
-  no:yes:* )
-    { echo "$as_me:$LINENO: WARNING: $ac_header: present but cannot be compiled" >&5
-echo "$as_me: WARNING: $ac_header: present but cannot be compiled" >&2;}
-    { echo "$as_me:$LINENO: WARNING: $ac_header:     check for missing prerequisite headers?" >&5
-echo "$as_me: WARNING: $ac_header:     check for missing prerequisite headers?" >&2;}
-    { echo "$as_me:$LINENO: WARNING: $ac_header: see the Autoconf documentation" >&5
-echo "$as_me: WARNING: $ac_header: see the Autoconf documentation" >&2;}
-    { echo "$as_me:$LINENO: WARNING: $ac_header:     section \"Present But Cannot Be Compiled\"" >&5
-echo "$as_me: WARNING: $ac_header:     section \"Present But Cannot Be Compiled\"" >&2;}
-    { echo "$as_me:$LINENO: WARNING: $ac_header: proceeding with the preprocessor's result" >&5
-echo "$as_me: WARNING: $ac_header: proceeding with the preprocessor's result" >&2;}
-    { echo "$as_me:$LINENO: WARNING: $ac_header: in the future, the compiler will take precedence" >&5
-echo "$as_me: WARNING: $ac_header: in the future, the compiler will take precedence" >&2;}
-    ( cat <<\_ASBOX
-## ------------------------------ ##
-## Report this to kaffe@kaffe.org ##
-## ------------------------------ ##
-_ASBOX
-     ) | sed "s/^/$as_me: WARNING:     /" >&2
-    ;;
-esac
-{ echo "$as_me:$LINENO: checking for $ac_header" >&5
-echo $ECHO_N "checking for $ac_header... $ECHO_C" >&6; }
-if { as_var=$as_ac_Header; eval "test \"\${$as_var+set}\" = set"; }; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  eval "$as_ac_Header=\$ac_header_preproc"
-fi
-ac_res=`eval echo '${'$as_ac_Header'}'`
-	       { echo "$as_me:$LINENO: result: $ac_res" >&5
-echo "${ECHO_T}$ac_res" >&6; }
-
-fi
-if test `eval echo '${'$as_ac_Header'}'` = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define `echo "HAVE_$ac_header" | $as_tr_cpp` 1
-_ACEOF
-
-else
-  GETOPT_H=getopt.h
-fi
-
-done
-
-  fi
-
-  if test -z "$GETOPT_H"; then
-
-for ac_func in getopt_long_only
-do
-as_ac_var=`echo "ac_cv_func_$ac_func" | $as_tr_sh`
-{ echo "$as_me:$LINENO: checking for $ac_func" >&5
-echo $ECHO_N "checking for $ac_func... $ECHO_C" >&6; }
-if { as_var=$as_ac_var; eval "test \"\${$as_var+set}\" = set"; }; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-/* Define $ac_func to an innocuous variant, in case <limits.h> declares $ac_func.
-   For example, HP-UX 11i <limits.h> declares gettimeofday.  */
-#define $ac_func innocuous_$ac_func
-
-/* System header to define __stub macros and hopefully few prototypes,
-    which can conflict with char $ac_func (); below.
-    Prefer <limits.h> to <assert.h> if __STDC__ is defined, since
-    <limits.h> exists even on freestanding compilers.  */
-
-#ifdef __STDC__
-# include <limits.h>
-#else
-# include <assert.h>
-#endif
-
-#undef $ac_func
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char $ac_func ();
-/* The GNU C library defines this for functions which it implements
-    to always fail with ENOSYS.  Some functions are actually named
-    something starting with __ and the normal name is an alias.  */
-#if defined __stub_$ac_func || defined __stub___$ac_func
-choke me
-#endif
-
-int
-main ()
-{
-return $ac_func ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (ac_try="$ac_link"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
-  (eval "$ac_link") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_c_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest$ac_exeext &&
-       $as_test_x conftest$ac_exeext; then
-  eval "$as_ac_var=yes"
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	eval "$as_ac_var=no"
-fi
-
-rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
-      conftest$ac_exeext conftest.$ac_ext
-fi
-ac_res=`eval echo '${'$as_ac_var'}'`
-	       { echo "$as_me:$LINENO: result: $ac_res" >&5
-echo "${ECHO_T}$ac_res" >&6; }
-if test `eval echo '${'$as_ac_var'}'` = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define `echo "HAVE_$ac_func" | $as_tr_cpp` 1
-_ACEOF
-
-else
-  GETOPT_H=getopt.h
-fi
-done
-
-  fi
-
-      if test -z "$GETOPT_H"; then
-    { echo "$as_me:$LINENO: checking whether optreset is declared" >&5
-echo $ECHO_N "checking whether optreset is declared... $ECHO_C" >&6; }
-if test "${ac_cv_have_decl_optreset+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-#include <getopt.h>
-
-int
-main ()
-{
-#ifndef optreset
-  (void) optreset;
-#endif
-
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext
-if { (ac_try="$ac_compile"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
-  (eval "$ac_compile") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_c_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest.$ac_objext; then
-  ac_cv_have_decl_optreset=yes
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	ac_cv_have_decl_optreset=no
-fi
-
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-fi
-{ echo "$as_me:$LINENO: result: $ac_cv_have_decl_optreset" >&5
-echo "${ECHO_T}$ac_cv_have_decl_optreset" >&6; }
-if test $ac_cv_have_decl_optreset = yes; then
-  GETOPT_H=getopt.h
-fi
-
-  fi
-
-      if test -z "$GETOPT_H"; then
-    { echo "$as_me:$LINENO: checking for working GNU getopt function" >&5
-echo $ECHO_N "checking for working GNU getopt function... $ECHO_C" >&6; }
-if test "${gl_cv_func_gnu_getopt+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  if test "$cross_compiling" = yes; then
-  	 	 	 { echo "$as_me:$LINENO: checking whether getopt_clip is declared" >&5
-echo $ECHO_N "checking whether getopt_clip is declared... $ECHO_C" >&6; }
-if test "${ac_cv_have_decl_getopt_clip+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-#include <getopt.h>
-
-int
-main ()
-{
-#ifndef getopt_clip
-  (void) getopt_clip;
-#endif
-
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext
-if { (ac_try="$ac_compile"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
-  (eval "$ac_compile") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_c_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest.$ac_objext; then
-  ac_cv_have_decl_getopt_clip=yes
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	ac_cv_have_decl_getopt_clip=no
-fi
-
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-fi
-{ echo "$as_me:$LINENO: result: $ac_cv_have_decl_getopt_clip" >&5
-echo "${ECHO_T}$ac_cv_have_decl_getopt_clip" >&6; }
-if test $ac_cv_have_decl_getopt_clip = yes; then
-  gl_cv_func_gnu_getopt=no
-else
-  gl_cv_func_gnu_getopt=yes
-fi
-
-else
-  cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-#include <getopt.h>
-int
-main ()
-{
-
-	     char *myargv[3];
-	     myargv[0] = "conftest";
-	     myargv[1] = "-+";
-	     myargv[2] = 0;
-	     return getopt (2, myargv, "+a") != '?';
-
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest$ac_exeext
-if { (ac_try="$ac_link"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
-  (eval "$ac_link") 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && { ac_try='./conftest$ac_exeext'
-  { (case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
-  (eval "$ac_try") 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  gl_cv_func_gnu_getopt=yes
-else
-  echo "$as_me: program exited with status $ac_status" >&5
-echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-( exit $ac_status )
-gl_cv_func_gnu_getopt=no
-fi
-rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
-fi
-
-
-fi
-{ echo "$as_me:$LINENO: result: $gl_cv_func_gnu_getopt" >&5
-echo "${ECHO_T}$gl_cv_func_gnu_getopt" >&6; }
-    if test "$gl_cv_func_gnu_getopt" = "no"; then
-      GETOPT_H=getopt.h
-    fi
-  fi
-
-
-
-  if test -n "$GETOPT_H"; then
-
-  case " $LIBOBJS " in
-  *" getopt.$ac_objext "* ) ;;
-  *) LIBOBJS="$LIBOBJS getopt.$ac_objext"
- ;;
-esac
-
-  case " $LIBOBJS " in
-  *" getopt1.$ac_objext "* ) ;;
-  *) LIBOBJS="$LIBOBJS getopt1.$ac_objext"
- ;;
-esac
-
-
-  GETOPT_H=getopt.h
-
-cat >>confdefs.h <<\_ACEOF
-#define __GETOPT_PREFIX rpl_
-_ACEOF
-
-
-
-  :
-
-fi
-
-
- if test  x"$GETOPT_H" != x""; then
-  REPLACE_GETOPT_TRUE=
-  REPLACE_GETOPT_FALSE='#'
-else
-  REPLACE_GETOPT_TRUE='#'
-  REPLACE_GETOPT_FALSE=
-fi
-
-
-
-
 
 
 
@@ -26076,7 +25594,7 @@ else
 JAVA_TEST=Test.java
 CLASS_TEST=Test.class
 cat << \EOF > $JAVA_TEST
-/* #line 26079 "configure" */
+/* #line 25597 "configure" */
 public class Test {
 }
 EOF
@@ -47481,13 +46999,6 @@ echo "$as_me: error: conditional \"MAY_RUN_PO\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
-if test -z "${REPLACE_GETOPT_TRUE}" && test -z "${REPLACE_GETOPT_FALSE}"; then
-  { { echo "$as_me:$LINENO: error: conditional \"REPLACE_GETOPT\" was never defined.
-Usually this means the macro was only invoked conditionally." >&5
-echo "$as_me: error: conditional \"REPLACE_GETOPT\" was never defined.
-Usually this means the macro was only invoked conditionally." >&2;}
-   { (exit 1); exit 1; }; }
-fi
 if test -z "${USE_JIT_TRUE}" && test -z "${USE_JIT_FALSE}"; then
   { { echo "$as_me:$LINENO: error: conditional \"USE_JIT\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
@@ -48469,10 +47980,6 @@ LTLIBINTL!$LTLIBINTL$ac_delim
 POSUB!$POSUB$ac_delim
 MAY_RUN_PO_TRUE!$MAY_RUN_PO_TRUE$ac_delim
 MAY_RUN_PO_FALSE!$MAY_RUN_PO_FALSE$ac_delim
-LIBOBJS!$LIBOBJS$ac_delim
-GETOPT_H!$GETOPT_H$ac_delim
-REPLACE_GETOPT_TRUE!$REPLACE_GETOPT_TRUE$ac_delim
-REPLACE_GETOPT_FALSE!$REPLACE_GETOPT_FALSE$ac_delim
 USE_JIT_TRUE!$USE_JIT_TRUE$ac_delim
 USE_JIT_FALSE!$USE_JIT_FALSE$ac_delim
 ENGINE_NAME!$ENGINE_NAME$ac_delim
@@ -48515,6 +48022,10 @@ HAVE_JAVAC_FALSE!$HAVE_JAVAC_FALSE$ac_delim
 HAVE_MKTEMP_TRUE!$HAVE_MKTEMP_TRUE$ac_delim
 HAVE_MKTEMP_FALSE!$HAVE_MKTEMP_FALSE$ac_delim
 HAVE_JASMIN_TRUE!$HAVE_JASMIN_TRUE$ac_delim
+HAVE_JASMIN_FALSE!$HAVE_JASMIN_FALSE$ac_delim
+KAFFE_LIBS!$KAFFE_LIBS$ac_delim
+M_LIBS!$M_LIBS$ac_delim
+NET_LIBS!$NET_LIBS$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -48556,10 +48067,6 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
-HAVE_JASMIN_FALSE!$HAVE_JASMIN_FALSE$ac_delim
-KAFFE_LIBS!$KAFFE_LIBS$ac_delim
-M_LIBS!$M_LIBS$ac_delim
-NET_LIBS!$NET_LIBS$ac_delim
 ZIP_LIBS!$ZIP_LIBS$ac_delim
 LIBADD_GMP!$LIBADD_GMP$ac_delim
 USE_GMP!$USE_GMP$ac_delim
@@ -48567,6 +48074,7 @@ SECURITY_LIBS!$SECURITY_LIBS$ac_delim
 GC_NAME!$GC_NAME$ac_delim
 HAVE_GCJ_SUPPORT_TRUE!$HAVE_GCJ_SUPPORT_TRUE$ac_delim
 HAVE_GCJ_SUPPORT_FALSE!$HAVE_GCJ_SUPPORT_FALSE$ac_delim
+LIBOBJS!$LIBOBJS$ac_delim
 USE_COMPAT_IFADDRS_TRUE!$USE_COMPAT_IFADDRS_TRUE$ac_delim
 USE_COMPAT_IFADDRS_FALSE!$USE_COMPAT_IFADDRS_FALSE$ac_delim
 COND_NATIVE_AWT_TRUE!$COND_NATIVE_AWT_TRUE$ac_delim
@@ -48630,7 +48138,7 @@ subdirs!$subdirs$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 72; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 69; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5
