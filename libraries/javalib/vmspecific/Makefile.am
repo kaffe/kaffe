@@ -38,13 +38,6 @@ dist_vminterface_JAVA = \
 	java/security/VMSecureRandom.java \
 	org/kaffe/jar/ExecJar.java \
 	org/kaffe/jar/ExecJarName.java \
-	org/kaffe/security/provider/Kaffe.java \
-	org/kaffe/security/provider/MD2.java \
-	org/kaffe/security/provider/MD4.java \
-	org/kaffe/security/provider/MD5.java \
-	org/kaffe/security/provider/SHA.java \
-	org/kaffe/security/provider/SHA1PRNG.java \
-	org/kaffe/security/provider/UpdateDigest.java \
 	org/kaffe/security/LameRandomness.java \
 	org/kaffe/security/Randomness.java \
 	org/kaffe/security/UnixRandomness.java \

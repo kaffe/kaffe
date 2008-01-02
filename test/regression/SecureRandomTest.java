@@ -63,29 +63,19 @@ class SecureRandomTest
 	int lpc, hist;
 	byte data[];
 
-	Security.addProvider(new org.kaffe.security.provider.Kaffe());
-	
 	/*
 	 * Make sure the SecureRandom's produce different sequences after
 	 * initialization.
 	 */
 	history = new byte[HISTORY_SIZE][];
-	/*
-	 * Now that we have added new org.kaffe.security.provider.Kaffe()
-	 * to the list of security providers, we may well explicitly
-	 * request Kaffe's SHA1PRNG to be used.
-	 * Otherwise, in some poor environment, GNU classpath's default
-	 * provider may be used, which, at the moment of this writing,
-	 * is not strong enough to pass this test. (Thu Jul 28, 2005)
-	 */
-	sr = SecureRandom.getInstance("SHA1PRNG", "KAFFE");
+	sr = SecureRandom.getInstance("SHA1PRNG");
 	for( lpc = 0, hist = 0; lpc < ITERATIONS; lpc++, hist++ )
 	{
 	    data = new byte[20];
 	    sr.nextBytes(data);
 	    history[hist % HISTORY_SIZE] = data;
 	}
-	sr = SecureRandom.getInstance("SHA1PRNG", "KAFFE");
+	sr = SecureRandom.getInstance("SHA1PRNG");
 	for( lpc = 0, hist = 0; lpc < ITERATIONS; lpc++, hist++ )
 	{
 	    data = new byte[20];

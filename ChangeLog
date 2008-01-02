@@ -1,5 +1,35 @@
 2008-01-02  Dalibor Topic  <robilad@kaffe.org>
 
+	* test/regression/SecureRandomTest.java: Adapted to work with default
+	crypto provider.
+
+	* configure.ac: Removed SECURITY_LIBS and checks for security libraries.
+	(AC_CONFIG_FILES) Removed libraries/clib/security/Makefile.
+
+	* include/Makefile.am, libraries/javalib/vmspecific/Makefile.am:
+	Removed all the purged kaffe security interface files.
+
+	* libraries/clib/Makefile.am (SUBDIRS): Removed security.
+
+	* libraries/javalib/vmspecific/org/kaffe/security/provider/SHA.java,
+	libraries/javalib/vmspecific/org/kaffe/security/provider/MD4.java,
+	libraries/javalib/vmspecific/org/kaffe/security/provider/Kaffe.java,
+	libraries/javalib/vmspecific/org/kaffe/security/provider/SHA1PRNG.java,
+	libraries/javalib/vmspecific/org/kaffe/security/provider/MD2.java,
+	libraries/javalib/vmspecific/org/kaffe/security/provider/MD5.java,
+	libraries/javalib/vmspecific/org/kaffe/security/provider/UpdateDigest.java,
+	libraries/clib/security/Kaffe.security,
+	libraries/clib/security/digest.c,
+	libraries/clib/security/.cvsignore,
+	libraries/clib/security/kaffe_md5.c,
+	libraries/clib/security/sha-1.h,
+	libraries/clib/security/kaffe_md5.h,
+	libraries/clib/security/Makefile.in,
+	libraries/clib/security/sha-1.c,
+	libraries/clib/security/Makefile.am: Removed.
+
+2008-01-02  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/vmspecific/org/kaffe/management/XProfiler.java,
 	libraries/javalib/vmspecific/org/kaffe/management/JIT.java,
 	libraries/javalib/vmspecific/org/kaffe/management/Debug.java,
@@ -12,10 +42,10 @@
 	libraries/clib/management/Makefile.in,
 	libraries/clib/management/Makefile.am: Removed.
 
+	* Makefile.am (KAFFELIBRARYPATH): Removed libraries/clib/management.
+
 	* include/Makefile.am, libraries/javalib/vmspecific/Makefile.am:
 	Removed all the purged kaffe management interface files.
-
-	* Makefile.am (KAFFELIBRARYPATH): Removed libraries/clib/management.
 
 	* configure.ac (JAVA_LIBS): Removed libmanagement. (AC_CONFIG_FILES)
 	Removed libraries/clib/management/Makefile.

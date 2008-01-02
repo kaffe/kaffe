@@ -73,11 +73,7 @@ NOINSTALL_JNI_DERIVED_HDRS = \
 	gnu_java_nio_SelectorImpl.h \
 	java_lang_VMSystem.h \
 	java_nio_VMDirectByteBuffer.h \
-	java_nio_MappedByteBufferImpl.h \
-	org_kaffe_security_provider_MD2.h \
-	org_kaffe_security_provider_MD4.h \
-	org_kaffe_security_provider_MD5.h \
-	org_kaffe_security_provider_SHA.h
+	java_nio_MappedByteBufferImpl.h 
 
 JNI_DERIVED_HDRS = \
 	$(INSTALL_JNI_DERIVED_HDRS) \

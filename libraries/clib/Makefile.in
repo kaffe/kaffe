@@ -83,7 +83,7 @@ RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
   distclean-recursive maintainer-clean-recursive
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = security awt math zip
+DIST_SUBDIRS = awt math zip
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -204,7 +204,6 @@ QT_CXXFLAGS = @QT_CXXFLAGS@
 QT_GUILINK = @QT_GUILINK@
 QT_LDADD = @QT_LDADD@
 RANLIB = @RANLIB@
-SECURITY_LIBS = @SECURITY_LIBS@
 SED = @SED@
 SEMAPHORE_LIB = @SEMAPHORE_LIB@
 SET_MAKE = @SET_MAKE@
@@ -280,7 +279,6 @@ prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
 sbindir = @sbindir@
-securitydir = @securitydir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
 subdirs = @subdirs@
@@ -294,7 +292,6 @@ with_engine = @with_engine@
 @COND_PURE_JAVA_MATH_FALSE@MAYBE_NATIVE_MATH_DIR = math
 @COND_ZLIB_ZIP_TRUE@MAYBE_ZLIB_ZIP = zip
 SUBDIRS = \
-	security \
 	$(MAYBE_NATIVE_AWT_DIR) \
 	$(MAYBE_NATIVE_MATH_DIR) \
 	$(MAYBE_ZLIB_ZIP)

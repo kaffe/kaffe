@@ -258,9 +258,6 @@
 /* Define to 1 if you have the `m' library (-lm). */
 #undef HAVE_LIBM
 
-/* Define to 1 if you have the `md' library (-lmd). */
-#undef HAVE_LIBMD
-
 /* Define to 1 if you have the `mw' library (-lmw). */
 #undef HAVE_LIBMW
 
@@ -308,15 +305,6 @@
 
 /* Define to 1 if you have the `mallopt' function. */
 #undef HAVE_MALLOPT
-
-/* Define to 1 if you have the `MD2Init' function. */
-#undef HAVE_MD2INIT
-
-/* Define to 1 if you have the `MD4Init' function. */
-#undef HAVE_MD4INIT
-
-/* Define to 1 if you have the `MD5Init' function. */
-#undef HAVE_MD5INIT
 
 /* Define to 1 if you have the `memalign' function. */
 #undef HAVE_MEMALIGN

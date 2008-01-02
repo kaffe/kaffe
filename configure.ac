@@ -902,14 +902,6 @@ AC_SUBST(ZIP_LIBS)
 
 m4_LIB_GMP
 
-dnl Check for libraries for security library.
-AC_CHECK_FUNCS_ONCE(MD2Init MD4Init MD5Init)
-if test $ac_cv_func_MD5Init = no; then
-  AC_CHECK_LIBRARY(md, MD5Init, SECURITY_LIBS)
-fi
-SECURITY_LIBS="$CTLIBS $SECURITY_LIBS"
-AC_SUBST(SECURITY_LIBS)
-
 dnl -------------------------------------------------------------------------
 
 dnl =========================================================================
@@ -1786,11 +1778,6 @@ dnl -----------------------------------------------------------------------
 
 AM_WITH_DMALLOC
 
-JAVA_LIBS=" \
-\$(top_builddir)/libraries/clib/security/libsecurity.la \
-$JAVA_LIBS \
-"
-
 if test x"$enable_zlib_zip" != x"no"; then
   JAVA_LIBS="\$(top_builddir)/libraries/clib/zip/libzip.la $JAVA_LIBS";
 fi
@@ -1946,9 +1933,6 @@ AC_SUBST(jrelibdir)
 nativedir=$jredir/lib/$Khost_cpu
 AC_SUBST(nativedir)
 
-securitydir=$jredir/lib/security
-AC_SUBST(securitydir)
-
 dnl =========================================================================
 dnl Additional directories for jni library path
 dnl -------------------------------------------------------------------------
@@ -2064,7 +2048,6 @@ AC_CONFIG_FILES([libraries/javalib/vmspecific/Makefile])
 AC_CONFIG_FILES([libraries/clib/Makefile])
 AC_CONFIG_FILES([libraries/clib/zip/Makefile])
 AC_CONFIG_FILES([libraries/clib/math/Makefile])
-AC_CONFIG_FILES([libraries/clib/security/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/X/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/qt/Makefile])

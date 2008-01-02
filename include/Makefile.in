@@ -212,7 +212,6 @@ QT_CXXFLAGS = @QT_CXXFLAGS@
 QT_GUILINK = @QT_GUILINK@
 QT_LDADD = @QT_LDADD@
 RANLIB = @RANLIB@
-SECURITY_LIBS = @SECURITY_LIBS@
 SED = @SED@
 SEMAPHORE_LIB = @SEMAPHORE_LIB@
 SET_MAKE = @SET_MAKE@
@@ -288,7 +287,6 @@ prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
 sbindir = @sbindir@
-securitydir = @securitydir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
 subdirs = @subdirs@
@@ -355,11 +353,7 @@ NOINSTALL_JNI_DERIVED_HDRS = \
 	gnu_java_nio_SelectorImpl.h \
 	java_lang_VMSystem.h \
 	java_nio_VMDirectByteBuffer.h \
-	java_nio_MappedByteBufferImpl.h \
-	org_kaffe_security_provider_MD2.h \
-	org_kaffe_security_provider_MD4.h \
-	org_kaffe_security_provider_MD5.h \
-	org_kaffe_security_provider_SHA.h
+	java_nio_MappedByteBufferImpl.h 
 
 JNI_DERIVED_HDRS = \
 	$(INSTALL_JNI_DERIVED_HDRS) \
