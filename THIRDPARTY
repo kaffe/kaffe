@@ -3,39 +3,6 @@ under a GPL compatible license can be merged in. You can find the
 licenses of third party sources either in their respective sources, or
 in license*.terms files in the top directory, or here. 
 
-* Replacement functions for getaddrinfo
-
-This code comes from Motoyuki Kasahara's <m-kasahr@sra.co.jp>
-getaddrinfo() and getnameinfo() implementations for traditional IPv4 
-systems available at http://www.sra.co.jp/people/m-kasahr/getaddrinfo/ 
-under the following GPL-compatible BSD like license:
-
-"Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions
-are met:
-1. Redistributions of source code must retain the above copyright
-   notice, this list of conditions and the following disclaimer.
-2. Redistributions in binary form must reproduce the above copyright
-   notice, this list of conditions and the following disclaimer in the
-   documentation and/or other materials provided with the distribution.
-3. Neither the name of the project nor the names of its contributors
-   may be used to endorse or promote products derived from this software
-   without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE PROJECT AND CONTRIBUTORS ``AS IS'' AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-ARE DISCLAIMED.  IN NO EVENT SHALL THE PROJECT OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-SUCH DAMAGE.
-
-At the time of writing, Kaffe uses getaddrinfo 1.6.1.
-
 * Replacement functions for inet_ntop and inet_pton.
 
 These functions came from ircii available at 
@@ -146,14 +113,6 @@ See license.terms for details of the GNU GPL.
 
 More information on GNU gettext is available from 
 http://www.gnu.org/software/gettext/.
-
-* m4/alsa.m4
-
-Autoconf/automake macros taken from ALSA CVS.  Licensed under the GPL/LGPL.
-
-* m4/esd.m4
-
-Autoconf macros taken from GNOME ESounD CVS. Licensed under the GPL/LGPL.
 
 * m4/ax_cflags_gcc_option.m4, m4/ax_cflags_warn_all.m4, m4/acx_pthread.m4,
   m4/compile_value.m4, m4/ac_prog_javac.m4, m4/ac_prog_javac_works.m4, 

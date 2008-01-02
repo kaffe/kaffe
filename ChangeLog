@@ -1,5 +1,29 @@
 2008-01-02  Dalibor Topic  <robilad@kaffe.org>
 
+	* TODO: Updated with new tasks.
+	
+	* config/config-net.h (KaffeSocketAddr): Removed.
+
+	* include/Makefile.am: Removed getaddrinfo and getifaddrs replacement
+	headers.
+
+	* configure.ac: Removed logic for getaddrinfo and getifaddrs
+	replacement functions.
+
+	* THIRDPARTY: Removed licensing information for getaddrinfo 
+	replacement. Removed licensing information for removed ALSA 
+	and ESD m4 code.
+
+	* replace/Makefile.am (libreplace_la_SOURCES): Removed getifaddrs.c,
+	dummyin6.c, getaddrinfo.c. (EXTRA_DIST) Removed.
+
+	* replace/dummyin6.c, replace/getaddrinfo.c, replace/getifaddrs.c,
+	replace/ifaddrs_bsd.c, replace/ifaddrs.h, replace/ifaddrs_linux.c,
+	include/getaddrinfo.h, include/dummyin6.h, include/ifaddrs_compat.h,
+	replace/memset.c: Removed.
+
+2008-01-02  Dalibor Topic  <robilad@kaffe.org>
+
 	* replace/Makefile.am: Removed getopt replacement building logic.
 	(libreplace_la_SOURCES): Removed GETOPT_SOURCES.
 

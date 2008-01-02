@@ -21,20 +21,10 @@ libreplace_la_LDFLAGS = \
         -no-undefined
 
 libreplace_la_SOURCES = \
-	dummyin6.c \
-	getaddrinfo.c \
-	getifaddrs.c \
 	inet_pton.c \
 	inet_ntop.c \
-	memset.c \
 	repsemaphore.h \
-	semaphores.c \
-	ifaddrs.h
+	semaphores.c
 
 libreplace_la_LIBADD = \
         $(LTLIBINTL)
-
-EXTRA_DIST = \
-	ifaddrs_linux.c \
-	ifaddrs_bsd.c 
-

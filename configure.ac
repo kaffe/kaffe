@@ -1299,11 +1299,6 @@ dnl pthread_yield is not implemented on any systems.
 AC_CHECK_FUNCS_ONCE([pthread_attr_setschedpolicy pthread_yield sched_yield])
 AC_CHECK_HEADERS_ONCE(sched.h)
 
-dnl getifaddrs replacement for linux
-AC_REPLACE_FUNCS([getifaddrs])
-AC_CHECK_HEADERS(ifaddrs.h,use_compat_ifaddrs="no",use_compat_ifaddrs="yes")
-AM_CONDITIONAL(USE_COMPAT_IFADDRS, test "$use_compat_ifaddrs" = "yes")
-
 dnl inet_ntop and inet_pton replacement for cygwin
 AC_REPLACE_FUNCS([inet_ntop])
 AC_REPLACE_FUNCS([inet_pton])
@@ -1311,44 +1306,6 @@ AC_CHECK_HEADERS_ONCE([arpa/nameser.h])
 
 dnl getaddrinfo replacement for Linux 2.0.x
 AC_REPLACE_FUNCS([memset])
-AC_TYPE_SOCKLEN_T
-AC_TYPE_IN_PORT_T
-AC_DECL_H_ERRNO
-
-saved_LIBS="$LIBS"
-LIBS="$LIBS $NET_LIBS"
-AC_CHECK_FUNCS_ONCE([getaddrinfo getnameinfo])
-LIBS="$saved_LIBS"
-if test "$ac_cv_func_getaddrinfo$ac_cv_func_getnameinfo" != yesyes ; then
-   AC_LIBOBJ(getaddrinfo)
-fi
-
-dnl IPv6 macros on systems lacking them
-AC_STRUCT_IN6_ADDR
-AC_STRUCT_SOCKADDR_IN6
-AC_STRUCT_SOCKADDR_STORAGE
-AC_DECL_IN6ADDR_ANY
-AC_DECL_IN6ADDR_LOOPBACK
-AC_TYPE_SA_FAMILY_T
-AC_CHECK_MEMBER([struct sockaddr.sa_len],
-		[AC_DEFINE(HAVE_SOCKADDR_SA_LEN, 1,
-		           [Defined if we have found sa_len in sockaddr])
-		],,[
-#if defined(HAVE_SYS_TYPES_H)
-#include <sys/types.h>
-#endif
-#if defined(HAVE_SYS_SOCKET_H)
-#include <sys/socket.h>
-#endif
-])
-
-dnl some Linux IPv6 stacks don't have sin6_flowinfo and sin6_scope_id
-dnl in their struct sockaddr_in6
-AC_CHECK_MEMBERS([struct sockaddr_in6.sin6_flowinfo, struct sockaddr_in6.sin6_scope_id],,,[
-#if defined(HAVE_NETINET_IN_H)
-#include <netinet/in.h>
-#endif
-])
 
 KSAVE_LIBS="$LIBS"
 LIBS="$M_LIBS $LIBS"

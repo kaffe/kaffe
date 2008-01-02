@@ -29,11 +29,4 @@
 #include <netinet/tcp.h>
 #endif
 
-typedef union {
-  struct sockaddr_in addr4;
-#if defined(HAVE_STRUCT_SOCKADDR_IN6)
-  struct sockaddr_in6 addr6;
-#endif
-} KaffeSocketAddr;
-
 #endif

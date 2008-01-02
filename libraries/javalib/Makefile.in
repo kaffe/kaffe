@@ -47,15 +47,12 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/compile_value.m4 \
 	$(top_srcdir)/m4/gcc_attribute.m4 $(top_srcdir)/m4/gettext.m4 \
 	$(top_srcdir)/m4/glibcver.m4 $(top_srcdir)/m4/gmp.m4 \
-	$(top_srcdir)/m4/gwqt.m4 $(top_srcdir)/m4/herrno.m4 \
-	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/in6addr.m4 \
+	$(top_srcdir)/m4/gwqt.m4 $(top_srcdir)/m4/iconv.m4 \
 	$(top_srcdir)/m4/lcmessage.m4 $(top_srcdir)/m4/lib-ld.m4 \
 	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
 	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/nls.m4 \
 	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/progtest.m4 \
 	$(top_srcdir)/m4/semaphore.m4 $(top_srcdir)/m4/size_max.m4 \
-	$(top_srcdir)/m4/sockaddrin6.m4 \
-	$(top_srcdir)/m4/sockinttypes.m4 \
 	$(top_srcdir)/m4/solarispthread.m4 $(top_srcdir)/m4/valist.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \

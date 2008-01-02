@@ -59,15 +59,12 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/compile_value.m4 \
 	$(top_srcdir)/m4/gcc_attribute.m4 $(top_srcdir)/m4/gettext.m4 \
 	$(top_srcdir)/m4/glibcver.m4 $(top_srcdir)/m4/gmp.m4 \
-	$(top_srcdir)/m4/gwqt.m4 $(top_srcdir)/m4/herrno.m4 \
-	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/in6addr.m4 \
+	$(top_srcdir)/m4/gwqt.m4 $(top_srcdir)/m4/iconv.m4 \
 	$(top_srcdir)/m4/lcmessage.m4 $(top_srcdir)/m4/lib-ld.m4 \
 	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
 	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/nls.m4 \
 	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/progtest.m4 \
 	$(top_srcdir)/m4/semaphore.m4 $(top_srcdir)/m4/size_max.m4 \
-	$(top_srcdir)/m4/sockaddrin6.m4 \
-	$(top_srcdir)/m4/sockinttypes.m4 \
 	$(top_srcdir)/m4/solarispthread.m4 $(top_srcdir)/m4/valist.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -78,8 +75,7 @@ CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 libreplace_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
-am_libreplace_la_OBJECTS = dummyin6.lo getaddrinfo.lo getifaddrs.lo \
-	inet_pton.lo inet_ntop.lo memset.lo semaphores.lo
+am_libreplace_la_OBJECTS = inet_pton.lo inet_ntop.lo semaphores.lo
 libreplace_la_OBJECTS = $(am_libreplace_la_OBJECTS)
 libreplace_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -314,22 +310,13 @@ libreplace_la_LDFLAGS = \
         -no-undefined
 
 libreplace_la_SOURCES = \
-	dummyin6.c \
-	getaddrinfo.c \
-	getifaddrs.c \
 	inet_pton.c \
 	inet_ntop.c \
-	memset.c \
 	repsemaphore.h \
-	semaphores.c \
-	ifaddrs.h
+	semaphores.c
 
 libreplace_la_LIBADD = \
         $(LTLIBINTL)
-
-EXTRA_DIST = \
-	ifaddrs_linux.c \
-	ifaddrs_bsd.c 
 
 all: all-am
 
@@ -382,12 +369,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dummyin6.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/getaddrinfo.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/getifaddrs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/inet_ntop.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/inet_pton.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/memset.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/semaphores.Plo@am__quote@
 
 .c.o:

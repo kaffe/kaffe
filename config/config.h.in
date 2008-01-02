@@ -15,21 +15,6 @@
 /* __GLIBC_MINOR__ */
 #undef COMPILE_VALUE_GLIBC_MINOR
 
-/* sizeof(char) */
-#undef COMPILE_VALUE_SIZEOF_CHAR
-
-/* sizeof(int) */
-#undef COMPILE_VALUE_SIZEOF_INT
-
-/* sizeof(long) */
-#undef COMPILE_VALUE_SIZEOF_LONG
-
-/* sizeof(short) */
-#undef COMPILE_VALUE_SIZEOF_SHORT
-
-/* sizeof((((struct sockaddr_in *) 0) ->sin_port)) */
-#undef COMPILE_VALUE_SIZEOF_SIN_PORT
-
 /* Define default KAFFEHOME */
 #undef DEFAULT_KAFFEHOME
 
@@ -163,9 +148,6 @@
 /* Define to 1 if you have the <gc/gc.h> header file. */
 #undef HAVE_GC_GC_H
 
-/* Define to 1 if you have the `getaddrinfo' function. */
-#undef HAVE_GETADDRINFO
-
 /* Define to 1 if you have the `getcwd' function. */
 #undef HAVE_GETCWD
 
@@ -174,12 +156,6 @@
 
 /* Define to 1 if you have the `gethostname' function. */
 #undef HAVE_GETHOSTNAME
-
-/* Define to 1 if you have the `getifaddrs' function. */
-#undef HAVE_GETIFADDRS
-
-/* Define to 1 if you have the `getnameinfo' function. */
-#undef HAVE_GETNAMEINFO
 
 /* Define to 1 if you have the `getpagesize' function. */
 #undef HAVE_GETPAGESIZE
@@ -248,9 +224,6 @@
 
 /* Define to 1 if you have the <iconv.h> header file. */
 #undef HAVE_ICONV_H
-
-/* Define to 1 if you have the <ifaddrs.h> header file. */
-#undef HAVE_IFADDRS_H
 
 /* Define to 1 if you have the `inet_ntop' function. */
 #undef HAVE_INET_NTOP
@@ -534,9 +507,6 @@
 /* Define to 1 if you have the `snprintf' function. */
 #undef HAVE_SNPRINTF
 
-/* Defined if we have found sa_len in sockaddr */
-#undef HAVE_SOCKADDR_SA_LEN
-
 /* Define to 1 if you have the `socket' function. */
 #undef HAVE_SOCKET
 
@@ -588,26 +558,11 @@
 /* Define to 1 if you have the `strtouq' function. */
 #undef HAVE_STRTOUQ
 
-/* Define to 1 if <netinet/in.h> defines `struct in6_addr' */
-#undef HAVE_STRUCT_IN6_ADDR
-
 /* Do we have sigcontext */
 #undef HAVE_STRUCT_SIGCONTEXT
 
 /* Do we have sigcontext_struct */
 #undef HAVE_STRUCT_SIGCONTEXT_STRUCT
-
-/* Define to 1 if <netinet/in.h> defines `struct sockaddr_in6' */
-#undef HAVE_STRUCT_SOCKADDR_IN6
-
-/* Define to 1 if `sin6_flowinfo' is member of `struct sockaddr_in6'. */
-#undef HAVE_STRUCT_SOCKADDR_IN6_SIN6_FLOWINFO
-
-/* Define to 1 if `sin6_scope_id' is member of `struct sockaddr_in6'. */
-#undef HAVE_STRUCT_SOCKADDR_IN6_SIN6_SCOPE_ID
-
-/* Define to 1 if <netinet/in.h> defines `struct sockaddr_storage' */
-#undef HAVE_STRUCT_SOCKADDR_STORAGE
 
 /* Define to 1 if `tm_zone' is member of `struct tm'. */
 #undef HAVE_STRUCT_TM_TM_ZONE
@@ -763,17 +718,8 @@
 /* Define to 1 if you have the `__throw' function. */
 #undef HAVE___THROW
 
-/* Define to 1 if `h_errno' is declared by <netdb.h> */
-#undef H_ERRNO_DECLARED
-
 /* Define as const if the declaration of iconv() needs const. */
 #undef ICONV_CONST
-
-/* Define to 1 if `in6addr_any' is declared by <netinet/in.h> */
-#undef IN6ADDR_ANY_DECLARED
-
-/* Define to 1 if `in6addr_loopback' is declared by <netinet/in.h> */
-#undef IN6ADDR_LOOPBACK_DECLARED
 
 /* additional directories to search for native jni libraries */
 #undef JNI_LIBRARY_PATH
@@ -919,12 +865,6 @@
 /* Define to empty if `const' does not conform to ANSI C. */
 #undef const
 
-/* Define to `unsigned char', `unsigned short', `unsigned int' or `unsigned
-   long' according with size of `sin_port' in `struct sockaddr_in', if
-   <sys/types.h>, <sys/socket.h> or <netinet/in.h> does not define
-   `in_port_t'. */
-#undef in_port_t
-
 /* Define to `__inline__' or `__inline' if that's what the C compiler
    calls it, or to nothing if 'inline' is not supported under any name.  */
 #ifndef __cplusplus
@@ -937,16 +877,8 @@
 /* Define to `int' if <sys/types.h> does not define. */
 #undef pid_t
 
-/* Define to `unsigned char', `unsigned short', `unsigned int' or `unsigned
-   long' according with size of `sa_family' in `struct sockaddr', if
-   <sys/types.h> or <sys/socket.h> does not define `sa_family_t'. */
-#undef sa_family_t
-
 /* Define to `unsigned int' if <sys/types.h> does not define. */
 #undef size_t
-
-/* Define to `int' if <sys/types.h> or <sys/socket.h> does not define. */
-#undef socklen_t
 
 /* Define to `int' if <sys/types.h> does not define. */
 #undef ssize_t
