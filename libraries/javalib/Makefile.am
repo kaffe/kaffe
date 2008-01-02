@@ -29,7 +29,6 @@ endif
 
 SUBDIRS= \
 	vmspecific \
-	dnsjava \
 	$(MAYBE_PEERLESS_KAFFE_AWT) \
 	$(MAYBE_GMP_JAVA_MATH) \
 	$(MAYBE_ZLIB_ZIP)

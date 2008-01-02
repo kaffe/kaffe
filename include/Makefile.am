@@ -56,8 +56,6 @@ NOINSTALL_DERIVED_HDRS = \
 	java_lang_reflect_Constructor.h \
 	java_lang_reflect_Field.h \
 	java_lang_reflect_Method.h \
-	java_net_VMInetAddress.h \
-	gnu_java_net_SysInetAddressImpl.h \
 	java_security_VMAccessController.h \
 	java_util_Vector.h \
 	org_kaffe_management_Classpath.h \

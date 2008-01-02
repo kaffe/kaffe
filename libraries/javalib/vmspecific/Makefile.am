@@ -24,8 +24,6 @@ vminterfacedir = $(FAKE)
 dist_vminterface_JAVA = \
 	gnu/classpath/VMStackWalker.java \
 	gnu/classpath/VMSystemProperties.java \
-	gnu/java/net/InetAddressImpl.java \
-	gnu/java/net/SysInetAddressImpl.java \
 	java/lang/Runtime.java \
 	java/lang/VMRuntime.java \
 	java/lang/VMString.java \
@@ -36,7 +34,6 @@ dist_vminterface_JAVA = \
 	java/lang/reflect/Constructor.java \
 	java/lang/reflect/Field.java \
 	java/lang/reflect/Method.java \
-	java/net/VMInetAddress.java \
 	java/security/VMAccessController.java \
 	java/security/VMSecureRandom.java \
 	org/kaffe/jar/ExecJar.java \

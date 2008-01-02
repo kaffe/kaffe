@@ -117,8 +117,7 @@ libkaffe_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libkaffe_la_CFLAGS) \
 	$(CFLAGS) $(libkaffe_la_LDFLAGS) $(LDFLAGS) -o $@
 libkaffevm_la_LIBADD =
-am_libkaffevm_la_OBJECTS = libkaffevm_la-InetAddressImpl.lo \
-	libkaffevm_la-AccessController.lo \
+am_libkaffevm_la_OBJECTS = libkaffevm_la-AccessController.lo \
 	libkaffevm_la-java_lang_ref_Reference.lo \
 	libkaffevm_la-Constructor.lo libkaffevm_la-Field.lo \
 	libkaffevm_la-Method.lo libkaffevm_la-Class.lo \
@@ -481,7 +480,6 @@ libkaffe_la_SOURCES = \
 	binreloc.c 
 
 libkaffevm_la_SOURCES = \
-	$(top_srcdir)/libraries/clib/net/InetAddressImpl.c \
 	$(top_srcdir)/libraries/clib/native/AccessController.c \
 	$(top_srcdir)/libraries/clib/native/java_lang_ref_Reference.c \
         $(top_srcdir)/libraries/clib/native/Constructor.c \
@@ -649,7 +647,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-ClassLoader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-Constructor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-Field.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-InetAddressImpl.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-Method.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-Runtime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-System.Plo@am__quote@
@@ -927,13 +924,6 @@ libkaffe_la-md.lo: md.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='md.c' object='libkaffe_la-md.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffe_la_CFLAGS) $(CFLAGS) -c -o libkaffe_la-md.lo `test -f 'md.c' || echo '$(srcdir)/'`md.c
-
-libkaffevm_la-InetAddressImpl.lo: $(top_srcdir)/libraries/clib/net/InetAddressImpl.c
-@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-InetAddressImpl.lo -MD -MP -MF $(DEPDIR)/libkaffevm_la-InetAddressImpl.Tpo -c -o libkaffevm_la-InetAddressImpl.lo `test -f '$(top_srcdir)/libraries/clib/net/InetAddressImpl.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/net/InetAddressImpl.c
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libkaffevm_la-InetAddressImpl.Tpo $(DEPDIR)/libkaffevm_la-InetAddressImpl.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/libraries/clib/net/InetAddressImpl.c' object='libkaffevm_la-InetAddressImpl.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-InetAddressImpl.lo `test -f '$(top_srcdir)/libraries/clib/net/InetAddressImpl.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/net/InetAddressImpl.c
 
 libkaffevm_la-AccessController.lo: $(top_srcdir)/libraries/clib/native/AccessController.c
 @am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-AccessController.lo -MD -MP -MF $(DEPDIR)/libkaffevm_la-AccessController.Tpo -c -o libkaffevm_la-AccessController.lo `test -f '$(top_srcdir)/libraries/clib/native/AccessController.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/native/AccessController.c

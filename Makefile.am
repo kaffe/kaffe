@@ -79,7 +79,6 @@ EXTRA_DIST = \
 	FAQ/FAQ.debugging \
 	FAQ/FAQ.depend \
 	FAQ/FAQ.dmalloc \
-	FAQ/FAQ.dns \
 	FAQ/FAQ.drops \
 	FAQ/FAQ.embedded \
 	FAQ/FAQ.feedback \

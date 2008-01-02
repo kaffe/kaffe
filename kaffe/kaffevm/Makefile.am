@@ -136,7 +136,6 @@ libkaffe_la_SOURCES = \
 	binreloc.c 
 
 libkaffevm_la_SOURCES = \
-	$(top_srcdir)/libraries/clib/net/InetAddressImpl.c \
 	$(top_srcdir)/libraries/clib/native/AccessController.c \
 	$(top_srcdir)/libraries/clib/native/java_lang_ref_Reference.c \
         $(top_srcdir)/libraries/clib/native/Constructor.c \
