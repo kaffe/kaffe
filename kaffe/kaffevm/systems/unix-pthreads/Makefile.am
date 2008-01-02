@@ -13,9 +13,6 @@ AM_CFLAGS= $(KAFFE_CFLAGS)
 
 noinst_LTLIBRARIES = libkthread.la
 
-libkthread_la_LIBADD = \
-	$(NET_LIBS)
-
 libkthread_la_LDFLAGS = \
 	$(KVMLIBFLAGS) \
 	$(PTHREAD_CFLAGS) \

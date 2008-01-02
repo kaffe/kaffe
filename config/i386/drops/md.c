@@ -15,7 +15,6 @@
 #include <string.h>     /* memcpy, str* */
 #include <stdlib.h>     /* malloc, free */
 #include <fcntl.h>      /* O_RDONLY */
-#include <netdb.h>      /* gethostname, getservbyname, ... */
 #include <signal.h>	/* kill */
 #ifdef USE_UCLIBC
 #include <unistd.h>     /* environ */
@@ -53,11 +52,6 @@ char **environ = NULL;
 int h_errno = 0;
 #endif
 
-int gethostname(char *name, size_t len)
-{
-  LOG("to do : len=%d name=%s ", len, name);
-  return 0;
-}
 struct servent *getservbyname (UNUSED const char *__name,
                                UNUSED const char *__proto)
 {
@@ -114,12 +108,6 @@ int execvp(const char *file UNUSED,
 }
 
 long sysconf(int name UNUSED) {
-  LOG("to do");
-  return 0;
-}
-
-struct hostent *gethostbyname (UNUSED const char *__name)
-{
   LOG("to do");
   return 0;
 }

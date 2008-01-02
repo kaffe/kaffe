@@ -73,7 +73,6 @@ libkaffe_la_DEPENDENCIES = \
 
 libkaffe_la_LIBADD = \
 	$(libkaffe_la_DEPENDENCIES) \
-	$(NET_LIBS) \
 	$(VM_LIBS) \
 	$(M_LIBS) \
 	$(ZIP_LIBS)

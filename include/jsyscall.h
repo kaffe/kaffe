@@ -18,10 +18,6 @@
 #include "config.h"
 #include "config-int.h"
 
-#if defined(HAVE_NETDB_H)
-#include <netdb.h>
-#endif /* defined(HAVE_NETDB_H) */
-
 #if defined(HAVE_STDLIB_H)
 #include <stdlib.h>
 #endif /* HAVE_STDLIB_H */

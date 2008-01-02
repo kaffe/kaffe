@@ -67,9 +67,6 @@
 /* Does mprotect support protecting region not covered by mmap ? */
 #undef HAVE_COMPATIBLE_MPROTECT
 
-/* Define to 1 if you have the `connect' function. */
-#undef HAVE_CONNECT
-
 /* Define to 1 if you have the <crt_externs.h> header file. */
 #undef HAVE_CRT_EXTERNS_H
 
@@ -147,12 +144,6 @@
 
 /* Define to 1 if you have the `getcwd' function. */
 #undef HAVE_GETCWD
-
-/* Define to 1 if you have the `gethostbyname' function. */
-#undef HAVE_GETHOSTBYNAME
-
-/* Define to 1 if you have the `gethostname' function. */
-#undef HAVE_GETHOSTNAME
 
 /* Define to 1 if you have the `getpagesize' function. */
 #undef HAVE_GETPAGESIZE
@@ -273,17 +264,11 @@
 /* Define to 1 if you have the `mw' library (-lmw). */
 #undef HAVE_LIBMW
 
-/* Define to 1 if you have the `nsl' library (-lnsl). */
-#undef HAVE_LIBNSL
-
 /* Define to 1 if you have the `png' library (-lpng). */
 #undef HAVE_LIBPNG
 
 /* Define to 1 if you have the `pthread' library (-lpthread). */
 #undef HAVE_LIBPTHREAD
-
-/* Define to 1 if you have the `socket' library (-lsocket). */
-#undef HAVE_LIBSOCKET
 
 /* Define to 1 if you have the `ungif' library (-lungif). */
 #undef HAVE_LIBUNGIF
@@ -374,9 +359,6 @@
 
 /* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
 #undef HAVE_NDIR_H
-
-/* Define to 1 if you have the <netdb.h> header file. */
-#undef HAVE_NETDB_H
 
 /* Define to 1 if you have the <netinet/in.h> header file. */
 #undef HAVE_NETINET_IN_H

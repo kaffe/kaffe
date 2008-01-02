@@ -72,8 +72,7 @@ mkinstalldirs = $(SHELL) $(top_srcdir)/scripts/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
-am__DEPENDENCIES_1 =
-libkthread_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
+libkthread_la_LIBADD =
 am_libkthread_la_OBJECTS = libkthread_la-lock-impl.lo \
 	libkthread_la-signal.lo libkthread_la-syscalls.lo \
 	libkthread_la-thread-impl.lo
@@ -195,7 +194,6 @@ MSGFMT = @MSGFMT@
 MSGMERGE = @MSGMERGE@
 M_LIBS = @M_LIBS@
 NANOX_CFLAGS = @NANOX_CFLAGS@
-NET_LIBS = @NET_LIBS@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
 OPT_DLOPEN_JAVA_LIBS = @OPT_DLOPEN_JAVA_LIBS@
@@ -305,9 +303,6 @@ top_srcdir = @top_srcdir@
 with_engine = @with_engine@
 AM_CFLAGS = $(KAFFE_CFLAGS)
 noinst_LTLIBRARIES = libkthread.la
-libkthread_la_LIBADD = \
-	$(NET_LIBS)
-
 libkthread_la_LDFLAGS = \
 	$(KVMLIBFLAGS) \
 	$(PTHREAD_CFLAGS) \

@@ -566,38 +566,6 @@ Ngetreadtimeout(int fd)
 
 static
 char*
-Ngethostname(void)
-{
-	char* buf;
-
-	buf = gc_malloc_fixed(64);
-	if (gethostname(buf, 64) == 0) {
-		return (buf);
-	}
-	else {
-		return ("localhost");
-	}
-}
-
-static
-int*
-Ngethostbyname(char* name)
-{
-	struct hostent* ent;
-	int* addrs;
-
-	ent = gethostbyname(name);
-	if (ent == 0) {
-		return (0);
-	}
-	addrs = (int*)gc_malloc_fixed(sizeof(int) * 2);
-	addrs[0] = *(int*)ent->h_addr;
-	addrs[1] = 0;
-	return (addrs);
-}
-
-static
-char*
 Ngethostbyaddr(int addr)
 {
 	struct hostent* ent;

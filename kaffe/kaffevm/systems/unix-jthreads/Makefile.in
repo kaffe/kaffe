@@ -69,8 +69,7 @@ mkinstalldirs = $(SHELL) $(top_srcdir)/scripts/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
-am__DEPENDENCIES_1 =
-libkthread_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
+libkthread_la_LIBADD =
 am_libkthread_la_OBJECTS = jthread.lo syscalls.lo signal.lo jqueue.lo
 libkthread_la_OBJECTS = $(am_libkthread_la_OBJECTS)
 libkthread_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -190,7 +189,6 @@ MSGFMT = @MSGFMT@
 MSGMERGE = @MSGMERGE@
 M_LIBS = @M_LIBS@
 NANOX_CFLAGS = @NANOX_CFLAGS@
-NET_LIBS = @NET_LIBS@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
 OPT_DLOPEN_JAVA_LIBS = @OPT_DLOPEN_JAVA_LIBS@
@@ -303,7 +301,6 @@ noinst_LTLIBRARIES = libkthread.la
 libkthread_la_LDFLAGS = \
 	$(KVMLIBFLAGS)
 
-libkthread_la_LIBADD = $(NET_LIBS)
 libkthread_la_SOURCES = jthread.c syscalls.c signal.c jqueue.c
 EXTRA_DIST = Makefile.frag config-jthreads.h jsignal.h jthread.h \
 		lock-impl.h thread-impl.h jqueue.h

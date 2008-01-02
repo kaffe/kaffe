@@ -895,21 +895,6 @@ esac
 
 AC_CHECK_LIBRARY([gc],[GC_free],[VM_LIBS])
 
-dnl Check for libraries for net library.
-AC_CHECK_FUNCS_ONCE(gethostname)
-if test $ac_cv_func_gethostname = no; then
-      AC_CHECK_LIBRARY(nsl, gethostname, NET_LIBS)
-fi
-AC_CHECK_FUNCS_ONCE(gethostbyname)
-if test $ac_cv_func_gethostbyname = no; then
-      AC_CHECK_LIBRARY(nsl, gethostbyname, NET_LIBS)
-fi
-AC_CHECK_FUNCS_ONCE(connect)
-if test $ac_cv_func_connect = no; then
-  AC_CHECK_LIBRARY(socket, connect, NET_LIBS)
-fi
-AC_SUBST(NET_LIBS)
-
 dnl Check for libraries for zip library.
 AC_CHECK_LIBRARY(z,deflate,ZIP_LIBS)
 ZIP_LIBS="$CTLIBS $ZIP_LIBS"
@@ -951,7 +936,6 @@ mach-o/rld.h \
 malloc.h \
 memory.h \
 mips/cachectl.h \
-netdb.h \
 netinet/in.h \
 netinet/in_systm.h \
 netinet/tcp.h \
