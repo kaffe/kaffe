@@ -1,5 +1,9 @@
 2008-01-02  Dalibor Topic  <robilad@kaffe.org>
 
+	* test/native/Makefile.am (TEST_ENVIRONMENT): Removed KAFFELIBRARYPATH initialization.
+
+2008-01-02  Dalibor Topic  <robilad@kaffe.org>
+
 	* Makefile.am (BUILD_ENVRONMENT-make): Cleaned up, and removed no longer used paths.
 
 2008-01-02  Dalibor Topic  <robilad@kaffe.org>
