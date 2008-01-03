@@ -1,5 +1,9 @@
 2008-01-02  Dalibor Topic  <robilad@kaffe.org>
 
+	* TODO: Added new integration tasks.
+
+2008-01-02  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac (AC_FUNC_STRFTIME, AC_FUNC_UTIME_NULL): Removed.
 
 2008-01-02  Dalibor Topic  <robilad@kaffe.org>

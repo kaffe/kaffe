@@ -23,6 +23,9 @@
 
 * Integration issues
  * Make pure java zip the default.
+ * Remove unused binreloc support.
+ * Remove jikes from checked compiler list.
+ * Update java.lang.ref vminterface to latest version.
  * Remove tests for unused functions and headers.
  * Switch over to GNU Classpath's javah and remove kaffeh
   * Replace native library code using KNI with code using JNI
