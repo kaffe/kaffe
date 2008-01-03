@@ -1239,10 +1239,8 @@ dnl =========================================================================
 dnl Checks for library functions.
 dnl -------------------------------------------------------------------------
 
-AC_FUNC_STRFTIME
 AC_FUNC_MEMCMP
 AC_FUNC_MMAP
-AC_FUNC_UTIME_NULL
 
 AC_CHECK_FUNCS_ONCE([select socket getsockname getpagesize fstat
 memcpy memmove 
