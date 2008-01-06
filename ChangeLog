@@ -1,3 +1,18 @@
+2008-01-06  Dalibor Topic  <topic@quad-damage>
+
+	* configure.ac: Don't check for socket, getsockname, mkdir, rmdir,
+	chdir, localtime, mincore, msync, madvise, remainder, remainderf,
+	drem, rint, strtod, mergesort, strtol, strtoul, finite, broken strtod,
+	hstrerr, strerr_r, waitpid, kill, execvp, execve, fork.
+	
+	* config/config-math.h (IEEERemainder, IEEERemainderf, rint) Removed.
+
+	* config/i386/drops/md.c (waitpid, kill, execvp, fork): Removed.
+
+	* config/sparc/sunos4/md.h,
+	config/mips/ultrix4/md.h,
+	config/m68k/sunos4/md.h: Removed socket, getsockname, kill prototypes.
+
 2008-01-02  Dalibor Topic  <robilad@kaffe.org>
 
 	* TODO: Added new integration tasks.

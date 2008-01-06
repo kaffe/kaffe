@@ -37,13 +37,10 @@
 #define longjmp         ultrixlongjmp
 extern void ultrixlongjmp(int*, int);
 
-extern int socket(int, int, int);
 extern int sendto(int, char*, int, int, struct sockaddr*, int);
 extern int setsockopt(int, int, int, char*, int);
 extern int getsockopt(int, int, int, char*, int*);
-extern int getsockname(int, struct sockaddr*, int*);
 extern int getpeername(int, struct sockaddr*, int*);
 extern int select(int, fd_set*, fd_set*, fd_set*, struct timeval*);
-extern int kill(pid_t, int);
 
 #endif

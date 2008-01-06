@@ -16,29 +16,6 @@
 #include <math.h>
 #include <limits.h>
 
-/*
- * Java defines two sorts of floating-point remainder operations, one
- * IEEE 754 remainder (for java.lang.IEEEremainder()) and a
- * different version for the % operator.
- */
-
-/* IEEE 754 remainder for doubles */
-#if defined(HAVE_REMAINDER)
-#define IEEERemainder(a, b) remainder(a, b)
-#elif defined(HAVE_DREM)
-#define IEEERemainder(a, b) drem(a, b)
-#else
-#define	IEEERemainder(a, b) 0
-/* Kaffe requires a truncating-division-based floating-point remainder operation */
-#endif
-
-/* IEEE 754 remainder for floats */
-#if defined(HAVE_REMAINDERF)
-#define IEEERemainderf(a, b) remainderf(a, b)
-#else
-#define IEEERemainderf(a, b) ((float)IEEERemainder((double)a, (double)b))
-#endif
-
 /* Java remainder for doubles */
 #if defined(HAVE_FMOD)
 #define javaRemainder(a, b) fmod(a, b)
@@ -60,11 +37,6 @@
 
 #if !defined(HAVE_CEIL)
 #define	ceil(v)		(-floor(-(v)))
-#endif
-
-#if !defined(HAVE_RINT)
-/* As per Java Class Libraries page 927 */
-#define	rint(v)		(floor(v+0.5))
 #endif
 
 /* If we dont' have isinf() assume nothing is */

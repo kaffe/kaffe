@@ -47,11 +47,9 @@
 struct sockaddr;
 extern int rename(const char*, const char*);
 extern int remove(const char*);
-extern int socket(int, int, int);
 extern ssize_t sendto(int, const void*, size_t, int, const struct sockaddr*, int);
 extern int setsockopt(int, int, int, const void*, int);
 extern int getsockopt(int, int, int, void*, int*);
-extern int getsockname(int, struct sockaddr*, int*);
 extern int getpeername(int, struct sockaddr*, int*);
 extern int select(int, fd_set*, fd_set*, fd_set*, struct timeval*);
 extern int vfprintf(FILE *, char *, va_list);

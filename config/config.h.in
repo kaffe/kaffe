@@ -61,9 +61,6 @@
 /* Define to 1 if you have the `ceil' function. */
 #undef HAVE_CEIL
 
-/* Define to 1 if you have the `chdir' function. */
-#undef HAVE_CHDIR
-
 /* Does mprotect support protecting region not covered by mmap ? */
 #undef HAVE_COMPATIBLE_MPROTECT
 
@@ -91,15 +88,6 @@
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
 
-/* Define to 1 if you have the `drem' function. */
-#undef HAVE_DREM
-
-/* Define to 1 if you have the `execve' function. */
-#undef HAVE_EXECVE
-
-/* Define to 1 if you have the `execvp' function. */
-#undef HAVE_EXECVP
-
 /* Define to 1 if you have the `fcntl' function. */
 #undef HAVE_FCNTL
 
@@ -120,9 +108,6 @@
 
 /* Define to 1 if you have the `fmodf' function. */
 #undef HAVE_FMODF
-
-/* Define to 1 if you have the `fork' function. */
-#undef HAVE_FORK
 
 /* Define to 1 if you have the `fstat' function. */
 #undef HAVE_FSTAT
@@ -153,9 +138,6 @@
 
 /* Define to 1 if you have the `getrusage' function. */
 #undef HAVE_GETRUSAGE
-
-/* Define to 1 if you have the `getsockname' function. */
-#undef HAVE_GETSOCKNAME
 
 /* Define if the GNU gettext() function is already present or preinstalled. */
 #undef HAVE_GETTEXT
@@ -201,9 +183,6 @@
 /* Define if unused variables la GCC 2.5 and higher are available. */
 #undef HAVE_GNUC25_UNUSED
 
-/* Define to 1 if you have the `hstrerror' function. */
-#undef HAVE_HSTRERROR
-
 /* Define to 1 if you have the <ia64intrin.h> header file. */
 #undef HAVE_IA64INTRIN_H
 
@@ -230,9 +209,6 @@
 
 /* Define to 1 if you have the <kernel/OS.h> header file. */
 #undef HAVE_KERNEL_OS_H
-
-/* Define to 1 if you have the `kill' function. */
-#undef HAVE_KILL
 
 /* Define if your <locale.h> file defines LC_MESSAGES. */
 #undef HAVE_LC_MESSAGES
@@ -288,17 +264,11 @@
 /* Define to 1 if you have the <linux/socket.h> header file. */
 #undef HAVE_LINUX_SOCKET_H
 
-/* Define to 1 if you have the `localtime' function. */
-#undef HAVE_LOCALTIME
-
 /* Define to 1 if you have the <mach/mach.h> header file. */
 #undef HAVE_MACH_MACH_H
 
 /* Define to 1 if you have the <mach-o/rld.h> header file. */
 #undef HAVE_MACH_O_RLD_H
-
-/* Define to 1 if you have the `madvise' function. */
-#undef HAVE_MADVISE
 
 /* Define to 1 if you have the <malloc.h> header file. */
 #undef HAVE_MALLOC_H
@@ -318,29 +288,17 @@
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
 
-/* Define to 1 if you have the `mergesort' function. */
-#undef HAVE_MERGESORT
-
-/* Define to 1 if you have the `mincore' function. */
-#undef HAVE_MINCORE
-
 /* Enable MIPS II instructions */
 #undef HAVE_MIPSII_INSTRUCTIONS
 
 /* Define to 1 if you have the <mips/cachectl.h> header file. */
 #undef HAVE_MIPS_CACHECTL_H
 
-/* Define to 1 if you have the `mkdir' function. */
-#undef HAVE_MKDIR
-
 /* Define to 1 if you have a working `mmap' system call. */
 #undef HAVE_MMAP
 
 /* Define to 1 if you have the `mprotect' function. */
 #undef HAVE_MPROTECT
-
-/* Define to 1 if you have the `msync' function. */
-#undef HAVE_MSYNC
 
 /* Define to 1 if you have the `munmap' function. */
 #undef HAVE_MUNMAP
@@ -389,18 +347,6 @@
 
 /* Define to 1 if you have the <pwd.h> header file. */
 #undef HAVE_PWD_H
-
-/* Define to 1 if you have the `remainder' function. */
-#undef HAVE_REMAINDER
-
-/* Define to 1 if you have the `remainderf' function. */
-#undef HAVE_REMAINDERF
-
-/* Define to 1 if you have the `rint' function. */
-#undef HAVE_RINT
-
-/* Define to 1 if you have the `rmdir' function. */
-#undef HAVE_RMDIR
 
 /* Define to 1 if you have the `sbrk' function. */
 #undef HAVE_SBRK
@@ -465,9 +411,6 @@
 /* Define to 1 if you have the `snprintf' function. */
 #undef HAVE_SNPRINTF
 
-/* Define to 1 if you have the `socket' function. */
-#undef HAVE_SOCKET
-
 /* Define to 1 if you have the <stdarg.h> header file. */
 #undef HAVE_STDARG_H
 
@@ -483,9 +426,6 @@
 /* Define to 1 if you have the `strerror' function. */
 #undef HAVE_STRERROR
 
-/* Define to 1 if you have the `strerror_r' function. */
-#undef HAVE_STRERROR_R
-
 /* Define to 1 if you have the <strings.h> header file. */
 #undef HAVE_STRINGS_H
 
@@ -497,15 +437,6 @@
 
 /* Define to 1 if you have the `strstr' function. */
 #undef HAVE_STRSTR
-
-/* Define to 1 if you have the `strtod' function. */
-#undef HAVE_STRTOD
-
-/* Define to 1 if you have the `strtol' function. */
-#undef HAVE_STRTOL
-
-/* Define to 1 if you have the `strtoul' function. */
-#undef HAVE_STRTOUL
 
 /* Define to 1 if you have the `strtoull' function. */
 #undef HAVE_STRTOULL
@@ -640,9 +571,6 @@
 /* Define to 1 if you have the `vsnprintf' function. */
 #undef HAVE_VSNPRINTF
 
-/* Define to 1 if you have the `waitpid' function. */
-#undef HAVE_WAITPID
-
 /* Define to 1 if you have the <wintypes.h> header file. */
 #undef HAVE_WINTYPES_H
 
@@ -768,9 +696,6 @@
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
-
-/* Define if strtod(\"-0.0\") is broken */
-#undef STRTOD_m0_BROKEN
 
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #undef TIME_WITH_SYS_TIME

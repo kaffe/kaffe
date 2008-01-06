@@ -80,32 +80,11 @@ int pipe(int filedes[2] UNUSED) {
   return -1;
 }
 
-pid_t fork(void) {
-  LOG("to do");
-  return 0;
-};
-
 int dup2 (int oldfd UNUSED, int newfd UNUSED) {
   LOG("to do");
   return 0;
 }
 
-pid_t waitpid(pid_t pid UNUSED, int *status UNUSED,
-	      int options UNUSED) {
-  LOG("to do");
-  return 0;
-}
-
-int kill(pid_t pid UNUSED, int sig UNUSED) {
-  LOG("to do");
-  return 0;
-}
-
-int execvp(const char *file UNUSED,
-	   char *const argv[] UNUSED) {
-  LOG("to do");
-  return 0;
-}
 
 long sysconf(int name UNUSED) {
   LOG("to do");

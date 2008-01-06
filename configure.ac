@@ -1242,12 +1242,11 @@ dnl -------------------------------------------------------------------------
 AC_FUNC_MEMCMP
 AC_FUNC_MMAP
 
-AC_CHECK_FUNCS_ONCE([select socket getsockname getpagesize fstat
+AC_CHECK_FUNCS_ONCE([select getpagesize fstat
 memcpy memmove 
-mkdir rmdir
-getcwd chdir getwd gettimeofday ftime time uname getuid
-localtime get_nprocs_conf
-munmap mincore msync madvise getpagesize sysconf])
+getcwd getwd gettimeofday ftime time uname getuid
+get_nprocs_conf
+munmap sysconf])
 
 AM_ICONV
 
@@ -1275,9 +1274,9 @@ AC_CHECK_HEADERS_ONCE(sched.h)
 
 KSAVE_LIBS="$LIBS"
 LIBS="$M_LIBS $LIBS"
-AC_CHECK_FUNCS([remainder remainderf fmod fmodf drem \
-rint floor ceil strtod mergesort \
-strdup strstr strtod strtol strtoul strtouq strtoull])
+AC_CHECK_FUNCS([fmod fmodf \
+floor ceil \
+strdup strstr strtouq strtoull])
 
 dnl isinf, isnan, finite checking code taken from Sablotron 1.0,
 dnl dually licensed licensed under MPL 1.1 and GPL
@@ -1288,7 +1287,6 @@ dnl this is due HPUX, where isnan & Co. are defined as macros
 
 AC_CHECK_FUNC( isnan, [has_isnan=1; AC_DEFINE(HAVE_ISNAN, 1, isnan)], has_isnan=0)
 AC_CHECK_FUNC( isinf, [has_isinf=1; AC_DEFINE(HAVE_ISINF, 1, isinf)], has_isinf=0)
-AC_CHECK_FUNC( finite,[has_finite=1;AC_DEFINE(HAVE_FINITE, 1, finite)], has_finite=0)
 
 dnl check for macro isnan in math
 if test $has_isnan = 0; then
@@ -1328,66 +1326,9 @@ fi
 
 LIBS="$KSAVE_LIBS"
 
-dnl Test whether strtod("-0.0") is broken
-AC_CACHE_CHECK([whether strtod(\"-0.0\") is broken],
-  ac_cv_strtod_m0_broken, [dnl
-    AC_RUN_IFELSE([AC_LANG_SOURCE([[
-#include <stdlib.h>
-/* definition DOUBLE_ORDER_OPPOSITE from config/config-hacks.h */
-#if defined(__arm__)
-#define DOUBLE_ORDER_OPPOSITE
-#endif
-/* definition of uint32 from kaffe/kaffevm/gtypes.h */
-#if SIZEOF_INT == 4
-#define uint32	unsigned int
-#elif SIZEOF_LONG == 4
-#define uint32	unsigned long
-#else
-#define uint32	int
-#endif
-/* definition of uint64 from kaffe/kaffevm/gtypes.h */
-#if SIZEOF_LONG == 8
-#define uint64	unsigned long
-#elif SIZEOF_LONG_LONG == 8
-#define uint64	unsigned long long
-#elif SIZEOF___INT64 == 8
-#define uint64	unsigned __int64
-#else
-#define uint64	int
-#endif
-int main()
-{
-    union { double d; uint32 i; uint64 j; } d;
-    if (sizeof(uint64) != 8) return 2;
-#if defined(HAVE_STRTOD)
-    d.d = strtod("-0.0", 0);
-#else
-    d.d = atof("-0.0");
-#endif
-    /* doubleToLong() from kaffe/kaffevm/fp.c */
-#if defined(DOUBLE_ORDER_OPPOSITE)
-    {
-	/* swap low and high word */
-	uint32 r = *(uint32*)&d.j;
-	uint32 *s = (uint32*)&d.j + 1;
-	d.i = *s;
-	*s = r;
-    }
-#endif
-    if ((d.j >> 63) & 1) return 0; else return 1;
-}
-]])],[ac_cv_strtod_m0_broken=no],[ac_cv_strtod_m0_broken=yes],[ac_cv_strtod_m0_broken=cross])])
-if test x"$ac_cv_strtod_m0_broken" = x"yes"; then
-  AC_DEFINE(STRTOD_m0_BROKEN, 1, [Define if strtod(\"-0.0\") is broken])
-fi
-
-AC_CHECK_FUNCS_ONCE([strerror hstrerror strerror_r
-fcntl ioctl
-alarm setitimer
+AC_CHECK_FUNCS_ONCE([strerror fcntl ioctl alarm setitimer
 sigprocmask sigsetmask sigemptyset sigaddset signal sigaction
 sbrk valloc memalign mallopt getrlimit setrlimit sigaltstack
-madvise
-waitpid kill fork execve execvp
 sync fsync ftruncate
 atexit on_exit vsnprintf snprintf])
 
