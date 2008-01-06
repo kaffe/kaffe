@@ -54,7 +54,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/ax_cflags_gcc_option.m4 \
 	$(top_srcdir)/m4/ax_cflags_warn_all.m4 \
 	$(top_srcdir)/m4/ax_create_stdint_h.m4 \
-	$(top_srcdir)/m4/binreloc.m4 $(top_srcdir)/m4/classpath.m4 \
+	$(top_srcdir)/m4/classpath.m4 \
 	$(top_srcdir)/m4/compile_value.m4 \
 	$(top_srcdir)/m4/gcc_attribute.m4 $(top_srcdir)/m4/gettext.m4 \
 	$(top_srcdir)/m4/glibcver.m4 $(top_srcdir)/m4/gmp.m4 \
@@ -71,7 +71,7 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 mkinstalldirs = $(SHELL) $(top_srcdir)/scripts/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h
 CONFIG_CLEAN_FILES = constants.c debug.c file.c jar.c readClass.c \
-	utf8const.c binreloc.c
+	utf8const.c
 am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
@@ -79,7 +79,7 @@ am_kaffeh_OBJECTS = main.$(OBJEXT) mem.$(OBJEXT) sigs.$(OBJEXT) \
 	support.$(OBJEXT)
 nodist_kaffeh_OBJECTS = constants.$(OBJEXT) debug.$(OBJEXT) \
 	file.$(OBJEXT) jar.$(OBJEXT) readClass.$(OBJEXT) \
-	utf8const.$(OBJEXT) binreloc.$(OBJEXT)
+	utf8const.$(OBJEXT)
 kaffeh_OBJECTS = $(am_kaffeh_OBJECTS) $(nodist_kaffeh_OBJECTS)
 am__DEPENDENCIES_1 =
 kaffeh_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
@@ -110,8 +110,6 @@ AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
 AWT_LIBS = @AWT_LIBS@
 BCEL_JAR = @BCEL_JAR@
-BINRELOC_CFLAGS = @BINRELOC_CFLAGS@
-BINRELOC_LIBS = @BINRELOC_LIBS@
 CC = @CC@
 CCAS = @CCAS@
 CCASDEPMODE = @CCASDEPMODE@
@@ -333,8 +331,7 @@ nodist_kaffeh_SOURCES = \
 	file.c \
 	jar.c \
 	readClass.c \
-	utf8const.c \
-	binreloc.c
+	utf8const.c
 
 noinst_HEADERS = \
 	kaffeh-support.h \
@@ -413,7 +410,6 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/binreloc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/constants.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/debug.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/file.Po@am__quote@

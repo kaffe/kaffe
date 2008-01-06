@@ -1,5 +1,26 @@
 2008-01-06  Dalibor Topic  <robilad@kaffe.org>
 
+	* THIRDPARTY: Removed information on binreloc.
+
+	* kaffe/kaffeh/Makefile.am (nodist_kaffeh_SOURCES): Removed binreloc.c.
+
+	* kaffe/kaffevm/Makefile.am (noinst_HEADERS): Removed binreloc.h
+	(libkaffe_la_SOURCES): Removed binreloc.c.
+
+	* kaffe/kaffevm/findInJar.c,
+	kaffe/kaffevm/external.c,
+	kaffe/kaffevm/baseClasses.c,
+	kaffe/kaffeh/main.c,
+	kaffe/kaffe/main.c: Removed support for binreloc.
+
+	* configure.ac (AM_BINRELOC) Removed. (AC_CONFIG_LINKS)
+	Removed linking in of binreloc.
+
+	* kaffe/kaffevm/binreloc.c, kaffe/kaffevm/binreloc.h, m4/binreloc.m4:
+	Removed.
+
+2008-01-06  Dalibor Topic  <robilad@kaffe.org>
+
 	* TODO: Updated.
 
 2008-01-06  Dalibor Topic  <robilad@kaffe.org>

@@ -30,10 +30,6 @@
 #include <locale.h>
 #endif
 
-#ifdef ENABLE_BINRELOC
-#include "binreloc.h"
-#endif
-
 #define	BUFSZ	1024
 #define	PATHSZ	1024
 
@@ -82,15 +78,6 @@ main(int argc, char* argv[])
 	char* nm;
 	int i, j, first = 1;
 	int farg;
-
-#if defined(ENABLE_BINRELOC)
-	BrInitError error;
-
-	if( br_init(&error) == 0 && error != BR_INIT_ERROR_DISABLED) {
-        	printf ("Warning: BinReloc failed to initialize (error code %d)\n", error);
-        	printf ("Will fallback to hardcoded default path.\n");
-    	};
-#endif
 
 	/* Process arguments */
 	farg = options(argc, argv);
@@ -363,19 +350,6 @@ options(int argc, char** argv)
 	  {
 	    strcpy(realClassPath, bootclasspath);
 	  } 
-	else 
-	  {
-
-#if defined(ENABLE_BINRELOC)
-            char *prefixPath = br_find_prefix(NULL);
-	    char *rtJarPath = br_build_path(prefixPath, "jre/lib/rt.jar");
-
-	    strcpy(realClassPath, rtJarPath);
-
-	    free(rtJarPath);
-	    free(prefixPath);
-#endif
-	  }
 
 	free(bootclasspath);
 

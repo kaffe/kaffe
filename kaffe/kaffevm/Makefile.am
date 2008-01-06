@@ -131,8 +131,7 @@ libkaffe_la_SOURCES = \
 	utf8const.c \
 	gcFuncs.c \
 	reflect.c \
-	reference.c \
-	binreloc.c 
+	reference.c
 
 libkaffevm_la_SOURCES = \
 	$(top_srcdir)/libraries/clib/native/AccessController.c \
@@ -187,8 +186,7 @@ noinst_HEADERS = \
 	threadData.h \
 	utf8const.h \
 	reflect.h \
-	reference.h \
-	binreloc.h
+	reference.h
 
 CLEANFILES = so_locations
 

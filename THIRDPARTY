@@ -12,7 +12,7 @@ Public License. See file license-lesser.terms for details.
 More information on GNU libc is available at 
 http://www.gnu.org/software/libc/libc.html.
 
-* Configure.in tests for isinf, isnan, finite
+* Configure.in tests for isinf, isnan
 
 Taken from Sablotron 1.0, which is dually licensed licensed under MPL 1.1 
 and GPL. It is available from 
@@ -155,14 +155,6 @@ The code is licensed under GNU General Public License v2 or later.
 See license.terms for the text of GNU General Public License v2. 
 
 More information on GNU m4 is available at http://www.gnu.org/software/m4/.
-
-* binreloc
-
-Merged in BinReloc 2.0 from http://www.autopackage.org/docs/binreloc/ . 
-BinReloc provides an easy-to-use API that uses dynamic linker and kernel magic 
-to find out the full path of your aplication or library. 
-
-BinReloc is in public domain.
 
 * libraries/clib/native/VMRuntime.c, m4/classpath.m4.
 

@@ -3,9 +3,6 @@
 /* Define the version we're compiling for */
 #undef ARCHOS
 
-/* Include pthread support for binary relocation? */
-#undef BR_PTHREAD
-
 /* 1234 = LIL_ENDIAN, 4321 = BIGENDIAN */
 #undef BYTEORDER
 
@@ -17,9 +14,6 @@
 
 /* Define default KAFFEHOME */
 #undef DEFAULT_KAFFEHOME
-
-/* Use binary relocation? */
-#undef ENABLE_BINRELOC
 
 /* JVM Profiling Interface */
 #undef ENABLE_JVMPI
@@ -205,9 +199,6 @@
 
 /* Define to 1 if you have the `png' library (-lpng). */
 #undef HAVE_LIBPNG
-
-/* Define to 1 if you have the `pthread' library (-lpthread). */
-#undef HAVE_LIBPTHREAD
 
 /* Define to 1 if you have the `ungif' library (-lungif). */
 #undef HAVE_LIBUNGIF

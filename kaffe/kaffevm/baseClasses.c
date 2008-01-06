@@ -44,9 +44,6 @@
 #include "fileSections.h"
 #include "verify-type.h"
 #include "jar.h"
-#if defined(ENABLE_BINRELOC)
-#include "binreloc.h"
-#endif
 
 Utf8Const* init_name;
 Utf8Const* final_name;
@@ -181,10 +178,6 @@ initialiseKaffe(void)
 	/* Machine specific initialisation first */
 #if defined(INIT_MD)
 	INIT_MD();
-#endif
-
-#if defined(ENABLE_BINRELOC)
-	br_init_lib(NULL);
 #endif
 
 	/* Register allocation types with gc subsystem */

@@ -38,8 +38,8 @@ nodist_kaffeh_SOURCES = \
 	file.c \
 	jar.c \
 	readClass.c \
-	utf8const.c \
-	binreloc.c
+	utf8const.c
+
 
 noinst_HEADERS = \
 	kaffeh-support.h \

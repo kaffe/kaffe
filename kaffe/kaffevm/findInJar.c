@@ -36,9 +36,6 @@
 #include "access.h"
 #include "gcj/gcj.h"
 #include "defs.h"
-#if defined(ENABLE_BINRELOC)
-#include "binreloc.h"
-#endif
 
 #if defined(HAVE_SYS_TYPES_H)
 #include <sys/types.h>
@@ -75,8 +72,6 @@ static int isEntryInClasspath(const char*);
 static char* getManifestMainAttribute(jarFile*, const char*);
 static void handleManifestClassPath (classpathEntry *);
 #endif
-
-static char* discoverClassHome(void);
 
 /*
  * Find the named class in a directory or JAR file.
@@ -395,9 +390,6 @@ initClasspath(void)
 		KFREE(writable_cp);
 	}
 	else {
-           if (0 == hm || hm[0] == '\0') {
-              hm = discoverClassHome();
-           }
            if (hm) {
 		discoverClasspath(hm);
            }
@@ -793,47 +785,3 @@ DBG(CLASSLOOKUP,	dprintf("Entry '%s' added to classpath\n", newEntry->path); );
 }
 #endif
 
-#ifdef ENABLE_BINRELOC
-static char discoveredClassHome[MAXPATHLEN];
-#endif
-
-/*
- * Guess the path to kaffe/jre/lib by going upwards from the current
- * module's absolute location. returns the first directory that
- * contains a readable file named "rt.jar", or NULL if the path cannot
- * be discovered.
- */
-static char* 
-discoverClassHome(void)
-{
-#ifdef ENABLE_BINRELOC
-   if (strlen(file_separator) == 1) {
-
-      char* p;
-      const char* referenceName = "rt.jar";
-      char *exeFilename = br_find_exe(NULL);
-
-      strcpy(discoveredClassHome, exeFilename);
-
-      while ((p = strrchr(discoveredClassHome, file_separator[0]))) {
-         if (p + 1 + strlen(referenceName) 
-             < discoveredClassHome + sizeof discoveredClassHome) {
-            strcpy(p + 1, referenceName);
-            if (0 == access(discoveredClassHome, R_OK)) {
-               *p = '\0';                    
-	       free(exeFilename);
-               return discoveredClassHome;
-            }
-         }
-         *p = '\0';                    
-      }
-      free(exeFilename);
-   }
-   else {
-      fprintf(stderr, "WARNING: file_separator not a single character, unable to discover lib directory\n");
-   }
-#endif
-
-   
-   return NULL;
-}

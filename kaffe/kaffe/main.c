@@ -52,10 +52,6 @@
 #include <locale.h>
 #endif
 
-#ifdef ENABLE_BINRELOC
-#include "binreloc.h"
-#endif
-
 #if defined(KAFFE_PROFILER)
 extern int profFlag;
 #endif
@@ -92,15 +88,6 @@ main(int argc, char* argv[])
 
 #if defined(MAIN_MD)
 	MAIN_MD;
-#endif
-
-#if defined(ENABLE_BINRELOC)
-        BrInitError error;
-
-        if( br_init(&error) == 0 && error != BR_INIT_ERROR_DISABLED) {
-                printf ("Warning: BinReloc failed to initialize (error code %d)\n", error);
-                printf ("Will fallback to hardcoded default path.\n");
-        };
 #endif
 
 #if defined(HAVE_LC_MESSAGES)
@@ -382,13 +369,7 @@ setKaffeAWT(const char * propStr)
 {
 	char    *newbootcpath;
 	unsigned int      bootcpathlength;
-	char    *prefix = 
-#if defined(ENABLE_BINRELOC)
-		br_find_lib_dir(NULL)
-#else /* !defined(ENABLE_BINRELOC) */
-	        DEFAULT_KAFFEHOME
-#endif /* defined(ENABLE_BINRELOC) */
-		;
+	char    *prefix =  DEFAULT_KAFFEHOME;
 
 	const char *suffix = file_separator "kaffeawt.jar";
 	char *backend_property = strdup(propStr);
@@ -422,10 +403,6 @@ setKaffeAWT(const char * propStr)
 
         /* select Xlib backend */
         prop = setUserProperty(backend_property);
-
-#if defined(ENABLE_BINRELOC)
-	free(prefix);
-#endif
 
 	return prop;
 }
@@ -549,13 +526,7 @@ options(char** argv, int argc)
                 else if (strncmp(argv[i], "-Xnative-big-math", (j=17)) == 0) {
                         char    *newbootcpath;
                         unsigned int      bootcpathlength;
-			const char *prefix =
-#if defined(ENABLE_BINRELOC)
-				br_find_lib_dir(NULL)
-#else /* !defined(ENABLE_BINRELOC) */
-				DEFAULT_KAFFEHOME
-#endif /* defined(ENABLE_BINRELOC) */
-				;
+			const char *prefix = DEFAULT_KAFFEHOME;
 
  			const char *suffix = file_separator "gmpjavamath.jar";
 

@@ -1017,8 +1017,6 @@ KVMBINFLAGS
 KVMLIBFLAGS
 COND_DIRECT_THREADING_TRUE
 COND_DIRECT_THREADING_FALSE
-BINRELOC_CFLAGS
-BINRELOC_LIBS
 KAFFEH
 MAKE_KAFFEH
 kaffe_builddir
@@ -1677,10 +1675,6 @@ Optional Features:
                           [default=native]
   --disable-direct-threading
                           Use switched interpreter instead of direct-threading
-  --enable-binreloc       compile with binary relocation support
-                          (default=enable when available)
-  --enable-binreloc-threads      compile binary relocation with threads support
-	                         (default=yes)
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -2157,6 +2151,7 @@ ac_header_list="$ac_header_list memory.h"
 ac_header_list="$ac_header_list mips/cachectl.h"
 ac_header_list="$ac_header_list png.h"
 ac_header_list="$ac_header_list poll.h"
+ac_header_list="$ac_header_list pthread.h"
 ac_header_list="$ac_header_list pwd.h"
 ac_header_list="$ac_header_list sgidefs.h"
 ac_header_list="$ac_header_list sigcontext.h"
@@ -2222,7 +2217,6 @@ ac_func_list="$ac_func_list sigaltstack"
 ac_func_list="$ac_func_list atexit"
 ac_func_list="$ac_func_list on_exit"
 ac_func_list="$ac_func_list vsnprintf"
-ac_header_list="$ac_header_list pthread.h"
 # Check that the precious variables saved in the cache have kept the same
 # value.
 ac_cache_corrupted=false
@@ -7049,7 +7043,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 7052 "configure"' > conftest.$ac_ext
+  echo '#line 7046 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -9613,11 +9607,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9616: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9610: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9620: \$? = $ac_status" >&5
+   echo "$as_me:9614: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9903,11 +9897,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9906: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9900: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9910: \$? = $ac_status" >&5
+   echo "$as_me:9904: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -10007,11 +10001,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:10010: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:10004: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:10014: \$? = $ac_status" >&5
+   echo "$as_me:10008: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -12356,7 +12350,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12359 "configure"
+#line 12353 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12456,7 +12450,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12459 "configure"
+#line 12453 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -14880,11 +14874,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14883: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14877: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:14887: \$? = $ac_status" >&5
+   echo "$as_me:14881: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -14984,11 +14978,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14987: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14981: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:14991: \$? = $ac_status" >&5
+   echo "$as_me:14985: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -16546,11 +16540,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16549: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16543: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:16553: \$? = $ac_status" >&5
+   echo "$as_me:16547: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -16650,11 +16644,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16653: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16647: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:16657: \$? = $ac_status" >&5
+   echo "$as_me:16651: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -18841,11 +18835,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18844: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18838: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:18848: \$? = $ac_status" >&5
+   echo "$as_me:18842: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -19131,11 +19125,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:19134: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:19128: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:19138: \$? = $ac_status" >&5
+   echo "$as_me:19132: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -19235,11 +19229,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:19238: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:19232: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:19242: \$? = $ac_status" >&5
+   echo "$as_me:19236: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -25541,7 +25535,7 @@ else
 JAVA_TEST=Test.java
 CLASS_TEST=Test.class
 cat << \EOF > $JAVA_TEST
-/* #line 25544 "configure" */
+/* #line 25538 "configure" */
 public class Test {
 }
 EOF
@@ -29968,6 +29962,10 @@ _ACEOF
 fi
 
 done
+
+
+
+
 
 
 
@@ -41682,219 +41680,6 @@ echo "$as_me: error: Can't find zlib 1.2.3 or later" >&2;}
 fi
 
 
-
-
-
-
-
-
-
-
-if test x"$ac_cv_header_pthread_h" = x"yes"; then
-    if test x"$cross_compiling" = x"yes"; then
-     ac_cv_file__proc_self_maps=no;
-     { echo "$as_me:$LINENO: WARNING: If you want binreloc support on the platform you are cross-compiling to, and the platform supports it, please run configure with --enable-binreloc explicitely." >&5
-echo "$as_me: WARNING: If you want binreloc support on the platform you are cross-compiling to, and the platform supports it, please run configure with --enable-binreloc explicitely." >&2;}
-  fi
-
-	# Check whether --enable-binreloc was given.
-if test "${enable_binreloc+set}" = set; then
-  enableval=$enable_binreloc; enable_binreloc=$enableval
-else
-  enable_binreloc=auto
-fi
-
-
-	# Check whether --enable-binreloc-threads was given.
-if test "${enable_binreloc_threads+set}" = set; then
-  enableval=$enable_binreloc_threads; enable_binreloc_threads=$enableval
-else
-  enable_binreloc_threads=yes
-fi
-
-
-	BINRELOC_CFLAGS=
-	BINRELOC_LIBS=
-	if test "x$enable_binreloc" = "xauto"; then
-		{ echo "$as_me:$LINENO: checking for /proc/self/maps" >&5
-echo $ECHO_N "checking for /proc/self/maps... $ECHO_C" >&6; }
-if test "${ac_cv_file__proc_self_maps+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  test "$cross_compiling" = yes &&
-  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
-echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
-   { (exit 1); exit 1; }; }
-if test -r "/proc/self/maps"; then
-  ac_cv_file__proc_self_maps=yes
-else
-  ac_cv_file__proc_self_maps=no
-fi
-fi
-{ echo "$as_me:$LINENO: result: $ac_cv_file__proc_self_maps" >&5
-echo "${ECHO_T}$ac_cv_file__proc_self_maps" >&6; }
-
-		{ echo "$as_me:$LINENO: checking whether everything is installed to the same prefix" >&5
-echo $ECHO_N "checking whether everything is installed to the same prefix... $ECHO_C" >&6; }
-if test "${br_cv_valid_prefixes+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-
-				if test "$bindir" = '${exec_prefix}/bin' -a "$sbindir" = '${exec_prefix}/sbin' -a \
-					"$datadir" = '${prefix}/share' -a "$libdir" = '${exec_prefix}/lib' -a \
-					"$libexecdir" = '${exec_prefix}/libexec' -a "$sysconfdir" = '${prefix}/etc'
-				then
-					br_cv_valid_prefixes=yes
-				else
-					br_cv_valid_prefixes=no
-				fi
-
-fi
-{ echo "$as_me:$LINENO: result: $br_cv_valid_prefixes" >&5
-echo "${ECHO_T}$br_cv_valid_prefixes" >&6; }
-	fi
-	{ echo "$as_me:$LINENO: checking whether binary relocation support should be enabled" >&5
-echo $ECHO_N "checking whether binary relocation support should be enabled... $ECHO_C" >&6; }
-if test "${br_cv_binreloc+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  if test "x$enable_binreloc" = "xyes"; then
-		       	       br_cv_binreloc=yes
-		       elif test "x$enable_binreloc" = "xauto"; then
-			       if test "x$br_cv_valid_prefixes" = "xyes" -a \
-			       	       "x$ac_cv_file__proc_self_maps" = "xyes"; then
-				       br_cv_binreloc=yes
-			       else
-				       br_cv_binreloc=no
-			       fi
-		       else
-			       br_cv_binreloc=no
-		       fi
-fi
-{ echo "$as_me:$LINENO: result: $br_cv_binreloc" >&5
-echo "${ECHO_T}$br_cv_binreloc" >&6; }
-
-	if test "x$br_cv_binreloc" = "xyes"; then
-		BINRELOC_CFLAGS="-DENABLE_BINRELOC"
-
-cat >>confdefs.h <<\_ACEOF
-#define ENABLE_BINRELOC
-_ACEOF
-
-		if test "x$enable_binreloc_threads" = "xyes"; then
-
-{ echo "$as_me:$LINENO: checking for pthread_getspecific in -lpthread" >&5
-echo $ECHO_N "checking for pthread_getspecific in -lpthread... $ECHO_C" >&6; }
-if test "${ac_cv_lib_pthread_pthread_getspecific+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lpthread  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char pthread_getspecific ();
-int
-main ()
-{
-return pthread_getspecific ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (ac_try="$ac_link"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
-  (eval "$ac_link") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_c_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest$ac_exeext &&
-       $as_test_x conftest$ac_exeext; then
-  ac_cv_lib_pthread_pthread_getspecific=yes
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	ac_cv_lib_pthread_pthread_getspecific=no
-fi
-
-rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
-      conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ echo "$as_me:$LINENO: result: $ac_cv_lib_pthread_pthread_getspecific" >&5
-echo "${ECHO_T}$ac_cv_lib_pthread_pthread_getspecific" >&6; }
-if test $ac_cv_lib_pthread_pthread_getspecific = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBPTHREAD 1
-_ACEOF
-
-  LIBS="-lpthread $LIBS"
-
-fi
-
-		fi
-
-		{ echo "$as_me:$LINENO: checking whether binary relocation should use threads" >&5
-echo $ECHO_N "checking whether binary relocation should use threads... $ECHO_C" >&6; }
-if test "${br_cv_binreloc_threads+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  if test "x$enable_binreloc_threads" = "xyes"; then
-					if test "x$ac_cv_lib_pthread_pthread_getspecific" = "xyes"; then
-						br_cv_binreloc_threads=yes
-					else
-						br_cv_binreloc_threads=no
-					fi
-			        else
-					br_cv_binreloc_threads=no
-				fi
-fi
-{ echo "$as_me:$LINENO: result: $br_cv_binreloc_threads" >&5
-echo "${ECHO_T}$br_cv_binreloc_threads" >&6; }
-
-		if test "x$br_cv_binreloc_threads" = "xyes"; then
-			BINRELOC_LIBS="-lpthread"
-
-cat >>confdefs.h <<\_ACEOF
-#define BR_PTHREAD 1
-_ACEOF
-
-		else
-			BINRELOC_CFLAGS="$BINRELOC_CFLAGS -DBR_PTHREADS=0"
-
-cat >>confdefs.h <<\_ACEOF
-#define BR_PTHREAD 0
-_ACEOF
-
-		fi
-	fi
-
-
-
-fi
-
-
 if test x"$cross_compiling" = x"yes"; then
       if test x"${ac_cv_c_bigendian+set}" != x"set"; then
     { echo "$as_me:$LINENO: WARNING: when cross compiling, you may want to set ac_cv_c_bigendian to yes or no" >&5
@@ -42488,8 +42273,6 @@ ac_config_links="$ac_config_links kaffe/kaffeh/jar.c:kaffe/kaffevm/jar.c"
 ac_config_links="$ac_config_links kaffe/kaffeh/readClass.c:kaffe/kaffevm/readClass.c"
 
 ac_config_links="$ac_config_links kaffe/kaffeh/utf8const.c:kaffe/kaffevm/utf8const.c"
-
-ac_config_links="$ac_config_links kaffe/kaffeh/binreloc.c:kaffe/kaffevm/binreloc.c"
 
 
 if test x"$with_engine" != x"intrp" ; then
@@ -43354,7 +43137,6 @@ do
     "kaffe/kaffeh/jar.c") CONFIG_LINKS="$CONFIG_LINKS kaffe/kaffeh/jar.c:kaffe/kaffevm/jar.c" ;;
     "kaffe/kaffeh/readClass.c") CONFIG_LINKS="$CONFIG_LINKS kaffe/kaffeh/readClass.c:kaffe/kaffevm/readClass.c" ;;
     "kaffe/kaffeh/utf8const.c") CONFIG_LINKS="$CONFIG_LINKS kaffe/kaffeh/utf8const.c:kaffe/kaffevm/utf8const.c" ;;
-    "kaffe/kaffeh/binreloc.c") CONFIG_LINKS="$CONFIG_LINKS kaffe/kaffeh/binreloc.c:kaffe/kaffevm/binreloc.c" ;;
     "config/jit-md.h") CONFIG_LINKS="$CONFIG_LINKS config/jit-md.h:$CONFIG_JIT_MD_H" ;;
     "config/callKaffeException.h") CONFIG_LINKS="$CONFIG_LINKS config/callKaffeException.h:$CONFIG_CALLKAFFEEXCEPTION_H" ;;
     "kaffe/kaffevm/$with_engine/icode.h") CONFIG_LINKS="$CONFIG_LINKS kaffe/kaffevm/$with_engine/icode.h:$KAFFEVM_ICODE_H" ;;
@@ -43755,8 +43537,6 @@ KVMBINFLAGS!$KVMBINFLAGS$ac_delim
 KVMLIBFLAGS!$KVMLIBFLAGS$ac_delim
 COND_DIRECT_THREADING_TRUE!$COND_DIRECT_THREADING_TRUE$ac_delim
 COND_DIRECT_THREADING_FALSE!$COND_DIRECT_THREADING_FALSE$ac_delim
-BINRELOC_CFLAGS!$BINRELOC_CFLAGS$ac_delim
-BINRELOC_LIBS!$BINRELOC_LIBS$ac_delim
 KAFFEH!$KAFFEH$ac_delim
 MAKE_KAFFEH!$MAKE_KAFFEH$ac_delim
 kaffe_builddir!$kaffe_builddir$ac_delim
@@ -43778,7 +43558,7 @@ subdirs!$subdirs$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 64; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 62; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5

@@ -928,6 +928,7 @@ memory.h \
 mips/cachectl.h \
 png.h \
 poll.h \
+pthread.h \
 pwd.h \
 sgidefs.h \
 sigcontext.h \
@@ -1704,20 +1705,6 @@ if test x"$is_recent_zlib" != x"yes" ; then
 fi
 
 dnl =========================================================================
-dnl Configure Binreloc support
-dnl -------------------------------------------------------------------------
-
-AC_CHECK_HEADERS_ONCE([pthread.h])
-if test x"$ac_cv_header_pthread_h" = x"yes"; then
-  dnl We can now check whether we want binreloc
-  if test x"$cross_compiling" = x"yes"; then
-     ac_cv_file__proc_self_maps=no;
-     AC_MSG_WARN([If you want binreloc support on the platform you are cross-compiling to, and the platform supports it, please run configure with --enable-binreloc explicitely.])
-  fi
-  AM_BINRELOC
-fi
-
-dnl =========================================================================
 dnl Set up for local build of kaffeh when cross-compiling
 dnl -------------------------------------------------------------------------
 
@@ -1925,7 +1912,6 @@ AC_CONFIG_LINKS([kaffe/kaffeh/file.c:kaffe/kaffevm/file.c])
 AC_CONFIG_LINKS([kaffe/kaffeh/jar.c:kaffe/kaffevm/jar.c])
 AC_CONFIG_LINKS([kaffe/kaffeh/readClass.c:kaffe/kaffevm/readClass.c])
 AC_CONFIG_LINKS([kaffe/kaffeh/utf8const.c:kaffe/kaffevm/utf8const.c])
-AC_CONFIG_LINKS([kaffe/kaffeh/binreloc.c:kaffe/kaffevm/binreloc.c])
 
 if test x"$with_engine" != x"intrp" ; then
   AC_CONFIG_LINKS([config/jit-md.h:$CONFIG_JIT_MD_H])

@@ -45,9 +45,6 @@
 #include "feedback.h"
 #endif
 #include "jni_i.h"
-#ifdef ENABLE_BINRELOC
-#include "binreloc.h"
-#endif
 
 #ifdef __riscos__
 #include <unixlib/local.h>
@@ -75,21 +72,6 @@ static struct _libHandle {
 static iStaticLock	libraryLock; /* mutex on all intern operations */
 static char *libraryPath = NULL;
 
-#ifdef ENABLE_BINRELOC
-static
-char *discoverLibraryHome(void)
-{
-  char *entryPoint;
-
-  entryPoint = br_find_exe_dir(NULL);
-  if (entryPoint == NULL)
-    // Abnormal. We may return ".".
-    return ".";
-
-  return entryPoint;
-}
-#endif
-
 void
 initNative(void)
 {
@@ -106,11 +88,6 @@ initNative(void)
 	lpath = (const char*)Kaffe_JavaVMArgs.libraryhome;
 	if (lpath == NULL) {
 		lpath = getenv(LIBRARYPATH);
-#ifdef ENABLE_BINRELOC
-		if (lpath == NULL) {
-			lpath = discoverLibraryHome();
-		}
-#endif
 	}
 #ifdef __riscos__
         __unixify(lpath, 0, lib, MAXLIBPATH, __RISCOSIFY_FILETYPE_NOTSPECIFIED);

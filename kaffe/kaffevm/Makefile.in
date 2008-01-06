@@ -46,9 +46,9 @@ build_triplet = @build@
 host_triplet = @host@
 subdir = kaffe/kaffevm
 DIST_COMMON = $(noinst_HEADERS) $(srcdir)/Makefile.am \
-	$(srcdir)/Makefile.in $(srcdir)/binreloc.c \
-	$(srcdir)/constants.c $(srcdir)/debug.c $(srcdir)/file.c \
-	$(srcdir)/jar.c $(srcdir)/readClass.c $(srcdir)/utf8const.c
+	$(srcdir)/Makefile.in $(srcdir)/constants.c $(srcdir)/debug.c \
+	$(srcdir)/file.c $(srcdir)/jar.c $(srcdir)/readClass.c \
+	$(srcdir)/utf8const.c
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/ac_prog_javac.m4 \
@@ -58,7 +58,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/ax_cflags_gcc_option.m4 \
 	$(top_srcdir)/m4/ax_cflags_warn_all.m4 \
 	$(top_srcdir)/m4/ax_create_stdint_h.m4 \
-	$(top_srcdir)/m4/binreloc.m4 $(top_srcdir)/m4/classpath.m4 \
+	$(top_srcdir)/m4/classpath.m4 \
 	$(top_srcdir)/m4/compile_value.m4 \
 	$(top_srcdir)/m4/gcc_attribute.m4 $(top_srcdir)/m4/gettext.m4 \
 	$(top_srcdir)/m4/glibcver.m4 $(top_srcdir)/m4/gmp.m4 \
@@ -105,8 +105,7 @@ am_libkaffe_la_OBJECTS = libkaffe_la-access.lo \
 	libkaffe_la-string.lo libkaffe_la-support.lo \
 	libkaffe_la-javacall.lo libkaffe_la-thread.lo \
 	libkaffe_la-utf8const.lo libkaffe_la-gcFuncs.lo \
-	libkaffe_la-reflect.lo libkaffe_la-reference.lo \
-	libkaffe_la-binreloc.lo
+	libkaffe_la-reflect.lo libkaffe_la-reference.lo
 nodist_libkaffe_la_OBJECTS = libkaffe_la-md.lo
 libkaffe_la_OBJECTS = $(am_libkaffe_la_OBJECTS) \
 	$(nodist_libkaffe_la_OBJECTS)
@@ -165,8 +164,6 @@ AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
 AWT_LIBS = @AWT_LIBS@
 BCEL_JAR = @BCEL_JAR@
-BINRELOC_CFLAGS = @BINRELOC_CFLAGS@
-BINRELOC_LIBS = @BINRELOC_LIBS@
 CC = @CC@
 CCAS = @CCAS@
 CCASDEPMODE = @CCASDEPMODE@
@@ -468,8 +465,7 @@ libkaffe_la_SOURCES = \
 	utf8const.c \
 	gcFuncs.c \
 	reflect.c \
-	reference.c \
-	binreloc.c 
+	reference.c
 
 libkaffevm_la_SOURCES = \
 	$(top_srcdir)/libraries/clib/native/AccessController.c \
@@ -524,8 +520,7 @@ noinst_HEADERS = \
 	threadData.h \
 	utf8const.h \
 	reflect.h \
-	reference.h \
-	binreloc.h
+	reference.h
 
 CLEANFILES = so_locations
 all: all-recursive
@@ -601,7 +596,6 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffe_la-access.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffe_la-baseClasses.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffe_la-binreloc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffe_la-classMethod.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffe_la-classPool.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffe_la-code-analyse.Plo@am__quote@
@@ -902,13 +896,6 @@ libkaffe_la-reference.lo: reference.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='reference.c' object='libkaffe_la-reference.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffe_la_CFLAGS) $(CFLAGS) -c -o libkaffe_la-reference.lo `test -f 'reference.c' || echo '$(srcdir)/'`reference.c
-
-libkaffe_la-binreloc.lo: binreloc.c
-@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffe_la_CFLAGS) $(CFLAGS) -MT libkaffe_la-binreloc.lo -MD -MP -MF $(DEPDIR)/libkaffe_la-binreloc.Tpo -c -o libkaffe_la-binreloc.lo `test -f 'binreloc.c' || echo '$(srcdir)/'`binreloc.c
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libkaffe_la-binreloc.Tpo $(DEPDIR)/libkaffe_la-binreloc.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='binreloc.c' object='libkaffe_la-binreloc.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffe_la_CFLAGS) $(CFLAGS) -c -o libkaffe_la-binreloc.lo `test -f 'binreloc.c' || echo '$(srcdir)/'`binreloc.c
 
 libkaffe_la-md.lo: md.c
 @am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffe_la_CFLAGS) $(CFLAGS) -MT libkaffe_la-md.lo -MD -MP -MF $(DEPDIR)/libkaffe_la-md.Tpo -c -o libkaffe_la-md.lo `test -f 'md.c' || echo '$(srcdir)/'`md.c
