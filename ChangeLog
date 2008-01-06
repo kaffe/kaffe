@@ -1,5 +1,13 @@
 2008-01-06  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/Makefile.am (noinst_HEADERS): Removed. Moved
+	headers over to libkaffe_la_SOURCES.
+
+	* kaffe/kaffeh/Makefile.am (noinst_HEADERS) Removed. Moved
+	headers over to kaffeh_SOURCES.
+
+2008-01-06  Dalibor Topic  <robilad@kaffe.org>
+
 	* TODO, WHATSNEW: Updated to document removal of binreloc.
 
 2008-01-06  Dalibor Topic  <robilad@kaffe.org>

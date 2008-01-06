@@ -22,7 +22,6 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
@@ -43,8 +42,7 @@ build_triplet = @build@
 host_triplet = @host@
 bin_PROGRAMS = kaffeh$(EXEEXT)
 subdir = kaffe/kaffeh
-DIST_COMMON = $(noinst_HEADERS) $(srcdir)/Makefile.am \
-	$(srcdir)/Makefile.in
+DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/ac_prog_javac.m4 \
@@ -96,7 +94,6 @@ LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	$(LDFLAGS) -o $@
 SOURCES = $(kaffeh_SOURCES) $(nodist_kaffeh_SOURCES)
 DIST_SOURCES = $(kaffeh_SOURCES)
-HEADERS = $(noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -323,7 +320,11 @@ kaffeh_SOURCES = \
 	main.c \
 	mem.c \
 	sigs.c \
-	support.c
+	support.c \
+	kaffeh-support.h \
+	java_lang_ClassLoader.h \
+	java_lang_Object.h \
+	java_lang_String.h
 
 nodist_kaffeh_SOURCES = \
 	constants.c \
@@ -332,12 +333,6 @@ nodist_kaffeh_SOURCES = \
 	jar.c \
 	readClass.c \
 	utf8const.c
-
-noinst_HEADERS = \
-	kaffeh-support.h \
-	java_lang_ClassLoader.h \
-	java_lang_Object.h \
-	java_lang_String.h
 
 all: all-am
 
@@ -524,7 +519,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(PROGRAMS) $(HEADERS)
+all-am: Makefile $(PROGRAMS)
 installdirs:
 	for dir in "$(DESTDIR)$(bindir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \

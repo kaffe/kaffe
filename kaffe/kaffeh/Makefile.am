@@ -30,7 +30,11 @@ kaffeh_SOURCES = \
 	main.c \
 	mem.c \
 	sigs.c \
-	support.c
+	support.c \
+	kaffeh-support.h \
+	java_lang_ClassLoader.h \
+	java_lang_Object.h \
+	java_lang_String.h
 
 nodist_kaffeh_SOURCES = \
 	constants.c \
@@ -39,10 +43,3 @@ nodist_kaffeh_SOURCES = \
 	jar.c \
 	readClass.c \
 	utf8const.c
-
-
-noinst_HEADERS = \
-	kaffeh-support.h \
-	java_lang_ClassLoader.h \
-	java_lang_Object.h \
-	java_lang_String.h

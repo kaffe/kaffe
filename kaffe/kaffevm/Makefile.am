@@ -131,27 +131,7 @@ libkaffe_la_SOURCES = \
 	utf8const.c \
 	gcFuncs.c \
 	reflect.c \
-	reference.c
-
-libkaffevm_la_SOURCES = \
-	$(top_srcdir)/libraries/clib/native/AccessController.c \
-	$(top_srcdir)/libraries/clib/native/java_lang_ref_Reference.c \
-        $(top_srcdir)/libraries/clib/native/Constructor.c \
-        $(top_srcdir)/libraries/clib/native/Field.c \
-        $(top_srcdir)/libraries/clib/native/Method.c \
-        $(top_srcdir)/libraries/clib/native/Class.c \
-        $(top_srcdir)/libraries/clib/native/ClassLoader.c \
-        $(top_srcdir)/libraries/clib/native/java_lang_Object.c \
-        $(top_srcdir)/libraries/clib/native/Runtime.c \
-        $(top_srcdir)/libraries/clib/native/VMRuntime.c \
-        $(top_srcdir)/libraries/clib/native/java_lang_String.c \
-        $(top_srcdir)/libraries/clib/native/System.c \
-        $(top_srcdir)/libraries/clib/native/java_lang_Thread.c \
-        $(top_srcdir)/libraries/clib/native/Throwable.c \
-	$(top_srcdir)/libraries/clib/native/gnu_classpath_VMStackWalker.c \
-	$(top_srcdir)/libraries/clib/native/gnu_classpath_VMSystemProperties.c 
-
-noinst_HEADERS = \
+	reference.c \
 	access.h \
 	baseClasses.h \
 	bytecode.h \
@@ -187,6 +167,24 @@ noinst_HEADERS = \
 	utf8const.h \
 	reflect.h \
 	reference.h
+
+libkaffevm_la_SOURCES = \
+	$(top_srcdir)/libraries/clib/native/AccessController.c \
+	$(top_srcdir)/libraries/clib/native/java_lang_ref_Reference.c \
+        $(top_srcdir)/libraries/clib/native/Constructor.c \
+        $(top_srcdir)/libraries/clib/native/Field.c \
+        $(top_srcdir)/libraries/clib/native/Method.c \
+        $(top_srcdir)/libraries/clib/native/Class.c \
+        $(top_srcdir)/libraries/clib/native/ClassLoader.c \
+        $(top_srcdir)/libraries/clib/native/java_lang_Object.c \
+        $(top_srcdir)/libraries/clib/native/Runtime.c \
+        $(top_srcdir)/libraries/clib/native/VMRuntime.c \
+        $(top_srcdir)/libraries/clib/native/java_lang_String.c \
+        $(top_srcdir)/libraries/clib/native/System.c \
+        $(top_srcdir)/libraries/clib/native/java_lang_Thread.c \
+        $(top_srcdir)/libraries/clib/native/Throwable.c \
+	$(top_srcdir)/libraries/clib/native/gnu_classpath_VMStackWalker.c \
+	$(top_srcdir)/libraries/clib/native/gnu_classpath_VMSystemProperties.c 
 
 CLEANFILES = so_locations
 

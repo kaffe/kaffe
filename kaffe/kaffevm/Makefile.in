@@ -25,7 +25,6 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
@@ -45,10 +44,9 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 subdir = kaffe/kaffevm
-DIST_COMMON = $(noinst_HEADERS) $(srcdir)/Makefile.am \
-	$(srcdir)/Makefile.in $(srcdir)/constants.c $(srcdir)/debug.c \
-	$(srcdir)/file.c $(srcdir)/jar.c $(srcdir)/readClass.c \
-	$(srcdir)/utf8const.c
+DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
+	$(srcdir)/constants.c $(srcdir)/debug.c $(srcdir)/file.c \
+	$(srcdir)/jar.c $(srcdir)/readClass.c $(srcdir)/utf8const.c
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/ac_prog_javac.m4 \
@@ -148,7 +146,6 @@ RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	install-pdf-recursive install-ps-recursive install-recursive \
 	installcheck-recursive installdirs-recursive pdf-recursive \
 	ps-recursive uninstall-recursive
-HEADERS = $(noinst_HEADERS)
 RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
   distclean-recursive maintainer-clean-recursive
 ETAGS = etags
@@ -465,27 +462,7 @@ libkaffe_la_SOURCES = \
 	utf8const.c \
 	gcFuncs.c \
 	reflect.c \
-	reference.c
-
-libkaffevm_la_SOURCES = \
-	$(top_srcdir)/libraries/clib/native/AccessController.c \
-	$(top_srcdir)/libraries/clib/native/java_lang_ref_Reference.c \
-        $(top_srcdir)/libraries/clib/native/Constructor.c \
-        $(top_srcdir)/libraries/clib/native/Field.c \
-        $(top_srcdir)/libraries/clib/native/Method.c \
-        $(top_srcdir)/libraries/clib/native/Class.c \
-        $(top_srcdir)/libraries/clib/native/ClassLoader.c \
-        $(top_srcdir)/libraries/clib/native/java_lang_Object.c \
-        $(top_srcdir)/libraries/clib/native/Runtime.c \
-        $(top_srcdir)/libraries/clib/native/VMRuntime.c \
-        $(top_srcdir)/libraries/clib/native/java_lang_String.c \
-        $(top_srcdir)/libraries/clib/native/System.c \
-        $(top_srcdir)/libraries/clib/native/java_lang_Thread.c \
-        $(top_srcdir)/libraries/clib/native/Throwable.c \
-	$(top_srcdir)/libraries/clib/native/gnu_classpath_VMStackWalker.c \
-	$(top_srcdir)/libraries/clib/native/gnu_classpath_VMSystemProperties.c 
-
-noinst_HEADERS = \
+	reference.c \
 	access.h \
 	baseClasses.h \
 	bytecode.h \
@@ -521,6 +498,24 @@ noinst_HEADERS = \
 	utf8const.h \
 	reflect.h \
 	reference.h
+
+libkaffevm_la_SOURCES = \
+	$(top_srcdir)/libraries/clib/native/AccessController.c \
+	$(top_srcdir)/libraries/clib/native/java_lang_ref_Reference.c \
+        $(top_srcdir)/libraries/clib/native/Constructor.c \
+        $(top_srcdir)/libraries/clib/native/Field.c \
+        $(top_srcdir)/libraries/clib/native/Method.c \
+        $(top_srcdir)/libraries/clib/native/Class.c \
+        $(top_srcdir)/libraries/clib/native/ClassLoader.c \
+        $(top_srcdir)/libraries/clib/native/java_lang_Object.c \
+        $(top_srcdir)/libraries/clib/native/Runtime.c \
+        $(top_srcdir)/libraries/clib/native/VMRuntime.c \
+        $(top_srcdir)/libraries/clib/native/java_lang_String.c \
+        $(top_srcdir)/libraries/clib/native/System.c \
+        $(top_srcdir)/libraries/clib/native/java_lang_Thread.c \
+        $(top_srcdir)/libraries/clib/native/Throwable.c \
+	$(top_srcdir)/libraries/clib/native/gnu_classpath_VMStackWalker.c \
+	$(top_srcdir)/libraries/clib/native/gnu_classpath_VMSystemProperties.c 
 
 CLEANFILES = so_locations
 all: all-recursive
@@ -1198,7 +1193,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-recursive
-all-am: Makefile $(LTLIBRARIES) $(HEADERS)
+all-am: Makefile $(LTLIBRARIES)
 installdirs: installdirs-recursive
 installdirs-am:
 	for dir in "$(DESTDIR)$(nativedir)"; do \
