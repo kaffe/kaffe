@@ -1,5 +1,9 @@
 2008-01-06  Dalibor Topic  <robilad@kaffe.org>
 
+	* TODO, WHATSNEW: Updated to document removal of binreloc.
+
+2008-01-06  Dalibor Topic  <robilad@kaffe.org>
+
 	* THIRDPARTY: Removed information on binreloc.
 
 	* kaffe/kaffeh/Makefile.am (nodist_kaffeh_SOURCES): Removed binreloc.c.

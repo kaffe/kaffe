@@ -23,7 +23,6 @@
 
 * Integration issues
  * Make pure java zip the default.
- * Remove unused binreloc support.
  * Remove jikes from checked compiler list.
  * Update java.lang.ref vminterface to latest version.
  * Switch over to GNU Classpath's javah and remove kaffeh
