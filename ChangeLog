@@ -1,5 +1,9 @@
 2008-01-06  Dalibor Topic  <robilad@kaffe.org>
 
+	* TODO: Updated.
+
+2008-01-06  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac (AC_HEADER_TIME, AC_STRUCT_TM, AC_STRUCT_TIMEZONE):
 	Removed.
 
