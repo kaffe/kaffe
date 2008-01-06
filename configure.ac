@@ -913,13 +913,11 @@ AC_HEADER_STDC
 AC_CHECK_HEADERS_ONCE([stdarg.h \
 alloca.h \
 bsd/libc.h \
-crt_externs.h \
 dlfcn.h \
 fcntl.h \
 features.h \
 gmp.h \
 gc/gc.h \
-iconv.h \
 jpeglib.h \
 kernel/OS.h \
 limits.h \
@@ -928,9 +926,6 @@ mach-o/rld.h \
 malloc.h \
 memory.h \
 mips/cachectl.h \
-netinet/in.h \
-netinet/in_systm.h \
-netinet/tcp.h \
 png.h \
 poll.h \
 pwd.h \
@@ -939,7 +934,6 @@ sigcontext.h \
 signal.h \
 stdlib.h \
 string.h \
-stropts.h \
 sys/cachectl.h \
 sys/filio.h \
 sys/ioctl.h \
@@ -949,19 +943,14 @@ sys/poll.h \
 sys/select.h \
 sys/signal.h \
 sys/socket.h \
-sys/sockio.h \
 sys/stat.h \
 sys/sysinfo.h \
 sys/time.h \
 sys/types.h \
 sys/utsname.h \
 sys/ucontext.h \
-syslog.h \
-time.h \
 unistd.h \
-utime.h \
 wintypes.h \
-wtypes.h \
 zlib.h])
 
 # check sys/sysctl.h seperately, as it requires other headers on at least OpenBSD
@@ -970,23 +959,6 @@ AC_CHECK_HEADERS([sys/sysctl.h], [], [],
 # include <sys/param.h>
 #endif
 ]])
-
-# check net/if.h seperately, as it requrires other headers on OS X
-# and HP-UX 10.20
-AC_CHECK_HEADERS([net/if.h], [], [],
-[#include <stdio.h>
-#if STDC_HEADERS
-# include <stdlib.h>
-# include <stddef.h>
-#else
-# if HAVE_STDLIB_H
-#  include <stdlib.h>
-# endif
-#endif
-#if HAVE_SYS_SOCKET_H
-# include <sys/socket.h>
-#endif
-])
 
 dnl GNU/Linux sigcontext headers
 AC_CHECK_HEADERS_ONCE([asm/sigcontext.h])
@@ -1003,30 +975,11 @@ AC_CHECK_HEADERS_ONCE([asm/cachectl.h])
 dnl needed for ia64
 AC_CHECK_HEADERS_ONCE([ia64intrin.h])
 
-dnl needed to check for Linux 2.0
-AC_CHECK_HEADERS_ONCE([linux/socket.h])
-AC_CHECK_HEADERS([linux/netlink.h], [], [],[
-#if defined(HAVE_LINUX_SOCKET_H)
-#include <linux/socket.h>
-#endif /* HAVE_LINUX_SOCKET_H */
-])
-AC_CHECK_HEADERS([linux/rtnetlink.h], [], [], [
-#if defined(HAVE_LINUX_SOCKET_H)
-#include <linux/socket.h>
-#endif /* HAVE_LINUX_SOCKET_H */
-])
-AC_CHECK_HEADERS_ONCE([netpacket/packet.h])
-
 AC_HEADER_SYS_WAIT
 AC_HEADER_DIRENT
 
 dnl We need both getrusage and the header containing its decls.
-have_rusage=no
-have_resource_h=no
-AC_CHECK_HEADERS(sys/resource.h, have_resource_h=yes)
-if test x"$have_resource_h" = x"yes"; then
-   AC_CHECK_FUNCS(getrusage, have_rusage=yes)
-fi
+AC_CHECK_HEADERS_ONCE([sys/resource.h])
 
 dnl Check whether there exists mprotect. If it exists and we are
 dnl on HPUX, then prevent kaffe from using it when the pointer does not
@@ -1242,13 +1195,8 @@ dnl -------------------------------------------------------------------------
 AC_FUNC_MEMCMP
 AC_FUNC_MMAP
 
-AC_CHECK_FUNCS_ONCE([select getpagesize fstat
-memcpy memmove 
-getcwd getwd gettimeofday ftime time uname getuid
-get_nprocs_conf
-munmap sysconf])
-
-AM_ICONV
+AC_CHECK_FUNCS_ONCE([getpagesize memcpy memmove 
+getcwd getwd gettimeofday ftime time uname getuid get_nprocs_conf])
 
 # sched_get_priority_* functions are not implemented on OpenBSD <= 3.4
 # at least. setting pthread priorities on OpenBSD has unexpected results,
@@ -1275,10 +1223,9 @@ AC_CHECK_HEADERS_ONCE(sched.h)
 KSAVE_LIBS="$LIBS"
 LIBS="$M_LIBS $LIBS"
 AC_CHECK_FUNCS([fmod fmodf \
-floor ceil \
-strdup strstr strtouq strtoull])
+floor ceil strtouq strtoull])
 
-dnl isinf, isnan, finite checking code taken from Sablotron 1.0,
+dnl isinf, isnan checking code taken from Sablotron 1.0,
 dnl dually licensed licensed under MPL 1.1 and GPL
 dnl available from http://www.gingerall.cz/charlie/ga/xml/p_sab.xml
 
@@ -1312,25 +1259,12 @@ if test $has_isinf = 0; then
   fi
 fi
 
-dnl check for macro finite in math
-if test $has_finite = 0; then
-  AC_MSG_CHECKING(for macro finite)
-  AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <math.h>]], [[{ int foo; foo = finite(0); }]])],[has_finite=1],[has_finite=0 ])
-  if test $has_finite = 1; then
-    AC_MSG_RESULT(yes)
-    AC_DEFINE(HAVE_FINITE, 1, finite)
-  else
-    AC_MSG_RESULT(no)
-  fi
-fi
-
 LIBS="$KSAVE_LIBS"
 
-AC_CHECK_FUNCS_ONCE([strerror fcntl ioctl alarm setitimer
+AC_CHECK_FUNCS_ONCE([strerror alarm setitimer
 sigprocmask sigsetmask sigemptyset sigaddset signal sigaction
 sbrk valloc memalign mallopt getrlimit setrlimit sigaltstack
-sync fsync ftruncate
-atexit on_exit vsnprintf snprintf])
+atexit on_exit vsnprintf])
 
 if test x"$Khost_cpu" = x"alpha" ; then
   AC_CACHE_CHECK([for alpha support of amask instruction],
@@ -1354,28 +1288,6 @@ AC_FUNC_VA_COPY
 AC_FUNC__VA_COPY
 
 dnl -------------------------------------------------------------------------
-
-dnl =========================================================================
-dnl Work out if select is declared
-dnl -------------------------------------------------------------------------
-
-AC_CACHE_CHECK([for declaration of select],
-  ac_cv_declared_select,
-[AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-#ifdef HAVE_SYS_TIME_H
-#include <sys/time.h>
-#endif
-#ifdef HAVE_SYS_SELECT_H
-#include <sys/select.h>
-#endif
-]], [[ void *foo = select; ]])],[ac_cv_declared_select=yes],[ac_cv_declared_select=no])
-])
-if test x"$ac_cv_declared_select" = x"yes"; then
-  AC_DEFINE(HAVE_DECLARED_SELECT, 1, [Is function select declared])
-fi
 
 dnl =========================================================================
 dnl Work out if swab is declared

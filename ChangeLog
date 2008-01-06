@@ -1,8 +1,17 @@
-2008-01-06  Dalibor Topic  <topic@quad-damage>
+2008-01-06  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac: Removed tests for declared select, crt_externs.h,
+	fcntl, finite, fstat, fsync, ftruncate, getrusage, AM_ICONV, ioctl,
+	linux/netlink.h, linux/rtnetlink.h, linux/socket.h, netpacket/packet.h,
+	munmap, netinet/in.h, netinet/in/systm.h, netinet/tcp.h, net/if.h,
+	select, snprintf, strdup, strstr, stropts.h, sync, sysconf, syslog.h,
+	sys/sockio.h, time.h, utime.h, wtypes.h.
+
+2008-01-06  Dalibor Topic  <robilad@kaffe.org>
+	
 	* TODO: Updated.
 
-2008-01-06  Dalibor Topic  <topic@quad-damage>
+2008-01-06  Dalibor Topic  <robilad@kaffe.org>
 
 	* configure.ac: Don't check for socket, getsockname, mkdir, rmdir,
 	chdir, localtime, mincore, msync, madvise, remainder, remainderf,
