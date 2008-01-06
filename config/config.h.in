@@ -71,10 +71,6 @@
 /* Is function swab declared */
 #undef HAVE_DECLARED_SWAB
 
-/* Define to 1 if you have the declaration of `tzname', and to 0 if you don't.
-   */
-#undef HAVE_DECL_TZNAME
-
 /* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
    */
 #undef HAVE_DIRENT_H
@@ -378,9 +374,6 @@
 /* Do we have sigcontext_struct */
 #undef HAVE_STRUCT_SIGCONTEXT_STRUCT
 
-/* Define to 1 if `tm_zone' is member of `struct tm'. */
-#undef HAVE_STRUCT_TM_TM_ZONE
-
 /* Define to 1 if you have the <sys/cachectl.h> header file. */
 #undef HAVE_SYS_CACHECTL_H
 
@@ -451,14 +444,6 @@
 
 /* Define to 1 if you have the `time' function. */
 #undef HAVE_TIME
-
-/* Define to 1 if your `struct tm' has `tm_zone'. Deprecated, use
-   `HAVE_STRUCT_TM_TM_ZONE' instead. */
-#undef HAVE_TM_ZONE
-
-/* Define to 1 if you don't have `tm_zone' but do have the external array
-   `tzname'. */
-#undef HAVE_TZNAME
 
 /* Define to 1 if you have the `uname' function. */
 #undef HAVE_UNAME
@@ -600,12 +585,6 @@
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
-
-/* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
-#undef TIME_WITH_SYS_TIME
-
-/* Define to 1 if your <sys/time.h> declares `struct tm'. */
-#undef TM_IN_SYS_TIME
 
 /* Define to 1 if using the GNU multiple precision library. */
 #undef USE_GMP

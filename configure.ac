@@ -1138,9 +1138,6 @@ dnl =========================================================================
 dnl Checks for typedefs, structures, and compiler characteristics.
 dnl -------------------------------------------------------------------------
 
-AC_HEADER_TIME
-AC_STRUCT_TM
-AC_STRUCT_TIMEZONE
 AC_C_BIGENDIAN_CROSS
 AC_C_BIGENDIAN
 AC_C_CHAR_UNSIGNED
