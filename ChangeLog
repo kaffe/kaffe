@@ -1,5 +1,9 @@
 2008-01-06  Dalibor Topic  <topic@quad-damage>
 
+	* TODO: Updated.
+
+2008-01-06  Dalibor Topic  <topic@quad-damage>
+
 	* configure.ac: Don't check for socket, getsockname, mkdir, rmdir,
 	chdir, localtime, mincore, msync, madvise, remainder, remainderf,
 	drem, rint, strtod, mergesort, strtol, strtoul, finite, broken strtod,
