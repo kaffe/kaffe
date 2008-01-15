@@ -226,4 +226,20 @@ public class DoNothingPeer implements LightweightPeer, WindowPeer {
   }
 
   public void restack() {}
+
+    public boolean requestFocus(java.awt.Component a, boolean b, 
+				boolean c, long d, sun.awt.CausedFocusEvent$Cause e) {
+	return false;
+    }
+
+    public void updateIconImages() {}
+
+    public void updateMinimumSize() {}
+
+    public void setModalBlocked(java.awt.Dialog a, boolean b) {}
+
+    public void updateFocusableWindowState() {}
+
+    public void setAlwaysOnTop(boolean a) {}
+
  }

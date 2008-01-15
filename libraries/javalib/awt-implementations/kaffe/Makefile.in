@@ -64,6 +64,7 @@ CONFIG_CLEAN_FILES =
 SOURCES =
 DIST_SOURCES =
 CLASSPATH_ENV = CLASSPATH=$(JAVAROOT):$(srcdir)/$(JAVAROOT):$$CLASSPATH
+JAVAROOT = $(top_builddir)
 am__installdirs = "$(DESTDIR)$(kaffeawtdir)" "$(DESTDIR)$(jrelibdir)"
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
@@ -278,9 +279,8 @@ with_engine = @with_engine@
 CLASSFILE = kaffeawt.jar
 jrelib_DATA = $(CLASSFILE)
 JAR_CMD1 = $(FASTJAR) cf $(CLASSFILE) `find . -name "*.class"`
-CPATH = .:$(srcdir):$(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar:$(GLIBJ_ZIP)
+CPATH = $(GLIBJ_ZIP):$(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar
 AM_JAVACFLAGS = -bootclasspath $(CPATH)
-JAVAROOT = $(LIBDIR)
 
 # Use a fake install class and dir to keep automake's JAVA (un)install tasks happy.
 FAKE = fakeinstall

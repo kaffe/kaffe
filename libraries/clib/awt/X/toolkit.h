@@ -16,7 +16,6 @@
 #include "config-mem.h"
 #include "config-setjmp.h"
 
-#include "jcl.h"
 #undef DBG
 
 #include <X11/Xlib.h>

@@ -11,7 +11,6 @@ native_LTLIBRARIES = libxawt.la
 AM_CPPFLAGS = \
 	-I$(top_builddir)/include \
 	-I$(top_srcdir)/kaffe/kaffevm/jni \
-	-I$(top_srcdir)/libraries/javalib/external/classpath/native/jni/classpath \
         -I$(top_srcdir)/config/$(Khost_cpu) \
         -I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os) 
 
@@ -30,7 +29,6 @@ libxawt_la_LDFLAGS = \
 
 libxawt_la_LIBADD = \
 	$(top_builddir)/kaffe/kaffevm/libkaffevm.la \
-	$(top_builddir)/libraries/javalib/external/classpath/native/jni/classpath/libclasspath.la \
 	$(AWT_LIBS)
 
 libxawt_la_SOURCES = \

@@ -2,9 +2,8 @@ CLASSFILE = kaffeawt.jar
 jrelib_DATA = $(CLASSFILE)
 JAR_CMD1 = $(FASTJAR) cf $(CLASSFILE) `find . -name "*.class"`
 
-CPATH =  .:$(srcdir):$(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar:$(GLIBJ_ZIP)
+CPATH =  $(GLIBJ_ZIP):$(top_builddir)/libraries/javalib/vmspecific/kaffe-vminterface.jar
 AM_JAVACFLAGS = -bootclasspath $(CPATH)
-JAVAROOT = $(LIBDIR)
 
 $(CLASSFILE): classdist_kaffeawt.stamp
 	rm -f $(CLASSFILE)
