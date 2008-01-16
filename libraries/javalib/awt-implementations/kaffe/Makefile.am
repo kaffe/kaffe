@@ -21,17 +21,10 @@ uninstall-local:
 kaffeawtdir = $(FAKE)
 
 dist_kaffeawt_JAVA = \
-	java/awt/AWTError.java \
 	java/awt/AWTEvent.java \
-	java/awt/AWTException.java \
-	java/awt/AWTPermission.java \
 	java/awt/ActionEvt.java \
-	java/awt/ActiveEvent.java \
-	java/awt/Adjustable.java \
 	java/awt/AdjustmentEvt.java \
-	java/awt/AlphaComposite.java \
 	java/awt/BarMenu.java \
-	java/awt/BasicStroke.java \
 	java/awt/Button.java \
 	java/awt/Canvas.java \
 	java/awt/Checkbox.java \
@@ -40,13 +33,8 @@ dist_kaffeawt_JAVA = \
 	java/awt/Choice.java \
 	java/awt/ClassAnalyzer.java \
 	java/awt/ClassProperties.java \
-	java/awt/Color.java \
-	java/awt/ColorPaintContext.java \
 	java/awt/Component.java \
 	java/awt/ComponentEvt.java \
-	java/awt/ComponentOrientation.java \
-	java/awt/Composite.java \
-	java/awt/CompositeContext.java \
 	java/awt/Container.java \
 	java/awt/ContainerEvt.java \
 	java/awt/Cursor.java \
@@ -54,39 +42,23 @@ dist_kaffeawt_JAVA = \
 	java/awt/Defaults.java \
 	java/awt/Dialog.java \
 	java/awt/Dimension.java \
-	java/awt/DisplayMode.java \
 	java/awt/Event.java \
 	java/awt/EventDispatchThread.java \
 	java/awt/EventQueue.java \
 	java/awt/FileDialog.java \
 	java/awt/FlowLayout.java \
 	java/awt/FocusEvt.java \
-	java/awt/FocusTraversalPolicy.java \
 	java/awt/Font.java \
-	java/awt/FontFormatException.java \
 	java/awt/FontMetrics.java \
 	java/awt/Frame.java \
-	java/awt/GradientPaint.java \
 	java/awt/Graphics.java \
-	java/awt/Graphics2D.java \
-	java/awt/GraphicsConfigTemplate.java \
-	java/awt/GraphicsConfiguration.java \
-	java/awt/GraphicsDevice.java \
-	java/awt/GraphicsEnvironment.java \
 	java/awt/GraphicsLink.java \
-	java/awt/HeadlessException.java \
-	java/awt/IllegalComponentStateException.java \
 	java/awt/Image.java \
-	java/awt/ImageCapabilities.java \
 	java/awt/ImageFrameLoader.java \
 	java/awt/ImageLoader.java \
 	java/awt/ImageNativeProducer.java \
 	java/awt/Insets.java \
 	java/awt/ItemEvt.java \
-	java/awt/ItemSelectable.java \
-	java/awt/JobAttributes.java \
-	java/awt/KeyEventDispatcher.java \
-	java/awt/KeyEventPostProcessor.java \
 	java/awt/KeyEvt.java \
 	java/awt/Label.java \
 	java/awt/List.java \
@@ -94,7 +66,6 @@ dist_kaffeawt_JAVA = \
 	java/awt/Menu.java \
 	java/awt/MenuBar.java \
 	java/awt/MenuComponent.java \
-	java/awt/MenuContainer.java \
 	java/awt/MenuItem.java \
 	java/awt/MenuShortcut.java \
 	java/awt/MouseEvt.java \
@@ -104,28 +75,17 @@ dist_kaffeawt_JAVA = \
 	java/awt/OpaqueComponent.java \
 	java/awt/PSGraphics.java \
 	java/awt/PSPrintJob.java \
-	java/awt/PageAttributes.java \
-	java/awt/Paint.java \
-	java/awt/PaintContext.java \
 	java/awt/PaintEvt.java \
 	java/awt/Panel.java \
-	java/awt/Point.java \
-	java/awt/Polygon.java \
 	java/awt/PopupMenu.java \
 	java/awt/PopupWindow.java \
-	java/awt/PrintGraphics.java \
 	java/awt/PrintJob.java \
-	java/awt/Rectangle.java \
-	java/awt/RenderingHints.java \
-	java/awt/Robot.java \
 	java/awt/RootWindow.java \
 	java/awt/RowCanvas.java \
 	java/awt/ScrollPane.java \
 	java/awt/Scrollbar.java \
-	java/awt/Shape.java \
 	java/awt/ShortcutConsumer.java \
 	java/awt/ShortcutHandler.java \
-	java/awt/Stroke.java \
 	java/awt/SystemColor.java \
 	java/awt/TextArea.java \
 	java/awt/TextBuffer.java \
@@ -133,88 +93,39 @@ dist_kaffeawt_JAVA = \
 	java/awt/TextCursor.java \
 	java/awt/TextEvt.java \
 	java/awt/TextField.java \
-	java/awt/TexturePaint.java \
 	java/awt/Toolkit.java \
 	java/awt/WMEvent.java \
 	java/awt/Window.java \
 	java/awt/WindowEvt.java \
-	java/awt/event/AWTEventListener.java \
-	java/awt/event/ActionEvent.java \
-	java/awt/event/ActionListener.java \
 	java/awt/event/AdjustmentEvent.java \
-	java/awt/event/AdjustmentListener.java \
 	java/awt/event/ComponentAdapter.java \
 	java/awt/event/ComponentEvent.java \
-	java/awt/event/ComponentListener.java \
 	java/awt/event/ContainerAdapter.java \
 	java/awt/event/ContainerEvent.java \
-	java/awt/event/ContainerListener.java \
 	java/awt/event/FocusAdapter.java \
-	java/awt/event/FocusEvent.java \
-	java/awt/event/FocusListener.java \
 	java/awt/event/InputEvent.java \
-	java/awt/event/InputMethodEvent.java \
-	java/awt/event/InputMethodListener.java \
-	java/awt/event/InvocationEvent.java \
 	java/awt/event/ItemEvent.java \
-	java/awt/event/ItemListener.java \
 	java/awt/event/KeyAdapter.java \
 	java/awt/event/KeyEvent.java \
-	java/awt/event/KeyListener.java \
 	java/awt/event/MouseAdapter.java \
 	java/awt/event/MouseEvent.java \
-	java/awt/event/MouseListener.java \
 	java/awt/event/MouseMotionAdapter.java \
-	java/awt/event/MouseMotionListener.java \
-	java/awt/event/MouseWheelEvent.java \
-	java/awt/event/MouseWheelListener.java \
 	java/awt/event/PaintEvent.java \
 	java/awt/event/TextEvent.java \
-	java/awt/event/TextListener.java \
 	java/awt/event/WindowAdapter.java \
 	java/awt/event/WindowEvent.java \
-	java/awt/event/WindowFocusListener.java \
-	java/awt/event/WindowListener.java \
-	java/awt/event/WindowStateListener.java \
 	java/awt/image/AreaAveragingScaleFilter.java \
-	java/awt/image/BufferStrategy.java \
-	java/awt/image/BufferedImage.java \
-	java/awt/image/BufferedImageOp.java \
-	java/awt/image/ColorModel.java \
-	java/awt/image/ComponentColorModel.java \
-	java/awt/image/ComponentSampleModel.java \
 	java/awt/image/CropImageFilter.java \
-	java/awt/image/DataBuffer.java \
-	java/awt/image/DataBufferByte.java \
-	java/awt/image/DataBufferDouble.java \
-	java/awt/image/DataBufferFloat.java \
-	java/awt/image/DataBufferInt.java \
-	java/awt/image/DataBufferShort.java \
-	java/awt/image/DataBufferUShort.java \
-	java/awt/image/DirectColorModel.java \
 	java/awt/image/FilteredImageSource.java \
 	java/awt/image/ImageConsumer.java \
 	java/awt/image/ImageFilter.java \
 	java/awt/image/ImageObserver.java \
 	java/awt/image/ImageProducer.java \
-	java/awt/image/ImagingOpException.java \
 	java/awt/image/IndexColorModel.java \
 	java/awt/image/MemoryImageSource.java \
-	java/awt/image/PackedColorModel.java \
 	java/awt/image/PixelGrabber.java \
-	java/awt/image/PixelInterleavedSampleModel.java \
 	java/awt/image/RGBImageFilter.java \
-	java/awt/image/Raster.java \
-	java/awt/image/RasterFormatException.java \
-	java/awt/image/RasterOp.java \
-	java/awt/image/RenderedImage.java \
 	java/awt/image/ReplicateScaleFilter.java \
-	java/awt/image/SampleModel.java \
-	java/awt/image/SinglePixelPackedSampleModel.java \
-	java/awt/image/TileObserver.java \
-	java/awt/image/VolatileImage.java \
-	java/awt/image/WritableRaster.java \
-	java/awt/image/WritableRenderedImage.java \
 	org/kaffe/awt/DoNothingPeer.java \
 	org/kaffe/awt/ExportTransferable.java \
 	org/kaffe/awt/FlavorConverter.java \

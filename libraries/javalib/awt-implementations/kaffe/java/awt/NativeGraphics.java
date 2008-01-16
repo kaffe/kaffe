@@ -304,7 +304,7 @@ void drawImg ( Image img,	int x, int y, int sx, int sy,	int width, int height, C
 	
 	Toolkit.graDrawImage( nativeData, img.nativeData,
 	                      sx, sy, x, y, width, height,
-		                    (background == null) ? -1 : background.getNativeValue());
+			      (background == null) ? -1 : Toolkit.clrGetPixelValue(background.getRGB()));
 }
 
 void drawImgScaled ( Image img,
@@ -318,7 +318,7 @@ void drawImgScaled ( Image img,
 		Toolkit.graDrawImageScaled( nativeData, img.nativeData,
 			dx0, dy0, dx1, dy1,
 			sx0, sy0, sx1, sy1,
-			(background == null) ? -1 : background.getNativeValue());
+					    (background == null) ? -1 : Toolkit.clrGetPixelValue(background.getRGB()));
 	}
 }
 
@@ -466,8 +466,8 @@ static NativeGraphics getClippedGraphics ( NativeGraphics g, Component c,
 		                             xOff, yOff,
 	 	                             xClip, yClip, wClip, hClip,
 	  	                           fnt.nativeData,
-	   	                           fg.getNativeValue(),
-	    	                         bg.getNativeValue(),
+							 Toolkit.clrGetPixelValue(fg.getRGB()),
+							 Toolkit.clrGetPixelValue(bg.getRGB()),
 	     	                         blank);
 				return g;
 			}
@@ -572,7 +572,7 @@ if ( fg == null ){ Thread.currentThread().dumpStack();}
 	                                        xOffset, yOffset,
 	                                        xClip, yClip, wClip, hClip,
 	                                        fnt.nativeData,
-	                                        fg.getNativeValue(), bg.getNativeValue(),
+	                                        Toolkit.clrGetPixelValue(fg.getRGB()), Toolkit.clrGetPixelValue(bg.getRGB()),
 	                                        blank);
 	return g;
 }
@@ -638,7 +638,7 @@ void setBackColor ( Color clr ){
 	if ( (clr != null) && (clr != background) ) {
 		background = clr;
 		
-		Toolkit.graSetBackColor( nativeData, background.getNativeValue());
+		Toolkit.graSetBackColor( nativeData, Toolkit.clrGetPixelValue(background.getRGB()));
 	}
 }
 
@@ -675,7 +675,7 @@ public void setClip ( int x, int y, int width, int height ) {
 public void setColor ( Color clr ){
 	if ( (clr != null) && (clr != foreground) ) {
 		foreground = clr;
-		Toolkit.graSetColor( nativeData, foreground.getNativeValue());
+		Toolkit.graSetColor( nativeData, Toolkit.clrGetPixelValue(foreground.getRGB()));
 	}
 }
 
@@ -711,8 +711,8 @@ void setGraphics ( Pointer tgtData, int tgtType, int xOffset, int yOffset,
 	                                      xOffset, yOffset,
 	                                      xClip, yClip, wClip, hClip,
 	                                      font.nativeData,
-	                                      foreground.getNativeValue(),
-	                                      background.getNativeValue(),
+	                                      Toolkit.clrGetPixelValue(foreground.getRGB()),
+	                                      Toolkit.clrGetPixelValue(background.getRGB()),
 	                                      blank);
 }
 
@@ -726,7 +726,7 @@ public void setPaintMode() {
 public void setXORMode ( Color newXorClr ) {
 	if ( newXorClr != xClr ) {
 		xClr = newXorClr;
-		Toolkit.graSetXORMode( nativeData, xClr.getNativeValue());
+		Toolkit.graSetXORMode( nativeData, Toolkit.clrGetPixelValue(xClr.getRGB()));
 	}
 }
 

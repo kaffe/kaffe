@@ -117,8 +117,8 @@ void cleanUpNative () {
 
 void createNative () {
 	nativeData = Toolkit.wndCreateWindow( (owner != null) ? owner.nativeData : null,
-	                                x, y, width, height,
-	                                cursor.type, background.getNativeValue());
+					      x, y, width, height,
+					      cursor.type, Toolkit.clrGetPixelValue(background.getRGB()));
 }
 
 void destroyNative () {

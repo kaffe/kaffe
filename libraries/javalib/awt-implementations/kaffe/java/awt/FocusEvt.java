@@ -6,7 +6,6 @@ import java.awt.event.WindowEvent;
 class FocusEvt
   extends FocusEvent
 {
-	static FocusEvt cache;
 	static Component keyTgtRequest;
 	static Window newActiveWindow;
 
@@ -89,20 +88,7 @@ protected void dispatch () {
 }
 
 static synchronized FocusEvt getEvent ( Component source, int id, boolean isTemporary ) {
-	if ( cache == null ){
-		return new FocusEvt( source, id, isTemporary);
-	}
-	else {
-		FocusEvt e = cache;
-		cache = (FocusEvt) e.next;
-		e.next = null;
-		
-		e.id = id;
-		e.source = source;
-		e.temporary = isTemporary;
-
-		return e;
-	}
+    return new FocusEvt( source, id, isTemporary);
 }
 
 static synchronized FocusEvt getEvent ( int srcIdx, int id, boolean isTemporary ) {
@@ -111,18 +97,7 @@ static synchronized FocusEvt getEvent ( int srcIdx, int id, boolean isTemporary 
 
 	if ( source == null ) return null;
 
-	if ( cache == null ){
-		e = new FocusEvt( source, id, isTemporary);
-	}
-	else {
-		e = cache;
-		cache = (FocusEvt) e.next;
-		e.next = null;
-		
-		e.id = id;
-		e.source = source;
-		e.temporary = isTemporary;
-	}
+	e = new FocusEvt( source, id, isTemporary);
 
 	if ( (Toolkit.flags & Toolkit.NATIVE_DISPATCHER_LOOP) != 0 ) {
 		// This is not used as a direct return value for EventQueue.getNextEvent(), 
@@ -142,11 +117,5 @@ protected boolean isLiveEventFor ( Object src ) {
 }
 
 protected void recycle () {
-	synchronized ( FocusEvt.class ) {
-		source = null;
-
-		next = cache;	
-		cache = this;
-	}
 }
 }

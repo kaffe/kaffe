@@ -4,8 +4,6 @@ package java.awt;
 class ActionEvt
   extends java.awt.event.ActionEvent
 {
-	private static ActionEvt cache;
-
 ActionEvt ( Object src, int evtId, String cmd, int mod ) {
 	super( src, evtId, cmd, mod);
 }
@@ -22,29 +20,9 @@ protected void dispatch () {
 }
 
 static synchronized ActionEvt getEvent ( Object source, int id, String cmd, int mods ){
-	if ( cache == null ){
-		return new ActionEvt( source, id, cmd, mods);
-	}
-	else {
-		ActionEvt e = cache;
-		cache = (ActionEvt)e.next;
-		e.next = null;
-		
-		e.source = source;
-		e.id = id;
-		e.actionCommand = cmd;
-		e.modifiers = mods;
-		
-		return e;
-	}	
+    return new ActionEvt( source, id, cmd, mods);
 }
 
 protected void recycle () {
-	synchronized ( ActionEvt.class ) {
-		source = null;
-
-		next = cache;	
-		cache = this;
-	}
 }
 }
