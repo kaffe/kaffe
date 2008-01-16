@@ -893,8 +893,6 @@ freebsd2|oskit)
 	AC_CHECK_LIBRARY(gcc,__moddi3,VM_LIBS);;
 esac
 
-AC_CHECK_LIBRARY([gc],[GC_free],[VM_LIBS])
-
 dnl Check for libraries for zip library.
 AC_CHECK_LIBRARY(z,deflate,ZIP_LIBS)
 ZIP_LIBS="$CTLIBS $ZIP_LIBS"
@@ -1019,6 +1017,8 @@ if test x$GC_NAME = xboehm-gc ; then
    if test x$ac_cv_header_gc_gc_h = xno ; then
       AC_MSG_ERROR([boehm-gc headers not found.])
    fi
+
+   AC_CHECK_LIBRARY([gc],[GC_free],[VM_LIBS])
 
    if test x$ac_cv_lib_gc_GC_free = xno; then
       AC_MSG_ERROR([boehm-gc library not found.])

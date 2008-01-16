@@ -1,5 +1,12 @@
 2008-01-16  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac: Only check for libgc when boehm-gc is selected as the
+	garbage collector.
+
+	Reported by:  Kiyo Inaba  <inaba@src.ricoh.co.jp>
+
+2008-01-16  Dalibor Topic  <robilad@kaffe.org>
+
 	*  libraries/javalib/awt-implementations/kaffe/java/awt/image/package.html,
 	libraries/javalib/awt-implementations/kaffe/java/awt/package.html,
 	libraries/javalib/awt-implementations/kaffe/java/awt/event/package.html: 
