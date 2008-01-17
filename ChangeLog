@@ -1,3 +1,8 @@
+2008-01-17  Dalibor Topic  <robilad@kaffe.org>
+
+	* configure.ac: Rewritten checking for pure java math to make the 
+	native GNU MP implementation disabled by default.
+
 2008-01-17  Doug Young  <doug@morphlix.com>
 
 	* kaffe/kaffevm/systems/unix-pthreads/signal.c (stackOverflowDetector),

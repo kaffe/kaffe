@@ -1671,8 +1671,8 @@ Optional Features:
                           (enabled by default)
   --disable-zlib-zip      Disable java.util.zip implementation using zlib
                           [default=enabled]
-  --enable-pure-java-math Enable pure java java.math.* package
-                          [default=native]
+  --disable-pure-java-math
+                          Disable pure java java.math.* package
   --disable-direct-threading
                           Use switched interpreter instead of direct-threading
 
@@ -41558,34 +41558,13 @@ fi
 
 # Check whether --enable-pure_java_math was given.
 if test "${enable_pure_java_math+set}" = set; then
-  enableval=$enable_pure_java_math; case "$enableval" in
-yes)
-	pure_java_math=true
-	;;
-no)
-	pure_java_math=false
-	;;
-*)
-	{ { echo "$as_me:$LINENO: error: bad value ${enableval} for --enable-pure-java-math" >&5
-echo "$as_me: error: bad value ${enableval} for --enable-pure-java-math" >&2;}
-   { (exit 1); exit 1; }; }
-	;;
-esac
+  enableval=$enable_pure_java_math;
 else
-
-        if test x"$ac_cv_lib_gmp_mpz_get_d" = x"no"; then
-                if test x"$ac_cv_lib_gmp___gmpz_get_d" = x"no"; then
-			{ { echo "$as_me:$LINENO: error: Could not find GNU MP library.  Install the gmp development package, or pass --enable-pure-java-math to configure." >&5
-echo "$as_me: error: Could not find GNU MP library.  Install the gmp development package, or pass --enable-pure-java-math to configure." >&2;}
-   { (exit 1); exit 1; }; }
-		fi
-	fi
-
-
+  enable_pure_java_math=yes
 fi
 
 
- if test "$enable_pure_java_math" = yes; then
+ if test x"$enable_pure_java_math" = x"yes"; then
   COND_PURE_JAVA_MATH_TRUE=
   COND_PURE_JAVA_MATH_FALSE='#'
 else
@@ -41594,16 +41573,27 @@ else
 fi
 
 
-if test x"$pure_java_math" = x"true" ; then
-	{ echo "$as_me:$LINENO: result: Information: Using pure Java math library" >&5
-echo "${ECHO_T}Information: Using pure Java math library" >&6; }
-	MATH_LIB=""
+if test x"$enable_pure_java_math" = x"yes"; then
+  { echo "$as_me:$LINENO: Using GNU Classpath's java.math library" >&5
+echo "$as_me: Using GNU Classpath's java.math library" >&6;}
 else
-	{ echo "$as_me:$LINENO: result: Information: Using native math library" >&5
-echo "${ECHO_T}Information: Using native math library" >&6; }
-	MATH_LIB="\$(top_builddir)/libraries/clib/math/libmath.la"
+  { echo "$as_me:$LINENO: Using Kaffe's java.math library" >&5
+echo "$as_me: Using Kaffe's java.math library" >&6;}
+       MATH_LIB="\$(top_builddir)/libraries/clib/math/libmath.la"
+
+
+       if test x"$ac_cv_lib_gmp_mpz_get_d" = x"no"; then
+  if test x"$ac_cv_lib_gmp___gmpz_get_d" = x"no"; then
+  { { echo "$as_me:$LINENO: error: Could not find GNU MP library.  Install the gmp development package
+elif or pass --enable-pure-java-math to configure." >&5
+echo "$as_me: error: Could not find GNU MP library.  Install the gmp development package; then
+  or pass --enable-pure-java-math to configure." >&2;}
+   { (exit 1); exit 1; }; }
 fi
 
+fi
+
+fi
 
 
 

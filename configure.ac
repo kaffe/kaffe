@@ -1585,41 +1585,20 @@ dnl                 Pure java imlementation of java.math.*
 dnl -----------------------------------------------------------------------
 
 AC_ARG_ENABLE([pure_java_math],
-              AS_HELP_STRING([--enable-pure-java-math],
-                             [Enable pure java java.math.* package @<:@default=native@:>@]),
-[case "$enableval" in
-yes)
-	pure_java_math=true
-	;;
-no)
-dnl  Use native implementation
-	pure_java_math=false
-	;;
-*)
-	AC_MSG_ERROR(bad value ${enableval} for --enable-pure-java-math)
-	;;
-esac],
-[
-dnl  If nothing is set, use native implementation if GNU MP can be found.
-        if test x"$ac_cv_lib_gmp_mpz_get_d" = x"no"; then
-                if test x"$ac_cv_lib_gmp___gmpz_get_d" = x"no"; then
-			AC_MSG_ERROR([Could not find GNU MP library.  Install the gmp development package, or pass --enable-pure-java-math to configure.])
-		fi
-	fi
-]
-)
+  AS_HELP_STRING([--disable-pure-java-math], [Disable pure java java.math.* package]),
+  [],
+  [enable_pure_java_math=yes])
 
-AM_CONDITIONAL([COND_PURE_JAVA_MATH], [test "$enable_pure_java_math" = yes])
+AM_CONDITIONAL([COND_PURE_JAVA_MATH], [test x"$enable_pure_java_math" = x"yes"])
 
-if test x"$pure_java_math" = x"true" ; then
-	AC_MSG_RESULT(Information: Using pure Java math library)
-	MATH_LIB=""
-else
-	AC_MSG_RESULT(Information: Using native math library)
-	MATH_LIB="\$(top_builddir)/libraries/clib/math/libmath.la"
-fi
+AS_IF([test x"$enable_pure_java_math" = x"yes"],
+      [AC_MSG_NOTICE([Using GNU Classpath's java.math library])],
+      [AC_MSG_NOTICE([Using Kaffe's java.math library])
+       AC_SUBST([MATH_LIB], ["\$(top_builddir)/libraries/clib/math/libmath.la"])
 
-AC_SUBST(MATH_LIB)
+       AS_IF([test x"$ac_cv_lib_gmp_mpz_get_d" = x"no"],
+             AS_IF([test x"$ac_cv_lib_gmp___gmpz_get_d" = x"no"],
+                   [AC_MSG_ERROR([Could not find GNU MP library.  Install the gmp development package, or pass --enable-pure-java-math to configure.])]))])
 
 dnl -----------------------------------------------------------------------
 dnl                    Memory debugging support
