@@ -431,9 +431,9 @@ static JTHREAD_JMPBUF outOfLoop;
  * and then go back in KaffePThread_detectStackBoundaries() using the old stack.
  */
 static void NONRETURNING
-stackOverflowDetector(SIGNAL_ARGS(sig UNUSED, sc))
+stackOverflowDetector(SIGNAL_ARGS(sig, sc))
 {
-  unblockSignal(SIGSEGV);
+  unblockSignal(sig);
   JTHREAD_LONGJMP(outOfLoop, 1);
 }
 
