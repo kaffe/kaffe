@@ -1574,11 +1574,11 @@ if test x"$enable_native_awt" = x"yes"; then
 fi
 
 AC_ARG_ENABLE([zlib_zip],
-              AS_HELP_STRING([--disable-zlib-zip],
-                             [Disable java.util.zip implementation using zlib @<:@default=enabled@:>@]),
-                             [], [enable_zlib_zip="yes"])
+              AS_HELP_STRING([--enable-zlib-zip],
+                             [Enable java.util.zip implementation using zlib]),
+                             [], [enable_zlib_zip="no"])
 
-AM_CONDITIONAL([COND_ZLIB_ZIP], [test x"$enable_zlib_zip" != x"no"])
+AM_CONDITIONAL([COND_ZLIB_ZIP], [test x"$enable_zlib_zip" = x"yes"])
 
 dnl -----------------------------------------------------------------------
 dnl                 Pure java imlementation of java.math.*
