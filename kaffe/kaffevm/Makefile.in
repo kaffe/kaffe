@@ -361,7 +361,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 with_engine = @with_engine@
 SUBDIRS = $(ENGINE_NAME) systems $(GC_NAME) gcj
-DIST_SUBDIRS = boehm-gc kaffe-gc intrp jit jit3 systems gcj verifier jni
+DIST_SUBDIRS = boehm-gc kaffe-gc intrp jit jit3 systems gcj
 EXTRA_DIST = \
 	kaffe.def \
 	systems/win32/winio.c \
@@ -450,6 +450,7 @@ libkaffe_la_SOURCES = \
 	findInJar.c \
 	fp.c \
 	gc.c \
+	gc-refs.h \
 	hashtab.c \
 	itypes.c \
 	jar.c \

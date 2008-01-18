@@ -30,7 +30,6 @@ libkaffegc_la_SOURCES= \
 	gc2.c \
 	gc2.h \
 	gc-refs.c \
-	gc-refs.h \
 	gc-kaffe.c \
 	gc-kaffe.h
 

@@ -10,7 +10,7 @@
 # of this file. 
 
 SUBDIRS = $(ENGINE_NAME) systems $(GC_NAME) gcj
-DIST_SUBDIRS = boehm-gc kaffe-gc intrp jit jit3 systems gcj verifier jni
+DIST_SUBDIRS = boehm-gc kaffe-gc intrp jit jit3 systems gcj
 
 EXTRA_DIST = \
 	kaffe.def \
@@ -111,6 +111,7 @@ libkaffe_la_SOURCES = \
 	findInJar.c \
 	fp.c \
 	gc.c \
+	gc-refs.h \
 	hashtab.c \
 	itypes.c \
 	jar.c \

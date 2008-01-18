@@ -1,5 +1,17 @@
 2008-01-18  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/Makefile.am (DIST_SUBDIRS): Removed jni and verifier dirs.
+	(libkaffe_la_SOURCES) Added gc-refs-h.
+
+	* kaffe/kaffevm/gc-refs.h: New file. Moved over from ...
+	* kaffe/kaffevm/kaffe-gc/gc-refs.h: ... here. Removed. 
+	* kaffe/kaffevm/boehm-gc/gc-refs.h: Removed. 
+
+	* kaffe/kaffevm/boehm-gc/Makefile.am,
+	kaffe/kaffevm/kaffe-gc/Makefile.am: (libkaffegc_la_SOURCES) Removed gc-refs.h.
+
+2008-01-18  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/Makefile.am (libkaffe_la_SOURCES): Added jni and
 	verifier sources.
 	(SUBDIRS): Removed jni and verifier directories. 
