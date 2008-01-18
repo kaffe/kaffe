@@ -1,5 +1,9 @@
 2008-01-18  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/boehm-gc/Makefile.am: Make libkaffegc.la a convenience library.
+
+2008-01-18  Dalibor Topic  <robilad@kaffe.org>
+
 	* config/i386/jit-i386.def:  Removed unused nop and unimplemented 
 	instructions. Removed ifdef-ed out code.
 

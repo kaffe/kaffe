@@ -20,12 +20,11 @@ AM_CPPFLAGS = \
         -I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os)
 
 
-native_LTLIBRARIES = libkaffegc.la
+noinst_LTLIBRARIES = libkaffegc.la
 
 libkaffegc_la_LDFLAGS = \
 	$(KVMLIBFLAGS) \
-	-export-dynamic \
-	-release $(PACKAGE_VERSION)
+	-export-dynamic 
 
 libkaffegc_la_SOURCES= \
 	gc2.c \
