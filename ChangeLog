@@ -1,5 +1,9 @@
 2008-01-19  Dalibor Topic  <robilad@kaffe.org>
 
+	* TODO: Updated.
+
+2008-01-19  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/boehm-gc/gc-refs.c: Added debugging code from kaffe-gc
 	version. Use KaffeGC_malloc & KaffeGC_free instead of boehm-specific
 	macros. Rearranged functions to match layout in kaffe-gc version in 

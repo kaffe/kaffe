@@ -12,6 +12,7 @@
  * Make runtime engine runtime selectable
  * Make gc backend runtime selectable
  * Make boehm-gc the default engine on platforms that support it
+ * Switch back to a shared gc-refs.c
  * Swich to glib for data structures, command line option parsing, etc.
  * Switch to libjclassinfo for class file parsing
 
@@ -23,16 +24,28 @@
  * Implement hooks for JVMTI from GNU Classpath. 
 
 * Integration issues
- * Remove jikes from checked compiler list.
+ * Remove jikes from checked compiler list. Otoh, it's the only real option on Cygwin atm. 
+   So the answer is probably to avoid having any 1.5+ Java code in vmreference, and to avoid
+   any deviation from Classpath's VM interface.
  * Update java.lang.ref vminterface to latest version.
  * Switch over to GNU Classpath's javah and remove kaffeh
   * Replace native library code using KNI with code using JNI
 
+* Unmerging work
+  * Remove GNU MP big math
+  * Remove old Kaffe AWT implementations
+
 * Merging work:
+  * sun.misc.Unsafe native implementation from openjdk/cacao for full jsr166 support.
+  * zip library from openjdk
   * verifier from gcj (rob gonzalez)
   * SkyOS port
 
 * Build system: (dalibor)
+  * Remove convenience libraries (gc, engine, threading) and make them part of libkaffe_la_SOURCES
+  * Remove symlinked files, and replace them by adding the 'right' file to SOURCES
+  * make sure all noinst_HEADERS are partof _SOURCES.
+  * Use AC_IF and AS_CASE all over the configure script.
   * Non-recursive build, single Makefile.am for kaffe.
   * Switch to autotest for the test suites
 
