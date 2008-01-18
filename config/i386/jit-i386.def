@@ -148,19 +148,6 @@ extern bool used_ieee_division;
 
 /* --------------------------------------------------------------------- */
 
-define_insn(unimplemented, unimplemented)
-{
-	KAFFEVM_ABORT();
-}
-
-define_insn(nop, nop)
-{
-	OUT(0x90);
-	debug(("nop\n"));
-}
-
-/* --------------------------------------------------------------------- */
-
 define_insn(prologue, prologue_xxx)
 {
 	label* l;
@@ -198,44 +185,6 @@ define_insn(prologue, prologue_xxx)
 		debug(("incl 0x%x\n",(int)&(globalMethod->callsCount)));
 	}
 #endif
-
-#if 0
-	/* If this method uses IEEE, set up the mode here */
-	if (used_ieee_division == true) {
-		OUT(0x68);
-		LOUT(0);
-		OUT(0x68);
-		LOUT(0);
-		debug(("pushl #0\n"));
-		debug(("pushl #0\n"));
-
-		OUT(0xD9);
-		OUT(0x3C);
-		OUT(0x24);
-		debug(("fnstcw (esp)\n"));
-
-		OUT(0x8B);
-		OUT((REG_eax<<3)|0x04);
-		OUT(0x24);
-		debug(("movl (esp),eax\n"));
-
-		OUT(0xB8|REG_eax);
-		LOUT(IEEE_MODE);
-		debug(("movl %d,eax\n", IEEE_MODE));
-
-		OUT(0x89);
-		OUT((REG_eax<<3)|0x44);
-		OUT(0x24);
-		OUT(0x04);
-		debug(("movl eax,4(esp)\n"));
-
-		OUT(0xD9);
-		OUT(0x6C);
-		OUT(0x24);
-		OUT(0x04);
-		debug(("fldcw 4(esp)\n"));
-	}
-#endif
 }
 
 define_insn(exception_prologue, eprologue_xLx)
@@ -265,64 +214,11 @@ define_insn(exception_prologue, eprologue_xLx)
 	debug(("subl #?,ecx\n"));
 	debug(("subl #3*SLOTSIZE,ecx\n"));
 	debug(("movl ecx,esp\n"));
-
-#if 0
-	if (used_ieee_division == true) {
-		OUT(0x81);
-		OUT(0xE8|REG_esp);
-		LOUT(SLOTSIZE);
-
-		debug(("subl #%d,esp\n", SLOTSIZE));
-
-		OUT(0x8B);
-		OUT((REG_eax<<3)|0x04);
-		OUT(0x24);
-		debug(("movl (esp),eax\n"));
-
-		OUT(0xB8|REG_eax);
-		LOUT(IEEE_MODE);
-		debug(("movl %d,eax\n", IEEE_MODE));
-
-		OUT(0x89);
-		OUT((REG_eax<<3)|0x44);
-		OUT(0x24);
-		OUT(0x04);
-		debug(("movl eax,4(esp)\n"));
-
-		OUT(0xD9);
-		OUT(0x6C);
-		OUT(0x24);
-		OUT(0x04);
-		debug(("fldcw 4(esp)\n"));
-	}
-#endif
 }
 
 define_insn(epilogue, epilogue_xxx)
 {
 	KaffeJIT_setEpilogueLabel((uintp)CODEPC);
-
-#if 0
-	/* If this method uses IEEE, restore it */
-	if (used_ieee_division == true) {
-#if 0
-		OUT(0xD9);
-		OUT(0x2C);
-		OUT(0x24);
-		debug(("fldcw (esp)\n"));
-#endif
-		OUT(0xD9);
-		OUT(0x6C);
-		OUT(0x24);
-		OUT(0);
-		debug(("fldcw 0(esp)\n"));
-
-		OUT(0x81);
-		OUT(0xC0|REG_esp);
-		LOUT(8);
-		debug(("addl 8,esp\n"));
-	}
-#endif
 
 #if defined(KAFFE_PROFILER)
 	if (profFlag) {
@@ -786,15 +682,8 @@ define_insn(div_int, div_RRR)
 
 	/* Setup EDX - should contains the sign of EAX */
 	do_move_int(REG_edx, REG_eax);
-#if 0
-	OUT(0xC1);
-	OUT(0xF8|REG_edx);
-	OUT(31);
-	debug(("sarl #31,edx\n"));
-#else
 	OUT(0x99);
 	debug(("cltd\n"));
-#endif
 
 	OUT(0xF7);
         OUT(0xF8|r);
@@ -876,15 +765,8 @@ define_insn(rem_int, rem_RRR)
 
 	/* Setup EDX - should contains the sign of EAX */
 	do_move_int(REG_edx, REG_eax);
-#if 0
-	OUT(0xC1);
-	OUT(0xF8|REG_edx);
-	OUT(31);
-	debug(("sarl #31,edx\n"));
-#else
 	OUT(0x99);
 	debug(("cltd\n"));
-#endif
 
 	OUT(0xF7);
         OUT(0xF8|r);
