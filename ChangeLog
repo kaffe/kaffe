@@ -1,3 +1,8 @@
+2008-01-18  Dalibor Topic  <robilad@kaffe.org>
+
+	* config/i386/jit3-i386.def: Removed unused nop and unimplemented 
+	instructions. Removed ifdef-ed out code.
+
 2008-01-17  Dalibor Topic  <robilad@kaffe.org>
 
 	* configure.ac: Disabled zlib-zip by default.
