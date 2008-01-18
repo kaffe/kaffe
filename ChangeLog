@@ -1,5 +1,17 @@
 2008-01-18  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/Makefile.am (libkaffe_la_SOURCES): Added jni and
+	verifier sources.
+	(SUBDIRS): Removed jni and verifier directories. 
+	(libkaffe_la_DEPENDENCIES): Removed jni and verifier convenience libraries.
+
+	* kaffe/kaffevm/verifier/Makefile.am,
+	kaffe/kaffevm/jni/Makefile.am: Removed.
+
+	* configure.ac: Removed Makefiles for jni and verifier.
+
+2008-01-18  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/boehm-gc/Makefile.am: Make libkaffegc.la a convenience library.
 
 2008-01-18  Dalibor Topic  <robilad@kaffe.org>

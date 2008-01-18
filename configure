@@ -6923,7 +6923,7 @@ linux* | k*bsd*-gnu)
   lt_cv_deplibs_check_method=pass_all
   ;;
 
-netbsd* | netbsdelf*-gnu)
+netbsd*)
   if echo __ELF__ | $CC -E - | grep __ELF__ > /dev/null; then
     lt_cv_deplibs_check_method='match_pattern /lib[^/]+(\.so\.[0-9]+\.[0-9]+|_pic\.a)$'
   else
@@ -10264,13 +10264,12 @@ EOF
   $echo "local: *; };" >> $output_objdir/$libname.ver~
 	  $CC '"$tmp_sharedflag""$tmp_addflag"' $libobjs $deplibs $compiler_flags ${wl}-soname $wl$soname ${wl}-version-script ${wl}$output_objdir/$libname.ver -o $lib'
 	fi
-	link_all_deplibs=no
       else
 	ld_shlibs=no
       fi
       ;;
 
-    netbsd* | netbsdelf*-gnu)
+    netbsd*)
       if echo __ELF__ | $CC -E - | grep __ELF__ >/dev/null; then
 	archive_cmds='$LD -Bshareable $libobjs $deplibs $linker_flags -o $lib'
 	wlarc=
@@ -10814,7 +10813,7 @@ if test -z "$aix_libpath"; then aix_libpath="/usr/lib:/lib"; fi
       link_all_deplibs=yes
       ;;
 
-    netbsd* | netbsdelf*-gnu)
+    netbsd*)
       if echo __ELF__ | $CC -E - | grep __ELF__ >/dev/null; then
 	archive_cmds='$LD -Bshareable -o $lib $libobjs $deplibs $linker_flags'  # a.out
       else
@@ -11523,18 +11522,6 @@ linux* | k*bsd*-gnu)
   # people can always --disable-shared, the test was removed, and we
   # assume the GNU/Linux dynamic linker is in use.
   dynamic_linker='GNU/Linux ld.so'
-  ;;
-
-netbsdelf*-gnu)
-  version_type=linux
-  need_lib_prefix=no
-  need_version=no
-  library_names_spec='${libname}${release}${shared_ext}$versuffix ${libname}${release}${shared_ext}$major ${libname}${shared_ext}'
-  soname_spec='${libname}${release}${shared_ext}$major'
-  shlibpath_var=LD_LIBRARY_PATH
-  shlibpath_overrides_runpath=no
-  hardcode_into_libs=yes
-  dynamic_linker='NetBSD ld.elf_so'
   ;;
 
 netbsd*)
@@ -12362,7 +12349,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12365 "configure"
+#line 12352 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12462,7 +12449,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12465 "configure"
+#line 12452 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -14072,7 +14059,7 @@ if test -z "$aix_libpath"; then aix_libpath="/usr/lib:/lib"; fi
 	;;
     esac
     ;;
-  netbsd* | netbsdelf*-gnu)
+  netbsd*)
     if echo __ELF__ | $CC -E - | grep __ELF__ >/dev/null; then
       archive_cmds_CXX='$LD -Bshareable  -o $lib $predep_objects $libobjs $deplibs $postdep_objects $linker_flags'
       wlarc=
@@ -14777,7 +14764,7 @@ echo $ECHO_N "checking for $compiler option to produce PIC... $ECHO_C" >&6; }
 	    ;;
 	esac
 	;;
-      netbsd* | netbsdelf*-gnu)
+      netbsd*)
 	;;
       osf3* | osf4* | osf5*)
 	case $cc_basename in
@@ -14886,11 +14873,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14889: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14876: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:14893: \$? = $ac_status" >&5
+   echo "$as_me:14880: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -14990,11 +14977,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14993: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14980: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:14997: \$? = $ac_status" >&5
+   echo "$as_me:14984: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -15061,9 +15048,6 @@ echo $ECHO_N "checking whether the $compiler linker ($LD) supports shared librar
   ;;
   cygwin* | mingw*)
     export_symbols_cmds_CXX='$NM $libobjs $convenience | $global_symbol_pipe | $SED -e '\''/^[BCDGRS][ ]/s/.*[ ]\([^ ]*\)/\1 DATA/;/^.*[ ]__nm__/s/^.*[ ]__nm__\([^ ]*\)[ ][^ ]*/\1 DATA/;/^I[ ]/d;/^[AITW][ ]/s/.*[ ]//'\'' | sort | uniq > $export_symbols'
-  ;;
-  linux* | k*bsd*-gnu)
-    link_all_deplibs_CXX=no
   ;;
   *)
     export_symbols_cmds_CXX='$NM $libobjs $convenience | $global_symbol_pipe | $SED '\''s/.* //'\'' | sort | uniq > $export_symbols'
@@ -15508,18 +15492,6 @@ linux* | k*bsd*-gnu)
   # people can always --disable-shared, the test was removed, and we
   # assume the GNU/Linux dynamic linker is in use.
   dynamic_linker='GNU/Linux ld.so'
-  ;;
-
-netbsdelf*-gnu)
-  version_type=linux
-  need_lib_prefix=no
-  need_version=no
-  library_names_spec='${libname}${release}${shared_ext}$versuffix ${libname}${release}${shared_ext}$major ${libname}${shared_ext}'
-  soname_spec='${libname}${release}${shared_ext}$major'
-  shlibpath_var=LD_LIBRARY_PATH
-  shlibpath_overrides_runpath=no
-  hardcode_into_libs=yes
-  dynamic_linker='NetBSD ld.elf_so'
   ;;
 
 netbsd*)
@@ -16567,11 +16539,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16570: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16542: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:16574: \$? = $ac_status" >&5
+   echo "$as_me:16546: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -16671,11 +16643,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16674: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16646: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:16678: \$? = $ac_status" >&5
+   echo "$as_me:16650: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -16935,13 +16907,12 @@ EOF
   $echo "local: *; };" >> $output_objdir/$libname.ver~
 	  $CC '"$tmp_sharedflag""$tmp_addflag"' $libobjs $deplibs $compiler_flags ${wl}-soname $wl$soname ${wl}-version-script ${wl}$output_objdir/$libname.ver -o $lib'
 	fi
-	link_all_deplibs_F77=no
       else
 	ld_shlibs_F77=no
       fi
       ;;
 
-    netbsd* | netbsdelf*-gnu)
+    netbsd*)
       if echo __ELF__ | $CC -E - | grep __ELF__ >/dev/null; then
 	archive_cmds_F77='$LD -Bshareable $libobjs $deplibs $linker_flags -o $lib'
 	wlarc=
@@ -17465,7 +17436,7 @@ if test -z "$aix_libpath"; then aix_libpath="/usr/lib:/lib"; fi
       link_all_deplibs_F77=yes
       ;;
 
-    netbsd* | netbsdelf*-gnu)
+    netbsd*)
       if echo __ELF__ | $CC -E - | grep __ELF__ >/dev/null; then
 	archive_cmds_F77='$LD -Bshareable -o $lib $libobjs $deplibs $linker_flags'  # a.out
       else
@@ -18122,18 +18093,6 @@ linux* | k*bsd*-gnu)
   # people can always --disable-shared, the test was removed, and we
   # assume the GNU/Linux dynamic linker is in use.
   dynamic_linker='GNU/Linux ld.so'
-  ;;
-
-netbsdelf*-gnu)
-  version_type=linux
-  need_lib_prefix=no
-  need_version=no
-  library_names_spec='${libname}${release}${shared_ext}$versuffix ${libname}${release}${shared_ext}$major ${libname}${shared_ext}'
-  soname_spec='${libname}${release}${shared_ext}$major'
-  shlibpath_var=LD_LIBRARY_PATH
-  shlibpath_overrides_runpath=no
-  hardcode_into_libs=yes
-  dynamic_linker='NetBSD ld.elf_so'
   ;;
 
 netbsd*)
@@ -18875,11 +18834,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18878: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18837: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:18882: \$? = $ac_status" >&5
+   echo "$as_me:18841: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -19165,11 +19124,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:19168: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:19127: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:19172: \$? = $ac_status" >&5
+   echo "$as_me:19131: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -19269,11 +19228,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:19272: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:19231: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:19276: \$? = $ac_status" >&5
+   echo "$as_me:19235: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -19533,13 +19492,12 @@ EOF
   $echo "local: *; };" >> $output_objdir/$libname.ver~
 	  $CC '"$tmp_sharedflag""$tmp_addflag"' $libobjs $deplibs $compiler_flags ${wl}-soname $wl$soname ${wl}-version-script ${wl}$output_objdir/$libname.ver -o $lib'
 	fi
-	link_all_deplibs_GCJ=no
       else
 	ld_shlibs_GCJ=no
       fi
       ;;
 
-    netbsd* | netbsdelf*-gnu)
+    netbsd*)
       if echo __ELF__ | $CC -E - | grep __ELF__ >/dev/null; then
 	archive_cmds_GCJ='$LD -Bshareable $libobjs $deplibs $linker_flags -o $lib'
 	wlarc=
@@ -20083,7 +20041,7 @@ if test -z "$aix_libpath"; then aix_libpath="/usr/lib:/lib"; fi
       link_all_deplibs_GCJ=yes
       ;;
 
-    netbsd* | netbsdelf*-gnu)
+    netbsd*)
       if echo __ELF__ | $CC -E - | grep __ELF__ >/dev/null; then
 	archive_cmds_GCJ='$LD -Bshareable -o $lib $libobjs $deplibs $linker_flags'  # a.out
       else
@@ -20740,18 +20698,6 @@ linux* | k*bsd*-gnu)
   # people can always --disable-shared, the test was removed, and we
   # assume the GNU/Linux dynamic linker is in use.
   dynamic_linker='GNU/Linux ld.so'
-  ;;
-
-netbsdelf*-gnu)
-  version_type=linux
-  need_lib_prefix=no
-  need_version=no
-  library_names_spec='${libname}${release}${shared_ext}$versuffix ${libname}${release}${shared_ext}$major ${libname}${shared_ext}'
-  soname_spec='${libname}${release}${shared_ext}$major'
-  shlibpath_var=LD_LIBRARY_PATH
-  shlibpath_overrides_runpath=no
-  hardcode_into_libs=yes
-  dynamic_linker='NetBSD ld.elf_so'
   ;;
 
 netbsd*)
@@ -25588,7 +25534,7 @@ else
 JAVA_TEST=Test.java
 CLASS_TEST=Test.class
 cat << \EOF > $JAVA_TEST
-/* #line 25591 "configure" */
+/* #line 25537 "configure" */
 public class Test {
 }
 EOF
@@ -42220,13 +42166,9 @@ ac_config_files="$ac_config_files kaffe/kaffevm/systems/beos-native/Makefile"
 
 ac_config_files="$ac_config_files kaffe/kaffevm/systems/unix-pthreads/Makefile"
 
-ac_config_files="$ac_config_files kaffe/kaffevm/verifier/Makefile"
-
 ac_config_files="$ac_config_files kaffe/kaffevm/kaffe-gc/Makefile"
 
 ac_config_files="$ac_config_files kaffe/kaffevm/boehm-gc/Makefile"
-
-ac_config_files="$ac_config_files kaffe/kaffevm/jni/Makefile"
 
 ac_config_files="$ac_config_files kaffe/kaffe/Makefile"
 
@@ -43132,10 +43074,8 @@ do
     "kaffe/kaffevm/systems/drops-l4threads/Makefile") CONFIG_FILES="$CONFIG_FILES kaffe/kaffevm/systems/drops-l4threads/Makefile" ;;
     "kaffe/kaffevm/systems/beos-native/Makefile") CONFIG_FILES="$CONFIG_FILES kaffe/kaffevm/systems/beos-native/Makefile" ;;
     "kaffe/kaffevm/systems/unix-pthreads/Makefile") CONFIG_FILES="$CONFIG_FILES kaffe/kaffevm/systems/unix-pthreads/Makefile" ;;
-    "kaffe/kaffevm/verifier/Makefile") CONFIG_FILES="$CONFIG_FILES kaffe/kaffevm/verifier/Makefile" ;;
     "kaffe/kaffevm/kaffe-gc/Makefile") CONFIG_FILES="$CONFIG_FILES kaffe/kaffevm/kaffe-gc/Makefile" ;;
     "kaffe/kaffevm/boehm-gc/Makefile") CONFIG_FILES="$CONFIG_FILES kaffe/kaffevm/boehm-gc/Makefile" ;;
-    "kaffe/kaffevm/jni/Makefile") CONFIG_FILES="$CONFIG_FILES kaffe/kaffevm/jni/Makefile" ;;
     "kaffe/kaffe/Makefile") CONFIG_FILES="$CONFIG_FILES kaffe/kaffe/Makefile" ;;
     "kaffe/kaffeh/Makefile") CONFIG_FILES="$CONFIG_FILES kaffe/kaffeh/Makefile" ;;
     "kaffe/xprof/Makefile") CONFIG_FILES="$CONFIG_FILES kaffe/xprof/Makefile" ;;

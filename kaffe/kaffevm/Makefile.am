@@ -9,7 +9,7 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-SUBDIRS = $(ENGINE_NAME) systems $(GC_NAME) gcj verifier jni
+SUBDIRS = $(ENGINE_NAME) systems $(GC_NAME) gcj
 DIST_SUBDIRS = boehm-gc kaffe-gc intrp jit jit3 systems gcj verifier jni
 
 EXTRA_DIST = \
@@ -66,9 +66,7 @@ libkaffe_la_DEPENDENCIES = \
 	$(ENGINE_NAME)/libengine.la \
 	$(libgcj) \
 	systems/$(THREAD_SYSTEM)/libkthread.la \
-	verifier/libkaffeverifier.la \
 	$(GC_NAME)/libkaffegc.la \
-	jni/libkaffejni.la \
         $(top_builddir)/replace/libreplace.la 
 
 libkaffe_la_LIBADD = \
@@ -166,7 +164,34 @@ libkaffe_la_SOURCES = \
 	threadData.h \
 	utf8const.h \
 	reflect.h \
-	reference.h
+	reference.h \
+	jni/jni.c \
+	jni/jni-base.c \
+	jni/jni-callmethod.c \
+	jni/jni-fields.c \
+	jni/jni-arrays.c \
+	jni/jni-string.c \
+	jni/jni-helpers.c \
+	jni/jni-refs.c \
+	jni/jni_i.h \
+	jni/jnirefs.h \
+	jni/jni_funcs.h \
+	verifier/verify.c \
+	verifier/verify.h \
+	verifier/verify2.c \
+	verifier/verify3a.c \
+	verifier/verify3b.c \
+	verifier/verify-block.c \
+	verifier/verify-block.h \
+	verifier/verify-debug.c \
+	verifier/verify-debug.h \
+	verifier/verify-errors.h \
+	verifier/verify-sigstack.c \
+	verifier/verify-sigstack.h \
+	verifier/verify-type.c \
+	verifier/verify-type.h \
+	verifier/verify-uninit.c \
+	verifier/verify-uninit.h
 
 libkaffevm_la_SOURCES = \
 	$(top_srcdir)/libraries/clib/native/AccessController.c \
