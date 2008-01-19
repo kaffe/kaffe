@@ -1,6 +1,8 @@
 What's New Since Kaffe 1.1.8
 ----------------------------
 
+* Removed libltdl. Kaffe uses an existing installation 
+  exclusively now.
 * Removed gnu-inet, dnsjava, Tritonus and binreloc.
 * Removed GNU Classpath tools. Kaffe uses an installed javap
   as javap when it's available.

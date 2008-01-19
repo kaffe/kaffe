@@ -18,6 +18,13 @@ versions of these libraries for your Linux distribution, and your
 distributor uses the RPM packaging format, you should check out
 http://www.rpmfind.net.
 
+libltdl
+-------
+
+You'll need GNU libtool's libltdl library for Kaffe to be able to
+dynamically open JNI libraries. It is available from 
+http://www.gnu.org/software/libtool/ .
+
 GNU Classpath
 -------------
 
