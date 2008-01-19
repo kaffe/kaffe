@@ -37,9 +37,7 @@ jrelib_DATA= \
 	     logging.properties
 
 install-data-local: installdirs
-	if ! test -f $(DESTDIR)${jrelibdir}/rt.jar ; then \
-		$(LN_S) $(TARGET_CLASSPATH_CLASSES) $(DESTDIR)${jrelibdir}/rt.jar ; \
-	fi
+	$(LN_S) -f $(TARGET_CLASSPATH_CLASSES) $(DESTDIR)${jrelibdir}/rt.jar
 
 uninstall-local:
 	$(RM) $(DESTDIR)${jrelibdir}/rt.jar

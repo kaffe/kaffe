@@ -43,9 +43,7 @@ CLASSPATH_APPS = appletviewer jar jarsigner keytool orbd native2ascii rmiregistr
 
 install-exec-local:
 	for app in $(CLASSPATH_APPS); do \
-		if ! test -f $(DESTDIR)$(bindir)/$$app ; then \
-			$(LN_S) -f $(CLASSPATH_PREFIX)/bin/g$$app $(DESTDIR)$(bindir)/$$app ; \
-		fi ; \
+		$(LN_S) -f $(CLASSPATH_PREFIX)/bin/g$$app $(DESTDIR)$(bindir)/$$app ; \
 	done
 	if test x"@JAVADOC@" != x"" ; then \
 		$(LN_S) -f @JAVADOC@  $(DESTDIR)$(bindir)/javadoc$(EXEEXT) ; \

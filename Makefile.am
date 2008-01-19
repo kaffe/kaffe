@@ -175,9 +175,7 @@ check-local:
 	cd test && $(MAKE) check
 
 install-exec-local:
-	if ! test -f $(DESTDIR)${toolslibdir}/tools.jar ; then \
-                $(LN_S) $(CLASSPATH_PREFIX)/share/classpath/tools.zip $(DESTDIR)${toolslibdir}/tools.jar ; \
-        fi
+	$(LN_S) -f $(CLASSPATH_PREFIX)/share/classpath/tools.zip $(DESTDIR)${toolslibdir}/tools.jar
 
 uninstall-local:
 	$(RM) $(DESTDIR)${toolslibdir}/tools.jar 
