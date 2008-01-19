@@ -1,5 +1,11 @@
 2008-01-19  Dalibor Topic  <robilad@kaffe.org>
 
+	* developers/config2.patch: Removed.
+
+	* Makefile.am (EXTRA_DIST): Removed developers/config2.patch.
+
+2008-01-19  Dalibor Topic  <robilad@kaffe.org>
+
 	* developers/autogen.sh: Don't libtoolize with --ltdl. Removed workarounds
 	and patches for libltdl.
 

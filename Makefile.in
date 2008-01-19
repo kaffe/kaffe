@@ -408,7 +408,6 @@ EXTRA_DIST = \
 	developers/auto-build.conf \
 	developers/autogen.sh \
 	developers/config1.patch \
-	developers/config2.patch \
 	developers/gdbinit \
 	developers/geteh_from_libgcc2 \
 	developers/glibc-2.1.1-signal.patch \
