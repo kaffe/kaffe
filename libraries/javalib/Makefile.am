@@ -38,7 +38,7 @@ jrelib_DATA= \
 
 install-data-local: installdirs
 	if ! test -f $(DESTDIR)${jrelibdir}/rt.jar ; then \
-		$(LN_S) $(CLASSPATH_CLASSES) $(DESTDIR)${jrelibdir}/rt.jar ; \
+		$(LN_S) $(TARGET_CLASSPATH_CLASSES) $(DESTDIR)${jrelibdir}/rt.jar ; \
 	fi
 
 uninstall-local:

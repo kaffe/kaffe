@@ -34,7 +34,6 @@ AC_ARG_WITH([classpath-prefix],
             [CLASSPATH_PREFIX=${withval}],
             [CLASSPATH_PREFIX=/usr/local/classpath])
 AC_MSG_RESULT(${CLASSPATH_PREFIX})
-#AC_DEFINE_UNQUOTED([CLASSPATH_PREFIX], "${CLASSPATH_PREFIX}", [Java core library installation directory])
 AC_SUBST(CLASSPATH_PREFIX)
 ])
 
@@ -48,10 +47,20 @@ AC_ARG_WITH([classpath-classes],
             [CLASSPATH_CLASSES=${withval}],
             [CLASSPATH_CLASSES=${CLASSPATH_PREFIX}/share/classpath/glibj.zip])
 AC_MSG_RESULT(${CLASSPATH_CLASSES})
-#AC_DEFINE_UNQUOTED([CLASSPATH_CLASSES], "${CLASSPATH_CLASSES}", [Java core library classes])
 AC_SUBST(CLASSPATH_CLASSES)
 ])
 
+dnl where are Java core library classes installed on the target
+
+AC_DEFUN([AC_CHECK_WITH_TARGET_CLASSPATH_CLASSES],[
+AC_MSG_CHECKING(where Java core library classes are installed on the target)
+AC_ARG_WITH([target-classpath-classes],
+            [AS_HELP_STRING(--with-target-classpath-classes=<path>,path to Java core library classes (includes the name of the file and may be flat) [[default=/usr/local/classpath/share/classpath/glibj.zip]])],
+            [TARGET_CLASSPATH_CLASSES=${withval}],
+            [TARGET_CLASSPATH_CLASSES=${CLASSPATH_CLASSES}])
+AC_MSG_RESULT(${TARGET_CLASSPATH_CLASSES})
+AC_SUBST(TARGET_CLASSPATH_CLASSES)
+])
 
 dnl where are Java core library native libraries installed
 
@@ -64,8 +73,6 @@ AC_ARG_WITH([classpath-libdir],
 AC_MSG_RESULT(${CLASSPATH_LIBDIR})
 
 dnl expand CLASSPATH_LIBDIR to something that is usable in C code
-#AS_AC_EXPAND([CLASSPATH_LIBDIR], ${CLASSPATH_LIBDIR})
-#AC_DEFINE_UNQUOTED([CLASSPATH_LIBDIR], "${CLASSPATH_LIBDIR}", [Java core library native libraries installation directory])
 AC_SUBST(CLASSPATH_LIBDIR)
 ])
 

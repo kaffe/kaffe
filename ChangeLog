@@ -1,3 +1,15 @@
+2008-01-19  Robert Schuster  <robertschuster@fsfe.org>
+
+	Added --with-target-classpath-classes option to support having glib.zip
+	in a different location on target environment.
+
+	* libraries/javalib/Makefile.am (install-data-local): 
+	Link TARGET_CLASSPATH_CLASSES as rt.jar. 
+
+	* m4/classpath.m4 (AC_CHECK_WITH_TARGET_CLASSPATH_CLASSES): Added.
+
+	* configure.ac: Use AC_CHECK_WITH_TARGET_CLASSPATH_CLASSES.
+
 2008-01-19  Dalibor Topic  <robilad@kaffe.org>
 
 	* TODO: Updated.

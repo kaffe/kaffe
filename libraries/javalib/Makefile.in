@@ -206,6 +206,7 @@ SEMAPHORE_LIB = @SEMAPHORE_LIB@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
+TARGET_CLASSPATH_CLASSES = @TARGET_CLASSPATH_CLASSES@
 THREAD_DIR = @THREAD_DIR@
 THREAD_SYSTEM = @THREAD_SYSTEM@
 UIC = @UIC@
@@ -646,7 +647,7 @@ uninstall-am: uninstall-jrelibDATA uninstall-local
 
 install-data-local: installdirs
 	if ! test -f $(DESTDIR)${jrelibdir}/rt.jar ; then \
-		$(LN_S) $(CLASSPATH_CLASSES) $(DESTDIR)${jrelibdir}/rt.jar ; \
+		$(LN_S) $(TARGET_CLASSPATH_CLASSES) $(DESTDIR)${jrelibdir}/rt.jar ; \
 	fi
 
 uninstall-local:

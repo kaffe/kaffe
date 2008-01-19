@@ -953,6 +953,7 @@ SEMAPHORE_LIB
 VM_LIBS
 CLASSPATH_PREFIX
 CLASSPATH_CLASSES
+TARGET_CLASSPATH_CLASSES
 CLASSPATH_LIBDIR
 GLIBJ_ZIP
 JAVAC
@@ -1703,6 +1704,10 @@ Optional Packages:
                           installation directory of Java core library
                           [default=/usr/local/classpath]
   --with-classpath-classes=<path>
+                          path to Java core library classes (includes the name
+                          of the file and may be flat)
+                          [default=/usr/local/classpath/share/classpath/glibj.zip]
+  --with-target-classpath-classes=<path>
                           path to Java core library classes (includes the name
                           of the file and may be flat)
                           [default=/usr/local/classpath/share/classpath/glibj.zip]
@@ -7042,7 +7047,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 7045 "configure"' > conftest.$ac_ext
+  echo '#line 7050 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -9606,11 +9611,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9609: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9614: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9613: \$? = $ac_status" >&5
+   echo "$as_me:9618: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9896,11 +9901,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9899: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9904: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9903: \$? = $ac_status" >&5
+   echo "$as_me:9908: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -10000,11 +10005,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:10003: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:10008: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:10007: \$? = $ac_status" >&5
+   echo "$as_me:10012: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -12349,7 +12354,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12352 "configure"
+#line 12357 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12449,7 +12454,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12452 "configure"
+#line 12457 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -14873,11 +14878,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14876: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14881: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:14880: \$? = $ac_status" >&5
+   echo "$as_me:14885: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -14977,11 +14982,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14980: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14985: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:14984: \$? = $ac_status" >&5
+   echo "$as_me:14989: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -16539,11 +16544,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16542: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16547: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:16546: \$? = $ac_status" >&5
+   echo "$as_me:16551: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -16643,11 +16648,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16646: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16651: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:16650: \$? = $ac_status" >&5
+   echo "$as_me:16655: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -18834,11 +18839,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18837: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18842: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:18841: \$? = $ac_status" >&5
+   echo "$as_me:18846: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -19124,11 +19129,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:19127: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:19132: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:19131: \$? = $ac_status" >&5
+   echo "$as_me:19136: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -19228,11 +19233,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:19231: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:19236: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:19235: \$? = $ac_status" >&5
+   echo "$as_me:19240: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -25363,7 +25368,6 @@ fi
 
 { echo "$as_me:$LINENO: result: ${CLASSPATH_PREFIX}" >&5
 echo "${ECHO_T}${CLASSPATH_PREFIX}" >&6; }
-#AC_DEFINE_UNQUOTED([CLASSPATH_PREFIX], "${CLASSPATH_PREFIX}", [Java core library installation directory])
 
 
 
@@ -25379,7 +25383,21 @@ fi
 
 { echo "$as_me:$LINENO: result: ${CLASSPATH_CLASSES}" >&5
 echo "${ECHO_T}${CLASSPATH_CLASSES}" >&6; }
-#AC_DEFINE_UNQUOTED([CLASSPATH_CLASSES], "${CLASSPATH_CLASSES}", [Java core library classes])
+
+
+
+{ echo "$as_me:$LINENO: checking where Java core library classes are installed on the target" >&5
+echo $ECHO_N "checking where Java core library classes are installed on the target... $ECHO_C" >&6; }
+
+# Check whether --with-target-classpath-classes was given.
+if test "${with_target_classpath_classes+set}" = set; then
+  withval=$with_target_classpath_classes; TARGET_CLASSPATH_CLASSES=${withval}
+else
+  TARGET_CLASSPATH_CLASSES=${CLASSPATH_CLASSES}
+fi
+
+{ echo "$as_me:$LINENO: result: ${TARGET_CLASSPATH_CLASSES}" >&5
+echo "${ECHO_T}${TARGET_CLASSPATH_CLASSES}" >&6; }
 
 
 
@@ -25396,8 +25414,6 @@ fi
 { echo "$as_me:$LINENO: result: ${CLASSPATH_LIBDIR}" >&5
 echo "${ECHO_T}${CLASSPATH_LIBDIR}" >&6; }
 
-#AS_AC_EXPAND([CLASSPATH_LIBDIR], ${CLASSPATH_LIBDIR})
-#AC_DEFINE_UNQUOTED([CLASSPATH_LIBDIR], "${CLASSPATH_LIBDIR}", [Java core library native libraries installation directory])
 
 
 
@@ -25534,7 +25550,7 @@ else
 JAVA_TEST=Test.java
 CLASS_TEST=Test.class
 cat << \EOF > $JAVA_TEST
-/* #line 25537 "configure" */
+/* #line 25553 "configure" */
 public class Test {
 }
 EOF
@@ -43415,6 +43431,7 @@ SEMAPHORE_LIB!$SEMAPHORE_LIB$ac_delim
 VM_LIBS!$VM_LIBS$ac_delim
 CLASSPATH_PREFIX!$CLASSPATH_PREFIX$ac_delim
 CLASSPATH_CLASSES!$CLASSPATH_CLASSES$ac_delim
+TARGET_CLASSPATH_CLASSES!$TARGET_CLASSPATH_CLASSES$ac_delim
 CLASSPATH_LIBDIR!$CLASSPATH_LIBDIR$ac_delim
 GLIBJ_ZIP!$GLIBJ_ZIP$ac_delim
 JAVAC!$JAVAC$ac_delim
@@ -43435,7 +43452,6 @@ HAVE_JASMIN_TRUE!$HAVE_JASMIN_TRUE$ac_delim
 HAVE_JASMIN_FALSE!$HAVE_JASMIN_FALSE$ac_delim
 KAFFE_LIBS!$KAFFE_LIBS$ac_delim
 M_LIBS!$M_LIBS$ac_delim
-ZIP_LIBS!$ZIP_LIBS$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -43477,6 +43493,7 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+ZIP_LIBS!$ZIP_LIBS$ac_delim
 LIBADD_GMP!$LIBADD_GMP$ac_delim
 USE_GMP!$USE_GMP$ac_delim
 GC_NAME!$GC_NAME$ac_delim
@@ -43541,7 +43558,7 @@ subdirs!$subdirs$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 62; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 63; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5
