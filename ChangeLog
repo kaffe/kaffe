@@ -1,5 +1,95 @@
 2008-01-19  Dalibor Topic  <robilad@kaffe.org>
 
+	*  config/alpha/jit-alpha.def,
+	config/alpha/jit-icode.h,
+	config/alpha/linux/md.c,
+	config/alpha/netbsd1/md.c,
+	config/alpha/osf/md.c,
+	config/arm/jit-arm.def,
+	config/arm/jit3-arm.def,
+	config/bfin/jit-bfin.def,
+	config/bfin/jit3-bfin.def,
+	config/ia64/linux/md.h,
+	config/m68k/jit3-m68k.def,
+	config/mips/mips.c,
+	config/powerpc/callmethod_ppc.h,
+	config/powerpc/jit3-icode.h,
+	config/powerpc/jit3-powerpc.def,
+	config/powerpc/netbsd1/md.c,
+	config/sparc/jit-sparc.def.
+	kaffe/kaffevm/classMethod.c,
+	kaffe/kaffevm/classPool.c,
+	kaffe/kaffevm/exception.c,
+	kaffe/kaffevm/findInJar.c,
+	kaffe/kaffevm/kaffe.def,
+	kaffe/kaffevm/soft.c,
+	kaffe/kaffevm/string.c,
+	kaffe/kaffevm/gcj/eh.c,
+	kaffe/kaffevm/gcj/gcj-glue.c,
+	kaffe/kaffevm/jit/labels.c,
+	kaffe/kaffevm/jit/methodcalls.c,
+	kaffe/kaffevm/jit/native-wrapper.c,
+	kaffe/kaffevm/jit3/icode.c,
+	kaffe/kaffevm/jit3/machine.c,
+	kaffe/kaffevm/jit3/registers.h,
+	kaffe/kaffevm/jni/jni.c,
+	kaffe/kaffevm/systems/oskit-pthreads/pjthread.c,
+	kaffe/kaffevm/systems/unix-jthreads/jthread.c,
+	kaffe/kaffevm/systems/win32/winio.c,
+	kaffe/xprof/xprofiler.c,
+	libraries/clib/native/Class.c:
+	Removed ifdef-ed out code.
+
+	* config/i386/callKaffeException.h,
+	config/i386/common.h, 
+	config/i386/sysdepCallMethod.h: 
+	Use __asm__ instead of asm.
+
+	* kaffe/kaffevm/Makefile.am (libkaffe_la_SOURCES): Added gc-refs.c.
+
+	* kaffe/kaffevm/gc-refs.c: New file. Moved most of the code from
+	kaffe/kaffevm/kaffe-gc/gc-refs.c here, and added KaffeGC_markAllRefs.
+
+	* kaffe/kaffevm/kaffe-gc/gc-refs.c, kaffe/kaffevm/boehm-gc/gc-refs.c:
+	Removed.
+
+	* kaffe/kaffevm/kaffe-gc/gc-krefs.c: New file. Moved over the thread 
+	walking functions necessary for kaffe-gc that don't fit into the shared
+	gc-refs.c implementation. 
+
+	* kaffe/kaffevm/boehm-gc/gc-brefs.c,
+	kaffe/kaffevm/boehm-gc/gc-brefs.h: New files.
+
+	* kaffe/kaffevm/gc-refs.h (KaffeGC_walkRefs) Removed.
+	(KaffeGC_markAllRefs) Added.
+
+	* kaffe/kaffevm/jar.c (openJarFile) Use S_ISDIR.
+
+	* kaffe/kaffevm/kaffe.def (FIELD_IS_CONSTANT): Removed.
+	(GETSTATIC) Removed uses of FIELD_IS_CONSTANT.
+
+	* kaffe/kaffevm/soft.c: Removed inline statements.
+
+	* kaffe/kaffevm/utf8const.c: Spell out unsigned int.
+
+	* kaffe/kaffevm/boehm-gc/Makefile.am (libkaffegc_la_SOURCES):
+	Removed gc-refs.c, added gc-brefs.c and gc-brefs.h.
+
+	* kaffe/kaffevm/boehm-gc/gc2.c: Include gc-brefs.h.
+	(GarbageCollectorInterface_Ops) Use BoehmGC_addRef and BoehmGC_rmRef
+	wrappers instead of using KaffeGC_addRef and KaffeGC_rmRef directly.
+
+	* kaffe/kaffevm/kaffe-gc/Makefile.am (libkaffegc_la_SOURCES): 
+	Removed gc-refs.c. Added gc-krefs.c.
+
+	* kaffe/kaffevm/kaffe-gc/gc-incremental.h (KaffeGC_walkRefs): 
+	Added prototype.
+
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c (resume_signal_handler,
+	jthread_unsuspendall) Declare status variable in the scope it is used.
+
+2008-01-19  Dalibor Topic  <robilad@kaffe.org>
+
 	* TODO: Updated.
 
 2008-01-19  Dalibor Topic  <robilad@kaffe.org>
