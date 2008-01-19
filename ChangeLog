@@ -1,5 +1,9 @@
 2008-01-19  Dalibor Topic  <robilad@kaffe.org>
 
+	* TODO: Updated.
+
+2008-01-19  Dalibor Topic  <robilad@kaffe.org>
+
 	*  config/alpha/jit-alpha.def,
 	config/alpha/jit-icode.h,
 	config/alpha/linux/md.c,

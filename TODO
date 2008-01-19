@@ -12,7 +12,6 @@
  * Make runtime engine runtime selectable
  * Make gc backend runtime selectable
  * Make boehm-gc the default engine on platforms that support it
- * Switch back to a shared gc-refs.c
  * Swich to glib for data structures, command line option parsing, etc.
  * Switch to libjclassinfo for class file parsing
 
@@ -44,8 +43,8 @@
 * Build system: (dalibor)
   * Remove convenience libraries (gc, engine, threading) and make them part of libkaffe_la_SOURCES
   * Remove symlinked files, and replace them by adding the 'right' file to SOURCES
-  * make sure all noinst_HEADERS are partof _SOURCES.
-  * Use AC_IF and AS_CASE all over the configure script.
+  * make sure all noinst_HEADERS are part of _SOURCES.
+  * Use AS_IF and AS_CASE all over the configure script.
   * Non-recursive build, single Makefile.am for kaffe.
   * Switch to autotest for the test suites
 
