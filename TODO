@@ -5,6 +5,10 @@
    Variable must be in thread local storage and not globally visible.
  * Add support for gcj-ed code with BC ABI.
  * Merge in Tom Tromey's libjit and llvm based JITs.
+
+* Cleanup
+ * Turn developers/autogen.sh into an autoreconf call
+ * Remove libltdl from C(PP)FLAGS in all Makefile.ams.
  * Remove unused instructions from jits (nop, unimplemented)
 
 * Architectural changes:
@@ -14,6 +18,8 @@
  * Make boehm-gc the default engine on platforms that support it
  * Swich to glib for data structures, command line option parsing, etc.
  * Switch to libjclassinfo for class file parsing
+  * Switch to libzzlib for zip file reading first to be able to kill the syscall
+    interface in the threading code.
 
 * Missing features
  * Implement support for extension override mechanism, and allow overriding
