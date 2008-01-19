@@ -78,20 +78,6 @@ DBG(MOREJIT,
 #error "You have to define either COMPARE_AND_EXCHANGE or ATOMIC_EXCHANGE"
 #endif
 
-#if 0
-	if (METHOD_PRE_COMPILED(meth)) {
-		nativecode* ncode = METHOD_TRUE_NCODE(meth);
-		nativecode* ocode = METHOD_NATIVECODE(meth);
-		METHOD_NATIVECODE(meth) = ncode;
-		/* Update the dtable entries for all classes if this isn't a
-	   	   static method.  */
-		if (meth->idx >= 0 && ocode != ncode) {
-			meth->class->dtable->method[meth->idx] = ncode;
-		}
-		SET_METHOD_PRE_COMPILED(meth, 0);
-	}
-#endif
-
 TDBG(	dprintf("Calling %s:%s%s @ %p\n", meth->class->name->data, meth->name->data, METHOD_SIGD(meth), METHOD_NATIVECODE(meth));	)
 
 DBG(MOREJIT,

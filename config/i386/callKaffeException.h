@@ -24,10 +24,10 @@ struct Hjava_lang_Throwable;
 static inline void callKaffeException(uintp fp, 
 				      uintp handler, 
 				      struct Hjava_lang_Throwable* eobj) {
-	asm("   movl %2,%%eax \n"
-	    "	movl %0,%%ebp \n"
-	    "	jmp *%1	\n"
-	    : : "g" (fp), "r" (handler), "g" (eobj) : "eax");
+	__asm__("   movl %2,%%eax \n"
+	        "	movl %0,%%ebp \n"
+	        "	jmp *%1	\n"
+	        : : "g" (fp), "r" (handler), "g" (eobj) : "eax");
 }
 
 #endif /* __i386_callKaffeException_h */

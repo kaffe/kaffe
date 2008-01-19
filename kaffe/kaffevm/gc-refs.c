@@ -25,7 +25,7 @@
 #include "md.h"
 #include "gc-refs.h"
 #include "java_lang_Thread.h"
-#include "gc2.h"
+#include "locks.h"
 
 #define	REFOBJHASHSZ	128
 typedef struct _strongRefObject {
@@ -64,11 +64,10 @@ static iStaticLock                      weakRefLock;
  * Add a persistent reference to an object.
  */
 bool
-KaffeGC_addRef(Collector *collector UNUSED, const void* mem)
+KaffeGC_addRef(Collector *collector, const void* mem)
 {
   uint32 idx;
   strongRefObject* obj;
-
 
   DBG(REFERENCE, dprintf("Adding persistent reference for object %p\n",
                  mem); );
@@ -87,8 +86,9 @@ KaffeGC_addRef(Collector *collector UNUSED, const void* mem)
   if (!obj)
     return false;
 	
-  obj->mem = ALIGN_BACKWARD(mem);
+  obj->mem = mem;
   obj->ref = 1;
+
   lockStaticMutex(&strongRefLock);
   obj->next = strongRefObjects.hash[idx];
   strongRefObjects.hash[idx] = obj;
@@ -101,19 +101,16 @@ KaffeGC_addRef(Collector *collector UNUSED, const void* mem)
  * zero then the reference is removed.
  */
 bool
-KaffeGC_rmRef(Collector *collector UNUSED, void* mem)
+KaffeGC_rmRef(Collector *collector, void* mem)
 {
   uint32 idx;
   strongRefObject** objp;
   strongRefObject* obj;
 
-
   DBG(REFERENCE, dprintf("Removing persistent reference for object %p\n",
                  mem); );
 
   idx = REFOBJHASH(mem);
-  mem = ALIGN_BACKWARD(mem);
-
   lockStaticMutex(&strongRefLock);
   for (objp = &strongRefObjects.hash[idx]; *objp != 0; objp = &obj->next) {
     obj = *objp;
@@ -128,8 +125,8 @@ KaffeGC_rmRef(Collector *collector UNUSED, void* mem)
       return true;
     }
   }
-  unlockStaticMutex(&strongRefLock);
 
+  unlockStaticMutex(&strongRefLock);
   /* Not found!! */
   return false;
 }
@@ -197,7 +194,6 @@ resizeWeakReferenceObject(Collector *collector, weakRefObject *obj, unsigned int
   while (1);
 }
 
-
 static weakRefObject *
 findWeakRefObject(void *mem)
 {
@@ -207,7 +203,7 @@ findWeakRefObject(void *mem)
   idx = REFOBJHASH(mem);
 
   for (obj = weakRefObjects.hash[idx]; obj != 0; obj = obj->next) {
-    /* Found it - just register a new weak reference */
+    /* Found it! */
     if (obj->mem == mem)
       return obj;
   }
@@ -289,14 +285,14 @@ KaffeGC_addWeakRef(Collector *collector, void* mem, void** refobj)
 }
 
 bool
-KaffeGC_rmWeakRef(Collector *collector UNUSED, void* mem, void** refobj)
+KaffeGC_rmWeakRef(Collector *collector, void* mem, void** refobj)
 {
   uint32 idx;
   weakRefObject** objp;
   weakRefObject* obj;
   unsigned int i;
 
-  
+
   DBG(REFERENCE, dprintf("Removing weak reference for object %p \n",
                  mem); );
 
@@ -354,7 +350,7 @@ KaffeGC_rmWeakRef(Collector *collector UNUSED, void* mem, void** refobj)
  * @param mem a valid memory object.
  */
 void
-KaffeGC_clearWeakRef(Collector *collector UNUSED, void* mem)
+KaffeGC_clearWeakRef(Collector *collector, void* mem)
 { 
   uint32 idx;
   weakRefObject** objp;
@@ -403,4 +399,18 @@ void KaffeGC_initRefs()
 {
   initStaticLock(&strongRefLock);
   initStaticLock(&weakRefLock);
+}
+
+void
+KaffeGC_markAllRefs(Collector* collector)
+{
+  int i;
+  strongRefObject* robj;
+  
+  /* Walk the referenced objects */
+  for (i = 0; i < REFOBJHASHSZ; i++) {
+    for (robj = strongRefObjects.hash[i]; robj != 0; robj = robj->next) {
+      KGC_markObject(collector, NULL, robj->mem);
+    }
+  }
 }

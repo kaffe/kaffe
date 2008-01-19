@@ -890,28 +890,6 @@ define_insn(build_code_ref, set_wordpc_xxC)
 	debug((".word ?\n"));
 }
 
-#if 0
-define_insn(build_const_ref, set_wordconst_xxC)
-{
-	label* l = (label*)const_int(2);
-
-	/* Align data onto relevant boundary */
-	if (l->size == 2 && ((uintp)CODEPC) % 8 != 0) {
-		LOUT(0);
-	}
-
-	l->to = (uintp)CODEPC;
-
-	LOUT(l->u.word[0]);
-	debug((".word 0x08x\n", l->u.word[0]));
-
-	if (l->size == 2) {
-		LOUT(l->u.word[1]);
-		debug((".word 0x08x\n", l->u.word[1]));
-	}
-}
-#endif
-
 /* --------------------------------------------------------------------- */
 
 define_insn(set_label, set_label_xxC)

@@ -426,13 +426,6 @@ kenvMakeJavaString(const char *utf8data, int utf8length, int utf8hash)
 	 */
 	assert((u->hash & 0xffff) == utf8hash);
 	s = utf8Const2Java(u);
-#if 0	/* This is kind of excessive, but turn it on if you need the
-	 * addresses of strings
-	 */
-DBG(GCJ, dprintf("making str `%s' ->%p value->%p v.dtable->%p\n",
-		utf8data, s, s->value, ((Hjava_lang_Object*)s->value)->dtable);
-    )
-#endif
 	utf8ConstRelease(u);
 
 	/* Nail these down for now because we do not walk a gcj class's

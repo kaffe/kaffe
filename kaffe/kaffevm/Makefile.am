@@ -111,6 +111,7 @@ libkaffe_la_SOURCES = \
 	findInJar.c \
 	fp.c \
 	gc.c \
+	gc-refs.c \
 	gc-refs.h \
 	hashtab.c \
 	itypes.c \

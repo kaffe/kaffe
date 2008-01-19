@@ -38,7 +38,7 @@ typedef int64	profiler_click_t;
  * This is a macro to help GCC optimization.
  * The rdtsc instruction load TSC to edx:eax aka A register.  */
 #define profiler_get_clicks(COUNTER)	\
-	asm volatile (".byte 0xf; .byte 0x31" /* "rdtsc" */ : "=A" (COUNTER))
+	__asm__ volatile (".byte 0xf; .byte 0x31" /* "rdtsc" */ : "=A" (COUNTER))
 
 #endif
 

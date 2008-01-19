@@ -49,15 +49,6 @@ init_md(void)
                 "excb"
                 : : "f"(FPCR_INED | FPCR_UNFD | FPCR_DYN_NORMAL
                         | FPCR_OVFD | FPCR_DZED));
-
-#if 0
-/* This code does not work on NetBSD and I do not have a clue why.
-   Disable it until forced to fix it, or someone else fixes it. */
-
-        /* Set the software emulation bits in the kernel for
-           those that don't.  */
-        ieee_set_fp_control(IEEE_TRAP_ENABLE_INV);
-#endif
 }
 
 #if defined(TRANSLATOR)

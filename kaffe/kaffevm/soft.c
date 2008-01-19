@@ -283,7 +283,6 @@ soft_lookupinterfacemethod(const Hjava_lang_Object* obj, const struct Hjava_lang
 	return ncode;
 }
 
-inline
 jint
 instanceof_class(Hjava_lang_Class* c, Hjava_lang_Class* oc)
 {
@@ -298,7 +297,6 @@ instanceof_class(Hjava_lang_Class* c, Hjava_lang_Class* oc)
 	return (0);
 }
 
-inline
 jint
 instanceof_interface(Hjava_lang_Class* c, Hjava_lang_Class* oc)
 {
@@ -338,7 +336,6 @@ instanceof_interface(Hjava_lang_Class* c, Hjava_lang_Class* oc)
 	  }
 }
 
-inline
 jint
 instanceof_array(Hjava_lang_Class* c, Hjava_lang_Class* oc)
 {
@@ -831,18 +828,6 @@ soft_lshrl(jlong v1, jint v2)
 jint
 soft_lcmp(jlong v1, jlong v2)
 {
-#if 0
-	jlong lcc = v2 - v1;
-	if (lcc < 0) {
-		return (-1);
-	}
-	else if (lcc > 0) {
-		return (1);
-	}
-	else {
-		return (0);
-	}
-#endif
 	if (v2 < v1) {
 		return (-1);
 	}

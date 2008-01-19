@@ -418,13 +418,6 @@ int jit_debug;
 #define	op_eor(T,F1,F2)		op_rrr(CC_AL,ALU_EOR,SFT_LSLC,0,T,F1,F2)
 #define	op_eor_const(T,F1,I8)	op_rrr(CC_AL,ALU_EOR | ALU_OP_IMMED, SFT_LSLC, 0, T, F1, I8 & 0xff)
 
-#if 0
-/* defined differently below --- why? */
-#define	op_ashr(T,F1,F2)	op_rrr(CC_AL,ALU_MOV,SFT_ASR,(F2)<<1,T,0,F1)
-#define	op_lshr(T,F1,F2)	op_rrr(CC_AL,ALU_MOV,SFT_LSR,(F2)<<1,T,0,F1)
-#define	op_lshl(T,F1,F2)	op_rrr(CC_AL,ALU_MOV,SFT_LSL,(F2)<<1,T,0,F1)
-#endif
-
 /*
  *
  * These use the register-specified shift forms.
@@ -1485,20 +1478,6 @@ define_insn(cvt_int_double, cvtdi_RxR)
 	debug(("cvt_double_int %d, %d\n", w, r));
 }
 
-#if 0
-/* these aren't being used */
-define_insn(cvt_long_float, cvtlf_RxR)
-{
-	/* Is a long a 64-bit quantity? */
-	debug(("NOT IMPLEMENTED: cvt_long_float\n"));
-}
-
-define_insn(cvt_long_double, cvtld_RxR)
-{
-	debug(("NOT IMPLEMENTED: cvt_long_double\n"));
-    }
-#endif
-
 define_insn(cvt_float_double, cvtfd_RxR)
 {
 	int r = rreg_float(2);
@@ -1881,35 +1860,6 @@ define_insn(return_double, freturnl_Rxx)
 }
 
 /* --------------------------------------------------------------------- */
-
-#if 0
-/*
- * We use to use this version of the fakecall system but it uses way
- * to many constant pool entries.  Since it's not time critical we
- * use the new lower version which doesn't use the constant pool but
- * instead constructs the relevant addresses byte by byte.
- */
-define_insn(fake_call_constpool, fakecall_xCC)
-{
-	label* tol = const_label(2);
-	label* froml = const_label(1);
-
-	froml->type = Lconstant | Labsolute | Loffset12;
-	froml->at = CODEPC;
-
-	op_load_offset(LR, CONSTPOOL_BASE, -128);
-	debug(("load_label_const lr, ?\n"));
-
-	tol->type = Lconstant | Labsolute | Loffset12;
-	tol->at = CODEPC;
-
-	op_load_offset(R0, CONSTPOOL_BASE, -128);
-	debug(("load_label_const r0, ?\n"));
-
-	op_mov(PC, R0);
-}
-
-#endif
 
 define_insn(fake_call, fakecall_xCC)
 {

@@ -277,12 +277,6 @@ Fread(int fd, void* buf, size_t len)
 	 * zero if there's still data to be read but none happens
 	 * to be available (to JDK 1.1.6 spec)
 	 */
-#if 0
-	if (len == 0) {
-		blockOnFile(fd, TH_READ, fhand[fd].timeout);
-		return (0);
-	}
-#endif
 
 	res = ReadFile(fhand[fd].hand, (LPVOID)buf, (DWORD)len, (LPDWORD)&r, NULL);
 	if (res == 0) {

@@ -2089,26 +2089,6 @@ define_insn(cmp_ref, cmpr_xRR)
 	op_cmpal_aa(r2, r1);
 }
 
-#if 0
-/*
- * Since this function generates an unimplemented instruction, and
- * tentatively commented out.
- */
-
-define_insn(cmp_ref_const, cmpr_xRC)
-{
-	int v = const_int(2);
-	int r = rreg_ref(1);
-
-	if (v != 0) {
-		op_cmpil_ia(v, r);
-	}
-	else {
-		op_tst_a(r);
-	}
-}
-#endif
-
 #if !defined(HAVE_NO_SWAP_ANY)
 define_insn(swap_any, swap_RxR)
 {

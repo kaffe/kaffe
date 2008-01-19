@@ -65,17 +65,6 @@ int __egcs_cmpxchg(void **A, void *O, void *N) {
 
 #define SP_OFFSET 0
 
-#if 0
-# define JB_GPR1   0  /* Also known as the stack pointer */
-# define JB_GPR2   1
-# define JB_LR     2  /* The address we will return to */
-# define JB_GPRS   3  /* GPRs 14 through 31 are saved, 18 in total */
-# define JB_CR     21 /* Condition code registers. */
-# define JB_FPRS   22 /* FPRs 14 through 31 are saved, 18*2 words total */
-# define JB_SIZE   (58*4)
-#endif
-
-
 asm(
 "	.text \n"
 "	.globl kaffe_longjmp \n"

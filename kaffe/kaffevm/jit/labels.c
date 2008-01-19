@@ -129,19 +129,6 @@ KaffeJIT_linkLabels(codeinfo* codeInfo, uintp codebase)
 			printf("Label type 0x%x not supported (%p).\n", l->type, l);
 			KAFFEVM_ABORT();
 		}
-#if 0
-		/*
-		 * If we were saving relocation information we must save all
-		 * labels which are 'Labsolute', that is they hold an absolute
-		 * address for something.  Note that this doesn't catch
-		 * everything, specifically it doesn't catch string objects
-		 * or references to classes.
-		 */
-		if ((l->type & Labsolute) != 0) {
-			l->snext = savedLabel;
-			savedLabel = l;
-		}
-#endif
 	}
 }
 

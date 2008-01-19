@@ -94,24 +94,24 @@ am_libkaffe_la_OBJECTS = libkaffe_la-access.lo \
 	libkaffe_la-debug.lo libkaffe_la-exception.lo \
 	libkaffe_la-external.lo libkaffe_la-file.lo \
 	libkaffe_la-findInJar.lo libkaffe_la-fp.lo libkaffe_la-gc.lo \
-	libkaffe_la-hashtab.lo libkaffe_la-itypes.lo \
-	libkaffe_la-jar.lo libkaffe_la-ksem.lo libkaffe_la-locks.lo \
-	libkaffe_la-lookup.lo libkaffe_la-object.lo \
-	libkaffe_la-readClass.lo libkaffe_la-soft.lo \
-	libkaffe_la-stackTrace.lo libkaffe_la-stats.lo \
-	libkaffe_la-string.lo libkaffe_la-support.lo \
-	libkaffe_la-javacall.lo libkaffe_la-thread.lo \
-	libkaffe_la-utf8const.lo libkaffe_la-gcFuncs.lo \
-	libkaffe_la-reflect.lo libkaffe_la-reference.lo \
-	libkaffe_la-jni.lo libkaffe_la-jni-base.lo \
-	libkaffe_la-jni-callmethod.lo libkaffe_la-jni-fields.lo \
-	libkaffe_la-jni-arrays.lo libkaffe_la-jni-string.lo \
-	libkaffe_la-jni-helpers.lo libkaffe_la-jni-refs.lo \
-	libkaffe_la-verify.lo libkaffe_la-verify2.lo \
-	libkaffe_la-verify3a.lo libkaffe_la-verify3b.lo \
-	libkaffe_la-verify-block.lo libkaffe_la-verify-debug.lo \
-	libkaffe_la-verify-sigstack.lo libkaffe_la-verify-type.lo \
-	libkaffe_la-verify-uninit.lo
+	libkaffe_la-gc-refs.lo libkaffe_la-hashtab.lo \
+	libkaffe_la-itypes.lo libkaffe_la-jar.lo libkaffe_la-ksem.lo \
+	libkaffe_la-locks.lo libkaffe_la-lookup.lo \
+	libkaffe_la-object.lo libkaffe_la-readClass.lo \
+	libkaffe_la-soft.lo libkaffe_la-stackTrace.lo \
+	libkaffe_la-stats.lo libkaffe_la-string.lo \
+	libkaffe_la-support.lo libkaffe_la-javacall.lo \
+	libkaffe_la-thread.lo libkaffe_la-utf8const.lo \
+	libkaffe_la-gcFuncs.lo libkaffe_la-reflect.lo \
+	libkaffe_la-reference.lo libkaffe_la-jni.lo \
+	libkaffe_la-jni-base.lo libkaffe_la-jni-callmethod.lo \
+	libkaffe_la-jni-fields.lo libkaffe_la-jni-arrays.lo \
+	libkaffe_la-jni-string.lo libkaffe_la-jni-helpers.lo \
+	libkaffe_la-jni-refs.lo libkaffe_la-verify.lo \
+	libkaffe_la-verify2.lo libkaffe_la-verify3a.lo \
+	libkaffe_la-verify3b.lo libkaffe_la-verify-block.lo \
+	libkaffe_la-verify-debug.lo libkaffe_la-verify-sigstack.lo \
+	libkaffe_la-verify-type.lo libkaffe_la-verify-uninit.lo
 nodist_libkaffe_la_OBJECTS = libkaffe_la-md.lo
 libkaffe_la_OBJECTS = $(am_libkaffe_la_OBJECTS) \
 	$(nodist_libkaffe_la_OBJECTS)
@@ -450,6 +450,7 @@ libkaffe_la_SOURCES = \
 	findInJar.c \
 	fp.c \
 	gc.c \
+	gc-refs.c \
 	gc-refs.h \
 	hashtab.c \
 	itypes.c \
@@ -636,6 +637,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffe_la-file.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffe_la-findInJar.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffe_la-fp.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffe_la-gc-refs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffe_la-gc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffe_la-gcFuncs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffe_la-hashtab.Plo@am__quote@
@@ -809,6 +811,13 @@ libkaffe_la-gc.lo: gc.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gc.c' object='libkaffe_la-gc.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffe_la_CFLAGS) $(CFLAGS) -c -o libkaffe_la-gc.lo `test -f 'gc.c' || echo '$(srcdir)/'`gc.c
+
+libkaffe_la-gc-refs.lo: gc-refs.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffe_la_CFLAGS) $(CFLAGS) -MT libkaffe_la-gc-refs.lo -MD -MP -MF $(DEPDIR)/libkaffe_la-gc-refs.Tpo -c -o libkaffe_la-gc-refs.lo `test -f 'gc-refs.c' || echo '$(srcdir)/'`gc-refs.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libkaffe_la-gc-refs.Tpo $(DEPDIR)/libkaffe_la-gc-refs.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gc-refs.c' object='libkaffe_la-gc-refs.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffe_la_CFLAGS) $(CFLAGS) -c -o libkaffe_la-gc-refs.lo `test -f 'gc-refs.c' || echo '$(srcdir)/'`gc-refs.c
 
 libkaffe_la-hashtab.lo: hashtab.c
 @am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffe_la_CFLAGS) $(CFLAGS) -MT libkaffe_la-hashtab.lo -MD -MP -MF $(DEPDIR)/libkaffe_la-hashtab.Tpo -c -o libkaffe_la-hashtab.lo `test -f 'hashtab.c' || echo '$(srcdir)/'`hashtab.c

@@ -70,7 +70,7 @@ CONFIG_HEADER = $(top_builddir)/config/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libkaffegc_la_LIBADD =
-am_libkaffegc_la_OBJECTS = gc2.lo gc-refs.lo gc-kaffe.lo
+am_libkaffegc_la_OBJECTS = gc2.lo gc-brefs.lo gc-kaffe.lo
 libkaffegc_la_OBJECTS = $(am_libkaffegc_la_OBJECTS)
 libkaffegc_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -312,7 +312,8 @@ libkaffegc_la_LDFLAGS = \
 libkaffegc_la_SOURCES = \
 	gc2.c \
 	gc2.h \
-	gc-refs.c \
+	gc-brefs.c \
+	gc-brefs.h \
 	gc-kaffe.c \
 	gc-kaffe.h
 
@@ -370,8 +371,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gc-brefs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gc-kaffe.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gc-refs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gc2.Plo@am__quote@
 
 .c.o:

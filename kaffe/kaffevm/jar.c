@@ -1177,7 +1177,7 @@ jarFile *openJarFile(char *name)
 			
 			if( KFSTAT(retval->fd, &jar_stat) == 0 )
  			{
-				if( (jar_stat.st_mode & S_IFDIR) )
+				if( S_ISDIR(jar_stat.st_mode) )
 				{
 					/* Its a directory! */
 					error = 1;

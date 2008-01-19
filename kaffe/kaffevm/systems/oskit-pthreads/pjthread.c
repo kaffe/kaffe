@@ -498,18 +498,6 @@ DBG(JTHREAD,
 	tid->func(tid->jlThread);
 
 	assert(!"firstStartThread has returned");
-#if 0
-DBG(JTHREAD, 
-	dprintf("thread %d returned, calling jthread_exit\n", 
-		tid->native_thread); 
-    )
-
-	/* drop onstop handler if that thread is exiting by itself */
-	assert (tid->status != THREAD_DYING);
-
-	mark_thread_dead();
-	/* by returning, we exit this thread */
-#endif
 	return 0;
 }
 

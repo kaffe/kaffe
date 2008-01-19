@@ -48,10 +48,6 @@ __terminate ()
 void *
 __throw_type_match (void *catch_type, void *throw_type, void *obj)
 {
-#if 0
- printf ("__throw_type_match (): catch_type = %s, throw_type = %s\n",
-	 catch_type, throw_type);
-#endif
  if (strcmp ((const char *)catch_type, (const char *)throw_type) == 0)
    return obj;
  return 0;

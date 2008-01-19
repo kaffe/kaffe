@@ -290,11 +290,6 @@
 #define	HAVE_load_constpool_float	fld_RxL
 #define	HAVE_load_constpool_double	fldl_RxL
 
-#if 0
-#define	HAVE_move_float_const_rangecheck(v)	__builtin_FP_values(v)
-#define	HAVE_move_double_const_rangecheck(v)	__builtin_FP_values(v)
-#endif
-
 #define	HAVE_add_float			fadd_RRR
 #define	HAVE_sub_float			fsub_RRR
 #define	HAVE_mul_float			fmul_RRR

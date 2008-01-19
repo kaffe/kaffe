@@ -830,11 +830,6 @@ Kaffe_GetEnv(JavaVM* vm, void** penv, jint interface_id)
 	case JNI_VERSION_1_4:
 		(*penv) = je;
 		return (JNI_OK);
-#if 0
-	case JVMDI_VERSION_1:
-		(*penv) = (JVMDI_Interface_1*)&Kaffe_JVMDIEnv;
-		return (JNI_OK);
-#endif
 
 #if defined(ENABLE_JVMPI)
 	case JVMPI_VERSION_1:

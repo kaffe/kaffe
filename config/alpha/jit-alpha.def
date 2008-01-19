@@ -2301,12 +2301,6 @@ define_insn(load_byte, loadb_RxR)
 		op_sextb(w, w);
 	}
 	else {
-#if 0
-		op_ldq_u(w, r, 0);
-		op_addq_i(r, 1, REG_at);
-		op_extqh(w, REG_at, w);
-		op_sra_i(w, 56, w);
-#endif
 		op_mov(r, REG_at);
                 op_ldq_u(w, r, 0);
                 op_extbl(w, REG_at, w);
@@ -2550,80 +2544,6 @@ define_insn(cvt_long_double, cvtld_RxR)
 		op_fmov(t, w);
 	}
 }
-
-#if 0
-/* These functions does not work correctly, use soft_cvtXX */
-
-define_insn(cvt_float_int, cvtfi_RxR)
-{
-	int r = rreg_float(2);
-	int w = wreg_float(0);
-
-	alpha_jit_info.ieee = 1;
-	if (r == w) {
-		/* XXX allocate three temp registers ? */
-		op_cvtst_s(r, REG_ft);
-		op_trapb();
-		op_cvttq_svc(REG_ft, w);
-		op_trapb();
-		op_cvtql_sv(w, REG_ft);
-		op_trapb();
-		op_fmov(REG_ft, w);
-	}
-	else {
-		op_cvtst_s(r, w);
-		op_cvttq_svc(w, REG_ft);
-		/* XXX allocate another temp register ? */
-		op_trapb();
-		op_cvtql_sv(REG_ft, w);
-		op_trapb();
-	}
-}
-
-define_insn(cvt_float_long, cvtfl_RxR)
-{
-	int r = rreg_float(2);
-	int w = wreg_double(0);
-
-	alpha_jit_info.ieee = 1;
-	op_cvtst_s(r, REG_ft);
-	if (r == w) {
-		/* XXX allocate another temp register ? */
-		op_trapb();
-	}
-	op_cvttq_svc(REG_ft, w);
-	op_trapb();
-}
-
-define_insn(cvt_double_int, cvtdi_RxR)
-{
-	int r = rreg_double(2);
-	int w = wreg_float(0);
-
-	alpha_jit_info.ieee = 1;
-	op_cvttq_svc(r, REG_ft);
-	if (r == w) {
-		/* XXX allocate another temp register ? */
-		op_trapb();
-	}
-	op_cvtql_sv(REG_ft, w);
-	op_trapb();
-}
-
-define_insn(cvt_double_long, cvtdl_RxR)
-{
-	int r = rreg_double(2);
-	int w = wreg_double(0);
-	int t = (r == w) ? REG_ft : w;
-
-	alpha_jit_info.ieee = 1;
-	op_cvttq_svc(r, t);
-	op_trapb();
-	if (t == REG_ft) {
-		op_fmov(t, w);
-	}
-}
-#endif
 
 define_insn(cvt_float_double, cvtfd_RxR)
 {
@@ -2913,18 +2833,6 @@ define_insn(call_ref, call_xCC)
 
         label* l = const_label(1);
         assert(const_int(2) == ba);
-
-#if 0
-	/* For normal function calls, these should have been flushed
-	   already.  For specials like soft_badarrayindex that aren't
-	   considered in the the normal basic block divisions, this
-	   is in fact wrong, because this flush isn't happening before
-	   the test, and so we'll later think that the up-to-date
-	   value for the slot is on the stack when it isn't.  */
-	clobberRegister(REG_pv);
-	clobberRegister(REG_ra);
-#endif
-
 	alpha_move_const_pool(REG_pv, l, CPref, l->to, op_ldq);
 
 	op_jsr(REG_ra, REG_pv, 0);

@@ -351,21 +351,6 @@ throwExternalException(Hjava_lang_Throwable* eobj)
 	dispatchException(eobj, (stackTraceInfo*)buildStackTrace(NULL));
 }
 
-#if 0
-void
-throwOutOfMemory(void)
-{
-	Hjava_lang_Throwable* err;
-
-	err = OutOfMemoryError;
-	if (err != NULL) {
-		throwException(err);
-	}
-	dprintf("(Insufficient memory)\n");
-	KAFFEVM_EXIT(-1);
-}
-#endif
-
 static void
 dispatchException(Hjava_lang_Throwable* eobj, stackTraceInfo* baseFrame)
 {

@@ -50,13 +50,6 @@
 #include "kaffe/jmalloc.h"
 #include "methodcalls.h"
 
-#if 0
-#define	METHOD_TRUE_NCODE(METH)			getMethodCodeStart(METH)
-#define	METHOD_PRE_COMPILED(METH)		((int16)(METH)->localsz < 0)
-#define	SET_METHOD_PRE_COMPILED(METH, VAL)	((METH)->localsz = -(VAL))
-#endif
-
-
 /* interfaces supported by arrays */
 static Hjava_lang_Class* arr_interfaces[2];
 
@@ -1767,12 +1760,6 @@ resolveObjectFields(Hjava_lang_Class* class, errorInfo *einfo)
 			maxalign = fsize;
 		}
 	}
-#if 0
-	/* Align start of this class's data */
-	if (oldoffset == 0) {
-		offset = ((offset + maxalign - 1) / maxalign) * maxalign;
-	}
-#endif
 
 	/* Now work out where to put each field */
 	fld = CLASS_IFIELDS(class);
@@ -1818,12 +1805,6 @@ resolveObjectFields(Hjava_lang_Class* class, errorInfo *einfo)
 	}
 	class->gc_layout = map;
 
-#if 0
-	/* Find and align start of object */
-	if (oldoffset == 0) {
-		offset = ((offset + maxalign - 1) / maxalign) * maxalign;
-	}
-#endif
 	nbits = offset/ALIGNMENTOF_VOIDP;
 
 DBG(GCPRECISE,

@@ -38,7 +38,7 @@ static inline void sysdepCallMethod(callMethodInfo *call) {
      assumes that the second 32bit-word of longs and doubles is
      available as an additional int argument, as callMethod[AV]() do.  */
   while (args > 0)
-    asm volatile ("pushl %0" : : "m" (call->args[--args].i) : "sp");
+    __asm__ volatile ("pushl %0" : : "m" (call->args[--args].i) : "sp");
 
   switch(call->retsize) {
   case 0:
@@ -64,7 +64,7 @@ static inline void sysdepCallMethod(callMethodInfo *call) {
   }
 
   /* Adjust the stack pointer.  */
-  asm volatile ("addl %0,%%esp" : :
+  __asm__ volatile ("addl %0,%%esp" : :
 		"r" (call->argsize * sizeof(jint)) : "cc", "sp");
 }
 #endif /* NEED_sysdepCallMethod */

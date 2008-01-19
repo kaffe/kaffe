@@ -31,8 +31,8 @@
    function calls into macros in such a way as to avoid compiler
    warnings.  Yuk! */
 #ifdef KAFFEH
-#define hashInit(a,b,c,d)	((hashtab_t)((u_int)utf8ConstCompare \
-					+ (u_int)utf8ConstHashValueInternal))
+#define hashInit(a,b,c,d)	((hashtab_t)((unsigned int)utf8ConstCompare \
+					+ (unsigned int)utf8ConstHashValueInternal))
 #define hashAdd(t, x)		(x)
 #define hashFind(t, x)		NULL
 #define hashRemove(t, x)	(void)NULL

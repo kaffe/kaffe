@@ -15,35 +15,6 @@
    common.h, and support.h for information as to the input parameters
 */
 
- 
-
-// #define dbg_mode 1
-
-#if 0
-#include "config.h"
-#include "config-std.h"
-#include "config-mem.h"
-#include "jni.h"
-#include <stdarg.h>
-#include "classMethod.h"
-#include "jtypes.h"
-#include "access.h"
-#include "object.h"
-#include "constants.h"
-#include "baseClasses.h"
-#include "lookup.h"
-#include "errors.h"
-#include "exception.h"
-#include "slots.h"
-#include "machine.h"
-#include "support.h"
-#include "md.h"
-#include "itypes.h"
-#include "external.h"
-#include "thread.h"
-#include "locks.h"
-#endif
-
 void sysdepCallMethod_ppc(
      callMethodInfo* CALL)  /* pointer to Kaffe callMethodInfo */
 {

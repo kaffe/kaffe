@@ -444,22 +444,6 @@ int enableProfileTimer(void)
 	sa.sa_handler = (SIG_T)profileTimerHandler;
 	sigfillset(&sa.sa_mask);
 	sa.sa_flags = 0;
-#if 0
-	if( sigaction(SIGALRM, &sa, &oldSigAction) >= 0 )
-	{
-		struct itimerval new_value;
-		
-		/* Setup a 10ms timer */
-		new_value.it_interval.tv_sec = 0;
-		new_value.it_interval.tv_usec = 10000;
-		new_value.it_value.tv_sec = 0;
-		new_value.it_value.tv_usec = 10000;
-		if( setitimer(ITIMER_REAL, &new_value, 0) >= 0 )
-		{
-			retval = true;
-		}
-	}
-#endif
 	retval = 1;
 	return( retval );
 }

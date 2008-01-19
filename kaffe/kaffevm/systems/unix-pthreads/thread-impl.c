@@ -1384,7 +1384,6 @@ resume_signal_handler ( int sig UNUSED )
 void
 jthread_suspendall (void)
 {
-  int		status;
   jthread_t	cur = jthread_current();
   volatile jthread_t	t;
 
@@ -1401,6 +1400,7 @@ jthread_suspendall (void)
   if ( ++critSection == 1 ){
 
 #if !defined(KAFFE_BOEHM_GC)
+        int status;
 	int val;
 	int numPending = 0;
 
@@ -1486,7 +1486,6 @@ jthread_unsuspendall (void)
 {
   jthread_t	cur = jthread_current();
   jthread_t	t;
-  int		status;
 
   if ( !jthreadInitialized || !critSection )
 	return;
@@ -1503,6 +1502,8 @@ jthread_unsuspendall (void)
 
 #if !defined(KAFFE_BOEHM_GC)
 	for ( t=activeThreads; t; t = t->next ){
+	  int status;
+
 	  pthread_mutex_lock(&t->suspendLock);
 	  if ( (t->suspendState & (SS_PENDING_SUSPEND | SS_SUSPENDED)) != 0 )
 	    {

@@ -32,7 +32,7 @@ libkaffegc_la_SOURCES= \
 	gc-incremental.h \
 	gc-mem.c \
 	gc-mem.h \
-	gc-refs.c 
+	gc-krefs.c 
 
 libkaffegc_la_DEPENDENCIES = \
         $(top_builddir)/kaffe/kaffevm/systems/$(THREAD_SYSTEM)/libkthread.la

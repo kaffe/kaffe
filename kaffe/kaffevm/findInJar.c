@@ -59,9 +59,6 @@ char* realBootClassPath;
 void initClasspath(void);
 
 static int getClasspathType(const char*);
-#if 0
-static void generateMangledName(char*, const char*);
-#endif
 static void discoverClasspath(const char*);
 static void makeClasspath(char*);
 static void findClassInJar(char*, classFile*, struct _errorInfo*);

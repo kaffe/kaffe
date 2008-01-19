@@ -996,14 +996,6 @@ add_int(SlotInfo* dst, SlotInfo* src, SlotInfo* src2)
 {
 #if defined(HAVE_add_int_const)
 	if (slot_type(src) == Tconst) {
-#if 0
-		/* Disabled as it does not clear Carry and breaks
-                   add_long() on ARM */
-		if (slot_type(src2) == Tconst) {
-			move_int_const(dst, slot_value(src)->i + slot_value(src2)->i);
-		}
-		else
-#endif
 		{
 			add_int_const(dst, src2, slot_value(src)->i);
 		}
@@ -4620,28 +4612,6 @@ build_call_frame(Utf8Const* sig, SlotInfo* obj, int sp_idx)
 /* Soft calls.								   */
 /*									   */
 
-#if 0
-void
-/* Custom edition */ softcall_lookupmethod(SlotInfo* dst, Method* meth, SlotInfo* obj)
-{
-	/* 'obj' must be written back since it will be reused */
-	begin_func_sync();
-#if defined(PUSHARG_FORWARDS)
-	pusharg_ref(obj, 0);
-	pusharg_utf8_const(meth->name, 1);
-	pusharg_utf8_const(meth->sig, 2);
-#else
-	pusharg_utf8_const(meth->sig, 2);
-	pusharg_utf8_const(meth->name, 1);
-	pusharg_ref(obj, 0);
-#endif
-	/* Custom edition */ call_soft(soft_lookupmethod);
-	popargs();
-	end_func_sync();
-	return_ref(dst);
-}
-#endif
-
 void
 softcall_lookupinterfacemethod(SlotInfo* dst, const Method* meth, SlotInfo* obj)
 {
@@ -4712,14 +4682,6 @@ check_array_store(SlotInfo* array, SlotInfo* obj)
 void
 explicit_check_null(int x, SlotInfo* obj, int y)
 {
-#if 0
-#if defined(HAVE_fakecall) || defined(HAVE_fakecall_constpool)
-	if (!canCatch(ANY)) {
-		cbranch_ref_const(obj, 0, newFakeCall(soft_nullpointer, pc), eq | blink);
-	}
-	else
-#endif
-#endif
 	{
 		end_sub_block();
 		cbranch_ref_const_ne(obj, NULL, reference_label(x, y));
@@ -4779,16 +4741,6 @@ check_div(int x UNUSED, SlotInfo* obj UNUSED, int y UNUSED)
 void
 check_div_long(int x, SlotInfo* obj, int y)
 {
-#if 0
-	THE CODE BELOW DOES NOT WORK - !!! FIX ME !!!
-#if defined(HAVE_fakecall) || defined(HAVE_fakecall_constpool)
-	if (!canCatch(ANY)) {
-		cbranch_int_const(LSLOT(obj), 0, newFakeCall(soft_divzero, pc), eq | blink);
-		cbranch_int_const(HSLOT(obj), 0, newFakeCall(soft_divzero, pc), eq | blink);
-	}
-	else
-#endif
-#endif
 	{
 		end_sub_block();
 		cbranch_int_const_ne(LSLOT(obj), 0, reference_label(x, y+0));

@@ -1844,36 +1844,10 @@ void ppc_finalize_args(void)
 define_insn(pusharg_int, push_xRC)
 {
 	int a = const_int(2);
-	
-#if 0
-	ppc_push_arg(Rint, seq_slot(s, 1));
-	if( a == 0 )
-	{
-		ppc_finalize_args();
-	}
-#else
-	int r, w, r_count;
+		int r, w, r_count;
 
 	if( (w = next_arg_register(a, Rint, &r_count)) != -1 )
 	{
-#if 0
-		/*
-		 * We can pass the arg in a register.  Ask for the register
-		 * we were given (rreg_int(1)) to be mapped to the one we
-		 * want (w).
-		 */
-		r = rreg_ideal_int(1, w);
-		if( r != w )
-		{
-			/* They weren't the same, flush whatever is in "w" */
-			clobberRegister(w);
-			/* and move the data into it. */
-			LOUT(ppc_op_mr(w, r));
-			/* XXX Why isn't there a register swap? */
-		}
-		/* Pin the register. */
-		register_reserve(w);
-#else
 		/*
 		 * can't use rreg_ideal_int because of brokeness.  its possible
 		 * for this to create a move between a callee saved register
@@ -1888,8 +1862,6 @@ define_insn(pusharg_int, push_xRC)
 		    LOUT(ppc_op_mr(w, r));
 		}
 		register_reserve(w);
-#endif
-		
 		debug((DBOUT,"pusharg_int %d, %d\n", w, r));
 	}
 	else
@@ -1901,21 +1873,11 @@ define_insn(pusharg_int, push_xRC)
 				PPC_FRAME_ARGS +
 				(a * sizeof(register_storage_t))));
 	}
-#endif
 }
 
 define_insn(push_float, fpush_xRC)
 {
 	int a = const_int(2);
-	
-#if 0
-	ppc_push_arg(Rint, seq_slot(s, 1));
-	if( a == 0 )
-	{
-		ppc_finalize_args();
-	}
-#else
-#if 1
 	int r_count, r, w;
 	
 	if( (w = next_arg_register(a, Rfloat, &r_count)) != -1 )
@@ -1942,57 +1904,12 @@ define_insn(push_float, fpush_xRC)
 				   PPC_FRAME_ARGS +
 				   (a * sizeof(register_storage_t))));
 	}
-#else
-	int r;
-	int w;
-	int a = const_int(2);
-
-	switch (a) {
-	case 0:
-	case 1:
-	case 2:
-	case 3:
-		w = R0 + a;
-		clobberRegister(w);
-		/*
-		 * Push it on to the stack
-		 */
-		r = rreg_float(1);
-		op_fpush(SP, r);
-		/*
-		 * Now pop it into the register pair
-		 */
-		op_pop_m(SP, (1 << w));
-		register_reserve(w);
-		debug((DBOUT,"push_float via elaborate mov r(%d) := f%d\n", w, r));
-		break;
-
-	default:
-		/*
-		 * Push it on to the stack
-		 */
-		r = rreg_float(1);
-		op_fpush(SP, r);
-		debug((DBOUT,"push_float via SP, f%d\n", r));
-		break;
-	}
-#endif
-#endif
 }
 
 
 define_insn(push_double, fpushl_xRC)
 {
 	int a = const_int(2);
-	
-#if 0
-	ppc_push_arg(Rint, seq_slot(s, 1));
-	if( a == 0 )
-	{
-		ppc_finalize_args();
-	}
-#else
-#if 1
 	int r_count, r, w;
 	
 	if( (w = next_arg_register(a, Rdouble, &r_count)) != -1 )
@@ -2019,59 +1936,6 @@ define_insn(push_double, fpushl_xRC)
 				   PPC_FRAME_ARGS +
 				   (a * sizeof(register_storage_t))));
 	}
-#else
-	int r;
-	int w;
-	int a = const_int(2);
-
-
-	switch (a) {
-	case 0:
-	case 1:
-	case 2:
-		w = R0 + a;
-		clobberRegister(w);
-		clobberRegister(w+1);
-		/*
-		 * Push it on to the stack
-		 */
-		r = rreg_double(1);
-		op_fpushl(SP, r);
-		/*
-		 * Now pop it into the register pair
-		 */
-		op_pop_m(SP, (1 << w) | (1 << (w+1)));
-		register_reserve(w);
-		register_reserve(w+1);
-		debug((DBOUT,"push_double via elaborate mov r(%d,%d) := f%d\n", w, w+1, r));
-		break;
-
-	case 3:
-		/*
-		 * Pass half of the double in R3, half on the stack
-		 */
-		w = R3;
-		clobberRegister(w);
-		r = rreg_double(1);
-		op_fpushl(SP, r);
-
-		/* Pop the first word */
-		op_pop_m(SP, (1 << w));
-		register_reserve(w);
-		debug((DBOUT,"push_double via partial register, partial stack SP, f%d\n", r));
-		break;
-
-	default:
-		/*
-		 * Push it on to the stack
-		 */
-		r = rreg_double(1);
-		op_fpushl(SP, r);
-		debug((DBOUT,"push_double via SP, f%d\n", r));
-		break;
-	}
-#endif
-#endif
 }
 
 define_insn(popargs, popargs_xxC)
@@ -2097,7 +1961,6 @@ define_insn(returnarg_int, returnarg_xxR)
 
 define_insn(returnarg_long, returnargl_xxR)
 {
-#if 1
 	int rhi, rlo;
 	REGSLOT* r;
 
@@ -2137,39 +2000,6 @@ define_insn(returnarg_long, returnargl_xxR)
 		/* Finally, move the lo register into place. */
 		LOUT(ppc_op_mr(PPC_RRETLO, rlo));
 	}
-#else
-	REGSLOT* r;
-	int r1;  
-	int r2;
-
-	r = seq_slot(s, 2);
-	r1 = _slowSlotRegister(r, Rint, rread);
-	r2 = _slowSlotRegister(r+1, Rint, rread);
-
-	debug((DBOUT,"returnarg_long R0,%d,%d\n", r1, r2));
-
-	/* Return long is a bit complicated since part of the source may
-	 * be the destination.
-	 */ 
-	if (R0 != r2) {
-		op_mov(R0, r1);
-		op_mov(R1, r2);
-	}
-	else if (R1 != r1) {
-		op_mov(R1, r2);
-		op_mov(R0, r1);
-	}
-	else {
-		/* Need to swap R0 and R1.  Force R0 into R2 (writing back
-		 * R2 if necessary) and then move things about until the
-		 * swap is done.
-		 */
-		forceRegister(r, R2, Rint);
-		op_mov(R2, R0);
-		op_mov(R0, R1);
-		op_mov(R1, R2);
-	}
-#endif
 }
 
 define_insn(returnarg_float, freturnarg_xxR)
@@ -2223,41 +2053,8 @@ define_insn(return_double, freturnl_Rxx)
 
 /* --------------------------------------------------------------------- */
 
-#if 0
-/*
- * We use to use this version of the fakecall system but it uses way
- * to many constant pool entries.  Since it's not time critical we
- * use the new lower version which doesn't use the constant pool but
- * instead constructs the relevant addresses byte by byte.
- */
-define_insn(fake_call_constpool, fakecall_xCC)
-{
-#if 1
-#else
-        label* tol = const_label(2);
-        label* froml = const_label(1);
-
-	froml->type = Lconstant | Labsolute | Loffset12;
-        froml->at = CODEPC;
-
-	op_load_offset(LR, CONSTPOOL_BASE, -128);
-	debug((DBOUT,"load_label_const lr, ?\n"));
-
-        tol->type = Lconstant | Labsolute | Loffset12;
-        tol->at = CODEPC;
-
-	op_load_offset(R0, CONSTPOOL_BASE, -128);
-	debug((DBOUT,"load_label_const r0, ?\n"));
-
-	op_mov(PC, R0);
-#endif
-}
-
-#endif
-
 define_insn(fake_call, fakecall_xCC)
 {
-#if 1
 	label *tol = const_label(2);
 	label *froml = const_label(1);
 
@@ -2269,29 +2066,5 @@ define_insn(fake_call, fakecall_xCC)
 	LOUT(ppc_op_addis(PPC_R3, PPC_R3, 0));
 	LOUT(ppc_op_mtctr(PPC_R3));
 	LOUT(ppc_op_bctr());
-#else
-        label* tol = const_label(2);
-        label* froml = const_label(1);
-
-	froml->type |= Labsolute | Llong8x8x8x8;
-        froml->at = CODEPC;
-
-	op_mov_c(LR, 0, 0);
-	op_add_c(LR, LR, 0, 24);
-	op_add_c(LR, LR, 0, 16);
-	op_add_c(LR, LR, 0, 8);
-	debug((DBOUT,"move_label_const lr, ?\n"));
-
-        tol->type |= Labsolute | Llong8x8x8x8;
-        tol->at = CODEPC;
-
-	op_mov_c(R0, 0, 0);
-	op_add_c(R0, R0, 0, 24);
-	op_add_c(R0, R0, 0, 16);
-	op_add_c(R0, R0, 0, 8);
-	debug((DBOUT,"move_label_const r0, ?\n"));
-
-	op_mov(PC, R0);
-#endif
 	debug((DBOUT,"fake_call\n"));
 }

@@ -152,35 +152,6 @@ Kaffe_wrapper(Method* xmeth, void* func, bool use_JNI)
 		end_func_sync();
 		return_ref(tmp);
 
-#if 0
-		{
-			int j;
-			int jcount;
-
-			/* Make the necesary JNI ref calls first */
-			if (!METHOD_IS_STATIC(xmeth)) {
-				pusharg_ref(local(0), 0);
-				end_sub_block();
-				call_soft(KaffeJNI_addJNIref);
-				popargs();
-			}
-			j = METHOD_NARGS(xmeth);
-			jcount = count;
-			while (j > 0) {
-				j--;
-				jcount -= sizeofSigChar(*METHOD_ARG_TYPE(xmeth, j), false);
-				switch (*METHOD_ARG_TYPE(xmeth, j)) {
-				case 'L':
-				case '[':
-					pusharg_ref(local(jcount), 0);
-					end_sub_block();
-					call_soft(KaffeJNI_addJNIref);
-					popargs();
-				}
-			}
-			start_sub_block();
-		}
-#endif
 	}
 
 	/* Add synchronisation if necessary */

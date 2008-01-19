@@ -2350,18 +2350,6 @@ define_insn_fini
 		softcall_initialise_class(c); \
 	}
 
-/* 
- * We cannot do this optimization as final fields can be changed by JNI calls.
- * However I leave the possibility of a future optimization by leaving the code in
- * there.
- */
-#if 0
-#define FIELD_IS_CONSTANT() \
-	field_class()->state==CSTATE_COMPLETE && (field_field()->accflags&ACC_FINAL)!=0
-#else
-#define FIELD_IS_CONSTANT() 0
-#endif
-
 define_insn(GETSTATIC)
 {
 	/*
@@ -2431,76 +2419,43 @@ define_insn(GETSTATIC)
 	   getting data in the right type of register.  */
 	else if (!FIELD_ISPRIM(field_field())) {
 		push(1);
-		if (FIELD_IS_CONSTANT()) {
-			move_ref_const(stack(0), *(jobject *)FIELD_ADDRESS(field_field()));
-		} else {
-			load_addr_ref(stack(0), FIELD_ADDRESS(field_field()));
-		}
+		load_addr_ref(stack(0), FIELD_ADDRESS(field_field()));
 	}
 	else switch (CLASS_PRIM_SIG(FIELD_TYPE(field_field()))) {
 	case 'I':
 		push(1);
-		if (FIELD_IS_CONSTANT()) {
-			move_int_const(stack(0), *(jint *)FIELD_ADDRESS(field_field()));
-		} else {
-			load_addr_int(stack(0), FIELD_ADDRESS(field_field()));
-		}
+		load_addr_int(stack(0), FIELD_ADDRESS(field_field()));
 		break;
 	case 'S':
 		push(1);
-		if (FIELD_IS_CONSTANT()) {
-			move_int_const(stack(0), *(jshort *)FIELD_ADDRESS(field_field()));
-		} else {
-			load_addr_short(stack(0), FIELD_ADDRESS(field_field()));
-		}
+		load_addr_short(stack(0), FIELD_ADDRESS(field_field()));
 		break;
 	case 'B':
 	case 'Z':
 		push(1);
-		if (FIELD_IS_CONSTANT()) {
-			move_int_const (stack(0), *(jbyte *)FIELD_ADDRESS(field_field()));
-		} else {
-			load_addr_byte(stack(0), FIELD_ADDRESS(field_field()));
-		}
+		load_addr_byte(stack(0), FIELD_ADDRESS(field_field()));
 		break;
 	case 'C':
 		push(1);
-		if (FIELD_IS_CONSTANT()) {
-			move_int_const(stack(0), *(jchar *)FIELD_ADDRESS(field_field()));
-		} else {
-			load_addr_char(stack(0), FIELD_ADDRESS(field_field()));
-		}
+		load_addr_char(stack(0), FIELD_ADDRESS(field_field()));
 		break;
 	case 'F':
 		push(1);
-		if (FIELD_IS_CONSTANT()) {
-			move_float_const(stack(0), *(jfloat *)FIELD_ADDRESS(field_field()));
-		} else {
-			load_addr_float(stack(0), FIELD_ADDRESS(field_field()));
-		}
+		load_addr_float(stack(0), FIELD_ADDRESS(field_field()));
 		break;
 	case 'J':
 		push(2);
-		if (FIELD_IS_CONSTANT()) {
-			move_long_const(stack(0), *(jlong *)FIELD_ADDRESS(field_field()));
-		} else {
-			load_addr_long(stack_long(0), FIELD_ADDRESS(field_field()));
-		}
+		load_addr_long(stack_long(0), FIELD_ADDRESS(field_field()));
 		break;
 	case 'D':
 		push(2);
-		if (FIELD_IS_CONSTANT()) {
-			move_double_const(stack(0), *(jdouble *)FIELD_ADDRESS(field_field()));
-		} else {
-			load_addr_double(stack_double(0), FIELD_ADDRESS(field_field()));
-		}
+		load_addr_double(stack_double(0), FIELD_ADDRESS(field_field()));
 		break;
 	default:
 		KAFFEVM_ABORT();
 	}
 }
 define_insn_fini
-#undef FIELD_IS_CONSTANT
 
 define_insn(PUTSTATIC)
 {

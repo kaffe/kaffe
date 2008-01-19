@@ -63,32 +63,6 @@ here:;
 		stackp = (int*)fm->return_sp;
 	}
 
-#if 0
-	/* Walk backwards down the code looking for the beginning of the
-	 * function.  This assumes standard calling convention without a
-	 * stack pointer.  We don't currently use this but keep it around
-	 * in case this changes.
-	 */
-	for (pc = spc;; pc--) {
-		unsigned short high = (short)((*pc) >> 16);
-		short low = (short)*pc;
-		switch (high) {
-		case 0x27bd:	/* addiu $sp,$sp,-i */
-		case 0x23bd:	/* addi $sp,$sp,-i */
-		case 0x67bd:	/* daddiu $sp,$sp,-i */
-			TDBG(kprintf("Found at %p: framesize = %d\n", pc, low);)
-			TDBG(kprintf(" sp = %p\n", fp);)
-			pfp = fp - (low / sizeof(int));
-			TDBG(kprintf(" prev fp = %p\n", pfp);)
-			break;
-
-		default:
-			continue;
-		}
-		break;
-	}
-#endif
-
 	if (!KTHREAD(on_current_stack)(fp)) {
 		pfp = 0;
 		ppc = 0;

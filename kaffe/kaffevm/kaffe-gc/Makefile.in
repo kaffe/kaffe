@@ -71,7 +71,7 @@ CONFIG_HEADER = $(top_builddir)/config/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libkaffegc_la_LIBADD =
-am_libkaffegc_la_OBJECTS = gc-incremental.lo gc-mem.lo gc-refs.lo
+am_libkaffegc_la_OBJECTS = gc-incremental.lo gc-mem.lo gc-krefs.lo
 libkaffegc_la_OBJECTS = $(am_libkaffegc_la_OBJECTS)
 libkaffegc_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -316,7 +316,7 @@ libkaffegc_la_SOURCES = \
 	gc-incremental.h \
 	gc-mem.c \
 	gc-mem.h \
-	gc-refs.c 
+	gc-krefs.c 
 
 libkaffegc_la_DEPENDENCIES = \
         $(top_builddir)/kaffe/kaffevm/systems/$(THREAD_SYSTEM)/libkthread.la
@@ -376,8 +376,8 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gc-incremental.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gc-krefs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gc-mem.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gc-refs.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

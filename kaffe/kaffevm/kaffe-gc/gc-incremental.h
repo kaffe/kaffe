@@ -97,5 +97,6 @@ typedef	gc_unit			gcList;
 
 void KaffeGC_WalkConservative(Collector* gcif, const void* base, uint32 size);
 void KaffeGC_WalkMemory(Collector* gcif, void* mem);
+void KaffeGC_walkRefs(Collector* collector);
 
 #endif

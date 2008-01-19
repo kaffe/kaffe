@@ -45,23 +45,6 @@ init_md(void)
 {
 	/* `Alpha Architecture Handbook' say that's user mode _must
            not_ change fpcr but use OS function as next one.  */
-#if 0
-	/* Set the bits in the hw fpcr for cpu's that implement
-	   all the bits.  */
-	__asm__ __volatile__(
-		"excb\n\t"
-		"mt_fpcr %0\n\t"
-		"excb"
-		: : "f"(FPCR_INED | FPCR_UNFD | FPCR_DYN_NORMAL
-			| FPCR_OVFD | FPCR_DZED));
-#endif
-
-#if 0 /* This breaks DoublePrint and DoubleComp tests.  */
-	/* Set the software emulation bits in the kernel for
-	   those that don't.  */
-	ieee_set_fp_control(IEEE_TRAP_ENABLE_INV);
-#endif
-
 #if defined(USE_LIBEXC)
 	initStaticLock(&excLock);
 #endif
@@ -126,11 +109,6 @@ exceptionFrame * __alpha_osf_nextFrame (exceptionFrame *frame)
 	else {
 		/* No table found, is this method GCed after throw but
                    before printStackTrace() ??? */
-#if 0
-		DBG(STACKTRACE,
-		    dprintf ("__alpha_osf_nextFrame(): no PDSC_RPD for pc %p\n",
-			     (void*)frame->sc.sc_pc); );
-#endif
 		frame->sc.sc_pc = 0;
 	}
 	unlockStaticMutex (&excLock);
@@ -173,13 +151,7 @@ void __alpha_osf_register_jit_exc (void *methblock, void *codebase, void *codeen
 	pdsc->crd[1].words.rpd_offset = 0;
 
 	/* create Runtime Procedure Descriptor */
-#if 0
-	/* With -ieee, GCC alway add .eflag 48 event if function does
-           not use float nor double.  */
-	pdsc->rpd.flags = PDSC_EXC_IEEE;
-#else
 	pdsc->rpd.flags = (alpha_jit_info.ieee ? PDSC_EXC_IEEE : 0);
-#endif
 	pdsc->rpd.entry_ra = 26;
 	pdsc->rpd.rsa_offset = rsa_offset;
 	pdsc->rpd.sp_set = alpha_jit_info.sp_set;

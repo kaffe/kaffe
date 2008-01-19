@@ -262,12 +262,6 @@ utf8ConstEqualJavaString(const Utf8Const *utf8, const Hjava_lang_String *string)
 	const jchar *sptr = STRING_DATA(string);
 	int ch, slen = STRING_SIZE(string);
 
-#if 0
-	/* Question: would this optimization be worthwhile? */
-	if (unhand(string)->cachedHashCode != 0 && unhand(string)->cachedHashCode != utf8->hash) {
-		return(0);
-	}
-#endif
 	for (;;) {
 		if ((ch = UTF8_GET(uptr, uend)) == -1) {
 			return(slen == 0);

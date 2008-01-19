@@ -471,18 +471,9 @@ java_lang_VMClass_getDeclaredClasses(struct Hjava_lang_Class* clazz, jboolean pu
 
 	count = 0;
 	for (i = clazz->nr_inner_classes, ic = clazz->inner_classes; i-- > 0; ic++) {
-#if 0
-		c = getClass (ic->outer_class, clazz, &einfo);
-		if (c == NULL) {
-			throwError(&einfo);
-		}
-		if (c != clazz)
-			continue;
-#else
 		/* assume one unique constant pool entry per class */
 		if (ic->outer_class != clazz->this_index)
 			continue;
-#endif
 		if (publicOnly && ((ic->inner_class_accflags&ACC_PUBLIC)==0))
 			continue;
 
@@ -495,18 +486,9 @@ java_lang_VMClass_getDeclaredClasses(struct Hjava_lang_Class* clazz, jboolean pu
 	ptr = (Hjava_lang_Class**)&unhand_array(array)->body[0];
 
 	for (i = clazz->nr_inner_classes, ic = clazz->inner_classes; i-- > 0; ic++) {
-#if 0
-		c = getClass (ic->outer_class, clazz, &einfo);
-		if (c == NULL) {
-			throwError(&einfo);
-		}
-		if (c != clazz)
-			continue;
-#else
 		/* assume one unique constant pool entry per class */
 		if (ic->outer_class != clazz->this_index)
 			continue;
-#endif
 		if (publicOnly && ((ic->inner_class_accflags&ACC_PUBLIC)==0))
 			continue;
 

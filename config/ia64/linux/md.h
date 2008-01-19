@@ -26,13 +26,6 @@ extern void init_md(void);
 extern int IA64_context_save(jmp_buf env);
 extern void IA64_context_restore(jmp_buf env, int val);
 
-#if 0
-#undef  JTHREAD_CONTEXT_SAVE
-#define JTHREAD_CONTEXT_SAVE(env)		IA64_context_save((env))
-#undef  JTHREAD_CONTEXT_RESTORE
-#define JTHREAD_CONTEXT_RESTORE(env, val)	IA64_context_restore((env), (val))
-#endif
-
 #define SIGNAL_ARGS(sig, scp)			int sig, siginfo_t *sip, struct sigcontext *scp
 #define SIGNAL_CONTEXT_POINTER(scp)		struct sigcontext *scp
 #define GET_SIGNAL_CONTEXT_POINTER(sc)		(sc)

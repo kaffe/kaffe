@@ -266,23 +266,11 @@ extern int alpha_andconst_rangecheck(long v);
 #define	HAVE_cvt_long_float		cvtlf_RxR
 
 
-#if 0
-/* These functions does not work correctly, use soft_cvtXX */
-
-#define	HAVE_cvt_float_int		cvtfi_RxR
-#define	HAVE_cvt_double_int		cvtdi_RxR
-#define	HAVE_cvt_float_long		cvtfl_RxR
-#define	HAVE_cvt_double_long		cvtdl_RxR
-
-#else
-
 #undef HAVE_cvt_float_int
 #undef HAVE_cvt_float_int_ieee
 #undef HAVE_cvt_double_int
 #undef HAVE_cvt_double_int_ieee
 #undef HAVE_cvt_float_long
 #undef HAVE_cvt_double_long
-
-#endif
 
 #endif

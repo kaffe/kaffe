@@ -661,14 +661,6 @@ jthread_dumpthreadinfo(jthread_t tid)
 		if (isOnList(waitForList, tid)) {
 			dprintf(": waiting for children");
 		}
-#if 0
-		/* XXX FIXME: alarmList uses nextalarm, but isOnList iterates
-		 * using nextQ
-		 */
-		if (isOnList(alarmList, tid)) {
-			dprintf(": sleeping");
-		}
-#endif
 		for (i = 0; i < FD_SETSIZE; i++) {
 			if (isOnList(readQ[i], tid)) {
 				dprintf(": reading from fd %d ", i);
@@ -679,16 +671,6 @@ jthread_dumpthreadinfo(jthread_t tid)
 				break;
 			}
 		}
-
-#if 0
-		dprintf("@%p (%p->", tid->blockqueue,
-					     t = *tid->blockqueue);
-		while (t && t->nextQ) {
-			t = t->nextQ; 
-			dprintf("%p->", t);
-		}
-		dprintf("|) ");
-#endif
 	}
 }
 
@@ -1806,12 +1788,6 @@ jthread_alive(jthread *jtid)
         int status = true;
         intsDisable();
         if (jtid == 0
-#if 0
-	    /* this code makes kaffe behave like sun, but it means
-	     * that Thread.join() after Thread.stop() is useless.
-	     */
-	    || (jtid->flags & (THREAD_FLAGS_KILLED | THREAD_FLAGS_DYING)) != 0 
-#else
 	    /* There seems to be a window in which death can be
 	     * broadcast before it is waited for.  Basically,
 	     * jthread_alive will be false immediately after
@@ -1820,7 +1796,6 @@ jthread_alive(jthread *jtid)
 	     * the thread is on its way out.
 	     */
 	    || (jtid->flags & (THREAD_FLAGS_DYING | THREAD_FLAGS_EXITING))
-#endif
 	    || jtid->status == THREAD_DEAD)
                 status = false;
         intsRestore();
@@ -2124,24 +2099,6 @@ dprintf("switch from %p to %p\n", lastThread, currentJThread); );
  * I/O interrupt related functions
  *
  */
-
-#if 0
-static void
-removeQueueFromBlockQueue(jthread *jtid, KaffeNodeQueue *queue)
-{
-  KaffeNodeQueue **thisQ;
-  
-  for (thisQ = &(jtid->blockqueue); *thisQ != 0; thisQ = &(*thisQ)->next) {
-    KaffeNodeQueue *node = *thisQ;
-    
-    if (*((KaffeNodeQueue **)node->element) == queue) {
-      *thisQ = node->next;
-      KaffePoolReleaseNode(queuePool, node);
-      break;
-    }
-  }
-}
-#endif
 
 /*
  * resume all threads blocked on a given queue

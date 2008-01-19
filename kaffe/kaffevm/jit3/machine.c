@@ -101,7 +101,7 @@ void softcall_fakecall (label* from,label* to, void* func);
 /* Codeblock redzone - allows for safe overrun when generating instructions */
 #define	CODEBLOCKREDZONE	256
 
-static uint codeblock_size;
+static unsigned int codeblock_size;
 static int code_generated;
 static int bytecode_processed;
 static int codeperbytecode;
@@ -784,13 +784,6 @@ installMethodCode(void* ignore UNUSED, Method* meth, nativeCodeInfo* code)
 				}
 #endif
 			}
-#if 0
-			addDebugInfo(df,
-				     DIA_LeftBrace, lve->start_pc,
-				     DIA_RightBrace, (lve->start_pc +
-						      lve->length),
-				     DIA_DONE);
-#endif
 		}
 #if defined(KAFFE_XDEBUGGING)
 		/*

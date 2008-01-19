@@ -27,6 +27,7 @@
 #include "debug.h"
 #include "thread.h"
 #include "gc-refs.h"
+#include "gc-brefs.h"
 #include "gc-kaffe.h"
 #include "gc2.h"
 #include "jvmpi_kaffe.h"
@@ -603,8 +604,8 @@ static struct GarbageCollectorInterface_Ops GC_Ops = {
   KaffeGC_HeapFree,
   KaffeGC_HeapLimit,
   KaffeGC_HeapTotal,
-  KaffeGC_addRef,
-  KaffeGC_rmRef,
+  BoehmGC_addRef,
+  BoehmGC_rmRef,
   KaffeGC_addWeakRef,
   KaffeGC_rmWeakRef
 };

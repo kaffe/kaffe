@@ -167,13 +167,6 @@ void	preloadRegister(SlotData*, int, int);
 #define	sreg_float(i)		sreg(i)
 #define	sreg_double(i)		sreg(i)
 
-#if 0
-#define	lreg_int(i)		wreg_int(i)
-#define	lreg_ref(i)		wreg_ref(i)
-#define	lreg_long(i)		wreg_long(i)
-#define	lreg_float(i)		wreg_float(i)
-#define	lreg_double(i)		wreg_double(i)
-#endif
 #define	lreg_int(i)		slotRegister(seq_slot(s, i), Rint, rreload, NOREG)     
 #define	lreg_ref(i)		slotRegister(seq_slot(s, i), Rref, rreload, NOREG)     
 #define	lreg_long(i)		slotRegister(seq_slot(s, i), Rlong, rreload, NOREG)     
