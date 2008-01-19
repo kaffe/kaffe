@@ -682,14 +682,14 @@ uninstall-am: uninstall-binSCRIPTS uninstall-jrebinSCRIPTS \
 install-exec-local:
 	for app in $(CLASSPATH_APPS); do \
 		if ! test -f $(DESTDIR)$(bindir)/$$app ; then \
-			$(LN_S) $(CLASSPATH_PREFIX)/bin/g$$app $(DESTDIR)$(bindir)/$$app ; \
+			$(LN_S) -f $(CLASSPATH_PREFIX)/bin/g$$app $(DESTDIR)$(bindir)/$$app ; \
 		fi ; \
 	done
 	if test x"@JAVADOC@" != x"" ; then \
-		$(LN_S) @JAVADOC@  $(DESTDIR)$(bindir)/javadoc$(EXEEXT) ; \
+		$(LN_S) -f @JAVADOC@  $(DESTDIR)$(bindir)/javadoc$(EXEEXT) ; \
 	fi
 	if test x"@JAVAP@" != x"" ; then \
-		$(LN_S) @JAVAP@  $(DESTDIR)$(bindir)/javap$(EXEEXT) ; \
+		$(LN_S) -f @JAVAP@  $(DESTDIR)$(bindir)/javap$(EXEEXT) ; \
 	fi
 
 uninstall-local:

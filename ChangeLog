@@ -1,5 +1,10 @@
 2008-01-19  Robert Schuster  <robertschuster@fsfe.org>
 
+	* kaffe/scripts/Makefile.am: Add force option to all ln invocations
+	in target install-exec-local.
+
+2008-01-19  Robert Schuster  <robertschuster@fsfe.org>
+
 	Added --with-target-classpath-classes option to support having glib.zip
 	in a different location on target environment.
 
