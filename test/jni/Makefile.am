@@ -43,7 +43,6 @@ jniBase_LDADD= \
 	$(LIBKAFFEVM) \
 	$(LIBREPLACE) \
         $(LTLIBINTL) \
-	@LIBLTDL@ \
 	-dlopen $(top_builddir)/kaffe/kaffevm/libkaffevm.la
 jniBase_DEPENDENCIES= $(LIBKAFFEVM)
 
@@ -54,7 +53,6 @@ jniExecClass_LDADD= \
 	$(LIBKAFFEVM) \
 	$(LIBREPLACE) \
         $(LTLIBINTL) \
-	@LIBLTDL@ \
 	-dlopen $(top_builddir)/kaffe/kaffevm/libkaffevm.la
 jniExecClass_DEPENDENCIES= \
 	$(LIBKAFFEVM) \
@@ -67,7 +65,6 @@ jniReflect_LDADD= \
 	$(LIBKAFFEVM) \
 	$(LIBREPLACE) \
         $(LTLIBINTL) \
-	@LIBLTDL@ \
 	-dlopen $(top_builddir)/kaffe/kaffevm/libkaffevm.la
 jniReflect_DEPENDENCIES= \
 	$(LIBKAFFEVM) \
@@ -120,7 +117,6 @@ jniWeakTest_LDADD= \
 	$(LIBKAFFEVM) \
 	$(LIBREPLACE) \
         $(LTLIBINTL) \
-	@LIBLTDL@ \
 	-dlopen $(top_builddir)/kaffe/kaffevm/libkaffevm.la
 
 jniWeakTest_DEPENDENCIES = $(LIBKAFFEVM) libjniweaklib.la

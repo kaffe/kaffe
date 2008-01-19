@@ -297,11 +297,13 @@ yes,yes) : ${enable_static=no};;
 esac
 
 AC_LIBTOOL_DLOPEN
-AC_LIBLTDL_CONVENIENCE
 AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL
-AC_SUBST(LIBTOOL_DEPS)
-AC_SUBST(LIBLTDL)
+
+AC_CHECK_HEADER([ltdl.h],
+  [AC_SEARCH_LIBS([lt_dlcaller_register], [ltdl], [], [AC_MSG_ERROR([Can't find the libltdl library.])])],
+  [AC_MSG_ERROR([Can't find the ltdl.h header file from the libltdl library])])
+
 ## Let users override the linker used by libtool, but default to $CC.
 CCLD=${CCLD:-'$(CC)'}
 AC_SUBST(CCLD)
@@ -1822,7 +1824,6 @@ AC_SUBST(KAFFE_CFLAGS)
 dnl Replace KAFFE_CCASFLAGS by the generated one
 AC_SUBST(KAFFE_CCASFLAGS)
 
-AC_CONFIG_SUBDIRS([libltdl])
 AC_CONFIG_HEADERS([config/config.h])
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([project.xml project.properties])

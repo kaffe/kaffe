@@ -84,7 +84,8 @@ am__installdirs = "$(DESTDIR)$(nativedir)"
 nativeLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(native_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1)
+libkaffexprof_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 am_libkaffexprof_la_OBJECTS = callGraph.lo debugFile.lo feedback.lo \
 	fileSections.lo gmonFile.lo mangle.lo memorySamples.lo \
 	sectionFile.lo xprofiler.lo
@@ -184,11 +185,9 @@ LDFLAGS = @LDFLAGS@
 LIBADD_GMP = @LIBADD_GMP@
 LIBICONV = @LIBICONV@
 LIBINTL = @LIBINTL@
-LIBLTDL = @LIBLTDL@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
-LIBTOOL_DEPS = @LIBTOOL_DEPS@
 LN_S = @LN_S@
 LTLIBICONV = @LTLIBICONV@
 LTLIBINTL = @LTLIBINTL@
@@ -304,7 +303,6 @@ psdir = @psdir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
-subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
@@ -328,10 +326,7 @@ libkaffexprof_la_LDFLAGS = \
 	-export-dynamic \
 	-release $(PACKAGE_VERSION)
 
-libkaffexprof_la_DEPENDENCIES = \
-	$(LIBLTDL)
-
-libkaffexprof_la_LIBADD = $(libkaffexprof_la_DEPENDENCIES) $(VM_LIBS) $(M_LIBS)
+libkaffexprof_la_LIBADD = $(VM_LIBS) $(M_LIBS)
 libkaffexprof_la_SOURCES = \
 	callGraph.c \
 	debugFile.c \

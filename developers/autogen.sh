@@ -94,13 +94,6 @@ fi
 rm -f depcomp missing config.guess config.sub install-sh
 # libtool things
 rm -f aclocal.m4 ltmain.sh libtool.m4 ltconfig
-(
- cd libltdl
- rm -f acinclude.m4 config-h.in configure.ac install-sh
- rm -f ltmain.sh missing aclocal.m4 config.sub COPYING.LIB
- rm -f ltdl.c Makefile.am mkinstalldirs config.guess configure
- rm -f ltdl.h Makefile.in README
-)
 
 # autoconf things
 rm -f aclocal.m4 configure
@@ -108,9 +101,7 @@ rm -f config/config.h.in
 find . -type f -name 'Makefile.in' | xargs rm -f
 
 # Now regenerate autotools
-libtoolize --automake --ltdl --copy --force
-# add some libtool patches if necessary here
-cp libltdl/acinclude.m4 m4/libtool.m4
+libtoolize --automake --copy --force
 
 # gettextize kaffe
 # commented out due to bugs in gettextize
@@ -122,21 +113,8 @@ autoheader # -Wall
 automake --add-missing --force-missing --copy # -Wall || true  # ignore warnings
 autoconf # -Wall
 
-(
- cd libltdl
- # Need to regenerate things because patching 	 
- # screws up timestamps 	 
- autoreconf -i -f # -Wall
- touch config-h.in
-) 	 
-
 # drops specific patches
 (
   cd scripts
   patch -p0 <../developers/config1.patch
-)
-
-(
-  cd libltdl
-  patch -p0 <../developers/config2.patch
 )

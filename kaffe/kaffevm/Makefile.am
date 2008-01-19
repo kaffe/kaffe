@@ -62,7 +62,6 @@ libkaffe_la_LDFLAGS = \
 	-release $(PACKAGE_VERSION)
 
 libkaffe_la_DEPENDENCIES = \
-	$(LIBLTDL) \
 	$(ENGINE_NAME)/libengine.la \
 	$(libgcj) \
 	systems/$(THREAD_SYSTEM)/libkthread.la \

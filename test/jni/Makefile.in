@@ -197,11 +197,9 @@ LDFLAGS = @LDFLAGS@
 LIBADD_GMP = @LIBADD_GMP@
 LIBICONV = @LIBICONV@
 LIBINTL = @LIBINTL@
-LIBLTDL = @LIBLTDL@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
-LIBTOOL_DEPS = @LIBTOOL_DEPS@
 LN_S = @LN_S@
 LTLIBICONV = @LTLIBICONV@
 LTLIBINTL = @LTLIBINTL@
@@ -317,7 +315,6 @@ psdir = @psdir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
-subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
@@ -347,7 +344,6 @@ jniBase_LDADD = \
 	$(LIBKAFFEVM) \
 	$(LIBREPLACE) \
         $(LTLIBINTL) \
-	@LIBLTDL@ \
 	-dlopen $(top_builddir)/kaffe/kaffevm/libkaffevm.la
 
 jniBase_DEPENDENCIES = $(LIBKAFFEVM)
@@ -358,7 +354,6 @@ jniExecClass_LDADD = \
 	$(LIBKAFFEVM) \
 	$(LIBREPLACE) \
         $(LTLIBINTL) \
-	@LIBLTDL@ \
 	-dlopen $(top_builddir)/kaffe/kaffevm/libkaffevm.la
 
 jniExecClass_DEPENDENCIES = \
@@ -372,7 +367,6 @@ jniReflect_LDADD = \
 	$(LIBKAFFEVM) \
 	$(LIBREPLACE) \
         $(LTLIBINTL) \
-	@LIBLTDL@ \
 	-dlopen $(top_builddir)/kaffe/kaffevm/libkaffevm.la
 
 jniReflect_DEPENDENCIES = \
@@ -420,7 +414,6 @@ jniWeakTest_LDADD = \
 	$(LIBKAFFEVM) \
 	$(LIBREPLACE) \
         $(LTLIBINTL) \
-	@LIBLTDL@ \
 	-dlopen $(top_builddir)/kaffe/kaffevm/libkaffevm.la
 
 jniWeakTest_DEPENDENCIES = $(LIBKAFFEVM) libjniweaklib.la

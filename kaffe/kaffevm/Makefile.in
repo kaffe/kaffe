@@ -82,11 +82,11 @@ am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
 am__installdirs = "$(DESTDIR)$(nativedir)"
 nativeLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(native_LTLIBRARIES)
-am__DEPENDENCIES_1 =
-@HAVE_GCJ_SUPPORT_TRUE@am__DEPENDENCIES_2 = gcj/libgcj.la
-am__DEPENDENCIES_3 = $(am__DEPENDENCIES_1) $(ENGINE_NAME)/libengine.la \
-	$(am__DEPENDENCIES_2) systems/$(THREAD_SYSTEM)/libkthread.la \
+@HAVE_GCJ_SUPPORT_TRUE@am__DEPENDENCIES_1 = gcj/libgcj.la
+am__DEPENDENCIES_2 = $(ENGINE_NAME)/libengine.la $(am__DEPENDENCIES_1) \
+	systems/$(THREAD_SYSTEM)/libkthread.la \
 	$(GC_NAME)/libkaffegc.la $(top_builddir)/replace/libreplace.la
+am__DEPENDENCIES_3 =
 am_libkaffe_la_OBJECTS = libkaffe_la-access.lo \
 	libkaffe_la-baseClasses.lo libkaffe_la-classMethod.lo \
 	libkaffe_la-classPool.lo libkaffe_la-code-analyse.lo \
@@ -234,11 +234,9 @@ LDFLAGS = @LDFLAGS@
 LIBADD_GMP = @LIBADD_GMP@
 LIBICONV = @LIBICONV@
 LIBINTL = @LIBINTL@
-LIBLTDL = @LIBLTDL@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
-LIBTOOL_DEPS = @LIBTOOL_DEPS@
 LN_S = @LN_S@
 LTLIBICONV = @LTLIBICONV@
 LTLIBINTL = @LTLIBINTL@
@@ -354,7 +352,6 @@ psdir = @psdir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
-subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
@@ -402,7 +399,6 @@ libkaffe_la_LDFLAGS = \
 	-release $(PACKAGE_VERSION)
 
 libkaffe_la_DEPENDENCIES = \
-	$(LIBLTDL) \
 	$(ENGINE_NAME)/libengine.la \
 	$(libgcj) \
 	systems/$(THREAD_SYSTEM)/libkthread.la \

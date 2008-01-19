@@ -179,11 +179,9 @@ LDFLAGS = @LDFLAGS@
 LIBADD_GMP = @LIBADD_GMP@
 LIBICONV = @LIBICONV@
 LIBINTL = @LIBINTL@
-LIBLTDL = @LIBLTDL@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
-LIBTOOL_DEPS = @LIBTOOL_DEPS@
 LN_S = @LN_S@
 LTLIBICONV = @LTLIBICONV@
 LTLIBINTL = @LTLIBINTL@
@@ -299,7 +297,6 @@ psdir = @psdir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
-subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
@@ -312,7 +309,6 @@ SUBDIRS = \
 	replace \
 	libraries/javalib \
 	config \
-	libltdl \
 	kaffe/kaffeh \
 	include  \
 	kaffe/kaffevm \
@@ -324,7 +320,6 @@ DIST_SUBDIRS = \
 	config \
 	include \
 	replace \
-	libltdl \
 	kaffe \
 	libraries \
 	test \
@@ -435,7 +430,7 @@ EXTRA_DIST = \
 	scripts/WarningDescription.pm
 
 CLEANFILES = BUILD_ENVIRONMENT
-noinst_SCRIPTS = libtool BUILD_ENVIRONMENT
+noinst_SCRIPTS = BUILD_ENVIRONMENT
 all: all-recursive
 
 .SUFFIXES:
@@ -873,9 +868,6 @@ uninstall-am: uninstall-local
 depend:
 	@echo \`make depend\' is no longer needed
 
-libtool: $(LIBTOOL_DEPS)
-	$(SHELL) ./config.status --recheck
-
 BUILD_ENVIRONMENT: Makefile
 	$(MAKE) top_srcdir=`cd $(top_srcdir) >/dev/null; pwd` \
 		top_builddir=`cd $(top_builddir) >/dev/null; pwd` \
@@ -901,6 +893,7 @@ check-local:
 	cd test && $(MAKE) check
 
 install-exec-local:
+	$(MKDIR_P) $(DESTDIR)${toolslibdir}
 	$(LN_S) -f $(CLASSPATH_PREFIX)/share/classpath/tools.zip $(DESTDIR)${toolslibdir}/tools.jar
 
 uninstall-local:

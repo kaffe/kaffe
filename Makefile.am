@@ -18,7 +18,6 @@ SUBDIRS = \
 	replace \
 	libraries/javalib \
 	config \
-	libltdl \
 	kaffe/kaffeh \
 	include  \
 	kaffe/kaffevm \
@@ -30,7 +29,6 @@ DIST_SUBDIRS = \
 	config \
 	include \
 	replace \
-	libltdl \
 	kaffe \
 	libraries \
 	test \
@@ -145,10 +143,7 @@ CLEANFILES = BUILD_ENVIRONMENT
 depend:
 	@echo \`make depend\' is no longer needed
 
-noinst_SCRIPTS = libtool BUILD_ENVIRONMENT
-
-libtool: $(LIBTOOL_DEPS)
-	$(SHELL) ./config.status --recheck
+noinst_SCRIPTS = BUILD_ENVIRONMENT
 
 BUILD_ENVIRONMENT: Makefile
 	$(MAKE) top_srcdir=`cd $(top_srcdir) >/dev/null; pwd` \
@@ -175,6 +170,7 @@ check-local:
 	cd test && $(MAKE) check
 
 install-exec-local:
+	$(MKDIR_P) $(DESTDIR)${toolslibdir}
 	$(LN_S) -f $(CLASSPATH_PREFIX)/share/classpath/tools.zip $(DESTDIR)${toolslibdir}/tools.jar
 
 uninstall-local:

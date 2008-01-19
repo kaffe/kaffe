@@ -47,7 +47,6 @@ LIBKAFFEVM = ../../kaffe/kaffevm/libkaffe.la $(libjvmpi)
 
 jitBasic_LDFLAGS = -export-dynamic
 jitBasic_LDADD = \
-	@LIBLTDL@ \
         $(LTLIBINTL) \
 	$(LIBREPLACE) \
 	$(LIBKAFFEVM) \

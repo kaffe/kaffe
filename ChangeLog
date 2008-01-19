@@ -1,5 +1,35 @@
 2008-01-19  Dalibor Topic  <robilad@kaffe.org>
 
+	* developers/autogen.sh: Don't libtoolize with --ltdl. Removed workarounds
+	and patches for libltdl.
+
+	* libltdl/COPYING.LIB, libltdl/Makefile.am, libltdl/Makefile.in,
+	libltdl/README, libltdl/acinclude.m4, libltdl/aclocal.m4, libltdl/config-h.in,
+	libltdl/config.guess, libltdl/config.sub, libltdl/configure, 
+	libltdl/configure.ac, libltdl/install-sh, libltdl/ltdl.c, libltdl/ltdl.h,
+	libltdl/ltmain.sh libltdl/missing: Removed.
+
+	* configure.ac: (AC_LIBLTDL_CONVENIENCE, LIBTOOL_DEPS, LIBLTDL) 
+	Removed. Check for ltdl.h and libltdl and if not found error out.
+	Don't attempt to configure libltdl.
+
+	* test/internal/Makefile.am (jitBasic_LDADD),
+	test/jni/Makefile.am (jniBase_LDADD, jniExecClass_LDADD)
+	(jniReflect_LDADD, libjniweaklib_la_LDADD),
+	kaffe/xprof/Makefile.am (libkaffexprof_la_LIBADD),
+	kaffe/jvmpi/Makefile.am (libkaffejvmpi_la_DEPENDENCIES),
+	kaffe/kaffevm/Makefile.am (libkaffe_la_DEPENDENCIES): Removed
+	LIBLTDL.
+
+	* test/internal/jit_stub.c: Include system ltdl.h.
+
+	* Makefile.am (SUBDIRS, DIST_SUBDIRS): Removed libltdl.
+	(noinst_SCRIPTS): Removed libtool. (libtool) Removed.
+	(install-exec-local) Make sure the target directory exists
+	prior to symlinking.
+
+2008-01-19  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/scripts/Makefile.am (install-exec-local),
 	Makefile.am (install-exec-local),
 	libraries/javalib/Makefile.am (install-data-local):

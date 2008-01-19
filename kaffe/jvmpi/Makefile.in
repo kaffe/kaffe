@@ -70,8 +70,6 @@ am__installdirs = "$(DESTDIR)$(libdir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) \
-	$(top_builddir)/kaffe/kaffevm/libkaffe.la
 am_libkaffejvmpi_la_OBJECTS = libkaffejvmpi_la-jvmpi_kaffe.lo
 libkaffejvmpi_la_OBJECTS = $(am_libkaffejvmpi_la_OBJECTS)
 libkaffejvmpi_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -168,11 +166,9 @@ LDFLAGS = @LDFLAGS@
 LIBADD_GMP = @LIBADD_GMP@
 LIBICONV = @LIBICONV@
 LIBINTL = @LIBINTL@
-LIBLTDL = @LIBLTDL@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
-LIBTOOL_DEPS = @LIBTOOL_DEPS@
 LN_S = @LN_S@
 LTLIBICONV = @LTLIBICONV@
 LTLIBINTL = @LTLIBINTL@
@@ -288,7 +284,6 @@ psdir = @psdir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
-subdirs = @subdirs@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 toolslibdir = @toolslibdir@
@@ -316,7 +311,6 @@ libkaffejvmpi_la_LDFLAGS = \
 	-release $(PACKAGE_VERSION)
 
 libkaffejvmpi_la_DEPENDENCIES = \
-	$(LIBLTDL) \
 	$(top_builddir)/kaffe/kaffevm/libkaffe.la
 
 libkaffejvmpi_la_LIBADD = \

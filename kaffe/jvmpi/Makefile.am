@@ -21,7 +21,6 @@ libkaffejvmpi_la_LDFLAGS = \
 	-release $(PACKAGE_VERSION)
 
 libkaffejvmpi_la_DEPENDENCIES = \
-	$(LIBLTDL) \
 	$(top_builddir)/kaffe/kaffevm/libkaffe.la
 
 libkaffejvmpi_la_LIBADD = \

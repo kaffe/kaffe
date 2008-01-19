@@ -31,10 +31,7 @@ libkaffexprof_la_LDFLAGS = \
 	-export-dynamic \
 	-release $(PACKAGE_VERSION)
 
-libkaffexprof_la_DEPENDENCIES = \
-	$(LIBLTDL)
-
-libkaffexprof_la_LIBADD = $(libkaffexprof_la_DEPENDENCIES) $(VM_LIBS) $(M_LIBS)
+libkaffexprof_la_LIBADD = $(VM_LIBS) $(M_LIBS)
 
 libkaffexprof_la_SOURCES = \
 	callGraph.c \

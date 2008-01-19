@@ -21,7 +21,7 @@
 #include <jni.h>
 #include <kaffe/version.h>
 
-#include "../../libltdl/ltdl.h"
+#include <ltdl.h>
 #include "debug.h"
 #include "itypes.h"
 #include "classMethod.h"
