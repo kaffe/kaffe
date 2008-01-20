@@ -1,5 +1,10 @@
 2008-01-20  Dalibor Topic  <robilad@kaffe.org>
 
+	* developers/autogen.sh: Replaced the complicated 
+	invocations of autotools with a single autoreconf call.
+
+2008-01-20  Dalibor Topic  <robilad@kaffe.org>
+
 	TODO: Updated.
 
 2008-01-20  Dalibor Topic  <robilad@kaffe.org>

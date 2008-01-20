@@ -89,29 +89,7 @@ fi
 
 fi
 
-# Delete old files to make sure we regenerate things
-# automake things
-rm -f depcomp missing config.guess config.sub install-sh
-# libtool things
-rm -f aclocal.m4 ltmain.sh libtool.m4 ltconfig
-
-# autoconf things
-rm -f aclocal.m4 configure
-rm -f config/config.h.in
-find . -type f -name 'Makefile.in' | xargs rm -f
-
-# Now regenerate autotools
-libtoolize --automake --copy --force
-
-# gettextize kaffe
-# commented out due to bugs in gettextize
-##gettextize -c -f --intl
-
-autopoint -f
-aclocal -I m4
-autoheader # -Wall
-automake --add-missing --force-missing --copy # -Wall || true  # ignore warnings
-autoconf # -Wall
+autoreconf -f -i # -Wall
 
 # drops specific patches
 (
