@@ -7,7 +7,6 @@
  * Merge in Tom Tromey's libjit and llvm based JITs.
 
 * Cleanup
- * Turn developers/autogen.sh into an autoreconf call
  * Remove unused instructions from jits (nop, unimplemented)
 
 * Architectural changes:
