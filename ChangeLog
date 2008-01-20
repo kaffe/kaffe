@@ -1,5 +1,10 @@
 2008-01-20  Dalibor Topic  <robilad@kaffe.org>
 
+	* developers/autogen.sh: Removed version checking logic.
+	We should simply set the minimum versions necessary in configure.ac.
+
+2008-01-20  Dalibor Topic  <robilad@kaffe.org>
+
 	* m4/libtool.m4: Removed.
 
 2008-01-20  Dalibor Topic  <robilad@kaffe.org>
