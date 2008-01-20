@@ -33,7 +33,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 ])
 
-AM_INIT_AUTOMAKE([1.10 dist-bzip2 dist-zip tar-ustar])
+AM_INIT_AUTOMAKE([1.9 dist-bzip2 dist-zip tar-ustar])
 
 AC_PREFIX_DEFAULT(/usr/local/kaffe)
 
