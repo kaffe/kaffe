@@ -8,7 +8,6 @@
 
 * Cleanup
  * Turn developers/autogen.sh into an autoreconf call
- * Remove libltdl from C(PP)FLAGS in all Makefile.ams.
  * Remove unused instructions from jits (nop, unimplemented)
 
 * Architectural changes:
