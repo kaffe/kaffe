@@ -1,3 +1,12 @@
+2008-01-20  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/xprof/Makefile.am (AM_CPPFLAGS),
+	* kaffe/jvmpi/Makefile.am (AM_CPPFLAGS), 
+	* kaffe/kaffevm/Makefile.am (AM_CPPFLAGS), 
+	* test/jni/Makefile.am (AM_CPPFLAGS),
+	* kaffe/kaffe/Makefile.am (AM_CPPFLAGS): 
+	Removed libltdl from include path.
+	
 2008-01-19  Dalibor Topic  <robilad@kaffe.org>
 
 	* TODO: Updated.

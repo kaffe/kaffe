@@ -17,7 +17,6 @@ AM_CFLAGS= $(KAFFE_CFLAGS)
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) \
 	$(ENGINE_INCLUDES) \
-	-I$(top_srcdir)/libltdl \
 	$(ENGINE_DEFS) \
 	-I$(top_srcdir)/kaffe/kaffevm \
 	-I$(top_builddir)/include \

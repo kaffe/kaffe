@@ -37,7 +37,6 @@ endif
 AM_CPPFLAGS = \
 	-I../kaffevm \
 	-I$(srcdir)/../kaffevm \
-	-I$(top_srcdir)/libltdl \
 	-I$(top_srcdir)/kaffe/jvmpi \
 	-I$(top_srcdir)/kaffe/xprof \
 	-I$(top_srcdir)/kaffe/kaffevm/jni \

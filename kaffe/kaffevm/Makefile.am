@@ -24,7 +24,6 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) \
 	-I$(top_srcdir)/kaffe/kaffevm/jni \
 	$(ENGINE_INCLUDES) \
-	-I$(top_srcdir)/libltdl \
 	$(ENGINE_DEFS) \
 	-I$(top_srcdir)/kaffe/jvmpi \
 	-I$(top_srcdir)/kaffe/xprof \
