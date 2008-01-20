@@ -1,5 +1,9 @@
 2008-01-20  Dalibor Topic  <robilad@kaffe.org>
 
+	* m4/libtool.m4: Removed.
+
+2008-01-20  Dalibor Topic  <robilad@kaffe.org>
+
 	* developers/autogen.sh: Replaced the complicated 
 	invocations of autotools with a single autoreconf call.
 
