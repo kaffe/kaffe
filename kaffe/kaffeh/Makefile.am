@@ -34,12 +34,11 @@ kaffeh_SOURCES = \
 	kaffeh-support.h \
 	java_lang_ClassLoader.h \
 	java_lang_Object.h \
-	java_lang_String.h
+	java_lang_String.h \
+	$(top_srcdir)/kaffe/kaffevm/constants.c \
+	$(top_srcdir)/kaffe/kaffevm/debug.c \
+	$(top_srcdir)/kaffe/kaffevm/file.c \
+	$(top_srcdir)/kaffe/kaffevm/jar.c \
+	$(top_srcdir)/kaffe/kaffevm/readClass.c \
+	$(top_srcdir)/kaffe/kaffevm/utf8const.c 
 
-nodist_kaffeh_SOURCES = \
-	constants.c \
-	debug.c \
-	file.c \
-	jar.c \
-	readClass.c \
-	utf8const.c

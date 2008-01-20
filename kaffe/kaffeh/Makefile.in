@@ -68,17 +68,15 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(SHELL) $(top_srcdir)/scripts/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config/config.h
-CONFIG_CLEAN_FILES = constants.c debug.c file.c jar.c readClass.c \
-	utf8const.c
+CONFIG_CLEAN_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_kaffeh_OBJECTS = main.$(OBJEXT) mem.$(OBJEXT) sigs.$(OBJEXT) \
-	support.$(OBJEXT)
-nodist_kaffeh_OBJECTS = constants.$(OBJEXT) debug.$(OBJEXT) \
+	support.$(OBJEXT) constants.$(OBJEXT) debug.$(OBJEXT) \
 	file.$(OBJEXT) jar.$(OBJEXT) readClass.$(OBJEXT) \
 	utf8const.$(OBJEXT)
-kaffeh_OBJECTS = $(am_kaffeh_OBJECTS) $(nodist_kaffeh_OBJECTS)
+kaffeh_OBJECTS = $(am_kaffeh_OBJECTS)
 am__DEPENDENCIES_1 =
 kaffeh_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 DEFAULT_INCLUDES = -I. -I$(top_builddir)/config@am__isrc@
@@ -92,7 +90,7 @@ LTCOMPILE = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(kaffeh_SOURCES) $(nodist_kaffeh_SOURCES)
+SOURCES = $(kaffeh_SOURCES)
 DIST_SOURCES = $(kaffeh_SOURCES)
 ETAGS = etags
 CTAGS = ctags
@@ -322,15 +320,13 @@ kaffeh_SOURCES = \
 	kaffeh-support.h \
 	java_lang_ClassLoader.h \
 	java_lang_Object.h \
-	java_lang_String.h
-
-nodist_kaffeh_SOURCES = \
-	constants.c \
-	debug.c \
-	file.c \
-	jar.c \
-	readClass.c \
-	utf8const.c
+	java_lang_String.h \
+	$(top_srcdir)/kaffe/kaffevm/constants.c \
+	$(top_srcdir)/kaffe/kaffevm/debug.c \
+	$(top_srcdir)/kaffe/kaffevm/file.c \
+	$(top_srcdir)/kaffe/kaffevm/jar.c \
+	$(top_srcdir)/kaffe/kaffevm/readClass.c \
+	$(top_srcdir)/kaffe/kaffevm/utf8const.c 
 
 all: all-am
 
@@ -434,6 +430,90 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
+
+constants.o: $(top_srcdir)/kaffe/kaffevm/constants.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT constants.o -MD -MP -MF $(DEPDIR)/constants.Tpo -c -o constants.o `test -f '$(top_srcdir)/kaffe/kaffevm/constants.c' || echo '$(srcdir)/'`$(top_srcdir)/kaffe/kaffevm/constants.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/constants.Tpo $(DEPDIR)/constants.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/kaffe/kaffevm/constants.c' object='constants.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o constants.o `test -f '$(top_srcdir)/kaffe/kaffevm/constants.c' || echo '$(srcdir)/'`$(top_srcdir)/kaffe/kaffevm/constants.c
+
+constants.obj: $(top_srcdir)/kaffe/kaffevm/constants.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT constants.obj -MD -MP -MF $(DEPDIR)/constants.Tpo -c -o constants.obj `if test -f '$(top_srcdir)/kaffe/kaffevm/constants.c'; then $(CYGPATH_W) '$(top_srcdir)/kaffe/kaffevm/constants.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/kaffe/kaffevm/constants.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/constants.Tpo $(DEPDIR)/constants.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/kaffe/kaffevm/constants.c' object='constants.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o constants.obj `if test -f '$(top_srcdir)/kaffe/kaffevm/constants.c'; then $(CYGPATH_W) '$(top_srcdir)/kaffe/kaffevm/constants.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/kaffe/kaffevm/constants.c'; fi`
+
+debug.o: $(top_srcdir)/kaffe/kaffevm/debug.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT debug.o -MD -MP -MF $(DEPDIR)/debug.Tpo -c -o debug.o `test -f '$(top_srcdir)/kaffe/kaffevm/debug.c' || echo '$(srcdir)/'`$(top_srcdir)/kaffe/kaffevm/debug.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/debug.Tpo $(DEPDIR)/debug.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/kaffe/kaffevm/debug.c' object='debug.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o debug.o `test -f '$(top_srcdir)/kaffe/kaffevm/debug.c' || echo '$(srcdir)/'`$(top_srcdir)/kaffe/kaffevm/debug.c
+
+debug.obj: $(top_srcdir)/kaffe/kaffevm/debug.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT debug.obj -MD -MP -MF $(DEPDIR)/debug.Tpo -c -o debug.obj `if test -f '$(top_srcdir)/kaffe/kaffevm/debug.c'; then $(CYGPATH_W) '$(top_srcdir)/kaffe/kaffevm/debug.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/kaffe/kaffevm/debug.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/debug.Tpo $(DEPDIR)/debug.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/kaffe/kaffevm/debug.c' object='debug.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o debug.obj `if test -f '$(top_srcdir)/kaffe/kaffevm/debug.c'; then $(CYGPATH_W) '$(top_srcdir)/kaffe/kaffevm/debug.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/kaffe/kaffevm/debug.c'; fi`
+
+file.o: $(top_srcdir)/kaffe/kaffevm/file.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT file.o -MD -MP -MF $(DEPDIR)/file.Tpo -c -o file.o `test -f '$(top_srcdir)/kaffe/kaffevm/file.c' || echo '$(srcdir)/'`$(top_srcdir)/kaffe/kaffevm/file.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/file.Tpo $(DEPDIR)/file.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/kaffe/kaffevm/file.c' object='file.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o file.o `test -f '$(top_srcdir)/kaffe/kaffevm/file.c' || echo '$(srcdir)/'`$(top_srcdir)/kaffe/kaffevm/file.c
+
+file.obj: $(top_srcdir)/kaffe/kaffevm/file.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT file.obj -MD -MP -MF $(DEPDIR)/file.Tpo -c -o file.obj `if test -f '$(top_srcdir)/kaffe/kaffevm/file.c'; then $(CYGPATH_W) '$(top_srcdir)/kaffe/kaffevm/file.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/kaffe/kaffevm/file.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/file.Tpo $(DEPDIR)/file.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/kaffe/kaffevm/file.c' object='file.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o file.obj `if test -f '$(top_srcdir)/kaffe/kaffevm/file.c'; then $(CYGPATH_W) '$(top_srcdir)/kaffe/kaffevm/file.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/kaffe/kaffevm/file.c'; fi`
+
+jar.o: $(top_srcdir)/kaffe/kaffevm/jar.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT jar.o -MD -MP -MF $(DEPDIR)/jar.Tpo -c -o jar.o `test -f '$(top_srcdir)/kaffe/kaffevm/jar.c' || echo '$(srcdir)/'`$(top_srcdir)/kaffe/kaffevm/jar.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/jar.Tpo $(DEPDIR)/jar.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/kaffe/kaffevm/jar.c' object='jar.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o jar.o `test -f '$(top_srcdir)/kaffe/kaffevm/jar.c' || echo '$(srcdir)/'`$(top_srcdir)/kaffe/kaffevm/jar.c
+
+jar.obj: $(top_srcdir)/kaffe/kaffevm/jar.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT jar.obj -MD -MP -MF $(DEPDIR)/jar.Tpo -c -o jar.obj `if test -f '$(top_srcdir)/kaffe/kaffevm/jar.c'; then $(CYGPATH_W) '$(top_srcdir)/kaffe/kaffevm/jar.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/kaffe/kaffevm/jar.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/jar.Tpo $(DEPDIR)/jar.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/kaffe/kaffevm/jar.c' object='jar.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o jar.obj `if test -f '$(top_srcdir)/kaffe/kaffevm/jar.c'; then $(CYGPATH_W) '$(top_srcdir)/kaffe/kaffevm/jar.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/kaffe/kaffevm/jar.c'; fi`
+
+readClass.o: $(top_srcdir)/kaffe/kaffevm/readClass.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT readClass.o -MD -MP -MF $(DEPDIR)/readClass.Tpo -c -o readClass.o `test -f '$(top_srcdir)/kaffe/kaffevm/readClass.c' || echo '$(srcdir)/'`$(top_srcdir)/kaffe/kaffevm/readClass.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/readClass.Tpo $(DEPDIR)/readClass.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/kaffe/kaffevm/readClass.c' object='readClass.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o readClass.o `test -f '$(top_srcdir)/kaffe/kaffevm/readClass.c' || echo '$(srcdir)/'`$(top_srcdir)/kaffe/kaffevm/readClass.c
+
+readClass.obj: $(top_srcdir)/kaffe/kaffevm/readClass.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT readClass.obj -MD -MP -MF $(DEPDIR)/readClass.Tpo -c -o readClass.obj `if test -f '$(top_srcdir)/kaffe/kaffevm/readClass.c'; then $(CYGPATH_W) '$(top_srcdir)/kaffe/kaffevm/readClass.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/kaffe/kaffevm/readClass.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/readClass.Tpo $(DEPDIR)/readClass.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/kaffe/kaffevm/readClass.c' object='readClass.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o readClass.obj `if test -f '$(top_srcdir)/kaffe/kaffevm/readClass.c'; then $(CYGPATH_W) '$(top_srcdir)/kaffe/kaffevm/readClass.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/kaffe/kaffevm/readClass.c'; fi`
+
+utf8const.o: $(top_srcdir)/kaffe/kaffevm/utf8const.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT utf8const.o -MD -MP -MF $(DEPDIR)/utf8const.Tpo -c -o utf8const.o `test -f '$(top_srcdir)/kaffe/kaffevm/utf8const.c' || echo '$(srcdir)/'`$(top_srcdir)/kaffe/kaffevm/utf8const.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/utf8const.Tpo $(DEPDIR)/utf8const.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/kaffe/kaffevm/utf8const.c' object='utf8const.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o utf8const.o `test -f '$(top_srcdir)/kaffe/kaffevm/utf8const.c' || echo '$(srcdir)/'`$(top_srcdir)/kaffe/kaffevm/utf8const.c
+
+utf8const.obj: $(top_srcdir)/kaffe/kaffevm/utf8const.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT utf8const.obj -MD -MP -MF $(DEPDIR)/utf8const.Tpo -c -o utf8const.obj `if test -f '$(top_srcdir)/kaffe/kaffevm/utf8const.c'; then $(CYGPATH_W) '$(top_srcdir)/kaffe/kaffevm/utf8const.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/kaffe/kaffevm/utf8const.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/utf8const.Tpo $(DEPDIR)/utf8const.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/kaffe/kaffevm/utf8const.c' object='utf8const.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o utf8const.obj `if test -f '$(top_srcdir)/kaffe/kaffevm/utf8const.c'; then $(CYGPATH_W) '$(top_srcdir)/kaffe/kaffevm/utf8const.c'; else $(CYGPATH_W) '$(srcdir)/$(top_srcdir)/kaffe/kaffevm/utf8const.c'; fi`
 
 mostlyclean-libtool:
 	-rm -f *.lo

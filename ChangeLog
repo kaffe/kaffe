@@ -1,3 +1,10 @@
+2008-01-20  Dalibor Topic  <robilad@kaffe.org>
+
+	* configure.ac: Don't link files for kaffeh.
+
+	* kaffe/kaffeh/Makefile.am (kaffeh_SOURCES): Added files
+	used from kaffevm.
+
 2008-01-20  Robert Schuster  <robertschuster@fsfe.org>
 
 	* configure.ac: Require automake 1.9 instead of 1.10.
