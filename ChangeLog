@@ -1,5 +1,9 @@
 2008-01-20  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac: Autoupdated. Now requires autoconf 2.61.
+
+2008-01-20  Dalibor Topic  <robilad@kaffe.org>
+
 	* developers/autogen.sh: Removed version checking logic.
 	We should simply set the minimum versions necessary in configure.ac.
 

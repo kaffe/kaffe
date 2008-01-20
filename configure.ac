@@ -1,6 +1,6 @@
 AC_INIT([Kaffe Virtual Machine],[1.1.9-pre],[kaffe@kaffe.org],[kaffe])
 
-AC_PREREQ(2.59)
+AC_PREREQ(2.61)
 
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([scripts])
