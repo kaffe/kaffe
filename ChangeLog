@@ -1,5 +1,9 @@
 2008-01-20  Dalibor Topic  <robilad@kaffe.org>
 
+	TODO: Updated.
+
+2008-01-20  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac: Don't link files for kaffeh.
 
 	* kaffe/kaffeh/Makefile.am (kaffeh_SOURCES): Added files

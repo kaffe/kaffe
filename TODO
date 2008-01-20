@@ -14,10 +14,14 @@
  * Make runtime engine runtime selectable
  * Make gc backend runtime selectable
  * Make boehm-gc the default engine on platforms that support it
+ * Use libltdl directly for JNI, remove wrappers.
  * Swich to glib for data structures, command line option parsing, etc.
  * Switch to libjclassinfo for class file parsing
   * Switch to libzzlib for zip file reading first to be able to kill the syscall
     interface in the threading code.
+    * start with jar.c /jar.h.
+    * findInJar is a bit trickier, as it also deals with directories, regular classes
+      etc. Maybe it can be largely rewritten in Java in the VMClassLoader? 
 
 * Missing features
  * Implement support for extension override mechanism, and allow overriding
