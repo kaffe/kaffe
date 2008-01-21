@@ -631,7 +631,7 @@ getManifestMainAttribute(ZZIP_DIR* file, const char* attrName)
 	char* mfdata;
 	char* attrEntry;
 	char* ret;
-	size_t i;
+	zzip_ssize_t i;
 	int posAttrValue;
 
 	/* Locate manifest entry in jar */
