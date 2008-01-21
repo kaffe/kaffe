@@ -13,6 +13,8 @@
    * libjit could use a vmgenned interpreter, too.
 
 * Cleanup
+ * Remove KLSEEK implementations from threading code, syscall interface and kaffeh
+ * cleanup JNI library loading to use libltdl exclusively.
  * Remove unused instructions from jits (nop, unimplemented)
 
 * Architectural changes:
@@ -37,6 +39,8 @@
     * continue with native zip libs.
     * findInJar is a bit trickier, as it also deals with directories, regular classes
       etc. Maybe it can be largely rewritten in Java in the VMClassLoader? 
+      Alternatively, use zziplib's transparent file access to access class files,
+      directories and zip files.
 
 * Missing features
  * Implement support for extension override mechanism, and allow overriding
@@ -72,5 +76,6 @@
   * Switch to autotest for the test suites
 
 * Pending patches 
+  arm flush_dcache from Robert Schuster
   amd64 jit from Eric Anholt (guilhem)
 

@@ -96,20 +96,6 @@ extern SystemCallInterface Kaffe_SystemCallInterface;
   (*Kaffe_SystemCallInterface._read)(filedescriptor, buffer, length, bytesRead)
 
 /**
- * Reposition read/write offset in a file in a 
- * platform-independant, thread-safe way.
- *
- * @param filedescriptor filedescriptor to stat
- * @param offset offset to set
- * @param whence how to set the offset
- * @param new_offset new value of read/write offset
- * 
- * @return 0 on success, or errno on failure.
- */
-#define	KLSEEK(filedescriptor, offset, whence, new_offset) \
-  (*Kaffe_SystemCallInterface._lseek)(filedescriptor, offset, whence, new_offset)
-
-/**
  * Close a file in a platform-independant, thread-safe way.
  *
  * @param filedescriptor filedescriptor to close
