@@ -5,6 +5,12 @@
    Variable must be in thread local storage and not globally visible.
  * Add support for gcj-ed code with BC ABI.
  * Merge in Tom Tromey's libjit and llvm based JITs.
+  * libjit targets x86, x86_84, ARM, Alpha
+  * llvm has jit targets for X86, X86-64, PowerPC and PowerPC-64
+  * gnu lightning targets x86, PowerPC32, AMD64, Sparc32
+  * tinycc targets linux-arm, linux-x86, win32-x86 and c67
+   * We could use libjit & try to fiddle in llvm, and the rest into it as backends.
+   * libjit could use a vmgenned interpreter, too.
 
 * Cleanup
  * Remove unused instructions from jits (nop, unimplemented)
@@ -16,6 +22,15 @@
  * Make boehm-gc the default engine on platforms that support it
  * Use libltdl directly for JNI, remove wrappers.
  * Swich to glib for data structures, command line option parsing, etc.
+  * debug logging (alternative would be GNU nana)
+  * command line option parsing (our manual code in main.c is rather ugly)
+  * data structures (no need to have our own hashtable, lists, etc.)
+  * fixed size types (without requiring c99, allowing to simplify gtypes, etc.)
+  * atomic functions (which we're now copying and pasting from gnu libc,
+    and Guilhem is no longer around to maintain them)
+  * string & utf8 utility functions (allowing us to throw away the implementation in kaffe)
+  * timers & counters (making the stats module leaner)
+  * and various little portability/utility functions
  * Switch to libjclassinfo for class file parsing
   * Switch to libzzlib for zip file reading first to be able to kill the syscall
     interface in the threading code.
