@@ -18,6 +18,12 @@ versions of these libraries for your Linux distribution, and your
 distributor uses the RPM packaging format, you should check out
 http://www.rpmfind.net.
 
+zziplib
+-------
+
+You'll need zziplib for Kaffe to be able to load classes from JAR files.
+It is available from http://zziplib.sourceforge.net/ .
+
 libltdl
 -------
 
