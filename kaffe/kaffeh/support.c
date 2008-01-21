@@ -782,8 +782,8 @@ void
 kaffeh_findClass(const char* nm)
 {
 	int fd;
-	jarFile* jfile;
-	jarEntry* jentry;
+	ZZIP_DIR* jfile;
+	ZZIP_FILE* jentry;
 	char superName[512];
 	struct stat sbuf;
 	char* start;
@@ -890,7 +890,7 @@ kaffeh_findClass(const char* nm)
 				continue;
 			}
 
-			buf = getDataJarFile(jfile, jentry);
+			buf = getDataJarFile(jentry);
                         if (buf == NULL) {
 				closeJarFile(jfile);
 				continue;
@@ -899,7 +899,7 @@ kaffeh_findClass(const char* nm)
 			classFileInit(&hand,
 				      buf,
 				      buf,
-				      jentry->uncompressedSize,
+				      getUncompressedSize(jentry),
 				      CP_ZIPFILE);
 
 			objectDepth++;

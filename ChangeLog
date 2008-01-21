@@ -1,3 +1,23 @@
+2008-01-21  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/baseClasses.c (initialiseKaffe): Don't initialize
+	JAR file cache, it's gone.
+
+	* kaffe/kaffevm/jar.h, kaffe/kaffevm/jar.c: 
+	Rewriten from scratch to use zzip library. Since zzlib
+	allows transprent access to files and directories as well
+	as zip files, it could be possible to rewrite findInJar.c
+	to use jar.c now, regardless of the entry type.
+
+	* configure.ac: Check for zzip library and header.
+
+	* kaffe/kaffeh/support.c (kaffeh_findClass),
+	kaffe/kaffevm/findInJar.c (getManifestMainAttribute)
+	(findClassInJar): Use zziplib types and updated jar interfaces.
+
+	* kaffe/kaffevm/classpath.h (_classpathEntry): Use ZZIP_DIR
+	for a jar entry.
+
 2008-01-20  Dalibor Topic  <robilad@kaffe.org>
 
 	TODO: Updated.

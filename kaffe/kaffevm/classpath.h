@@ -11,6 +11,8 @@
 #ifndef __classpath_h
 #define __classpath_h
 
+#include <zzip/zzip.h>
+
 #define IS_ZIP(B) \
 	((B)[0] == 'P' && (B)[1] == 'K')
 #define	IS_SOFILE(B) \
@@ -20,7 +22,7 @@ typedef struct _classpathEntry {
         int     type;
         char*   path;
         union {
-                jarFile*        jar;
+                ZZIP_DIR*        jar;
                 struct {
                         int     loaded;
                 } sof;

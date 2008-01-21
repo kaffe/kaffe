@@ -216,7 +216,6 @@ initialiseKaffe(void)
 	initLocking();
 	initEngine();
 	KaffeVM_initClassPool();
-	KaffeVM_initJarCache();
 
 	/* Initialise the string and utf8 systems */
 	stringInit();

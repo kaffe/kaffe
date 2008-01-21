@@ -66,7 +66,7 @@ static int insertClasspath(const char* cp, int prepend);
 
 #if defined(HANDLE_MANIFEST_CLASSPATH)
 static int isEntryInClasspath(const char*);
-static char* getManifestMainAttribute(jarFile*, const char*);
+static char* getManifestMainAttribute(ZZIP_DIR*, const char*);
 static void handleManifestClassPath (classpathEntry *);
 #endif
 
@@ -211,7 +211,7 @@ DBG(CLASSLOOKUP,dprintf("Processing classpath entry '%s'\n", ptr->path); );
 		switch (ptr->type) {
 		case CP_ZIPFILE:
 		{
-			jarEntry* entry;
+		        ZZIP_FILE * entry;
 			unsigned char* data;
 
 DBG(CLASSLOOKUP,	dprintf("Opening JAR file %s for %s\n", ptr->path, cname); );
@@ -230,31 +230,27 @@ DBG(CLASSLOOKUP,	dprintf("Opening JAR file %s for %s\n", ptr->path, cname); );
 			if (entry == 0) {
 				break;
 			}
-			if (entry->compressedSize == 0) {
+			if (getUncompressedSize(entry) == 0) {
 				hand->type = CP_NULLCLASS;
 				goto done;
 			}
-			data = getDataJarFile(ptr->u.jar, entry);
+			data = getDataJarFile(entry);
 			if (data == 0) {
 				postExceptionMessage(einfo,
 					JAVA_IO(IOException),
-					"Couldn't extract data from jar: %s",
-					ptr->u.jar->error);
+					"Couldn't extract data from jar %s",
+					ptr->path);
 				goto done;
 			}
 
 			classFileInit(hand,
 				      data,
 				      data,
-				      entry->uncompressedSize,
+				      getUncompressedSize(entry),
 				      CP_ZIPFILE);
 
 			if (Kaffe_JavaVMArgs.enableVerboseClassloading) {
-				dprintf("Loading %s(%s)", cname, ptr->path);
-				if (entry->compressionMethod != COMPRESSION_STORED) {
-					dprintf(" [compressed]");
-				}
-				dprintf("\n");
+				dprintf("Loading %s(%s)\n", cname, ptr->path);
 			}
 			goto done;
 		}
@@ -629,9 +625,9 @@ isEntryInClasspath(const char *path)
 
 
 static char*
-getManifestMainAttribute(jarFile* file, const char* attrName)
+getManifestMainAttribute(ZZIP_DIR* file, const char* attrName)
 {
-	jarEntry* mf;
+	ZZIP_FILE* mf;
 	char* mfdata;
 	char* attrEntry;
 	char* ret;
@@ -644,13 +640,13 @@ getManifestMainAttribute(jarFile* file, const char* attrName)
 		return (NULL);
 
 	/* Read it */
-	mfdata = (char*)getDataJarFile(file, mf);
+	mfdata = (char*)getDataJarFile(mf);
 	if (mfdata == 0)
 		return (NULL);
 
 	/* Look for the desired entry */
 	attrEntry = mfdata;
-	for (i = 0; i < mf->uncompressedSize; ++i) {
+	for (i = 0; i < getUncompressedSize(mf); ++i) {
 		/* Sun's jar, even under Linux, insists on terminating
 		   newlines with newline *and* carriage return */
 		if (mfdata[i] == '\n' || mfdata[i] == '\r') {
@@ -666,7 +662,7 @@ getManifestMainAttribute(jarFile* file, const char* attrName)
 					++attrEntry;
 
 				/* Now look for end of string. */
-				while (i < mf->uncompressedSize && attrEntry[i] != 0xd)
+				while (i < getUncompressedSize(mf) && attrEntry[i] != 0xd)
 					++i;
 
 				attrEntry[i] = '\0';
