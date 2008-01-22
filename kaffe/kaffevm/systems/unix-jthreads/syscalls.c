@@ -39,20 +39,6 @@ jthreadedClose(int fd)
 }
 
 static int
-jthreadedLSeek(int fd, off_t offset, int whence, off_t *out)
-{
-	int rc = 0;
-
-	jthread_spinon(0);
-	*out = lseek(fd, offset, whence);
-	if (*out == -1) {
-		rc = errno;
-	}
-	jthread_spinoff(0);
-	return (rc);
-}
-
-static int
 jthreadedFStat(int fd, struct stat *sb)
 {
 	int rc = 0;
@@ -84,7 +70,6 @@ jthreadedStat(const char* path, struct stat *sb)
 SystemCallInterface Kaffe_SystemCallInterface = {
         jthreadedOpen,
         jthreadedRead,	
-        jthreadedLSeek,
         jthreadedClose,
         jthreadedFStat,
         jthreadedStat,

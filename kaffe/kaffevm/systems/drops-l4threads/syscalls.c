@@ -48,18 +48,6 @@ static int drops_read(int fd, void* buffer,
   return nReturn;
 }
 
-static int drops_lseek(int fd, off_t o, int type,
-                       off_t *out) {
-  int nReturn = 0;
-
-  *out = lseek(fd, o, type);
-
-  if (*out == -1)
-    nReturn = errno;
- 
-  return nReturn;
-}
-
 static int drops_close(int fd) {
   int nReturn = 0;
 
@@ -90,7 +78,6 @@ static int drops_stat(const char *p, struct stat *st){
 SystemCallInterface Kaffe_SystemCallInterface = {
 	drops_open,
 	drops_read,
-	drops_lseek,
 	drops_close,
 	drops_fstat,
 	drops_stat,

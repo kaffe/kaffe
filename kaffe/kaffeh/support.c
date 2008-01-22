@@ -71,13 +71,6 @@ kread(int fd, void *buf, size_t len, ssize_t *out)
 	return (*out == -1) ? errno : 0;
 }
 
-static int
-klseek(int fd, off_t off, int whence, off_t *out)
-{
-	*out = lseek(fd, off, whence);
-	return (*out == -1) ? errno : 0;
-}
-
 /* With Tru64, stat and fstat() are silly macros, convert them to functions.  */
 #if defined(stat)
 static int
@@ -108,7 +101,6 @@ SystemCallInterface Kaffe_SystemCallInterface =
 {
 	binary_open,
         kread,
-        klseek,
         close,
         kfstat,
         kstat,

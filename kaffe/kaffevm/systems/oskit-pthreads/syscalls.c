@@ -54,13 +54,6 @@ oskit_pthread_read(int fd, void* b, size_t l, ssize_t *out)
 }
 
 static int
-oskit_pthread_lseek(int f, off_t o, int w, off_t *out)
-{
-	*out = lseek(f, o, w);
-	return (*out == -1) ? errno : 0;
-}
-
-static int
 oskit_pthread_close(int f)
 {
 	return (close(f) == -1) ? errno : 0;
@@ -81,7 +74,6 @@ oskit_pthread_stat(const char *p, struct stat *st)
 SystemCallInterface Kaffe_SystemCallInterface = {
 	oskit_pthread_open,
 	oskit_pthread_read,
-	oskit_pthread_lseek,
 	oskit_pthread_close,
 	oskit_pthread_fstat,
 	oskit_pthread_stat,

@@ -57,13 +57,6 @@ beos_native_read(int fd, void* b, size_t l, ssize_t *out)
 }
 
 static int
-beos_native_lseek(int f, off_t o, int w, off_t *out)
-{
-	*out = lseek(f, o, w);
-	return (*out < 0) ? errno : 0;
-}
-
-static int
 beos_native_close(int f)
 {
 	return (close(f) < 0) ? errno : 0;
@@ -84,7 +77,6 @@ beos_native_stat(const char *p, struct stat *st)
 SystemCallInterface Kaffe_SystemCallInterface = {
 	beos_native_open,
 	beos_native_read,
-	beos_native_lseek,
 	beos_native_close,
 	beos_native_fstat,
 	beos_native_stat,

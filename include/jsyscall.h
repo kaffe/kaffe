@@ -55,7 +55,6 @@ typedef struct SystemCallInterface {
 
 	int	(*_open)(const char *, int, int, int *);
 	int	(*_read)(int, void *, size_t, ssize_t *);
-	int	(*_lseek)(int, off_t, int, off_t *);
 	int	(*_close)(int);
 	int	(*_fstat)(int, struct stat *);
 	int	(*_stat)(const char *, struct stat *);
