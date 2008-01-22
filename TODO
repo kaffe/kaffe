@@ -13,7 +13,6 @@
    * libjit could use a vmgenned interpreter, too.
 
 * Cleanup
- * Remove KLSEEK implementations from threading code, syscall interface and kaffeh
  * cleanup JNI library loading to use libltdl exclusively.
  * Remove unused instructions from jits (nop, unimplemented)
 
