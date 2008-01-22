@@ -18,13 +18,15 @@ AM_CPPFLAGS = \
 	-I$(top_builddir)/config \
 	-I$(top_srcdir)/kaffe/kaffevm/jni \
 	-I$(top_srcdir)/config/$(Khost_cpu) \
-	-I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os) 
+	-I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os) \
+	$(ZZIP_CFLAGS)
 
 bin_PROGRAMS = kaffeh
 
 kaffeh_LDADD = \
 	$(LTLIBINTL) \
-	$(ZIP_LIBS)
+	$(ZZIP_LIBS) 
+
 
 kaffeh_SOURCES = \
 	main.c \

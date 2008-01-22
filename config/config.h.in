@@ -469,9 +469,6 @@
 /* Define to 1 if you have the <zlib.h> header file. */
 #undef HAVE_ZLIB_H
 
-/* Define to 1 if you have the <zzip/zzip.h> header file. */
-#undef HAVE_ZZIP_ZZIP_H
-
 /* Define if __va_copy is available */
 #undef HAVE__VA_COPY
 

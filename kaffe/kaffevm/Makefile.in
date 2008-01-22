@@ -262,6 +262,7 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATHSEP = @PATHSEP@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PKG_CONFIG = @PKG_CONFIG@
 POSUB = @POSUB@
 PTHREAD_CC = @PTHREAD_CC@
 PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
@@ -293,6 +294,8 @@ X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_LIBS = @X_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
 ZIP_LIBS = @ZIP_LIBS@
+ZZIP_CFLAGS = @ZZIP_CFLAGS@
+ZZIP_LIBS = @ZZIP_LIBS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -384,6 +387,7 @@ native_LTLIBRARIES = libkaffevm.la libkaffe.la
 libkaffe_la_CFLAGS = \
 	$(AM_CFLAGS) \
 	$(CFLAGS_PG) \
+	$(ZZIP_CFLAGS) \
 	$(PTHREAD_CFLAGS)
 
 libkaffe_la_LDFLAGS = \
@@ -406,7 +410,7 @@ libkaffe_la_LIBADD = \
 	$(libkaffe_la_DEPENDENCIES) \
 	$(VM_LIBS) \
 	$(M_LIBS) \
-	$(ZIP_LIBS)
+	$(ZZIP_LIBS)
 
 libkaffevm_la_CFLAGS = \
 	$(AM_CFLAGS) \

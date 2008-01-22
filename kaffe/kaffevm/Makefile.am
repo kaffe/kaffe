@@ -49,6 +49,7 @@ endif
 libkaffe_la_CFLAGS = \
 	$(AM_CFLAGS) \
 	$(CFLAGS_PG) \
+	$(ZZIP_CFLAGS) \
 	$(PTHREAD_CFLAGS)
 
 libkaffe_la_LDFLAGS = \
@@ -71,7 +72,7 @@ libkaffe_la_LIBADD = \
 	$(libkaffe_la_DEPENDENCIES) \
 	$(VM_LIBS) \
 	$(M_LIBS) \
-	$(ZIP_LIBS)
+	$(ZZIP_LIBS)
 
 libkaffevm_la_CFLAGS = \
 	$(AM_CFLAGS) \

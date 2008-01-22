@@ -953,7 +953,6 @@ sys/utsname.h \
 sys/ucontext.h \
 unistd.h \
 wintypes.h \
-zzip/zzip.h \
 zlib.h])
 
 # check sys/sysctl.h seperately, as it requires other headers on at least OpenBSD
@@ -1577,11 +1576,8 @@ if test x"$enable_native_awt" = x"yes"; then
    fi
 fi
 
-if test x"$ac_cv_header_zzip_zzip_h" != x"yes" ; then
-  AC_MSG_ERROR([Can't find or can't use system zzip/zzip.h from zzip library])
-fi
-
-AC_SEARCH_LIBS([zzip_read], [zzip], [], [AC_MSG_ERROR([Can't find the zzip library.])])
+# Make sure that we get a zlib instance with zzip_fstat.
+PKG_CHECK_MODULES([ZZIP],[zziplib >= 0.13.24])
 
 AC_ARG_ENABLE([zlib_zip],
               AS_HELP_STRING([--enable-zlib-zip],
