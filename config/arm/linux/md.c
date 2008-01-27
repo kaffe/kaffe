@@ -26,6 +26,7 @@ init_md(void)
 #endif
 }
 
+#ifdef TRANSLATOR
 /**
  * Shamelessly stolen from parrot... ([perl]/parrot/jit/arm/jit_emit.h arm_sync_d_i_cache)
  *
@@ -41,3 +42,4 @@ void flush_dcache(void *start, void *end) {
 		    : "r" ((long)start), "r" ((long)end)
 		    : "r0","r1","r2");
 }
+#endif

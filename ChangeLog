@@ -1,3 +1,8 @@
+2008-01-25  Dalibor Topic  <topic@quad-damage>
+
+	* config/arm/linux/md.c (flush_dcache): Only
+	declare for JIT engine.
+
 2008-01-22  Dalibor Topic  <topic@quad-damage>
 
 	* kaffe/kaffeh/Makefile.am (kaffeh_LDADD, AM_CPPFLAGS): 
