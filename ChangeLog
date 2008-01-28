@@ -1,9 +1,13 @@
-2008-01-25  Dalibor Topic  <topic@quad-damage>
+2008-01-27  Dalibor Topic  <robilad@kaffe.org>
+
+	* libltdl/.cvsignore: Removed.
+
+2008-01-25  Dalibor Topic  <robilad@kaffe.org>
 
 	* config/arm/linux/md.c (flush_dcache): Only
 	declare for JIT engine.
 
-2008-01-22  Dalibor Topic  <topic@quad-damage>
+2008-01-22  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffeh/Makefile.am (kaffeh_LDADD, AM_CPPFLAGS): 
 	kaffe/kaffevm/Makefile.am (libkaffe_la_CFLAGS)
