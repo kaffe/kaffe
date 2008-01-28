@@ -1,5 +1,11 @@
 2008-01-27  Dalibor Topic  <robilad@kaffe.org>
 
+	* config/arm/netbsd1/md.c,
+	config/arm/riscos/md.c (flush_dcache): Only
+        declare for JIT engine.
+
+2008-01-27  Dalibor Topic  <robilad@kaffe.org>
+
 	* libltdl/.cvsignore: Removed.
 
 2008-01-25  Dalibor Topic  <robilad@kaffe.org>

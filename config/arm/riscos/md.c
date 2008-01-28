@@ -16,6 +16,7 @@ init_md(void)
 	__feature_imagefs_is_file = 1;
 }
 
+#ifdef TRANSLATOR
 /* This may not be correct for all ARMs, e.g. XScale */
 #define CACHE_SIZE (32 * 1024)
 #define LINE_SIZE sizeof(int)
@@ -34,3 +35,4 @@ flush_dcache(void)
        /* Not a call we have yet */
 /*        sched_yield(); */
 }
+#endif

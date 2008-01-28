@@ -12,6 +12,7 @@
 #include "config.h"
 #include <malloc.h>
 
+#ifdef TRANSLATOR
 #define CACHE_SIZE (32 * 1024)
 #define LINE_SIZE sizeof(int)
 #define CACHE_LINES (CACHE_SIZE / LINE_SIZE)
@@ -27,3 +28,4 @@ flush_dcache(void)
         }
         /* sched_yield(); */
 }
+#endif
