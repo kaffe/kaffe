@@ -13,6 +13,7 @@
    * libjit could use a vmgenned interpreter, too.
 
 * Cleanup
+ * Don't use __USE_GNU use _GNU_SOURCE instead
  * cleanup JNI library loading to use libltdl exclusively.
  * Remove unused instructions from jits (nop, unimplemented)
 

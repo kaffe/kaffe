@@ -27,10 +27,7 @@ dist_zlib_JAVA = \
 	java/util/zip/Deflater.java \
 	java/util/zip/DeflaterOutputStream.java \
 	java/util/zip/Inflater.java \
-	java/util/zip/ZipEntry.java \
 	java/util/zip/ZipFile.java \
-	java/util/zip/ZipInputStream.java \
-	java/util/zip/ZipOutputStream.java \
 	org/kaffe/util/Assert.java \
 	org/kaffe/util/UTF8.java \
 	org/kaffe/util/zip/SwitchInflater.java 

@@ -1,3 +1,30 @@
+2008-01-31  Dalibor Topic  <robilad@kaffe.org>
+
+	* TODO: Updated.
+
+	* libraries/javalib/zlib-zip/java/util/zip/ZipEntry.java,
+	libraries/javalib/zlib-zip/java/util/zip/ZipInputStream.java,
+	libraries/javalib/zlib-zip/java/util/zip/ZipOutputStream.java:
+	Removed.
+
+	* kaffe/kaffevm/debug.c (kaffe_dprintf): Changed prototype of
+	max to size_t.
+
+	* libraries/clib/zip/ZipFile.c: Include native.h amd zzip/zzip.h.
+	(makeZipEntry, java_util_zip_ZipFile_openZipFile0, 
+	java_util_zip_ZipFile_closeZipFile0, java_util_zip_ZipFile_getZipFileSize0,
+	java_util_zip_ZipFile_getZipEntry0, java_util_zip_ZipFile_getZipData0, 
+	java_util_zip_ZipFile_getZipEntries0) Rewritten to use zziplib.
+	(getZipEntry) New helper function.
+
+	* libraries/javalib/zlib-zip/Makefile.am (dist_zlib_JAVA):
+	Removed /java/util/zip/ZipEntry.java, java/util/zip/ZipInputStream.java
+	and java/util/zip/ZipOutputStream.java.
+
+	* libraries/javalib/zlib-zip/java/util/zip/ZipFile.java (getZipEntry):
+	New private helper method. (getEntry, getInputStream) Use getZipEntry
+	to avoid infinte recursion with overridden getEntry.
+	
 2008-01-27  Dalibor Topic  <robilad@kaffe.org>
 
 	* config/arm/netbsd1/md.c,

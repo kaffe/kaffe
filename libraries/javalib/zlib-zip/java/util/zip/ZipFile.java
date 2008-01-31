@@ -90,10 +90,15 @@ public Enumeration entries()
   return (all.elements());
 }
 
-public ZipEntry getEntry(String zname)
+private final ZipEntry getZipEntry(String zname)
 {
   checkIfClosed();
   return (getZipEntry0(zip, zname));
+}
+
+public ZipEntry getEntry(String zname)
+{
+    return (getZipEntry(zname));
 }
 
 public InputStream getInputStream(ZipEntry ze) throws IOException
@@ -103,7 +108,7 @@ public InputStream getInputStream(ZipEntry ze) throws IOException
 	}
 
 	if (ze.getSize() == -1) {
-		ze = getEntry(ze.getName());
+		ze = getZipEntry(ze.getName());
 	}
 
 	if (ze == null) {

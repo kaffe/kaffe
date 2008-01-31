@@ -429,7 +429,7 @@ kaffe_dprintf(const char *fmt, ...)
 {
 
 	int n;
-	int max;
+	size_t max;
 	va_list args;
 	ssize_t w = 0;
 	int rc;
@@ -441,7 +441,7 @@ kaffe_dprintf(const char *fmt, ...)
 #ifdef HAVE_VSNPRINTF
 	max = bufferSz - bufferBegin - 1;
 	assert(max > 0);
-	n = vsnprintf(debugBuffer + bufferBegin, (unsigned int)max, fmt, args);
+	n = vsnprintf(debugBuffer + bufferBegin, max, fmt, args);
 
 	/* The return value is bytes *needed* not bytes *used* */
 	if (n > max)
