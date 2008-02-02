@@ -2,6 +2,7 @@ What's New Since Kaffe 1.1.8
 ----------------------------
 
 * Depend on zziplib instead of zlib for JAR reading.
+* Removed support for native big math.
 * Removed libltdl. Kaffe uses an existing installation 
   exclusively now.
 * Removed gnu-inet, dnsjava, Tritonus and binreloc.

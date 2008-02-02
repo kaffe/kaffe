@@ -57,7 +57,6 @@
   * Replace native library code using KNI with code using JNI
 
 * Unmerging work
-  * Remove GNU MP big math
   * Remove old Kaffe AWT implementations
 
 * Merging work:
