@@ -1,5 +1,22 @@
 2008-02-02  Dalibor Topic  <robilad@kaffe.org>
 
+	* FAQ/FAQ.bignum: Removed.
+
+	* Makefile.am (EXTRA_DIST): Removed FAQ/FAQ.bignum.
+
+	* THIRDPARTY: Remove section on gmp.m4.
+
+	* FAQ/FAQ.requiredlibraries: Removed section on ESD, ALSA, 
+	GNU MP, and libmd.
+
+	* FAQ/FAQ.ps2linux: Removed paragraph on GNU MP.
+	
+2008-02-02  Dalibor Topic  <robilad@kaffe.org>
+
+	* WHATSNEW, TODO: Updated for native big math purge.
+	
+2008-02-02  Dalibor Topic  <robilad@kaffe.org>
+
 	Fix for build on arm-oabi-linux-ffi.
 	
 	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c (__USE_GNU)

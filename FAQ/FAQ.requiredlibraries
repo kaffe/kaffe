@@ -99,53 +99,6 @@ libpng:
     Ditto for png images.  Available at
     http://www.libpng.org/pub/png/libpng.html
 
-Sound libraries
----------------
-
-You need at least one of these libraries if you want to use kaffe's
-Java Sound implementation, which has been merged in from the tritonus
-project. More information on sound support in kaffe is available in
-FAQ.sound.
-
-ALSA:
-	The Advanced Linux Sound Architecture backend provides both
-	sampled sound and MIDI functionality. You need to have ALSA
-	installed first, which is available at:
-	http://www.alsa-project.org/
-
-Esd:
-	The Enlightened Sound Daemon provides sound playback
-	functionality on many Unix implementations. It is available
-	at:
-	http://www.tux.org/~ricdude/EsounD.html
-
-Mathematical libraries
-----------------------
-
-If you want to use arbitrary precision numbers provided by the
-java.math package, you can install these libraries. If kaffe can not
-find them, it will automatically use a pure java implementation from
-GNU Classpath.
-
-GNU MP:
-    libgmp is used in the native implementation of
-    java.math.BigInteger. It is available at:
-    http://www.swox.com/gmp/
-
-Cryptographical libraries
--------------------------
-
-If you want to use cryptographical hashing algorithms, you need to
-install these libraries.
-
-libmd:
-    This library is included with FreeBSD and may be included with
-    other operating systems. It supplies implementations of the MD2,
-    MD4, and MD5 hashing algorithms. If this library is not found by
-    configure, then SHA is the only hashing algorithm that will be
-    available. It can be found at:
-    http://www.penguin.cz/~mhi/libmd/
-
 Internationalization libraries
 ------------------------------
 

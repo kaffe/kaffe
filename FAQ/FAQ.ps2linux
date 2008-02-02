@@ -44,13 +44,6 @@ VERBOSE=-target 1.2
 IF YOU ARE BUILDING FROM CVS, you probably should add --without-kaffe-qt-awt and --disable-native-awt (otherwise you will get gtk+-2.0 missing errors in the configure step.)
 January 22, 2005 From CVS:  ./configure --enable-pure-java-math --with-jikes --witth-engine=intrp --without-kaffe-qt-awt --disable-native-awt
 
-If you want to use faster native math, you supposedly need to install
-the GNU MP library.  But I don't know if GNU MP supports any PS2-specific
-math so it may not be worth it.  
-
-But, if GNU MP is installed, the following is sufficient:
-./configure --with-jikes --with-engine=intrp
-
 Or if you don't need double precision floating point support, you can
 build the jit3 version:
 ./configure --with-jikes

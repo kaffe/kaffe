@@ -147,15 +147,6 @@ under a GPL compatible license:
    agrees to be bound by the terms and conditions of this License
    Agreement.
 
-* m4/gmp.m4
-
-This code has been taken from GNU m4. Kaffe is tracking this project's CVS. 
-The code is licensed under GNU General Public License v2 or later.
-
-See license.terms for the text of GNU General Public License v2. 
-
-More information on GNU m4 is available at http://www.gnu.org/software/m4/.
-
 * libraries/clib/native/VMRuntime.c, m4/classpath.m4.
 
   This file comes from CACAO. More information on CACAO is available from
