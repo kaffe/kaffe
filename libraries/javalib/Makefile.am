@@ -16,13 +16,6 @@ endif
 endif
 endif
 
-# Only build gmp java.math libraries if kaffe is configured
-# to build the native libraries as well.
-if COND_PURE_JAVA_MATH
-else
-MAYBE_GMP_JAVA_MATH=gmp-math
-endif
-
 if COND_ZLIB_ZIP
   MAYBE_ZLIB_ZIP=zlib-zip
 endif
@@ -30,7 +23,6 @@ endif
 SUBDIRS= \
 	vmspecific \
 	$(MAYBE_PEERLESS_KAFFE_AWT) \
-	$(MAYBE_GMP_JAVA_MATH) \
 	$(MAYBE_ZLIB_ZIP)
 
 jrelib_DATA= \

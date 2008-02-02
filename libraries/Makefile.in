@@ -53,13 +53,12 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/classpath.m4 \
 	$(top_srcdir)/m4/compile_value.m4 \
 	$(top_srcdir)/m4/gcc_attribute.m4 $(top_srcdir)/m4/gettext.m4 \
-	$(top_srcdir)/m4/glibcver.m4 $(top_srcdir)/m4/gmp.m4 \
-	$(top_srcdir)/m4/gwqt.m4 $(top_srcdir)/m4/iconv.m4 \
-	$(top_srcdir)/m4/lcmessage.m4 $(top_srcdir)/m4/lib-ld.m4 \
-	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
-	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/po.m4 \
-	$(top_srcdir)/m4/progtest.m4 $(top_srcdir)/m4/semaphore.m4 \
-	$(top_srcdir)/m4/size_max.m4 \
+	$(top_srcdir)/m4/glibcver.m4 $(top_srcdir)/m4/gwqt.m4 \
+	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/lcmessage.m4 \
+	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
+	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/nls.m4 \
+	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/progtest.m4 \
+	$(top_srcdir)/m4/semaphore.m4 $(top_srcdir)/m4/size_max.m4 \
 	$(top_srcdir)/m4/solarispthread.m4 $(top_srcdir)/m4/valist.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -154,7 +153,6 @@ KVMLIBFLAGS = @KVMLIBFLAGS@
 Khost_cpu = @Khost_cpu@
 Khost_os = @Khost_os@
 LDFLAGS = @LDFLAGS@
-LIBADD_GMP = @LIBADD_GMP@
 LIBICONV = @LIBICONV@
 LIBINTL = @LIBINTL@
 LIBOBJS = @LIBOBJS@
@@ -167,7 +165,6 @@ LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MAKE_KAFFEH = @MAKE_KAFFEH@
-MATH_LIB = @MATH_LIB@
 MKDIR_P = @MKDIR_P@
 MKINSTALLDIRS = @MKINSTALLDIRS@
 MKTEMP = @MKTEMP@
@@ -207,7 +204,6 @@ TARGET_CLASSPATH_CLASSES = @TARGET_CLASSPATH_CLASSES@
 THREAD_DIR = @THREAD_DIR@
 THREAD_SYSTEM = @THREAD_SYSTEM@
 UIC = @UIC@
-USE_GMP = @USE_GMP@
 USE_NLS = @USE_NLS@
 VERSION = @VERSION@
 VM_LIBS = @VM_LIBS@

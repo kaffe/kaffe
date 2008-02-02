@@ -896,8 +896,6 @@ freebsd2|oskit)
 	AC_CHECK_LIBRARY(gcc,__moddi3,VM_LIBS);;
 esac
 
-m4_LIB_GMP
-
 dnl -------------------------------------------------------------------------
 
 dnl =========================================================================
@@ -1581,26 +1579,6 @@ AC_ARG_ENABLE([zlib_zip],
 AM_CONDITIONAL([COND_ZLIB_ZIP], [test x"$enable_zlib_zip" = x"yes"])
 
 dnl -----------------------------------------------------------------------
-dnl                 Pure java imlementation of java.math.*
-dnl -----------------------------------------------------------------------
-
-AC_ARG_ENABLE([pure_java_math],
-  AS_HELP_STRING([--disable-pure-java-math], [Disable pure java java.math.* package]),
-  [],
-  [enable_pure_java_math=yes])
-
-AM_CONDITIONAL([COND_PURE_JAVA_MATH], [test x"$enable_pure_java_math" = x"yes"])
-
-AS_IF([test x"$enable_pure_java_math" = x"yes"],
-      [AC_MSG_NOTICE([Using GNU Classpath's java.math library])],
-      [AC_MSG_NOTICE([Using Kaffe's java.math library])
-       AC_SUBST([MATH_LIB], ["\$(top_builddir)/libraries/clib/math/libmath.la"])
-
-       AS_IF([test x"$ac_cv_lib_gmp_mpz_get_d" = x"no"],
-             AS_IF([test x"$ac_cv_lib_gmp___gmpz_get_d" = x"no"],
-                   [AC_MSG_ERROR([Could not find GNU MP library.  Install the gmp development package, or pass --enable-pure-java-math to configure.])]))])
-
-dnl -----------------------------------------------------------------------
 dnl                    Memory debugging support
 dnl -----------------------------------------------------------------------
 
@@ -1833,12 +1811,10 @@ AC_CONFIG_FILES([kaffe/scripts/compat/Makefile])
 AC_CONFIG_FILES([libraries/javalib/Makefile])
 AC_CONFIG_FILES([libraries/javalib/awt-implementations/Makefile])
 AC_CONFIG_FILES([libraries/javalib/awt-implementations/kaffe/Makefile])
-AC_CONFIG_FILES([libraries/javalib/gmp-math/Makefile])
 AC_CONFIG_FILES([libraries/javalib/zlib-zip/Makefile])
 AC_CONFIG_FILES([libraries/javalib/vmspecific/Makefile])
 AC_CONFIG_FILES([libraries/clib/Makefile])
 AC_CONFIG_FILES([libraries/clib/zip/Makefile])
-AC_CONFIG_FILES([libraries/clib/math/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/X/Makefile])
 AC_CONFIG_FILES([libraries/clib/awt/qt/Makefile])

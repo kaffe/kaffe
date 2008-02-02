@@ -46,13 +46,12 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/classpath.m4 \
 	$(top_srcdir)/m4/compile_value.m4 \
 	$(top_srcdir)/m4/gcc_attribute.m4 $(top_srcdir)/m4/gettext.m4 \
-	$(top_srcdir)/m4/glibcver.m4 $(top_srcdir)/m4/gmp.m4 \
-	$(top_srcdir)/m4/gwqt.m4 $(top_srcdir)/m4/iconv.m4 \
-	$(top_srcdir)/m4/lcmessage.m4 $(top_srcdir)/m4/lib-ld.m4 \
-	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
-	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/po.m4 \
-	$(top_srcdir)/m4/progtest.m4 $(top_srcdir)/m4/semaphore.m4 \
-	$(top_srcdir)/m4/size_max.m4 \
+	$(top_srcdir)/m4/glibcver.m4 $(top_srcdir)/m4/gwqt.m4 \
+	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/lcmessage.m4 \
+	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
+	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/nls.m4 \
+	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/progtest.m4 \
+	$(top_srcdir)/m4/semaphore.m4 $(top_srcdir)/m4/size_max.m4 \
 	$(top_srcdir)/m4/solarispthread.m4 $(top_srcdir)/m4/valist.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -82,7 +81,7 @@ RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
   distclean-recursive maintainer-clean-recursive
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = vmspecific awt-implementations gmp-math zlib-zip
+DIST_SUBDIRS = vmspecific awt-implementations zlib-zip
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -156,7 +155,6 @@ KVMLIBFLAGS = @KVMLIBFLAGS@
 Khost_cpu = @Khost_cpu@
 Khost_os = @Khost_os@
 LDFLAGS = @LDFLAGS@
-LIBADD_GMP = @LIBADD_GMP@
 LIBICONV = @LIBICONV@
 LIBINTL = @LIBINTL@
 LIBOBJS = @LIBOBJS@
@@ -169,7 +167,6 @@ LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 MAKE_KAFFEH = @MAKE_KAFFEH@
-MATH_LIB = @MATH_LIB@
 MKDIR_P = @MKDIR_P@
 MKINSTALLDIRS = @MKINSTALLDIRS@
 MKTEMP = @MKTEMP@
@@ -209,7 +206,6 @@ TARGET_CLASSPATH_CLASSES = @TARGET_CLASSPATH_CLASSES@
 THREAD_DIR = @THREAD_DIR@
 THREAD_SYSTEM = @THREAD_SYSTEM@
 UIC = @UIC@
-USE_GMP = @USE_GMP@
 USE_NLS = @USE_NLS@
 VERSION = @VERSION@
 VM_LIBS = @VM_LIBS@
@@ -292,15 +288,10 @@ with_engine = @with_engine@
 # Only build the peerless AWT libraries if kaffe is configured to
 # build the native libraries as well.
 @COND_KAFFE_QT_AWT_TRUE@MAYBE_PEERLESS_KAFFE_AWT = awt-implementations
-
-# Only build gmp java.math libraries if kaffe is configured
-# to build the native libraries as well.
-@COND_PURE_JAVA_MATH_FALSE@MAYBE_GMP_JAVA_MATH = gmp-math
 @COND_ZLIB_ZIP_TRUE@MAYBE_ZLIB_ZIP = zlib-zip
 SUBDIRS = \
 	vmspecific \
 	$(MAYBE_PEERLESS_KAFFE_AWT) \
-	$(MAYBE_GMP_JAVA_MATH) \
 	$(MAYBE_ZLIB_ZIP)
 
 jrelib_DATA = \

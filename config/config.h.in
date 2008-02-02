@@ -571,9 +571,6 @@
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
 
-/* Define to 1 if using the GNU multiple precision library. */
-#undef USE_GMP
-
 /* Define if va_list is an array */
 #undef VA_LIST_IS_ARRAY
 

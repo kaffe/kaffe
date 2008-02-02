@@ -972,8 +972,6 @@ HAVE_JASMIN_TRUE
 HAVE_JASMIN_FALSE
 KAFFE_LIBS
 M_LIBS
-LIBADD_GMP
-USE_GMP
 GC_NAME
 HAVE_GCJ_SUPPORT_TRUE
 HAVE_GCJ_SUPPORT_FALSE
@@ -1008,9 +1006,6 @@ ZZIP_CFLAGS
 ZZIP_LIBS
 COND_ZLIB_ZIP_TRUE
 COND_ZLIB_ZIP_FALSE
-COND_PURE_JAVA_MATH_TRUE
-COND_PURE_JAVA_MATH_FALSE
-MATH_LIB
 DLOPEN_JAVA_LIBS
 OPT_DLOPEN_JAVA_LIBS
 KLIBFLAGS
@@ -1673,8 +1668,6 @@ Optional Features:
   --disable-xawt-xi18n    disable build of Xi18n support of Xlib AWT backend
                           (enabled by default)
   --enable-zlib-zip       Enable java.util.zip implementation using zlib
-  --disable-pure-java-math
-                          Disable pure java java.math.* package
   --disable-direct-threading
                           Use switched interpreter instead of direct-threading
 
@@ -1720,7 +1713,6 @@ Optional Packages:
                           installation directory of Java core library headers
                           [default=/usr/local/classpath/include]
   --with-libffi           Use libffi for sysdepCallMethod
-  --without-gmp           don't use GNU multiple precision arithmetic library
   --with-gc=GC            Force use given execution engine (kaffe-gc or
                           boehm-gc)
   --with-stats            Gather statistics on vm execution
@@ -7039,7 +7031,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 7042 "configure"' > conftest.$ac_ext
+  echo '#line 7034 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -9599,11 +9591,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9602: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9594: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9606: \$? = $ac_status" >&5
+   echo "$as_me:9598: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9889,11 +9881,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9892: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9884: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9896: \$? = $ac_status" >&5
+   echo "$as_me:9888: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9993,11 +9985,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9996: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9988: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:10000: \$? = $ac_status" >&5
+   echo "$as_me:9992: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -12355,7 +12347,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12358 "configure"
+#line 12350 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12455,7 +12447,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12458 "configure"
+#line 12450 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -14875,11 +14867,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14878: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14870: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:14882: \$? = $ac_status" >&5
+   echo "$as_me:14874: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -14979,11 +14971,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14982: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14974: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:14986: \$? = $ac_status" >&5
+   echo "$as_me:14978: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -16556,11 +16548,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16559: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16551: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:16563: \$? = $ac_status" >&5
+   echo "$as_me:16555: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -16660,11 +16652,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16663: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16655: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:16667: \$? = $ac_status" >&5
+   echo "$as_me:16659: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -18860,11 +18852,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18863: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18855: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:18867: \$? = $ac_status" >&5
+   echo "$as_me:18859: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -19150,11 +19142,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:19153: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:19145: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:19157: \$? = $ac_status" >&5
+   echo "$as_me:19149: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -19254,11 +19246,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:19257: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:19249: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:19261: \$? = $ac_status" >&5
+   echo "$as_me:19253: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -25809,7 +25801,7 @@ else
 JAVA_TEST=Test.java
 CLASS_TEST=Test.class
 cat << \EOF > $JAVA_TEST
-/* #line 25812 "configure" */
+/* #line 25804 "configure" */
 public class Test {
 }
 EOF
@@ -29591,170 +29583,6 @@ VM_LIBS=`echo "$LIBS" | sed "s% $KSAVE_LIBS$%%"`
 LIBS="$KSAVE_LIBS"
 ;;
 esac
-
-
-for ac_header in gmp.h
-do
-as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
-{ echo "$as_me:$LINENO: checking for $ac_header" >&5
-echo $ECHO_N "checking for $ac_header... $ECHO_C" >&6; }
-if { as_var=$as_ac_Header; eval "test \"\${$as_var+set}\" = set"; }; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-$ac_includes_default
-
-#include <$ac_header>
-_ACEOF
-rm -f conftest.$ac_objext
-if { (ac_try="$ac_compile"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
-  (eval "$ac_compile") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_c_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest.$ac_objext; then
-  eval "$as_ac_Header=yes"
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	eval "$as_ac_Header=no"
-fi
-
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-fi
-ac_res=`eval echo '${'$as_ac_Header'}'`
-	       { echo "$as_me:$LINENO: result: $ac_res" >&5
-echo "${ECHO_T}$ac_res" >&6; }
-if test `eval echo '${'$as_ac_Header'}'` = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define `echo "HAVE_$ac_header" | $as_tr_cpp` 1
-_ACEOF
-
-fi
-
-done
-
-
-
-# Some versions of gmp provide mpq_init as a macro, so we need to
-# include the header file, otherwise the detection will fail.
-m4_gmp_save_LIBS="$LIBS"
-LIBS="$LIBS -lgmp"
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-#if HAVE_GMP_H
-#  include <gmp.h>
-#endif
-int
-main ()
-{
-mpq_t n; mpq_init (n);
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (ac_try="$ac_link"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
-  (eval "$ac_link") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_c_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest$ac_exeext &&
-       $as_test_x conftest$ac_exeext; then
-  LIBADD_GMP=-lgmp
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-
-fi
-
-rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
-      conftest$ac_exeext conftest.$ac_ext
-LIBS=$m4_gmp_save_LIBS
-
-
-{ echo "$as_me:$LINENO: checking if using GNU multiple precision arithmetic library" >&5
-echo $ECHO_N "checking if using GNU multiple precision arithmetic library... $ECHO_C" >&6; }
-if test "${m4_cv_using_lib_gmp+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-
-# Check whether --with-gmp was given.
-if test "${with_gmp+set}" = set; then
-  withval=$with_gmp; use_gmp=$withval
-else
-  use_gmp=yes
-fi
-
-
-case $use_gmp:$LIBADD_GMP:$ac_cv_header_gmp_h in
-  *::yes)
-    { echo "$as_me:$LINENO: WARNING: gmp library not found or does not appear to work
-                 but \`gmp.h' is present" >&5
-echo "$as_me: WARNING: gmp library not found or does not appear to work
-                 but \`gmp.h' is present" >&2;}
-    m4_cv_using_lib_gmp=no
-    ;;
-  *:-lgmp:no)
-    { echo "$as_me:$LINENO: WARNING: gmp works but \`gmp.h' is missing" >&5
-echo "$as_me: WARNING: gmp works but \`gmp.h' is missing" >&2;}
-    m4_cv_using_lib_gmp=no
-    ;;
-  yes:*:yes)
-    m4_cv_using_lib_gmp=yes
-    ;;
-  no:*)
-    m4_cv_using_lib_gmp=no
-    ;;
-esac
-
-fi
-{ echo "$as_me:$LINENO: result: $m4_cv_using_lib_gmp" >&5
-echo "${ECHO_T}$m4_cv_using_lib_gmp" >&6; }
-
-# Don't try to link in libgmp if we are not using it after the last call
-if test "$m4_cv_using_lib_gmp" = yes; then
-
-cat >>confdefs.h <<\_ACEOF
-#define USE_GMP 1
-_ACEOF
-
-fi
-
-USE_GMP=$m4_cv_using_lib_gmp
-
-
 
 
 
@@ -41926,47 +41754,6 @@ fi
 
 
 
-# Check whether --enable-pure_java_math was given.
-if test "${enable_pure_java_math+set}" = set; then
-  enableval=$enable_pure_java_math;
-else
-  enable_pure_java_math=yes
-fi
-
-
- if test x"$enable_pure_java_math" = x"yes"; then
-  COND_PURE_JAVA_MATH_TRUE=
-  COND_PURE_JAVA_MATH_FALSE='#'
-else
-  COND_PURE_JAVA_MATH_TRUE='#'
-  COND_PURE_JAVA_MATH_FALSE=
-fi
-
-
-if test x"$enable_pure_java_math" = x"yes"; then
-  { echo "$as_me:$LINENO: Using GNU Classpath's java.math library" >&5
-echo "$as_me: Using GNU Classpath's java.math library" >&6;}
-else
-  { echo "$as_me:$LINENO: Using Kaffe's java.math library" >&5
-echo "$as_me: Using Kaffe's java.math library" >&6;}
-       MATH_LIB="\$(top_builddir)/libraries/clib/math/libmath.la"
-
-
-       if test x"$ac_cv_lib_gmp_mpz_get_d" = x"no"; then
-  if test x"$ac_cv_lib_gmp___gmpz_get_d" = x"no"; then
-  { { echo "$as_me:$LINENO: error: Could not find GNU MP library.  Install the gmp development package
-elif or pass --enable-pure-java-math to configure." >&5
-echo "$as_me: error: Could not find GNU MP library.  Install the gmp development package; then
-  or pass --enable-pure-java-math to configure." >&2;}
-   { (exit 1); exit 1; }; }
-fi
-
-fi
-
-fi
-
-
-
 { echo "$as_me:$LINENO: checking if malloc debugging is wanted" >&5
 echo $ECHO_N "checking if malloc debugging is wanted... $ECHO_C" >&6; }
 
@@ -42576,8 +42363,6 @@ ac_config_files="$ac_config_files libraries/javalib/awt-implementations/Makefile
 
 ac_config_files="$ac_config_files libraries/javalib/awt-implementations/kaffe/Makefile"
 
-ac_config_files="$ac_config_files libraries/javalib/gmp-math/Makefile"
-
 ac_config_files="$ac_config_files libraries/javalib/zlib-zip/Makefile"
 
 ac_config_files="$ac_config_files libraries/javalib/vmspecific/Makefile"
@@ -42585,8 +42370,6 @@ ac_config_files="$ac_config_files libraries/javalib/vmspecific/Makefile"
 ac_config_files="$ac_config_files libraries/clib/Makefile"
 
 ac_config_files="$ac_config_files libraries/clib/zip/Makefile"
-
-ac_config_files="$ac_config_files libraries/clib/math/Makefile"
 
 ac_config_files="$ac_config_files libraries/clib/awt/Makefile"
 
@@ -42910,13 +42693,6 @@ if test -z "${COND_ZLIB_ZIP_TRUE}" && test -z "${COND_ZLIB_ZIP_FALSE}"; then
   { { echo "$as_me:$LINENO: error: conditional \"COND_ZLIB_ZIP\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
 echo "$as_me: error: conditional \"COND_ZLIB_ZIP\" was never defined.
-Usually this means the macro was only invoked conditionally." >&2;}
-   { (exit 1); exit 1; }; }
-fi
-if test -z "${COND_PURE_JAVA_MATH_TRUE}" && test -z "${COND_PURE_JAVA_MATH_FALSE}"; then
-  { { echo "$as_me:$LINENO: error: conditional \"COND_PURE_JAVA_MATH\" was never defined.
-Usually this means the macro was only invoked conditionally." >&5
-echo "$as_me: error: conditional \"COND_PURE_JAVA_MATH\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
@@ -43459,12 +43235,10 @@ do
     "libraries/javalib/Makefile") CONFIG_FILES="$CONFIG_FILES libraries/javalib/Makefile" ;;
     "libraries/javalib/awt-implementations/Makefile") CONFIG_FILES="$CONFIG_FILES libraries/javalib/awt-implementations/Makefile" ;;
     "libraries/javalib/awt-implementations/kaffe/Makefile") CONFIG_FILES="$CONFIG_FILES libraries/javalib/awt-implementations/kaffe/Makefile" ;;
-    "libraries/javalib/gmp-math/Makefile") CONFIG_FILES="$CONFIG_FILES libraries/javalib/gmp-math/Makefile" ;;
     "libraries/javalib/zlib-zip/Makefile") CONFIG_FILES="$CONFIG_FILES libraries/javalib/zlib-zip/Makefile" ;;
     "libraries/javalib/vmspecific/Makefile") CONFIG_FILES="$CONFIG_FILES libraries/javalib/vmspecific/Makefile" ;;
     "libraries/clib/Makefile") CONFIG_FILES="$CONFIG_FILES libraries/clib/Makefile" ;;
     "libraries/clib/zip/Makefile") CONFIG_FILES="$CONFIG_FILES libraries/clib/zip/Makefile" ;;
-    "libraries/clib/math/Makefile") CONFIG_FILES="$CONFIG_FILES libraries/clib/math/Makefile" ;;
     "libraries/clib/awt/Makefile") CONFIG_FILES="$CONFIG_FILES libraries/clib/awt/Makefile" ;;
     "libraries/clib/awt/X/Makefile") CONFIG_FILES="$CONFIG_FILES libraries/clib/awt/X/Makefile" ;;
     "libraries/clib/awt/qt/Makefile") CONFIG_FILES="$CONFIG_FILES libraries/clib/awt/qt/Makefile" ;;
@@ -43801,8 +43575,8 @@ HAVE_JASMIN_TRUE!$HAVE_JASMIN_TRUE$ac_delim
 HAVE_JASMIN_FALSE!$HAVE_JASMIN_FALSE$ac_delim
 KAFFE_LIBS!$KAFFE_LIBS$ac_delim
 M_LIBS!$M_LIBS$ac_delim
-LIBADD_GMP!$LIBADD_GMP$ac_delim
-USE_GMP!$USE_GMP$ac_delim
+GC_NAME!$GC_NAME$ac_delim
+HAVE_GCJ_SUPPORT_TRUE!$HAVE_GCJ_SUPPORT_TRUE$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -43844,8 +43618,6 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
-GC_NAME!$GC_NAME$ac_delim
-HAVE_GCJ_SUPPORT_TRUE!$HAVE_GCJ_SUPPORT_TRUE$ac_delim
 HAVE_GCJ_SUPPORT_FALSE!$HAVE_GCJ_SUPPORT_FALSE$ac_delim
 LIBOBJS!$LIBOBJS$ac_delim
 COND_NATIVE_AWT_TRUE!$COND_NATIVE_AWT_TRUE$ac_delim
@@ -43878,9 +43650,6 @@ ZZIP_CFLAGS!$ZZIP_CFLAGS$ac_delim
 ZZIP_LIBS!$ZZIP_LIBS$ac_delim
 COND_ZLIB_ZIP_TRUE!$COND_ZLIB_ZIP_TRUE$ac_delim
 COND_ZLIB_ZIP_FALSE!$COND_ZLIB_ZIP_FALSE$ac_delim
-COND_PURE_JAVA_MATH_TRUE!$COND_PURE_JAVA_MATH_TRUE$ac_delim
-COND_PURE_JAVA_MATH_FALSE!$COND_PURE_JAVA_MATH_FALSE$ac_delim
-MATH_LIB!$MATH_LIB$ac_delim
 DLOPEN_JAVA_LIBS!$DLOPEN_JAVA_LIBS$ac_delim
 OPT_DLOPEN_JAVA_LIBS!$OPT_DLOPEN_JAVA_LIBS$ac_delim
 KLIBFLAGS!$KLIBFLAGS$ac_delim
@@ -43908,7 +43677,7 @@ KAFFE_CCASFLAGS!$KAFFE_CCASFLAGS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 62; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 57; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5
