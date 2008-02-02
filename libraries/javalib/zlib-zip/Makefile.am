@@ -22,8 +22,6 @@ uninstall-local:
 zlibdir = $(FAKE)
 
 dist_zlib_JAVA = \
-	java/util/zip/Adler32.java \
-	java/util/zip/CRC32.java \
 	java/util/zip/Deflater.java \
 	java/util/zip/DeflaterOutputStream.java \
 	java/util/zip/Inflater.java \

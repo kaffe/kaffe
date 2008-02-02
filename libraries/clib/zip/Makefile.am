@@ -31,8 +31,6 @@ libzip_la_LIBADD = \
 	$(ZIP_LIBS)
 
 libzip_la_SOURCES = \
-	Adler32.c \
-	CRC32.c \
 	Deflater.c \
 	Inflater.c \
 	ZipFile.c
