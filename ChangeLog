@@ -1,5 +1,15 @@
 2008-02-02  Dalibor Topic  <robilad@kaffe.org>
 
+	Fix for build on arm-oabi-linux-ffi.
+	
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c (__USE_GNU)
+	Define it only if it's not yet defined.
+	
+	* kaffe/kaffevm/systems/unix-pthreads/thread-internal.h (__USE_GNU):
+	Removed.
+	
+2008-02-02  Dalibor Topic  <robilad@kaffe.org>
+
 	* m4/gmp.m4: Removed.
 	
 2008-02-02  Dalibor Topic  <robilad@kaffe.org>

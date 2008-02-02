@@ -48,7 +48,9 @@
 #endif
 
 /* define __USE_GNU for pthread_yield on linux */
+#ifndef __USE_GNU
 #define __USE_GNU
+#endif
 #include <pthread.h>
 
 #if !defined(HAVE_PTHREAD_YIELD) && defined(HAVE_SCHED_YIELD)
