@@ -1,5 +1,12 @@
 2008-02-02  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c:
+	Don't use __USE_GNU, use _GNU_SOURCE instead.
+
+	* TODO: Updated.
+	
+2008-02-02  Dalibor Topic  <robilad@kaffe.org>
+
 	* FAQ/FAQ.bignum: Removed.
 
 	* Makefile.am (EXTRA_DIST): Removed FAQ/FAQ.bignum.

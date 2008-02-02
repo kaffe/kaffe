@@ -47,9 +47,9 @@
 #include <gc/gc.h>
 #endif
 
-/* define __USE_GNU for pthread_yield on linux */
-#ifndef __USE_GNU
-#define __USE_GNU
+/* define _GNU_SOURCE for pthread_yield on linux */
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
 #endif
 #include <pthread.h>
 
