@@ -61,6 +61,8 @@ EXTRA_DIST = \
 	arm/jit3-arm.def \
 	arm/jit3-icode.h \
 	arm/linux/config.frag \
+	arm/linux/linux-eabi.h \
+	arm/linux/linux-gas.h \
 	arm/linux/jit-md.h \
 	arm/linux/jit3-md.h \
 	arm/linux/md.c \

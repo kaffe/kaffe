@@ -10,13 +10,14 @@
  */     
                 
 #include "config.h"
-#include "md.h"
 #if defined(TRANSLATOR)
-#include "arm/jit.h"
-#endif
+#if defined(__ARM_EABI__)
+#include "linux-eabi.h"
+#else
+#include "linux-gas.h"
+#endif /* defined(__ARM_EABI__) */
+#endif /* defined(TRANSLATOR) */
 #include <malloc.h>
-#include <sched.h>
-#include <asm/unistd.h>
 
 void            
 init_md(void)
@@ -27,19 +28,7 @@ init_md(void)
 }
 
 #ifdef TRANSLATOR
-/**
- * Shamelessly stolen from parrot... ([perl]/parrot/jit/arm/jit_emit.h arm_sync_d_i_cache)
- *
- * r2 should be zero for 2.4 (but it's ignored) so passing VM_EXEC (needed
- * for 2.6) should be okay.
- */
 void flush_dcache(void *start, void *end) {
-  __asm __volatile ("mov r0, %0\n"
-		    "mov r1, %1\n"
-		    "mov r2, #0\n"
-		    "swi " __sys1(__ARM_NR_cacheflush) "\n"
-		    : /* no return value */
-		    : "r" ((long)start), "r" ((long)end)
-		    : "r0","r1","r2");
+  CLEAR_INSN_CACHE(start, end);
 }
 #endif

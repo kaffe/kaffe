@@ -1,5 +1,20 @@
 2008-02-02  Dalibor Topic  <robilad@kaffe.org>
 
+	Fixed build with arm-linux-oabi-jit and arm-linux-eabi-jit.
+	Reported by:  Robert Schuster  <robertschuster@fsfe.org>
+
+	* config/Makefile.am (EXTRA_DIST): Added arm/linux/linux-eabi.h
+	and arm/linux/linux-gas.h.
+
+	* config/arm/linux/linux-eabi.h,
+	onfig/arm/linux/linux-gas.h: New files, imported from GCC.
+	
+	* config/arm/linux/md.c: Include linux-eabi.h when using EABI
+	and linux-gas otherwise for cache flushing code.
+	(flish_dcache) Use CLEAR_INSN_CACHE.
+	
+2008-02-02  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/systems/unix-pthreads/thread-impl.c:
 	Don't use __USE_GNU, use _GNU_SOURCE instead.
 
