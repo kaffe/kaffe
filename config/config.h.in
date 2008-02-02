@@ -206,9 +206,6 @@
 /* Define to 1 if you have the `Xext' library (-lXext). */
 #undef HAVE_LIBXEXT
 
-/* Define to 1 if you have the `z' library (-lz). */
-#undef HAVE_LIBZ
-
 /* Define to 1 if you have the <limits.h> header file. */
 #undef HAVE_LIMITS_H
 
@@ -465,9 +462,6 @@
 
 /* Enable XScale support */
 #undef HAVE_XSCALE
-
-/* Define to 1 if you have the <zlib.h> header file. */
-#undef HAVE_ZLIB_H
 
 /* Define if __va_copy is available */
 #undef HAVE__VA_COPY

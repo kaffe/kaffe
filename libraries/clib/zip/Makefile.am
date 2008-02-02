@@ -17,7 +17,8 @@ native_LTLIBRARIES = libzip.la
 
 libzip_la_CFLAGS = \
 	$(AM_CFLAGS) \
-	$(CFLAGS_PG)
+	$(CFLAGS_PG) \
+	$(ZZIP_CFLAGS)
 
 libzip_la_LDFLAGS = \
 	$(KLIBFLAGS) \
@@ -28,7 +29,7 @@ libzip_la_LDFLAGS = \
 
 libzip_la_LIBADD = \
 	$(top_builddir)/kaffe/kaffevm/libkaffe.la \
-	$(ZIP_LIBS)
+	$(ZZIP_LIBS)
 
 libzip_la_SOURCES = \
 	ZipFile.c

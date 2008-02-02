@@ -896,11 +896,6 @@ freebsd2|oskit)
 	AC_CHECK_LIBRARY(gcc,__moddi3,VM_LIBS);;
 esac
 
-dnl Check for libraries for zip library.
-AC_CHECK_LIBRARY(z,deflate,ZIP_LIBS)
-ZIP_LIBS="$CTLIBS $ZIP_LIBS"
-AC_SUBST(ZIP_LIBS)
-
 m4_LIB_GMP
 
 dnl -------------------------------------------------------------------------
@@ -952,8 +947,7 @@ sys/types.h \
 sys/utsname.h \
 sys/ucontext.h \
 unistd.h \
-wintypes.h \
-zlib.h])
+wintypes.h])
 
 # check sys/sysctl.h seperately, as it requires other headers on at least OpenBSD
 AC_CHECK_HEADERS([sys/sysctl.h], [], [],
@@ -1373,7 +1367,7 @@ if test x"$enable_native_awt" = x"yes"; then
 	dnl Instead of adding it to both JPEG_LIBS and PNG_LIBS, use X_LIBS
 	AC_CHECK_LIBRARY(Csup,__T_9__nothrow,X_LIBS)
 	OLIBS=$LIBS
-	LIBS="$ZIP_LIBS $M_LIBS $X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $OLIBS"
+	LIBS="$M_LIBS $X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $OLIBS"
 	AC_CHECK_LIBRARY(Xext,XShmQueryExtension,X_PRE_LIBS)
 	OCPPFLAGS=$CPPFLAGS
 	CPPFLAGS="$CPPFLAGS $X_CFLAGS"
@@ -1383,7 +1377,7 @@ if test x"$enable_native_awt" = x"yes"; then
 	[[#include <X11/Xlib.h>
 	]])
 	CPPFLAGS=$OCPPFLAGS	
-	LIBS="$ZIP_LIBS $M_LIBS $X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $OLIBS"
+	LIBS="$M_LIBS $X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS $OLIBS"
 	AC_CHECK_LIBRARY(jpeg,jpeg_read_header,JPEG_LIBS)
 	AC_CHECK_LIBRARY(png,png_create_info_struct,PNG_LIBS)
 	AC_CACHE_CHECK([for a usable version of gif_lib.h],
@@ -1405,8 +1399,8 @@ if test x"$enable_native_awt" = x"yes"; then
 	LIBS=$OLIBS
 	dnl If libpng is included, we also need libz - if we don't have it then
 	dnl we can't include png support.
-	if test -n "$PNG_LIBS" && test -n "$ZIP_LIBS"; then
-		PNG_LIBS="$PNG_LIBS $ZIP_LIBS $M_LIBS"
+	if test -n "$PNG_LIBS"; then
+		PNG_LIBS="$PNG_LIBS $M_LIBS"
 	else
 		PNG_LIBS=""
 	fi
@@ -1576,7 +1570,7 @@ if test x"$enable_native_awt" = x"yes"; then
    fi
 fi
 
-# Make sure that we get a zlib instance with zzip_fstat.
+# Make sure that we get a zziplib instance with zzip_fstat.
 PKG_CHECK_MODULES([ZZIP],[zziplib >= 0.13.24])
 
 AC_ARG_ENABLE([zlib_zip],
@@ -1668,26 +1662,6 @@ AC_ARG_ENABLE([direct-threading],
 
 AM_CONDITIONAL([COND_DIRECT_THREADING], [test x"$enable_direct_threading" = x"yes"])
 
-
-dnl ------------------------------------------------------------
-dnl Ensure system installation of zlib can be used for the build
-dnl ------------------------------------------------------------
-if test x"$ac_cv_header_zlib_h" != x"yes" ; then
-  AC_MSG_ERROR([Can't find or can't use system zlib.h])
-fi
-if test x"$ac_cv_lib_z_deflate" != x"yes" ; then
-  AC_MSG_ERROR([Can't find system zlib or can't find function deflate in it])
-fi
-AC_EGREP_CPP(yes,
-[#include <zlib.h>
-
-#if ZLIB_VERNUM >= 0x1230
-  yes
-#endif
-], is_recent_zlib=yes, is_recent_zlib=no)
-if test x"$is_recent_zlib" != x"yes" ; then
-  AC_MSG_ERROR([Can't find zlib 1.2.3 or later])
-fi
 
 dnl =========================================================================
 dnl Set up for local build of kaffeh when cross-compiling
