@@ -73,6 +73,5 @@
   * Switch to autotest for the test suites
 
 * Pending patches 
-  arm flush_dcache from Robert Schuster
   amd64 jit from Eric Anholt (guilhem)
 
