@@ -23,7 +23,6 @@ zlibdir = $(FAKE)
 
 dist_zlib_JAVA = \
 	java/util/zip/Deflater.java \
-	java/util/zip/DeflaterOutputStream.java \
 	java/util/zip/Inflater.java \
 	java/util/zip/ZipFile.java \
 	org/kaffe/util/Assert.java \
