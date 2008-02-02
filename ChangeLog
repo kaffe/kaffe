@@ -1,5 +1,13 @@
 2008-02-02  Dalibor Topic  <robilad@kaffe.org>
 
+	* WHATSNEW: Documented JAR reading dependency change.
+
+	* TODO: Updated.
+
+	* FAQ/FAQ.requiredlibraries: Removed section on zlib.
+
+2008-02-02  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac: Removed checks for zlib.h, libz, and ZIP_LIBS.
 
 	* libraries/clib/zip/Makefile.am (libzip_la_CFLAGS): Added

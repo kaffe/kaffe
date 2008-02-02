@@ -36,7 +36,6 @@
  * Switch to libjclassinfo for class file parsing
   * Switch to libzzlib for zip file reading first to be able to kill the syscall
     interface in the threading code.
-    * continue with native zip libs.
     * findInJar is a bit trickier, as it also deals with directories, regular classes
       etc. Maybe it can be largely rewritten in Java in the VMClassLoader? 
       Alternatively, use zziplib's transparent file access to access class files,

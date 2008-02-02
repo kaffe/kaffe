@@ -38,13 +38,6 @@ You'll need GNU Classpath 0.96.1 or later. It is available from
 http://www.classpath.org . GNU Classpath is used as the core class
 library for Kaffe.
 
-ZIP library
------------
-
-You'll need the zlib library for Kaffe to be able to use class libraries
-stored in JAR archives. It is available at:
-http://www.zlib.net
-
 JAR tool
 --------
 
