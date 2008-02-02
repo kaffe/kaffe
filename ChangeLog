@@ -1,5 +1,25 @@
 2008-02-02  Dalibor Topic  <robilad@kaffe.org>
 
+
+	* libraries/javalib/zlib-zip/org/kaffe/util/Assert.java,
+	libraries/javalib/zlib-zip/org/kaffe/util/UTF8.java,
+	libraries/javalib/zlib-zip/org/kaffe/util/zip/SwitchInflater.java,
+	libraries/clib/zip/Inflater.c,
+	libraries/clib/zip/Deflater.c,
+	libraries/javalib/zlib-zip/java/util/zip/Inflater.java,
+	libraries/javalib/zlib-zip/java/util/zip/Deflater.java:
+	Removed.
+	
+	* libraries/clib/zip/Makefile.am (libzip_la_SOURCES): 
+	Removed Inflater.c and Deflater.c.
+
+	* libraries/javalib/zlib-zip/Makefile.am (dist_zlib_JAVA): 
+	Removed org/kaffe/util/Assert.java, org/kaffe/util/UTF8.java,
+	org/kaffe/util/zip/SwitchInflater.java, java/util/zip/Inflater.java,
+	java/util/zip/Deflater.java.
+
+2008-02-02  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/zlib-zip/java/util/zip/DeflaterOutputStream.java:
 	Removed.
 	

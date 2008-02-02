@@ -22,9 +22,5 @@ uninstall-local:
 zlibdir = $(FAKE)
 
 dist_zlib_JAVA = \
-	java/util/zip/Deflater.java \
-	java/util/zip/Inflater.java \
-	java/util/zip/ZipFile.java \
-	org/kaffe/util/Assert.java \
-	org/kaffe/util/UTF8.java \
-	org/kaffe/util/zip/SwitchInflater.java 
+	java/util/zip/ZipFile.java
+

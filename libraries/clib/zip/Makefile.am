@@ -31,8 +31,6 @@ libzip_la_LIBADD = \
 	$(ZIP_LIBS)
 
 libzip_la_SOURCES = \
-	Deflater.c \
-	Inflater.c \
 	ZipFile.c
 
 CLEANFILES = so_locations
