@@ -1344,14 +1344,6 @@ define_insn(cvt_int_double, cvtid_RxR)
 	debug(("cvt_int_double %d, %d\n", w, r));
 }
 
-define_insn(cvt_float_int, cvtfi_RxR)
-{
-	int r = rreg_float(2);
-	int w = wreg_int(0);
-	op_cvt_f2i(w,r);
-	debug(("cvt_float_int r%d, f%d\n", w, r));
-}
-
 define_insn(cvt_int_double, cvtdi_RxR)
 {
 	int r = rreg_double(2);
