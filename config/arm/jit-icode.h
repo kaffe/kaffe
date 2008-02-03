@@ -156,7 +156,7 @@
 #define	HAVE_cvt_int_float		cvtif_RxR
 #define	HAVE_cvt_int_double		cvtid_RxR
 
-#define	HAVE_cvt_float_int		cvtfi_RxR
+#undef HAVE_cvt_float_int
 #undef HAVE_cvt_float_int_ieee
 #define	HAVE_cvt_double_int		cvtdi_RxR
 #undef HAVE_cvt_double_int_ieee
