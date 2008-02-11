@@ -627,6 +627,15 @@ soft_checkarraystore(Hjava_lang_Object* array, Hjava_lang_Object* obj)
 }
 
 
+/**
+ * dcmp helper function.
+ *
+ * @param v1 left side value
+ * @param v2 right side value
+ * @param nan return value in case v1 or v2 is NaN
+ *
+ * @return 1 if v1 > v2, 0 if v1 == v2, -1 if v1 < v2, otherwise nan.
+ */
 static
 jint
 soft_dcmp(const jdouble v1, const jdouble v2, const jint nan)

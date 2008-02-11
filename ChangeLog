@@ -1,5 +1,9 @@
 2008-02-11  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/soft.c (soft_dcmp): Documented.
+
+2008-02-11  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/soft.c (soft_dcmp): New function.
 	Implements dcmpl/dcmpg according to VM spec.
 	(soft_dcmpl, soft_dcmpg) Call soft_dcmp.
