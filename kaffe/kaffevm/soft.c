@@ -626,27 +626,28 @@ soft_checkarraystore(Hjava_lang_Object* array, Hjava_lang_Object* obj)
 	}
 }
 
+
+static
+jint
+soft_dcmp(const jdouble v1, const jdouble v2, const jint nan)
+{
+  if (v1 > v2)
+    return 1;
+  else if (v1 == v2)
+    return 0;
+  else if (v1 < v2)
+    return -1;
+  else 
+    return nan;
+}
+  
 /*
  * soft_dcmpg
  */
 jint
 soft_dcmpg(jdouble v1, jdouble v2)
 {
-	jint ret;
-	if ((!isinf(v1) && isnan(v1)) || (!isinf(v2) && isnan(v2))) {
-		ret = 1;
-	}
-	else if (v1 > v2) {
-		ret = 1;
-	}
-	else if (v1 == v2) {
-		ret = 0;
-	}
-	else {
-		ret = -1;
-	}
-
-	return (ret);
+  return soft_dcmp(v1, v2, 1);
 }
 
 /*
@@ -655,20 +656,7 @@ soft_dcmpg(jdouble v1, jdouble v2)
 jint
 soft_dcmpl(jdouble v1, jdouble v2)
 {
-        jint ret;
-	if ((!isinf(v1) && isnan(v1)) || (!isinf(v2) && isnan(v2))) {
-		ret = -1;
-	}
-        else if (v1 > v2) {
-                ret = 1;
-        }
-        else if (v1 == v2) {
-                ret = 0;
-        }
-        else {
-                ret = -1;
-        }
-	return (ret);
+  return soft_dcmp(v1, v2, -1);
 }
 
 /*
