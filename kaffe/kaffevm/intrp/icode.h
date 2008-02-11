@@ -272,9 +272,9 @@ static const uintptr_t UNINITIALIZED_STACK_SLOT = 0x00c0ffee;
 #define	neg_float(t, f)				(t)[0].v.tfloat = -(f)[0].v.tfloat
 #define	neg_double(t, f)			(t)[0].v.tdouble = -(f)[0].v.tdouble
 
-#define	cmpg_float(t, f1, f2)			(t)[0].v.tint = soft_fcmpg((f1)[0].v.tfloat, (f2)[0].v.tfloat)
+#define	cmpg_float(t, f1, f2)			(t)[0].v.tint = soft_dcmpg((f1)[0].v.tfloat, (f2)[0].v.tfloat)
 #define	cmpg_double(t, f1, f2)			(t)[0].v.tint = soft_dcmpg((f1)[0].v.tdouble, (f2)[0].v.tdouble)
-#define	cmpl_float(t, f1, f2)			(t)[0].v.tint = soft_fcmpl((f1)[0].v.tfloat, (f2)[0].v.tfloat)
+#define	cmpl_float(t, f1, f2)			(t)[0].v.tint = soft_dcmpl((f1)[0].v.tfloat, (f2)[0].v.tfloat)
 #define	cmpl_double(t, f1, f2)			(t)[0].v.tint = soft_dcmpl((f1)[0].v.tdouble, (f2)[0].v.tdouble)
 
 #define	cvt_int_float(t, f)			(t)[0].v.tfloat = (f)[0].v.tint

@@ -1,3 +1,10 @@
+2008-02-12  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/intrp/icode.h (cmpg_float, cmpl_float): 
+	Use soft_dcmpg and soft_dcmpl internally, as they 
+	produce the same results, since the float parameters 
+	are automatically widened to equivalent doubles.
+
 2008-02-11  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/soft.c (soft_dcmp): Documented.
