@@ -674,26 +674,7 @@ soft_dcmpl(jdouble v1, jdouble v2)
 jint
 soft_fcmpg(jfloat v1, jfloat v2)
 {
-        jint ret;
-	jint v1bits;
-	jint v2bits;
-
-	v1bits = floatToInt(v1);
-	v2bits = floatToInt(v2);
-
-        if (FISNAN(v1bits) || FISNAN(v2bits)) {
-		ret = 1;
-	}
-        else if (v1 > v2) {
-                ret = 1;
-        }
-        else if (v1 == v2) {
-                ret = 0;
-        }
-        else {
-                ret = -1;
-        }
-	return (ret);
+  return soft_dcmpg(v1, v2);
 }
 
 /*
@@ -702,26 +683,7 @@ soft_fcmpg(jfloat v1, jfloat v2)
 jint
 soft_fcmpl(jfloat v1, jfloat v2)
 {
-        jint ret;
-	jint v1bits;
-	jint v2bits;
-
-	v1bits = floatToInt(v1);
-	v2bits = floatToInt(v2);
-
-        if (FISNAN(v1bits) || FISNAN(v2bits)) {
-		ret = -1;
-	}
-        else if (v1 > v2) {
-                ret = 1;
-        }
-        else if (v1 == v2) {
-                ret = 0;
-        }
-        else {
-                ret = -1;
-        }
-	return (ret);
+  return soft_dcmpl(v1, v2);
 }
 
 #if defined(TRANSLATOR)
