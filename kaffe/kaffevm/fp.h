@@ -22,7 +22,6 @@
 #define DMANMASK	((((uint64)0x000fffff)<<32)|((uint64)0xffffffff))
 #define DSIGNBIT	(((uint64)0x80000000)<<32)
 #define DINFBITS	(((uint64)0x7ff00000)<<32)
-#define DNANBITS	(((uint64)0x7ff80000)<<32)
 
 #define FEXPMASK	0x7f800000
 #define FMANMASK	0x007fffff
@@ -40,7 +39,6 @@ extern jfloat	floatDivide(jfloat v1, jfloat v2);
 extern jdouble	doubleDivide(jdouble v1, jdouble v2);
 
 extern jlong	doubleToLong(jdouble val);
-extern jdouble	longToDouble(jlong val);
 extern jint	floatToInt(jfloat val);
 extern float	intToFloat(jint val);
 

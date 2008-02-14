@@ -1,5 +1,12 @@
 2008-02-15  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/fp.h (DNANBITS, longToDouble): Removed.
+
+	* kaffe/kaffevm/fp.c (longToDouble): Simplified collapsing of NaNs.
+	Made function static.
+
+2008-02-15  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/fp.c (doubleAdd, doubleSubtract, doubleMultiply)
 	(doubleDivide): Use KAFFE_JDOUBLE_NAN.
 

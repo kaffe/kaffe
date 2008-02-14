@@ -48,14 +48,11 @@ doubleToLong(jdouble val)
 /*
  * Convert jlong to double.
  */
+static
 jdouble
 longToDouble(jlong val)
 {
 	jvalue d;
-
-	/* Force all possible NaN values into the canonical NaN value */
-	if ((val & DEXPMASK) == DEXPMASK && (val & DMANMASK) != 0)
-		val = DNANBITS;
 
 	/* Convert value */
 	d.j = val;
@@ -68,7 +65,12 @@ longToDouble(jlong val)
 		*s = r;
 	}
 #endif
-	return d.d;
+
+	/* Collapse NaNs */
+	if (isnan(d.d))
+	  return KAFFE_JDOUBLE_NAN;
+	else
+	  return d.d;
 }
 
 /*
