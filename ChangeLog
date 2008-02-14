@@ -1,3 +1,11 @@
+2008-02-14  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/fp.h (FISNAN): Removed.
+
+	* kaffe/kaffevm/soft.c (soft_cvtfl, soft_cvtfd, soft_cvtfi), 
+	kaffe/kaffevm/fp.c (floatDivide, floatMultiply, floatSubtract)
+	(floatAdd): Use isnan instead of FISNAN.
+	
 2008-02-12  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/soft.c (soft_fcmpg): Delegate to soft_dcmpg.

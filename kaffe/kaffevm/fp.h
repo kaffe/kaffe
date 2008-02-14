@@ -31,7 +31,6 @@
 #define FNANBITS	0x7fc00000
 
 #define DISNAN(b)	(((b) & DEXPMASK) == DEXPMASK && ((b) & DMANMASK) != 0)
-#define FISNAN(b)	(((b) & FEXPMASK) == FEXPMASK && ((b) & FMANMASK) != 0)
 
 extern jfloat	floatAdd(jfloat v1, jfloat v2);
 extern jdouble	doubleAdd(jdouble v1, jdouble v2);

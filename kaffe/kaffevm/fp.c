@@ -122,12 +122,7 @@ doubleAdd(jdouble v1, jdouble v2)
 jfloat
 floatAdd(jfloat v1, jfloat v2)
 {
-	jint v1bits, v2bits;
-
-	v1bits = floatToInt(v1);
-	v2bits = floatToInt(v2);
-
-	if (FISNAN(v1bits) || FISNAN(v2bits)) {
+	if (isnan(v1) || isnan(v2)) {
 		return intToFloat(FNANBITS);
 	}
 	return (v1 + v2);
@@ -156,12 +151,7 @@ doubleSubtract(jdouble v1, jdouble v2)
 jfloat
 floatSubtract(jfloat v1, jfloat v2)
 {
-	jint v1bits, v2bits;
-
-	v1bits = floatToInt(v1);
-	v2bits = floatToInt(v2);
-
-	if (FISNAN(v1bits) || FISNAN(v2bits)) {
+	if (isnan(v1) || isnan(v2)) {
 		return intToFloat(FNANBITS);
 	}
 	return (v1 - v2);
@@ -190,12 +180,7 @@ doubleMultiply(jdouble v1, jdouble v2)
 jfloat
 floatMultiply(jfloat v1, jfloat v2)
 {
-	jint v1bits, v2bits;
-
-	v1bits = floatToInt(v1);
-	v2bits = floatToInt(v2);
-
-	if (FISNAN(v1bits) || FISNAN(v2bits)) {
+	if (isnan(v1) || isnan(v2)) {
 		return intToFloat(FNANBITS);
 	}
 	return (v1 * v2);
@@ -235,7 +220,7 @@ floatDivide(jfloat v1, jfloat v2)
 	v1bits = floatToInt(v1);
 	v2bits = floatToInt(v2);
 
-	if (FISNAN(v1bits) || FISNAN(v2bits)) {
+	if (isnan(v1) || isnan(v2)) {
 		return intToFloat(FNANBITS);
 	}
 	if (v2 != 0.0) {

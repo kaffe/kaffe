@@ -848,10 +848,7 @@ soft_cvtld(jlong v)
 jdouble
 soft_cvtfd(jfloat v)
 {
-	jint vbits;
-
-	vbits = floatToInt(v);
-        if (FISNAN(vbits)) {
+        if (isnan(v)) {
 		return (longToDouble(DNANBITS));
 	}
 	else {
@@ -881,10 +878,7 @@ soft_cvtdf(jdouble v)
 jlong
 soft_cvtfl(jfloat v)
 {
-	jint vbits;
-
-	vbits = floatToInt(v);
-        if (FISNAN(vbits)) {
+	if(isnan(v)) {
 		return ((jlong)0);
 	}
 
@@ -939,10 +933,7 @@ soft_cvtdl(jdouble v)
 jint
 soft_cvtfi(jfloat v)
 {
-    jint vbits;
-
-	vbits = floatToInt(v);
-        if (FISNAN(vbits)) {
+        if (isnan(v)) {
 		return (0);
 	}
 
