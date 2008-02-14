@@ -105,12 +105,7 @@ intToFloat(jint val)
 jdouble
 doubleAdd(jdouble v1, jdouble v2)
 {
-	jlong v1bits, v2bits;
-
-	v1bits = doubleToLong(v1);
-	v2bits = doubleToLong(v2);
-
-	if (DISNAN(v1bits) || DISNAN(v2bits)) {
+	if (isnan(v1) || isnan(v2)) {
 		return longToDouble(DNANBITS);
 	}
 	return (v1 + v2);
@@ -134,12 +129,7 @@ floatAdd(jfloat v1, jfloat v2)
 jdouble
 doubleSubtract(jdouble v1, jdouble v2)
 {
-	jlong v1bits, v2bits;
-
-	v1bits = doubleToLong(v1);
-	v2bits = doubleToLong(v2);
-
-	if (DISNAN(v1bits) || DISNAN(v2bits)) {
+	if (isnan(v1) || isnan(v2)) {
 		return longToDouble(DNANBITS);
 	}
 	return (v1 - v2);
@@ -163,12 +153,7 @@ floatSubtract(jfloat v1, jfloat v2)
 jdouble
 doubleMultiply(jdouble v1, jdouble v2)
 {
-	jlong v1bits, v2bits;
-
-	v1bits = doubleToLong(v1);
-	v2bits = doubleToLong(v2);
-
-	if (DISNAN(v1bits) || DISNAN(v2bits)) {
+	if (isnan(v1) || isnan(v2)) {
 		return longToDouble(DNANBITS);
 	}
 	return (v1 * v2);
@@ -197,7 +182,7 @@ doubleDivide(jdouble v1, jdouble v2)
 	v1bits = doubleToLong(v1);
 	v2bits = doubleToLong(v2);
 
-	if (DISNAN(v1bits) || DISNAN(v2bits)) {
+	if (isnan(v1) || isnan(v2)) {
 		return longToDouble(DNANBITS);
 	}
 	if (v2 != 0.0) {

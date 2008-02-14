@@ -1,5 +1,13 @@
 2008-02-14  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/fp.h (DISNAN): Removed.
+
+	* kaffe/kaffevm/soft.c (soft_cvtdf, soft_cvtdl, soft_cvtdi),
+	kaffe/kaffevm/fp.c (doubleAdd, doubleSubtract, doubleMultiply)
+	(doubleDivide): 
+
+2008-02-14  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/fp.h (FISNAN): Removed.
 
 	* kaffe/kaffevm/soft.c (soft_cvtfl, soft_cvtfd, soft_cvtfi), 
