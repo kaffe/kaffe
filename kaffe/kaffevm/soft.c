@@ -845,15 +845,20 @@ soft_cvtld(jlong v)
 	return ((jdouble)v);
 }
 
+/**
+ * convert a float to a double
+ *
+ * @param v a float
+ * 
+ * @return the double corresponding to the float, or Double.NaN if the float is a NaN.
+ */
 jdouble
 soft_cvtfd(jfloat v)
 {
-        if (isnan(v)) {
-		return (longToDouble(DNANBITS));
-	}
-	else {
-		return ((jdouble)v);
-	}
+        if (isnan(v))
+		return KAFFE_JDOUBLE_NAN;
+	else
+		return (jdouble)v;
 }
 
 jfloat

@@ -44,6 +44,7 @@
 #include "fileSections.h"
 #include "verify-type.h"
 #include "jar.h"
+#include "jni_funcs.h"
 
 Utf8Const* init_name;
 Utf8Const* final_name;
@@ -89,6 +90,8 @@ Hjava_lang_Class* javaLangIntegerClass;
 Hjava_lang_Class* javaLangLongClass;
 Hjava_lang_Class* javaLangFloatClass;
 Hjava_lang_Class* javaLangDoubleClass;
+
+jdouble KAFFE_JDOUBLE_NAN;
 
 Hjava_lang_Class *javaNioBufferClass;
 Hjava_lang_Class *javaNioDirectByteBufferImplClass;
@@ -421,5 +424,9 @@ initBaseClasses(void)
 	    DBG(INIT, dprintf("Cannot resolve fields necessary for NIO operations\n"); );
 	    KAFFEVM_EXIT(-1);
 	  }
+
+	KAFFE_JDOUBLE_NAN = KaffeJNI_GetStaticDoubleField(NULL, javaLangDoubleClass, 
+							  KNI_lookupFieldC(javaLangDoubleClass,
+									   "NaN", true, &einfo));
 }
 

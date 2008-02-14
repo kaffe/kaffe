@@ -50,6 +50,7 @@ extern struct Hjava_lang_Class*	javaLangIntegerClass;
 extern struct Hjava_lang_Class*	javaLangLongClass;
 extern struct Hjava_lang_Class*	javaLangFloatClass;
 extern struct Hjava_lang_Class*	javaLangDoubleClass;
+extern jdouble KAFFE_JDOUBLE_NAN;
 
 extern struct Hjava_lang_Class *javaNioDirectByteBufferImplClass;
 extern struct Hjava_lang_Class *javaNioDirectByteBufferImplReadWriteClass;

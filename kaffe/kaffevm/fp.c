@@ -15,6 +15,7 @@
 #include "config-mem.h"
 #include "config-hacks.h"
 #include <math.h>
+#include "baseClasses.h"
 #include "gtypes.h"
 #include "defs.h"
 #include "files.h"
@@ -106,7 +107,7 @@ jdouble
 doubleAdd(jdouble v1, jdouble v2)
 {
 	if (isnan(v1) || isnan(v2)) {
-		return longToDouble(DNANBITS);
+		return KAFFE_JDOUBLE_NAN;
 	}
 	return (v1 + v2);
 }
@@ -130,7 +131,7 @@ jdouble
 doubleSubtract(jdouble v1, jdouble v2)
 {
 	if (isnan(v1) || isnan(v2)) {
-		return longToDouble(DNANBITS);
+	  return KAFFE_JDOUBLE_NAN;
 	}
 	return (v1 - v2);
 }
@@ -154,7 +155,7 @@ jdouble
 doubleMultiply(jdouble v1, jdouble v2)
 {
 	if (isnan(v1) || isnan(v2)) {
-		return longToDouble(DNANBITS);
+	  return KAFFE_JDOUBLE_NAN;
 	}
 	return (v1 * v2);
 }
@@ -183,13 +184,13 @@ doubleDivide(jdouble v1, jdouble v2)
 	v2bits = doubleToLong(v2);
 
 	if (isnan(v1) || isnan(v2)) {
-		return longToDouble(DNANBITS);
+		return KAFFE_JDOUBLE_NAN;
 	}
 	if (v2 != 0.0) {
 		return (v1 / v2);
 	}
 	if (v1 == 0.0) {
-		return longToDouble(DNANBITS);
+	        return KAFFE_JDOUBLE_NAN;
 	}
 	return longToDouble((jlong)(DINFBITS | ((v1bits ^ v2bits) & DSIGNBIT)));
 }

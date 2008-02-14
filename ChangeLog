@@ -1,3 +1,15 @@
+2008-02-15  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/fp.c (doubleAdd, doubleSubtract, doubleMultiply)
+	(doubleDivide): Use KAFFE_JDOUBLE_NAN.
+
+	* kaffe/kaffevm/soft.c (soft_cvtfd): Use KAFFE_JDOUBLE_NAN. Documented.
+
+	* kaffe/kaffevm/baseClasses.c (initBaseClasses): Initialize KAFFE_JDOUBLE_NAN.
+
+	* kaffe/kaffevm/baseClasses.h (KAFFE_JDOUBLE_NAN): New field caching
+	java.lang.Double.NaN.
+
 2008-02-14  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/fp.h (DISNAN): Removed.
