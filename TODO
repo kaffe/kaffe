@@ -13,6 +13,7 @@
    * libjit could use a vmgenned interpreter, too.
 
 * Cleanup
+ * Remove KAFFE_CFLAGS
  * In config/config-hacks.h: Remove DOUBLE_ORDER_OPPOSITE.
     In kaffe/kaffevm/constants.c: Instead of it, check if 
     NEGATIVE_INFINITY (0xfff0000000000000L) as jdouble is
