@@ -92,6 +92,8 @@ Hjava_lang_Class* javaLangFloatClass;
 Hjava_lang_Class* javaLangDoubleClass;
 
 jfloat KAFFE_JFLOAT_NAN;
+jdouble KAFFE_JDOUBLE_POS_INF;
+jdouble KAFFE_JDOUBLE_NEG_INF;
 jdouble KAFFE_JDOUBLE_NAN;
 
 Hjava_lang_Class *javaNioBufferClass;
@@ -426,11 +428,21 @@ initBaseClasses(void)
 	    KAFFEVM_EXIT(-1);
 	  }
 
-	KAFFE_JFLOAT_NAN = KaffeJNI_GetStaticFloatField(NULL, javaLangFloatClass, 
-							  KNI_lookupFieldC(javaLangFloatClass,
-									   "NaN", true, &einfo));
-	KAFFE_JDOUBLE_NAN = KaffeJNI_GetStaticDoubleField(NULL, javaLangDoubleClass, 
-							  KNI_lookupFieldC(javaLangDoubleClass,
-									   "NaN", true, &einfo));
+	KAFFE_JFLOAT_NAN = 
+	  KaffeJNI_GetStaticFloatField(NULL, javaLangFloatClass, 
+				       KNI_lookupFieldC(javaLangFloatClass,
+							"NaN", true, &einfo));
+	KAFFE_JDOUBLE_POS_INF = 
+	  KaffeJNI_GetStaticDoubleField(NULL, javaLangDoubleClass, 
+					KNI_lookupFieldC(javaLangDoubleClass,
+							 "POSITIVE_INFINITY", true, &einfo));
+	KAFFE_JDOUBLE_NEG_INF = 
+	  KaffeJNI_GetStaticDoubleField(NULL, javaLangDoubleClass, 
+					KNI_lookupFieldC(javaLangDoubleClass,
+							 "NEGATIVE_INFINITY", true, &einfo));
+	KAFFE_JDOUBLE_NAN = 
+	  KaffeJNI_GetStaticDoubleField(NULL, javaLangDoubleClass, 
+					KNI_lookupFieldC(javaLangDoubleClass,
+							 "NaN", true, &einfo));
 }
 

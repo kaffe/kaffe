@@ -80,6 +80,7 @@ LIBS="$CTLIBS $LIBS"
 
 dnl Find the compiler early on in case we need to override.
 AC_PROG_CC
+AC_PROG_CC_C99
 
 dnl If gcc is the compiler, compile with -Wall for lots of warnings
 

@@ -1,5 +1,17 @@
 2008-02-15  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/fp.c (doubleDivide): Return KAFFE_JDOUBLE_POS_INF or
+	KAFFE_JDOUBLE_NEG_INF depending on the signbit of input.
+	(doubleToLong, longToDouble): Removed unused functions.
+	
+	* kaffe/kaffevm/baseClasses.c (initBaseClasses): Initialize KAFFE_JDOUBLE_NEG_INF
+	and KAFFE_JDOUBLE_POS_INF.
+
+	* kaffe/kaffevm/baseClasses.h (KAFFE_JDOUBLE_POS_INF, KAFFE_JDOUBLE_NEG_INF): 
+	New fields used to cache Double.POSITIVE_INFINITY and Double.NEGATIVE_INFINITY.
+
+2008-02-15  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/fp.c (floatToInt, doubleToLong): Made static.
 
 	* kaffe/kaffevm/fp.h (doubleToLong, floatToInt): Removed.

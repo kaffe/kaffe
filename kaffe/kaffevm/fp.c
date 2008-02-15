@@ -22,56 +22,6 @@
 #include "fp.h"
 
 /*
- * Convert double to jlong.
- */
-static
-jlong
-doubleToLong(jdouble val)
-{
-	jvalue d;
-	d.d = val;
-
-#if defined(DOUBLE_ORDER_OPPOSITE)
-	{
-		/* swap low and high word */
-		uint32 r = *(uint32*)&d.j;
-		uint32 *s = (uint32*)&d.j + 1;
-		d.i = *s;
-		*s = r;
-	}
-#endif
-	return d.j;
-}
-
-/*
- * Convert jlong to double.
- */
-static
-jdouble
-longToDouble(jlong val)
-{
-	jvalue d;
-
-	/* Convert value */
-	d.j = val;
-#if defined(DOUBLE_ORDER_OPPOSITE)
-	{
-		/* swap low and high word */
-		uint32 r = *(uint32*)&d.j;
-		uint32 *s = (uint32*)&d.j + 1;
-		d.i = *s;
-		*s = r;
-	}
-#endif
-
-	/* Collapse NaNs */
-	if (isnan(d.d))
-	  return KAFFE_JDOUBLE_NAN;
-	else
-	  return d.d;
-}
-
-/*
  * Convert float to int.
  */
 static
@@ -181,11 +131,6 @@ floatMultiply(jfloat v1, jfloat v2)
 jdouble
 doubleDivide(jdouble v1, jdouble v2)
 {
-	jlong v1bits, v2bits;
-
-	v1bits = doubleToLong(v1);
-	v2bits = doubleToLong(v2);
-
 	if (isnan(v1) || isnan(v2)) {
 		return KAFFE_JDOUBLE_NAN;
 	}
@@ -195,7 +140,10 @@ doubleDivide(jdouble v1, jdouble v2)
 	if (v1 == 0.0) {
 	        return KAFFE_JDOUBLE_NAN;
 	}
-	return longToDouble((jlong)(DINFBITS | ((v1bits ^ v2bits) & DSIGNBIT)));
+	if (signbit(v1) ^ signbit(v2))
+	  return KAFFE_JDOUBLE_NEG_INF;
+	else
+	  return KAFFE_JDOUBLE_POS_INF;
 }
 
 /*

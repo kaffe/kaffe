@@ -50,7 +50,21 @@ extern struct Hjava_lang_Class*	javaLangIntegerClass;
 extern struct Hjava_lang_Class*	javaLangLongClass;
 extern struct Hjava_lang_Class*	javaLangFloatClass;
 extern struct Hjava_lang_Class*	javaLangDoubleClass;
+/**
+ * Cached value of java.lang.Float.NaN.
+ */
 extern jfloat KAFFE_JFLOAT_NAN;
+/**
+ * Cached value of java.lang.Double.POSITIVE_INFINITY.
+ */
+extern jdouble KAFFE_JDOUBLE_POS_INF;
+/**
+ * Cached value of java.lang.Double.NEGAIVE_INFINITY.
+ */
+extern jdouble KAFFE_JDOUBLE_NEG_INF;
+/**
+ * Cached value of java.lang.Double.NaN.
+ */
 extern jdouble KAFFE_JDOUBLE_NAN;
 
 extern struct Hjava_lang_Class *javaNioDirectByteBufferImplClass;
