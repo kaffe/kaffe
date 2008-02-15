@@ -868,7 +868,8 @@ kaffeh_findClass(const char* nm)
 			unsigned char *buf;
 			classFile hand;
 			Hjava_lang_Class tmpClass;
-			
+			zzip_size_t length;
+
 			/* JAR file */
 			jfile = zzip_opendir(superName);
 			if (jfile == 0) {
@@ -884,7 +885,9 @@ kaffeh_findClass(const char* nm)
 				continue;
 			}
 
+			length = getUncompressedSize(jentry);
 			buf = getDataJarFile(jentry);
+			zzip_file_close(jentry);
                         if (buf == NULL) {
 				zzip_closedir(jfile);
 				continue;
@@ -893,7 +896,7 @@ kaffeh_findClass(const char* nm)
 			classFileInit(&hand,
 				      buf,
 				      buf,
-				      getUncompressedSize(jentry),
+				      length,
 				      CP_ZIPFILE);
 
 			objectDepth++;

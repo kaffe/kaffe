@@ -215,6 +215,7 @@ DBG(CLASSLOOKUP,dprintf("Processing classpath entry '%s'\n", ptr->path); );
 		{
 		        ZZIP_FILE * entry;
 			unsigned char* data;
+			zzip_size_t length;
 
 DBG(CLASSLOOKUP,	dprintf("Opening JAR file %s for %s\n", ptr->path, cname); );
 			if (ptr->u.jar == 0) {
@@ -232,11 +233,13 @@ DBG(CLASSLOOKUP,	dprintf("Opening JAR file %s for %s\n", ptr->path, cname); );
 			if (entry == 0) {
 				break;
 			}
-			if (getUncompressedSize(entry) == 0) {
+			length = getUncompressedSize(entry);
+			if (0 == length) {
 				hand->type = CP_NULLCLASS;
 				goto done;
 			}
 			data = getDataJarFile(entry);
+			zzip_file_close(entry);
 			if (data == 0) {
 				postExceptionMessage(einfo,
 					JAVA_IO(IOException),
@@ -248,7 +251,7 @@ DBG(CLASSLOOKUP,	dprintf("Opening JAR file %s for %s\n", ptr->path, cname); );
 			classFileInit(hand,
 				      data,
 				      data,
-				      getUncompressedSize(entry),
+				      length,
 				      CP_ZIPFILE);
 
 			if (Kaffe_JavaVMArgs.enableVerboseClassloading) {
@@ -633,7 +636,7 @@ getManifestMainAttribute(ZZIP_DIR* file, const char* attrName)
 	char* mfdata;
 	char* attrEntry;
 	char* ret;
-	zzip_ssize_t i;
+	zzip_ssize_t i, manifest_length;
 	int posAttrValue;
 
 	/* Locate manifest entry in jar */
@@ -642,13 +645,17 @@ getManifestMainAttribute(ZZIP_DIR* file, const char* attrName)
 		return (NULL);
 
 	/* Read it */
+	manifest_length = getUncompressedSize(mf);
 	mfdata = (char*)getDataJarFile(mf);
-	if (mfdata == 0)
-		return (NULL);
+	zzip_file_close(mf);
+	if (mfdata == 0) {
+	  return (NULL);
+	}
 
 	/* Look for the desired entry */
 	attrEntry = mfdata;
-	for (i = 0; i < getUncompressedSize(mf); ++i) {
+
+	  for (i = 0; i < manifest_length; ++i) {
 		/* Sun's jar, even under Linux, insists on terminating
 		   newlines with newline *and* carriage return */
 		if (mfdata[i] == '\n' || mfdata[i] == '\r') {
@@ -664,7 +671,7 @@ getManifestMainAttribute(ZZIP_DIR* file, const char* attrName)
 					++attrEntry;
 
 				/* Now look for end of string. */
-				while (i < getUncompressedSize(mf) && attrEntry[i] != 0xd)
+				while (i < manifest_length && attrEntry[i] != 0xd)
 					++i;
 
 				attrEntry[i] = '\0';

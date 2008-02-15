@@ -97,9 +97,10 @@ java_util_zip_ZipFile_getZipEntry0(struct Horg_kaffe_util_Ptr* zip, Hjava_lang_S
   Hjava_util_zip_ZipEntry* zentry = NULL;
 
   entry = getZipEntry(zip, zname);
-
-  if (entry != NULL)
+  if (entry != NULL) {
     zentry = makeZipEntry(entry, zname);
+    zzip_file_close(entry);
+  }
   
   return (zentry);
 }
@@ -121,7 +122,7 @@ java_util_zip_ZipFile_getZipData0(struct Horg_kaffe_util_Ptr* zip, struct Hjava_
 	  ZZIP_FILE *entry = getZipEntry( zip, unhand(zentry)->name);
 	  if (entry != NULL)
 	    buf = getDataJarFile(entry);
-
+	  zzip_file_close(entry);
 	  if (buf == 0) {
 	    return (NULL);
 	  }
@@ -159,6 +160,7 @@ java_util_zip_ZipFile_getZipEntries0(struct Horg_kaffe_util_Ptr* zip)
 	  if (NULL != zip_entry) {
 	    entry = zzip_file_open(zfile, zip_entry->d_name, 0);
 	    elems[i] = (HObject*)makeZipEntry(entry, stringC2Java(zip_entry->d_name));
+	    zzip_file_close(entry);
 	    i++;
 	  }
 	}while (zip_entry != NULL);
