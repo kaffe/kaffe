@@ -53,7 +53,7 @@ java_util_zip_ZipFile_openZipFile0(Hjava_lang_String* fname)
 	char* str;
 
 	str = checkPtr(stringJava2C(fname));
-	zip = openJarFile(str);
+	zip = zzip_opendir(str);
 	gc_free(str);
 	return ((struct Horg_kaffe_util_Ptr*)zip);
 }

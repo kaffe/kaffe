@@ -20,13 +20,6 @@
 #include <zzip/zzip.h>
 
 /**
- * Attempt to open the given JAR file. 
- *
- * @param filename The full path to JAR file on the file system.
- * @return A zip dir structure or NULL if something went  wrong.
- */
-ZZIP_DIR *openJarFile(zzip_char_t *filename);
-/**
  * Close a jarFile structure that was created with openJarFile.
  *
  * @param jf The jarFile structure as returned by openJarFile.

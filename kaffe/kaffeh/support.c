@@ -33,6 +33,8 @@
 #include <sys/types.h>
 #endif /* defined(HAVE_SYS_TYPES_H) */
 
+#include <zzip/zzip.h>
+
 #if defined(__WIN32__) || defined (__amigaos__)
 #define	PATHSEP	';'
 #else
@@ -868,7 +870,7 @@ kaffeh_findClass(const char* nm)
 			Hjava_lang_Class tmpClass;
 			
 			/* JAR file */
-			jfile = openJarFile(superName);
+			jfile = zzip_opendir(superName);
 			if (jfile == 0) {
 				continue;
 			}

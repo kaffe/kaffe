@@ -41,6 +41,8 @@
 #include <sys/types.h>
 #endif /* defined(HAVE_SYS_TYPES_H) */
 
+#include <zzip/zzip.h>
+
 #ifdef __riscos__
 #include <unixlib/local.h>
 #endif
@@ -216,7 +218,7 @@ DBG(CLASSLOOKUP,dprintf("Processing classpath entry '%s'\n", ptr->path); );
 
 DBG(CLASSLOOKUP,	dprintf("Opening JAR file %s for %s\n", ptr->path, cname); );
 			if (ptr->u.jar == 0) {
-				ptr->u.jar = openJarFile(ptr->path);
+				ptr->u.jar = zzip_opendir(ptr->path);
 				if (ptr->u.jar == 0) {
 					break;
 				}
