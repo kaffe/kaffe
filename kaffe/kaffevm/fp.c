@@ -23,10 +23,8 @@
 
 /*
  * Convert double to jlong.
- *
- * If you change this function, also change strtod("-0.0") check in
- * configure.in.
  */
+static
 jlong
 doubleToLong(jdouble val)
 {
@@ -76,6 +74,7 @@ longToDouble(jlong val)
 /*
  * Convert float to int.
  */
+static
 jint
 floatToInt(jfloat val)
 {

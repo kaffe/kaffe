@@ -37,8 +37,5 @@ extern jdouble	doubleMultiply(jdouble v1, jdouble v2);
 extern jfloat	floatDivide(jfloat v1, jfloat v2);
 extern jdouble	doubleDivide(jdouble v1, jdouble v2);
 
-extern jlong	doubleToLong(jdouble val);
-extern jint	floatToInt(jfloat val);
-
 #endif /* __fp_h */
 
