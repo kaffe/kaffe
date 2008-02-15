@@ -19,14 +19,6 @@
 
 #include <zzip/zzip.h>
 
-/**
- * Lookup a file stored in the given jarFile.
- *
- * @param jf The jarFile in which to search for the given file.
- * @param entry_name The name of the file to search for in the JAR.
- * @return the file entry in the jar file.
- */
-ZZIP_FILE *lookupJarFile(ZZIP_DIR *jf, zzip_char_t *entry_name);
 /*
  * Read in and, if necessary, decompress the contents of a file stored in a
  * JAR file.

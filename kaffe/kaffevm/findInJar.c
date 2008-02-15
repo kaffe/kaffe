@@ -228,7 +228,7 @@ DBG(CLASSLOOKUP,	dprintf("Opening JAR file %s for %s\n", ptr->path, cname); );
 #endif
 			}
 
-			entry = lookupJarFile(ptr->u.jar, cname);
+			entry = zzip_file_open(ptr->u.jar, cname, 0);
 			if (entry == 0) {
 				break;
 			}
@@ -637,7 +637,7 @@ getManifestMainAttribute(ZZIP_DIR* file, const char* attrName)
 	int posAttrValue;
 
 	/* Locate manifest entry in jar */
-	mf = lookupJarFile(file, "META-INF/MANIFEST.MF");
+	mf = zzip_file_open(file, "META-INF/MANIFEST.MF", 0);
 	if (mf == 0)
 		return (NULL);
 

@@ -1,5 +1,15 @@
 2008-02-15  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/jar.h, kaffe/kaffevm/jar.c (lookupJarFile): Removed.
+
+	* libraries/clib/zip/ZipFile.c (getZipEntry)
+	(java_util_zip_ZipFile_getZipEntries0), 
+	kaffe/kaffevm/findInJar.c (findClassInJar)
+	(getManifestMainAttribute),
+	kaffe/kaffeh/support.c (kaffeh_findClass): Use zzip_file_open directly.
+
+2008-02-15  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/jar.h, kaffe/kaffevm/jar.c (closeJarFile): Removed.
 
 	* libraries/clib/zip/ZipFile.c (java_util_zip_ZipFile_closeZipFile0),

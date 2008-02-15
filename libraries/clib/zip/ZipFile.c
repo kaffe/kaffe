@@ -84,7 +84,7 @@ ZZIP_FILE* getZipEntry(struct Horg_kaffe_util_Ptr* zip, Hjava_lang_String* zname
 	char* str;
 
 	str = checkPtr(stringJava2C(zname));
-	entry = lookupJarFile((ZZIP_DIR*)zip, str);
+	entry = zzip_file_open((ZZIP_DIR*)zip, str, 0);
 	gc_free(str);
 
 	return entry;
@@ -157,7 +157,7 @@ java_util_zip_ZipFile_getZipEntries0(struct Horg_kaffe_util_Ptr* zip)
 	do {
 	  zip_entry = zzip_readdir(zfile);
 	  if (NULL != zip_entry) {
-	    entry = lookupJarFile(zfile, zip_entry->d_name);
+	    entry = zzip_file_open(zfile, zip_entry->d_name, 0);
 	    elems[i] = (HObject*)makeZipEntry(entry, stringC2Java(zip_entry->d_name));
 	    i++;
 	  }

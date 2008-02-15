@@ -878,7 +878,7 @@ kaffeh_findClass(const char* nm)
 			strcpy(superName, nm);
 			strcat(superName, ".class");
 
-			jentry = lookupJarFile(jfile, superName);
+			jentry = zzip_file_open(jfile, superName, 0);
 			if (jentry == 0) {
 				zzip_closedir(jfile);
 				continue;
