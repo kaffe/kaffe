@@ -88,17 +88,19 @@ floatToInt(jfloat val)
 /*
  * Convert int to float.
  */
+static
 float
 intToFloat(jint val)
 {
 	jvalue d;
 
-	/* Force all possible NaN values into the canonical NaN value */
-	if ((val & FEXPMASK) == FEXPMASK && (val & FMANMASK) != 0)
-		val = FNANBITS;
-
 	/* Convert value */
 	d.i = val;
+
+	/* Force all possible NaN values into the canonical NaN value */
+	if (isnan(d.f))
+	  return KAFFE_JFLOAT_NAN;
+
 	return d.f;
 }
 

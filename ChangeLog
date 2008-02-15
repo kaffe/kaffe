@@ -1,5 +1,12 @@
 2008-02-15  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/fp.c (intToFloat):  Simplified collapsing of NaNs.
+	Made function static.
+
+	* kaffe/kaffevm/fp.h (FNANBITS, intToFloat): Removed.
+
+2008-02-15  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/fp.c (floatAdd, floatSubtract, floatMultiply)
 	(floatDivide):  Use KAFFE_JFLOAT_NAN.
 

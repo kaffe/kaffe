@@ -27,7 +27,6 @@
 #define FMANMASK	0x007fffff
 #define FSIGNBIT	0x80000000
 #define FINFBITS	0x7f800000
-#define FNANBITS	0x7fc00000
 
 extern jfloat	floatAdd(jfloat v1, jfloat v2);
 extern jdouble	doubleAdd(jdouble v1, jdouble v2);
@@ -40,7 +39,6 @@ extern jdouble	doubleDivide(jdouble v1, jdouble v2);
 
 extern jlong	doubleToLong(jdouble val);
 extern jint	floatToInt(jfloat val);
-extern float	intToFloat(jint val);
 
 #endif /* __fp_h */
 
