@@ -1,5 +1,12 @@
 2008-02-15  Dalibor Topic  <robilad@kaffe.org>
 
+	* TODO: Updated.
+
+2008-02-15  Dalibor Topic  <robilad@kaffe.org>
+
+	* configure.ac (AC_PROG_CC_C99): Ask for a C99 compiler, so that useful
+	ISO C99 macros like isnan and signbit are defined in math.h.
+	
 	* kaffe/kaffevm/fp.c (doubleDivide): Return KAFFE_JDOUBLE_POS_INF or
 	KAFFE_JDOUBLE_NEG_INF depending on the signbit of input.
 	(doubleToLong, longToDouble): Removed unused functions.
@@ -9,7 +16,7 @@
 
 	* kaffe/kaffevm/baseClasses.h (KAFFE_JDOUBLE_POS_INF, KAFFE_JDOUBLE_NEG_INF): 
 	New fields used to cache Double.POSITIVE_INFINITY and Double.NEGATIVE_INFINITY.
-
+	
 2008-02-15  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/fp.c (floatToInt, doubleToLong): Made static.
