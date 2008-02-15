@@ -121,7 +121,7 @@ jfloat
 floatAdd(jfloat v1, jfloat v2)
 {
 	if (isnan(v1) || isnan(v2)) {
-		return intToFloat(FNANBITS);
+		return KAFFE_JFLOAT_NAN;
 	}
 	return (v1 + v2);
 }
@@ -145,7 +145,7 @@ jfloat
 floatSubtract(jfloat v1, jfloat v2)
 {
 	if (isnan(v1) || isnan(v2)) {
-		return intToFloat(FNANBITS);
+		return KAFFE_JFLOAT_NAN;
 	}
 	return (v1 - v2);
 }
@@ -169,7 +169,7 @@ jfloat
 floatMultiply(jfloat v1, jfloat v2)
 {
 	if (isnan(v1) || isnan(v2)) {
-		return intToFloat(FNANBITS);
+		return KAFFE_JFLOAT_NAN;
 	}
 	return (v1 * v2);
 }
@@ -209,13 +209,13 @@ floatDivide(jfloat v1, jfloat v2)
 	v2bits = floatToInt(v2);
 
 	if (isnan(v1) || isnan(v2)) {
-		return intToFloat(FNANBITS);
+		return KAFFE_JFLOAT_NAN;
 	}
 	if (v2 != 0.0) {
 		return (v1 / v2);
 	}
 	if (v1 == 0.0) {
-		return intToFloat(FNANBITS);
+		return KAFFE_JFLOAT_NAN;
 	}
 	return intToFloat((jint)(FINFBITS | ((v1bits ^ v2bits) & FSIGNBIT)));
 }

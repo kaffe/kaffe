@@ -861,15 +861,20 @@ soft_cvtfd(jfloat v)
 		return (jdouble)v;
 }
 
+/**
+ * convert a double to float
+ *
+ * @param v a double
+ * 
+ * @return the float corresponding to the double, or Float.NaN if the double is a NaN.
+ */
 jfloat
 soft_cvtdf(jdouble v)
 {
-        if (isnan(v)) {
-		return (intToFloat(FNANBITS));
-	}
-	else {
-		return ((jfloat)v);
-	}
+        if (isnan(v))
+		return KAFFE_JFLOAT_NAN;
+	else
+		return (jfloat)v;
 }
 
 /*
