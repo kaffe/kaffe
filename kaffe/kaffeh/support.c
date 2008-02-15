@@ -880,13 +880,13 @@ kaffeh_findClass(const char* nm)
 
 			jentry = lookupJarFile(jfile, superName);
 			if (jentry == 0) {
-				closeJarFile(jfile);
+				zzip_closedir(jfile);
 				continue;
 			}
 
 			buf = getDataJarFile(jentry);
                         if (buf == NULL) {
-				closeJarFile(jfile);
+				zzip_closedir(jfile);
 				continue;
                         }
 
@@ -908,7 +908,7 @@ kaffeh_findClass(const char* nm)
 			hand.type = CP_INVALID;
 			free(buf);
 
-			closeJarFile(jfile);
+			zzip_closedir(jfile);
 			return;
 		}
 	}

@@ -20,12 +20,6 @@
 #include <zzip/zzip.h>
 
 /**
- * Close a jarFile structure that was created with openJarFile.
- *
- * @param jf The jarFile structure as returned by openJarFile.
- */
-void closeJarFile(ZZIP_DIR *jf);
-/**
  * Lookup a file stored in the given jarFile.
  *
  * @param jf The jarFile in which to search for the given file.

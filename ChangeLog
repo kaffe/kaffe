@@ -1,5 +1,12 @@
 2008-02-15  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/jar.h, kaffe/kaffevm/jar.c (closeJarFile): Removed.
+
+	* libraries/clib/zip/ZipFile.c (java_util_zip_ZipFile_closeZipFile0),
+	kaffe/kaffeh/support.c (kaffeh_findClass): Use zzip_closedir directly.
+
+2008-02-15  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffevm/jar.h, kaffe/kaffevm/jar.c (openJarFile): Removed.
 
 	* libraries/clib/zip/ZipFile.c (java_util_zip_ZipFile_openZipFile0),

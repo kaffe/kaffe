@@ -61,7 +61,7 @@ java_util_zip_ZipFile_openZipFile0(Hjava_lang_String* fname)
 void
 java_util_zip_ZipFile_closeZipFile0(struct Horg_kaffe_util_Ptr* zip)
 {
-	closeJarFile((ZZIP_DIR*)zip);
+	zzip_closedir((ZZIP_DIR*)zip);
 }
 
 jint

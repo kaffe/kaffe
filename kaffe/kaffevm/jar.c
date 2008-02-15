@@ -40,11 +40,6 @@ zzip_ssize_t getUncompressedSize(ZZIP_FILE * je)
   return -1;
 }
 
-void closeJarFile(ZZIP_DIR *jf)
-{
-  zzip_closedir(jf);
-}
-
 ZZIP_FILE *lookupJarFile(ZZIP_DIR *jf, zzip_char_t *entry_name)
 {
   return zzip_file_open(jf, entry_name, 0);
