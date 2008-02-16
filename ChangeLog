@@ -1,5 +1,14 @@
 2008-02-16  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/constants.c (readConstantPool): Use 
+	check_if_need_to_switch_words_in_jdouble instead of checking 
+	if DOUBLE_ORDER_OPPOSITE is defined.
+	(check_if_need_to_switch_words_in_jdouble): New static helper function.
+
+	* config/config-hacks.h (DOUBLE_ORDER_OPPOSITE): Removed.
+
+2008-02-16  Dalibor Topic  <robilad@kaffe.org>
+
 	* THIRDPARTY: Added license information for files imported 
 	from GNU Classpath and GCC.
 

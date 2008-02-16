@@ -65,18 +65,6 @@
 #define	HAVE_UNALIGNEDACCESS
 #endif
 
-/* On arm, word order of doubles is always big endian when
- * using FPA. When using VFP, word order of doubles follows
- * the word order of the memory system.
- *
- * Therefore, the word order of doubles is opposite to the
- * word order of jlongs when using a little endian arm
- * unless VFP is used.
- */
-#if defined(__ARMEL__) && !defined(__VFP_FP__)
-#define DOUBLE_ORDER_OPPOSITE
-#endif
-
 /*
  * GCC before 3.0 does not support explicit branch optimization.
  */

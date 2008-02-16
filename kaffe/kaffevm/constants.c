@@ -28,6 +28,21 @@
 /*
  * XXX move into readClass.c
  */
+/**
+ * Check if the words making up a jdouble need to be 
+ * switched around. Necessary for some ARM systems.
+ */
+static
+jboolean check_if_need_to_switch_words_in_jdouble(void) {
+  jvalue val; 
+
+  /* -0.0 as an IEEE754 double is 0x80000000000000LL, i.e. < 0LL.
+   * If the words in the double are switched around, then the 
+   * bit pattern will be 0x0000000080000000LL, i.e. > 0LL. 
+   */
+  val.d = -0.0;
+  return val.j > 0;
+}
 
 /*
  * Read in constant pool from opened file.
@@ -168,23 +183,23 @@ readConstantPool(Hjava_lang_Class* this, classFile* fp, errorInfo *einfo)
 			readu4(&d4b, fp);
 
 #if SIZEOF_VOID_P == 8
-#if defined(DOUBLE_ORDER_OPPOSITE)
-			pool[i] = WORDS_TO_LONG(d4b, d4);
-#else
-			pool[i] = WORDS_TO_LONG(d4, d4b);
-#endif /* DOUBLE_ORDER_OPPOSITE */
+			if(check_if_need_toswitch_words_in_jdouble())
+			  pool[i] = WORDS_TO_LONG(d4b, d4);
+			else
+			  pool[i] = WORDS_TO_LONG(d4, d4b);
 			i++;
 			pool[i] = 0;
 #else
-#if defined(DOUBLE_ORDER_OPPOSITE)
-			pool[i] = d4b;
-			i++;
-			pool[i] = d4;
-#else
-			pool[i] = d4;
-			i++;
-			pool[i] = d4b;
-#endif /* DOUBLE_ORDER_OPPOSITE */
+			if (check_if_need_to_switch_words_in_jdouble()) {
+			  pool[i] = d4b;
+			  i++;
+			  pool[i] = d4;
+			}
+			else {
+			  pool[i] = d4;
+			  i++;
+			  pool[i] = d4b;
+			}
 #endif /* SIZEOF_VOID_P == 8 */
 			tags[i] = CONSTANT_Unknown;
 			break;
