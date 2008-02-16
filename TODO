@@ -23,6 +23,7 @@
  * Look into removing the logging.properties file in libraries/javalib.
  * cleanup JNI library loading to use libltdl exclusively.
  * Remove unused instructions from jits (nop, unimplemented)
+ * Use CScout http://www.spinellis.gr/cscout/doc/indexw.html to weed out unused symbols.
 
 * Architectural changes:
  * Make threading model runtime selectable.
