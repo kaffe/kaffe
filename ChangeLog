@@ -1,3 +1,12 @@
+2008-02-17  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/fp.c (doubleDivide): Follow the spec more closely.
+
+	* kaffe/kaffevm/soft.c, kaffe/kaffevm/soft.h (soft_fdivl): 
+	Make the function available to the interpreter.
+
+ 	* kaffe/kaffevm/intrp/icode.h (div_double): Use soft_fdivl.
+
 2008-02-16  Dalibor Topic  <robilad@kaffe.org>
 
 	* TODO: Updated.

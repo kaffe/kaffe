@@ -59,6 +59,8 @@ struct _slots;
 void*	soft_multianewarray(struct Hjava_lang_Class*, jint, struct _slots*);
 #endif
 
+jdouble	soft_fdivl(jdouble, jdouble);
+
 #if defined(TRANSLATOR)
 jlong	soft_lmul(jlong, jlong);
 jlong	soft_ldiv(jlong, jlong);
@@ -70,7 +72,6 @@ jdouble	soft_fsubl(jdouble, jdouble);
 jfloat	soft_fmul(jfloat, jfloat);
 jdouble	soft_fmull(jdouble, jdouble);
 jfloat	soft_fdiv(jfloat, jfloat);
-jdouble	soft_fdivl(jdouble, jdouble);
 jfloat	soft_frem(jfloat, jfloat);
 jdouble	soft_freml(jdouble, jdouble);
 jlong	soft_lshll(jlong, jint);

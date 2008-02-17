@@ -686,6 +686,12 @@ soft_fcmpl(jfloat v1, jfloat v2)
   return soft_dcmpl(v1, v2);
 }
 
+jdouble
+soft_fdivl(jdouble v1, jdouble v2)
+{
+	return doubleDivide(v1, v2);
+}
+
 #if defined(TRANSLATOR)
 jlong
 soft_lmul(jlong v1, jlong v2)
@@ -746,12 +752,6 @@ jfloat
 soft_fdiv(jfloat v1, jfloat v2)
 {
 	return floatDivide(v1, v2);
-}
-
-jdouble
-soft_fdivl(jdouble v1, jdouble v2)
-{
-	return doubleDivide(v1, v2);
 }
 
 jfloat

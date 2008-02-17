@@ -131,19 +131,48 @@ floatMultiply(jfloat v1, jfloat v2)
 jdouble
 doubleDivide(jdouble v1, jdouble v2)
 {
-	if (isnan(v1) || isnan(v2)) {
+	jboolean negative_result;
+
+	if (isnan(v1) || isnan(v2)) 
 		return KAFFE_JDOUBLE_NAN;
+
+	negative_result = ((signbit(v1) == 0) && (signbit(v2) != 0))
+			    || ((signbit(v1) != 0) && (signbit(v2) == 0));
+
+	if (isinf(v1) && isinf(v2)) 
+		return KAFFE_JDOUBLE_NAN;
+
+	if (isinf(v1) && isfinite(v2)) {
+		if (negative_result)
+			return KAFFE_JDOUBLE_NEG_INF;
+		else
+			return KAFFE_JDOUBLE_POS_INF;
 	}
-	if (v2 != 0.0) {
-		return (v1 / v2);
+
+	if (isfinite(v1) && isinf(v2)) {
+		if (negative_result)
+			return -0.0;
+		else
+			return 0.0;
 	}
+
 	if (v1 == 0.0) {
-	        return KAFFE_JDOUBLE_NAN;
+		if (v2 == 0.0)
+		        return KAFFE_JDOUBLE_NAN;
+		else if (negative_result)
+			return -0.0;
+		else
+			return 0.0;
 	}
-	if (signbit(v1) ^ signbit(v2))
-	  return KAFFE_JDOUBLE_NEG_INF;
-	else
-	  return KAFFE_JDOUBLE_POS_INF;
+
+	if (v1 != 0.0 && v2 == 0.0) {
+		if (negative_result)
+			return KAFFE_JDOUBLE_NEG_INF;
+		else
+			return KAFFE_JDOUBLE_POS_INF;
+	}
+
+	return (v1 / v2);
 }
 
 /*
