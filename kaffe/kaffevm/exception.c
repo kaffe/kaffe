@@ -89,7 +89,6 @@ vmExcept_JNIContains(VmExceptHandler* eh, JNIFrameAddress fp)
 	assert(eh != NULL);
 	assert(eh->meth == VMEXCEPTHANDLER_KAFFEJNI_HANDLER);
 	assert(fp != (JNIFrameAddress)0);
-
 	return (eh->frame.jni.fp == fp);
 }
 
@@ -97,7 +96,6 @@ void
 vmExcept_setJNIFrame(VmExceptHandler* eh, JNIFrameAddress fp)
 {
 	assert(eh != NULL);
-	assert(fp != (JNIFrameAddress)0);
 
 	eh->meth = VMEXCEPTHANDLER_KAFFEJNI_HANDLER;
 	eh->frame.jni.fp = fp;

@@ -1,3 +1,12 @@
+2008-02-18  Dalibor Topic  <robilad@kaffe.org>
+
+	JIT fixes for ARM.
+
+	* kaffe/kaffevm/exception.c (vmExcept_setJNIFrame): Removed unnecessary assert.
+
+	* kaffe/kaffevm/stackTrace.c (buildStackTrace): Check if a frame shows up twice
+	on the stack and abort when it does.
+
 2008-02-17  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/fp.c (doubleDivide): Follow the spec more closely.

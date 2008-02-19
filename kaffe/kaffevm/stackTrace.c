@@ -52,23 +52,43 @@ HArrayOfObject*     getStackTraceElements(struct Hjava_lang_VMThrowable*, struct
 Hjava_lang_Object*
 buildStackTrace(struct _exceptionFrame* base)
 {
-	int cnt;
 	struct _stackTrace trace;
 	stackTraceInfo* info;
 	struct _exceptionFrame orig;
+#ifdef TRANSLATOR
+	struct _exceptionFrame* previousframe;
+#else
+	VmExceptHandler* previousframe;
+#endif
+	int cnt;
+	int elements;
 
 	(void) orig;			/* avoid compiler warning in intrp */
 	DBG(STACKTRACE,
 	    dprintf("STACKTRACEINIT(trace, %p, %p, orig);\n", base, base); );
 	STACKTRACEINIT(trace, base, base, orig);
 	cnt = 0;
+	previousframe = trace.frame;
+
 	while(STACKTRACEFRAME(trace) && KTHREAD(on_current_stack) ((void *)STACKTRACEFP(trace))) {
+#ifdef TRANSLATOR
+	DBG(STACKTRACE,
+	    dprintf("STACKTRACESTEP(%d, fp=%p, nextframe=%p);\n", 
+	             cnt, (void *) FPFRAME(trace.frame), (void *) NEXTFRAME(trace.frame)); );
+#endif
 		cnt++;
 		STACKTRACESTEP(trace);
+		/* break out of the frame counting loop if 
+		 * we start looping frames. */
+		if (previousframe == trace.frame)
+			break;
+		else
+			previousframe = trace.frame;
 	}
+	elements = cnt;
 
 	/* Build an array of stackTraceInfo */
-	info = gc_malloc(sizeof(stackTraceInfo) * (cnt+1), KGC_ALLOC_NOWALK);
+	info = gc_malloc(sizeof(stackTraceInfo) * (elements+1), KGC_ALLOC_NOWALK);
 	if (!info) {
 	    dprintf("buildStackTrace(%p): can't allocate stackTraceInfo\n",
 		    base);
@@ -81,7 +101,7 @@ buildStackTrace(struct _exceptionFrame* base)
 	    dprintf("STACKTRACEINIT(trace, &orig, %p, orig);\n", base); );
 	STACKTRACEINIT(trace, &orig, base, orig);
 
-	while (STACKTRACEFRAME(trace) && KTHREAD(on_current_stack) ((void *)STACKTRACEFP(trace))) {
+	while (cnt < elements) {
 		info[cnt].pc = STACKTRACEPC(trace);
 		info[cnt].fp = STACKTRACEFP(trace);
 		info[cnt].meth = stacktraceFindMethod (info[cnt].fp, info[cnt].pc);
