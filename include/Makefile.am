@@ -31,10 +31,6 @@ INSTALL_DERIVED_HDRS =
 
 if COND_ZLIB_ZIP
 MAYBE_ZLIB_ZIP_HDRS = \
-	java_util_zip_Adler32.h \
-	java_util_zip_CRC32.h \
-	java_util_zip_Deflater.h \
-	java_util_zip_Inflater.h \
 	java_util_zip_ZipEntry.h \
 	java_util_zip_ZipFile.h 
 endif

@@ -308,10 +308,6 @@ EXTRA_DIST = distclean-hack \
 # otherwise it goes into the other one.
 INSTALL_DERIVED_HDRS = 
 @COND_ZLIB_ZIP_TRUE@MAYBE_ZLIB_ZIP_HDRS = \
-@COND_ZLIB_ZIP_TRUE@	java_util_zip_Adler32.h \
-@COND_ZLIB_ZIP_TRUE@	java_util_zip_CRC32.h \
-@COND_ZLIB_ZIP_TRUE@	java_util_zip_Deflater.h \
-@COND_ZLIB_ZIP_TRUE@	java_util_zip_Inflater.h \
 @COND_ZLIB_ZIP_TRUE@	java_util_zip_ZipEntry.h \
 @COND_ZLIB_ZIP_TRUE@	java_util_zip_ZipFile.h 
 

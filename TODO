@@ -14,10 +14,6 @@
 
 * Cleanup
  * Remove KAFFE_CFLAGS
- * In config/config-hacks.h: Remove DOUBLE_ORDER_OPPOSITE.
-    In kaffe/kaffevm/constants.c: Instead of it, check if 
-    NEGATIVE_INFINITY (0xfff0000000000000L) as jdouble is
-    < 0.0 as a static bool, and only swap in that case.
  * Remove kaffe's copies of jni.h, jni-md.h, etc. Use GNU Classpath's headers instead.
     Also remove the config-int.h generation now that we are using C99.
  * Look into removing the logging.properties file in libraries/javalib.
