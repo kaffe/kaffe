@@ -1,5 +1,9 @@
 2008-02-20  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffevm/debug.c (kaffe_dprintf): Added missing casts to n.
+
+2008-02-20  Dalibor Topic  <robilad@kaffe.org>
+
 	* TODO: Updated.
 
 	* include/Makefile.am (MAYBE_ZLIB_ZIP_HDRS): Removed unused headers.

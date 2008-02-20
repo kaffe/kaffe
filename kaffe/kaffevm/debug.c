@@ -444,7 +444,7 @@ kaffe_dprintf(const char *fmt, ...)
 	n = vsnprintf(debugBuffer + bufferBegin, max, fmt, args);
 
 	/* The return value is bytes *needed* not bytes *used* */
-	if (n > max)
+	if (n > 0 && (size_t )n > max)
 		n = max;
 #else
 	n = vsprintf(debugBuffer + bufferBegin, fmt, args);
@@ -461,7 +461,7 @@ kaffe_dprintf(const char *fmt, ...)
 		 * defintions?
 		 */
 		max = 0;
-		while (max < n) {
+		while (max < (size_t) n) {
                         w = write(kaffe_dprintf_fd,
                                        debugBuffer + max,
                                        (size_t)n - max);
