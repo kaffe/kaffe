@@ -18,6 +18,12 @@ versions of these libraries for your Linux distribution, and your
 distributor uses the RPM packaging format, you should check out
 http://www.rpmfind.net.
 
+glib
+----
+
+You'll need glib for Kaffe's atomic operations support. It is available 
+from http://www.gtk.org/ .
+
 zziplib
 -------
 

@@ -1,5 +1,9 @@
 2008-02-21  Dalibor Topic  <robilad@kaffe.org>
 
+	* FAQ/FAQ.requiredlibraries: Added glib.
+
+2008-02-21  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/clib/native/Unsafe.c: New file.
 
 2008-02-21  Dalibor Topic  <robilad@kaffe.org>
