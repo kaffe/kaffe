@@ -1,7 +1,11 @@
-What's New Since Kaffe 1.1.8
+What's New In Kaffe 1.1.9
 ----------------------------
 
+* Depend on glib for atomic operations
+* Support for JSR 166.
 * Depend on zziplib instead of zlib for JAR reading.
+* Many build system improvements.
+* Simplified threading subsystem interface.
 * Removed support for native big math.
 * Removed libltdl. Kaffe uses an existing installation 
   exclusively now.

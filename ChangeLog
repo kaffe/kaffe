@@ -1,3 +1,7 @@
+2008-02-22  Dalibor Topic  <robilad@kaffe.org>
+
+	* configure.ac, RELEASE-NOTES, README: Updated.
+
 2008-02-21  Dalibor Topic  <robilad@kaffe.org>
 
 	* FAQ/FAQ.cross-compiling: Documented that dependencies need to be

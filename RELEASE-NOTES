@@ -1,11 +1,11 @@
-Release Notes for 1.1.9-pre
+Release Notes for 1.1.9
 =======================
 
-Release 1.1.9-pre of Kaffe is a "development" release.
+Release 1.1.9 of Kaffe is a "development" release.
 
 It has been tested, but not as thoroughly as a
 production release would be. It contains major 
-improvements over 1.1.8, which was released X 
+improvements over 1.1.8, which was released 5 
 months ago. I anticipate that most people will have 
 less trouble with this release, and more fun.
 
@@ -101,25 +101,16 @@ Platform Matrix
 The following platforms have been tested for this release:
 (Please check FAQ/FAQ.platform-status for a more extensive result series)
 
-  arch	|   os	   | engine | threads |  gc   | passed
+  arch	|   os	     | engine | threads |  gc   | passed
 ======================================================
- arm9hf | linux    | intrp  | pthread | kaffe | 137/150 * hf: Hard Float
- arm9hf | linux    | jit    | pthread | kaffe | 136/150
- arm9hf | linux    | jit3   | pthread | kaffe | 124/150
- arm9sf | netbsd   | intrp  | pthread | kaffe | 146/150 * sf: Soft Float
-  i386  | cygwin   | intrp  | jthread | kaffe | 142/150
-  i386  | cygwin   | jit    | jthread | kaffe | 131/150
-  i386  | cygwin   | intrp  | pthread | kaffe | 139/150
-  i386  | cygwin   | jit    | pthread | kaffe | 126/150
-  i386  | netbsd   | intrp  | jthread | kaffe | 144/150
-  i386  | netbsd   | jit    | jthread | kaffe | 144/150
-  i386  | netbsd   | jit3   | jthread | kaffe | 146/150
-  m68k  | linux    | intrp  | pthread | kaffe | ~138/150
-  m68k  | linux    | jit    | pthread | kaffe | ~122/150
-  m68k  | linux    | jit3   | pthread | kaffe | ~128/150
-  m68k  | netbsd   | jit3   | jthread | kaffe | ~123/150
-  m68k  | netbsd   | intrp  | jthread | kaffe | ~105/150
- sparc  | linux    | jit    | pthread | kaffe | 150/150
+ armel  | linux-oabi | intrp  | pthread | kaffe | 149/149
+ armel  | linux-oabi | jit3   | pthread | kaffe | 123/149
+ armel  | linux-eabi | intrp  | pthread | kaffe | 149/149
+  i386  | linux      | intrp  | pthread | kaffe | 149/149
+  i386  | linux      | jit    | pthread | kaffe | 148/149
+  i386  | linux      | jit3   | pthread | kaffe | 149/149
+  i386  | darwin     | intrp  | pthread | kaffe | 120/149
+  i386  | darwin     | jit    | pthread | kaffe | 120/149
 
 Platform Specific Notes
 =======================
@@ -137,9 +128,12 @@ configure script.
 
 * ARM
 
-Kiyo Inaba has made jit3 work on ARM. Current status:
-http://article.gmane.org/gmane.comp.java.vm.kaffe.general/11664/match=kaffe+arm
+Kiyo Inaba has made jit3 work on ARM.
 
+On armel linux, the interpreter works without regressions 
+with both oabi and eabi. The jit engine needs more work,
+though.
+ 
 * MIPS(EL)
 
 The jit3 implementation needs some more work. Casey 
