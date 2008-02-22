@@ -31,31 +31,12 @@
 #include "stringSupport.h"
 
 static
-void*
+volatile void*
 getFieldAddress(Hjava_lang_reflect_Field* this, struct Hjava_lang_Object* obj)
 {
-        Hjava_lang_Class* clas;
-        Field* fld;
-
-        clas = (Hjava_lang_Class*)unhand(this)->declaringClass;
-        fld = CLASS_FIELDS(clas) + unhand(this)->slot;
-
-        if (unhand(this)->slot < CLASS_NSFIELDS(clas)) {
-		errorInfo einfo;
-		if (!processClass(clas, CSTATE_COMPLETE, &einfo)) {
-			throwError(&einfo);
-		}
-                return (FIELD_ADDRESS(fld));
-        }
-        else {
-                if (obj == NULL) {
-                        SignalError("java.lang.NullPointerException", "");
-                }
-                if  (!soft_instanceof(clas, obj)) {
-                        SignalError("java.lang.IllegalArgumentException","");
-                }
-                return ((void*)(((char*)(obj)) + FIELD_BOFFSET(fld)));
-        }
+	return KaffeVM_GetFieldAddress(unhand(this)->declaringClass,
+				       obj,
+				       unhand(this)->slot);
 }
 
 /* WHAT WITH SECURITY RESTRICTIONS !!!??? */

@@ -43,6 +43,7 @@
 #include "methodcalls.h"
 #include "native.h"
 #include "jni_i.h"
+#include "soft.h"
 
 #if !defined(HAVE_GETTIMEOFDAY)
 #include <sys/timeb.h>
@@ -647,4 +648,43 @@ int bitCount(int bits)
 			retval++;
 	}
 	return( retval );
+}
+
+/** 
+ * Return a pointer to a field.
+ * 
+ * @param declaring_class class declaring the field
+ * @param instance        object contaning the field
+ * @param slot            index of the field in the fields array
+ */
+volatile void * 
+KaffeVM_GetFieldAddress(jclass declaring_class, jobject instance, jlong slot) {
+        Field* fld;
+	Hjava_lang_Class * clazz = (Hjava_lang_Class *) declaring_class;
+
+	/* Get the declaring class' field descriptor located at the given slot */
+        fld = CLASS_FIELDS(clazz) + slot;
+
+	/* If the field is static, complete return its address */
+        if (slot < CLASS_NSFIELDS(clazz)) {
+		errorInfo einfo;
+		/* If the instanca type is not completely initialized, 
+		   initialize it now. */
+		if (!processClass(clazz, CSTATE_COMPLETE, &einfo)) {
+			throwError(&einfo);
+		}
+
+                return FIELD_ADDRESS(fld);
+        }
+        else {
+	  /* If the field is not static, compute its address based on the location
+	     of the instance, and return it. */
+                if (instance == NULL) {
+                        SignalError("java.lang.NullPointerException", "");
+                }
+                if  (!soft_instanceof(declaring_class, instance)) {
+                        SignalError("java.lang.IllegalArgumentException","");
+                }
+                return (void*)(((char*)(instance)) + FIELD_BOFFSET(fld));
+        }
 }

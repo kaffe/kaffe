@@ -62,6 +62,7 @@ DERIVED_HDRS = $(INSTALL_DERIVED_HDRS) $(NOINSTALL_DERIVED_HDRS)
 INSTALL_JNI_DERIVED_HDRS =
 
 NOINSTALL_JNI_DERIVED_HDRS = \
+	sun_misc_Unsafe.h \
 	java_math_BigInteger.h \
 	java_lang_VMProcess.h \
 	java_lang_ref_Reference.h \

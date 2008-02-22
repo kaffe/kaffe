@@ -31,7 +31,8 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/kaffe/kaffevm/verifier \
 	-I$(top_srcdir)/kaffe/kaffevm/jni \
         -I$(top_srcdir)/config/$(Khost_cpu) \
-	-I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os) 
+	-I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os) \
+	$(GLIB_CFLAGS)
 
 native_LTLIBRARIES = libkaffevm.la libkaffe.la
 
@@ -72,7 +73,8 @@ libkaffe_la_LIBADD = \
 	$(libkaffe_la_DEPENDENCIES) \
 	$(VM_LIBS) \
 	$(M_LIBS) \
-	$(ZZIP_LIBS)
+	$(ZZIP_LIBS) \
+	$(GLIB_LIBS)
 
 libkaffevm_la_CFLAGS = \
 	$(AM_CFLAGS) \
@@ -210,7 +212,8 @@ libkaffevm_la_SOURCES = \
         $(top_srcdir)/libraries/clib/native/java_lang_Thread.c \
         $(top_srcdir)/libraries/clib/native/Throwable.c \
 	$(top_srcdir)/libraries/clib/native/gnu_classpath_VMStackWalker.c \
-	$(top_srcdir)/libraries/clib/native/gnu_classpath_VMSystemProperties.c 
+	$(top_srcdir)/libraries/clib/native/gnu_classpath_VMSystemProperties.c \
+	$(top_srcdir)/libraries/clib/native/Unsafe.c
 
 CLEANFILES = so_locations
 

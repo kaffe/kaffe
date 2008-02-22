@@ -138,6 +138,7 @@ extern void     KaffeVM_safeCallMethodV(struct _jmethodID*, void*, void*, va_lis
 extern Method*	lookupClassMethod(struct Hjava_lang_Class*, const char*, const char*, bool, struct _errorInfo*);
 extern Method*	lookupObjectMethod(struct Hjava_lang_Object*, const char*, const char*, struct _errorInfo*);
 extern Field*   KNI_lookupFieldC(struct Hjava_lang_Class*, const char*, bool, struct _errorInfo*);
+extern volatile void * KaffeVM_GetFieldAddress(jclass declaring_class, jobject instance, jlong slot); 
 
 struct _strconst;
 extern void SignalError(const char *, const char *);

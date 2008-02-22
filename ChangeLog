@@ -1,3 +1,29 @@
+2008-02-21  Dalibor Topic  <robilad@kaffe.org>
+
+	* configure.ac : Check for glib.
+
+	* kaffe/kaffevm/Makefile.am (AM_CPPFLAGS): Added GLIB_CFLAGS.
+	(libkaffe_la_LIBADD) Added GLIB_LIBS.
+	(libkaffevm_la_SOURCES) Added libraries/clib/native/Unsafe.c.
+
+	* kaffe/kaffevm/jit/Makefile.am (AM_CPPFLAGS): Added GLIB_CFLAGS.
+        (libengine_la_LDFLAGS) Added GLIB_LIBS.
+
+	* kaffe/kaffevm/jit3/Makefile.am (AM_CPPFLAGS): Added GLIB_CFLAGS.
+        (libengine_la_LDFLAGS) Added GLIB_LIBS.
+
+	* kaffe/kaffevm/jit/methodcalls.c (soft_fixup_trampoline) Use glib atomic functions.
+
+	* kaffe/kaffevm/support.h (KaffeVM_GetFieldAddress): Added declaration.
+
+	* kaffe/kaffevm/support.c (KaffeVM_GetFieldAddress): New helper function,
+	created from getFieldAddress.
+
+	* libraries/clib/native/Field.c (getFieldAddress): Factored out into 
+	KaffeVM_GetFieldAddress.
+
+	* include/Makefile.am (NOINSTALL_JNI_DERIVED_HDRS): Added sun_misc_Unsafe.h.
+
 2008-02-20  Dalibor Topic  <robilad@kaffe.org>
 
 	* kaffe/kaffevm/debug.c (kaffe_dprintf): Added missing casts to n.

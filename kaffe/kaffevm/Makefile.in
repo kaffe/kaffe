@@ -125,7 +125,8 @@ am_libkaffevm_la_OBJECTS = libkaffevm_la-AccessController.lo \
 	libkaffevm_la-java_lang_String.lo libkaffevm_la-System.lo \
 	libkaffevm_la-java_lang_Thread.lo libkaffevm_la-Throwable.lo \
 	libkaffevm_la-gnu_classpath_VMStackWalker.lo \
-	libkaffevm_la-gnu_classpath_VMSystemProperties.lo
+	libkaffevm_la-gnu_classpath_VMSystemProperties.lo \
+	libkaffevm_la-Unsafe.lo
 libkaffevm_la_OBJECTS = $(am_libkaffevm_la_OBJECTS)
 libkaffevm_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libkaffevm_la_CFLAGS) \
@@ -202,6 +203,8 @@ FASTJAR = @FASTJAR@
 FFLAGS = @FFLAGS@
 GC_NAME = @GC_NAME@
 GLIBJ_ZIP = @GLIBJ_ZIP@
+GLIB_CFLAGS = @GLIB_CFLAGS@
+GLIB_LIBS = @GLIB_LIBS@
 GMSGFMT = @GMSGFMT@
 GREP = @GREP@
 INSTALL = @INSTALL@
@@ -374,7 +377,8 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/kaffe/kaffevm/verifier \
 	-I$(top_srcdir)/kaffe/kaffevm/jni \
         -I$(top_srcdir)/config/$(Khost_cpu) \
-	-I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os) 
+	-I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os) \
+	$(GLIB_CFLAGS)
 
 native_LTLIBRARIES = libkaffevm.la libkaffe.la
 @HAVE_GCJ_SUPPORT_FALSE@libgcj = #
@@ -405,7 +409,8 @@ libkaffe_la_LIBADD = \
 	$(libkaffe_la_DEPENDENCIES) \
 	$(VM_LIBS) \
 	$(M_LIBS) \
-	$(ZZIP_LIBS)
+	$(ZZIP_LIBS) \
+	$(GLIB_LIBS)
 
 libkaffevm_la_CFLAGS = \
 	$(AM_CFLAGS) \
@@ -543,7 +548,8 @@ libkaffevm_la_SOURCES = \
         $(top_srcdir)/libraries/clib/native/java_lang_Thread.c \
         $(top_srcdir)/libraries/clib/native/Throwable.c \
 	$(top_srcdir)/libraries/clib/native/gnu_classpath_VMStackWalker.c \
-	$(top_srcdir)/libraries/clib/native/gnu_classpath_VMSystemProperties.c 
+	$(top_srcdir)/libraries/clib/native/gnu_classpath_VMSystemProperties.c \
+	$(top_srcdir)/libraries/clib/native/Unsafe.c
 
 CLEANFILES = so_locations
 all: all-recursive
@@ -678,6 +684,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-Runtime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-System.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-Throwable.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-Unsafe.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-VMRuntime.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-gnu_classpath_VMStackWalker.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libkaffevm_la-gnu_classpath_VMSystemProperties.Plo@am__quote@
@@ -1182,6 +1189,13 @@ libkaffevm_la-gnu_classpath_VMSystemProperties.lo: $(top_srcdir)/libraries/clib/
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/libraries/clib/native/gnu_classpath_VMSystemProperties.c' object='libkaffevm_la-gnu_classpath_VMSystemProperties.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-gnu_classpath_VMSystemProperties.lo `test -f '$(top_srcdir)/libraries/clib/native/gnu_classpath_VMSystemProperties.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/native/gnu_classpath_VMSystemProperties.c
+
+libkaffevm_la-Unsafe.lo: $(top_srcdir)/libraries/clib/native/Unsafe.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -MT libkaffevm_la-Unsafe.lo -MD -MP -MF $(DEPDIR)/libkaffevm_la-Unsafe.Tpo -c -o libkaffevm_la-Unsafe.lo `test -f '$(top_srcdir)/libraries/clib/native/Unsafe.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/native/Unsafe.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libkaffevm_la-Unsafe.Tpo $(DEPDIR)/libkaffevm_la-Unsafe.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/libraries/clib/native/Unsafe.c' object='libkaffevm_la-Unsafe.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libkaffevm_la_CFLAGS) $(CFLAGS) -c -o libkaffevm_la-Unsafe.lo `test -f '$(top_srcdir)/libraries/clib/native/Unsafe.c' || echo '$(srcdir)/'`$(top_srcdir)/libraries/clib/native/Unsafe.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

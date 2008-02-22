@@ -19,7 +19,8 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/kaffe/jvmpi \
 	-I$(top_builddir)/include \
 	-I$(top_srcdir)/config/$(Khost_cpu) \
-	-I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os) 
+	-I$(top_srcdir)/config/$(Khost_cpu)/$(Khost_os) \
+	$(GLIB_CFLAGS)
 
 
 AM_CCASFLAGS = \
@@ -33,7 +34,8 @@ AM_CCASFLAGS = \
 noinst_LTLIBRARIES = libengine.la
 
 libengine_la_LDFLAGS = \
-	$(KVMLIBFLAGS)
+	$(KVMLIBFLAGS) \
+	$(GLIB_LIBS)
 
 libengine_la_SOURCES = \
 	basecode.c \

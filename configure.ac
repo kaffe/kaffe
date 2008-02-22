@@ -1572,6 +1572,8 @@ fi
 # Make sure that we get a zziplib instance with zzip_fstat.
 PKG_CHECK_MODULES([ZZIP],[zziplib >= 0.13.24])
 
+PKG_CHECK_MODULES([GLIB],[glib-2.0 >= 2.8.6])
+
 AC_ARG_ENABLE([zlib_zip],
               AS_HELP_STRING([--enable-zlib-zip],
                              [Enable java.util.zip implementation using zlib]),

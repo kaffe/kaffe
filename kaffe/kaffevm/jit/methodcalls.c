@@ -12,6 +12,8 @@
  * of this file. 
  */
 #include "config.h"
+#include <glib.h>
+
 #if defined(HAVE_LIBFFI)
 #include "sysdepCallMethod-ffi.h"
 #else
@@ -34,6 +36,7 @@ soft_fixup_trampoline(FIXUP_TRAMPOLINE_DECL)
 	Method* meth;
 	void **where;
 	void *tramp;
+	void *nativeCode;
 	errorInfo info;
 
 	/* FIXUP_TRAMPOLINE_INIT sets tramp and where */
@@ -64,28 +67,16 @@ DBG(MOREJIT,
 	 * while we were translating the method, so we have to make this
 	 * atomic.
 	 */
-#if defined(COMPARE_AND_EXCHANGE)
-	if (COMPARE_AND_EXCHANGE(where, tramp, METHOD_NATIVECODE(meth))) {
-		;
-	}
-#elif defined(ATOMIC_EXCHANGE)
-	{
-		void *tmp = METHOD_NATIVECODE(meth);
+	nativeCode = METHOD_NATIVECODE(meth);
+	g_atomic_pointer_compare_and_exchange(where, tramp, nativeCode);
 
-		ATOMIC_EXCHANGE(where, tmp);
-	}
-#else
-#error "You have to define either COMPARE_AND_EXCHANGE or ATOMIC_EXCHANGE"
-#endif
-
-TDBG(	dprintf("Calling %s:%s%s @ %p\n", meth->class->name->data, meth->name->data, METHOD_SIGD(meth), METHOD_NATIVECODE(meth));	)
+TDBG(	dprintf("Calling %s:%s%s @ %p\n", meth->class->name->data, meth->name->data, METHOD_SIGD(meth), nativeCode);	)
 
 DBG(MOREJIT,
-	dprintf("soft_fixup_trampoline(): return %p\n",
-		METHOD_NATIVECODE(meth));
+	dprintf("soft_fixup_trampoline(): return %p\n", nativeCode);
     );
 
-	return (METHOD_NATIVECODE(meth));
+	return nativeCode;
 }
 
 /*
