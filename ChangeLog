@@ -1,5 +1,10 @@
 2008-02-21  Dalibor Topic  <robilad@kaffe.org>
 
+	* FAQ/FAQ.cross-compiling: Documented that dependencies need to be
+	cross compiled first.
+
+2008-02-21  Dalibor Topic  <robilad@kaffe.org>
+
 	* FAQ/FAQ.requiredlibraries: Added glib.
 
 2008-02-21  Dalibor Topic  <robilad@kaffe.org>

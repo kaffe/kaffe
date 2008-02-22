@@ -44,6 +44,24 @@ And anyway, configuring and making your kaffe binary in different
 directory from source directory is a good practice. This is really
 needed for cross compiling.
 
+Dependencies are needed for cross compilation
+=============================================
+
+In order to successfully cross-compile Kaffe, you will need to 
+start with the dependencies listed in FAQ.requiredlibraries, and
+cross-compile them first.
+
+It's easiest to cross compile all dependencies using the same
+--prefix to configure their builds, so that all the dependencies
+end up being installed in the same directory hierachy.
+
+When configuring kaffe for cross-compilation, you'll need to
+tell Kaffe's configure script where to look for the cross-compiled
+libraries using --with-includes and --with-libs options to point 
+Kaffe to the include and library files, respectively. You'll also
+need to set the environment variable PKG_CONFIG_PATH to point to 
+the location of the .pc files for the cross-compiled libraries.
+
 'kaffeh' is needed for cross compilation
 ========================================
 The way how to supply options to configure is roughly ok, but it is
