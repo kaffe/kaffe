@@ -1,11 +1,11 @@
-Release Notes for 1.1.9
-=======================
+Release Notes for 1.1.10-pre
+============================
 
-Release 1.1.9 of Kaffe is a "development" release.
+Release 1.1.10-pre of Kaffe is a "development" release.
 
 It has been tested, but not as thoroughly as a
 production release would be. It contains major 
-improvements over 1.1.8, which was released 5 
+improvements over 1.1.9, which was released X 
 months ago. I anticipate that most people will have 
 less trouble with this release, and more fun.
 
