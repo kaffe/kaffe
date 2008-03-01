@@ -13,7 +13,6 @@
 # PARTICULAR PURPOSE.
 
 @SET_MAKE@
-
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
@@ -68,15 +67,6 @@ RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	install-pdf-recursive install-ps-recursive install-recursive \
 	installcheck-recursive installdirs-recursive pdf-recursive \
 	ps-recursive uninstall-recursive
-am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
-am__vpath_adj = case $$p in \
-    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
-    *) f=$$p;; \
-  esac;
-am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
-am__installdirs = "$(DESTDIR)$(jrelibdir)"
-jrelibDATA_INSTALL = $(INSTALL_DATA)
-DATA = $(jrelib_DATA)
 RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
   distclean-recursive maintainer-clean-recursive
 ETAGS = etags
@@ -295,12 +285,6 @@ SUBDIRS = \
 	$(MAYBE_PEERLESS_KAFFE_AWT) \
 	$(MAYBE_ZLIB_ZIP)
 
-jrelib_DATA = \
-	     logging.properties
-
-EXTRA_DIST = \
-	    logging.properties 
-
 all: all-recursive
 
 .SUFFIXES:
@@ -339,23 +323,6 @@ mostlyclean-libtool:
 
 clean-libtool:
 	-rm -rf .libs _libs
-install-jrelibDATA: $(jrelib_DATA)
-	@$(NORMAL_INSTALL)
-	test -z "$(jrelibdir)" || $(MKDIR_P) "$(DESTDIR)$(jrelibdir)"
-	@list='$(jrelib_DATA)'; for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  f=$(am__strip_dir) \
-	  echo " $(jrelibDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(jrelibdir)/$$f'"; \
-	  $(jrelibDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(jrelibdir)/$$f"; \
-	done
-
-uninstall-jrelibDATA:
-	@$(NORMAL_UNINSTALL)
-	@list='$(jrelib_DATA)'; for p in $$list; do \
-	  f=$(am__strip_dir) \
-	  echo " rm -f '$(DESTDIR)$(jrelibdir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(jrelibdir)/$$f"; \
-	done
 
 # This directory's subdirectories are mostly independent; you can cd
 # into them and run `make' without going through this Makefile.
@@ -533,12 +500,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-recursive
-all-am: Makefile $(DATA)
+all-am: Makefile
 installdirs: installdirs-recursive
 installdirs-am:
-	for dir in "$(DESTDIR)$(jrelibdir)"; do \
-	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
-	done
 install: install-recursive
 install-exec: install-exec-recursive
 install-data: install-data-recursive
@@ -581,7 +545,7 @@ info: info-recursive
 
 info-am:
 
-install-data-am: install-data-local install-jrelibDATA
+install-data-am: install-data-local
 
 install-dvi: install-dvi-recursive
 
@@ -615,7 +579,7 @@ ps: ps-recursive
 
 ps-am:
 
-uninstall-am: uninstall-jrelibDATA uninstall-local
+uninstall-am: uninstall-local
 
 .MAKE: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) install-am \
 	install-strip
@@ -627,13 +591,12 @@ uninstall-am: uninstall-jrelibDATA uninstall-local
 	html-am info info-am install install-am install-data \
 	install-data-am install-data-local install-dvi install-dvi-am \
 	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-jrelibDATA install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	installdirs-am maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-generic mostlyclean-libtool pdf pdf-am \
-	ps ps-am tags tags-recursive uninstall uninstall-am \
-	uninstall-jrelibDATA uninstall-local
+	install-info install-info-am install-man install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installdirs installdirs-am \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags tags-recursive uninstall uninstall-am uninstall-local
 
 
 install-data-local: installdirs

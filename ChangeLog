@@ -1,5 +1,11 @@
 2008-03-01  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/javalib/logging.properties: Removed.
+	
+	* libraries/javalib/Makefile.am (jrelib_DATA, EXTRA_DIST): Removed.
+
+2008-03-01  Dalibor Topic  <robilad@kaffe.org>
+
 	* kaffe/kaffeh/Makefile.am (AM_CFLAGS): Removed KAFFE_CFLAGS.
 
 2008-03-01  Dalibor Topic  <robilad@kaffe.org>
