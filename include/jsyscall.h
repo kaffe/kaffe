@@ -16,7 +16,8 @@
 #define __jsyscall_h
 
 #include "config.h"
-#include "config-int.h"
+
+#include <stdint.h>
 
 #if defined(HAVE_STDLIB_H)
 #include <stdlib.h>

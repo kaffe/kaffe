@@ -93,7 +93,6 @@ noinst_HEADERS = \
 	native.h 
 
 include_HEADERS = \
-	config-int.h \
 	jni.h \
 	jni_md.h \
 	jni_cpp.h \
@@ -173,7 +172,6 @@ CLEANFILES = \
 DISTCLEANFILES = \
 	$(DERIVED_HDRS) \
 	$(JNI_DERIVED_HDRS) \
-	config-int.h \
 	stamp-h0all \
 	stamp-h1all \
 	stamp-libtritonusalsa \

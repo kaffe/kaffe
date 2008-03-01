@@ -27,7 +27,7 @@
  * as appropriate and which in turn include this file.
  */
 
-#include "config-int.h"
+#include <stdint.h>
 
 typedef int32_t atomic32_t;
 typedef uint32_t uatomic32_t;

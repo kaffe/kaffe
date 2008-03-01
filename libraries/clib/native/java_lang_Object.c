@@ -11,8 +11,9 @@
  * of this file. 
  */
 
+#include <stdint.h>
+
 #include "config.h"
-#include "config-int.h"
 #include "config-std.h"
 #include "config-mem.h"
 #include "classMethod.h"

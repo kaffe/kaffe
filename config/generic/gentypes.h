@@ -13,6 +13,6 @@
 #define __KAFFE_GENTYPES_H
 
 #include "config.h"
-#include "config-int.h"
+#include <stdint.h>
 
 #endif

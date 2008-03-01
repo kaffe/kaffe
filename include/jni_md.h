@@ -27,7 +27,7 @@ executable file might be covered by the GNU General Public License. */
 #ifndef __CLASSPATH_JNI_MD_H__
 #define __CLASSPATH_JNI_MD_H__
 
-#include "config-int.h"
+#include <stdint.h>
 
 /* Linkage and calling conventions. */
 #if defined (_WIN32) || defined (__WIN32__) || defined (WIN32)

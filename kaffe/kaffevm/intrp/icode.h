@@ -12,8 +12,9 @@
 #ifndef __icode_h
 #define	__icode_h
 
+#include <stdint.h>
+
 #include "config.h"
-#include "config-int.h"
 #include "slots.h"
 #include "soft.h"
 

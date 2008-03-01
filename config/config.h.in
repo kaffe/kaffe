@@ -46,9 +46,6 @@
 /* Define to 1 if you have the `atexit' function. */
 #undef HAVE_ATEXIT
 
-/* Do we have bool */
-#undef HAVE_BOOL
-
 /* Define to 1 if you have the <bsd/libc.h> header file. */
 #undef HAVE_BSD_LIBC_H
 
@@ -540,9 +537,6 @@
    stackbase */
 #undef SIGALTSTACK_NEEDS_END
 
-/* The size of `char', as computed by sizeof. */
-#undef SIZEOF_CHAR
-
 /* The size of `int', as computed by sizeof. */
 #undef SIZEOF_INT
 
@@ -554,9 +548,6 @@
 
 /* The size of `short', as computed by sizeof. */
 #undef SIZEOF_SHORT
-
-/* The size of `void*', as computed by sizeof. */
-#undef SIZEOF_VOIDP
 
 /* The size of `void *', as computed by sizeof. */
 #undef SIZEOF_VOID_P

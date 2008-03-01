@@ -16,7 +16,7 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
    02111-1307 USA.  */
 
-#include "config-int.h"
+#include <stdint.h>
 #include <ia64intrin.h>
 
 typedef int8_t atomic8_t;

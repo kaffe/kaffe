@@ -13,9 +13,9 @@
 
 #include <qfont.h>
 #include <qfontmetrics.h>
+#include <stdint.h>
 
 #include "config.h"
-#include "config-int.h"
 #include "toolkit.h"
 
 /**

@@ -1141,16 +1141,6 @@ AC_C_CONST
 AC_C_INLINE
 
 dnl =========================================================================
-dnl Check for [u]int{8,16,32,64} and bool.
-dnl -------------------------------------------------------------------------
-
-AX_CREATE_STDINT_H([include/config-int.h])
-
-if test x"$ac_cv_typedef_bool" = x"yes"; then
-  AC_DEFINE(HAVE_BOOL, 1, [Do we have bool])
-fi
-
-dnl =========================================================================
 dnl Check for struct sigcontext.
 dnl -------------------------------------------------------------------------
 

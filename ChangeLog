@@ -1,5 +1,38 @@
 2008-03-01  Dalibor Topic  <robilad@kaffe.org>
 
+	* config/x86_64/atomic.h,
+	config/s390/atomic.h,
+	config/config-std.h, 
+	config/powerpc/bits/atomic.h, 
+	config/mips/atomic.h,
+	config/generic/gentypes.h,
+	config/ia64/atomic.h,
+	config/m68k/atomic.h,
+	config/alpha/atomic.h,
+	config/sparc/atomic-sparc64.h,
+	config/sparc/atomic-sparc32v9.h,
+	libraries/clib/native/java_lang_Object.c,
+	libraries/clib/awt/qt/fnt.cc,
+	include/jni_md.h,
+	include/jsyscall.h,
+	kaffe/kaffevm/intrp/icode.h,
+	kaffe/kaffevm/gc.h: Include stdint.h rather than config-int.h.
+
+	* include/Makefile.am (include_HEADERS, DISTCLEANFILES): Removed 
+	config-int-h.
+
+	* config/config-hacks.h: (HAVE_BOOL) Removed.
+
+	* libraries/clib/awt/qt/toolkit.h [HAVE_BOOL]: Removed.
+
+	* kaffe/kaffevm/gtypes.h: (HAVE_BOOL): Removed. Include stdint.h 
+	and stdbool.h.
+
+	* configure.ac: Don't check for stdint.h, or having a bool type,
+	those are standard c99 features.
+
+2008-03-01  Dalibor Topic  <robilad@kaffe.org>
+
 	* libraries/javalib/logging.properties: Removed.
 	
 	* libraries/javalib/Makefile.am (jrelib_DATA, EXTRA_DIST): Removed.

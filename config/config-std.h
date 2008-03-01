@@ -17,10 +17,7 @@
 #ifndef __config_std_h
 #define __config_std_h
 
-/* We put config-int at the top because stdio.h may overwrite some
- * types which are defined by inttypes.h (and incorrectly of course)
- */
-#include "config-int.h"
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>

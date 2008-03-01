@@ -16,7 +16,7 @@
 #include "config.h"
 #endif
 
-#include "config-int.h"
+#include <stdint.h>
 
 #if defined(HAVE_LIMITS_H)
 #include <limits.h>

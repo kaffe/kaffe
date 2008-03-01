@@ -12,8 +12,10 @@
 #ifndef __gtype_h
 #define __gtype_h
 
+#include <stdbool.h>
+#include <stdint.h>
+
 #include "config.h"
-#include "config-int.h"
 #include "config-std.h"
 #include "jni.h"
 
@@ -41,13 +43,6 @@ typedef int64			intp;
 
 typedef	void*		jref;
 typedef intp            jword;
-
-#if !defined(HAVE_BOOL)
-typedef enum _bool {
-	false	= 0,
-	true	= 1
-} bool;
-#endif
 
 typedef uint8			u1;
 typedef uint16			u2;

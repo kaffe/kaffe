@@ -25,11 +25,6 @@
 #if defined(HAVE_WINSOCK2_H)
 #include <winsock2.h>
 #endif
-#if defined(__cplusplus)
-#define HAVE_BOOL 1
-#else
-#define inline
-#endif
 #endif
 
 /* Hack to configure AIX */

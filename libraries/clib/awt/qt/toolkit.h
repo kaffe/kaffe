@@ -14,10 +14,6 @@
 #ifndef __toolkit_h
 #define __toolkit_h
 
-#ifdef __cplusplus
-#define HAVE_BOOL
-#endif
-
 #include "defs.h"
 
 BEGIN_C_DECLS

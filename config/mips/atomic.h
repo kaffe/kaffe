@@ -20,7 +20,7 @@
 #ifndef _MIPS_BITS_ATOMIC_H
 #define _MIPS_BITS_ATOMIC_H 1
 
-#include "config-int.h"
+#include <stdint.h>
 #include <sgidefs.h>
 
 typedef int32_t atomic32_t;
