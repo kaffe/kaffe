@@ -1,5 +1,9 @@
 2008-03-01  Dalibor Topic  <robilad@kaffe.org>
 
+	* kaffe/kaffeh/Makefile.am (AM_CFLAGS): Removed KAFFE_CFLAGS.
+
+2008-03-01  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac (KAFFE_CFLAGS): Removed 
 
 	* kaffe/jvmpi/Makefile.am,
