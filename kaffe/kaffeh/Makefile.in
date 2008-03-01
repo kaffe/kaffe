@@ -293,7 +293,6 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 with_engine = @with_engine@
 AM_CFLAGS = \
-	$(KAFFE_CFLAGS) \
 	$(CFLAGS_PG)
 
 AM_CPPFLAGS = \

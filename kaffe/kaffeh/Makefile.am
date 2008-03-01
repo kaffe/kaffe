@@ -7,7 +7,6 @@
 # of this file. 
 
 AM_CFLAGS= \
-	$(KAFFE_CFLAGS) \
 	$(CFLAGS_PG)
 
 AM_CPPFLAGS = \
