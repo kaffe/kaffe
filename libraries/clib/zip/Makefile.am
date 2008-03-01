@@ -6,8 +6,6 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-AM_CFLAGS= $(KAFFE_CFLAGS)
-
 AM_CPPFLAGS = \
 	-I$(top_builddir)/include \
         -I$(top_srcdir)/config/$(Khost_cpu) \

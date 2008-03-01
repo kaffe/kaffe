@@ -1030,7 +1030,6 @@ kaffe_TRANSF
 kaffeh_TRANSF
 kaffebin_TRANSF
 CFLAGS_WITHOUT_PG
-KAFFE_CFLAGS
 KAFFE_CCASFLAGS
 LTLIBOBJS'
 ac_subst_files='cpu_os_frag
@@ -4237,8 +4236,8 @@ esac
 
 
 
-{ echo "$as_me:$LINENO: checking KAFFE_CFLAGS for maximum warnings" >&5
-echo $ECHO_N "checking KAFFE_CFLAGS for maximum warnings... $ECHO_C" >&6; }
+{ echo "$as_me:$LINENO: checking CFLAGS for maximum warnings" >&5
+echo $ECHO_N "checking CFLAGS for maximum warnings... $ECHO_C" >&6; }
 if test "${ac_cv_cflags_warn_all+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
@@ -4311,18 +4310,18 @@ case ".$ac_cv_cflags_warn_all" in
    .|.no|.no,*)
  ;;
    *)
-   if echo " $KAFFE_CFLAGS " | grep " $ac_cv_cflags_warn_all " 2>&1 >/dev/null
-   then { (echo "$as_me:$LINENO: : KAFFE_CFLAGS does contain \$ac_cv_cflags_warn_all") >&5
-  (: KAFFE_CFLAGS does contain $ac_cv_cflags_warn_all) 2>&5
+   if echo " $CFLAGS " | grep " $ac_cv_cflags_warn_all " 2>&1 >/dev/null
+   then { (echo "$as_me:$LINENO: : CFLAGS does contain \$ac_cv_cflags_warn_all") >&5
+  (: CFLAGS does contain $ac_cv_cflags_warn_all) 2>&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }
-   else { (echo "$as_me:$LINENO: : KAFFE_CFLAGS=\"\$KAFFE_CFLAGS \$ac_cv_cflags_warn_all\"") >&5
-  (: KAFFE_CFLAGS="$KAFFE_CFLAGS $ac_cv_cflags_warn_all") 2>&5
+   else { (echo "$as_me:$LINENO: : CFLAGS=\"\$CFLAGS \$ac_cv_cflags_warn_all\"") >&5
+  (: CFLAGS="$CFLAGS $ac_cv_cflags_warn_all") 2>&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }
-                      KAFFE_CFLAGS="$KAFFE_CFLAGS $ac_cv_cflags_warn_all"
+                      CFLAGS="$CFLAGS $ac_cv_cflags_warn_all"
    fi
  ;;
 esac
@@ -4386,8 +4385,8 @@ esac
 # AX_CFLAGS_GCC_OPTION([-pedantic])
 # AX_CFLAGS_GCC_OPTION([-ansi])
 
-{ echo "$as_me:$LINENO: checking KAFFE_CFLAGS for gcc -W" >&5
-echo $ECHO_N "checking KAFFE_CFLAGS for gcc -W... $ECHO_C" >&6; }
+{ echo "$as_me:$LINENO: checking CFLAGS for gcc -W" >&5
+echo $ECHO_N "checking CFLAGS for gcc -W... $ECHO_C" >&6; }
 if test "${ac_cv_cflags_gcc_option__W+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
@@ -4459,23 +4458,23 @@ case ".$ac_cv_cflags_gcc_option__W" in
      .ok|.ok,*)  ;;
    .|.no|.no,*)  ;;
    *)
-   if echo " $KAFFE_CFLAGS " | grep " $ac_cv_cflags_gcc_option__W " 2>&1 >/dev/null
-   then { (echo "$as_me:$LINENO: : KAFFE_CFLAGS does contain \$ac_cv_cflags_gcc_option__W") >&5
-  (: KAFFE_CFLAGS does contain $ac_cv_cflags_gcc_option__W) 2>&5
+   if echo " $CFLAGS " | grep " $ac_cv_cflags_gcc_option__W " 2>&1 >/dev/null
+   then { (echo "$as_me:$LINENO: : CFLAGS does contain \$ac_cv_cflags_gcc_option__W") >&5
+  (: CFLAGS does contain $ac_cv_cflags_gcc_option__W) 2>&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }
-   else { (echo "$as_me:$LINENO: : KAFFE_CFLAGS=\"\$KAFFE_CFLAGS \$ac_cv_cflags_gcc_option__W\"") >&5
-  (: KAFFE_CFLAGS="$KAFFE_CFLAGS $ac_cv_cflags_gcc_option__W") 2>&5
+   else { (echo "$as_me:$LINENO: : CFLAGS=\"\$CFLAGS \$ac_cv_cflags_gcc_option__W\"") >&5
+  (: CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__W") 2>&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }
-                      KAFFE_CFLAGS="$KAFFE_CFLAGS $ac_cv_cflags_gcc_option__W"
+                      CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__W"
    fi
  ;;
 esac
-	{ echo "$as_me:$LINENO: checking KAFFE_CFLAGS for gcc -Wextra" >&5
-echo $ECHO_N "checking KAFFE_CFLAGS for gcc -Wextra... $ECHO_C" >&6; }
+	{ echo "$as_me:$LINENO: checking CFLAGS for gcc -Wextra" >&5
+echo $ECHO_N "checking CFLAGS for gcc -Wextra... $ECHO_C" >&6; }
 if test "${ac_cv_cflags_gcc_option__Wextra+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
@@ -4547,18 +4546,18 @@ case ".$ac_cv_cflags_gcc_option__Wextra" in
      .ok|.ok,*)  ;;
    .|.no|.no,*)  ;;
    *)
-   if echo " $KAFFE_CFLAGS " | grep " $ac_cv_cflags_gcc_option__Wextra " 2>&1 >/dev/null
-   then { (echo "$as_me:$LINENO: : KAFFE_CFLAGS does contain \$ac_cv_cflags_gcc_option__Wextra") >&5
-  (: KAFFE_CFLAGS does contain $ac_cv_cflags_gcc_option__Wextra) 2>&5
+   if echo " $CFLAGS " | grep " $ac_cv_cflags_gcc_option__Wextra " 2>&1 >/dev/null
+   then { (echo "$as_me:$LINENO: : CFLAGS does contain \$ac_cv_cflags_gcc_option__Wextra") >&5
+  (: CFLAGS does contain $ac_cv_cflags_gcc_option__Wextra) 2>&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }
-   else { (echo "$as_me:$LINENO: : KAFFE_CFLAGS=\"\$KAFFE_CFLAGS \$ac_cv_cflags_gcc_option__Wextra\"") >&5
-  (: KAFFE_CFLAGS="$KAFFE_CFLAGS $ac_cv_cflags_gcc_option__Wextra") 2>&5
+   else { (echo "$as_me:$LINENO: : CFLAGS=\"\$CFLAGS \$ac_cv_cflags_gcc_option__Wextra\"") >&5
+  (: CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wextra") 2>&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }
-                      KAFFE_CFLAGS="$KAFFE_CFLAGS $ac_cv_cflags_gcc_option__Wextra"
+                      CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__Wextra"
    fi
  ;;
 esac
@@ -4697,8 +4696,8 @@ esac
 ## Required for gcc 4.1.x as long as kaffe's
 ## not cleaned up to use unions in classMethod.h
 ## where necessary.
-{ echo "$as_me:$LINENO: checking KAFFE_CFLAGS for gcc -fno-strict-aliasing" >&5
-echo $ECHO_N "checking KAFFE_CFLAGS for gcc -fno-strict-aliasing... $ECHO_C" >&6; }
+{ echo "$as_me:$LINENO: checking CFLAGS for gcc -fno-strict-aliasing" >&5
+echo $ECHO_N "checking CFLAGS for gcc -fno-strict-aliasing... $ECHO_C" >&6; }
 if test "${ac_cv_cflags_gcc_option__fno_strict_aliasing+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
@@ -4770,18 +4769,18 @@ case ".$ac_cv_cflags_gcc_option__fno_strict_aliasing" in
      .ok|.ok,*)  ;;
    .|.no|.no,*)  ;;
    *)
-   if echo " $KAFFE_CFLAGS " | grep " $ac_cv_cflags_gcc_option__fno_strict_aliasing " 2>&1 >/dev/null
-   then { (echo "$as_me:$LINENO: : KAFFE_CFLAGS does contain \$ac_cv_cflags_gcc_option__fno_strict_aliasing") >&5
-  (: KAFFE_CFLAGS does contain $ac_cv_cflags_gcc_option__fno_strict_aliasing) 2>&5
+   if echo " $CFLAGS " | grep " $ac_cv_cflags_gcc_option__fno_strict_aliasing " 2>&1 >/dev/null
+   then { (echo "$as_me:$LINENO: : CFLAGS does contain \$ac_cv_cflags_gcc_option__fno_strict_aliasing") >&5
+  (: CFLAGS does contain $ac_cv_cflags_gcc_option__fno_strict_aliasing) 2>&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }
-   else { (echo "$as_me:$LINENO: : KAFFE_CFLAGS=\"\$KAFFE_CFLAGS \$ac_cv_cflags_gcc_option__fno_strict_aliasing\"") >&5
-  (: KAFFE_CFLAGS="$KAFFE_CFLAGS $ac_cv_cflags_gcc_option__fno_strict_aliasing") 2>&5
+   else { (echo "$as_me:$LINENO: : CFLAGS=\"\$CFLAGS \$ac_cv_cflags_gcc_option__fno_strict_aliasing\"") >&5
+  (: CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__fno_strict_aliasing") 2>&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }
-                      KAFFE_CFLAGS="$KAFFE_CFLAGS $ac_cv_cflags_gcc_option__fno_strict_aliasing"
+                      CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__fno_strict_aliasing"
    fi
  ;;
 esac
@@ -4791,8 +4790,8 @@ esac
 ## omits the frame pointer on -O1 and above on
 ## some architectures, notably i386, making
 ## it impossible to unwind exceptions.
-{ echo "$as_me:$LINENO: checking KAFFE_CFLAGS for gcc -fno-omit-frame-pointer" >&5
-echo $ECHO_N "checking KAFFE_CFLAGS for gcc -fno-omit-frame-pointer... $ECHO_C" >&6; }
+{ echo "$as_me:$LINENO: checking CFLAGS for gcc -fno-omit-frame-pointer" >&5
+echo $ECHO_N "checking CFLAGS for gcc -fno-omit-frame-pointer... $ECHO_C" >&6; }
 if test "${ac_cv_cflags_gcc_option__fno_omit_frame_pointer+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
@@ -4864,18 +4863,18 @@ case ".$ac_cv_cflags_gcc_option__fno_omit_frame_pointer" in
      .ok|.ok,*)  ;;
    .|.no|.no,*)  ;;
    *)
-   if echo " $KAFFE_CFLAGS " | grep " $ac_cv_cflags_gcc_option__fno_omit_frame_pointer " 2>&1 >/dev/null
-   then { (echo "$as_me:$LINENO: : KAFFE_CFLAGS does contain \$ac_cv_cflags_gcc_option__fno_omit_frame_pointer") >&5
-  (: KAFFE_CFLAGS does contain $ac_cv_cflags_gcc_option__fno_omit_frame_pointer) 2>&5
+   if echo " $CFLAGS " | grep " $ac_cv_cflags_gcc_option__fno_omit_frame_pointer " 2>&1 >/dev/null
+   then { (echo "$as_me:$LINENO: : CFLAGS does contain \$ac_cv_cflags_gcc_option__fno_omit_frame_pointer") >&5
+  (: CFLAGS does contain $ac_cv_cflags_gcc_option__fno_omit_frame_pointer) 2>&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }
-   else { (echo "$as_me:$LINENO: : KAFFE_CFLAGS=\"\$KAFFE_CFLAGS \$ac_cv_cflags_gcc_option__fno_omit_frame_pointer\"") >&5
-  (: KAFFE_CFLAGS="$KAFFE_CFLAGS $ac_cv_cflags_gcc_option__fno_omit_frame_pointer") 2>&5
+   else { (echo "$as_me:$LINENO: : CFLAGS=\"\$CFLAGS \$ac_cv_cflags_gcc_option__fno_omit_frame_pointer\"") >&5
+  (: CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__fno_omit_frame_pointer") 2>&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }
-                      KAFFE_CFLAGS="$KAFFE_CFLAGS $ac_cv_cflags_gcc_option__fno_omit_frame_pointer"
+                      CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__fno_omit_frame_pointer"
    fi
  ;;
 esac
@@ -7238,7 +7237,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 7241 "configure"' > conftest.$ac_ext
+  echo '#line 7240 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -9798,11 +9797,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9801: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9800: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9805: \$? = $ac_status" >&5
+   echo "$as_me:9804: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -10088,11 +10087,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:10091: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:10090: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:10095: \$? = $ac_status" >&5
+   echo "$as_me:10094: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -10192,11 +10191,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:10195: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:10194: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:10199: \$? = $ac_status" >&5
+   echo "$as_me:10198: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -12554,7 +12553,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12557 "configure"
+#line 12556 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12654,7 +12653,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12657 "configure"
+#line 12656 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -15074,11 +15073,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15077: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15076: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:15081: \$? = $ac_status" >&5
+   echo "$as_me:15080: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -15178,11 +15177,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15181: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15180: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:15185: \$? = $ac_status" >&5
+   echo "$as_me:15184: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -16755,11 +16754,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16758: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16757: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:16762: \$? = $ac_status" >&5
+   echo "$as_me:16761: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -16859,11 +16858,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:16862: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:16861: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:16866: \$? = $ac_status" >&5
+   echo "$as_me:16865: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -19059,11 +19058,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:19062: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:19061: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:19066: \$? = $ac_status" >&5
+   echo "$as_me:19065: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -19349,11 +19348,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:19352: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:19351: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:19356: \$? = $ac_status" >&5
+   echo "$as_me:19355: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -19453,11 +19452,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:19456: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:19455: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:19460: \$? = $ac_status" >&5
+   echo "$as_me:19459: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -25277,7 +25276,7 @@ fi
 # Finally, execute ACTION-IF-FOUND/ACTION-IF-NOT-FOUND:
 if test x"$acx_pthread_ok" = xyes; then
         THREADLIBS="$PTHREAD_LIBS "
-		     KAFFE_CFLAGS="$KAFFE_CFLAGS $PTHREAD_CFLAGS"
+		     CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
                      CC="$PTHREAD_CC"
         :
 else
@@ -25294,7 +25293,6 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 	OLD_LIBS="$LIBS"
 	LIBS="$LIBS $THREADLIBS"
 	OLD_CFLAGS="$CFLAGS"
-	CFLAGS="$KAFFE_CFLAGS"
 
 for ac_func in pthread_getattr_np
 do
@@ -26008,7 +26006,7 @@ else
 JAVA_TEST=Test.java
 CLASS_TEST=Test.class
 cat << \EOF > $JAVA_TEST
-/* #line 26011 "configure" */
+/* #line 26009 "configure" */
 public class Test {
 }
 EOF
@@ -33114,7 +33112,7 @@ cat >>confdefs.h <<\_ACEOF
 #define HAVE_GCJ_SUPPORT 1
 _ACEOF
 
-      KAFFE_CFLAGS="$KAFFE_CFLAGS -fexceptions"
+      CFLAGS="$CFLAGS -fexceptions"
     fi
   fi
 fi
@@ -33157,7 +33155,7 @@ _ACEOF
     enable_mips2=yes
     case "$Khost_os" in
 	linux*)
-		KAFFE_CFLAGS="$KAFFE_CFLAGS -mips2"
+		CFLAGS="$CFLAGS -mips2"
 		;;
     esac
 fi
@@ -42607,13 +42605,12 @@ CPPFLAGS="-I$abssrcdir/kaffe/kaffevm -I$abssrcdir/kaffe/kaffevm/$with_engine -I$
 LIBS="$LIBS $LTLIBS"
 
 CFLAGS_WITHOUT_PG=""
-for ac_option in $CFLAGS $KAFFE_CFLAGS; do
+for ac_option in $CFLAGS; do
     if test x"$ac_option" = x"-pg"; then :;
     else
         CFLAGS_WITHOUT_PG="$CFLAGS_WITHOUT_PG $ac_option"
     fi
 done
-
 
 
 
@@ -43993,12 +43990,11 @@ kaffe_TRANSF!$kaffe_TRANSF$ac_delim
 kaffeh_TRANSF!$kaffeh_TRANSF$ac_delim
 kaffebin_TRANSF!$kaffebin_TRANSF$ac_delim
 CFLAGS_WITHOUT_PG!$CFLAGS_WITHOUT_PG$ac_delim
-KAFFE_CFLAGS!$KAFFE_CFLAGS$ac_delim
 KAFFE_CCASFLAGS!$KAFFE_CCASFLAGS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 59; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 58; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5

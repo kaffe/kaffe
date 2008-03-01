@@ -84,7 +84,7 @@ AC_PROG_CC_C99
 
 dnl If gcc is the compiler, compile with -Wall for lots of warnings
 
-AX_CFLAGS_WARN_ALL(KAFFE_CFLAGS)
+AX_CFLAGS_WARN_ALL
 
 # the following are covered by -Wall, but we list them separately, so
 # that it's easier to control.
@@ -144,8 +144,8 @@ AX_CFLAGS_WARN_ALL(KAFFE_CFLAGS)
 # AX_CFLAGS_GCC_OPTION([-pedantic])
 # AX_CFLAGS_GCC_OPTION([-ansi])
 
-AX_CFLAGS_GCC_OPTION([-W],KAFFE_CFLAGS)	dnl new name is -Wextra
-AX_CFLAGS_GCC_OPTION([-Wextra],KAFFE_CFLAGS)
+AX_CFLAGS_GCC_OPTION([-W])	dnl new name is -Wextra
+AX_CFLAGS_GCC_OPTION([-Wextra])
 
 # AX_CFLAGS_GCC_OPTION([-Wfloat-equal])
 # AX_CFLAGS_GCC_OPTION([-Wtraditional])
@@ -192,13 +192,13 @@ AX_CFLAGS_GCC_OPTION([-mregnames],KAFFE_CCASFLAGS)
 ## Required for gcc 4.1.x as long as kaffe's
 ## not cleaned up to use unions in classMethod.h
 ## where necessary.
-AX_CFLAGS_GCC_OPTION([-fno-strict-aliasing],KAFFE_CFLAGS)
+AX_CFLAGS_GCC_OPTION([-fno-strict-aliasing])
 
 ## Required for gcc 4.1.x and above, as it 
 ## omits the frame pointer on -O1 and above on
 ## some architectures, notably i386, making
 ## it impossible to unwind exceptions.
-AX_CFLAGS_GCC_OPTION([-fno-omit-frame-pointer],KAFFE_CFLAGS)
+AX_CFLAGS_GCC_OPTION([-fno-omit-frame-pointer])
 
 GCC_ATTRIBUTE_ALWAYS_INLINE
 GCC_ATTRIBUTE_CONST
@@ -671,12 +671,11 @@ THREAD_DIR=systems/$with_threads
 dnl Check for thread libraries
 if test x$with_threads = xunix-pthreads ; then
 	ACX_PTHREAD([THREADLIBS="$PTHREAD_LIBS "
-		     KAFFE_CFLAGS="$KAFFE_CFLAGS $PTHREAD_CFLAGS"
+		     CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
                      CC="$PTHREAD_CC"])
 	OLD_LIBS="$LIBS"
 	LIBS="$LIBS $THREADLIBS"
 	OLD_CFLAGS="$CFLAGS"
-	CFLAGS="$KAFFE_CFLAGS"
 	AC_CHECK_FUNCS([pthread_getattr_np])
 	LIBS="$OLD_LIBS"
 	CFLAGS="$OLD_CFLAGS"
@@ -1078,7 +1077,7 @@ if test "x$enable_gcj" = "xyes"; then
     if test "x$have_libgcj_headers" = xyes; then
       enable_gcj=yes
       AC_DEFINE([HAVE_GCJ_SUPPORT], 1, [Enable GCJ support. ])
-      KAFFE_CFLAGS="$KAFFE_CFLAGS -fexceptions"
+      CFLAGS="$CFLAGS -fexceptions"
     fi
   fi
 fi
@@ -1107,7 +1106,7 @@ if test x"$enable_mips2" != x"no" -a x"$Khost_cpu" = x"mips"; then
     enable_mips2=yes
     case "$Khost_os" in
 	linux*)
-		KAFFE_CFLAGS="$KAFFE_CFLAGS -mips2"
+		CFLAGS="$CFLAGS -mips2"
 		;;
     esac
 fi
@@ -1769,7 +1768,7 @@ LIBS="$LIBS $LTLIBS"
 
 dnl Avoid GNU Make $(filter-out -pg,@CFLAGS@) in kaffe/xprof/Makefile.am
 CFLAGS_WITHOUT_PG=""
-for ac_option in $CFLAGS $KAFFE_CFLAGS; do
+for ac_option in $CFLAGS; do
     if test x"$ac_option" = x"-pg"; then :;
     else
         CFLAGS_WITHOUT_PG="$CFLAGS_WITHOUT_PG $ac_option"
@@ -1777,8 +1776,6 @@ for ac_option in $CFLAGS $KAFFE_CFLAGS; do
 done
 AC_SUBST(CFLAGS_WITHOUT_PG)
 
-dnl Replace KAFFE_CFLAGS by the generated one
-AC_SUBST(KAFFE_CFLAGS)
 dnl Replace KAFFE_CCASFLAGS by the generated one
 AC_SUBST(KAFFE_CCASFLAGS)
 

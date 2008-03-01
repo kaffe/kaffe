@@ -12,8 +12,6 @@
 
 @engine_frag@
 
-AM_CFLAGS= $(KAFFE_CFLAGS)
-
 if NEED_LIBXPROF
 libxprof = ../../kaffe/xprof/libkaffexprof.la
 else

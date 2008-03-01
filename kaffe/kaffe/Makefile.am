@@ -6,8 +6,6 @@
 # See the file "license.terms" for information on usage and redistribution 
 # of this file. 
 
-AM_CFLAGS= $(KAFFE_CFLAGS)
-
 jrebin_PROGRAMS = kaffe-bin
 
 if NEED_LIBXPROF

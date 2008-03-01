@@ -1,5 +1,33 @@
 2008-03-01  Dalibor Topic  <robilad@kaffe.org>
 
+	* configure.ac (KAFFE_CFLAGS): Removed 
+
+	* kaffe/jvmpi/Makefile.am,
+        kaffe/kaffe/Makefile.am,
+        kaffe/kaffevm/Makefile.am,
+        kaffe/kaffevm/boehm-gc/Makefile.am,
+        kaffe/kaffevm/gcj/Makefile.am,
+        kaffe/kaffevm/intrp/Makefile.am,
+        kaffe/kaffevm/jit/Makefile.am,
+        kaffe/kaffevm/jit3/Makefile.am,
+        kaffe/kaffevm/kaffe-gc/Makefile.am,
+        kaffe/kaffevm/systems/beos-native/Makefile.am,
+        kaffe/kaffevm/systems/drops-l4threads/Makefile.am,
+        kaffe/kaffevm/systems/oskit-pthreads/Makefile.am,
+        kaffe/kaffevm/systems/unix-jthreads/Makefile.am,
+        kaffe/kaffevm/systems/unix-pthreads/Makefile.am,
+        kaffe/xprof/Makefile.am,
+        libraries/clib/awt/Makefile.am,
+        libraries/clib/awt/X/Makefile.am,
+        libraries/clib/zip/Makefile.am,
+        replace/Makefile.am,
+        test/internal/Makefile.am,
+        test/jni/Makefile.am: Removed KAFFE_CFLAGS.
+
+	Reported by:  Kiyo Inaba  <inaba@src.ricoh.co.jp>
+
+2008-03-01  Dalibor Topic  <robilad@kaffe.org>
+
 	* include/Makefile.am (NOINSTALL_DERIVED_HDRS): Added 
 	java_lang_ThreadGroup.h.
 

@@ -222,7 +222,6 @@ JAVA_LIBS = @JAVA_LIBS@
 KAFFEH = @KAFFEH@
 KAFFE_ARCHOS = @KAFFE_ARCHOS@
 KAFFE_CCASFLAGS = @KAFFE_CCASFLAGS@
-KAFFE_CFLAGS = @KAFFE_CFLAGS@
 KAFFE_LIBS = @KAFFE_LIBS@
 KLIBFLAGS = @KLIBFLAGS@
 KPREFIX = @KPREFIX@
@@ -365,7 +364,6 @@ EXTRA_DIST = \
 	systems/win32/winthread.c \
 	systems/win32/winthread.h
 
-AM_CFLAGS = $(KAFFE_CFLAGS)
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) \
 	-I$(top_srcdir)/kaffe/kaffevm/jni \

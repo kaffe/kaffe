@@ -8,9 +8,6 @@
 
 check_PROGRAMS= jniBase jniExecClass jniReflect jniWeakTest
 
-AM_CFLAGS = \
-	$(KAFFE_CFLAGS)
-
 AM_CPPFLAGS= \
 	-I$(top_builddir)/include \
 	-I$(top_srcdir)/include -I$(top_srcdir)/include/kaffe \

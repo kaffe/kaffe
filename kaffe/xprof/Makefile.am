@@ -10,8 +10,6 @@
 # Contributed by the Flux Research Group, Department of Computer Science,
 # University of Utah, http://www.cs.utah.edu/flux/
 
-AM_CFLAGS= $(KAFFE_CFLAGS)
-
 @engine_frag@
 
 AM_CPPFLAGS = \

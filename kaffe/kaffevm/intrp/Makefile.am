@@ -7,7 +7,6 @@
 # of this file. 
 
 @engine_frag@
-AM_CFLAGS= $(KAFFE_CFLAGS)
 AM_CPPFLAGS = \
 	      -I$(top_srcdir)/kaffe/kaffevm/$(THREAD_DIR) \
 	      -I$(top_srcdir)/kaffe/kaffevm/jni \
