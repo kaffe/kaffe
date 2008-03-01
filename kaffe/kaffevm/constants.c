@@ -183,7 +183,7 @@ readConstantPool(Hjava_lang_Class* this, classFile* fp, errorInfo *einfo)
 			readu4(&d4b, fp);
 
 #if SIZEOF_VOID_P == 8
-			if(check_if_need_toswitch_words_in_jdouble())
+			if(check_if_need_to_switch_words_in_jdouble())
 			  pool[i] = WORDS_TO_LONG(d4b, d4);
 			else
 			  pool[i] = WORDS_TO_LONG(d4, d4b);

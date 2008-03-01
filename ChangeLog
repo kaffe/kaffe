@@ -1,3 +1,9 @@
+2008-03-01  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/constants.c (readConstantPool): Fixed typo.
+
+	Reported by:  Michael Koch  <mkoch@kaffe.org>
+
 2008-02-27  Dalibor Topic  <robilad@kaffe.org>
 
 	* Makefile.am (EXTRA_DIST): Added ChangeLog.20. 
