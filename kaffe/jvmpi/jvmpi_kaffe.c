@@ -32,6 +32,7 @@
 #include "code.h"
 #include "classMethod.h"
 #include "java_lang_Thread.h"
+#include "java_lang_ThreadGroup.h"
 #include "thread.h"
 #include "stackTrace.h"
 #include "stringSupport.h"
