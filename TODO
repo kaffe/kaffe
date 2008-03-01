@@ -13,10 +13,8 @@
    * libjit could use a vmgenned interpreter, too.
 
 * Cleanup
- * Remove KAFFE_CFLAGS
  * Remove kaffe's copies of jni.h, jni-md.h, etc. Use GNU Classpath's headers instead.
-    Also remove the config-int.h generation now that we are using C99.
- * Look into removing the logging.properties file in libraries/javalib.
+    Also remove the inttypes.h checks and use now that we are using c99.
  * cleanup JNI library loading to use libltdl exclusively.
  * Remove unused instructions from jits (nop, unimplemented)
  * Use CScout http://www.spinellis.gr/cscout/doc/indexw.html to weed out unused symbols.
