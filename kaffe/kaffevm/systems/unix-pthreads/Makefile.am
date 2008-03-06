@@ -19,7 +19,8 @@ libkthread_la_LDFLAGS = \
 
 libkthread_la_CFLAGS = \
 	$(AM_CFLAGS) \
-	$(PTHREAD_CFLAGS)
+	$(PTHREAD_CFLAGS) \
+	-D_GNU_SOURCE
 
 libkthread_la_SOURCES = \
 	lock-impl.c \

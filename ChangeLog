@@ -1,3 +1,12 @@
+2008-03-06  Dalibor Topic  <robilad@kaffe.org>
+
+	* kaffe/kaffevm/systems/unix-pthreads/Makefile.am (libkthread_la_CFLAGS): 
+	Define _GNU_SOURCE.
+
+	* kaffe/kaffevm/systems/unix-pthreads/signal.c,
+	kaffe/kaffevm/systems/unix-pthreads/thread-impl.c: Removed
+	the _GNU_SOURCE define.
+
 2008-03-01  Dalibor Topic  <robilad@kaffe.org>
 
 	* TODO: Updated.

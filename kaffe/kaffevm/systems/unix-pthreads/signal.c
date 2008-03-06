@@ -9,7 +9,6 @@
  * of this file. 
  */
 
-#define _GNU_SOURCE
 #include "config.h"
 #include "debug.h"
 #include "config-std.h"

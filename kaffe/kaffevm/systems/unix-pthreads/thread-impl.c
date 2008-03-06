@@ -47,10 +47,6 @@
 #include <gc/gc.h>
 #endif
 
-/* define _GNU_SOURCE for pthread_yield on linux */
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
 #include <pthread.h>
 
 #if !defined(HAVE_PTHREAD_YIELD) && defined(HAVE_SCHED_YIELD)
