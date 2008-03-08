@@ -31,10 +31,6 @@
 #include "jvmpi_kaffe.h"
 #include "debug.h"
 
-#if defined(HAVE_INTTYPES_H)
-#include <inttypes.h>
-#endif
-
 /*
  * Return class object for this object.
  */

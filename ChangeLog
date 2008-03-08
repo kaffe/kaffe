@@ -1,5 +1,12 @@
 2008-03-08  Dalibor Topic  <robilad@kaffe.org>
 
+	* libraries/clib/native/java_lang_Object.c: Don't include inttypes.h,
+	we already include stdint.h.
+
+	* TODO: Updated.
+
+2008-03-08  Dalibor Topic  <robilad@kaffe.org>
+
 	* m4/ax_create_stdint_h.m4: Removed.
 
 2008-03-06  Dalibor Topic  <robilad@kaffe.org>
