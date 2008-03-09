@@ -36087,11 +36087,6 @@ done
 
 
 
-OPT_JAVA_LIBS=" \
-$ALSA_LIB \
-$ESD_LIB \
-"
-
 OPT_DLOPEN_JAVA_LIBS=
 for lib in $OPT_JAVA_LIBS; do
   OPT_DLOPEN_JAVA_LIBS="$OPT_DLOPEN_JAVA_LIBS -dlopen $lib"
