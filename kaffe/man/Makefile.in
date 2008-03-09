@@ -53,12 +53,12 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_c_bigendian_cross.m4 \
 	$(top_srcdir)/m4/classpath.m4 \
 	$(top_srcdir)/m4/compile_value.m4 \
 	$(top_srcdir)/m4/gcc_attribute.m4 $(top_srcdir)/m4/gettext.m4 \
-	$(top_srcdir)/m4/glibcver.m4 $(top_srcdir)/m4/gwqt.m4 \
-	$(top_srcdir)/m4/iconv.m4 $(top_srcdir)/m4/lcmessage.m4 \
-	$(top_srcdir)/m4/lib-ld.m4 $(top_srcdir)/m4/lib-link.m4 \
-	$(top_srcdir)/m4/lib-prefix.m4 $(top_srcdir)/m4/nls.m4 \
-	$(top_srcdir)/m4/po.m4 $(top_srcdir)/m4/progtest.m4 \
-	$(top_srcdir)/m4/semaphore.m4 $(top_srcdir)/m4/size_max.m4 \
+	$(top_srcdir)/m4/glibcver.m4 $(top_srcdir)/m4/iconv.m4 \
+	$(top_srcdir)/m4/lcmessage.m4 $(top_srcdir)/m4/lib-ld.m4 \
+	$(top_srcdir)/m4/lib-link.m4 $(top_srcdir)/m4/lib-prefix.m4 \
+	$(top_srcdir)/m4/nls.m4 $(top_srcdir)/m4/po.m4 \
+	$(top_srcdir)/m4/progtest.m4 $(top_srcdir)/m4/semaphore.m4 \
+	$(top_srcdir)/m4/size_max.m4 \
 	$(top_srcdir)/m4/solarispthread.m4 $(top_srcdir)/m4/valist.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -81,7 +81,6 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
-AWT_LIBS = @AWT_LIBS@
 BCEL_JAR = @BCEL_JAR@
 CC = @CC@
 CCAS = @CCAS@
@@ -161,11 +160,9 @@ MAKE_KAFFEH = @MAKE_KAFFEH@
 MKDIR_P = @MKDIR_P@
 MKINSTALLDIRS = @MKINSTALLDIRS@
 MKTEMP = @MKTEMP@
-MOC = @MOC@
 MSGFMT = @MSGFMT@
 MSGMERGE = @MSGMERGE@
 M_LIBS = @M_LIBS@
-NANOX_CFLAGS = @NANOX_CFLAGS@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
 OPT_DLOPEN_JAVA_LIBS = @OPT_DLOPEN_JAVA_LIBS@
@@ -182,11 +179,6 @@ POSUB = @POSUB@
 PTHREAD_CC = @PTHREAD_CC@
 PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
 PTHREAD_LIBS = @PTHREAD_LIBS@
-QASSISTANTCLIENT_LDADD = @QASSISTANTCLIENT_LDADD@
-QEMBED = @QEMBED@
-QT_CXXFLAGS = @QT_CXXFLAGS@
-QT_GUILINK = @QT_GUILINK@
-QT_LDADD = @QT_LDADD@
 RANLIB = @RANLIB@
 SED = @SED@
 SEMAPHORE_LIB = @SEMAPHORE_LIB@
@@ -196,17 +188,10 @@ STRIP = @STRIP@
 TARGET_CLASSPATH_CLASSES = @TARGET_CLASSPATH_CLASSES@
 THREAD_DIR = @THREAD_DIR@
 THREAD_SYSTEM = @THREAD_SYSTEM@
-UIC = @UIC@
 USE_NLS = @USE_NLS@
 VERSION = @VERSION@
 VM_LIBS = @VM_LIBS@
 XGETTEXT = @XGETTEXT@
-XI18N_CFLAGS = @XI18N_CFLAGS@
-XMKMF = @XMKMF@
-X_CFLAGS = @X_CFLAGS@
-X_EXTRA_LIBS = @X_EXTRA_LIBS@
-X_LIBS = @X_LIBS@
-X_PRE_LIBS = @X_PRE_LIBS@
 ZZIP_CFLAGS = @ZZIP_CFLAGS@
 ZZIP_LIBS = @ZZIP_LIBS@
 abs_builddir = @abs_builddir@

@@ -66,7 +66,6 @@ EXTRA_DIST = \
 	FAQ/FAQ.Known-Bugs \
 	FAQ/FAQ.amigaos \
 	FAQ/FAQ.automake \
-	FAQ/FAQ.awt \
 	FAQ/FAQ.benchmarking \
 	FAQ/FAQ.blackfin \
 	FAQ/FAQ.charsets \

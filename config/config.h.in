@@ -117,9 +117,6 @@
 /* Define to 1 if you have the `get_nprocs_conf' function. */
 #undef HAVE_GET_NPROCS_CONF
 
-/* Do we have the right version of libungif */
-#undef HAVE_GIF_LIB_H
-
 /* Define to 1 if you have the <gmp.h> header file. */
 #undef HAVE_GMP_H
 
@@ -170,9 +167,6 @@
 /* Define if your <locale.h> file defines LC_MESSAGES. */
 #undef HAVE_LC_MESSAGES
 
-/* Define to 1 if you have the `Csup' library (-lCsup). */
-#undef HAVE_LIBCSUP
-
 /* Define to 1 if you have the `ffi' library (-lffi). */
 #undef HAVE_LIBFFI
 
@@ -182,26 +176,11 @@
 /* Define to 1 if you have the `gcc' library (-lgcc). */
 #undef HAVE_LIBGCC
 
-/* Define to 1 if you have the `gif' library (-lgif). */
-#undef HAVE_LIBGIF
-
-/* Define to 1 if you have the `jpeg' library (-ljpeg). */
-#undef HAVE_LIBJPEG
-
 /* Define to 1 if you have the `m' library (-lm). */
 #undef HAVE_LIBM
 
 /* Define to 1 if you have the `mw' library (-lmw). */
 #undef HAVE_LIBMW
-
-/* Define to 1 if you have the `png' library (-lpng). */
-#undef HAVE_LIBPNG
-
-/* Define to 1 if you have the `ungif' library (-lungif). */
-#undef HAVE_LIBUNGIF
-
-/* Define to 1 if you have the `Xext' library (-lXext). */
-#undef HAVE_LIBXEXT
 
 /* Define to 1 if you have the <limits.h> header file. */
 #undef HAVE_LIMITS_H
@@ -372,9 +351,6 @@
 /* Define to 1 if you have the <sys/ioctl.h> header file. */
 #undef HAVE_SYS_IOCTL_H
 
-/* Define to 1 if you have the <sys/ipc.h> header file. */
-#undef HAVE_SYS_IPC_H
-
 /* Define to 1 if you have the <sys/mman.h> header file. */
 #undef HAVE_SYS_MMAN_H
 
@@ -393,9 +369,6 @@
 
 /* Define to 1 if you have the <sys/select.h> header file. */
 #undef HAVE_SYS_SELECT_H
-
-/* Define to 1 if you have the <sys/shm.h> header file. */
-#undef HAVE_SYS_SHM_H
 
 /* Define to 1 if you have the <sys/signal.h> header file. */
 #undef HAVE_SYS_SIGNAL_H
@@ -453,9 +426,6 @@
 
 /* Define to 1 if you have the <wintypes.h> header file. */
 #undef HAVE_WINTYPES_H
-
-/* Define to 1 if you have the <X11/extensions/XShm.h> header file. */
-#undef HAVE_X11_EXTENSIONS_XSHM_H
 
 /* Enable XScale support */
 #undef HAVE_XSCALE
@@ -568,18 +538,12 @@
 /* Version number of package */
 #undef VERSION
 
-/* Defined if on Win32 platform */
-#undef WIN32
-
 /* Define if using the dmalloc debugging malloc package */
 #undef WITH_DMALLOC
 
 /* Define to 1 if your processor stores words with the most significant byte
    first (like Motorola and SPARC, unlike Intel and VAX). */
 #undef WORDS_BIGENDIAN
-
-/* Define to 1 if the X Window System is missing or not being used. */
-#undef X_DISPLAY_MISSING
 
 /* Number of bits in a file offset, on hosts where this is settable. */
 #undef _FILE_OFFSET_BITS
