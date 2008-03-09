@@ -13,7 +13,11 @@
    * libjit could use a vmgenned interpreter, too.
 
 * Cleanup
- * Remove kaffe's copies of jni.h, jni-md.h, etc. Use GNU Classpath's headers instead.
+ * Remove kaffe's copies of jni.h, jni-md.h, kaffe-jni.h etc. Use GNU Classpath's headers 
+   instead.
+   - Implement KaffeVM_Arguments as JDK1_1InitArgs, or do without them
+   - Implement GetObjectRefType
+   - Symlink jni.h, jawt.h, etc. from classpath's installation on install.
  * cleanup JNI library loading to use libltdl exclusively.
  * Remove unused instructions from jits (nop, unimplemented)
  * Use CScout http://www.spinellis.gr/cscout/doc/indexw.html to weed out unused symbols.
@@ -23,7 +27,6 @@
  * Make runtime engine runtime selectable
  * Make gc backend runtime selectable
  * Make boehm-gc the default engine on platforms that support it
- * Use libltdl directly for JNI, remove wrappers.
  * Swich to glib for data structures, command line option parsing, etc.
   * debug logging (alternative would be GNU nana)
   * command line option parsing (our manual code in main.c is rather ugly)
@@ -61,7 +64,6 @@
   * Remove old Kaffe AWT implementations
 
 * Merging work:
-  * sun.misc.Unsafe native implementation from openjdk/cacao for full jsr166 support.
   * verifier from gcj (rob gonzalez)
   * SkyOS port
 
@@ -74,7 +76,5 @@
   * Switch to autotest for the test suites
 
 * Pending patches
-  classpath's doubleToLongBits (dalibor)
-  jit fixes for arm-linux (dalibor)
   amd64 jit from Eric Anholt (guilhem)
 

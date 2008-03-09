@@ -1,3 +1,7 @@
+2008-03-09  Dalibor Topic  <robilad@kaffe.org>
+
+	* TODO: Updated.
+
 2008-03-08  Dalibor Topic  <robilad@kaffe.org>
 
 	* libraries/clib/native/java_lang_Object.c: Don't include inttypes.h,
