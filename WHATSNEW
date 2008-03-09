@@ -1,6 +1,7 @@
 What's New Since Kaffe 1.1.9
 ----------------------------
 
+* Removed kaffe-specific AWT implementations.
 
 What's New In Kaffe 1.1.9
 ----------------------------

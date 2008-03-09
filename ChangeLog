@@ -1,5 +1,9 @@
 2008-03-09  Dalibor Topic  <robilad@kaffe.org>
 
+	* WHATSNEW, TODO: Updated.
+
+2008-03-09  Dalibor Topic  <robilad@kaffe.org>
+
 	* configure.ac: Removed old kaffe AWT configuration mechanism.
 
 	* Makefile.am (EXTRA_DIST): Removed FAQ.awt.
