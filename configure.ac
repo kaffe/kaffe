@@ -1350,13 +1350,6 @@ done
 AC_SUBST(DLOPEN_JAVA_LIBS)
 
 
-OPT_DLOPEN_JAVA_LIBS=
-for lib in $OPT_JAVA_LIBS; do
-  OPT_DLOPEN_JAVA_LIBS="$OPT_DLOPEN_JAVA_LIBS -dlopen $lib"
-done
-AC_SUBST(OPT_DLOPEN_JAVA_LIBS)
-
-
 if test x"$dynamic_libraries" = x"no"; then
 	KLIBFLAGS=-static
 else
