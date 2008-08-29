@@ -16,18 +16,47 @@
 #include "arm/sysdepCallMethod.h"
 #include "arm/threads.h"
 
-/**/
-/* Extra exception handling information. */
-/**/
+#if defined(HAVE_SIGNAL_H)
 #include <signal.h>
+#endif
+#if defined(HAVE_SYS_RESOURCE_H)
+#include <sys/resource.h>
+#endif
+#if defined(HAVE_SYS_SIGNAL_H)
+#include <sys/signal.h>
+#endif
+#if defined(HAVE_UNISTD_H)
+#include <unistd.h>
+#endif
 
-#define	SIGNAL_ARGS(sig, sc) int sig, int code, struct sigcontext *sc
+#if defined(HAVE_SYS_UCONTEXT_H)
+#include <sys/ucontext.h>
+
+/* older netbsd's could have this macro missing, so we provide it */
+#ifndef _UC_MACHINE_SP
+#define _UC_MACHINE_SP(uc)	((uc)->uc_mcontext.__gregs[_REG_SP])
+#endif
+#ifndef _UC_MACHINE_PC
+#define _UC_MACHINE_PC(uc)	((uc)->uc_mcontext.__gregs[_REG_PC])
+#endif
+
+#define SIGCONTEXT ucontext_t
+
+#define SIGNAL_ARGS(sig, sc) int sig, siginfo_t *__si, void *sc
+#define SIGNAL_CONTEXT_POINTER(scp) SIGCONTEXT *scp
+#define SIGNAL_PC(scp) _UC_MACHINE_PC(((SIGCONTEXT *)(scp)))
+#define STACK_POINTER(scp) _UC_MACHINE_SP(((SIGCONTEXT *)(scp)))
+#define GET_SIGNAL_CONTEXT_POINTER(sc) (sc)
+
+#else
+
+#define SIGNAL_ARGS(sig, sc) int sig, int __code, struct sigcontext *sc
 #define SIGNAL_CONTEXT_POINTER(scp) struct sigcontext *scp
-#define GET_SIGNAL_CONTEXT_POINTER(scp) (scp)
-#define SIGNAL_PC(scp) ((uintp)(scp)->sc_pc)
+#define GET_SIGNAL_CONTEXT_POINTER(sc) (sc)
+#define SIGNAL_PC(scp) (scp)->sc_pc
+#define STACK_POINTER(scp) (scp)->sc_sp
 
-/* #include "kaffe-unix-stack.h" */
-
+#endif
 #if defined(TRANSLATOR)
 #include "jit-md.h"
 #endif

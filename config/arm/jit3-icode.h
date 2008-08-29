@@ -293,6 +293,9 @@ __moveable_constant_rangecheck(int val)
 #define	HAVE_check_stack_limit_constpool check_stack_limit_xRC
 #endif
 
+#define	HAVE_spill_float		fspill_Rxx
+#define	HAVE_reload_float		freload_Rxx
+
 #if !defined(HAVE_NO_FLOATING_POINT)
 /*
  * We only include these operations if we actually support floating point.
@@ -304,8 +307,6 @@ __moveable_constant_rangecheck(int val)
 
 #define __doubleconst_rangecheck(v)	0
 
-#define	HAVE_spill_float		fspill_Rxx
-#define	HAVE_reload_float		freload_Rxx
 #define	HAVE_spill_double		fspilll_Rxx
 #define	HAVE_reload_double		freloadl_Rxx
 

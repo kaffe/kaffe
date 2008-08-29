@@ -143,6 +143,29 @@ extern void arm_do_fixup_trampoline(void);
 #endif
 
 /* Define the register set */
+#if defined(HAVE_NO_FLOATING_POINT)
+	// slot, ctype, type, flags, used, regno
+#define	REGISTER_SET							\
+	{ /* r0 */	0, 0, Rint|Rref|Rfloat,	0, 0, 0    },		\
+	{ /* r1 */	0, 0, Rint|Rref|Rfloat,	0, 0, 1    },		\
+	{ /* r2 */	0, 0, Rint|Rref|Rfloat,	0, 0, 2    },		\
+	{ /* r3 */	0, 0, Rint|Rref|Rfloat,	0, 0, 3    },		\
+	{ /* r4 */	0, 0, Rint|Rref|Rfloat,	_GR_, 0, 4    },	\
+	{ /* r5 */	0, 0, Rint|Rref|Rfloat,	_GR_, 0, 5    },	\
+	{ /* r6 */	0, 0, Rint|Rref|Rfloat,	_GR_, 0, 6    },	\
+	{ /* r7 */	0, 0, Rint|Rref|Rfloat,	_GR_, 0, 7    },	\
+	{ /* r8 */	0, 0, Rint|Rref|Rfloat,	_GR_, 0, 8    },	\
+	{ /* r9 */	0, 0, Reserved,		0, 0, 9    },	/* Static base */	\
+	{ /* r10 */	0, 0, Rint|Rref|Rfloat,	_GR_, 0, 10   },/* Stack limit */	\
+	{ /* fp */	0, 0, Reserved,		0, 0, 11   },		\
+	{ /* ip */	0, 0, Rint|Rref|Rfloat,	0, 0, 12   },		\
+	{ /* sp */	0, 0, Reserved,		0, 0, 13   },		\
+	{ /* lr */	0, 0, Reserved,		0, 0, 14   },		\
+	{ /* pc */	0, 0, Reserved,		0, 0, 15   },
+
+/* Number of registers in the register set */
+#define	NR_REGISTERS	16
+#else
 	// slot, ctype, type, flags, used, regno
 #define	REGISTER_SET							\
 	{ /* r0 */	0, 0, Rint|Rref,	0, 0, 0    },		\
@@ -172,6 +195,7 @@ extern void arm_do_fixup_trampoline(void);
 
 /* Number of registers in the register set */
 #define	NR_REGISTERS	24
+#endif
 
 /**/
 /* Opcode generation. */

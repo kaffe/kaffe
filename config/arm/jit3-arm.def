@@ -731,9 +731,14 @@ define_insn(spill_float, fspill_Rxx)
 	int r = sreg_float(0);
 	int o = const_int(1);
 
+#if defined(HAVE_NO_FLOATING_POINT)
+	assert(__I12const_rangecheck(o));
+	op_store_offset(r, FP, o);
+#else
 	assert(__I10const_rangecheck(o));
 	assert( (o & 0x3) == 0);
 	op_fstore_offset(r, FP, o >> 2);
+#endif
 
 	debug(("spill_float %d, [FP, %d]\n", r, o));
 }
@@ -766,9 +771,14 @@ define_insn(reload_float, freload_Rxx)
 	int r = lreg_float(0);
 	int o = const_int(1);
 
+#if defined(HAVE_NO_FLOATING_POINT)
+	assert(__I12const_rangecheck(o));
+	op_load_offset(r, FP, o);
+#else
 	assert(__I10const_rangecheck(o));
 	assert( (o & 0x3) == 0);
 	op_fload_offset(r, FP, o >> 2);
+#endif
 
 	debug(("reload_float %d, [FP, %d]\n", r, o));
 }
