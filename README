@@ -81,7 +81,7 @@ Where do I find new copies of Kaffe?
 
 Kaffe is available from various sites.  The primary site is:
 
-        ftp://ftp.kaffe.org/pub/kaffe/
+        https://github.com/kaffe/kaffe
 
 What about a web site?
 ----------------------
@@ -93,22 +93,25 @@ News about the "Open Source" Kaffe distribution can always be found at:
 And mailing lists?
 ------------------
 
-A couple of mailing lists are available for information and discussion of
-the Kaffe project.  These lists are:
-  
-        kaffe@kaffe.org                             - General discussions
-        kaffe-announce@kaffe.org                    - Announcements
+There is a Google group available at:
 
-In order to subscribe or unsubscribe, or to view the archives, please go
-to the website at:
+	http://groups.google.com/group/kaffevm
 
-	http://www.kaffe.org/
+Historic mailing list archives for the old kaffe mailing lists are archived at:
+
+	http://www.kaffe.org/pipermail/kaffe-announce/
+	http://www.kaffe.org/pipermail/kaffe/
 
 How do I report bugs and problems?
 ----------------------------------
 
-Go the website http://www.kaffe.org/ and you'll find information on how to
-report bugs.
+You can use GitHub issues here.
+
+	https://github.com/kaffe/kaffe/issues
+
+Note that the project is currently dormant, and not under active development. So
+you might want to raise the issue in the Google Group as well in order to raise
+awareness of your problem. New developers and pull requests are welcome!
 
 What software do I need to install Kaffe?
 -----------------------------------------
@@ -193,7 +196,7 @@ This will run a suite of tests to check that your Kaffe executable is
 in fact working.
 
 The Kaffe Team
-<kaffe@kaffe.org>
+<kaffevm@googlegroups.com>
 
 ----
 * Kaffe.org is a an independent, free software community project, not
