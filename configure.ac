@@ -302,7 +302,7 @@ AC_LIBTOOL_WIN32_DLL
 AC_PROG_LIBTOOL
 
 AC_CHECK_HEADER([ltdl.h],
-  [AC_SEARCH_LIBS([lt_dlcaller_register], [ltdl], [], [AC_MSG_ERROR([Can't find the libltdl library.])])],
+  [AC_SEARCH_LIBS([lt_dlinterface_register], [ltdl], [], [AC_MSG_ERROR([Can't find the libltdl library.])])],
   [AC_MSG_ERROR([Can't find the ltdl.h header file from the libltdl library])])
 
 ## Let users override the linker used by libtool, but default to $CC.
