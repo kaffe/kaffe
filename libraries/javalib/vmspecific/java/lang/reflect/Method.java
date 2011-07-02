@@ -39,6 +39,7 @@ exception statement from your version. */
 package java.lang.reflect;
 
 import gnu.java.lang.ClassHelper;
+import gnu.java.lang.CPStringBuilder;
 
 import gnu.java.lang.reflect.MethodSignatureParser;
 
@@ -282,7 +283,7 @@ extends AccessibleObject implements Member, GenericDeclaration
   public String toString()
   {
     // 128 is a reasonable buffer initial size for constructor
-    StringBuilder sb = new StringBuilder(128);
+    CPStringBuilder sb = new CPStringBuilder(128);
     Modifier.toString(getModifiers(), sb).append(' ');
     sb.append(ClassHelper.getUserName(getReturnType())).append(' ');
     sb.append(getDeclaringClass().getName()).append('.');
@@ -308,7 +309,7 @@ extends AccessibleObject implements Member, GenericDeclaration
   public String toGenericString()
   {
     // 128 is a reasonable buffer initial size for constructor
-    StringBuilder sb = new StringBuilder(128);
+    CPStringBuilder sb = new CPStringBuilder(128);
     Modifier.toString(getModifiers(), sb).append(' ');
     Constructor.addTypeParameters(sb, getTypeParameters());
     sb.append(getGenericReturnType()).append(' ');
