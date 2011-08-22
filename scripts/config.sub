@@ -283,6 +283,7 @@ case $basic_machine in
 	| sparcv8 | sparcv9 | sparcv9b | sparcv9v \
 	| spu | strongarm \
 	| tahoe | thumb | tic4x | tic80 | tron \
+	| tile \
 	| v850 | v850e \
 	| we32k \
 	| x86 | xc16x | xscale | xscalee[bl] | xstormy16 | xtensa \
@@ -366,6 +367,7 @@ case $basic_machine in
 	| tahoe-* | thumb-* \
 	| tic30-* | tic4x-* | tic54x-* | tic55x-* | tic6x-* | tic80-* \
 	| tron-* \
+	| tile-* \
 	| v850-* | v850e-* | vax-* \
 	| we32k-* \
 	| x86-* | x86_64-* | xc16x-* | xps100-* | xscale-* | xscalee[bl]-* \
@@ -1017,6 +1019,10 @@ case $basic_machine in
 		basic_machine=tic6x-unknown
 		os=-coff
 		;;
+	tile)
+		basic_machine=tile
+		os=-linux
+		;;
 	tx39)
 		basic_machine=mipstx39-unknown
 		;;
@@ -1587,6 +1593,9 @@ case $basic_machine in
 				;;
 			-ptx*)
 				vendor=sequent
+				;;
+			-tile*)
+				vendor=tilera
 				;;
 			-tpf*)
 				vendor=ibm
